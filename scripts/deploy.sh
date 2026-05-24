@@ -11,7 +11,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # 默认配置
-REMOTE_HOST="${REMOTE_HOST:-}"
+REMOTE_HOST="${REMOTE_HOST:-8.135.25.206}"
 REMOTE_USER="${REMOTE_USER:-root}"
 REMOTE_DIR="${REMOTE_DIR:-/opt/innerpath}"
 REMOTE_PORT="${REMOTE_PORT:-22}"
@@ -26,13 +26,14 @@ show_usage() {
     echo "  $0 remote update      # 远程快速更新"
     echo ""
     echo "环境变量:"
-    echo "  REMOTE_HOST          # 远程服务器地址"
+    echo "  REMOTE_HOST          # 远程服务器地址（默认: 8.135.25.206）"
     echo "  REMOTE_USER          # SSH 用户名（默认: root）"
     echo "  REMOTE_DIR           # 部署目录（默认: /opt/innerpath）"
     echo "  REMOTE_PORT          # SSH 端口（默认: 22）"
     echo ""
     echo "示例:"
-    echo "  export REMOTE_HOST=8.135.25.206"
+    echo "  $0 remote init                    # 使用默认服务器"
+    echo "  export REMOTE_HOST=1.2.3.4        # 或指定其他服务器"
     echo "  $0 remote init"
 }
 
@@ -51,10 +52,10 @@ deploy_local() {
     fi
 
     echo -e "${GREEN}停止现有容器...${NC}"
-    docker-compose down 2>/dev/null || true
+    docker compose down 2>/dev/null || true
 
     echo -e "${GREEN}构建并启动服务...${NC}"
-    docker-compose up -d --build
+    docker compose up -d --build
 
     echo ""
     echo -e "${GREEN}✅ 部署完成！${NC}"
@@ -64,12 +65,6 @@ deploy_local() {
 
 # 远程首次部署
 deploy_remote_init() {
-    if [ -z "$REMOTE_HOST" ]; then
-        echo -e "${RED}错误: 请设置 REMOTE_HOST 环境变量${NC}"
-        show_usage
-        exit 1
-    fi
-
     echo -e "${GREEN}========================================${NC}"
     echo -e "${GREEN}InnerPath 远程首次部署${NC}"
     echo -e "${GREEN}目标: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}${NC}"
@@ -131,15 +126,15 @@ deploy_remote_init() {
         fi
 
         # 启动服务
-        docker-compose down 2>/dev/null || true
-        docker-compose up -d --build
+        docker compose down 2>/dev/null || true
+        docker compose up -d --build
 
         # 清理
         rm -f /tmp/${PACKAGE}
 
         echo ""
         echo "部署完成！"
-        docker-compose ps
+        docker compose ps
 EOF
 
     # 清理本地临时文件
@@ -160,12 +155,6 @@ EOF
 
 # 远程快速更新
 deploy_remote_update() {
-    if [ -z "$REMOTE_HOST" ]; then
-        echo -e "${RED}错误: 请设置 REMOTE_HOST 环境变量${NC}"
-        show_usage
-        exit 1
-    fi
-
     echo -e "${GREEN}========================================${NC}"
     echo -e "${GREEN}InnerPath 远程快速更新${NC}"
     echo -e "${GREEN}目标: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}${NC}"
@@ -200,7 +189,7 @@ deploy_remote_update() {
         cp .env /tmp/.env.backup
 
         # 停止服务
-        docker-compose down
+        docker compose down
 
         # 解压新文件
         tar -xzf /tmp/${PACKAGE} -C ${REMOTE_DIR}/current
@@ -209,14 +198,15 @@ deploy_remote_update() {
         mv /tmp/.env.backup .env
 
         # 重新构建并启动
-        docker-compose up -d --build --no-cache
+        docker compose build --no-cache
+        docker compose up -d
 
         # 清理
         rm -f /tmp/${PACKAGE}
 
         echo ""
         echo "更新完成！"
-        docker-compose ps
+        docker compose ps
 EOF
 
     # 清理本地临时文件
