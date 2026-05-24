@@ -147,16 +147,35 @@ pytest
 
 ## 部署
 
+### Docker 部署（推荐）
+
+使用项目根目录的 `docker-compose.yml` 进行完整部署：
+
+```bash
+# 在项目根目录
+docker-compose up -d
+
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f backend
+```
+
 ### 生产环境配置
 
 1. 修改 `.env` 文件：
    - 设置 `ENVIRONMENT=production`
    - 设置 `DEBUG=False`
    - 使用强密码和安全的 `SECRET_KEY`
+   - 配置正确的 `CORS_ORIGINS`
 
-2. 使用Supervisor管理进程（参考 `deployment/supervisor.conf`）
-
-3. 配置Nginx反向代理（参考 `deployment/nginx.conf`）
+2. 所有服务通过 Docker Compose 统一管理，包括：
+   - PostgreSQL 数据库
+   - Redis 缓存
+   - Backend API
+   - Frontend Nginx
+   - Celery Worker
 
 ### 环境变量说明
 
