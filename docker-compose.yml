@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: innerseek-postgres
+    environment:
+      POSTGRES_DB: innerseek
+      POSTGRES_USER: innerseek
+      POSTGRES_PASSWORD: innerseek123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - innerseek-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U innerseek"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: innerseek-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - innerseek-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 后端 API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: innerseek-backend
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://innerseek:innerseek123@postgres:5432/innerseek
+      - REDIS_URL=redis://redis:6379/0
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:5174
+      - DEBUG=True
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./backend/logs:/app/logs
+    ports:
+      - "8000:8000"
+    networks:
+      - innerseek-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 前端 Nginx
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: innerseek-frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - innerseek-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  innerseek-network:
+    driver: bridge
