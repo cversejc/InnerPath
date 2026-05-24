@@ -1,4 +1,4 @@
-# InnerSeek Backend API
+# InnerPath Backend API
 
 离火引个人成长咨询平台后端服务
 

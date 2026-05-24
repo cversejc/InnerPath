@@ -128,7 +128,7 @@ app.include_router(courses.router, prefix="/api/v1/courses", tags=["Courses"])
 async def root():
     """Root endpoint"""
     return {
-        "message": "Welcome to InnerSeek API",
+        "message": "Welcome to InnerPath API",
         "version": settings.APP_VERSION,
         "docs": "/docs",
         "redoc": "/redoc"

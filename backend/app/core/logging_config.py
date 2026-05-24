@@ -29,7 +29,7 @@ class ColoredFormatter(logging.Formatter):
         return super().format(record)
 
 
-def setup_logging(app_name: str = "InnerSeek", log_level: str = "INFO", log_dir: str = "logs"):
+def setup_logging(app_name: str = "InnerPath", log_level: str = "INFO", log_dir: str = "logs"):
     """
     设置日志配置
 

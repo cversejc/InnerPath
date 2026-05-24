@@ -1,4 +1,4 @@
-# 离火引 InnerSeek
+# 离火引 InnerPath
 
 帮助你重构生命地图的个人成长咨询平台
 
@@ -138,7 +138,7 @@ docker-compose up -d --build
 ## 项目结构
 
 ```
-innerseek/
+innerpath/
 ├── src/
 │   ├── views/              # 页面组件
 │   │   ├── Home.vue        # 首页
@@ -218,10 +218,10 @@ innerseek/
 
 ## 联系方式
 
-- 微信：innerseek2026
-- 邮箱：hello@innerseek.me
-- 公众号：离火引InnerSeek
+- 微信：innerpath2026
+- 邮箱：hello@innerpath.me
+- 公众号：离火引InnerPath
 
 ## License
 
-Copyright © 2026 离火引 InnerSeek
+Copyright © 2026 离火引 InnerPath

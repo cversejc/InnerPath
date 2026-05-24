@@ -1,4 +1,4 @@
-# InnerSeek 后端部署指南
+# InnerPath 后端部署指南
 
 ## 服务器要求
 
@@ -32,15 +32,15 @@ sudo systemctl enable postgresql
 
 # 创建数据库和用户
 sudo -u postgres psql << EOF
-CREATE DATABASE innerseek;
-CREATE USER innerseek WITH PASSWORD 'your_secure_password';
-GRANT ALL PRIVILEGES ON DATABASE innerseek TO innerseek;
+CREATE DATABASE innerpath;
+CREATE USER innerpath WITH PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE innerpath TO innerpath;
 \q
 EOF
 
 # 配置PostgreSQL允许本地连接
 sudo nano /etc/postgresql/15/main/pg_hba.conf
-# 添加: local   innerseek   innerseek   md5
+# 添加: local   innerpath   innerpath   md5
 
 # 重启PostgreSQL
 sudo systemctl restart postgresql
@@ -62,11 +62,11 @@ redis-cli ping
 
 ```bash
 # 创建部署目录
-sudo mkdir -p /var/www/innerseek/backend
-sudo chown -R $USER:$USER /var/www/innerseek
+sudo mkdir -p /var/www/innerpath/backend
+sudo chown -R $USER:$USER /var/www/innerpath
 
 # 上传代码（使用git或scp）
-cd /var/www/innerseek
+cd /var/www/innerpath
 git clone <your-repo-url> backend
 # 或使用scp上传
 
@@ -98,7 +98,7 @@ ENVIRONMENT=production
 DEBUG=False
 
 # 数据库
-DATABASE_URL=postgresql+asyncpg://innerseek:your_secure_password@localhost:5432/innerseek
+DATABASE_URL=postgresql+asyncpg://innerpath:your_secure_password@localhost:5432/innerpath
 
 # Redis
 REDIS_URL=redis://localhost:6379/0
@@ -130,10 +130,10 @@ alembic upgrade head
 
 ```bash
 # 复制Nginx配置
-sudo cp deployment/nginx.conf /etc/nginx/sites-available/innerseek
+sudo cp deployment/nginx.conf /etc/nginx/sites-available/innerpath
 
 # 创建软链接
-sudo ln -s /etc/nginx/sites-available/innerseek /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/innerpath /etc/nginx/sites-enabled/
 
 # 测试配置
 sudo nginx -t
@@ -147,18 +147,18 @@ sudo systemctl enable nginx
 
 ```bash
 # 创建日志目录
-sudo mkdir -p /var/log/innerseek
-sudo chown -R www-data:www-data /var/log/innerseek
+sudo mkdir -p /var/log/innerpath
+sudo chown -R www-data:www-data /var/log/innerpath
 
 # 复制Supervisor配置
-sudo cp deployment/supervisor.conf /etc/supervisor/conf.d/innerseek.conf
+sudo cp deployment/supervisor.conf /etc/supervisor/conf.d/innerpath.conf
 
 # 重新加载Supervisor配置
 sudo supervisorctl reread
 sudo supervisorctl update
 
 # 启动服务
-sudo supervisorctl start innerseek:*
+sudo supervisorctl start innerpath:*
 
 # 查看状态
 sudo supervisorctl status
@@ -174,11 +174,11 @@ curl http://localhost:8000/health
 curl http://localhost:8000/docs
 
 # 检查Celery worker
-sudo supervisorctl status innerseek-celery
+sudo supervisorctl status innerpath-celery
 
 # 查看日志
-sudo tail -f /var/log/innerseek/api.log
-sudo tail -f /var/log/innerseek/celery.log
+sudo tail -f /var/log/innerpath/api.log
+sudo tail -f /var/log/innerpath/celery.log
 ```
 
 ## 常用管理命令
@@ -190,32 +190,32 @@ sudo tail -f /var/log/innerseek/celery.log
 sudo supervisorctl status
 
 # 启动所有服务
-sudo supervisorctl start innerseek:*
+sudo supervisorctl start innerpath:*
 
 # 停止所有服务
-sudo supervisorctl stop innerseek:*
+sudo supervisorctl stop innerpath:*
 
 # 重启所有服务
-sudo supervisorctl restart innerseek:*
+sudo supervisorctl restart innerpath:*
 
 # 重启单个服务
-sudo supervisorctl restart innerseek-api
+sudo supervisorctl restart innerpath-api
 
 # 查看日志
-sudo supervisorctl tail -f innerseek-api
+sudo supervisorctl tail -f innerpath-api
 ```
 
 ### 数据库管理
 
 ```bash
 # 备份数据库
-pg_dump -U innerseek innerseek > backup_$(date +%Y%m%d).sql
+pg_dump -U innerpath innerpath > backup_$(date +%Y%m%d).sql
 
 # 恢复数据库
-psql -U innerseek innerseek < backup_20260524.sql
+psql -U innerpath innerpath < backup_20260524.sql
 
 # 运行迁移
-cd /var/www/innerseek/backend
+cd /var/www/innerpath/backend
 source venv/bin/activate
 alembic upgrade head
 ```

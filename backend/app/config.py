@@ -4,7 +4,7 @@ from typing import List
 
 class Settings(BaseSettings):
     # Application
-    APP_NAME: str = "InnerSeek API"
+    APP_NAME: str = "InnerPath API"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
     ENVIRONMENT: str = "development"

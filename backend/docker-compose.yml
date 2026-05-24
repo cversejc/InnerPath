@@ -3,24 +3,24 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
-    container_name: innerseek-postgres
+    container_name: innerpath-postgres
     environment:
-      POSTGRES_DB: innerseek
-      POSTGRES_USER: innerseek
-      POSTGRES_PASSWORD: innerseek_dev_password
+      POSTGRES_DB: innerpath
+      POSTGRES_USER: innerpath
+      POSTGRES_PASSWORD: innerpath_dev_password
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U innerseek"]
+      test: ["CMD-SHELL", "pg_isready -U innerpath"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    container_name: innerseek-redis
+    container_name: innerpath-redis
     ports:
       - "6379:6379"
     healthcheck:
@@ -31,14 +31,14 @@ services:
 
   api:
     build: .
-    container_name: innerseek-api
+    container_name: innerpath-api
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://innerseek:innerseek_dev_password@postgres:5432/innerseek
+      - DATABASE_URL=postgresql+asyncpg://innerpath:innerpath_dev_password@postgres:5432/innerpath
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -53,12 +53,12 @@ services:
 
   celery:
     build: .
-    container_name: innerseek-celery
+    container_name: innerpath-celery
     command: celery -A app.tasks.celery_app worker --loglevel=info
     volumes:
       - .:/app
     environment:
-      - DATABASE_URL=postgresql+asyncpg://innerseek:innerseek_dev_password@postgres:5432/innerseek
+      - DATABASE_URL=postgresql+asyncpg://innerpath:innerpath_dev_password@postgres:5432/innerpath
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
