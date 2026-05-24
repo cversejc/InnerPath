@@ -31,7 +31,6 @@ backend/htmlcov/
 .env
 .env.local
 .env.*.local
-backend/.env
 
 # Database
 *.db

@@ -2,17 +2,17 @@ services:
   # PostgreSQL 数据库
   postgres:
     image: postgres:15-alpine
-    container_name: innerseek-postgres
+    container_name: innerpath-postgres
     environment:
-      POSTGRES_DB: innerseek
-      POSTGRES_USER: innerseek
-      POSTGRES_PASSWORD: innerseek123
+      POSTGRES_DB: ${POSTGRES_DB:-innerpath}
+      POSTGRES_USER: ${POSTGRES_USER:-innerpath}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-innerpath123}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - innerseek-network
+      - innerpath-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U innerseek"]
@@ -23,11 +23,11 @@ services:
   # Redis 缓存
   redis:
     image: redis:7-alpine
-    container_name: innerseek-redis
+    container_name: innerpath-redis
     ports:
       - "6379:6379"
     networks:
-      - innerseek-network
+      - innerpath-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -40,20 +40,17 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: innerseek-backend
+    container_name: innerpath-backend
+    env_file: .env
     environment:
-      - DATABASE_URL=postgresql+asyncpg://innerseek:innerseek123@postgres:5432/innerseek
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-innerpath}:${POSTGRES_PASSWORD:-innerpath123}@postgres:5432/${POSTGRES_DB:-innerpath}
       - REDIS_URL=redis://redis:6379/0
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
-      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:5174
-      - DEBUG=True
-      - LOG_LEVEL=INFO
     volumes:
       - ./backend/logs:/app/logs
     ports:
       - "8000:8000"
     networks:
-      - innerseek-network
+      - innerpath-network
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,12 +68,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: innerseek-frontend
+    container_name: innerpath-frontend
     ports:
       - "80:80"
       - "443:443"
     networks:
-      - innerseek-network
+      - innerpath-network
     depends_on:
       - backend
     restart: unless-stopped
@@ -91,5 +88,5 @@ volumes:
     driver: local
 
 networks:
-  innerseek-network:
+  innerpath-network:
     driver: bridge

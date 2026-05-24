@@ -1,26 +1,29 @@
 #!/bin/bash
 
-# InnerSeek 本地构建脚本
+# InnerPath 本地开发脚本
 
 set -e
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+RED='\033[0;31m'
 NC='\033[0m'
 
 echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}InnerSeek 本地构建${NC}"
+echo -e "${GREEN}InnerPath 本地开发环境${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 
 # 检查 .env 文件
 if [ ! -f ".env" ]; then
-    echo -e "${YELLOW}警告: .env 文件不存在，从 .env.example 复制${NC}"
+    echo -e "${YELLOW}⚠️  .env 文件不存在，从 .env.example 复制${NC}"
     if [ -f ".env.example" ]; then
         cp .env.example .env
-        echo -e "${YELLOW}请编辑 .env 文件，填入正确的配置${NC}"
+        echo -e "${RED}请编辑 .env 文件，填入正确的配置（特别是 DEEPSEEK_API_KEY）${NC}"
+        echo ""
+        exit 1
     else
-        echo "错误: .env.example 不存在"
+        echo -e "${RED}错误: .env.example 不存在${NC}"
         exit 1
     fi
 fi
@@ -36,7 +39,7 @@ docker-compose up -d || docker compose up -d
 
 echo ""
 echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}构建完成！${NC}"
+echo -e "${GREEN}✅ 服务启动成功！${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 echo -e "前端地址: ${YELLOW}http://localhost${NC}"

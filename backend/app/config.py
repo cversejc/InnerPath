@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import List
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -64,7 +65,8 @@ class Settings(BaseSettings):
     LOG_FORMAT: str = "json"
 
     class Config:
-        env_file = ".env"
+        # 读取项目根目录的 .env 文件
+        env_file = Path(__file__).parent.parent.parent / ".env"
         case_sensitive = True
 
 
