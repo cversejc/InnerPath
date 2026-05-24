@@ -34,18 +34,92 @@
     <!-- 报告内容 -->
     <section class="report-content">
       <div class="container">
-        <!-- AI 生成的完整内容 -->
+        <!-- AI 生成的完整内容（优先展示） -->
         <div v-if="report && report.aiGeneratedContent" class="ai-content">
           <div class="content-card">
             <div class="ai-badge">
               <span class="badge-icon">✨</span>
               <span>AI 深度分析</span>
             </div>
-            <div class="markdown-content" v-html="formatMarkdown(report.aiGeneratedContent)"></div>
+
+            <!-- 命理基础（特殊展示） -->
+            <div v-if="foundationData" class="foundation-section">
+              <h2 class="section-title">
+                <span class="title-icon">🔮</span>
+                命理基础
+              </h2>
+
+              <!-- 八字四柱 -->
+              <div v-if="foundationData.bazi" class="bazi-container">
+                <h3 class="subsection-title">八字四柱</h3>
+                <div class="pillar-grid">
+                  <div v-if="foundationData.bazi.year" class="pillar-card">
+                    <div class="pillar-label">年柱</div>
+                    <div class="pillar-value">{{ foundationData.bazi.year.stem }}{{ foundationData.bazi.year.branch }}</div>
+                    <div v-if="foundationData.bazi.year.ten_god" class="pillar-god">{{ foundationData.bazi.year.ten_god }}</div>
+                  </div>
+                  <div v-if="foundationData.bazi.month" class="pillar-card">
+                    <div class="pillar-label">月柱</div>
+                    <div class="pillar-value">{{ foundationData.bazi.month.stem }}{{ foundationData.bazi.month.branch }}</div>
+                    <div v-if="foundationData.bazi.month.ten_god" class="pillar-god">{{ foundationData.bazi.month.ten_god }}</div>
+                  </div>
+                  <div v-if="foundationData.bazi.day" class="pillar-card day-pillar">
+                    <div class="pillar-label">日柱（日主）</div>
+                    <div class="pillar-value">{{ foundationData.bazi.day.stem }}{{ foundationData.bazi.day.branch }}</div>
+                  </div>
+                  <div v-if="foundationData.bazi.hour" class="pillar-card">
+                    <div class="pillar-label">时柱</div>
+                    <div class="pillar-value">{{ foundationData.bazi.hour.stem }}{{ foundationData.bazi.hour.branch }}</div>
+                    <div v-if="foundationData.bazi.hour.ten_god" class="pillar-god">{{ foundationData.bazi.hour.ten_god }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 紫微斗数 -->
+              <div v-if="foundationData.ziwei" class="ziwei-container">
+                <h3 class="subsection-title">紫微斗数</h3>
+                <div class="palace-grid">
+                  <div v-if="foundationData.ziwei.life_palace" class="palace-card">
+                    <div class="palace-label">命宫</div>
+                    <div class="palace-stars">
+                      <span v-for="(star, idx) in foundationData.ziwei.life_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
+                      <span v-for="(star, idx) in foundationData.ziwei.life_palace.aux_stars" :key="'aux-' + idx" class="star-tag aux">{{ star }}</span>
+                    </div>
+                  </div>
+                  <div v-if="foundationData.ziwei.career_palace" class="palace-card">
+                    <div class="palace-label">事业宫</div>
+                    <div class="palace-stars">
+                      <span v-for="(star, idx) in foundationData.ziwei.career_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
+                    </div>
+                  </div>
+                  <div v-if="foundationData.ziwei.wealth_palace" class="palace-card">
+                    <div class="palace-label">财帛宫</div>
+                    <div class="palace-stars">
+                      <span v-for="(star, idx) in foundationData.ziwei.wealth_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
+                    </div>
+                  </div>
+                  <div v-if="foundationData.ziwei.relationship_palace" class="palace-card">
+                    <div class="palace-label">夫妻宫</div>
+                    <div class="palace-stars">
+                      <span v-for="(star, idx) in foundationData.ziwei.relationship_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="foundationData.ziwei.patterns && foundationData.ziwei.patterns.length > 0" class="patterns-section">
+                  <div class="pattern-label">关键格局：</div>
+                  <div class="pattern-tags">
+                    <span v-for="(pattern, idx) in foundationData.ziwei.patterns" :key="idx" class="pattern-tag">{{ pattern }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 其他内容 -->
+            <div class="markdown-content" v-html="formatMarkdown(contentWithoutFoundation)"></div>
           </div>
         </div>
 
-        <!-- 结构化内容展示 -->
+        <!-- 结构化内容展示（降级方案） -->
         <div v-else-if="report" class="structured-content">
           <!-- 能量特质 -->
           <div class="content-card">
@@ -163,7 +237,9 @@ export default {
   name: 'ReportDetail',
   data() {
     return {
-      report: null
+      report: null,
+      foundationData: null,
+      contentWithoutFoundation: ''
     }
   },
   mounted() {
@@ -184,6 +260,11 @@ export default {
         // 确保数据结构正确
         this.report = this.normalizeReportData(reportData.report)
         console.log('Normalized report:', this.report)
+
+        // 解析命理基础数据
+        if (this.report.aiGeneratedContent) {
+          this.parseFoundationData(this.report.aiGeneratedContent)
+        }
       } else {
         // 如果没有找到报告，显示示例报告
         console.warn('Report not found, showing example')
@@ -192,11 +273,12 @@ export default {
     },
     normalizeReportData(report) {
       // 标准化数据结构，处理可能的字段名差异
-      return {
+      const normalized = {
         basicInfo: report.basicInfo || report.basic_info || {
           name: '用户',
           reportDate: new Date().toISOString().split('T')[0]
         },
+        structuredSections: report.structuredSections || report.structured_sections || null,
         energyProfile: report.energyProfile || report.energy_profile || {
           type: '综合型',
           coreTraits: '独特的个人特质',
@@ -219,6 +301,143 @@ export default {
         summary: report.summary || '你是独特的个体，拥有无限的成长潜力。',
         aiGeneratedContent: report.aiGeneratedContent || report.ai_generated_content || report.ai_raw_content || null
       }
+
+      // Debug: 打印 structuredSections 的内容
+      console.log('structuredSections 内容:', normalized.structuredSections)
+      if (normalized.structuredSections) {
+        console.log('structuredSections keys:', Object.keys(normalized.structuredSections))
+        console.log('energy:', normalized.structuredSections.energy)
+        console.log('topics:', normalized.structuredSections.topics)
+        console.log('summary:', normalized.structuredSections.summary)
+      }
+
+      // Debug: 打印 aiGeneratedContent
+      console.log('aiGeneratedContent 存在吗?', !!normalized.aiGeneratedContent)
+      console.log('aiGeneratedContent 长度:', normalized.aiGeneratedContent?.length)
+      if (normalized.aiGeneratedContent) {
+        console.log('aiGeneratedContent 预览:', normalized.aiGeneratedContent.substring(0, 200))
+      }
+
+      return normalized
+    },
+    parseFoundationData(content) {
+      // 尝试从内容中提取命理基础的JSON数据
+      // 后端在 _format_foundation_as_markdown 中会输出结构化的Markdown
+      // 我们需要解析这些内容
+
+      // 提取八字四柱
+      const baziMatch = content.match(/### 八字四柱\s+([\s\S]*?)(?=###|$)/i)
+      if (baziMatch) {
+        const baziText = baziMatch[1]
+        const bazi = {}
+
+        // 解析年柱
+        const yearMatch = baziText.match(/\*\*年柱：\*\*\s*([^\s（]+)(?:（([^）]+)）)?/)
+        if (yearMatch) {
+          const [stem, branch] = this.splitStemBranch(yearMatch[1])
+          bazi.year = { stem, branch, ten_god: yearMatch[2] || '' }
+        }
+
+        // 解析月柱
+        const monthMatch = baziText.match(/\*\*月柱：\*\*\s*([^\s（]+)(?:（([^）]+)）)?/)
+        if (monthMatch) {
+          const [stem, branch] = this.splitStemBranch(monthMatch[1])
+          bazi.month = { stem, branch, ten_god: monthMatch[2] || '' }
+        }
+
+        // 解析日柱
+        const dayMatch = baziText.match(/\*\*日柱[^：]*：\*\*\s*([^\s（]+)/)
+        if (dayMatch) {
+          const [stem, branch] = this.splitStemBranch(dayMatch[1])
+          bazi.day = { stem, branch }
+        }
+
+        // 解析时柱
+        const hourMatch = baziText.match(/\*\*时柱：\*\*\s*([^\s（]+)(?:（([^）]+)）)?/)
+        if (hourMatch) {
+          const [stem, branch] = this.splitStemBranch(hourMatch[1])
+          bazi.hour = { stem, branch, ten_god: hourMatch[2] || '' }
+        }
+
+        if (Object.keys(bazi).length > 0) {
+          this.foundationData = this.foundationData || {}
+          this.foundationData.bazi = bazi
+        }
+      }
+
+      // 提取紫微斗数
+      const ziweiMatch = content.match(/### 紫微斗数\s+([\s\S]*?)(?=##[^#]|$)/i)
+      if (ziweiMatch) {
+        const ziweiText = ziweiMatch[1]
+        const ziwei = {}
+
+        // 解析命宫 - 格式: **命宫：** 主星名称
+        const lifePalaceMatch = ziweiText.match(/\*\*命宫：\*\*\s*([^\n]+)/)
+        if (lifePalaceMatch) {
+          ziwei.life_palace = {
+            main_stars: lifePalaceMatch[1].split('、').filter(s => s.trim()),
+            aux_stars: []
+          }
+          // 查找辅星 - 格式: - 辅星：星名
+          const auxStarsMatch = ziweiText.match(/\-\s*辅星：([^\n]+)/)
+          if (auxStarsMatch) {
+            ziwei.life_palace.aux_stars = auxStarsMatch[1].split('、').filter(s => s.trim())
+          }
+        }
+
+        // 解析事业宫 - 格式: **事业宫：** 主星名称
+        const careerMatch = ziweiText.match(/\*\*事业宫：\*\*\s*([^\n]+)/)
+        if (careerMatch) {
+          ziwei.career_palace = {
+            main_stars: careerMatch[1].split('、').filter(s => s.trim())
+          }
+        }
+
+        // 解析财帛宫 - 格式: **财帛宫：** 主星名称
+        const wealthMatch = ziweiText.match(/\*\*财帛宫：\*\*\s*([^\n]+)/)
+        if (wealthMatch) {
+          ziwei.wealth_palace = {
+            main_stars: wealthMatch[1].split('、').filter(s => s.trim())
+          }
+        }
+
+        // 解析夫妻宫 - 格式: **夫妻宫：** 主星名称
+        const relationshipMatch = ziweiText.match(/\*\*夫妻宫：\*\*\s*([^\n]+)/)
+        if (relationshipMatch) {
+          ziwei.relationship_palace = {
+            main_stars: relationshipMatch[1].split('、').filter(s => s.trim())
+          }
+        }
+
+        // 解析格局 - 格式: **格局：** 格局名称
+        const patternsMatch = ziweiText.match(/\*\*格局：\*\*\s*([^\n]+)/)
+        if (patternsMatch) {
+          ziwei.patterns = patternsMatch[1].split('、').filter(s => s.trim())
+        }
+
+        if (Object.keys(ziwei).length > 0) {
+          this.foundationData = this.foundationData || {}
+          this.foundationData.ziwei = ziwei
+        }
+      }
+
+      // 移除命理基础部分，保留其他内容
+      if (baziMatch || ziweiMatch) {
+        // 更精确的正则：匹配 "## 命理基础" 到下一个 "## " 之间的所有内容
+        this.contentWithoutFoundation = content.replace(/## 命理基础[\s\S]*?(?=\n## (?!#)|\n---\n|\n\n## (?!#)|$)/i, '')
+      } else {
+        this.contentWithoutFoundation = content
+      }
+
+      console.log('Foundation data parsed:', this.foundationData)
+      console.log('Content without foundation length:', this.contentWithoutFoundation.length)
+    },
+    splitStemBranch(text) {
+      // 天干地支各一个字
+      if (text.length >= 2) {
+        return [text[0], text[1]]
+      }
+      return [text, '']
     },
     getExampleReport() {
       return {
@@ -258,9 +477,34 @@ export default {
     formatMarkdown(content) {
       if (!content) return ''
 
-      // 简单的 Markdown 转 HTML
+      // 章节图标映射
+      const sectionIcons = {
+        '能量特质': '⚡',
+        '能量内核': '⚡',
+        '人生主题': '🎭',
+        '职业': '💼',
+        '关系': '💕',
+        '个人成长': '🌱',
+        '压力': '🧘',
+        '家庭': '🏠',
+        '总结': '🌟'
+      }
+
+      // 为二级标题添加图标
       let html = content
-        // 标题
+      Object.keys(sectionIcons).forEach(keyword => {
+        const icon = sectionIcons[keyword]
+        const regex = new RegExp(`^## ([^#]*${keyword}[^\\n]*)$`, 'gim')
+        html = html.replace(regex, `<h2><span class="section-icon">${icon}</span> $1</h2>`)
+      })
+
+      // 简单的 Markdown 转 HTML
+      html = html
+        // 分割线
+        .replace(/^---$/gim, '<hr>')
+        // 标题（从高级到低级，避免误匹配）
+        .replace(/^##### (.*$)/gim, '<h5>$1</h5>')
+        .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
         .replace(/^### (.*$)/gim, '<h3>$1</h3>')
         .replace(/^## (.*$)/gim, '<h2>$1</h2>')
         .replace(/^# (.*$)/gim, '<h1>$1</h1>')
@@ -269,14 +513,18 @@ export default {
         // 列表项
         .replace(/^\- (.*$)/gim, '<li>$1</li>')
         .replace(/^\* (.*$)/gim, '<li>$1</li>')
-        // 段落
-        .replace(/\n\n/g, '</p><p>')
+        // 段落：两个换行符表示段落分隔
+        .replace(/\n\n+/g, '</p><p>')
+        // 单个换行符保留为换行
+        .replace(/\n/g, '<br>')
 
       // 包裹列表项
-      html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+      html = html.replace(/(<li>.*?<\/li>(<br>)?)+/g, (match) => {
+        return '<ul>' + match.replace(/<br>/g, '') + '</ul>'
+      })
 
       // 包裹段落
-      if (!html.startsWith('<')) {
+      if (!html.startsWith('<h') && !html.startsWith('<ul>')) {
         html = '<p>' + html + '</p>'
       }
 
@@ -399,8 +647,8 @@ export default {
 .content-card {
   background: #fff;
   border-radius: 15px;
-  padding: 35px;
-  margin-bottom: 25px;
+  padding: 40px;
+  margin-bottom: 30px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
@@ -439,30 +687,85 @@ export default {
 }
 
 .markdown-content {
-  line-height: 1.8;
+  line-height: 2;
   color: #555;
 }
 
 .markdown-content h2 {
   font-size: 22px;
-  margin-top: 30px;
-  margin-bottom: 15px;
+  margin-top: 50px;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+  color: #2d3436;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.markdown-content h2:first-child {
+  margin-top: 0;
 }
 
 .markdown-content h3 {
   font-size: 18px;
-  margin-top: 20px;
-  margin-bottom: 10px;
+  margin-top: 35px;
+  margin-bottom: 18px;
+  color: #d4524f;
+  font-weight: 600;
+}
+
+.markdown-content h4 {
+  font-size: 16px;
+  margin-top: 28px;
+  margin-bottom: 15px;
+  color: #555;
+  font-weight: 600;
+}
+
+.markdown-content h5 {
+  font-size: 15px;
+  margin-top: 22px;
+  margin-bottom: 12px;
+  color: #666;
+  font-weight: 600;
 }
 
 .markdown-content p {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+.markdown-content hr {
+  border: none;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #d4524f, transparent);
+  margin: 45px 0;
+  position: relative;
+}
+
+.markdown-content hr::before {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  color: #d4524f;
+  padding: 0 15px;
+  font-size: 16px;
+}
+
+.markdown-content ul {
+  margin: 20px 0;
+  padding-left: 0;
 }
 
 .markdown-content li {
-  margin-bottom: 8px;
-  padding-left: 20px;
+  margin-bottom: 12px;
+  padding-left: 25px;
   position: relative;
+  line-height: 2;
 }
 
 .markdown-content li::before {
@@ -471,6 +774,272 @@ export default {
   left: 0;
   color: #d4524f;
   font-weight: 600;
+  font-size: 18px;
+}
+
+.markdown-content strong {
+  color: #2d3436;
+  font-weight: 600;
+}
+
+.section-icon {
+  font-size: 24px;
+}
+
+/* 命理基础样式 */
+.foundation-section {
+  margin-bottom: 35px;
+  padding-bottom: 25px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3436;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.title-icon {
+  font-size: 28px;
+}
+
+.subsection-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #d4524f;
+  margin: 20px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subsection-title::before {
+  content: '◆';
+  font-size: 14px;
+  color: #d4524f;
+}
+
+/* 八字四柱 */
+.bazi-container {
+  margin-bottom: 30px;
+}
+
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.pillar-card {
+  background: linear-gradient(135deg, #fff9f9 0%, #fff5f5 100%);
+  border: 1px solid #f0d0d0;
+  border-radius: 10px;
+  padding: 18px;
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.pillar-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, #d4524f 0%, #e74c3c 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.pillar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(212, 82, 79, 0.15);
+  border-color: #d4524f;
+}
+
+.pillar-card:hover::before {
+  opacity: 1;
+}
+
+.pillar-card.day-pillar {
+  background: linear-gradient(135deg, #d4524f 0%, #e74c3c 100%);
+  border-color: #d4524f;
+  box-shadow: 0 4px 12px rgba(212, 82, 79, 0.3);
+}
+
+.pillar-card.day-pillar::before {
+  opacity: 0;
+}
+
+.pillar-card.day-pillar:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(212, 82, 79, 0.4);
+}
+
+.pillar-card.day-pillar .pillar-label,
+.pillar-card.day-pillar .pillar-value {
+  color: #fff;
+}
+
+.pillar-label {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.pillar-card.day-pillar .pillar-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pillar-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #d4524f;
+  margin-bottom: 6px;
+  letter-spacing: 3px;
+}
+
+.pillar-god {
+  font-size: 11px;
+  color: #666;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 3px 9px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 4px;
+  border: 1px solid #f0d0d0;
+}
+
+/* 紫微斗数 */
+.ziwei-container {
+  margin-bottom: 0;
+}
+
+.palace-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.palace-card {
+  background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.palace-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.palace-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+}
+
+.palace-card:hover::before {
+  opacity: 1;
+}
+
+.palace-label {
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.palace-stars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.star-tag {
+  padding: 5px 11px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.star-tag.main {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.star-tag.main:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
+}
+
+.star-tag.aux {
+  background: #f0f0f0;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.patterns-section {
+  margin-top: 15px;
+  padding: 14px;
+  background: linear-gradient(135deg, #fff9f9 0%, #fff5f5 100%);
+  border-radius: 8px;
+  border-left: 3px solid #d4524f;
+}
+
+.pattern-label {
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.pattern-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pattern-tag {
+  background: linear-gradient(135deg, #d4524f 0%, #e74c3c 100%);
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(212, 82, 79, 0.3);
+  transition: all 0.2s;
+}
+
+.pattern-tag:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(212, 82, 79, 0.4);
 }
 
 /* 能量类型 */
@@ -598,6 +1167,188 @@ export default {
   text-align: justify;
 }
 
+/* 新增：结构化章节样式 */
+.structured-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.title-icon {
+  font-size: 28px;
+}
+
+/* 能量特质章节 */
+.energy-section .subsections {
+  display: grid;
+  gap: 20px;
+}
+
+.subsection-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  padding: 25px;
+  border-radius: 12px;
+  border-left: 4px solid #d4524f;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.subsection-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.subsection-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.subsection-icon {
+  font-size: 24px;
+}
+
+.subsection-header h3 {
+  font-size: 18px;
+  color: #d4524f;
+  margin: 0;
+}
+
+.subsection-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #555;
+  text-align: justify;
+}
+
+/* 议题章节 */
+.topic-section {
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+}
+
+.topic-subsections {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.topic-subsection {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.topic-subsection-title {
+  font-size: 16px;
+  color: #d4524f;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.topic-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #555;
+  text-align: justify;
+}
+
+/* 行动清单 */
+.action-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.action-item-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  transition: background 0.2s;
+}
+
+.action-item-check:hover {
+  background: #fffbfb;
+}
+
+.action-item-check input[type="checkbox"] {
+  margin-top: 4px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #d4524f;
+}
+
+.action-item-check label {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+  cursor: pointer;
+}
+
+.action-item-check input[type="checkbox"]:checked + label {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* 总结章节 */
+.summary-section {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+  border: 2px solid #d4524f;
+}
+
+.summary-highlight {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #d4524f;
+}
+
+.summary-highlight h3 {
+  font-size: 16px;
+  color: #d4524f;
+  margin-bottom: 10px;
+}
+
+.summary-highlight p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #555;
+  margin: 0;
+}
+
+.summary-message {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 25px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.summary-message p {
+  font-size: 16px;
+  line-height: 2;
+  color: #333;
+  font-weight: 500;
+  margin: 0;
+}
+
 /* 操作按钮 */
 .report-actions {
   display: flex;
@@ -678,6 +1429,14 @@ export default {
   .btn-action {
     width: 100%;
     justify-content: center;
+  }
+
+  .pillar-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .palace-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
