@@ -26,12 +26,11 @@ apiClient.interceptors.request.use(
  * 调用后端API生成报告（异步）
  */
 export async function generateReportWithAI(userData) {
-  const { name, gender, birthYear, birthMonth, birthDay, birthHour, birthMinute, birthPlace, selectedTopics, additionalInfo } = userData
+  const { gender, birthYear, birthMonth, birthDay, birthHour, birthMinute, birthPlace, selectedTopics, additionalInfo } = userData
 
   try {
     // 构建请求数据
     const requestData = {
-      name: name || '用户',
       gender: gender || 'male',
       birth_year: parseInt(birthYear),
       birth_month: parseInt(birthMonth),
@@ -117,6 +116,7 @@ function formatReportForFrontend(reportData) {
       birthDate: reportData.birth_date || '',
       reportDate: reportData.report_date || new Date().toISOString().split('T')[0]
     },
+    structuredSections: reportData.structured_sections || reportData.structuredSections || null,
     energyProfile: reportData.energy_profile || reportData.energyProfile || {
       type: '综合型',
       coreTraits: '独特的个人特质',

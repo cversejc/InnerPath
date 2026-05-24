@@ -43,60 +43,208 @@
 
         <!-- 步骤1: 基本信息 -->
         <div v-if="currentStep === 1" class="step-content">
-          <h2>请填写你的基本信息</h2>
-          <p class="step-desc">我们将基于你的出生时间节律，分析你的能量动力模式</p>
+          <h2>请填写你的出生信息</h2>
+          <p class="step-desc">基于你的时间节律，我们将为你绘制专属的能量地图</p>
 
           <form class="assessment-form">
+            <!-- 性别选择 -->
             <div class="form-group">
-              <label>姓名 <span class="required">*</span></label>
-              <input v-model="formData.name" type="text" placeholder="请输入你的姓名" required>
+              <label class="form-label">
+                <span class="label-icon">👤</span>
+                性别 <span class="required">*</span>
+              </label>
+              <div class="gender-selector">
+                <div
+                  class="gender-option"
+                  :class="{ selected: formData.gender === 'male' }"
+                  @click="formData.gender = 'male'"
+                >
+                  <span class="gender-icon male">♂</span>
+                  <span class="gender-text">男</span>
+                </div>
+                <div
+                  class="gender-option"
+                  :class="{ selected: formData.gender === 'female' }"
+                  @click="formData.gender = 'female'"
+                >
+                  <span class="gender-icon female">♀</span>
+                  <span class="gender-text">女</span>
+                </div>
+              </div>
             </div>
 
-            <div class="form-row">
-              <div class="form-group">
-                <label>性别 <span class="required">*</span></label>
-                <div class="radio-group">
-                  <label class="radio-label">
-                    <input v-model="formData.gender" type="radio" value="male" required>
-                    <span>男</span>
-                  </label>
-                  <label class="radio-label">
-                    <input v-model="formData.gender" type="radio" value="female" required>
-                    <span>女</span>
-                  </label>
+            <!-- 历法类型 -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="label-icon">📖</span>
+                历法类型 <span class="required">*</span>
+              </label>
+              <div class="calendar-selector">
+                <div
+                  class="calendar-option"
+                  :class="{ selected: formData.calendarType === 'solar' }"
+                  @click="formData.calendarType = 'solar'"
+                >
+                  <div class="calendar-icon">☀️</div>
+                  <div class="calendar-info">
+                    <div class="calendar-title">公历（阳历）</div>
+                    <div class="calendar-desc">身份证日期</div>
+                  </div>
+                </div>
+                <div
+                  class="calendar-option"
+                  :class="{ selected: formData.calendarType === 'lunar' }"
+                  @click="formData.calendarType = 'lunar'"
+                >
+                  <div class="calendar-icon">🌙</div>
+                  <div class="calendar-info">
+                    <div class="calendar-title">农历（阴历）</div>
+                    <div class="calendar-desc">传统节日</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 出生日期 -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="label-icon">📅</span>
+                出生日期 <span class="required">*</span>
+              </label>
+              <div class="date-input-group">
+                <div class="date-field">
+                  <input
+                    v-model="formData.birthYear"
+                    type="tel"
+                    inputmode="numeric"
+                    placeholder="1990"
+                    maxlength="4"
+                    required
+                    class="date-field-input"
+                    @input="validateYear"
+                  >
+                  <span class="date-field-label">年</span>
+                </div>
+                <span class="date-divider">/</span>
+                <div class="date-field">
+                  <input
+                    v-model="formData.birthMonth"
+                    type="tel"
+                    inputmode="numeric"
+                    placeholder="01"
+                    maxlength="2"
+                    required
+                    class="date-field-input"
+                    @input="validateMonth"
+                  >
+                  <span class="date-field-label">月</span>
+                </div>
+                <span class="date-divider">/</span>
+                <div class="date-field">
+                  <input
+                    v-model="formData.birthDay"
+                    type="tel"
+                    inputmode="numeric"
+                    placeholder="01"
+                    maxlength="2"
+                    required
+                    class="date-field-input"
+                    @input="validateDay"
+                  >
+                  <span class="date-field-label">日</span>
+                </div>
+              </div>
+              <p class="form-hint">💡 请按照上方选择的历法填写</p>
+            </div>
+
+            <!-- 出生时间 -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="label-icon">⏰</span>
+                出生时间 <span class="optional">(选填)</span>
+              </label>
+              <div class="time-accuracy-selector">
+                <div
+                  class="accuracy-option"
+                  :class="{ selected: formData.timeAccuracy === 'unknown' }"
+                  @click="selectTimeAccuracy('unknown')"
+                >
+                  <div class="accuracy-icon">❓</div>
+                  <div class="accuracy-label">不知道</div>
+                </div>
+                <div
+                  class="accuracy-option"
+                  :class="{ selected: formData.timeAccuracy === 'approximate' }"
+                  @click="selectTimeAccuracy('approximate')"
+                >
+                  <div class="accuracy-icon">🕐</div>
+                  <div class="accuracy-label">大概时间</div>
+                </div>
+                <div
+                  class="accuracy-option"
+                  :class="{ selected: formData.timeAccuracy === 'exact' }"
+                  @click="selectTimeAccuracy('exact')"
+                >
+                  <div class="accuracy-icon">⏱️</div>
+                  <div class="accuracy-label">精确时间</div>
                 </div>
               </div>
 
-              <div class="form-group">
-                <label>联系方式 <span class="required">*</span></label>
-                <input v-model="formData.contact" type="text" placeholder="手机号或微信" required>
+              <div v-if="formData.timeAccuracy !== 'unknown'" class="time-picker-modern">
+                <div class="time-input-wrapper">
+                  <input
+                    v-model="formData.birthHour"
+                    type="tel"
+                    inputmode="numeric"
+                    placeholder="08"
+                    maxlength="2"
+                    class="time-input"
+                    @input="validateHour"
+                  >
+                  <span class="time-separator">:</span>
+                </div>
+                <div class="time-input-wrapper">
+                  <input
+                    v-model="formData.birthMinute"
+                    type="tel"
+                    inputmode="numeric"
+                    placeholder="30"
+                    maxlength="2"
+                    class="time-input"
+                    @input="validateMinute"
+                  >
+                </div>
               </div>
+              <p class="form-hint" v-if="formData.timeAccuracy === 'unknown'">
+                💡 没关系，我们会基于日期为你提供分析
+              </p>
+              <p class="form-hint" v-else-if="formData.timeAccuracy === 'approximate'">
+                💡 大概时间也能提供较准确的分析
+              </p>
+              <p class="form-hint" v-else-if="formData.timeAccuracy === 'exact'">
+                ✨ 精确时间将获得最准确的能量地图
+              </p>
             </div>
 
+            <!-- 出生地 -->
             <div class="form-group">
-              <label>出生日期 <span class="required">*</span></label>
-              <div class="date-inputs">
-                <input v-model="formData.birthYear" type="number" placeholder="年" min="1900" max="2026" required>
-                <input v-model="formData.birthMonth" type="number" placeholder="月" min="1" max="12" required>
-                <input v-model="formData.birthDay" type="number" placeholder="日" min="1" max="31" required>
-              </div>
+              <label class="form-label">
+                <span class="label-icon">📍</span>
+                出生地 <span class="optional">(选填)</span>
+              </label>
+              <input
+                v-model="formData.birthPlace"
+                type="text"
+                placeholder="如：北京、上海、广州..."
+                class="modern-input"
+              >
+              <p class="form-hint">💡 用于真太阳时校正，提升分析精度</p>
             </div>
 
-            <div class="form-group">
-              <label>出生时间 <span class="optional">(选填，更精准)</span></label>
-              <div class="time-inputs">
-                <input v-model="formData.birthHour" type="number" placeholder="时" min="0" max="23">
-                <input v-model="formData.birthMinute" type="number" placeholder="分" min="0" max="59">
-              </div>
-              <p class="form-hint">如不确定出生时间，可留空</p>
-            </div>
-
-            <div class="form-group">
-              <label>出生地 <span class="optional">(选填)</span></label>
-              <input v-model="formData.birthPlace" type="text" placeholder="省份-城市，如：北京-北京">
-            </div>
-
-            <button type="button" @click="nextStep" class="btn-next">下一步</button>
+            <button type="button" @click="nextStep" class="btn-next">
+              <span>下一步</span>
+              <span class="btn-arrow">→</span>
+            </button>
           </form>
         </div>
 
@@ -217,18 +365,19 @@ export default {
       isGenerating: false,
       genStep: 0,
       formData: {
-        name: '',
         gender: '',
-        contact: '',
         birthYear: '',
         birthMonth: '',
         birthDay: '',
         birthHour: '',
         birthMinute: '',
         birthPlace: '',
+        timeAccuracy: 'unknown',
+        calendarType: 'solar',
         selectedTopics: [],
         additionalInfo: ''
       },
+      years: Array.from({ length: 127 }, (_, i) => 2026 - i),
       topics: [
         { id: 'career', icon: '💼', title: '职业发展', desc: '职业选择、转型、瓶颈突破' },
         { id: 'relationship', icon: '💕', title: '亲密关系', desc: '恋爱、婚姻、关系模式' },
@@ -248,10 +397,13 @@ export default {
   },
   methods: {
     nextStep() {
+      console.log('点击下一步，当前表单数据:', this.formData)
       if (!this.validateStep1()) {
+        console.log('验证失败')
         alert('请填写必填项')
         return
       }
+      console.log('验证通过，进入步骤2')
       this.currentStep = 2
       window.scrollTo(0, 0)
     },
@@ -260,8 +412,60 @@ export default {
       window.scrollTo(0, 0)
     },
     validateStep1() {
-      const { name, gender, contact, birthYear, birthMonth, birthDay } = this.formData
-      return name && gender && contact && birthYear && birthMonth && birthDay
+      const { gender, birthYear, birthMonth, birthDay, calendarType } = this.formData
+      return gender && birthYear && birthMonth && birthDay && calendarType
+    },
+    selectTimeAccuracy(accuracy) {
+      this.formData.timeAccuracy = accuracy
+      if (accuracy === 'unknown') {
+        this.formData.birthHour = ''
+        this.formData.birthMinute = ''
+      }
+    },
+    validateYear(e) {
+      let value = e.target.value.replace(/[^\d]/g, '')
+      if (value.length === 4) {
+        const num = parseInt(value)
+        if (num < 1900) value = '1900'
+        if (num > 2026) value = '2026'
+      }
+      this.formData.birthYear = value
+    },
+    validateMonth(e) {
+      let value = e.target.value.replace(/[^\d]/g, '')
+      if (value) {
+        const num = parseInt(value)
+        if (num > 12) value = '12'
+        if (num < 1 && value.length === 2) value = '01'
+      }
+      this.formData.birthMonth = value
+    },
+    validateDay(e) {
+      let value = e.target.value.replace(/[^\d]/g, '')
+      if (value) {
+        const num = parseInt(value)
+        if (num > 31) value = '31'
+        if (num < 1 && value.length === 2) value = '01'
+      }
+      this.formData.birthDay = value
+    },
+    validateHour(e) {
+      let value = e.target.value.replace(/[^\d]/g, '')
+      if (value) {
+        const num = parseInt(value)
+        if (num > 23) value = '23'
+        if (num < 0) value = '0'
+      }
+      this.formData.birthHour = value
+    },
+    validateMinute(e) {
+      let value = e.target.value.replace(/[^\d]/g, '')
+      if (value) {
+        const num = parseInt(value)
+        if (num > 59) value = '59'
+        if (num < 0) value = '0'
+      }
+      this.formData.birthMinute = value
     },
     toggleTopic(topicId) {
       const index = this.formData.selectedTopics.indexOf(topicId)
@@ -272,6 +476,7 @@ export default {
       }
     },
     async submitAssessment() {
+      console.log('开始提交评估，表单数据:', this.formData)
       this.currentStep = 3
       this.isGenerating = true
       window.scrollTo(0, 0)
@@ -283,7 +488,9 @@ export default {
 
         // 步骤2: 调用 DeepSeek AI 生成报告
         this.genStep = 2
+        console.log('准备调用 AI 服务...')
         this.generatedReport = await generateReportWithAI(this.formData)
+        console.log('AI 服务返回结果:', this.generatedReport)
 
         // 步骤3: 分析能量动力模式
         this.genStep = 3
@@ -507,27 +714,27 @@ export default {
 
 /* 表单 */
 .assessment-form {
-  background: #f8f9fa;
-  padding: 40px;
-  border-radius: 15px;
+  background: #fff;
+  padding: 0;
+  border-radius: 0;
 }
 
 .form-group {
-  margin-bottom: 25px;
+  margin-bottom: 32px;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.form-group label {
-  display: block;
-  font-size: 15px;
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
   font-weight: 600;
   color: #2d3436;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
+}
+
+.label-icon {
+  font-size: 20px;
 }
 
 .required {
@@ -537,7 +744,438 @@ export default {
 .optional {
   color: #999;
   font-weight: 400;
+  font-size: 14px;
+}
+
+/* 性别选择器 */
+.gender-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.gender-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px;
+  background: #f8f9fa;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gender-option:hover {
+  background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.gender-option.selected {
+  background: #fff;
+  border-color: #d4524f;
+  box-shadow: 0 2px 12px rgba(212, 82, 79, 0.15);
+}
+
+.gender-icon {
+  font-size: 28px;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.gender-icon.male {
+  color: #3498db;
+}
+
+.gender-icon.female {
+  color: #e74c3c;
+}
+
+.gender-text {
   font-size: 13px;
+  font-weight: 600;
+  color: #2d3436;
+}
+
+/* 日期输入组 */
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.date-input-group:focus-within {
+  background: #fff;
+  border-color: #d4524f;
+  box-shadow: 0 0 0 3px rgba(212, 82, 79, 0.1);
+}
+
+.date-field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.date-field:first-child {
+  flex: 1.5;
+}
+
+.date-field:not(:first-child) {
+  flex: 1;
+}
+
+.date-field-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3436;
+  text-align: center;
+  outline: none;
+  padding: 4px;
+}
+
+.date-field-input::placeholder {
+  color: #bbb;
+  font-weight: 400;
+}
+
+.date-field-input::-webkit-outer-spin-button,
+.date-field-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.date-field-label {
+  font-size: 14px;
+  color: #999;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.date-divider {
+  font-size: 18px;
+  color: #ccc;
+  font-weight: 300;
+  margin: 0 2px;
+}
+
+/* 简洁日期选择器（备用） */
+.simple-date-picker {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 10px;
+}
+
+.date-select {
+  width: 100%;
+  padding: 14px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #f8f9fa;
+  color: #2d3436;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.date-select:focus {
+  background-color: #fff;
+  border-color: #d4524f;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212, 82, 79, 0.1);
+}
+
+.date-select option {
+  padding: 10px;
+}
+
+/* 原生日期选择器样式（备用） */
+.modern-date-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  color: #2d3436;
+  font-weight: 500;
+}
+
+.modern-date-input:focus {
+  background: #fff;
+  border-color: #d4524f;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(212, 82, 79, 0.1);
+}
+
+.modern-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+}
+
+/* 现代日期选择器（已废弃，保留以防需要） */
+.date-picker-modern {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.date-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.date-input-wrapper:focus-within {
+  background: #fff;
+  border-color: #d4524f;
+  box-shadow: 0 0 0 4px rgba(212, 82, 79, 0.1);
+}
+
+.date-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3436;
+  text-align: center;
+  outline: none;
+}
+
+.date-input::placeholder {
+  color: #bbb;
+  font-weight: 400;
+}
+
+.year-input {
+  max-width: 80px;
+}
+
+.month-input,
+.day-input {
+  max-width: 50px;
+}
+
+.date-separator {
+  font-size: 14px;
+  color: #999;
+  font-weight: 500;
+}
+
+/* 时间精度选择器 */
+.time-accuracy-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.accuracy-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 8px;
+  background: #f8f9fa;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.accuracy-option:hover {
+  background: #fff;
+  border-color: #ffd7d5;
+  transform: translateY(-2px);
+}
+
+.accuracy-option.selected {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+  border-color: #d4524f;
+  box-shadow: 0 2px 8px rgba(212, 82, 79, 0.15);
+}
+
+.accuracy-icon {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.accuracy-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2d3436;
+  text-align: center;
+}
+
+/* 现代时间选择器 */
+.time-picker-modern {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.time-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8f9fa;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.time-input-wrapper:focus-within {
+  background: #fff;
+  border-color: #d4524f;
+  box-shadow: 0 0 0 4px rgba(212, 82, 79, 0.1);
+}
+
+.time-input {
+  width: 60px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  font-weight: 600;
+  color: #2d3436;
+  text-align: center;
+  outline: none;
+}
+
+.time-input::placeholder {
+  color: #bbb;
+  font-weight: 400;
+}
+
+/* 移除 number 输入框的上下箭头 */
+.time-input::-webkit-outer-spin-button,
+.time-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.time-input[type="tel"] {
+  -moz-appearance: textfield;
+}
+
+.time-separator {
+  font-size: 24px;
+  color: #999;
+  font-weight: 600;
+}
+
+/* 现代输入框 */
+.modern-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.modern-input:focus {
+  background: #fff;
+  border-color: #d4524f;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(212, 82, 79, 0.1);
+}
+
+.modern-input::placeholder {
+  color: #bbb;
+}
+
+/* 历法选择器 */
+.calendar-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.calendar-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: #f8f9fa;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.calendar-option:hover {
+  background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.calendar-option.selected {
+  background: #fff;
+  border-color: #d4524f;
+  box-shadow: 0 2px 12px rgba(212, 82, 79, 0.15);
+}
+
+.calendar-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.calendar-info {
+  flex: 1;
+}
+
+.calendar-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3436;
+  margin-bottom: 2px;
+}
+
+.calendar-desc {
+  font-size: 12px;
+  color: #999;
+}
+
+.form-hint {
+  font-size: 13px;
+  color: #999;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
 .form-group input[type="text"],
@@ -581,12 +1219,6 @@ export default {
   width: 18px;
   height: 18px;
   cursor: pointer;
-}
-
-.form-hint {
-  font-size: 13px;
-  color: #999;
-  margin-top: 8px;
 }
 
 /* 议题选择 */
@@ -639,20 +1271,40 @@ export default {
 .btn-next,
 .btn-submit {
   width: 100%;
-  padding: 16px;
-  font-size: 16px;
+  padding: 18px;
+  font-size: 17px;
   font-weight: 600;
   color: #fff;
-  background: #d4524f;
-  border-radius: 50px;
-  transition: all 0.3s;
-  margin-top: 20px;
+  background: linear-gradient(135deg, #d4524f 0%, #e74c3c 100%);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(212, 82, 79, 0.3);
 }
 
 .btn-next:hover,
 .btn-submit:hover {
-  background: #c0392b;
+  background: linear-gradient(135deg, #c0392b 0%, #d4524f 100%);
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 82, 79, 0.4);
+}
+
+.btn-next:active,
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+.btn-arrow {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.btn-next:hover .btn-arrow {
+  transform: translateX(4px);
 }
 
 .button-group {
@@ -924,11 +1576,117 @@ export default {
   }
 
   .assessment-form {
-    padding: 25px 20px;
+    padding: 0;
   }
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .gender-selector {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .gender-option {
+    padding: 12px 10px;
+  }
+
+  .gender-icon {
+    font-size: 24px;
+    margin-bottom: 3px;
+  }
+
+  .gender-text {
+    font-size: 12px;
+  }
+
+  .calendar-option {
+    padding: 12px 14px;
+  }
+
+  .calendar-icon {
+    font-size: 24px;
+  }
+
+  .calendar-title {
+    font-size: 13px;
+  }
+
+  .calendar-desc {
+    font-size: 11px;
+  }
+
+  .simple-date-picker {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .date-select {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .date-input-group {
+    padding: 10px 12px;
+  }
+
+  .date-field-input {
+    font-size: 16px;
+  }
+
+  .date-field-label {
+    font-size: 13px;
+  }
+
+  .date-divider {
+    font-size: 16px;
+  }
+
+  .date-picker-modern {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .date-input-wrapper {
+    width: 100%;
+  }
+
+  .date-input {
+    font-size: 16px;
+  }
+
+  .year-input,
+  .month-input,
+  .day-input {
+    max-width: none;
+  }
+
+  .time-accuracy-selector {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .accuracy-option {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 14px 16px;
+  }
+
+  .accuracy-icon {
+    font-size: 24px;
+    margin-bottom: 0;
+  }
+
+  .accuracy-label {
+    text-align: left;
+  }
+
+  .calendar-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-option {
+    padding: 16px;
   }
 
   .topics-grid {
@@ -941,6 +1699,14 @@ export default {
 
   .btn-submit {
     flex: 1;
+  }
+
+  .form-label {
+    font-size: 15px;
+  }
+
+  .label-icon {
+    font-size: 18px;
   }
 }
 </style>

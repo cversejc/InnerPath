@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     SMS_TEMPLATE_CODE: str = ""
 
     # CORS
-    CORS_ORIGINS: str = "http://localhost:3000,http://8.135.25.206"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3003,http://192.168.2.47:3003,http://8.135.25.206"
 
     @property
     def cors_origins_list(self) -> List[str]:

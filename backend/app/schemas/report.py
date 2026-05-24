@@ -4,7 +4,7 @@ from datetime import datetime, date, time
 
 
 class ReportCreate(BaseModel):
-    name: str = Field(..., min_length=1, max_length=50)
+    name: Optional[str] = Field(None, min_length=1, max_length=50)
     gender: str = Field(..., pattern="^(male|female)$")
     birth_year: int = Field(..., ge=1900, le=2026)
     birth_month: int = Field(..., ge=1, le=12)
