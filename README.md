@@ -92,15 +92,55 @@ export REMOTE_HOST=your-server.com
 
 ## 本地开发
 
-### 前端开发
+### 开发模式（推荐）
 
+前后端分离启动，支持热重载，方便调试：
+
+**Windows:**
 ```bash
-npm install
+# 1. 启动后端（自动启动 Redis 和 PostgreSQL）
+dev-backend.bat
+
+# 2. 启动前端（新终端）
+cd frontend
 npm run dev
-# 访问 http://localhost:5173
+
+# 3. 启动 Celery Worker（可选，新终端）
+dev-celery.bat
 ```
 
-### 后端开发
+**Linux/Mac:**
+```bash
+# 1. 启动后端
+./dev-backend.sh
+
+# 2. 启动前端（新终端）
+cd frontend
+npm run dev
+
+# 3. 启动 Celery Worker（可选，新终端）
+./dev-celery.sh
+```
+
+访问地址：
+- 前端: http://localhost:3000
+- 后端 API: http://localhost:8000
+- API 文档: http://localhost:8000/docs
+
+详细开发指南请查看 [DEV_GUIDE.md](DEV_GUIDE.md)
+
+### 传统方式
+
+#### 前端开发
+
+```bash
+cd frontend
+npm install
+npm run dev
+# 访问 http://localhost:3000
+```
+
+#### 后端开发
 
 ```bash
 cd backend

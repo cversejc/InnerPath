@@ -26,7 +26,7 @@ apiClient.interceptors.request.use(
  * 调用后端API生成报告（异步）
  */
 export async function generateReportWithAI(userData) {
-  const { gender, birthYear, birthMonth, birthDay, birthHour, birthMinute, birthPlace, selectedTopics, additionalInfo } = userData
+  const { gender, birthYear, birthMonth, birthDay, birthHour, birthMinute, birthPlace, calendarType, selectedTopics, additionalInfo } = userData
 
   try {
     // 构建请求数据
@@ -38,6 +38,7 @@ export async function generateReportWithAI(userData) {
       birth_hour: birthHour ? parseInt(birthHour) : null,
       birth_minute: birthMinute ? parseInt(birthMinute) : null,
       birth_place: birthPlace || null,
+      calendar_type: calendarType || 'solar',
       selected_topics: selectedTopics || [],
       additional_info: additionalInfo || null
     }

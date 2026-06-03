@@ -1,7 +1,7 @@
 import time
 import json
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from app.tasks.celery_app import celery_app
 from app.services.ai_service import generate_report_with_ai
 from app.services.report_service import create_report
@@ -11,7 +11,7 @@ import asyncio
 
 
 @celery_app.task(bind=True, name="generate_report")
-def generate_report_task(self, user_id: int, user_data: Dict[str, Any]):
+def generate_report_task(self, user_id: Optional[int], user_data: Dict[str, Any]):
     """
     Celery task to generate report asynchronously
     Supports both authenticated users and guest users (user_id can be None)
@@ -87,7 +87,7 @@ def generate_report_task(self, user_id: int, user_data: Dict[str, Any]):
         if not user_id:
             asyncio.run(cache_set(
                 f"report:guest:{task_id}",
-                json.dumps(report_data),
+                json.dumps(report_data, default=str),
                 expire=3600  # 1 hour
             ))
 

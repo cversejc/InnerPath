@@ -12,6 +12,7 @@ class ReportCreate(BaseModel):
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
+    calendar_type: str = Field("solar", pattern="^(solar|lunar)$")
     selected_topics: List[str] = Field(default_factory=list)
     additional_info: Optional[str] = None
 

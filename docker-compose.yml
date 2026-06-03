@@ -1,5 +1,4 @@
 services:
-  # PostgreSQL 数据库
   postgres:
     image: postgres:15-alpine
     container_name: innerpath-postgres
@@ -15,12 +14,11 @@ services:
       - innerpath-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U innerseek"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-innerpath}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Redis 缓存
   redis:
     image: redis:7-alpine
     container_name: innerpath-redis
@@ -35,7 +33,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # 后端 API
   backend:
     build:
       context: ./backend
@@ -45,6 +42,8 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-innerpath}:${POSTGRES_PASSWORD:-innerpath123}@postgres:5432/${POSTGRES_DB:-innerpath}
       - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     volumes:
       - ./backend/logs:/app/logs
     ports:
@@ -63,7 +62,29 @@ services:
       timeout: 10s
       retries: 3
 
-  # 前端 Nginx
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: innerpath-celery
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-innerpath}:${POSTGRES_PASSWORD:-innerpath123}@postgres:5432/${POSTGRES_DB:-innerpath}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    command: ["celery", "-A", "app.tasks.celery_app", "worker", "--loglevel=info"]
+    volumes:
+      - ./backend/logs:/app/logs
+    networks:
+      - innerpath-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
   frontend:
     build:
       context: .
