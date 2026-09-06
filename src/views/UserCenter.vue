@@ -1,17 +1,6 @@
 <template>
   <div class="user-center">
-    <!-- 导航栏 -->
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="logo">离火引</div>
-        <ul class="nav-menu">
-          <li><router-link to="/pages/home/home" class="nav-link">首页</router-link></li>
-          <li><router-link to="/pages/services/services" class="nav-link">服务</router-link></li>
-          <li><router-link to="/pages/assessment/assessment" class="nav-link">能量测评</router-link></li>
-          <li><router-link to="/pages/user/user" class="nav-link active">个人中心</router-link></li>
-        </ul>
-      </div>
-    </nav>
+    <BrandNav />
 
     <!-- 用户信息头部 -->
     <section class="user-header">
@@ -54,7 +43,7 @@
               <div v-if="reports.length === 0" class="empty-state">
                 <div class="empty-icon">📄</div>
                 <p>暂无报告</p>
-                <button class="btn-action" @click="goToAssessment">开始测评</button>
+                <button class="btn-action" @click="goToAssessment">生成说明书</button>
               </div>
               <div v-else class="reports-list">
                 <div v-for="report in reports" :key="report.id" class="report-card">
@@ -64,7 +53,7 @@
                   </div>
                   <div class="report-preview">
                     <div class="preview-item">
-                      <strong>能量类型：</strong>{{ report.energyType }}
+                      <strong>个人属性：</strong>{{ report.energyType }}
                     </div>
                     <div class="preview-item">
                       <strong>核心特质：</strong>{{ report.coreTraits }}
@@ -84,7 +73,7 @@
               <div v-if="bookings.length === 0" class="empty-state">
                 <div class="empty-icon">📅</div>
                 <p>暂无预约</p>
-                <button class="btn-action" @click="goToBooking">预约咨询</button>
+                <button class="btn-action" @click="goToBooking">预约行动端</button>
               </div>
               <div v-else class="bookings-list">
                 <div v-for="booking in bookings" :key="booking.id" class="booking-card">
@@ -187,12 +176,7 @@
       </div>
     </section>
 
-    <!-- 页脚 -->
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2026 离火引 InnerSeek. 欢迎来到「离火引」，开启你的"灵魂战略"第一步。</p>
-      </div>
-    </footer>
+    <BrandFooter />
   </div>
 </template>
 
@@ -214,7 +198,7 @@ export default {
       bookings: [
         {
           id: 1,
-          service: '个人成长深度咨询',
+          service: '辰鉴·行动与决策',
           date: '2026-05-28',
           time: '14:00-15:30',
           consultant: '李老师',
@@ -222,7 +206,7 @@ export default {
         },
         {
           id: 2,
-          service: '个人能量地图解读',
+          service: '辰鉴·人生说明书',
           date: '2026-05-15',
           time: '10:00-11:00',
           consultant: '王老师',
@@ -232,7 +216,7 @@ export default {
       courses: [
         {
           id: 1,
-          title: '东方人格洞察入门课',
+          title: '辰鉴·共鉴计划',
           progress: 35,
           completed: 4,
           total: 12
@@ -255,7 +239,7 @@ export default {
       const savedReports = JSON.parse(localStorage.getItem('userReports') || '[]')
       this.reports = savedReports.map(item => ({
         id: item.id,
-        title: '个人能量地图报告',
+        title: '辰鉴·人生说明书',
         date: item.date,
         energyType: item.report.energyProfile.type,
         coreTraits: item.report.energyProfile.coreTraits,

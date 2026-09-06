@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# InnerPath 部署脚本
+# 辰鉴部署脚本
 # 支持本地和远程部署
 
 set -e
@@ -18,7 +18,7 @@ REMOTE_PORT="${REMOTE_PORT:-22}"
 
 # 显示使用说明
 show_usage() {
-    echo "InnerPath 部署脚本"
+    echo "辰鉴部署脚本"
     echo ""
     echo "用法:"
     echo "  $0 local              # 本地部署（同 dev.sh）"
@@ -40,7 +40,7 @@ show_usage() {
 # 本地部署
 deploy_local() {
     echo -e "${GREEN}========================================${NC}"
-    echo -e "${GREEN}InnerPath 本地部署${NC}"
+    echo -e "${GREEN}辰鉴本地部署${NC}"
     echo -e "${GREEN}========================================${NC}"
     echo ""
 
@@ -66,7 +66,7 @@ deploy_local() {
 # 远程首次部署
 deploy_remote_init() {
     echo -e "${GREEN}========================================${NC}"
-    echo -e "${GREEN}InnerPath 远程首次部署${NC}"
+    echo -e "${GREEN}辰鉴远程首次部署${NC}"
     echo -e "${GREEN}目标: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}${NC}"
     echo -e "${GREEN}========================================${NC}"
     echo ""
@@ -156,7 +156,7 @@ EOF
 # 远程快速更新
 deploy_remote_update() {
     echo -e "${GREEN}========================================${NC}"
-    echo -e "${GREEN}InnerPath 远程快速更新${NC}"
+    echo -e "${GREEN}辰鉴远程快速更新${NC}"
     echo -e "${GREEN}目标: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}${NC}"
     echo -e "${GREEN}========================================${NC}"
     echo ""

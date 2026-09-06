@@ -1,22 +1,12 @@
 <template>
   <div class="page-shell services">
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="logo">离火引</div>
-        <ul class="nav-menu">
-          <li><router-link to="/pages/home/home" class="nav-link">首页</router-link></li>
-          <li><router-link to="/pages/services/services" class="nav-link active">服务</router-link></li>
-          <li><router-link to="/pages/assessment/assessment" class="nav-link">测评</router-link></li>
-          <li><router-link to="/pages/about/about" class="nav-link">关于</router-link></li>
-        </ul>
-      </div>
-    </nav>
+    <BrandNav />
 
     <section class="page-header">
       <div class="container header-inner">
-        <p class="section-kicker">SERVICE CATALOGUE</p>
-        <h1>我们的服务</h1>
-        <p>融合传统文化人格叙事与现代心理学工具，提供非医疗性质的个人成长支持。</p>
+        <p class="section-kicker">CHENJIAN / FI + TE</p>
+        <h1>把看见自己，变成可使用的方向</h1>
+        <p>辰鉴用 fi 端写人生说明书，用 te 端陪你做行动与决策。不是替你判断，而是让你更有依据地选择。</p>
       </div>
     </section>
 
@@ -24,25 +14,25 @@
       <div class="container services-list">
         <article class="paper-card service-item">
           <div class="service-meta">
-            <span class="seal-badge">基础解读</span>
+            <span class="seal-badge">FI / 人生说明书</span>
             <p class="service-price">¥499 - ¥699</p>
           </div>
           <div class="service-copy">
-            <h2>个人能量地图解读</h2>
-            <p class="service-intro">3-5 页专业报告 + 60 分钟深度解读，适合第一次系统认识自己的人。</p>
+            <h2>辰鉴·人生说明书</h2>
+            <p class="service-intro">一份写给你的个人说明书：从先天属性出发，照见当下的位置与人生重复出现的题目。</p>
             <div class="service-columns">
               <div>
                 <h3>服务内容</h3>
                 <ul class="service-list">
-                  <li>八字 / 紫微基础结构解读</li>
-                  <li>性格动力与能量模式分析</li>
-                  <li>关系模式与职业优势倾向</li>
-                  <li>当前困境中的心理议题识别</li>
+                  <li>性格密码：天赋、弱点与暗面天赋</li>
+                  <li>能量通路：什么让你充电、什么让你耗电</li>
+                  <li>关系模式：你如何与重要他人相处</li>
+                  <li>核心矛盾与人生重复模式</li>
                 </ul>
               </div>
               <div>
                 <h3>适合人群</h3>
-                <p>希望快速了解自身能量特质、行为模式和当下卡点的你。</p>
+                <p>想先知道“我是谁、我卡在哪”，再决定下一步怎么走的人。</p>
               </div>
             </div>
             <button class="secondary-button" @click="goToBooking">预约解读</button>
@@ -51,25 +41,25 @@
 
         <article class="paper-card service-item featured">
           <div class="service-meta">
-            <span class="seal-badge">推荐方案</span>
+            <span class="seal-badge">TE / 行动与决策</span>
             <p class="service-price">¥1599 - ¥3599</p>
           </div>
           <div class="service-copy">
-            <h2>个人成长深度咨询</h2>
-            <p class="service-intro">3-4 次深度咨询 + 个性化成长方案，适合处在人生转折期或长期困于同一议题的人。</p>
+            <h2>辰鉴·行动与决策</h2>
+            <p class="service-intro">把说明书带回现实：围绕一个具体问题，找到能执行、能复盘、适合你当下时序的行动方案。</p>
             <div class="service-columns">
               <div>
                 <h3>服务内容</h3>
                 <ul class="service-list">
-                  <li>完整自我结构和原局能量分析</li>
-                  <li>能量消耗点与环境适配评估</li>
-                  <li>亲密关系、家庭、职场脚本探索</li>
-                  <li>可落地的行动策略和复盘路径</li>
+                  <li>60 分钟聚焦一个现实议题</li>
+                  <li>区分个人属性与社会化评价</li>
+                  <li>用舍由时，行藏在我</li>
+                  <li>个性化日历、陪伴与复盘</li>
                 </ul>
               </div>
               <div>
                 <h3>适合人群</h3>
-                <p>面对重大选择、关系困境、职业转型或自我价值重建的人。</p>
+                <p>面对就业、关系、家庭或自我价值选择，希望不被“你应该怎样”绑住的人。</p>
               </div>
             </div>
             <button class="primary-button" @click="goToBooking">立即预约</button>
@@ -78,25 +68,25 @@
 
         <article class="paper-card service-item">
           <div class="service-meta">
-            <span class="seal-badge">系统课程</span>
+            <span class="seal-badge">共鉴 / 理论与实践</span>
             <p class="service-price">¥399 - ¥999</p>
           </div>
           <div class="service-copy">
-            <h2>东方人格洞察入门课</h2>
-            <p class="service-intro">系统化课程 + 终身学习社群，适合想掌握工具、自主成长的人。</p>
+            <h2>辰鉴·共鉴计划</h2>
+            <p class="service-intro">和一群愿意长期理解自己的人，一起学习、记录、实践，让理论在生活里长出答案。</p>
             <div class="service-columns">
               <div>
                 <h3>课程内容</h3>
                 <ul class="service-list">
-                  <li>命理与心理学融合工具体系</li>
-                  <li>能量、关系与人格模式框架</li>
-                  <li>实用案例分析和练习</li>
-                  <li>学习社群持续支持</li>
+                  <li>玄学、心理学、哲学的分工</li>
+                  <li>从见自己到知其序、行其路</li>
+                  <li>真实案例与决策日志练习</li>
+                  <li>社群支持与阶段性打卡</li>
                 </ul>
               </div>
               <div>
                 <h3>适合人群</h3>
-                <p>对自我探索有强烈兴趣，或希望未来从事相关领域的人。</p>
+                <p>不满足于短效鸡汤，愿意在长期人本方向上持续练习的人。</p>
               </div>
             </div>
             <button class="secondary-button" @click="goToCourse">查看课程</button>
@@ -113,30 +103,26 @@
         </div>
         <div class="philosophy-grid">
           <article class="paper-card philosophy-item">
-            <span>授人以渔</span>
-            <p>命盘是认识自我的工具，不是决定人生的判决书。</p>
+            <span>不算命</span>
+            <p>命盘是照见个人属性的工具，不是决定人生的判决书。</p>
           </article>
           <article class="paper-card philosophy-item">
-            <span>个性化指南</span>
-            <p>基于真实处境，把抽象洞察翻译成个人行动地图。</p>
+            <span>不审判</span>
+            <p>不点评财富等级和能力高低，先肯定你已经拥有的个性与能力。</p>
           </article>
           <article class="paper-card philosophy-item">
-            <span>系统化分析</span>
-            <p>从能量、关系、环境三层结构定位现实消耗点。</p>
+            <span>不预言</span>
+            <p>可以给希望，但不替你预测具体未来，更不制造因果恐惧。</p>
           </article>
           <article class="paper-card philosophy-item">
-            <span>从结构进入</span>
-            <p>先看清人格地图，再处理具体问题。</p>
+            <span>顺势而为</span>
+            <p>有助推力时冲锋，风浪大时稳住修整，把主动权留在你手里。</p>
           </article>
         </div>
       </div>
     </section>
 
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2026 离火引 InnerSeek. 开启你的灵魂战略第一步。</p>
-      </div>
-    </footer>
+    <BrandFooter />
   </div>
 </template>
 

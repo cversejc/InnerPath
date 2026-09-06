@@ -28,7 +28,7 @@ async def create_report(
     # Create report
     report = Report(
         user_id=user_id,
-        title="个人能量地图报告",
+        title="辰鉴·人生说明书",
         birth_date=birth_date,
         birth_time=None,  # TODO: parse from user data if available
         energy_profile=report_data["energy_profile"],

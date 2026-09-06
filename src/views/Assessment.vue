@@ -1,22 +1,12 @@
 <template>
   <div class="page-shell assessment">
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="logo">离火引</div>
-        <ul class="nav-menu">
-          <li><router-link to="/pages/home/home" class="nav-link">首页</router-link></li>
-          <li><router-link to="/pages/services/services" class="nav-link">服务</router-link></li>
-          <li><router-link to="/pages/assessment/assessment" class="nav-link active">测评</router-link></li>
-          <li><router-link to="/pages/booking/booking" class="nav-link">预约</router-link></li>
-        </ul>
-      </div>
-    </nav>
+    <BrandNav />
 
     <section class="page-header">
       <div class="container header-inner">
-        <p class="section-kicker">ENERGY MAP</p>
-        <h1>东方能量测评</h1>
-        <p>输入出生信息和当下议题，生成一张属于你的个人能量地图。</p>
+        <p class="section-kicker">FI / YOUR LIFE MANUAL</p>
+        <h1>生成你的人生说明书</h1>
+        <p>从个人属性、能量通路与人生时序出发，先见自己，再知其序。</p>
       </div>
     </section>
 
@@ -30,12 +20,12 @@
           <div class="progress-line" :class="{ active: currentStep > 1 }"></div>
           <div class="progress-step" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
             <span>2</span>
-            <p>生命议题</p>
+            <p>当下处境</p>
           </div>
           <div class="progress-line" :class="{ active: currentStep > 2 }"></div>
           <div class="progress-step" :class="{ active: currentStep >= 3 }">
             <span>3</span>
-            <p>生成报告</p>
+            <p>生成说明书</p>
           </div>
         </div>
 
@@ -43,7 +33,7 @@
           <div class="step-heading">
             <p class="section-kicker">STEP 01</p>
             <h2>填写出生信息</h2>
-            <p>这些信息会用于建立你的时间节律结构。</p>
+            <p>出生信息用于建立你的先天坐标；它不是给人生下结论，而是帮助我们找到观察自己的入口。</p>
           </div>
 
           <form class="assessment-form">
@@ -210,7 +200,7 @@
           <div class="step-heading">
             <p class="section-kicker">STEP 02</p>
             <h2>选择当下最关注的议题</h2>
-            <p>可多选。议题会帮助报告更贴近现实处境。</p>
+            <p>可多选。你提供的真实处境，会帮助说明书回应“我卡在哪”，而不是只讲抽象结论。</p>
           </div>
 
           <div class="topics-grid">
@@ -239,39 +229,39 @@
 
           <div class="button-row">
             <button type="button" @click="prevStep" class="secondary-button">上一步</button>
-            <button type="button" @click="submitAssessment" class="primary-button">生成能量地图</button>
+            <button type="button" @click="submitAssessment" class="primary-button">生成我的说明书</button>
           </div>
         </div>
 
         <div v-if="currentStep === 3" class="step-content form-panel">
           <div v-if="isGenerating" class="generating">
             <div class="loading-compass" aria-hidden="true"></div>
-            <h2>正在生成你的专属能量地图</h2>
-            <p>系统正在分析时间节律、能量模式和关系议题。</p>
+            <h2>正在整理你的专属说明书</h2>
+            <p>系统正在把先天属性、当下时序和现实议题放到同一张地图上。</p>
             <div class="generating-steps">
-              <div class="gen-step" :class="{ active: genStep >= 1 }">解析时间节律结构</div>
-              <div class="gen-step" :class="{ active: genStep >= 2 }">生成个人报告</div>
-              <div class="gen-step" :class="{ active: genStep >= 3 }">分析能量动力模式</div>
-              <div class="gen-step" :class="{ active: genStep >= 4 }">整理行动建议</div>
+              <div class="gen-step" :class="{ active: genStep >= 1 }">定位先天坐标</div>
+              <div class="gen-step" :class="{ active: genStep >= 2 }">翻译性格密码</div>
+              <div class="gen-step" :class="{ active: genStep >= 3 }">照见重复模式</div>
+              <div class="gen-step" :class="{ active: genStep >= 4 }">整理下一步方向</div>
             </div>
           </div>
 
           <div v-else class="result-success">
             <span class="seal-badge">已生成</span>
-            <h2>你的能量地图已经完成</h2>
-            <p>报告已保存到本地，可继续查看完整内容或预约深度咨询。</p>
+            <h2>你的人生说明书已经完成</h2>
+            <p>说明书已保存到本地。先读懂自己，再决定是否需要行动端的陪伴。</p>
 
             <div class="result-preview paper-card">
               <div>
-                <span>能量类型</span>
+                <span>个人属性</span>
                 <strong>{{ reportPreview.energyType }}</strong>
               </div>
               <div>
-                <span>核心特质</span>
+                <span>核心天赋</span>
                 <strong>{{ reportPreview.coreTraits }}</strong>
               </div>
               <div>
-                <span>天赋倾向</span>
+                <span>行动提示</span>
                 <strong>{{ reportPreview.talents }}</strong>
               </div>
             </div>
@@ -286,11 +276,7 @@
       </div>
     </section>
 
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2026 离火引 InnerSeek. 开启你的灵魂战略第一步。</p>
-      </div>
-    </footer>
+    <BrandFooter />
   </div>
 </template>
 

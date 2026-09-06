@@ -84,6 +84,8 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      disable: true
 
   frontend:
     build:

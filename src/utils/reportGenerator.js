@@ -131,7 +131,7 @@ export const tenGodsMapping = {
 }
 
 /**
- * 生成个人能量地图报告
+ * 生成辰鉴人生说明书
  */
 export function generateEnergyReport(userData) {
   const { birthYear, birthMonth, birthDay, birthHour, selectedTopics } = userData
@@ -316,8 +316,8 @@ function generateActionPlan(element, topics) {
 function getGrowthResources(topics) {
   return [
     '推荐书籍：《原生家庭》《亲密关系》《活出生命的意义》',
-    '推荐课程：离火引《东方人格洞察入门课》',
-    '推荐实践：正念冥想、日记书写、定期复盘'
+    '推荐路径：辰鉴《共鉴计划》',
+    '推荐实践：决策日志、日记书写、定期复盘'
   ]
 }
 
@@ -325,7 +325,7 @@ function getGrowthResources(topics) {
  * 生成总结
  */
 function generateSummary(energyType, topics) {
-  return `你是${energyType.name}，具有${energyType.traits.slice(0, 2).join('、')}的特质。当前你最关注的是${topics.length > 0 ? '个人成长' : '自我探索'}相关议题。建议你从认识自己的能量模式开始，逐步建立适合自己的成长路径。记住，成长不是改变自己，而是更好地成为自己。`
+  return `你的个人属性呈现出${energyType.traits.slice(0, 2).join('、')}的特质。当前你最关注的是${topics.length > 0 ? '现实处境' : '自我探索'}相关议题。辰鉴不替你预测未来，而是邀请你先看见自己的能量通路，再在合适的时机做出属于你的选择。`
 }
 
 export default {

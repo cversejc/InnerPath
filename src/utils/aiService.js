@@ -243,7 +243,7 @@ function generateBasicReport(userData) {
       ],
       resources: ['推荐书籍', '推荐课程', '推荐实践']
     },
-    summary: `你是${energyType.name}，具有${energyType.traits}的特质。建议你从认识自己的能量模式开始，逐步建立适合自己的成长路径。`,
+    summary: `你的个人属性呈现出${energyType.traits}的特质。辰鉴不替你预测未来，而是邀请你先看见自己的能量通路，再在合适的时机做出属于你的选择。`,
     aiGeneratedContent: null
   }
 }

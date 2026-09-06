@@ -1,22 +1,12 @@
 <template>
   <div class="page-shell booking">
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="logo">离火引</div>
-        <ul class="nav-menu">
-          <li><router-link to="/pages/home/home" class="nav-link">首页</router-link></li>
-          <li><router-link to="/pages/services/services" class="nav-link">服务</router-link></li>
-          <li><router-link to="/pages/assessment/assessment" class="nav-link">测评</router-link></li>
-          <li><router-link to="/pages/booking/booking" class="nav-link active">预约</router-link></li>
-        </ul>
-      </div>
-    </nav>
+    <BrandNav />
 
     <section class="page-header">
       <div class="container header-inner">
-        <p class="section-kicker">BOOKING</p>
-        <h1>预约咨询</h1>
-        <p>选择适合当下阶段的服务，再留下你的基本信息。</p>
+        <p class="section-kicker">TE / WALK WITH YOUR CHOICE</p>
+        <h1>预约辰鉴行动端</h1>
+        <p>带着一个具体问题来，把人生说明书用到现实里。</p>
       </div>
     </section>
 
@@ -25,45 +15,45 @@
         <div v-if="!selectedService" class="service-selection">
           <div class="section-heading">
             <p class="section-kicker">CHOOSE YOUR MAP</p>
-            <h2 class="section-title">先选择一套服务</h2>
+            <h2 class="section-title">先选择一条陪伴路径</h2>
           </div>
 
           <div class="service-options">
             <article class="paper-card service-option" @click="selectService('basic')">
-              <span class="seal-badge">入门</span>
-              <h3>个人能量地图解读</h3>
+              <span class="seal-badge">FI / 说明书</span>
+              <h3>辰鉴·人生说明书</h3>
               <p class="service-price">¥499 - ¥699</p>
               <ul>
-                <li>3-5 页专业报告</li>
-                <li>60 分钟深度解读</li>
-                <li>八字 / 紫微基础结构</li>
-                <li>关系模式与职业优势</li>
+                <li>个人属性与天赋地图</li>
+                <li>能量通路与关系模式</li>
+                <li>当下卡点的结构化说明</li>
+                <li>适合自己的阅读与复盘入口</li>
               </ul>
               <button class="secondary-button">选择此服务</button>
             </article>
 
             <article class="paper-card service-option featured" @click="selectService('advanced')">
-              <span class="seal-badge">推荐</span>
-              <h3>个人成长深度咨询</h3>
+              <span class="seal-badge">TE / 行动</span>
+              <h3>辰鉴·行动与决策</h3>
               <p class="service-price">¥1599 - ¥3599</p>
               <ul>
-                <li>3-4 次深度咨询</li>
-                <li>完整能量结构分析</li>
-                <li>能量消耗点识别</li>
-                <li>个性化行动方案</li>
+                <li>聚焦一个现实选择</li>
+                <li>把个人属性放回环境里看</li>
+                <li>用舍由时，行藏在我</li>
+                <li>行动方案与复盘路径</li>
               </ul>
               <button class="primary-button">选择此服务</button>
             </article>
 
             <article class="paper-card service-option" @click="selectService('trial')">
-              <span class="seal-badge">体验</span>
-              <h3>种子用户体验</h3>
+              <span class="seal-badge">共鉴</span>
+              <h3>辰鉴·实践陪伴</h3>
               <p class="service-price">¥99 - ¥199</p>
               <ul>
-                <li>个人成长地图</li>
-                <li>基础解读服务</li>
-                <li>能量特质概览</li>
-                <li>成长方向建议</li>
+                <li>个性化决策日历</li>
+                <li>阶段性记录与打卡</li>
+                <li>社群共学与反馈</li>
+                <li>把洞察变成生活证据</li>
               </ul>
               <button class="secondary-button">选择此服务</button>
             </article>
@@ -82,7 +72,7 @@
           <form class="booking-form form-panel" @submit.prevent="submitBooking">
             <div class="step-heading">
               <p class="section-kicker">CONTACT</p>
-              <h2>填写预约信息</h2>
+              <h2>留下你的现实问题</h2>
             </div>
 
             <div class="form-grid two">
@@ -165,7 +155,7 @@
             </div>
 
             <div class="form-notice">
-              提交后，咨询师会在 24 小时内与你联系，确认具体咨询时间。
+              提交后，辰鉴团队会在 24 小时内与你联系，确认具体形式与时间。这里不是医疗或危机干预服务。
             </div>
 
             <button type="submit" class="primary-button full-width">提交预约</button>
@@ -176,7 +166,7 @@
           <div class="success-content paper-card" @click.stop>
             <span class="seal-badge">预约成功</span>
             <h2>我们已收到你的预约信息</h2>
-            <p>咨询师将通过 <strong>{{ bookingData.contact }}</strong> 与你联系。</p>
+            <p>辰鉴团队将通过 <strong>{{ bookingData.contact }}</strong> 与你联系。</p>
             <div class="success-actions">
               <button @click="bookingSuccess = false" class="secondary-button">关闭</button>
               <button @click="goToHome" class="primary-button">返回首页</button>
@@ -186,11 +176,7 @@
       </div>
     </section>
 
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2026 离火引 InnerSeek. 开启你的灵魂战略第一步。</p>
-      </div>
-    </footer>
+    <BrandFooter />
   </div>
 </template>
 
@@ -231,9 +217,9 @@ export default {
     },
     getServiceName(service) {
       const names = {
-        trial: '种子用户体验',
-        basic: '个人能量地图解读',
-        advanced: '个人成长深度咨询'
+        trial: '辰鉴·实践陪伴',
+        basic: '辰鉴·人生说明书',
+        advanced: '辰鉴·行动与决策'
       }
       return names[service] || ''
     },

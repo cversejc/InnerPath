@@ -1,24 +1,13 @@
 <template>
   <div class="course">
-    <!-- 导航栏 -->
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="logo">离火引</div>
-        <ul class="nav-menu">
-          <li><router-link to="/pages/home/home" class="nav-link">首页</router-link></li>
-          <li><router-link to="/pages/services/services" class="nav-link">服务</router-link></li>
-          <li><router-link to="/pages/assessment/assessment" class="nav-link">能量测评</router-link></li>
-          <li><router-link to="/pages/course/course" class="nav-link active">课程</router-link></li>
-          <li><router-link to="/pages/about/about" class="nav-link">关于</router-link></li>
-        </ul>
-      </div>
-    </nav>
+    <BrandNav />
 
     <!-- 页面标题 -->
     <section class="page-header">
       <div class="container">
-        <h1>东方人格洞察入门课</h1>
-        <p>融合传统文化与现代心理学<br>掌握工具，开启自主成长之旅</p>
+        <p class="section-kicker">CHENJIAN / CO-EXPLORATION</p>
+        <h1>辰鉴·共鉴计划</h1>
+        <p>把玄学、心理学与哲学放回生活<br>在长期的人本实践里，学会见自己、知其序、行其路</p>
       </div>
     </section>
 
@@ -27,32 +16,32 @@
       <div class="container">
         <div class="intro-content">
           <div class="intro-text">
-            <h2>为什么要学习这门课？</h2>
-            <p>在AI时代，技能会被替代，但理解自己、理解人性的能力永远不会过时。</p>
-            <p>这门课不是教你"算命"，而是教你用东方智慧的人格分析工具，结合现代心理学，建立一套属于自己的"自我认知系统"。</p>
+            <h2>为什么要加入共鉴？</h2>
+            <p>在一个越来越快、越来越功利的社会里，理解自己、理解关系、理解时序，是不容易被替代的长期能力。</p>
+            <p>共鉴不教人给自己或别人下判断，而是练习如何把传统智慧翻译成现代生活能使用的语言，建立一套属于自己的“人生观察系统”。</p>
             <ul class="intro-benefits">
-              <li>🎯 理解自己的能量模式与行为倾向</li>
-              <li>🔍 看清关系中的互动模式</li>
-              <li>💡 找到适合自己的成长路径</li>
-              <li>🛠️ 掌握可持续使用的分析工具</li>
+              <li>🎯 读懂自己的性格密码与天赋</li>
+              <li>🔍 看见关系与人生重复模式</li>
+              <li>💡 在不同阶段找到合适的用力方式</li>
+              <li>🛠️ 用记录、日历和复盘把洞察落地</li>
             </ul>
           </div>
           <div class="intro-image">
             <div class="course-card-preview">
-              <div class="preview-badge">系统化课程</div>
-              <h3>东方人格洞察</h3>
+              <div class="preview-badge">理论 × 实践 × 陪伴</div>
+              <h3>辰鉴共鉴</h3>
               <div class="preview-stats">
                 <div class="stat-item">
                   <div class="stat-number">12+</div>
-                  <div class="stat-label">课时</div>
+                  <div class="stat-label">主题</div>
                 </div>
                 <div class="stat-item">
                   <div class="stat-number">终身</div>
-                  <div class="stat-label">回看</div>
+                  <div class="stat-label">记录</div>
                 </div>
                 <div class="stat-item">
                   <div class="stat-number">社群</div>
-                  <div class="stat-label">支持</div>
+                  <div class="stat-label">同行</div>
                 </div>
               </div>
             </div>
@@ -64,8 +53,8 @@
     <!-- 课程大纲 -->
     <section class="course-outline">
       <div class="container">
-        <h2>课程大纲</h2>
-        <p class="section-desc">系统化学习，从理论到实践</p>
+        <h2>共鉴路径</h2>
+        <p class="section-desc">不追求一次学会，追求每次都能在生活里多看见一点。</p>
 
         <div class="modules">
           <div class="module-item" v-for="(module, index) in modules" :key="index">
@@ -93,22 +82,22 @@
     <!-- 适合人群 -->
     <section class="target-audience">
       <div class="container">
-        <h2>这门课适合谁？</h2>
+        <h2>这条路径适合谁？</h2>
         <div class="audience-grid">
           <div class="audience-card">
             <div class="audience-icon">🌱</div>
             <h3>自我探索者</h3>
-            <p>对自我认知有强烈兴趣，希望深入了解自己的能量特质和行为模式</p>
+            <p>想理解自己的个人属性，不满足于“更好的自己”模板</p>
           </div>
           <div class="audience-card">
             <div class="audience-icon">🎓</div>
             <h3>心理学爱好者</h3>
-            <p>想要学习东方人格分析工具，拓展心理学视野和实践方法</p>
+            <p>愿意把玄学、心理学和哲学放在同一张桌面上对话</p>
           </div>
           <div class="audience-card">
             <div class="audience-icon">💼</div>
             <h3>职业发展者</h3>
-            <p>希望通过了解自己的天赋优势，找到更适合的职业发展方向</p>
+            <p>正在做职业、关系或人生方向选择，希望少一点社会化审判</p>
           </div>
           <div class="audience-card">
             <div class="audience-icon">👥</div>
@@ -132,27 +121,27 @@
     <!-- 课程特色 -->
     <section class="course-features">
       <div class="container">
-        <h2>课程特色</h2>
+        <h2>共鉴的四个坚持</h2>
         <div class="features-grid">
           <div class="feature-item">
             <div class="feature-icon">🎯</div>
-            <h3>理论与实践结合</h3>
-            <p>不只讲理论，更注重实际应用。每个模块都配有案例分析和练习</p>
+            <h3>理论与现实相接</h3>
+            <p>每个概念都回到真实处境，用决策日志和小行动检验它是否真的有用。</p>
           </div>
           <div class="feature-item">
             <div class="feature-icon">🌉</div>
-            <h3>东西方融合</h3>
-            <p>将传统命理智慧与现代心理学工具结合，建立本土化的人格分析体系</p>
+            <h3>多种语言互译</h3>
+            <p>玄学负责看见属性，心理学负责处理旧循环，哲学负责提供人生脉络。</p>
           </div>
           <div class="feature-item">
             <div class="feature-icon">🔄</div>
-            <h3>终身学习社群</h3>
-            <p>加入学习社群，持续交流、案例研讨、答疑解惑</p>
+            <h3>长期人本社群</h3>
+            <p>不靠焦虑和排名驱动，靠真实记录、趣味练习和彼此照见保持连接。</p>
           </div>
           <div class="feature-item">
             <div class="feature-icon">📚</div>
-            <h3>系统化方法论</h3>
-            <p>不是碎片化知识，而是完整的分析框架和可复用的工具体系</p>
+            <h3>把主动权留给人</h3>
+            <p>不点评命盘层次、财富等级和能力高低，不预测具体因果，只帮助你更有依据地行动。</p>
           </div>
         </div>
       </div>
@@ -161,7 +150,7 @@
     <!-- 价格与报名 -->
     <section class="course-pricing">
       <div class="container">
-        <h2>课程价格</h2>
+        <h2>共鉴方式</h2>
         <div class="pricing-cards">
           <div class="pricing-card">
             <div class="pricing-badge">早鸟价</div>
@@ -214,18 +203,13 @@
         </div>
 
         <div class="enrollment-notice">
-          <p>💡 报名后即可开始学习，课程持续更新中</p>
-          <p>📧 报名咨询请联系：innerseek@example.com</p>
+          <p>💡 具体开放时间与共鉴名额，以辰鉴最新通知为准</p>
+          <p>📧 参与咨询请联系：hello@chenjian.me</p>
         </div>
       </div>
     </section>
 
-    <!-- 页脚 -->
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2026 离火引 InnerSeek. 欢迎来到「离火引」，开启你的"灵魂战略"第一步。</p>
-      </div>
-    </footer>
+    <BrandFooter />
   </div>
 </template>
 
@@ -237,68 +221,68 @@ export default {
       expandedModules: [0],
       modules: [
         {
-          title: '基础篇：东方人格分析的哲学基础',
-          description: '理解阴阳五行、天干地支的底层逻辑，建立东方思维框架',
+          title: '第一篇：见自己与时间坐标',
+          description: '理解辰鉴的三层地图：先天属性、后天环境与主动选择',
           lessons: [
-            '阴阳五行：不是迷信，是系统思维',
-            '天干地支：时间节律与能量周期',
-            '东方哲学与现代心理学的对话',
-            '如何科学地看待传统命理工具'
+            '见自己：把个人属性从社会评价中分离出来',
+            '知其序：理解阶段、时机与环境的变化',
+            '哲学、心理学与玄学如何彼此翻译',
+            '如何有边界地使用传统观察工具'
           ]
         },
         {
-          title: '工具篇：八字基础与能量解读',
-          description: '学习八字排盘、十神系统，理解个人能量结构',
+          title: '第二篇：性格密码与能量通路',
+          description: '从八字结构进入天赋、弱点与充放电方式',
           lessons: [
-            '八字排盘：如何读懂你的"时间密码"',
-            '十神系统：理解你的心理动力模式',
-            '五行平衡：能量流通与淤堵',
-            '格局分析：看清你的能量结构',
-            '案例实战：真实案例解读练习'
+            '时间坐标：如何读懂你的先天结构',
+            '十神系统：把抽象配置翻译成心理动力',
+            '能量通路：什么事情充电，什么事情耗电',
+            '天赋与暗面天赋：用对与用错的区别',
+            '案例实战：从属性到环境的翻译练习'
           ]
         },
         {
-          title: '工具篇：紫微斗数与关系模式',
-          description: '学习紫微斗数，深入理解关系互动与人生议题',
+          title: '第三篇：关系模式与人生重复题',
+          description: '用关系与潜意识视角，看见反复出现的互动脚本',
           lessons: [
-            '紫微斗数排盘基础',
-            '十二宫位：人生各领域的能量分布',
-            '主星特质：理解不同的人格类型',
-            '关系宫位：看清你的关系模式',
-            '案例实战：关系议题分析'
+            '关系模式：亲密关系、家庭与职场中的我',
+            '核心矛盾：在想要与恐惧之间如何摆动',
+            '内在小孩：旧经验正在保护什么',
+            '人生谎言：哪些信念让你重复卡住',
+            '案例实战：把旧循环改写成新答案'
           ]
         },
         {
-          title: '整合篇：心理学视角的命理解读',
-          description: '将命理语言转化为心理学语言，建立实用的分析框架',
+          title: '第四篇：从说明书到行动',
+          description: '把 fi 端的理解转译为 te 端可执行的生活选择',
           lessons: [
-            '从命理到心理：语言转译系统',
-            '人格特质分析：五大维度整合',
-            '行为模式识别：看见重复的模式',
-            '防御机制与应对策略',
-            '成长路径规划：从认知到行动'
+            '从命理到心理：个人属性的当代翻译',
+            '最小可行行动：下周就能做的三件事',
+            '用舍由时：顺环境，不顺从恐惧',
+            '复盘与行为实验：为自己留下证据',
+            '成长路径规划：未来 6—12 个月的能力建设'
           ]
         },
         {
-          title: '应用篇：人生议题的实战分析',
-          description: '针对职业、关系、自我价值等议题的具体应用',
+          title: '第五篇：把建议还给具体的人',
+          description: '练习不审判地回应真实的就业、关系与成长困境',
           lessons: [
-            '职业发展：找到你的天赋优势',
-            '亲密关系：理解关系中的互动模式',
-            '家庭议题：原生家庭的影响与超越',
-            '自我价值：建立内在稳定感',
-            '综合案例：完整的咨询流程演示'
+            '就业选择：肯定能力，再看环境适配',
+            '亲密关系：在关系中保留主体性',
+            '家庭议题：把责任与自我价值分开',
+            '青少年困惑：允许思考，也看见阶段任务',
+            '综合案例：从说明书到行动端的交付流程'
           ]
         },
         {
-          title: '进阶篇：成为自己的咨询师',
-          description: '掌握自我分析与持续成长的方法',
+          title: '第六篇：成为自己的长期观察者',
+          description: '建立可持续的记录、日历、社群与复盘习惯',
           lessons: [
             '如何为自己做定期复盘',
-            '流年运势：理解周期与节奏',
+            '决策日历：识别推进、等待与修整窗口',
             '行动方案制定：从认知到改变',
-            '持续学习：建立你的知识体系',
-            '未来发展：咨询师成长路径'
+            '持续学习：建立你的个人知识系统',
+            '共鉴实践：在社群里彼此照见'
           ]
         }
       ]

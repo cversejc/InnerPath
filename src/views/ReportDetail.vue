@@ -1,21 +1,12 @@
 <template>
   <div class="report-detail">
-    <!-- 导航栏 -->
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="logo">离火引</div>
-        <ul class="nav-menu">
-          <li><router-link to="/pages/home/home" class="nav-link">首页</router-link></li>
-          <li><router-link to="/pages/user/user" class="nav-link">个人中心</router-link></li>
-        </ul>
-      </div>
-    </nav>
+    <BrandNav />
 
     <!-- 报告头部 -->
     <section v-if="report" class="report-header">
       <div class="container">
         <button class="btn-back" @click="goBack">← 返回</button>
-        <h1>个人能量地图报告</h1>
+        <h1>辰鉴·人生说明书</h1>
         <div class="report-meta">
           <span>生成日期：{{ report.basicInfo?.reportDate || '今天' }}</span>
           <span class="divider">|</span>
@@ -39,19 +30,19 @@
           <div class="content-card">
             <div class="ai-badge">
               <span class="badge-icon">✨</span>
-              <span>AI 深度分析</span>
+              <span>辰鉴结构化解读</span>
             </div>
 
             <!-- 命理基础（特殊展示） -->
             <div v-if="foundationData" class="foundation-section">
               <h2 class="section-title">
                 <span class="title-icon">🔮</span>
-                命理基础
+                先天坐标
               </h2>
 
               <!-- 八字四柱 -->
               <div v-if="foundationData.bazi" class="bazi-container">
-                <h3 class="subsection-title">八字四柱</h3>
+                <h3 class="subsection-title">八字坐标</h3>
                 <div class="pillar-grid">
                   <div v-if="foundationData.bazi.year" class="pillar-card">
                     <div class="pillar-label">年柱</div>
@@ -77,7 +68,7 @@
 
               <!-- 紫微斗数 -->
               <div v-if="foundationData.ziwei" class="ziwei-container">
-                <h3 class="subsection-title">紫微斗数</h3>
+                <h3 class="subsection-title">紫微坐标</h3>
                 <div class="palace-grid">
                   <div v-if="foundationData.ziwei.life_palace" class="palace-card">
                     <div class="palace-label">命宫</div>
@@ -123,7 +114,7 @@
         <div v-else-if="report" class="structured-content">
           <!-- 能量特质 -->
           <div class="content-card">
-            <h2>一、能量特质分析</h2>
+            <h2>一、我是谁 · 性格密码</h2>
             <div class="energy-type">
               <span class="type-badge">{{ report.energyProfile?.type || '综合型' }}</span>
             </div>
@@ -133,11 +124,11 @@
             <p class="description">{{ report.energyProfile?.description || '' }}</p>
           </div>
 
-          <!-- 职业发展 -->
+            <!-- 行动方向 -->
           <div class="content-card">
-            <h2>二、职业发展建议</h2>
+            <h2>二、我往哪去 · 环境与方向</h2>
             <div class="section-content">
-              <h3>适合的职业路径</h3>
+              <h3>可以尝试的方向</h3>
               <ul class="path-list">
                 <li v-for="(path, index) in report.careerGuidance.suitablePaths" :key="index">
                   {{ path }}
@@ -145,7 +136,7 @@
               </ul>
               <h3>工作风格</h3>
               <p>{{ report.careerGuidance.workStyle }}</p>
-              <h3>发展建议</h3>
+              <h3>顺势建议</h3>
               <ul class="suggestion-list">
                 <li v-for="(suggestion, index) in report.careerGuidance.developmentSuggestions" :key="index">
                   {{ suggestion }}
@@ -154,9 +145,9 @@
             </div>
           </div>
 
-          <!-- 关系模式 -->
+            <!-- 关系模式 -->
           <div class="content-card">
-            <h2>三、关系模式解读</h2>
+            <h2>三、我如何与人相处 · 关系模式</h2>
             <div class="section-content">
               <h3>关系风格</h3>
               <p>{{ report.relationshipPattern.style }}</p>
@@ -183,9 +174,9 @@
             </div>
           </div>
 
-          <!-- 行动方案 -->
+            <!-- 行动方案 -->
           <div class="content-card">
-            <h2>四、个性化行动方案</h2>
+            <h2>四、我卡在哪 · 破局行动</h2>
             <div class="action-plans">
               <div v-for="(plan, index) in report.personalGrowth.actionPlan" :key="index" class="action-item">
                 <div class="action-header">
@@ -200,7 +191,7 @@
 
           <!-- 总结 -->
           <div class="content-card summary-card">
-            <h2>五、总结与寄语</h2>
+            <h2>五、知其序 · 行其路</h2>
             <p class="summary-text">{{ report.summary }}</p>
           </div>
         </div>
@@ -217,18 +208,13 @@
           </button>
           <button class="btn-action primary" @click="goToBooking">
             <span class="icon">💬</span>
-            预约深度咨询
+            预约行动与决策
           </button>
         </div>
       </div>
     </section>
 
-    <!-- 页脚 -->
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2026 离火引 InnerSeek. 欢迎来到「离火引」，开启你的"灵魂战略"第一步。</p>
-      </div>
-    </footer>
+    <BrandFooter />
   </div>
 </template>
 

@@ -32,7 +32,7 @@ def generate_report_task(self, user_id: Optional[int], user_data: Dict[str, Any]
             # Step 1: Foundation calculation (10% -> 25%)
             asyncio.run(cache_set(
                 f"report:task:{task_id}",
-                json.dumps({"status": "processing", "progress": 15, "message": "推算命理基础..."}),
+                json.dumps({"status": "processing", "progress": 15, "message": "建立先天坐标..."}),
                 expire=600
             ))
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# InnerPath 本地开发脚本
+# 辰鉴本地开发脚本
 
 set -e
 
@@ -10,7 +10,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}InnerPath 本地开发环境${NC}"
+echo -e "${GREEN}辰鉴本地开发环境${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 

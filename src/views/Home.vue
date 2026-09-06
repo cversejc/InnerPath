@@ -1,24 +1,14 @@
 <template>
   <div class="page-shell home">
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="logo">离火引</div>
-        <ul class="nav-menu">
-          <li><router-link to="/pages/home/home" class="nav-link active">首页</router-link></li>
-          <li><router-link to="/pages/services/services" class="nav-link">服务</router-link></li>
-          <li><router-link to="/pages/assessment/assessment" class="nav-link">测评</router-link></li>
-          <li><router-link to="/pages/about/about" class="nav-link">关于</router-link></li>
-        </ul>
-      </div>
-    </nav>
+    <BrandNav />
 
     <section class="landscape-hero hero">
       <div class="container hero-layout">
         <div class="hero-copy">
-          <p class="section-kicker">INNERSEEK COMPASS</p>
-          <h1>帮助你重构生命地图</h1>
+          <p class="section-kicker">CHENJIAN / LIFE ORIENTATION</p>
+          <h1>星辰引路，<br />镜子照见</h1>
           <p class="hero-subtitle">
-            用传统人格叙事和现代心理学工具，看见能量、关系与选择背后的结构。
+            星辰的运行规律，帮你照见人生选择的方向。辰鉴把个人属性、当下时序和后天行动放在同一张地图上。
           </p>
           <div class="hero-actions">
             <button class="primary-button" @click="goToAssessment">开始测评</button>
@@ -42,9 +32,9 @@
           <h2 class="section-title">不是安慰你，而是帮你看清自己为何停在这里</h2>
         </div>
         <div class="paper-card prose-card">
-          <p>你听过很多道理，也明白要爱自己、设立边界、与过去和解。</p>
-          <p>但那些漂亮话没有碰到真正的结。你看起来一切正常，心里却知道自己被困住了。</p>
-          <p class="emphasis">离火引为这样的时刻而来：把混乱变成地图，把感受落成行动。</p>
+          <p>你不一定缺少努力，也不一定需要再听一句“你应该怎样”。很多时候，卡住是因为个人属性、环境时序和行动方式没有对上。</p>
+          <p>辰鉴不替你评判人生，也不替你决定未来。我们先照见你是谁、当下处在哪个阶段，再一起找到更适合你的用力方式。</p>
+          <p class="emphasis">社会属性可以被重新理解，个人属性值得被认真肯定。</p>
         </div>
       </div>
     </section>
@@ -53,26 +43,26 @@
       <div class="container">
         <div class="section-heading">
           <p class="section-kicker">OUR METHOD</p>
-          <h2 class="section-title">从结构进入，而不是原地打转</h2>
+          <h2 class="section-title">一张说明书，两个方向</h2>
           <p class="section-desc">
-            我们把八字、紫微等传统工具作为人格结构的透镜，再用现代心理学语言转译为可执行的成长策略。
+            fi 负责理解与定位，te 负责行动与决策。我们把八字、紫微、星盘等传统工具作为观察个人属性的透镜，再用心理学和哲学把洞察翻译成能使用的语言。
           </p>
         </div>
         <div class="method-grid">
           <article class="paper-card method-card">
-            <span>01</span>
-            <h3>看见能量结构</h3>
-            <p>识别你的动力来源、消耗点和反复出现的选择模式。</p>
+            <span>FI / 01</span>
+            <h3>我是谁</h3>
+            <p>性格密码、天赋与暗面天赋、能量通路，以及你与关系的互动模式。</p>
           </article>
           <article class="paper-card method-card">
-            <span>02</span>
-            <h3>命名关系脚本</h3>
-            <p>把亲密关系、家庭和职场里的隐性互动模式说清楚。</p>
+            <span>FI / 02</span>
+            <h3>我卡在哪</h3>
+            <p>看见当下核心矛盾、人生重复模式，以及潜意识正在保护什么。</p>
           </article>
           <article class="paper-card method-card">
-            <span>03</span>
-            <h3>落成行动方案</h3>
-            <p>不做宿命论，把洞察转化为能执行、能复盘的下一步。</p>
+            <span>TE / 03</span>
+            <h3>我往哪去</h3>
+            <p>从下周可做的三件事，到未来 6—12 个月的能力建设和决策日历。</p>
           </article>
         </div>
       </div>
@@ -82,39 +72,39 @@
       <div class="container">
         <div class="section-heading">
           <p class="section-kicker">SERVICE MAP</p>
-          <h2 class="section-title">选择一张适合此刻的地图</h2>
+          <h2 class="section-title">从照见自己，到把日子过好</h2>
         </div>
         <div class="services-grid">
           <article class="paper-card service-card">
             <span class="seal-badge">入门</span>
-            <h3>个人能量地图解读</h3>
+            <h3>辰鉴·人生说明书</h3>
             <p class="price">¥499 - ¥699</p>
             <ul class="service-features">
-              <li>八字 / 紫微基础结构解读</li>
-              <li>性格动力与关系模式分析</li>
-              <li>当前困境中的心理议题定位</li>
+              <li>个人属性、天赋与能量通路</li>
+              <li>核心矛盾与人生重复模式</li>
+              <li>当前阶段的环境坐标</li>
             </ul>
             <button class="secondary-button" @click="goToBooking">了解详情</button>
           </article>
           <article class="paper-card service-card featured">
             <span class="seal-badge">推荐</span>
-            <h3>个人成长深度咨询</h3>
+            <h3>辰鉴·行动与决策</h3>
             <p class="price">¥1599 - ¥3599</p>
             <ul class="service-features">
-              <li>完整自我结构和消耗点分析</li>
-              <li>关系、职业与环境适配评估</li>
-              <li>个性化行动方案和复盘路径</li>
+              <li>把说明书用于具体问题</li>
+              <li>用舍由时，行藏在我</li>
+              <li>个性化日历、陪伴与复盘</li>
             </ul>
             <button class="primary-button" @click="goToBooking">立即预约</button>
           </article>
           <article class="paper-card service-card">
             <span class="seal-badge">课程</span>
-            <h3>东方人格洞察入门课</h3>
+            <h3>辰鉴·共鉴计划</h3>
             <p class="price">¥399 - ¥999</p>
             <ul class="service-features">
-              <li>命理与心理学融合工具</li>
-              <li>系统化学习框架与案例</li>
-              <li>终身学习社群支持</li>
+              <li>玄学、心理学、哲学的分工</li>
+              <li>从见自己到知行合一</li>
+              <li>社群实践与真实案例共学</li>
             </ul>
             <button class="secondary-button" @click="goToCourse">查看课程</button>
           </article>
@@ -125,30 +115,19 @@
     <section class="section-band final-cta">
       <div class="container final-cta-inner">
         <p class="section-kicker">NEXT STEP</p>
-        <h2>先测一张属于你的能量地图</h2>
+        <h2>先写一页属于你的说明书</h2>
+        <p>不算命，不评判，不替你预言未来。先从“我是谁”开始。</p>
         <button class="primary-button" @click="goToAssessment">开始探索</button>
       </div>
     </section>
 
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2026 离火引 InnerSeek. 开启你的灵魂战略第一步。</p>
-        <p class="version">v{{ version }}</p>
-      </div>
-    </footer>
+    <BrandFooter />
   </div>
 </template>
 
 <script>
-import pkg from '../../package.json'
-
 export default {
   name: 'Home',
-  data() {
-    return {
-      version: pkg.version
-    }
-  },
   methods: {
     goToAssessment() {
       this.$router.push('/pages/assessment/assessment')

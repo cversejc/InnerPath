@@ -7,6 +7,7 @@ import Booking from '../views/Booking.vue'
 import Course from '../views/Course.vue'
 import UserCenter from '../views/UserCenter.vue'
 import ReportDetail from '../views/ReportDetail.vue'
+import Calendar from '../views/Calendar.vue'
 
 const routes = [
   {
@@ -47,6 +48,11 @@ const routes = [
     path: '/pages/report/detail',
     name: 'ReportDetail',
     component: ReportDetail
+  },
+  {
+    path: '/pages/calendar/calendar',
+    name: 'Calendar',
+    component: Calendar
   },
   {
     path: '/pages/about/about',

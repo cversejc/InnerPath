@@ -9,15 +9,15 @@ from app.schemas.booking import BookingCreate
 # Service type mapping
 SERVICE_TYPES = {
     "trial": {
-        "name": "种子用户体验",
+        "name": "辰鉴·实践陪伴",
         "price": 99.00
     },
     "basic": {
-        "name": "个人能量地图解读",
+        "name": "辰鉴·人生说明书",
         "price": 499.00
     },
     "advanced": {
-        "name": "个人成长深度咨询",
+        "name": "辰鉴·行动与决策",
         "price": 1599.00
     }
 }

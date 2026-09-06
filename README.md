@@ -1,17 +1,17 @@
-# InnerPath（离火引）
+# 辰鉴（ChenJian）
 
-帮助你重构生命地图的个人成长咨询平台
+星辰引路，镜子照见——用人生说明书与行动决策，陪你见自己、知其序、行其路。
 
 ---
 
 ## 项目简介
 
-InnerPath 是一个融合东方传统文化人格叙事与现代心理学工具的个人成长咨询平台。
+辰鉴是一个融合东方时间结构、现代心理学与哲学脉络的个人成长产品。它不替用户算命或预测未来，而是把个人属性、环境时序与现实行动放到同一张地图上。
 
 **核心功能**：
-- 🎯 个人能量地图解读（基于时间节律的个性化分析）
-- 💬 深度成长咨询服务
-- 📚 东方人格洞察课程
+- 🪞 **fi / 人生说明书**：性格密码、能量通路、关系模式、核心矛盾与人生时序
+- 🧭 **te / 行动与决策**：最小可行行动、6—12 个月能力建设、决策日历与陪伴
+- 🌌 **辰鉴·共鉴计划**：玄学、心理学、哲学的当代翻译与长期人本实践
 
 **技术栈**：
 - 前端：Vue 3 + Vite + Vue Router
@@ -32,7 +32,7 @@ InnerPath 是一个融合东方传统文化人格叙事与现代心理学工具�
 ```bash
 # 1. 克隆项目
 git clone <repository-url>
-cd innerseek
+cd InnerPath
 
 # 2. 配置环境变量
 cp .env.example .env
@@ -50,10 +50,17 @@ cp .env.example .env
 ### 测试功能
 
 1. 打开 http://localhost
-2. 点击"开始探索"
+2. 点击“开始测评”
 3. 填写测评信息
 4. 等待 AI 生成报告（约 30 秒）
-5. 查看完整的个人成长报告
+5. 查看完整的辰鉴人生说明书
+
+---
+
+## 项目文档
+
+- [辰鉴产品定位](docs/辰鉴产品定位.md)：产品核心、fi / te 双端结构与产品边界
+- [多步报告生成系统使用指南](MULTISTEP_REPORT_GUIDE.md)：配置开关、生成流程、数据结构与降级策略
 
 ---
 
@@ -92,63 +99,52 @@ export REMOTE_HOST=your-server.com
 
 ## 本地开发
 
-### 开发模式（推荐）
+### Docker 全栈开发（推荐）
 
-前后端分离启动，支持热重载，方便调试：
+脚本会检查根目录 `.env`，构建前后端镜像，并启动 PostgreSQL、Redis、Celery 和 Nginx：
 
-**Windows:**
 ```bash
-# 1. 启动后端（自动启动 Redis 和 PostgreSQL）
-dev-backend.bat
-
-# 2. 启动前端（新终端）
-cd frontend
-npm run dev
-
-# 3. 启动 Celery Worker（可选，新终端）
-dev-celery.bat
+./scripts/dev.sh
 ```
 
-**Linux/Mac:**
-```bash
-# 1. 启动后端
-./dev-backend.sh
+Windows PowerShell 可直接运行等价命令：
 
-# 2. 启动前端（新终端）
-cd frontend
-npm run dev
-
-# 3. 启动 Celery Worker（可选，新终端）
-./dev-celery.sh
+```powershell
+docker compose up -d --build
 ```
 
 访问地址：
-- 前端: http://localhost:3000
-- 后端 API: http://localhost:8000
-- API 文档: http://localhost:8000/docs
+- 前端：http://localhost
+- 后端 API：http://localhost:8000
+- API 文档：http://localhost:8000/docs
 
-详细开发指南请查看 [DEV_GUIDE.md](DEV_GUIDE.md)
+### 前端热重载
 
-### 传统方式
-
-#### 前端开发
+在项目根目录安装依赖并启动 Vite。开发服务器会把 `/api` 请求代理到 `http://localhost:8000`：
 
 ```bash
-cd frontend
 npm install
 npm run dev
 # 访问 http://localhost:3000
 ```
 
-#### 后端开发
+### 后端和 Celery 直接运行
+
+先启动 PostgreSQL 与 Redis，再分别运行 API 和 Worker：
+
+```bash
+docker compose up -d postgres redis
+
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+另开终端启动 Celery Worker：
 
 ```bash
 cd backend
-pip install -r requirements.txt
-
-# 确保根目录有 .env 文件
-uvicorn app.main:app --reload --port 8000
-# 访问 http://localhost:8000/docs
+celery -A app.tasks.celery_app worker --loglevel=info
 ```
 
 ### 数据库迁移
@@ -168,7 +164,7 @@ alembic upgrade head
 ## 项目结构
 
 ```
-innerpath/
+InnerPath/
 ├── .env.example           # 配置模板（唯一配置文件）
 ├── docker-compose.yml     # Docker 编排
 ├── Dockerfile.frontend    # 前端镜像
@@ -182,14 +178,15 @@ innerpath/
 │   └── deploy.sh        # 部署脚本
 │
 ├── src/                  # 前端源码
-│   ├── views/           # 页面组件
-│   │   ├── Home.vue
-│   │   ├── Assessment.vue
-│   │   ├── Booking.vue
-│   │   ├── Course.vue
-│   │   └── UserCenter.vue
-│   ├── router/          # 路由配置
-│   ├── utils/           # 工具函数
+│   ├── assets/           # 图片资源
+│   ├── components/       # BrandNav、BrandFooter 等共享组件
+│   ├── data/             # 决策日历等前端数据
+│   ├── views/            # 页面组件
+│   │   ├── Home.vue / Assessment.vue / ReportDetail.vue
+│   │   ├── Services.vue / Booking.vue / Course.vue
+│   │   ├── Calendar.vue / About.vue / UserCenter.vue
+│   ├── router/           # 路由配置
+│   ├── utils/            # API 与报告工具函数
 │   ├── App.vue
 │   ├── main.js
 │   └── style.css
@@ -312,20 +309,16 @@ docker-compose restart postgres
 
 ## 核心功能模块
 
-### 1. 用户测评系统
-- 三步式测评流程：基本信息 → 生命议题 → 生成报告
+### 1. 用户说明书系统
+- 三步式说明书流程：先天坐标 → 当下处境 → 生成说明书
 - 支持游客模式（无需登录）
 - 响应式设计（移动端适配）
 
 ### 2. AI 报告生成引擎
 - 集成 DeepSeek API
-- 深度整合八字、紫微斗数、心理学分析
-- 生成包含 5 大模块的完整报告：
-  - 能量内核（八字分析）
-  - 人生剧场（紫微斗数）
-  - 心智模式（心理学）
-  - 职业发展指南
-  - 行动方案
+- 深度整合八字、紫微斗数、心理学与哲学翻译
+- 生成包含“我是谁 / 我卡在哪 / 我往哪去”的人生说明书
+- 明确不做命盘等级、财富等级、能力高低与具体未来因果预测
 
 ### 3. 咨询预约系统
 - 三种服务套餐
@@ -335,7 +328,12 @@ docker-compose restart postgres
 - 6 大课程模块
 - 三档价格体系
 
-### 5. 用户中心
+### 5. 决策日历
+- 路由：`/pages/calendar/calendar`
+- 提供月度阶段、每日适合 / 不适合事项、关键决策节点和记录提示
+- 当前版本覆盖 `2026年9月7日` 至 `2026年10月7日`；更新下一周期时请同步维护 `src/data/decisionCalendar.js`
+
+### 6. 用户中心
 - 我的报告
 - 我的预约
 - 我的课程
@@ -346,19 +344,19 @@ docker-compose restart postgres
 ## 产品特色
 
 ### 话语体系创新
-- 将传统命理包装为"东方能量测评"
-- 使用"能量类型"、"心理动力"等现代化术语
-- 避免"算命"等敏感词汇
+- 以“星辰引路，镜子照见”作为品牌核心
+- fi 端负责看见个人属性，te 端负责支持现实行动
+- 用当代语言翻译传统经验，不机械套用古代社会角色
 
-### 漏斗模型设计
-- **引流层**：免费/低价能量测评
-- **转化层**：课程学习（¥399-999）
-- **利润层**：1对1 深度咨询（¥1599-3599）
+### 长期人本方向
+- 不算命，不审判，不点评命盘层次、财富等级和能力高低
+- 可以给希望，但不预测客户未来具体走向和因果
+- 社会属性的批评回到个人属性的肯定，把主动权留给用户
 
 ### 差异化优势
-- 融合东方智慧与现代心理学
-- 提供"结构化"而非"问题化"的分析视角
-- 强调主体性和成长性，反对宿命论
+- 融合玄学、心理学与哲学，但让三者各自负责不同问题
+- 提供“人生说明书 + 行动决策”的双端结构
+- 强调“用舍由时，行藏在我”：顺环境选择，在助推时冲锋，在风浪时修整
 
 ---
 
@@ -379,11 +377,15 @@ SECRET_KEY=change-this-to-random-string-in-production-min-32-chars
 # 调试模式（生产环境设为 false）
 DEBUG=false
 
+# 是否启用多步报告生成（默认关闭）
+USE_MULTISTEP_GENERATION=false
+
 # CORS 配置（生产环境添加实际域名）
 CORS_ORIGINS=http://localhost:3000,https://yourdomain.com
 ```
 
-完整配置说明见 `.env.example` 文件。
+完整配置说明见 `.env.example` 文件；多步生成的流程、降级和排查方式见
+[MULTISTEP_REPORT_GUIDE.md](MULTISTEP_REPORT_GUIDE.md)。
 
 ---
 
@@ -404,7 +406,7 @@ CORS_ORIGINS=http://localhost:3000,https://yourdomain.com
 
 ## 性能指标
 
-- 报告生成时间：20-40 秒
+- 报告生成时间：单步约 20-40 秒，多步模式约 60-80 秒（取决于 API 响应）
 - API 响应时间：< 100ms
 - 前端加载时间：< 2 秒
 
@@ -431,12 +433,12 @@ CORS_ORIGINS=http://localhost:3000,https://yourdomain.com
 
 ## 联系方式
 
-- 微信：innerpath2026
-- 邮箱：hello@innerpath.me
-- 公众号：离火引 InnerPath
+- 微信：chenjian2026
+- 邮箱：hello@chenjian.me
+- 公众号：辰鉴 ChenJian
 
 ---
 
 ## License
 
-Copyright © 2026 离火引 InnerPath
+Copyright © 2026 辰鉴 ChenJian

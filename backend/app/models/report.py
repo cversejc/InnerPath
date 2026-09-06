@@ -8,7 +8,7 @@ class Report(Base, TimestampMixin):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
-    title = Column(String(100), default="个人能量地图报告", nullable=False)
+    title = Column(String(100), default="辰鉴·人生说明书", nullable=False)
 
     # Basic info
     birth_date = Column(Date, nullable=False)

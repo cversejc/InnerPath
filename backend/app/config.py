@@ -5,7 +5,7 @@ from pathlib import Path
 
 class Settings(BaseSettings):
     # Application
-    APP_NAME: str = "InnerPath API"
+    APP_NAME: str = "辰鉴 API"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
     ENVIRONMENT: str = "development"
@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     SMS_PROVIDER: str = "aliyun"
     SMS_ACCESS_KEY: str = ""
     SMS_SECRET_KEY: str = ""
-    SMS_SIGN_NAME: str = "离火引"
+    SMS_SIGN_NAME: str = "辰鉴"
     SMS_TEMPLATE_CODE: str = ""
 
     # CORS
