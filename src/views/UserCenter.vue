@@ -18,6 +18,8 @@
     <!-- 主内容区 -->
     <section class="user-content">
       <div class="container">
+        <p v-if="loading" class="dashboard-message">正在加载你的账户数据…</p>
+        <p v-if="message" class="dashboard-message">{{ message }}</p>
         <div class="content-layout">
           <!-- 侧边栏 -->
           <aside class="sidebar">
@@ -97,7 +99,7 @@
                   </div>
                   <div class="booking-actions">
                     <button v-if="booking.status === 'confirmed'" class="btn-join">进入咨询</button>
-                    <button v-if="booking.status === 'pending'" class="btn-cancel">取消预约</button>
+                    <button v-if="booking.status === 'pending'" class="btn-cancel" @click="cancelUserBooking(booking)">取消预约</button>
                     <button v-if="booking.status === 'completed'" class="btn-feedback">评价</button>
                   </div>
                 </div>
@@ -158,17 +160,25 @@
                 </div>
                 <div class="form-group">
                   <label>联系方式</label>
-                  <input v-model="settings.contact" type="text">
+                  <input v-model="settings.contact" type="text" readonly>
                 </div>
                 <div class="form-group">
                   <label>出生日期</label>
                   <input v-model="settings.birthDate" type="date">
                 </div>
-                <div class="form-group">
-                  <label>邮箱</label>
-                  <input v-model="settings.email" type="email">
-                </div>
                 <button type="button" class="btn-save" @click="saveSettings">保存设置</button>
+              </form>
+              <form class="password-form" @submit.prevent="savePassword">
+                <h4>修改密码</h4>
+                <div class="form-group">
+                  <label>当前密码</label>
+                  <input v-model="passwordForm.current" type="password" minlength="8" maxlength="128" required autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                  <label>新密码</label>
+                  <input v-model="passwordForm.next" type="password" minlength="8" maxlength="128" required autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn-save">更新密码</button>
               </form>
             </div>
           </main>
@@ -181,13 +191,19 @@
 </template>
 
 <script>
+import { changePassword, getCurrentUser, updateUserProfile } from '../utils/authService'
+import { cancelBooking, getBookings, getMyCourses } from '../utils/businessService'
+import { getUserReports } from '../utils/aiService'
+
 export default {
   name: 'UserCenter',
   data() {
     return {
-      userName: '张三',
+      userName: '用户',
       userType: '成长探索者',
       activeTab: 'reports',
+      loading: true,
+      message: '',
       tabs: [
         { id: 'reports', icon: '📊', label: '我的报告' },
         { id: 'bookings', icon: '📅', label: '我的预约' },
@@ -195,65 +211,84 @@ export default {
         { id: 'settings', icon: '⚙️', label: '账户设置' }
       ],
       reports: [],
-      bookings: [
-        {
-          id: 1,
-          service: '辰鉴·行动与决策',
-          date: '2026-05-28',
-          time: '14:00-15:30',
-          consultant: '李老师',
-          status: 'confirmed'
-        },
-        {
-          id: 2,
-          service: '辰鉴·人生说明书',
-          date: '2026-05-15',
-          time: '10:00-11:00',
-          consultant: '王老师',
-          status: 'completed'
-        }
-      ],
-      courses: [
-        {
-          id: 1,
-          title: '辰鉴·共鉴计划',
-          progress: 35,
-          completed: 4,
-          total: 12
-        }
-      ],
+      bookings: [],
+      courses: [],
       settings: {
-        name: '张三',
-        gender: 'male',
-        contact: '138****8888',
-        birthDate: '1990-01-01',
-        email: 'zhangsan@example.com'
+        name: '',
+        gender: '',
+        contact: '',
+        birthDate: '',
+        email: ''
+      },
+      passwordForm: {
+        current: '',
+        next: ''
       }
     }
   },
-  mounted() {
-    this.loadReports()
+  async mounted() {
+    await this.loadDashboard()
   },
   methods: {
-    loadReports() {
-      const savedReports = JSON.parse(localStorage.getItem('userReports') || '[]')
-      this.reports = savedReports.map(item => ({
-        id: item.id,
-        title: '辰鉴·人生说明书',
-        date: item.date,
-        energyType: item.report.energyProfile.type,
-        coreTraits: item.report.energyProfile.coreTraits,
-        fullReport: item.report
-      }))
+    async loadDashboard() {
+      this.loading = true
+      try {
+        const [user, reportResponse, bookingResponse, courseResponse] = await Promise.all([
+          getCurrentUser(),
+          getUserReports(),
+          getBookings(),
+          getMyCourses()
+        ])
+        this.userName = user.name
+        this.userType = user.role === 'admin' ? '管理员' : user.role === 'consultant' ? '咨询师' : '成长探索者'
+        this.settings = {
+          name: user.name || '',
+          gender: user.gender || '',
+          contact: user.phone || '',
+          birthDate: user.birth_year && user.birth_month && user.birth_day
+            ? `${user.birth_year}-${String(user.birth_month).padStart(2, '0')}-${String(user.birth_day).padStart(2, '0')}`
+            : '',
+          email: ''
+        }
+        this.reports = (reportResponse.items || []).map(report => ({
+          id: report.id,
+          title: report.title,
+          date: this.formatDate(report.created_at),
+          energyType: report.energy_type || '综合型',
+          coreTraits: report.core_traits || '—'
+        }))
+        this.bookings = (bookingResponse.items || []).map(booking => ({
+          ...booking,
+          service: booking.service_name,
+          date: booking.confirmed_date || '待确认',
+          time: booking.confirmed_time || booking.preferred_time,
+          consultant: booking.consultant_name
+        }))
+        this.courses = (courseResponse.items || []).map(course => ({
+          id: course.course_id,
+          title: course.title,
+          progress: course.progress,
+          completed: course.completed_lessons,
+          total: course.total_lessons
+        }))
+      } catch (error) {
+        this.message = error.response?.data?.detail || '用户数据加载失败，请刷新重试'
+      } finally {
+        this.loading = false
+      }
+    },
+    async cancelUserBooking(booking) {
+      if (!window.confirm('确定取消这条预约吗？')) return
+      try {
+        await cancelBooking(booking.id)
+        booking.status = 'cancelled'
+        this.message = '预约已取消'
+      } catch (error) {
+        this.message = error.response?.data?.detail || '取消预约失败'
+      }
     },
     getStatusText(status) {
-      const statusMap = {
-        pending: '待确认',
-        confirmed: '已确认',
-        completed: '已完成',
-        cancelled: '已取消'
-      }
-      return statusMap[status] || status
+      return { pending: '待确认', confirmed: '已确认', completed: '已完成', cancelled: '已取消' }[status] || status
     },
     goToAssessment() {
       this.$router.push('/pages/assessment/assessment')
@@ -267,14 +302,45 @@ export default {
     viewReport(reportId) {
       this.$router.push(`/pages/report/detail?id=${reportId}`)
     },
-    saveSettings() {
-      alert('设置已保存')
+    formatDate(value) {
+      return value ? new Date(value).toLocaleDateString('zh-CN') : '—'
+    },
+    async saveSettings() {
+      try {
+        const payload = {
+          name: this.settings.name,
+          gender: this.settings.gender || null
+        }
+        if (this.settings.birthDate) {
+          const [year, month, day] = this.settings.birthDate.split('-').map(Number)
+          Object.assign(payload, { birth_year: year, birth_month: month, birth_day: day })
+        }
+        const user = await updateUserProfile(payload)
+        this.userName = user.name
+        this.message = '设置已保存'
+      } catch (error) {
+        this.message = error.response?.data?.detail || '设置保存失败'
+      }
+    },
+    async savePassword() {
+      try {
+        await changePassword(this.passwordForm.current, this.passwordForm.next)
+        this.passwordForm = { current: '', next: '' }
+        this.message = '密码已更新，请重新登录其他设备'
+      } catch (error) {
+        this.message = error.response?.data?.detail || '密码更新失败'
+      }
     }
   }
 }
 </script>
 
 <style scoped>
+.dashboard-message {
+  margin: 0 0 16px;
+  color: var(--muted, #756a60);
+}
+
 .user-center {
   width: 100%;
   background: #f8f9fa;
@@ -761,6 +827,19 @@ export default {
   max-width: 600px;
 }
 
+.password-form {
+  max-width: 600px;
+  margin-top: 36px;
+  border-top: 1px solid #e8e8e8;
+  padding-top: 28px;
+}
+
+.password-form h4 {
+  margin-bottom: 20px;
+  color: #2d3436;
+  font-size: 18px;
+}
+
 .form-group {
   margin-bottom: 25px;
 }
@@ -775,7 +854,8 @@ export default {
 
 .form-group input[type="text"],
 .form-group input[type="email"],
-.form-group input[type="date"] {
+.form-group input[type="date"],
+.form-group input[type="password"] {
   width: 100%;
   padding: 12px 16px;
   border: 2px solid #e0e0e0;

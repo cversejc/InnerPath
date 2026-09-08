@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
-from datetime import datetime, date, time
+from datetime import datetime
 
 
 class ReportCreate(BaseModel):
@@ -27,7 +27,7 @@ class ReportTaskStatusResponse(BaseModel):
     task_id: str
     status: str  # processing/completed/failed
     report_id: Optional[int] = None
-    report_data: Optional[Dict[str, Any]] = None  # For guest users
+    report_data: Optional[Dict[str, Any]] = None
     progress: int = 0
     error: Optional[str] = None
 

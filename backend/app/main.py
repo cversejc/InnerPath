@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.core.cache import init_redis, close_redis
 from app.core.logging_config import setup_logging, get_logger
-from app.api.v1 import auth, users, reports, bookings, courses
+from app.api.v1 import admin, auth, bookings, calendar, courses, reports, staff, users
 import time
 
 # 初始化日志系统
@@ -43,6 +43,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=settings.cors_origins_list,
     allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
@@ -122,6 +123,9 @@ app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(bookings.router, prefix="/api/v1/bookings", tags=["Bookings"])
 app.include_router(courses.router, prefix="/api/v1/courses", tags=["Courses"])
+app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["Calendar"])
+app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
+app.include_router(staff.router, prefix="/api/v1/staff", tags=["Staff"])
 
 
 @app.get("/")

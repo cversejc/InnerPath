@@ -60,3 +60,12 @@ async def cache_exists(key: str) -> bool:
     """Check if cache key exists"""
     client = await get_redis()
     return await client.exists(key) > 0
+
+
+async def cache_increment(key: str, expire: int = 300) -> int:
+    """Increment a counter and set its expiration on first use."""
+    client = await get_redis()
+    value = await client.incr(key)
+    if value == 1:
+        await client.expire(key, expire)
+    return value

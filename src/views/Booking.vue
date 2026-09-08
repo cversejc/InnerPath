@@ -70,6 +70,7 @@
           </div>
 
           <form class="booking-form form-panel" @submit.prevent="submitBooking">
+            <p v-if="errorMessage" class="form-error">{{ errorMessage }}</p>
             <div class="step-heading">
               <p class="section-kicker">CONTACT</p>
               <h2>留下你的现实问题</h2>
@@ -158,7 +159,7 @@
               提交后，辰鉴团队会在 24 小时内与你联系，确认具体形式与时间。这里不是医疗或危机干预服务。
             </div>
 
-            <button type="submit" class="primary-button full-width">提交预约</button>
+            <button type="submit" class="primary-button full-width" :disabled="submitting">{{ submitting ? '提交中…' : '提交预约' }}</button>
           </form>
         </div>
 
@@ -181,6 +182,9 @@
 </template>
 
 <script>
+import { getCurrentUser } from '../utils/authService'
+import { createBooking } from '../utils/businessService'
+
 export default {
   name: 'Booking',
   data() {
@@ -200,6 +204,8 @@ export default {
         topics: [],
         notes: ''
       },
+      submitting: false,
+      errorMessage: '',
       topics: [
         { value: 'career', label: '职业发展' },
         { value: 'relationship', label: '亲密关系' },
@@ -208,6 +214,21 @@ export default {
         { value: 'growth', label: '个人成长' },
         { value: 'stress', label: '压力焦虑' }
       ]
+    }
+  },
+  async mounted() {
+    try {
+      const user = await getCurrentUser()
+      this.bookingData.name = user.name || ''
+      this.bookingData.contact = user.phone || ''
+      this.bookingData.gender = user.gender || ''
+      this.bookingData.birthYear = user.birth_year || ''
+      this.bookingData.birthMonth = user.birth_month || ''
+      this.bookingData.birthDay = user.birth_day || ''
+      this.bookingData.birthHour = user.birth_hour ?? ''
+      this.bookingData.birthMinute = user.birth_minute ?? ''
+    } catch (error) {
+      this.errorMessage = error.response?.data?.detail || '账户信息加载失败'
     }
   },
   methods: {
@@ -231,20 +252,29 @@ export default {
       }
       return prices[service] || ''
     },
-    submitBooking() {
+    async submitBooking() {
       if (!this.bookingData.name || !this.bookingData.gender || !this.bookingData.contact ||
           !this.bookingData.birthYear || !this.bookingData.birthMonth || !this.bookingData.birthDay ||
           !this.bookingData.preferredTime || this.bookingData.topics.length === 0) {
         alert('请填写所有必填项')
         return
       }
-
-      console.log('预约信息：', {
-        service: this.selectedService,
-        ...this.bookingData
-      })
-
-      this.bookingSuccess = true
+      this.submitting = true
+      this.errorMessage = ''
+      try {
+        await createBooking({
+          service_type: this.selectedService,
+          preferred_time: this.bookingData.preferredTime,
+          contact_phone: this.bookingData.contact,
+          topics: this.bookingData.topics,
+          notes: this.bookingData.notes
+        })
+        this.bookingSuccess = true
+      } catch (error) {
+        this.errorMessage = error.response?.data?.detail || '预约提交失败，请稍后重试'
+      } finally {
+        this.submitting = false
+      }
     },
     goToHome() {
       this.$router.push('/pages/home/home')
@@ -254,6 +284,12 @@ export default {
 </script>
 
 <style scoped>
+.form-error {
+  margin: 0 0 18px;
+  color: #a23b35;
+  line-height: 1.6;
+}
+
 .page-header {
   padding: 82px 0 58px;
   text-align: center;

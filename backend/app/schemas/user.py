@@ -15,7 +15,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    phone: str = Field(..., min_length=11, max_length=11)
+    phone: str = Field(..., min_length=11, max_length=11, pattern=r"^\d{11}$")
 
 
 class UserUpdate(BaseModel):
@@ -28,6 +28,11 @@ class UserUpdate(BaseModel):
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
     avatar_url: Optional[str] = None
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(..., min_length=8, max_length=128)
+    new_password: str = Field(..., min_length=8, max_length=128)
 
 
 class UserResponse(BaseModel):
@@ -43,7 +48,10 @@ class UserResponse(BaseModel):
     birth_place: Optional[str]
     avatar_url: Optional[str]
     user_type: str
+    role: str
     is_active: bool
+    phone_verified_at: Optional[datetime]
+    last_login_at: Optional[datetime]
     created_at: datetime
     updated_at: datetime
 

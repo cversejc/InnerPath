@@ -249,7 +249,7 @@
           <div v-else class="result-success">
             <span class="seal-badge">已生成</span>
             <h2>你的人生说明书已经完成</h2>
-            <p>说明书已保存到本地。先读懂自己，再决定是否需要行动端的陪伴。</p>
+            <p>说明书已保存到你的辰鉴账户。先读懂自己，再决定是否需要行动端的陪伴。</p>
 
             <div class="result-preview paper-card">
               <div>
@@ -433,24 +433,13 @@ export default {
         await new Promise(resolve => setTimeout(resolve, 500))
         this.isGenerating = false
 
-        this.saveReportToLocal()
+        this.currentReportId = this.generatedReport.id
       } catch (error) {
         console.error('报告生成失败:', error)
         alert('报告生成失败，请稍后重试')
         this.currentStep = 2
         this.isGenerating = false
       }
-    },
-    saveReportToLocal() {
-      const reports = JSON.parse(localStorage.getItem('userReports') || '[]')
-      const reportId = Date.now()
-      reports.push({
-        id: reportId,
-        date: new Date().toISOString().split('T')[0],
-        report: this.generatedReport
-      })
-      localStorage.setItem('userReports', JSON.stringify(reports))
-      this.currentReportId = reportId
     },
     viewFullReport() {
       if (this.currentReportId) {

@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import get_current_active_user
 from app.models.user import User
-from app.schemas.user import UserResponse, UserUpdate
-from app.services.user_service import update_user_profile
+from app.schemas.user import ChangePasswordRequest, UserResponse, UserUpdate
+from app.services.user_service import change_user_password, update_user_profile
 
 router = APIRouter()
 
@@ -24,3 +24,21 @@ async def update_current_user(
     """Update current user information"""
     updated_user = await update_user_profile(db, current_user, user_update)
     return updated_user
+
+
+@router.post("/me/change-password")
+async def change_password(
+    request: ChangePasswordRequest,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        await change_user_password(
+            db,
+            current_user,
+            request.current_password,
+            request.new_password,
+        )
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid current password")
+    return {"success": True, "message": "Password changed successfully"}

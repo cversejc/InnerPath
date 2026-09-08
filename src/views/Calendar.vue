@@ -2,29 +2,42 @@
   <div class="page-shell calendar-page">
     <BrandNav />
 
-    <main>
+    <main v-if="loading" class="calendar-empty-state">
+      <div class="container"><h1>正在加载你的个性化日历…</h1></div>
+    </main>
+
+    <main v-else-if="!calendar || !days.length" class="calendar-empty-state">
+      <div class="container paper-card">
+        <span class="seal-badge">PERSONAL TIMEZONE</span>
+        <h1>等待管理员维护你的日历</h1>
+        <p>你的个性化决策日历发布后，会在这里显示。</p>
+      </div>
+    </main>
+
+    <main v-else>
       <section class="calendar-hero">
         <div class="container calendar-hero-inner">
           <div class="calendar-hero-copy">
             <p class="section-kicker">TE / DECISION TIMING</p>
             <p class="calendar-overline">{{ meta.subtitle }}</p>
-            <h1>辰鉴 <span>·</span> 你的丁酉月<br /><em>时区说明书</em></h1>
-            <p class="calendar-hero-intro">{{ meta.intro }} 用舍由时，行藏在我：顺着环境做选择，在有助推力的时候冲锋，在风浪大的时候稳住修整。</p>
+            <h1>{{ meta.title }}</h1>
+            <p class="calendar-hero-intro">{{ meta.intro }}</p>
             <div class="calendar-hero-meta">
               <span class="hero-chip hero-chip-date">{{ meta.dateLabel }}</span>
-              <span class="hero-chip">{{ meta.pillars }}</span>
+              <span v-if="meta.pillars" class="hero-chip">{{ meta.pillars }}</span>
               <span class="hero-chip hero-chip-rhythm">{{ meta.rhythm }}</span>
+              <span v-if="calendarSource === 'mock'" class="hero-chip hero-chip-demo">示例数据 · 发布后自动替换</span>
             </div>
           </div>
 
-          <div class="orbit-card" aria-label="丁酉月节奏图示">
+          <div class="orbit-card" aria-label="个人日历节奏图示">
             <div class="orbit-ring orbit-ring-outer">
               <span class="orbit-glyph orbit-glyph-top">观</span>
               <span class="orbit-glyph orbit-glyph-right">行</span>
               <span class="orbit-glyph orbit-glyph-bottom">息</span>
               <span class="orbit-glyph orbit-glyph-left">记</span>
               <div class="orbit-ring orbit-ring-inner">
-                <div class="orbit-core"><span>丁</span><strong>酉</strong></div>
+                <div class="orbit-core"><span>辰</span><strong>鉴</strong></div>
               </div>
             </div>
             <div class="orbit-caption">
@@ -43,12 +56,12 @@
               <p class="section-kicker">MONTHLY OVERVIEW</p>
               <h2 class="section-title">这个月，不急着证明自己在前进</h2>
             </div>
-            <p class="section-desc">丁酉月像一张低声运转的后台地图：表面动作不多，判断、整合与等待都在发生。</p>
+            <p class="section-desc">这张日历像一张低声运转的后台地图：表面动作不多，判断、整合与等待都在发生。</p>
           </div>
 
           <div class="overview-grid">
             <article class="paper-card overview-story">
-              <div class="card-ornament">「 丁酉月 · 总览 」</div>
+              <div class="card-ornament">「 {{ calendar.title }} · 总览 」</div>
               <p v-for="paragraph in meta.overview" :key="paragraph">{{ paragraph }}</p>
               <p class="overview-emphasis">核心节奏：{{ meta.rhythm }}</p>
             </article>
@@ -79,22 +92,29 @@
           <div class="calendar-section-heading">
             <div>
               <p class="section-kicker">DAILY NAVIGATION</p>
-              <h2 class="section-title">把每一天，放回它适合的位置</h2>
+              <h2 class="section-title">看见时机，也留下发生过的事</h2>
             </div>
-            <div class="legend" aria-label="时区颜色图例">
+            <div class="calendar-heading-side">
+              <div class="calendar-trace-summary" aria-live="polite">
+                <span>本月行动轨迹</span>
+                <strong>{{ monthRecordDays }}天 · {{ monthRecordCount }}条</strong>
+              </div>
+              <div class="legend" aria-label="时区颜色图例">
               <span><i class="legend-dot legend-dot-green"></i>推进</span>
               <span><i class="legend-dot legend-dot-yellow"></i>准备</span>
               <span><i class="legend-dot legend-dot-red"></i>休整</span>
+                <span><i class="legend-dot legend-dot-record"></i>已记录</span>
+              </div>
             </div>
           </div>
 
           <div class="calendar-layout">
-            <section class="paper-card month-board" aria-label="2026年丁酉月日历">
+            <section class="paper-card month-board" :aria-label="`${calendarLabel}日历`">
               <header class="month-board-head">
                 <div>
                   <span class="month-eyebrow">PERSONAL TIMEZONE</span>
-                  <h3>2026 / 09—10</h3>
-                  <p>甲申日 · 丁酉月末</p>
+                  <h3>{{ calendarLabel }}</h3>
+                  <p>{{ meta.dateLabel }}</p>
                 </div>
                 <button class="today-button" type="button" @click="showCurrentDate">回到当前聚焦 <span>↗</span></button>
               </header>
@@ -119,13 +139,14 @@
                     <span class="date-cell-pillar">{{ cell.dayPillar || cell.shortLabel }}</span>
                     <span class="date-cell-keyword">{{ cell.keyword || cell.shortLabel }}</span>
                     <span class="date-cell-status">{{ cell.statusLabel }}</span>
+                    <span v-if="cell.recordCount" class="date-cell-record"><i></i>{{ cell.recordCount }}条记录</span>
                     <span v-if="cell.isCurrentDay" class="today-mark">今天</span>
                   </button>
                 </template>
               </div>
 
               <button v-if="!mobileDetailOpen" class="mobile-detail-launch" type="button" @click="mobileDetailOpen = true">
-                查看 {{ selectedDay.month }}月{{ selectedDay.day }}日的时区导航 <span>↗</span>
+                查看 {{ selectedDay.month }}月{{ selectedDay.day }}日的建议与记录 <span>↗</span>
               </button>
             </section>
 
@@ -142,6 +163,13 @@
               <div class="detail-title-row">
                 <span class="detail-pillar">{{ selectedDay.dayPillar || selectedEntry.dateRange }}</span>
                 <span class="detail-phase">{{ selectedEntry.phaseLabel }}</span>
+              </div>
+              <div class="detail-context-heading">
+                <div>
+                  <span class="detail-section-kicker">TODAY'S COMPASS</span>
+                  <strong>今天适合做什么</strong>
+                </div>
+                <span>时机参考</span>
               </div>
               <div class="detail-keyword"><span>今日关键词</span><strong>{{ selectedEntry.keyword }}</strong></div>
               <p class="detail-summary">{{ selectedEntry.isPhase ? selectedEntry.summary : `这一日适合把“${selectedEntry.keyword}”放在第一位。` }}</p>
@@ -161,6 +189,69 @@
                 <span class="time-window-icon">⌁</span>
                 <div><span>换气口提醒</span><p>{{ selectedEntry.timeWindow }}</p></div>
               </div>
+
+              <section class="actual-records" aria-labelledby="actual-record-title">
+                <div class="actual-records-head">
+                  <div>
+                    <span class="detail-section-kicker">KEEP A TRACE</span>
+                    <h4 id="actual-record-title">{{ selectedDate === todayDate ? '今天实际做了什么' : '这天实际做了什么' }}</h4>
+                  </div>
+                  <span class="actual-count">{{ selectedRecords.length }} 条</span>
+                </div>
+                <p class="actual-records-intro">把建议和真实发生的事并排保存，日后才能看见自己的节奏。</p>
+
+                <div v-if="selectedRecords.length" class="actual-record-list">
+                  <article v-for="record in selectedRecords" :key="record.id" class="actual-record-item">
+                    <div class="actual-record-meta">
+                      <span class="record-kind" :class="`kind-${record.kind}`">{{ record.kind === 'decision' ? '决策' : '行动' }}</span>
+                      <span class="record-status" :class="`status-${record.status}`">{{ statusText(record.status) }}</span>
+                      <button class="record-delete" type="button" @click.stop="removeDecisionLog(record)">删除</button>
+                    </div>
+                    <p>{{ record.content }}</p>
+                    <small v-if="record.note">{{ record.note }}</small>
+                  </article>
+                </div>
+                <p v-else class="actual-record-empty">还没有记录。可以从下面的建议开始，也可以写下一件今天真实发生的事。</p>
+
+                <div v-if="selectedEntry.suitable?.length" class="quick-records">
+                  <div class="quick-records-head"><span>从今日建议记一笔</span><small>已经做过的可以直接加入</small></div>
+                  <button
+                    v-for="item in selectedEntry.suitable"
+                    :key="item"
+                    type="button"
+                    class="quick-record-button"
+                    :class="{ recorded: isQuickRecordSaved(item) }"
+                    :disabled="isQuickRecordSaved(item) || savingRecord"
+                    @click="quickRecord(item)"
+                  >
+                    <span>{{ item }}</span><b>{{ isQuickRecordSaved(item) ? '已记录' : '＋ 已做' }}</b>
+                  </button>
+                </div>
+
+                <button v-if="!showRecordForm" class="record-add-button" type="button" @click="openRecordForm">
+                  <span>＋</span> 记录一件事 / 一个决定
+                </button>
+
+                <form v-else class="record-form" @submit.prevent="saveDecisionLog">
+                  <div class="record-form-head">
+                    <span>新记录</span>
+                    <button type="button" @click="closeRecordForm">收起</button>
+                  </div>
+                  <div class="record-form-grid">
+                    <label><span>记录类型</span><select v-model="recordDraft.kind"><option value="action">行动</option><option value="decision">决策</option></select></label>
+                    <label><span>当前状态</span><select v-model="recordDraft.status"><option value="done">已完成</option><option value="doing">进行中</option><option value="skipped">跳过</option></select></label>
+                  </div>
+                  <label class="record-form-field"><span>实际发生了什么</span><textarea v-model.trim="recordDraft.content" rows="3" maxlength="240" placeholder="例如：完成了产品首页第一版文案"></textarea></label>
+                  <label class="record-form-field"><span>结果 / 备注（可选）</span><input v-model.trim="recordDraft.note" maxlength="240" placeholder="例如：比预想顺利，明天继续细化"></label>
+                  <div class="record-form-actions">
+                    <button class="secondary-button" type="button" @click="closeRecordForm">取消</button>
+                    <button class="primary-button" type="submit" :disabled="savingRecord">{{ savingRecord ? '保存中…' : '保存记录' }}</button>
+                  </div>
+                  <p v-if="recordError" class="record-error">{{ recordError }}</p>
+                </form>
+                <p v-if="recordFeedback" class="record-feedback">{{ recordFeedback }}</p>
+                <p class="record-storage-note"><i></i>{{ recordSource === 'api' ? '已同步到你的账号' : '当前暂存于本设备' }}</p>
+              </section>
 
               <button v-if="selectedDate !== todayDate" class="detail-reset" type="button" @click="showCurrentDate">回到最近可用日 <span>→</span></button>
             </aside>
@@ -198,7 +289,7 @@
         <div class="container">
           <div class="calendar-section-heading compact-heading">
             <div><p class="section-kicker">KEEP A TRACE</p><h2 class="section-title">把这个月，留下一点可回看的证据</h2></div>
-            <p class="section-desc">不求每天都高效，只记录那些让你更了解自己的时刻。</p>
+            <p class="section-desc">日期详情已经把“适合做什么”和“实际做了什么”放在一起；这里保留几种适合长期坚持的记录方式。</p>
           </div>
           <div class="record-grid">
             <article v-for="prompt in recordPrompts" :key="prompt.index" class="paper-card record-card">
@@ -224,85 +315,401 @@
 </template>
 
 <script>
+import { authState } from '../stores/auth'
 import {
-  calendarMeta,
-  cautionNotes,
-  createCalendarDays,
-  decisionNodes,
-  getDateEntry,
-  isToday,
-  phaseDefinitions,
-  recordPrompts,
-  resolveDefaultDate
+  createDecisionLog,
+  deleteDecisionLog,
+  getMyCalendars,
+  getMyDecisionLogs
+} from '../utils/businessService'
+import {
+  calendarMeta as mockCalendarMeta,
+  cautionNotes as mockCautionNotes,
+  createCalendarDays as createMockCalendarDays,
+  decisionNodes as mockDecisionNodes,
+  phaseDefinitions as mockPhaseDefinitions,
+  recordPrompts as mockRecordPrompts
 } from '../data/decisionCalendar'
+
+const weekdays = ['日', '一', '二', '三', '四', '五', '六']
+const DECISION_LOG_STORAGE_KEY = 'innerseek:decision-logs'
+
+function createRecordDraft() {
+  return {
+    kind: 'action',
+    status: 'done',
+    content: '',
+    note: ''
+  }
+}
+
+function parseDateKey(value) {
+  const [year, month, day] = value.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+function formatDateKey(date) {
+  const pad = value => String(value).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
+function isToday(dateKey) {
+  return formatDateKey(new Date()) === dateKey
+}
+
+function createMockCalendar() {
+  return {
+    id: 'demo-calendar',
+    user_id: null,
+    title: mockCalendarMeta.title,
+    start_date: mockCalendarMeta.startDate,
+    end_date: mockCalendarMeta.endDate,
+    status: 'published',
+    entries: createMockCalendarDays().map((entry, index) => ({
+      id: `demo-entry-${index + 1}`,
+      entry_date: entry.date,
+      day_pillar: entry.dayPillar || null,
+      tone: entry.tone || null,
+      status_label: entry.statusLabel || null,
+      keyword: entry.keyword || null,
+      summary: entry.summary || null,
+      suitable: entry.suitable || [],
+      unsuitable: entry.unsuitable || [],
+      time_window: entry.timeWindow || null,
+      phase_id: entry.phaseId || null,
+      phase_label: entry.phaseLabel || null,
+      is_phase: entry.isPhase || false
+    }))
+  }
+}
+
+function dateKeyFromLabel(label, year) {
+  const [, month, day] = label.match(/(\d+)月(\d+)日/) || []
+  if (!month || !day) return null
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+}
 
 export default {
   name: 'Calendar',
   data() {
-    const days = createCalendarDays()
-    const defaultDate = resolveDefaultDate()
-
     return {
-      meta: calendarMeta,
-      phases: phaseDefinitions,
-      days,
+      loading: true,
+      calendar: null,
+      calendarSource: 'api',
+      meta: {},
+      phases: [],
+      days: [],
       weekdays: ['一', '二', '三', '四', '五', '六', '日'],
-      selectedDate: defaultDate,
-      todayDate: defaultDate,
-      mobileDetailOpen: !(typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches),
-      decisionNodes,
-      recordPrompts,
-      cautionNotes
+      selectedDate: null,
+      todayDate: null,
+      mobileDetailOpen: false,
+      decisionNodes: [],
+      recordPrompts: [],
+      cautionNotes: ['', '', '日历内容由辰鉴管理员维护'],
+      decisionLogs: [],
+      recordSource: 'local',
+      showRecordForm: false,
+      recordDraft: createRecordDraft(),
+      recordError: '',
+      recordFeedback: '',
+      savingRecord: false
     }
   },
   computed: {
     selectedDay() {
-      return this.days.find(day => day.date === this.selectedDate) || this.days[0]
+      return this.days.find(day => day.date === this.selectedDate) || this.days[0] || {}
     },
     selectedEntry() {
-      return getDateEntry(this.selectedDate) || {}
+      return this.selectedDay
+    },
+    selectedRecords() {
+      return this.decisionLogs.filter(record => record.date === this.selectedDate)
+    },
+    recordCountByDate() {
+      return this.decisionLogs.reduce((counts, record) => {
+        counts[record.date] = (counts[record.date] || 0) + 1
+        return counts
+      }, {})
+    },
+    monthRecordCount() {
+      return this.decisionLogs.filter(record => this.days.some(day => day.date === record.date)).length
+    },
+    monthRecordDays() {
+      return new Set(this.decisionLogs.filter(record => this.days.some(day => day.date === record.date)).map(record => record.date)).size
+    },
+    calendarLabel() {
+      if (!this.calendar) return ''
+      const start = this.calendar.start_date || this.days[0]?.date
+      const end = this.calendar.end_date || this.days[this.days.length - 1]?.date
+      if (!start || !end) return '个人日历'
+      return `${start.slice(0, 7).replace('-', ' / ')}—${end.slice(0, 7).replace('-', ' / ')}`
     },
     calendarCells() {
-      const leading = (new Date(2026, 8, 7).getDay() + 6) % 7
+      if (!this.days.length) return []
+      const firstDate = parseDateKey(this.days[0].date)
+      const leading = (firstDate.getDay() + 6) % 7
       const trailing = (7 - ((leading + this.days.length) % 7)) % 7
       const emptyCells = Array.from({ length: leading + trailing }, (_, index) => ({
         key: `empty-${index}`,
         empty: true
       }))
-
       return [
         ...emptyCells.slice(0, leading),
-        ...this.days.map(day => ({ ...day, key: day.date, isCurrentDay: isToday(day.date) })),
+        ...this.days.map(day => ({
+          ...day,
+          key: day.date,
+          isCurrentDay: isToday(day.date),
+          recordCount: this.recordCountByDate[day.date] || 0
+        })),
         ...emptyCells.slice(leading)
       ]
     }
   },
-  mounted() {
+  async mounted() {
     window.addEventListener('keydown', this.handleEscape)
+    await this.loadCalendar()
+    await this.loadDecisionLogs()
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleEscape)
   },
   methods: {
+    async loadCalendar() {
+      try {
+        const response = await getMyCalendars()
+        const publishedCalendar = response.items?.find(item => item.entries?.length) || null
+        this.applyCalendar(publishedCalendar || createMockCalendar(), publishedCalendar ? 'api' : 'mock')
+      } catch (error) {
+        this.applyCalendar(createMockCalendar(), 'mock')
+      } finally {
+        this.loading = false
+      }
+    },
+    applyCalendar(calendar, source) {
+      this.calendar = calendar
+      this.calendarSource = source
+      this.days = (calendar.entries || []).map(entry => {
+        const entryDate = entry.entry_date || entry.date
+        if (!entryDate) return null
+        const date = parseDateKey(entryDate)
+        return {
+          ...entry,
+          date: entryDate,
+          month: date.getMonth() + 1,
+          day: date.getDate(),
+          weekday: weekdays[date.getDay()],
+          dayPillar: entry.day_pillar || entry.dayPillar || '',
+          statusLabel: entry.status_label || entry.statusLabel || '',
+          shortLabel: entry.keyword || entry.shortLabel || entry.status_label || entry.statusLabel || '查看',
+          phaseId: entry.phase_id || entry.phaseId || entry.tone || 'default',
+          phaseLabel: entry.phase_label || entry.phaseLabel || entry.status_label || entry.statusLabel || entry.tone || '',
+          timeWindow: entry.time_window || entry.timeWindow || '按你的节奏安排，给决定留出换气空间。',
+          suitable: entry.suitable || [],
+          unsuitable: entry.unsuitable || [],
+          isPhase: entry.is_phase ?? entry.isPhase ?? false
+        }
+      }).filter(Boolean)
+      const startDate = calendar.start_date || this.days[0]?.date || ''
+      const year = startDate.slice(0, 4)
+      this.meta = source === 'mock'
+        ? mockCalendarMeta
+        : {
+            title: calendar.title,
+            subtitle: 'PERSONAL TIMEZONE',
+            dateLabel: `${startDate} — ${calendar.end_date || this.days[this.days.length - 1]?.date || ''}`,
+            pillars: '',
+            rhythm: '少说，多做，多记录',
+            intro: '这是一张由辰鉴为你维护的个性化决策时机参照系。',
+            overview: []
+          }
+      this.todayDate = this.days.find(day => isToday(day.date))?.date || this.days[0]?.date || null
+      this.selectedDate = this.todayDate
+      this.decisionNodes = source === 'mock'
+        ? mockDecisionNodes.map(node => ({ ...node, dateKey: dateKeyFromLabel(node.date, year) }))
+        : this.days.map(day => ({
+            date: `${day.month}月${day.day}日`,
+            dateKey: day.date,
+            pillar: day.dayPillar || '—',
+            tone: day.tone || 'yellow',
+            type: day.keyword || day.statusLabel || '查看详情'
+          }))
+      this.phases = source === 'mock' ? mockPhaseDefinitions : this.buildPhases()
+      this.recordPrompts = source === 'mock' ? mockRecordPrompts : []
+      this.cautionNotes = source === 'mock' ? mockCautionNotes : ['', '', '日历内容由辰鉴管理员维护']
+      this.mobileDetailOpen = !(window.matchMedia('(max-width: 900px)').matches)
+    },
+    buildPhases() {
+      const grouped = []
+      for (const day of this.days) {
+        const existing = grouped.find(phase => phase.id === day.phaseId)
+        if (existing) {
+          existing.endDate = day.date
+          existing.dateRange = `${existing.startDate}—${existing.endDate}`
+        } else {
+          grouped.push({
+            id: day.phaseId,
+            label: day.phaseLabel || day.shortLabel,
+            tone: day.tone || 'yellow',
+            startDate: day.date,
+            endDate: day.date,
+            dateRange: day.date
+          })
+        }
+      }
+      return grouped
+    },
     selectDate(date) {
       this.selectedDate = date
+      this.closeRecordForm()
+      this.recordFeedback = ''
       if (window.matchMedia('(max-width: 900px)').matches) {
         this.mobileDetailOpen = true
       }
     },
     selectDecisionNode(node) {
-      const [, month, day] = node.date.match(/(\d+)月(\d+)日/) || []
-      const dateKey = `2026-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-      this.selectDate(dateKey)
+      this.selectDate(node.dateKey || this.selectedDate)
     },
     showCurrentDate() {
-      this.selectedDate = this.todayDate
+      if (this.todayDate) this.selectDate(this.todayDate)
       this.mobileDetailOpen = true
     },
-    handleEscape(event) {
-      if (event.key === 'Escape') {
-        this.mobileDetailOpen = false
+    getRecordStorageKey() {
+      const userKey = authState.user?.id || 'guest'
+      return `${DECISION_LOG_STORAGE_KEY}:${userKey}`
+    },
+    normalizeDecisionLog(log) {
+      return {
+        id: log.id ?? log.localId ?? `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        date: log.log_date || log.date,
+        kind: log.kind || log.type || 'action',
+        status: log.status || 'done',
+        content: log.content || '',
+        note: log.note || '',
+        createdAt: log.created_at || log.createdAt || new Date().toISOString()
       }
+    },
+    readLocalDecisionLogs() {
+      try {
+        const stored = window.localStorage.getItem(this.getRecordStorageKey())
+        const parsed = stored ? JSON.parse(stored) : []
+        return Array.isArray(parsed) ? parsed.map(record => this.normalizeDecisionLog(record)).filter(record => record.date && record.content) : []
+      } catch (error) {
+        return []
+      }
+    },
+    persistLocalDecisionLogs(records = this.decisionLogs) {
+      try {
+        window.localStorage.setItem(this.getRecordStorageKey(), JSON.stringify(records))
+      } catch (error) {
+        // Local storage may be unavailable in private browsing; the page can still keep the in-memory record.
+      }
+    },
+    async loadDecisionLogs() {
+      const localRecords = this.readLocalDecisionLogs()
+      try {
+        const response = await getMyDecisionLogs({
+          start_date: this.days[0]?.date,
+          end_date: this.days[this.days.length - 1]?.date
+        })
+        this.decisionLogs = (response.items || []).map(record => this.normalizeDecisionLog(record)).filter(record => record.date && record.content)
+        this.recordSource = 'api'
+      } catch (error) {
+        this.decisionLogs = localRecords
+        this.recordSource = 'local'
+      }
+    },
+    async persistDecisionLog(payload) {
+      const localRecord = this.normalizeDecisionLog({
+        ...payload,
+        date: this.selectedDate,
+        localId: `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+      })
+
+      if (this.recordSource === 'api') {
+        try {
+          const response = await createDecisionLog({
+            log_date: this.selectedDate,
+            kind: payload.kind,
+            status: payload.status,
+            content: payload.content,
+            note: payload.note || null
+          })
+          this.decisionLogs = [...this.decisionLogs, this.normalizeDecisionLog(response)]
+          return
+        } catch (error) {
+          this.recordSource = 'local'
+        }
+      }
+
+      this.decisionLogs = [...this.decisionLogs, localRecord]
+      this.persistLocalDecisionLogs()
+    },
+    async loadRecordAndGiveFeedback(payload, message) {
+      this.savingRecord = true
+      this.recordError = ''
+      try {
+        await this.persistDecisionLog(payload)
+        this.recordFeedback = message
+      } catch (error) {
+        this.recordError = '记录没有保存成功，请稍后再试。'
+      } finally {
+        this.savingRecord = false
+      }
+    },
+    openRecordForm() {
+      this.recordError = ''
+      this.recordFeedback = ''
+      this.showRecordForm = true
+    },
+    closeRecordForm() {
+      this.showRecordForm = false
+      this.recordError = ''
+    },
+    async saveDecisionLog() {
+      const content = this.recordDraft.content.trim()
+      if (!content) {
+        this.recordError = '先写下今天实际发生的事。'
+        return
+      }
+
+      await this.loadRecordAndGiveFeedback({
+        kind: this.recordDraft.kind,
+        status: this.recordDraft.status,
+        content,
+        note: this.recordDraft.note.trim()
+      }, '已把这件事留在今天。')
+
+      if (!this.recordError) {
+        this.recordDraft = createRecordDraft()
+        this.showRecordForm = false
+      }
+    },
+    isQuickRecordSaved(item) {
+      return this.selectedRecords.some(record => record.kind === 'action' && record.content === item && record.status !== 'skipped')
+    },
+    async quickRecord(item) {
+      if (this.isQuickRecordSaved(item)) return
+      await this.loadRecordAndGiveFeedback({ kind: 'action', status: 'done', content: item, note: '' }, '已把这条建议记为今天做过的事。')
+    },
+    statusText(status) {
+      return { done: '已完成', doing: '进行中', skipped: '已跳过' }[status] || '已记录'
+    },
+    async removeDecisionLog(record) {
+      if (!window.confirm('确定删除这条记录吗？')) return
+      this.recordError = ''
+      try {
+        if (this.recordSource === 'api' && typeof record.id === 'number') {
+          await deleteDecisionLog(record.id)
+        }
+        this.decisionLogs = this.decisionLogs.filter(item => item.id !== record.id)
+        if (this.recordSource === 'local') this.persistLocalDecisionLogs()
+        this.recordFeedback = '记录已移除。'
+      } catch (error) {
+        this.recordError = '删除没有成功，请稍后再试。'
+      }
+    },
+    handleEscape(event) {
+      if (event.key === 'Escape') this.mobileDetailOpen = false
     }
   }
 }
@@ -317,6 +724,29 @@ export default {
   --calendar-yellow: #bd9550;
   --calendar-red: #b45d58;
   background: linear-gradient(180deg, rgba(255, 250, 240, 0.38), rgba(234, 217, 191, 0.14));
+}
+
+.calendar-empty-state {
+  display: grid;
+  min-height: 70vh;
+  place-items: center;
+  padding: 60px 0;
+  background: linear-gradient(180deg, rgba(255, 250, 240, 0.7), rgba(234, 217, 191, 0.16));
+}
+
+.calendar-empty-state .paper-card {
+  width: min(100% - 32px, 720px);
+  padding: 42px;
+  text-align: center;
+}
+
+.calendar-empty-state h1 {
+  margin: 16px 0 12px;
+  color: var(--calendar-ink, #2e251d);
+}
+
+.calendar-empty-state p {
+  color: var(--calendar-muted, #806e5f);
 }
 
 .calendar-hero {
@@ -436,6 +866,13 @@ export default {
 .hero-chip-rhythm {
   background: rgba(111, 159, 147, 0.13);
   color: #4c7569;
+}
+
+.hero-chip-demo {
+  border-style: dashed;
+  border-color: rgba(184, 92, 80, 0.34);
+  background: rgba(255, 240, 223, 0.72);
+  color: var(--cinnabar-deep);
 }
 
 .orbit-card {

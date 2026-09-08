@@ -41,3 +41,13 @@ class UserCourseResponse(BaseModel):
 
 class MyCourseListResponse(BaseModel):
     items: List[UserCourseResponse]
+
+
+class UserCourseProgressUpdate(BaseModel):
+    completed_lessons: int = Field(..., ge=0)
+    progress_percentage: int = Field(..., ge=0, le=100)
+    last_lesson_id: Optional[int] = Field(None, ge=0)
+
+
+class UserCourseEnrollRequest(BaseModel):
+    purchase_price: Decimal = Field(default=Decimal("0.00"), ge=0)

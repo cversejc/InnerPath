@@ -16,9 +16,15 @@
     </section>
 
     <!-- 加载中 -->
-    <section v-else class="report-header">
+    <section v-else-if="loading" class="report-header">
       <div class="container">
         <h1>加载中...</h1>
+      </div>
+    </section>
+    <section v-else class="report-header">
+      <div class="container">
+        <button class="btn-back" @click="goBack">← 返回</button>
+        <h1>{{ loadError || '报告不存在或无权访问' }}</h1>
       </div>
     </section>
 
@@ -219,72 +225,52 @@
 </template>
 
 <script>
+import { getReportDetail } from '../utils/aiService.js'
+
 export default {
   name: 'ReportDetail',
   data() {
     return {
       report: null,
       foundationData: null,
-      contentWithoutFoundation: ''
+      contentWithoutFoundation: '',
+      loading: true,
+      loadError: ''
     }
   },
-  mounted() {
-    this.loadReport()
+  async mounted() {
+    await this.loadReport()
   },
   methods: {
-    loadReport() {
+    async loadReport() {
       const reportId = this.$route.query.id
-      console.log('Loading report with ID:', reportId)
-
-      const reports = JSON.parse(localStorage.getItem('userReports') || '[]')
-      console.log('All reports in localStorage:', reports)
-
-      const reportData = reports.find(r => r.id == reportId)
-      console.log('Found report data:', reportData)
-
-      if (reportData && reportData.report) {
-        // 确保数据结构正确
-        this.report = this.normalizeReportData(reportData.report)
-        console.log('Normalized report:', this.report)
-
-        // 解析命理基础数据
+      try {
+        const reportData = await getReportDetail(reportId)
+        this.report = this.normalizeReportData(reportData)
         if (this.report.aiGeneratedContent) {
           this.parseFoundationData(this.report.aiGeneratedContent)
         }
-      } else {
-        // 如果没有找到报告，显示示例报告
-        console.warn('Report not found, showing example')
-        this.report = this.getExampleReport()
+      } catch (error) {
+        this.loadError = error.response?.status === 403 ? '你没有权限查看这份报告' : '报告不存在或加载失败'
+      } finally {
+        this.loading = false
       }
     },
     normalizeReportData(report) {
       // 标准化数据结构，处理可能的字段名差异
+      const rawBasicInfo = report.basicInfo || report.basic_info || {}
       const normalized = {
-        basicInfo: report.basicInfo || report.basic_info || {
-          name: '用户',
-          reportDate: new Date().toISOString().split('T')[0]
+        basicInfo: {
+          ...rawBasicInfo,
+          name: rawBasicInfo.name || '用户',
+          reportDate: rawBasicInfo.reportDate || rawBasicInfo.report_date || new Date().toISOString().split('T')[0]
         },
         structuredSections: report.structuredSections || report.structured_sections || null,
-        energyProfile: report.energyProfile || report.energy_profile || {
-          type: '综合型',
-          coreTraits: '独特的个人特质',
-          description: '正在分析中...'
-        },
-        careerGuidance: report.careerGuidance || report.career_guidance || {
-          suitablePaths: [],
-          workStyle: '',
-          developmentSuggestions: []
-        },
-        relationshipPattern: report.relationshipPattern || report.relationship_pattern || {
-          style: '',
-          strengths: [],
-          challenges: [],
-          growthDirection: ''
-        },
-        personalGrowth: report.personalGrowth || report.personal_growth || {
-          actionPlan: []
-        },
-        summary: report.summary || '你是独特的个体，拥有无限的成长潜力。',
+        energyProfile: report.energyProfile || report.energy_profile || {},
+        careerGuidance: report.careerGuidance || report.career_guidance || {},
+        relationshipPattern: report.relationshipPattern || report.relationship_pattern || {},
+        personalGrowth: report.personalGrowth || report.personal_growth || {},
+        summary: report.summary || '',
         aiGeneratedContent: report.aiGeneratedContent || report.ai_generated_content || report.ai_raw_content || null
       }
 
@@ -424,41 +410,6 @@ export default {
         return [text[0], text[1]]
       }
       return [text, '']
-    },
-    getExampleReport() {
-      return {
-        basicInfo: {
-          name: '示例用户',
-          reportDate: new Date().toISOString().split('T')[0]
-        },
-        energyProfile: {
-          type: '生长驱动型',
-          coreTraits: '创新求变、积极进取、富有创造力',
-          description: '你的能量倾向于向外扩展和生长，喜欢探索新事物，具有强烈的成长动力。'
-        },
-        careerGuidance: {
-          suitablePaths: ['创意型工作', '产品经理', '创业者'],
-          workStyle: '你适合需要创新和开拓的工作环境',
-          developmentSuggestions: ['持续学习新技能', '拓展人际网络', '发挥创新优势']
-        },
-        relationshipPattern: {
-          style: '在关系中追求成长和新鲜感',
-          strengths: ['积极主动', '富有活力', '能带动对方成长'],
-          challenges: ['容易急躁', '缺乏耐心', '需要学习倾听'],
-          growthDirection: '学习放慢节奏，给予对方更多耐心和关注'
-        },
-        personalGrowth: {
-          actionPlan: [
-            {
-              area: '能量管理',
-              action: '每天预留30分钟独处时间，进行自我觉察',
-              timeline: '立即开始，持续21天'
-            }
-          ]
-        },
-        summary: '你是生长驱动型，具有创新求变、积极进取的特质。建议你从认识自己的能量模式开始，逐步建立适合自己的成长路径。',
-        aiGeneratedContent: null
-      }
     },
     formatMarkdown(content) {
       if (!content) return ''

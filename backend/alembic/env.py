@@ -10,10 +10,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from app.config import settings
 from app.db.base import Base
-from app.models.user import User
-from app.models.report import Report
+from app.models.user import AuditLog, AuthSession, StaffInvite, User
+from app.models.report import Report, ReportTask
 from app.models.booking import Booking
 from app.models.course import Course, UserCourse
+from app.models.calendar import CalendarEntry, UserCalendar
 
 # this is the Alembic Config object
 config = context.config

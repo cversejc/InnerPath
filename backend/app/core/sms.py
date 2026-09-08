@@ -1,10 +1,9 @@
-import random
-from typing import Optional
-from app.core.cache import cache_set, cache_get, cache_delete
+import secrets
+from app.core.cache import cache_delete, cache_get, cache_increment, cache_set
 from app.config import settings
 
 
-async def send_verification_code(phone: str) -> bool:
+async def send_verification_code(phone: str, purpose: str = "register") -> bool:
     """
     Send SMS verification code
 
@@ -12,11 +11,16 @@ async def send_verification_code(phone: str) -> bool:
     For development, we'll just store the code in Redis
     """
     # Generate 6-digit code
-    code = str(random.randint(100000, 999999))
+    code = str(secrets.randbelow(900000) + 100000)
 
     # Store in Redis with 5-minute expiration
-    cache_key = f"sms:code:{phone}"
+    cache_key = f"sms:code:{purpose}:{phone}"
+    cooldown_key = f"sms:cooldown:{purpose}:{phone}"
+    if await cache_get(cooldown_key):
+        return False
+
     await cache_set(cache_key, code, expire=300)
+    await cache_set(cooldown_key, "1", expire=60)
 
     # In production, call SMS API here
     if settings.ENVIRONMENT == "development":
@@ -32,16 +36,23 @@ async def send_verification_code(phone: str) -> bool:
     return True
 
 
-async def verify_code(phone: str, code: str) -> bool:
+async def verify_code(phone: str, code: str, purpose: str = "register") -> bool:
     """Verify SMS code"""
-    cache_key = f"sms:code:{phone}"
+    cache_key = f"sms:code:{purpose}:{phone}"
+    attempts_key = f"sms:attempts:{purpose}:{phone}"
     stored_code = await cache_get(cache_key)
+
+    if await cache_get(attempts_key) and int(await cache_get(attempts_key)) >= 5:
+        await cache_delete(cache_key)
+        return False
 
     if stored_code and stored_code == code:
         # Delete code after successful verification
         await cache_delete(cache_key)
+        await cache_delete(attempts_key)
         return True
 
+    await cache_increment(attempts_key, expire=300)
     return False
 
 

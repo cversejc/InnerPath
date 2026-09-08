@@ -26,7 +26,11 @@ class Settings(BaseSettings):
     # JWT
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 14
+    SESSION_COOKIE_NAME: str = "innerseek_refresh"
+    SESSION_COOKIE_SECURE: bool = False
+    PASSWORD_MIN_LENGTH: int = 8
 
     # DeepSeek API
     DEEPSEEK_API_KEY: str
@@ -54,6 +58,8 @@ class Settings(BaseSettings):
     RATE_LIMIT_ENABLED: bool = True
     RATE_LIMIT_SMS_PER_MINUTE: int = 5
     RATE_LIMIT_REPORT_PER_HOUR: int = 10
+    RATE_LIMIT_REGISTER_PER_HOUR: int = 10
+    RATE_LIMIT_REGISTER_PER_PHONE_PER_HOUR: int = 3
 
     # Celery
     CELERY_BROKER_URL: str
