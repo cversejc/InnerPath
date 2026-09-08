@@ -1,11 +1,10 @@
-from datetime import datetime, date, time as dt_time
+from datetime import datetime, time as dt_time
 from typing import List, Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
-from app.models.report import Report
-from app.schemas.report import ReportCreate
+from app.config import settings
+from app.models.report import Report, ReportTask
 from app.core.logging_config import get_logger
-import json
 
 logger = get_logger(__name__)
 
@@ -14,7 +13,8 @@ async def create_report(
     db: AsyncSession,
     user_id: int,
     report_data: Dict[str, Any],
-    generation_time_ms: int
+    generation_time_ms: int,
+    input_data: Optional[Dict[str, Any]] = None,
 ) -> Report:
     """Create a new report"""
     logger.info(f"创建报告 | 用户ID: {user_id} | 生成耗时: {generation_time_ms}ms")
@@ -25,22 +25,31 @@ async def create_report(
 
     logger.debug(f"出生日期: {birth_date}")
 
-    # Create report
+    birth_time = None
+    if input_data and input_data.get("birth_hour") is not None:
+        birth_time = dt_time(
+            int(input_data["birth_hour"]),
+            int(input_data.get("birth_minute") or 0),
+        )
+
     report = Report(
         user_id=user_id,
         title="辰鉴·人生说明书",
         birth_date=birth_date,
-        birth_time=None,  # TODO: parse from user data if available
+        birth_time=birth_time,
+        birth_calendar_type=(input_data or {}).get("calendar_type", "solar"),
+        birth_place=(input_data or {}).get("birth_place"),
+        input_snapshot=input_data,
         energy_profile=report_data["energy_profile"],
         career_guidance=report_data["career_guidance"],
         relationship_pattern=report_data["relationship_pattern"],
         personal_growth=report_data["personal_growth"],
         summary=report_data.get("summary"),
         ai_raw_content=report_data.get("ai_generated_content"),
-        ai_model="deepseek-chat",
+        ai_model=settings.DEEPSEEK_MODEL,
         generation_time_ms=generation_time_ms,
-        selected_topics=report_data.get("selected_topics", []),
-        additional_info=report_data.get("additional_info"),
+        selected_topics=(input_data or {}).get("selected_topics", report_data.get("selected_topics", [])),
+        additional_info=(input_data or {}).get("additional_info", report_data.get("additional_info")),
         status="completed",
         is_deleted=False
     )
@@ -52,6 +61,26 @@ async def create_report(
     logger.info(f"报告创建成功 | 报告ID: {report.id}")
 
     return report
+
+
+async def create_report_task(db: AsyncSession, task_id: str, user_id: int) -> ReportTask:
+    task = ReportTask(task_id=task_id, user_id=user_id, status="processing", progress=0)
+    db.add(task)
+    await db.commit()
+    await db.refresh(task)
+    return task
+
+
+async def get_report_task(db: AsyncSession, task_id: str, user_id: int) -> Optional[ReportTask]:
+    result = await db.execute(
+        select(ReportTask).where(ReportTask.task_id == task_id, ReportTask.user_id == user_id)
+    )
+    return result.scalar_one_or_none()
+
+
+async def get_report_task_by_id(db: AsyncSession, task_id: str) -> Optional[ReportTask]:
+    result = await db.execute(select(ReportTask).where(ReportTask.task_id == task_id))
+    return result.scalar_one_or_none()
 
 
 async def get_report_by_id(db: AsyncSession, report_id: int, user_id: Optional[int] = None) -> Optional[Report]:
@@ -117,7 +146,7 @@ def format_report_response(report: Report) -> Dict[str, Any]:
         "id": report.id,
         "title": report.title,
         "basic_info": {
-            "name": "用户",  # Name is not stored in report
+            "name": (report.input_snapshot or {}).get("name") or "用户",
             "birth_date": report.birth_date.isoformat(),
             "report_date": report.created_at.date().isoformat(),
             "generated_by": "DeepSeek AI" if report.ai_raw_content else "Basic Algorithm"

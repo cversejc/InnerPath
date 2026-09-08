@@ -11,6 +11,37 @@ from app.services.report_prompt import build_prompt
 logger = get_logger(__name__)
 
 
+def _extract_chat_content(response_data: Dict[str, Any]) -> str:
+    """Extract visible assistant content from a DeepSeek Chat Completions response."""
+    choices = response_data.get("choices") or []
+    if not choices or not isinstance(choices[0], dict):
+        raise ValueError("DeepSeek 响应缺少 choices")
+
+    choice = choices[0]
+    message = choice.get("message") or {}
+    content = message.get("content") if isinstance(message, dict) else None
+
+    if isinstance(content, str):
+        normalized_content = content.strip()
+    elif isinstance(content, list):
+        # Keep compatibility with content-part responses (for example vision models).
+        parts = []
+        for part in content:
+            if isinstance(part, str):
+                parts.append(part)
+            elif isinstance(part, dict) and isinstance(part.get("text"), str):
+                parts.append(part["text"])
+        normalized_content = "".join(parts).strip()
+    else:
+        normalized_content = ""
+
+    if not normalized_content:
+        finish_reason = choice.get("finish_reason", "unknown")
+        raise ValueError(f"DeepSeek 返回空正文，finish_reason={finish_reason}")
+
+    return normalized_content
+
+
 class MultiStepReportGenerator:
     """Multi-step AI report generation with progressive context building"""
 
@@ -254,7 +285,7 @@ class MultiStepReportGenerator:
         self, prompt: str, temperature: float = 0.7, max_tokens: int = 2000
     ) -> str:
         """Call DeepSeek API with given prompt"""
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=settings.DEEPSEEK_TIMEOUT_SECONDS) as client:
             response = await client.post(
                 self.api_url,
                 json={
@@ -266,7 +297,11 @@ class MultiStepReportGenerator:
                         }
                     ],
                     "temperature": temperature,
-                    "max_tokens": max_tokens
+                    "max_tokens": max_tokens,
+                    "stream": False,
+                    "thinking": {
+                        "type": "enabled" if settings.DEEPSEEK_THINKING else "disabled"
+                    }
                 },
                 headers={
                     "Content-Type": "application/json",
@@ -276,7 +311,7 @@ class MultiStepReportGenerator:
 
             response.raise_for_status()
             response_data = response.json()
-            return response_data["choices"][0]["message"]["content"]
+            return _extract_chat_content(response_data)
 
     def _assemble_report(
         self,
@@ -869,7 +904,7 @@ async def generate_report_single_step(user_data: Dict[str, Any]) -> Dict[str, An
     try:
         logger.info(f"调用 DeepSeek API | URL: {settings.DEEPSEEK_API_URL}")
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=settings.DEEPSEEK_TIMEOUT_SECONDS) as client:
             response = await client.post(
                 settings.DEEPSEEK_API_URL,
                 json={
@@ -901,7 +936,11 @@ async def generate_report_single_step(user_data: Dict[str, Any]) -> Dict[str, An
                         }
                     ],
                     "temperature": 0.7,
-                    "max_tokens": 4000
+                    "max_tokens": settings.DEEPSEEK_MAX_TOKENS,
+                    "stream": False,
+                    "thinking": {
+                        "type": "enabled" if settings.DEEPSEEK_THINKING else "disabled"
+                    }
                 },
                 headers={
                     "Content-Type": "application/json",
@@ -911,9 +950,14 @@ async def generate_report_single_step(user_data: Dict[str, Any]) -> Dict[str, An
 
             response.raise_for_status()
             response_data = response.json()
-            ai_content = response_data["choices"][0]["message"]["content"]
+            ai_content = _extract_chat_content(response_data)
 
-            logger.info(f"DeepSeek API 调用成功 | 响应长度: {len(ai_content)} 字符")
+            finish_reason = (response_data.get("choices") or [{}])[0].get("finish_reason")
+            logger.info(
+                f"DeepSeek API 调用成功 | 模型: {settings.DEEPSEEK_MODEL} | "
+                f"思考模式: {'enabled' if settings.DEEPSEEK_THINKING else 'disabled'} | "
+                f"结束原因: {finish_reason} | 响应长度: {len(ai_content)} 字符"
+            )
             logger.debug(f"AI 响应预览: {ai_content[:200]}...")
 
             # Parse AI response into structured format

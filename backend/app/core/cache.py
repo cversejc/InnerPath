@@ -22,7 +22,10 @@ async def close_redis():
     """Close Redis connection"""
     global redis_client
     if redis_client:
-        await redis_client.close()
+        try:
+            await redis_client.close()
+        finally:
+            redis_client = None
 
 
 async def get_redis() -> redis.Redis:

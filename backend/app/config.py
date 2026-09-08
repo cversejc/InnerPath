@@ -31,7 +31,10 @@ class Settings(BaseSettings):
     # DeepSeek API
     DEEPSEEK_API_KEY: str
     DEEPSEEK_API_URL: str = "https://api.deepseek.com/v1/chat/completions"
-    DEEPSEEK_MODEL: str = "deepseek-chat"
+    DEEPSEEK_MODEL: str = "deepseek-v4-flash"
+    DEEPSEEK_THINKING: bool = False
+    DEEPSEEK_TIMEOUT_SECONDS: float = 120.0
+    DEEPSEEK_MAX_TOKENS: int = 8000
 
     # SMS Service
     SMS_PROVIDER: str = "aliyun"
