@@ -14,7 +14,7 @@ from app.models.user import AuditLog, AuthSession, StaffInvite, User
 from app.models.report import Report, ReportTask
 from app.models.booking import Booking
 from app.models.course import Course, UserCourse
-from app.models.calendar import CalendarEntry, UserCalendar
+from app.models.calendar import CalendarEntry, DecisionLog, UserCalendar
 
 # this is the Alembic Config object
 config = context.config

@@ -100,9 +100,9 @@
                 <strong>{{ monthRecordDays }}天 · {{ monthRecordCount }}条</strong>
               </div>
               <div class="legend" aria-label="时区颜色图例">
-              <span><i class="legend-dot legend-dot-green"></i>推进</span>
-              <span><i class="legend-dot legend-dot-yellow"></i>准备</span>
-              <span><i class="legend-dot legend-dot-red"></i>休整</span>
+                <span><i class="legend-dot legend-dot-green"></i>推进</span>
+                <span><i class="legend-dot legend-dot-yellow"></i>准备</span>
+                <span><i class="legend-dot legend-dot-red"></i>休整</span>
                 <span><i class="legend-dot legend-dot-record"></i>已记录</span>
               </div>
             </div>
@@ -131,7 +131,7 @@
                     type="button"
                     class="date-cell"
                     :class="[`tone-${cell.tone}`, { selected: selectedDate === cell.date, 'is-today': cell.isCurrentDay }]"
-                    :aria-label="`${cell.month}月${cell.day}日，${cell.statusLabel}`"
+                    :aria-label="`${cell.month}月${cell.day}日，${cell.statusLabel}${cell.recordCount ? `，已有${cell.recordCount}条记录` : ''}`"
                     :aria-selected="selectedDate === cell.date"
                     @click="selectDate(cell.date)"
                   >
@@ -164,31 +164,51 @@
                 <span class="detail-pillar">{{ selectedDay.dayPillar || selectedEntry.dateRange }}</span>
                 <span class="detail-phase">{{ selectedEntry.phaseLabel }}</span>
               </div>
-              <div class="detail-context-heading">
-                <div>
-                  <span class="detail-section-kicker">TODAY'S COMPASS</span>
-                  <strong>今天适合做什么</strong>
+              <div class="day-signal-card">
+                <div class="day-signal-top">
+                  <div class="day-signal-copy">
+                    <span class="detail-section-kicker">ACTION CLIMATE</span>
+                    <strong>{{ actionClimate.label }}</strong>
+                    <p>{{ actionClimate.caption }}</p>
+                  </div>
+                  <div class="keyword-stamp" aria-label="今日关键词">
+                    <strong>{{ selectedEntry.keyword }}</strong>
+                    <span>关键词</span>
+                  </div>
                 </div>
-                <span>时机参考</span>
+                <div class="climate-meter" :aria-label="`行动气候：${actionClimate.label}`">
+                  <div class="climate-meter-labels"><span>休整</span><span>观察</span><span>推进</span></div>
+                  <div class="climate-meter-track">
+                    <span class="climate-meter-fill" :class="`tone-${selectedEntry.tone}`" :style="{ width: `${actionClimate.position}%` }"></span>
+                    <i :class="`tone-${selectedEntry.tone}`" :style="{ left: `${actionClimate.position}%` }"></i>
+                  </div>
+                </div>
               </div>
-              <div class="detail-keyword"><span>今日关键词</span><strong>{{ selectedEntry.keyword }}</strong></div>
               <p class="detail-summary">{{ selectedEntry.isPhase ? selectedEntry.summary : `这一日适合把“${selectedEntry.keyword}”放在第一位。` }}</p>
 
-              <div class="detail-columns">
-                <div class="detail-list detail-list-good">
-                  <span class="detail-list-label">适合做</span>
-                  <ul><li v-for="item in selectedEntry.suitable" :key="item">{{ item }}</li></ul>
+              <div class="rhythm-strip">
+                <div class="rhythm-strip-head"><span>今日节奏</span><small>把力气放在合适的时段</small></div>
+                <div class="rhythm-track" aria-label="今日节奏分段">
+                  <div v-for="segment in rhythmSegments" :key="segment.period" class="rhythm-segment" :class="`rhythm-${segment.tone}`">
+                    <span>{{ segment.period }}</span><strong>{{ segment.label }}</strong>
+                  </div>
                 </div>
-                <div class="detail-list detail-list-bad">
-                  <span class="detail-list-label">先不要做</span>
-                  <ul><li v-for="item in selectedEntry.unsuitable" :key="item">{{ item }}</li></ul>
-                </div>
+                <p class="rhythm-note">{{ selectedEntry.timeWindow }}</p>
               </div>
 
-              <div class="time-window">
-                <span class="time-window-icon">⌁</span>
-                <div><span>换气口提醒</span><p>{{ selectedEntry.timeWindow }}</p></div>
+              <div class="guidance-grid">
+                <div class="guidance-card guidance-good">
+                  <div class="guidance-card-head"><span>适合做</span><b>{{ selectedEntry.suitable.length }}</b></div>
+                  <ul><li v-if="!selectedEntry.suitable.length" class="guidance-empty">暂无明确建议</li><li v-for="item in visibleSuitable" :key="item">{{ item }}</li></ul>
+                </div>
+                <div class="guidance-card guidance-bad">
+                  <div class="guidance-card-head"><span>先不要做</span><b>{{ selectedEntry.unsuitable.length }}</b></div>
+                  <ul><li v-if="!selectedEntry.unsuitable.length" class="guidance-empty">暂无特别避开事项</li><li v-for="item in visibleUnsuitable" :key="item">{{ item }}</li></ul>
+                </div>
               </div>
+              <button v-if="hiddenGuidanceCount" class="guidance-toggle" type="button" @click="showFullGuidance = !showFullGuidance">
+                {{ showFullGuidance ? '收起详细建议' : `展开其余 ${hiddenGuidanceCount} 条建议` }} <span>{{ showFullGuidance ? '↑' : '↓' }}</span>
+              </button>
 
               <section class="actual-records" aria-labelledby="actual-record-title">
                 <div class="actual-records-head">
@@ -409,6 +429,7 @@ export default {
       decisionLogs: [],
       recordSource: 'local',
       showRecordForm: false,
+      showFullGuidance: false,
       recordDraft: createRecordDraft(),
       recordError: '',
       recordFeedback: '',
@@ -421,6 +442,40 @@ export default {
     },
     selectedEntry() {
       return this.selectedDay
+    },
+    actionClimate() {
+      const climateByTone = {
+        green: { label: '推进窗口', caption: '适合把已经想清楚的事做成。', position: 84 },
+        'green-yellow': { label: '先推进，再收束', caption: '上午打开行动，后半天留一点余地。', position: 72 },
+        'yellow-green': { label: '先准备，再行动', caption: '先把信息理顺，下午再迈出下一步。', position: 58 },
+        yellow: { label: '观察与准备', caption: '今天更适合整理判断，而不是急着拍板。', position: 45 },
+        'red-yellow': { label: '缓冲后再判断', caption: '先降低消耗，等思路重新变得清楚。', position: 29 },
+        red: { label: '先收气', caption: '今天更适合减少消耗，为下一次行动留力。', position: 16 },
+        rest: { label: '先收气', caption: '今天更适合减少消耗，为下一次行动留力。', position: 16 }
+      }
+      return climateByTone[this.selectedEntry.tone] || climateByTone.yellow
+    },
+    visibleSuitable() {
+      return this.showFullGuidance ? this.selectedEntry.suitable : this.selectedEntry.suitable.slice(0, 2)
+    },
+    visibleUnsuitable() {
+      return this.showFullGuidance ? this.selectedEntry.unsuitable : this.selectedEntry.unsuitable.slice(0, 1)
+    },
+    hiddenGuidanceCount() {
+      if (this.showFullGuidance) return 0
+      return Math.max(0, this.selectedEntry.suitable.length - 2) + Math.max(0, this.selectedEntry.unsuitable.length - 1)
+    },
+    rhythmSegments() {
+      const rhythmByTone = {
+        green: [['上午', '聚焦', 'green'], ['下午', '推进', 'green'], ['晚上', '收束', 'yellow']],
+        'green-yellow': [['上午', '表达', 'green'], ['下午', '推进', 'green'], ['晚上', '收束', 'yellow']],
+        'yellow-green': [['上午', '观察', 'yellow'], ['下午', '启动', 'green'], ['晚上', '整理', 'yellow']],
+        yellow: [['上午', '观察', 'yellow'], ['下午', '准备', 'yellow'], ['晚上', '轻推', 'green']],
+        'red-yellow': [['上午', '缓冲', 'red'], ['下午', '整理', 'yellow'], ['晚上', '收气', 'red']],
+        red: [['上午', '收气', 'red'], ['下午', '整理', 'yellow'], ['晚上', '休息', 'red']],
+        rest: [['上午', '收气', 'red'], ['下午', '整理', 'yellow'], ['晚上', '休息', 'red']]
+      }
+      return (rhythmByTone[this.selectedEntry.tone] || rhythmByTone.yellow).map(([period, label, tone]) => ({ period, label, tone }))
     },
     selectedRecords() {
       return this.decisionLogs.filter(record => record.date === this.selectedDate)
@@ -562,6 +617,7 @@ export default {
       this.selectedDate = date
       this.closeRecordForm()
       this.recordFeedback = ''
+      this.showFullGuidance = false
       if (window.matchMedia('(max-width: 900px)').matches) {
         this.mobileDetailOpen = true
       }
@@ -664,6 +720,7 @@ export default {
     closeRecordForm() {
       this.showRecordForm = false
       this.recordError = ''
+      this.recordDraft = createRecordDraft()
     },
     async saveDecisionLog() {
       const content = this.recordDraft.content.trim()
@@ -698,11 +755,11 @@ export default {
       if (!window.confirm('确定删除这条记录吗？')) return
       this.recordError = ''
       try {
-        if (this.recordSource === 'api' && typeof record.id === 'number') {
+        if (typeof record.id === 'number') {
           await deleteDecisionLog(record.id)
         }
         this.decisionLogs = this.decisionLogs.filter(item => item.id !== record.id)
-        if (this.recordSource === 'local') this.persistLocalDecisionLogs()
+        if (this.recordSource === 'local' || typeof record.id !== 'number') this.persistLocalDecisionLogs()
         this.recordFeedback = '记录已移除。'
       } catch (error) {
         this.recordError = '删除没有成功，请稍后再试。'
@@ -1094,6 +1151,9 @@ export default {
 .phase-progress-rest { background: linear-gradient(90deg, #d1ad5e, #b45d58); }
 .phase-progress-labels { margin-top: 8px; color: var(--calendar-muted); font-size: 10px; }
 
+.calendar-heading-side { display: grid; justify-items: end; gap: 12px; }
+.calendar-trace-summary { display: flex; align-items: baseline; gap: 9px; color: var(--calendar-muted); font-size: 12px; }
+.calendar-trace-summary strong { color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 12px; letter-spacing: 0.04em; }
 .legend { display: flex; flex-wrap: wrap; justify-content: end; gap: 13px; color: var(--calendar-muted); font-size: 12px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--calendar-muted); }
@@ -1101,6 +1161,7 @@ export default {
 .legend-dot-yellow { background: var(--calendar-yellow); }
 .legend-dot-red { background: var(--calendar-red); }
 .legend-dot-yellow-green { background: linear-gradient(90deg, var(--calendar-yellow), var(--calendar-green)); }
+.legend-dot-record { border: 2px solid var(--cinnabar); background: transparent; box-shadow: 0 0 0 2px rgba(184, 92, 80, 0.1); }
 
 .calendar-layout {
   display: grid;
@@ -1207,6 +1268,8 @@ export default {
 .date-cell-pillar { position: relative; z-index: 1; margin-top: 9px; color: currentColor; font-size: 12px; font-weight: 900; letter-spacing: 0.12em; }
 .date-cell-keyword { position: relative; z-index: 1; margin-top: auto; color: var(--calendar-ink); font-size: 12px; font-weight: 800; }
 .date-cell-status { position: relative; z-index: 1; max-width: 100%; margin-top: 5px; overflow: hidden; color: var(--calendar-muted); font-size: 9px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.date-cell-record { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 8px; font-weight: 900; }
+.date-cell-record i { display: inline-block; width: 6px; height: 6px; border: 1px solid var(--cinnabar); border-radius: 50%; background: rgba(184, 92, 80, 0.22); }
 .today-mark { position: absolute; right: 9px; bottom: 9px; z-index: 2; color: var(--cinnabar-deep); font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 900; }
 .date-cell.is-today { outline: 2px solid rgba(184, 92, 80, 0.42); outline-offset: -4px; }
 
@@ -1251,24 +1314,102 @@ export default {
 .detail-pillar { color: var(--cinnabar-deep); font-size: 15px; font-weight: 900; letter-spacing: 0.12em; }
 .detail-phase { color: var(--calendar-muted); font-size: 11px; }
 
-.detail-keyword { display: flex; align-items: end; gap: 11px; margin-top: 21px; }
-.detail-keyword span { color: var(--calendar-muted); font-size: 11px; }
-.detail-keyword strong { color: var(--calendar-ink); font-size: 35px; line-height: 0.95; }
-.detail-summary { position: relative; z-index: 1; margin-top: 16px; color: var(--calendar-muted); font-size: 14px; line-height: 1.8; }
+.detail-section-kicker { color: var(--gold-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 9px; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase; }
+.day-signal-card { position: relative; z-index: 1; margin-top: 22px; padding: 16px; overflow: hidden; border: 1px solid rgba(184, 92, 80, 0.2); border-radius: 16px; background: linear-gradient(145deg, rgba(255, 252, 245, 0.92), rgba(239, 231, 209, 0.72)); }
+.day-signal-card::after { content: '日'; position: absolute; right: -11px; bottom: -31px; color: rgba(184, 92, 80, 0.09); font-size: 104px; font-weight: 900; line-height: 1; }
+.day-signal-top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.day-signal-copy { min-width: 0; }
+.day-signal-copy strong { display: block; margin-top: 7px; color: var(--calendar-ink); font-size: 23px; line-height: 1.1; }
+.day-signal-copy p { max-width: 220px; margin-top: 6px; color: var(--calendar-muted); font-size: 11px; line-height: 1.6; }
+.keyword-stamp { display: grid; flex: 0 0 66px; place-items: center; width: 66px; aspect-ratio: 1; border: 1px solid rgba(184, 92, 80, 0.43); border-radius: 50%; background: rgba(255, 250, 240, 0.72); box-shadow: 0 8px 18px -14px rgba(158, 63, 53, 0.9); transform: rotate(5deg); }
+.keyword-stamp strong { color: var(--cinnabar-deep); font-size: 20px; line-height: 1; }
+.keyword-stamp span { margin-top: -1px; color: var(--calendar-muted); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 8px; font-weight: 800; letter-spacing: 0.12em; }
+.climate-meter { position: relative; z-index: 1; margin-top: 18px; }
+.climate-meter-labels { display: flex; justify-content: space-between; color: var(--calendar-muted); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 8px; font-weight: 800; }
+.climate-meter-track { position: relative; height: 8px; margin-top: 8px; overflow: visible; border-radius: 999px; background: linear-gradient(90deg, rgba(180, 93, 88, 0.78), rgba(209, 173, 94, 0.78) 48%, rgba(111, 159, 147, 0.82)); }
+.climate-meter-fill { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: rgba(255, 252, 245, 0.54); }
+.climate-meter-track > i { position: absolute; top: 50%; width: 17px; height: 17px; border: 3px solid #fffaf0; border-radius: 50%; box-shadow: 0 3px 10px -5px rgba(47, 36, 27, 0.9); transform: translate(-50%, -50%); }
+.climate-meter-track > i.tone-green, .climate-meter-track > i.tone-green-yellow { background: var(--calendar-green); }
+.climate-meter-track > i.tone-yellow, .climate-meter-track > i.tone-yellow-green { background: var(--calendar-yellow); }
+.climate-meter-track > i.tone-red, .climate-meter-track > i.tone-red-yellow, .climate-meter-track > i.tone-rest { background: var(--calendar-red); }
+.detail-summary { position: relative; z-index: 1; margin-top: 14px; color: var(--calendar-muted); font-size: 13px; line-height: 1.75; }
 
-.detail-columns { position: relative; z-index: 1; display: grid; gap: 15px; margin-top: 23px; }
-.detail-list { padding-top: 13px; border-top: 1px solid rgba(139, 90, 20, 0.14); }
-.detail-list-label { display: inline-block; color: var(--calendar-ink); font-size: 12px; font-weight: 900; }
-.detail-list-good .detail-list-label::before { content: '＋'; margin-right: 5px; color: var(--calendar-green); }
-.detail-list-bad .detail-list-label::before { content: '—'; margin-right: 5px; color: var(--calendar-red); }
-.detail-list ul { display: grid; gap: 7px; margin-top: 9px; }
-.detail-list li { position: relative; padding-left: 13px; color: var(--calendar-muted); font-size: 12px; line-height: 1.6; }
-.detail-list li::before { content: '·'; position: absolute; left: 1px; color: var(--cinnabar); font-weight: 900; }
+.rhythm-strip { position: relative; z-index: 1; margin-top: 17px; padding: 13px; border: 1px solid rgba(111, 159, 147, 0.23); border-radius: 13px; background: rgba(111, 159, 147, 0.08); }
+.rhythm-strip-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: #4f806f; font-size: 11px; font-weight: 900; }
+.rhythm-strip-head small { color: #5b7065; font-size: 9px; font-weight: 500; }
+.rhythm-track { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 10px; }
+.rhythm-segment { display: grid; min-height: 45px; align-content: space-between; padding: 7px 8px; border-radius: 9px; }
+.rhythm-segment span { color: var(--calendar-muted); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 8px; font-weight: 800; }
+.rhythm-segment strong { color: var(--calendar-ink); font-size: 11px; }
+.rhythm-green { background: rgba(111, 159, 147, 0.2); }
+.rhythm-yellow { background: rgba(217, 186, 98, 0.22); }
+.rhythm-red { background: rgba(180, 93, 88, 0.15); }
+.rhythm-note { margin-top: 9px; color: #5b7065; font-size: 10px; line-height: 1.6; }
 
-.time-window { position: relative; z-index: 1; display: grid; grid-template-columns: 27px 1fr; gap: 8px; margin-top: 20px; padding: 13px 14px; border: 1px solid rgba(111, 159, 147, 0.24); border-radius: 13px; background: rgba(111, 159, 147, 0.1); }
-.time-window-icon { color: #4f806f; font-size: 22px; line-height: 1; }
-.time-window span:not(.time-window-icon) { color: #4f806f; font-size: 10px; font-weight: 900; letter-spacing: 0.12em; }
-.time-window p { margin-top: 5px; color: #5b7065; font-size: 11px; line-height: 1.65; }
+.guidance-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 8px; margin-top: 15px; }
+.guidance-card { min-width: 0; padding: 12px; border: 1px solid transparent; border-radius: 12px; }
+.guidance-good { border-color: rgba(111, 159, 147, 0.24); background: rgba(111, 159, 147, 0.09); }
+.guidance-bad { border-color: rgba(180, 93, 88, 0.18); background: rgba(180, 93, 88, 0.06); }
+.guidance-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--calendar-ink); font-size: 11px; font-weight: 900; }
+.guidance-card-head b { display: inline-grid; width: 19px; height: 19px; place-items: center; border-radius: 50%; color: var(--calendar-muted); background: rgba(255, 252, 245, 0.7); font-family: 'Manrope', sans-serif; font-size: 9px; }
+.guidance-good .guidance-card-head span::before { content: '＋'; margin-right: 4px; color: var(--calendar-green); }
+.guidance-bad .guidance-card-head span::before { content: '—'; margin-right: 4px; color: var(--calendar-red); }
+.guidance-card ul { display: grid; gap: 6px; margin-top: 9px; }
+.guidance-card li { position: relative; padding-left: 11px; color: var(--calendar-muted); font-size: 10px; line-height: 1.55; }
+.guidance-card li::before { content: '·'; position: absolute; left: 1px; color: var(--cinnabar); font-weight: 900; }
+.guidance-card li.guidance-empty { padding-left: 0; color: rgba(128, 110, 95, 0.72); }
+.guidance-card li.guidance-empty::before { display: none; }
+.guidance-toggle { position: relative; z-index: 1; display: block; width: 100%; margin-top: 8px; color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 10px; font-weight: 900; text-align: center; }
+.guidance-toggle span { margin-left: 3px; font-size: 13px; }
+
+.actual-records { position: relative; z-index: 1; margin-top: 24px; padding-top: 19px; border-top: 1px solid rgba(184, 92, 80, 0.18); }
+.actual-records-head { display: flex; align-items: end; justify-content: space-between; gap: 10px; }
+.actual-records-head > div { display: grid; gap: 6px; }
+.actual-records-head h4 { color: var(--calendar-ink); font-size: 18px; }
+.actual-count { display: inline-flex; min-height: 23px; align-items: center; border: 1px solid rgba(184, 92, 80, 0.2); border-radius: 999px; padding: 0 9px; color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 10px; font-weight: 900; }
+.actual-records-intro { margin-top: 9px; color: var(--calendar-muted); font-size: 11px; line-height: 1.65; }
+.actual-record-list { display: grid; gap: 8px; margin-top: 13px; }
+.actual-record-item { padding: 11px 12px; border: 1px solid rgba(139, 90, 20, 0.12); border-radius: 12px; background: rgba(255, 252, 245, 0.58); }
+.actual-record-meta { display: flex; align-items: center; gap: 6px; }
+.record-kind, .record-status { display: inline-flex; min-height: 19px; align-items: center; border-radius: 999px; padding: 0 7px; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 9px; font-weight: 900; }
+.record-kind { color: var(--cinnabar-deep); background: rgba(184, 92, 80, 0.1); }
+.record-kind.kind-decision { color: var(--gold-deep); background: rgba(217, 186, 98, 0.18); }
+.record-status { color: #4f806f; background: rgba(111, 159, 147, 0.13); }
+.record-status.status-doing { color: var(--gold-deep); background: rgba(217, 186, 98, 0.18); }
+.record-status.status-skipped { color: var(--calendar-red); background: rgba(180, 93, 88, 0.1); }
+.record-delete { margin-left: auto; color: var(--calendar-muted); font-size: 10px; opacity: 0; transition: color 0.2s ease, opacity 0.2s ease; }
+.actual-record-item:hover .record-delete, .record-delete:focus-visible { opacity: 1; }
+.record-delete:hover { color: var(--cinnabar-deep); }
+.actual-record-item > p { margin-top: 8px; color: var(--calendar-ink); font-size: 12px; line-height: 1.6; }
+.actual-record-item > small { display: block; margin-top: 4px; color: var(--calendar-muted); font-size: 10px; line-height: 1.55; }
+.actual-record-empty { margin-top: 13px; padding: 12px; border: 1px dashed rgba(139, 90, 20, 0.17); border-radius: 12px; color: var(--calendar-muted); font-size: 11px; line-height: 1.65; }
+.quick-records { display: grid; gap: 7px; margin-top: 15px; }
+.quick-records-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--calendar-ink); font-size: 11px; font-weight: 900; }
+.quick-records-head small { color: var(--calendar-muted); font-size: 9px; font-weight: 500; }
+.quick-record-button { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 8px 10px; border: 1px solid rgba(111, 159, 147, 0.18); border-radius: 10px; background: rgba(111, 159, 147, 0.07); color: var(--calendar-muted); font-size: 11px; line-height: 1.4; text-align: left; transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease; }
+.quick-record-button:hover:not(:disabled) { transform: translateX(2px); border-color: rgba(111, 159, 147, 0.42); background: rgba(111, 159, 147, 0.13); }
+.quick-record-button b { flex: 0 0 auto; color: #4f806f; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 9px; font-weight: 900; white-space: nowrap; }
+.quick-record-button.recorded { border-color: rgba(111, 159, 147, 0.3); background: rgba(111, 159, 147, 0.12); }
+.quick-record-button:disabled { cursor: default; opacity: 0.82; }
+.record-add-button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 41px; margin-top: 13px; border: 1px dashed rgba(184, 92, 80, 0.36); border-radius: 11px; background: rgba(184, 92, 80, 0.055); color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 11px; font-weight: 900; transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+.record-add-button span { margin-right: 5px; font-size: 16px; font-weight: 500; }
+.record-add-button:hover { transform: translateY(-1px); border-color: rgba(184, 92, 80, 0.58); background: rgba(184, 92, 80, 0.1); }
+.record-form { display: grid; gap: 11px; margin-top: 13px; padding: 14px; border: 1px solid rgba(184, 92, 80, 0.2); border-radius: 13px; background: rgba(255, 250, 240, 0.66); }
+.record-form-head { display: flex; align-items: center; justify-content: space-between; color: var(--calendar-ink); font-size: 12px; font-weight: 900; }
+.record-form-head button { color: var(--calendar-muted); font-size: 10px; }
+.record-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.record-form label { display: grid; gap: 5px; min-width: 0; }
+.record-form label > span { color: var(--calendar-muted); font-size: 10px; }
+.record-form select, .record-form input, .record-form textarea { width: 100%; border: 1px solid rgba(139, 90, 20, 0.14); border-radius: 9px; padding: 8px 9px; background: rgba(255, 252, 245, 0.8); color: var(--calendar-ink); font-size: 11px; }
+.record-form textarea { resize: vertical; line-height: 1.6; }
+.record-form select:focus, .record-form input:focus, .record-form textarea:focus { border-color: rgba(184, 92, 80, 0.5); outline: 0; box-shadow: 0 0 0 3px rgba(184, 92, 80, 0.1); }
+.record-form-actions { display: flex; justify-content: end; gap: 7px; }
+.record-form-actions .primary-button, .record-form-actions .secondary-button { min-height: 36px; padding: 0 13px; font-size: 10px; }
+.record-form-actions .primary-button:disabled { cursor: wait; opacity: 0.65; }
+.record-error { color: var(--cinnabar-deep); font-size: 10px; line-height: 1.5; }
+.record-feedback { margin-top: 9px; color: #4f806f; font-size: 10px; line-height: 1.5; }
+.record-storage-note { display: flex; align-items: center; gap: 5px; margin-top: 13px; color: var(--calendar-muted); font-size: 9px; }
+.record-storage-note i { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--calendar-green); }
 .detail-reset { position: relative; z-index: 1; margin-top: 15px; }
 
 .phase-rail { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
@@ -1329,6 +1470,7 @@ export default {
   .detail-close { position: absolute; z-index: 2; top: 12px; right: 15px; display: block; width: 30px; height: 30px; border: 1px solid rgba(139, 90, 20, 0.14); border-radius: 50%; color: var(--calendar-muted); font-size: 24px; line-height: 26px; }
   .detail-scrim { position: fixed; z-index: 1250; inset: 0; display: block; background: rgba(47, 36, 27, 0.28); backdrop-filter: blur(3px); }
   .mobile-detail-launch { display: block; }
+  .record-delete { opacity: 1; }
   .phase-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -1343,6 +1485,8 @@ export default {
   .orbit-ring-outer { width: 230px; }
   .calendar-section-heading { display: grid; gap: 15px; margin-bottom: 22px; }
   .calendar-section-heading .section-desc { text-align: left; }
+  .calendar-heading-side { justify-items: start; gap: 9px; }
+  .calendar-trace-summary { font-size: 11px; }
   .legend { justify-content: start; }
   .month-board { padding: 13px; }
   .month-board-head { margin-bottom: 18px; }
@@ -1359,6 +1503,7 @@ export default {
   .date-cell-keyword { font-size: 10px; }
   .date-cell-status { display: none; }
   .today-mark { right: 5px; bottom: 5px; font-size: 7px; }
+  .date-cell-record { font-size: 7px; }
   .phase-rail { gap: 7px; }
   .phase-card { gap: 6px; padding: 10px 8px; }
   .phase-card-index { font-size: 9px; }
@@ -1376,6 +1521,10 @@ export default {
   .caution-mark { display: none; }
   .day-detail { left: 8px; right: 8px; bottom: 8px; padding: 21px 18px; }
   .detail-header h3 { font-size: 26px; }
-  .detail-keyword strong { font-size: 31px; }
+  .keyword-stamp { flex-basis: 58px; width: 58px; }
+  .keyword-stamp strong { font-size: 17px; }
+  .actual-records-head h4 { font-size: 16px; }
+  .quick-records-head { align-items: start; flex-direction: column; gap: 3px; }
+  .record-form-grid { grid-template-columns: 1fr; }
 }
 </style>

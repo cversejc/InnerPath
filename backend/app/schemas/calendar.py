@@ -23,6 +23,27 @@ class CalendarEntryResponse(CalendarEntryInput):
         from_attributes = True
 
 
+class DecisionLogInput(BaseModel):
+    log_date: date
+    kind: str = Field("action", pattern="^(action|decision)$")
+    status: str = Field("done", pattern="^(done|doing|skipped)$")
+    content: str = Field(..., min_length=1, max_length=240)
+    note: Optional[str] = Field(None, max_length=240)
+
+
+class DecisionLogResponse(DecisionLogInput):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class DecisionLogListResponse(BaseModel):
+    items: List[DecisionLogResponse]
+
+
 class CalendarCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=150)
     start_date: Optional[date] = None

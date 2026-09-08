@@ -33,3 +33,17 @@ class CalendarEntry(Base, TimestampMixin):
     unsuitable = Column(JSONB, nullable=False, default=list)
     time_window = Column(Text, nullable=True)
     admin_note = Column(Text, nullable=True)
+
+
+class DecisionLog(Base, TimestampMixin):
+    """A user's real-world action or decision captured against a calendar date."""
+
+    __tablename__ = "decision_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    log_date = Column(Date, nullable=False, index=True)
+    kind = Column(String(20), nullable=False, default="action")
+    status = Column(String(20), nullable=False, default="done")
+    content = Column(Text, nullable=False)
+    note = Column(Text, nullable=True)

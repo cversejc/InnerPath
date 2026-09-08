@@ -1,14 +1,14 @@
 import json
-from datetime import datetime
+from datetime import date, datetime
 from typing import Iterable, Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.booking import Booking
-from app.models.calendar import CalendarEntry, UserCalendar
+from app.models.calendar import CalendarEntry, DecisionLog, UserCalendar
 from app.models.user import AuditLog
-from app.schemas.calendar import CalendarCreate, CalendarEntryInput, CalendarUpdate
+from app.schemas.calendar import CalendarCreate, CalendarEntryInput, CalendarUpdate, DecisionLogInput
 
 
 def _validate_entries(entries: Iterable[CalendarEntryInput]) -> None:
@@ -149,6 +149,53 @@ async def get_user_calendars(
     result = await db.execute(query)
     calendars = result.scalars().all()
     return [await serialize_calendar(db, calendar) for calendar in calendars]
+
+
+async def get_user_decision_logs(
+    db: AsyncSession,
+    user_id: int,
+    start_date: date | None = None,
+    end_date: date | None = None,
+) -> list[DecisionLog]:
+    query = select(DecisionLog).where(DecisionLog.user_id == user_id)
+    if start_date is not None:
+        query = query.where(DecisionLog.log_date >= start_date)
+    if end_date is not None:
+        query = query.where(DecisionLog.log_date <= end_date)
+    query = query.order_by(DecisionLog.log_date, DecisionLog.created_at)
+    result = await db.execute(query)
+    return list(result.scalars().all())
+
+
+async def create_user_decision_log(
+    db: AsyncSession,
+    user_id: int,
+    data: DecisionLogInput,
+) -> DecisionLog:
+    log = DecisionLog(user_id=user_id, **data.model_dump())
+    db.add(log)
+    await db.commit()
+    await db.refresh(log)
+    return log
+
+
+async def delete_user_decision_log(
+    db: AsyncSession,
+    user_id: int,
+    log_id: int,
+) -> bool:
+    result = await db.execute(
+        select(DecisionLog).where(
+            DecisionLog.id == log_id,
+            DecisionLog.user_id == user_id,
+        )
+    )
+    log = result.scalar_one_or_none()
+    if log is None:
+        return False
+    await db.delete(log)
+    await db.commit()
+    return True
 
 
 async def has_staff_assignment(db: AsyncSession, staff_id: int, user_id: int) -> bool:
