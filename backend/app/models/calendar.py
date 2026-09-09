@@ -5,9 +5,12 @@ from app.db.base import Base, TimestampMixin
 
 class UserCalendar(Base, TimestampMixin):
     __tablename__ = "user_calendars"
+    __table_args__ = (UniqueConstraint("series_id", "version_number", name="uq_user_calendar_series_version"),)
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    series_id = Column(String(36), nullable=False, index=True)
+    version_number = Column(Integer, nullable=False, default=1)
     title = Column(String(150), nullable=False)
     start_date = Column(Date, nullable=True)
     end_date = Column(Date, nullable=True)

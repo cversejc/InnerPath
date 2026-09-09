@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
@@ -13,6 +13,7 @@ from app.schemas.user import UserResponse
 from app.services.booking_service import get_all_bookings, update_booking
 from app.services.calendar_service import get_user_calendars, has_staff_assignment
 from app.services.report_service import format_report_response, get_report_by_id, get_user_reports
+from app.services.audit_service import record_audit
 
 router = APIRouter()
 
@@ -99,20 +100,34 @@ async def get_staff_bookings(
 @router.patch("/bookings/{booking_id}", response_model=BookingResponse)
 async def update_staff_booking(
     booking_id: int,
-    request: BookingAdminUpdate,
+    data: BookingAdminUpdate,
+    request: Request,
     current_user: User = Depends(require_roles("consultant")),
     db: AsyncSession = Depends(get_db),
 ):
-    request_data = request.model_dump(exclude_unset=True, exclude={"consultant_id"})
+    request_data = data.model_dump(exclude_unset=True, exclude={"consultant_id"})
     try:
         booking = await update_booking(
             db,
             booking_id,
             BookingAdminUpdate(**request_data),
             consultant_scope=current_user.id,
+            commit=False,
         )
     except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid booking update")
     if not booking:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Assigned booking not found")
+    await record_audit(
+        db,
+        current_user.id,
+        "booking.staff.update",
+        "booking",
+        str(booking.id),
+        target_user_id=booking.user_id,
+        details={"changed_fields": list(request_data.keys())},
+        request=request,
+    )
+    await db.commit()
+    await db.refresh(booking)
     return booking

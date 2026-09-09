@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import get_current_active_user
@@ -16,6 +16,7 @@ from app.services.course_service import (
     get_user_courses,
     update_user_course_progress,
 )
+from app.services.audit_service import record_audit
 
 router = APIRouter()
 
@@ -82,13 +83,27 @@ async def enroll_course(
 async def update_course_progress(
     course_id: int,
     request: UserCourseProgressUpdate,
+    http_request: Request,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
     try:
         user_course = await update_user_course_progress(db, current_user.id, course_id, request)
-    except ValueError:
+    except ValueError as error:
+        if str(error) == "completed_lessons_exceed_total":
+            raise HTTPException(status_code=400, detail="Completed lessons exceed course total")
         raise HTTPException(status_code=404, detail="Course enrollment not found")
+    await record_audit(
+        db,
+        current_user.id,
+        "course.progress.update",
+        "user_course",
+        f"{current_user.id}:{course_id}",
+        target_user_id=current_user.id,
+        details={"progress_percentage": request.progress_percentage, "completed_lessons": request.completed_lessons},
+        request=http_request,
+    )
+    await db.commit()
     return {
         "course_id": user_course.course_id,
         "progress": user_course.progress_percentage,

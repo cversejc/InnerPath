@@ -1,7 +1,7 @@
 import json
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,6 +28,7 @@ from app.services.report_service import (
     get_report_by_id,
     get_user_reports,
 )
+from app.services.audit_service import record_audit
 from app.tasks.report_tasks import generate_report_task
 
 router = APIRouter()
@@ -53,16 +54,27 @@ def format_report_list(reports):
 @router.post("", response_model=ReportTaskResponse, status_code=status.HTTP_202_ACCEPTED)
 async def create_report(
     report_data: ReportCreate,
+    request: Request,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Create a report generation task for the authenticated user."""
     task_id = str(uuid4())
 
-    await create_report_task(db, task_id, current_user.id)
-
     task_input = report_data.model_dump()
     task_input["name"] = task_input.get("name") or current_user.name
+    await create_report_task(db, task_id, current_user.id, input_snapshot=task_input)
+    await record_audit(
+        db,
+        current_user.id,
+        "report.task.create",
+        "report_task",
+        task_id,
+        target_user_id=current_user.id,
+        details={"selected_topics": task_input.get("selected_topics", [])},
+        request=request,
+    )
+    await db.commit()
 
     await cache_set(
         f"report:task:{task_id}",
@@ -209,6 +221,7 @@ async def get_report(
 @router.delete("/{report_id}")
 async def delete_report_endpoint(
     report_id: int,
+    request: Request,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -220,5 +233,16 @@ async def delete_report_endpoint(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Report not found",
         )
+
+    await record_audit(
+        db,
+        current_user.id,
+        "report.delete",
+        "report",
+        str(report_id),
+        target_user_id=current_user.id,
+        request=request,
+    )
+    await db.commit()
 
     return {"success": True, "message": "Report deleted successfully"}

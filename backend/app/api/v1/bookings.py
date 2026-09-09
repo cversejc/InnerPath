@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import get_current_active_user
@@ -16,6 +16,7 @@ from app.services.booking_service import (
     get_user_bookings,
     cancel_booking
 )
+from app.services.audit_service import record_audit
 
 router = APIRouter()
 
@@ -23,11 +24,23 @@ router = APIRouter()
 @router.post("", response_model=BookingResponse, status_code=status.HTTP_201_CREATED)
 async def create_booking_endpoint(
     booking_data: BookingCreate,
+    request: Request,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new booking"""
     booking = await create_booking(db, current_user.id, booking_data)
+    await record_audit(
+        db,
+        current_user.id,
+        "booking.create",
+        "booking",
+        str(booking.id),
+        target_user_id=current_user.id,
+        details={"service_type": booking.service_type},
+        request=request,
+    )
+    await db.commit()
     return booking
 
 
@@ -64,6 +77,7 @@ async def get_booking(
 async def cancel_booking_endpoint(
     booking_id: int,
     cancel_request: BookingCancelRequest,
+    request: Request,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -80,5 +94,17 @@ async def cancel_booking_endpoint(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Booking not found or already cancelled"
         )
+
+    await record_audit(
+        db,
+        current_user.id,
+        "booking.cancel",
+        "booking",
+        str(booking_id),
+        target_user_id=current_user.id,
+        details={"reason_provided": bool(cancel_request.reason)},
+        request=request,
+    )
+    await db.commit()
 
     return BookingCancelResponse(success=True, message="预约已取消")

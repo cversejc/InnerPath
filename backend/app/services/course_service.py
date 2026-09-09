@@ -86,6 +86,11 @@ async def update_user_course_progress(
     course_id: int,
     data: UserCourseProgressUpdate,
 ) -> UserCourse:
+    course = await db.get(Course, course_id)
+    if not course:
+        raise ValueError("course_not_found")
+    if data.completed_lessons > course.total_lessons:
+        raise ValueError("completed_lessons_exceed_total")
     result = await db.execute(
         select(UserCourse).where(UserCourse.user_id == user_id, UserCourse.course_id == course_id)
     )

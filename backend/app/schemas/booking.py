@@ -57,3 +57,4 @@ class BookingAdminUpdate(BaseModel):
     consultant_id: Optional[int] = None
     meeting_url: Optional[str] = Field(None, max_length=255)
     meeting_notes: Optional[str] = None
+    cancellation_reason: Optional[str] = Field(None, max_length=500)

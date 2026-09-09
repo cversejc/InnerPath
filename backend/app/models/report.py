@@ -51,3 +51,6 @@ class ReportTask(Base, TimestampMixin):
     status = Column(String(20), nullable=False, default="processing", index=True)
     progress = Column(Integer, nullable=False, default=0)
     error = Column(Text, nullable=True)
+    input_snapshot = Column(JSONB, nullable=True)
+    retry_count = Column(Integer, nullable=False, default=0)
+    retry_of_task_id = Column(String(64), ForeignKey("report_tasks.task_id", ondelete="SET NULL"), nullable=True, index=True)

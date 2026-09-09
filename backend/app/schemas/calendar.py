@@ -62,6 +62,9 @@ class CalendarUpdate(BaseModel):
 class CalendarResponse(BaseModel):
     id: int
     user_id: int
+    series_id: str
+    version_number: int
+    is_current: bool = False
     title: str
     start_date: Optional[date]
     end_date: Optional[date]
@@ -75,6 +78,8 @@ class CalendarResponse(BaseModel):
 class CalendarImportRequest(BaseModel):
     user_id: int
     title: str = Field(..., min_length=1, max_length=150)
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
     entries: List[CalendarEntryInput] = Field(..., min_length=1)
 
 

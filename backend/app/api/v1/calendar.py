@@ -1,6 +1,6 @@
 from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
@@ -46,19 +46,21 @@ async def get_my_decision_logs(
 @router.post("/decision-logs", response_model=DecisionLogResponse, status_code=status.HTTP_201_CREATED)
 async def create_my_decision_log(
     data: DecisionLogInput,
+    request: Request,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    return await create_user_decision_log(db, current_user.id, data)
+    return await create_user_decision_log(db, current_user.id, data, request=request)
 
 
 @router.delete("/decision-logs/{log_id}")
 async def delete_my_decision_log(
     log_id: int,
+    request: Request,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    deleted = await delete_user_decision_log(db, current_user.id, log_id)
+    deleted = await delete_user_decision_log(db, current_user.id, log_id, request=request)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Decision log not found")
     return {"ok": True}

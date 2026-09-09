@@ -12,6 +12,7 @@ from app.models.report import ReportTask
 from app.models.user import User  # noqa: F401
 from app.services.ai_service import generate_report_with_ai
 from app.services.report_service import create_report
+from app.services.audit_service import record_audit
 from app.tasks.celery_app import celery_app
 
 logger = get_logger(__name__)
@@ -82,6 +83,17 @@ async def _run_generate_report_task(
 
         report_id = await save_report()
         await update_task_state(task_id, "completed", 100, report_id=report_id)
+        async with AsyncSessionLocal() as db:
+            await record_audit(
+                db,
+                None,
+                "report.task.completed",
+                "report_task",
+                task_id,
+                target_user_id=user_id,
+                details={"report_id": report_id, "generation_time_ms": generation_time_ms},
+            )
+            await db.commit()
         await cache_set(
             f"report:task:{task_id}",
             {
@@ -118,6 +130,20 @@ async def _run_generate_report_task(
             )
         except Exception:
             logger.exception("报告任务失败缓存写入失败 | task_id=%s", task_id)
+        try:
+            async with AsyncSessionLocal() as db:
+                await record_audit(
+                    db,
+                    None,
+                    "report.task.failed",
+                    "report_task",
+                    task_id,
+                    target_user_id=user_id,
+                    details={"error_type": type(error).__name__},
+                )
+                await db.commit()
+        except Exception:
+            logger.exception("报告任务失败审计写入失败 | task_id=%s", task_id)
         raise
     finally:
         # AsyncEngine and redis-py async clients retain loop-bound resources.

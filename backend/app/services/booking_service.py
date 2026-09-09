@@ -23,6 +23,13 @@ SERVICE_TYPES = {
     }
 }
 
+BOOKING_STATUS_TRANSITIONS = {
+    "pending": {"pending", "confirmed", "cancelled"},
+    "confirmed": {"confirmed", "completed", "cancelled"},
+    "completed": {"completed"},
+    "cancelled": {"cancelled"},
+}
+
 
 async def create_booking(
     db: AsyncSession,
@@ -121,6 +128,7 @@ async def update_booking(
     booking_id: int,
     booking_update: BookingAdminUpdate,
     consultant_scope: Optional[int] = None,
+    commit: bool = True,
 ) -> Optional[Booking]:
     query = select(Booking).where(Booking.id == booking_id)
     if consultant_scope is not None:
@@ -131,6 +139,9 @@ async def update_booking(
         return None
 
     update_data = booking_update.model_dump(exclude_unset=True)
+    next_status = update_data.get("status", booking.status)
+    if next_status not in BOOKING_STATUS_TRANSITIONS.get(booking.status, {booking.status}):
+        raise ValueError("invalid_status_transition")
     if "consultant_id" in update_data and update_data["consultant_id"] is not None:
         consultant_result = await db.execute(
             select(User).where(User.id == update_data["consultant_id"], User.role == "consultant", User.is_active == True)
@@ -145,6 +156,7 @@ async def update_booking(
     if "consultant_id" in update_data and update_data["consultant_id"] is None:
         booking.consultant_name = None
 
-    await db.commit()
-    await db.refresh(booking)
+    if commit:
+        await db.commit()
+        await db.refresh(booking)
     return booking

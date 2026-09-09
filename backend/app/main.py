@@ -7,6 +7,7 @@ from app.core.cache import init_redis, close_redis
 from app.core.logging_config import setup_logging, get_logger
 from app.api.v1 import admin, auth, bookings, calendar, courses, reports, staff, users
 import time
+from uuid import uuid4
 
 # 初始化日志系统
 setup_logging(
@@ -55,7 +56,9 @@ app.add_middleware(
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     """记录所有 HTTP 请求"""
-    request_id = str(time.time())
+    supplied_request_id = (request.headers.get("X-Request-ID") or "").strip()
+    request_id = supplied_request_id if 0 < len(supplied_request_id) <= 64 else str(uuid4())
+    request.state.request_id = request_id
     start_time = time.time()
 
     # 记录请求
@@ -75,6 +78,7 @@ async def log_requests(request: Request, call_next):
             f"状态: {response.status_code} | 耗时: {elapsed:.2f}ms | ID: {request_id}"
         )
 
+        response.headers["X-Request-ID"] = request_id
         return response
     except Exception as e:
         elapsed = (time.time() - start_time) * 1000

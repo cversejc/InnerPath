@@ -134,12 +134,14 @@ async def rotate_auth_session(db: AsyncSession, raw_token: str) -> tuple[User, s
     return user, new_token
 
 
-async def revoke_auth_session(db: AsyncSession, raw_token: str) -> None:
+async def revoke_auth_session(db: AsyncSession, raw_token: str) -> Optional[int]:
     result = await db.execute(select(AuthSession).where(AuthSession.token_hash == hash_refresh_token(raw_token)))
     session = result.scalar_one_or_none()
     if session and not session.revoked_at:
         session.revoked_at = datetime.utcnow()
         await db.commit()
+        return session.user_id
+    return None
 
 
 async def create_staff_invite(db: AsyncSession, phone: str, role: str, invited_by: int) -> tuple[StaffInvite, str]:

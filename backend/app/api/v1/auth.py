@@ -22,6 +22,7 @@ from app.services.auth_service import (
     revoke_auth_session,
     rotate_auth_session,
 )
+from app.services.audit_service import record_audit
 
 router = APIRouter()
 
@@ -101,7 +102,18 @@ async def register(
                 detail="Registration temporarily limited",
             )
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Registration failed")
-    return await issue_token_response(db, response, http_request, user)
+    token_response = await issue_token_response(db, response, http_request, user)
+    await record_audit(
+        db,
+        user.id,
+        "auth.register",
+        "user",
+        str(user.id),
+        target_user_id=user.id,
+        request=http_request,
+    )
+    await db.commit()
+    return token_response
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -113,12 +125,52 @@ async def login(
 ):
     user = await authenticate_with_password(db, request.phone, request.password)
     if not user:
+        await record_audit(
+            db,
+            None,
+            "auth.login.failure",
+            "auth",
+            details={"reason": "invalid_credentials"},
+            request=http_request,
+        )
+        await db.commit()
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid phone or password")
     if not user.password_hash:
+        await record_audit(
+            db,
+            None,
+            "auth.login.failure",
+            "auth",
+            target_user_id=user.id,
+            details={"reason": "password_setup_required"},
+            request=http_request,
+        )
+        await db.commit()
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Password setup required")
     if not user.is_active:
+        await record_audit(
+            db,
+            None,
+            "auth.login.failure",
+            "auth",
+            target_user_id=user.id,
+            details={"reason": "inactive_user"},
+            request=http_request,
+        )
+        await db.commit()
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is inactive")
-    return await issue_token_response(db, response, http_request, user)
+    token_response = await issue_token_response(db, response, http_request, user)
+    await record_audit(
+        db,
+        user.id,
+        "auth.login.success",
+        "user",
+        str(user.id),
+        target_user_id=user.id,
+        request=http_request,
+    )
+    await db.commit()
+    return token_response
 
 
 @router.post("/refresh", response_model=RefreshTokenResponse)
@@ -154,7 +206,10 @@ async def logout(
 ):
     raw_token = request.cookies.get(settings.SESSION_COOKIE_NAME)
     if raw_token:
-        await revoke_auth_session(db, raw_token)
+        user_id = await revoke_auth_session(db, raw_token)
+        if user_id:
+            await record_audit(db, user_id, "auth.logout", "user", str(user_id), target_user_id=user_id, request=request)
+            await db.commit()
     clear_refresh_cookie(response)
     return {"success": True, "message": "Logged out successfully"}
 
@@ -178,4 +233,15 @@ async def accept_invite(
         if str(error) == "phone_already_registered":
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Phone already registered")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid staff invite")
-    return await issue_token_response(db, response, http_request, user)
+    token_response = await issue_token_response(db, response, http_request, user)
+    await record_audit(
+        db,
+        user.id,
+        "staff.invite.accept",
+        "user",
+        str(user.id),
+        target_user_id=user.id,
+        request=http_request,
+    )
+    await db.commit()
+    return token_response

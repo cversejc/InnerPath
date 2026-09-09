@@ -39,6 +39,8 @@ class Settings(BaseSettings):
     DEEPSEEK_THINKING: bool = False
     DEEPSEEK_TIMEOUT_SECONDS: float = 120.0
     DEEPSEEK_MAX_TOKENS: int = 8000
+    REPORT_MAX_RETRIES: int = 2
+    ADMIN_EXPORT_MAX_ROWS: int = 10000
 
     # SMS Service
     SMS_PROVIDER: str = "aliyun"
