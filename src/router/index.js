@@ -12,6 +12,7 @@ import ReportDetail from '../views/ReportDetail.vue'
 import Services from '../views/Services.vue'
 import StaffConsole from '../views/StaffConsole.vue'
 import UserCenter from '../views/UserCenter.vue'
+import { isLaunchFeatureEnabled } from '../config/launchScope'
 
 const routes = [
   { path: '/', redirect: '/pages/home/home' },
@@ -20,10 +21,10 @@ const routes = [
   { path: '/auth/forgot-password', name: 'ForgotPassword', component: Auth, meta: { public: true } },
   { path: '/auth/invite', name: 'StaffInvite', component: Auth, meta: { public: true } },
   { path: '/pages/home/home', name: 'Home', component: Home, meta: { requiresAuth: true } },
-  { path: '/pages/services/services', name: 'Services', component: Services, meta: { requiresAuth: true } },
+  { path: '/pages/services/services', name: 'Services', component: Services, meta: { requiresAuth: true, hiddenFeature: 'services' } },
   { path: '/pages/assessment/assessment', name: 'Assessment', component: Assessment, meta: { requiresAuth: true } },
-  { path: '/pages/booking/booking', name: 'Booking', component: Booking, meta: { requiresAuth: true } },
-  { path: '/pages/course/course', name: 'Course', component: Course, meta: { requiresAuth: true } },
+  { path: '/pages/booking/booking', name: 'Booking', component: Booking, meta: { requiresAuth: true, hiddenFeature: 'booking' } },
+  { path: '/pages/course/course', name: 'Course', component: Course, meta: { requiresAuth: true, hiddenFeature: 'courses' } },
   { path: '/pages/user/user', name: 'UserCenter', component: UserCenter, meta: { requiresAuth: true } },
   { path: '/pages/report/detail', name: 'ReportDetail', component: ReportDetail, meta: { requiresAuth: true } },
   { path: '/pages/calendar/calendar', name: 'Calendar', component: Calendar, meta: { requiresAuth: true } },
@@ -47,6 +48,9 @@ router.beforeEach(async to => {
       return user.role === 'admin' ? '/admin' : user.role === 'consultant' ? '/staff' : '/pages/home/home'
     }
     return true
+  }
+  if (to.meta.hiddenFeature && !isLaunchFeatureEnabled(to.meta.hiddenFeature)) {
+    return '/pages/home/home'
   }
   if (to.meta.requiresAuth && !user) {
     return {

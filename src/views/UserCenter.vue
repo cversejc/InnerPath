@@ -18,7 +18,7 @@
     <!-- 主内容区 -->
     <section class="user-content">
       <div class="container">
-        <p v-if="loading" class="dashboard-message">正在加载你的账户数据…</p>
+        <p v-if="loading" class="dashboard-message">正在打开你的个人空间…</p>
         <p v-if="message" class="dashboard-message">{{ message }}</p>
         <div class="content-layout">
           <!-- 侧边栏 -->
@@ -69,71 +69,17 @@
               </div>
             </div>
 
-            <!-- 我的预约 -->
-            <div v-if="activeTab === 'bookings'" class="content-section">
-              <h3 class="section-title">我的预约</h3>
-              <div v-if="bookings.length === 0" class="empty-state">
-                <div class="empty-icon">📅</div>
-                <p>暂无预约</p>
-                <button class="btn-action" @click="goToBooking">预约行动端</button>
-              </div>
-              <div v-else class="bookings-list">
-                <div v-for="booking in bookings" :key="booking.id" class="booking-card">
-                  <div class="booking-status" :class="booking.status">
-                    {{ getStatusText(booking.status) }}
-                  </div>
-                  <div class="booking-info">
-                    <h4>{{ booking.service }}</h4>
-                    <div class="booking-detail">
-                      <span class="detail-icon">📅</span>
-                      <span>{{ booking.date }}</span>
-                    </div>
-                    <div class="booking-detail">
-                      <span class="detail-icon">⏰</span>
-                      <span>{{ booking.time }}</span>
-                    </div>
-                    <div class="booking-detail" v-if="booking.consultant">
-                      <span class="detail-icon">👤</span>
-                      <span>咨询师：{{ booking.consultant }}</span>
-                    </div>
-                  </div>
-                  <div class="booking-actions">
-                    <button v-if="booking.status === 'confirmed'" class="btn-join">进入咨询</button>
-                    <button v-if="booking.status === 'pending'" class="btn-cancel" @click="cancelUserBooking(booking)">取消预约</button>
-                    <button v-if="booking.status === 'completed'" class="btn-feedback">评价</button>
-                  </div>
+            <!-- 我的决策日历 -->
+            <div v-if="activeTab === 'calendar'" class="content-section">
+              <h3 class="section-title">我的决策日历</h3>
+              <div class="calendar-access-card">
+                <div class="calendar-access-mark" aria-hidden="true">辰</div>
+                <div>
+                  <span class="calendar-access-kicker">PERSONAL TIMEZONE</span>
+                  <h4>把报告里的洞察带回每天</h4>
+                  <p>查看当前阶段的行动节奏，记录真实发生过的事，让选择逐渐有迹可循。</p>
                 </div>
-              </div>
-            </div>
-
-            <!-- 我的课程 -->
-            <div v-if="activeTab === 'courses'" class="content-section">
-              <h3 class="section-title">我的课程</h3>
-              <div v-if="courses.length === 0" class="empty-state">
-                <div class="empty-icon">📚</div>
-                <p>暂无课程</p>
-                <button class="btn-action" @click="goToCourse">浏览课程</button>
-              </div>
-              <div v-else class="courses-list">
-                <div v-for="course in courses" :key="course.id" class="course-card">
-                  <div class="course-cover">
-                    <div class="course-progress-ring">
-                      <span class="progress-text">{{ course.progress }}%</span>
-                    </div>
-                  </div>
-                  <div class="course-info">
-                    <h4>{{ course.title }}</h4>
-                    <div class="course-stats">
-                      <span>已学习 {{ course.completed }}/{{ course.total }} 课时</span>
-                    </div>
-                    <div class="progress-bar">
-                      <div class="progress-fill" :style="{ width: course.progress + '%' }"></div>
-                    </div>
-                  </div>
-                  <div class="course-actions">
-                    <button class="btn-continue">继续学习</button>
-                  </div>
-                </div>
+                <button class="btn-action" @click="goToCalendar">打开决策日历</button>
               </div>
             </div>
 
@@ -192,7 +138,6 @@
 
 <script>
 import { changePassword, getCurrentUser, updateUserProfile } from '../utils/authService'
-import { cancelBooking, getBookings, getMyCourses } from '../utils/businessService'
 import { getUserReports } from '../utils/aiService'
 
 export default {
@@ -206,13 +151,10 @@ export default {
       message: '',
       tabs: [
         { id: 'reports', icon: '📊', label: '我的报告' },
-        { id: 'bookings', icon: '📅', label: '我的预约' },
-        { id: 'courses', icon: '📚', label: '我的课程' },
+        { id: 'calendar', icon: '🗓️', label: '决策日历' },
         { id: 'settings', icon: '⚙️', label: '账户设置' }
       ],
       reports: [],
-      bookings: [],
-      courses: [],
       settings: {
         name: '',
         gender: '',
@@ -233,11 +175,9 @@ export default {
     async loadDashboard() {
       this.loading = true
       try {
-        const [user, reportResponse, bookingResponse, courseResponse] = await Promise.all([
+        const [user, reportResponse] = await Promise.all([
           getCurrentUser(),
-          getUserReports(),
-          getBookings(),
-          getMyCourses()
+          getUserReports()
         ])
         this.userName = user.name
         this.userType = user.role === 'admin' ? '管理员' : user.role === 'consultant' ? '咨询师' : '成长探索者'
@@ -257,47 +197,17 @@ export default {
           energyType: report.energy_type || '综合型',
           coreTraits: report.core_traits || '—'
         }))
-        this.bookings = (bookingResponse.items || []).map(booking => ({
-          ...booking,
-          service: booking.service_name,
-          date: booking.confirmed_date || '待确认',
-          time: booking.confirmed_time || booking.preferred_time,
-          consultant: booking.consultant_name
-        }))
-        this.courses = (courseResponse.items || []).map(course => ({
-          id: course.course_id,
-          title: course.title,
-          progress: course.progress,
-          completed: course.completed_lessons,
-          total: course.total_lessons
-        }))
       } catch (error) {
-        this.message = error.response?.data?.detail || '用户数据加载失败，请刷新重试'
+        this.message = error.response?.data?.detail || '暂时无法打开你的个人空间，请稍后再试'
       } finally {
         this.loading = false
       }
     },
-    async cancelUserBooking(booking) {
-      if (!window.confirm('确定取消这条预约吗？')) return
-      try {
-        await cancelBooking(booking.id)
-        booking.status = 'cancelled'
-        this.message = '预约已取消'
-      } catch (error) {
-        this.message = error.response?.data?.detail || '取消预约失败'
-      }
-    },
-    getStatusText(status) {
-      return { pending: '待确认', confirmed: '已确认', completed: '已完成', cancelled: '已取消' }[status] || status
-    },
     goToAssessment() {
       this.$router.push('/pages/assessment/assessment')
     },
-    goToBooking() {
-      this.$router.push('/pages/booking/booking')
-    },
-    goToCourse() {
-      this.$router.push('/pages/course/course')
+    goToCalendar() {
+      this.$router.push('/pages/calendar/calendar')
     },
     viewReport(reportId) {
       this.$router.push(`/pages/report/detail?id=${reportId}`)
@@ -624,202 +534,49 @@ export default {
   color: #d4524f;
 }
 
-/* 预约列表 */
-.bookings-list {
+/* 决策日历入口 */
+.calendar-access-card {
   display: grid;
-  gap: 20px;
-}
-
-.booking-card {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 25px;
-  position: relative;
-  transition: all 0.3s;
-}
-
-.booking-card:hover {
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-}
-
-.booking-status {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.booking-status.pending {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.booking-status.confirmed {
-  background: #d1ecf1;
-  color: #0c5460;
-}
-
-.booking-status.completed {
-  background: #d4edda;
-  color: #155724;
-}
-
-.booking-info h4 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #2d3436;
-  margin-bottom: 15px;
-}
-
-.booking-detail {
-  display: flex;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
+  gap: 22px;
+  border: 1px solid rgba(184, 92, 80, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fffaf0 0%, #fff0df 100%);
+  padding: 28px;
 }
 
-.detail-icon {
-  font-size: 16px;
-}
-
-.booking-actions {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.btn-join,
-.btn-cancel,
-.btn-feedback {
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
-  transition: all 0.3s;
-}
-
-.btn-join {
-  color: #fff;
-  background: #27ae60;
-}
-
-.btn-join:hover {
-  background: #229954;
-}
-
-.btn-cancel {
-  color: #666;
-  background: #fff;
-  border: 2px solid #e0e0e0;
-}
-
-.btn-cancel:hover {
-  border-color: #e74c3c;
-  color: #e74c3c;
-}
-
-.btn-feedback {
-  color: #fff;
-  background: #d4524f;
-}
-
-.btn-feedback:hover {
-  background: #c0392b;
-}
-
-/* 课程列表 */
-.courses-list {
+.calendar-access-mark {
   display: grid;
-  gap: 20px;
-}
-
-.course-card {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 25px;
-  display: grid;
-  grid-template-columns: 100px 1fr auto;
-  gap: 20px;
-  align-items: center;
-  transition: all 0.3s;
-}
-
-.course-card:hover {
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-}
-
-.course-cover {
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.course-progress-ring {
-  width: 70px;
-  height: 70px;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border: 1px solid rgba(139, 90, 20, 0.2);
   border-radius: 50%;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 4px solid #d4524f;
+  color: var(--cinnabar-deep);
+  font-size: 28px;
+  font-weight: 900;
 }
 
-.progress-text {
-  font-size: 18px;
-  font-weight: 700;
-  color: #d4524f;
+.calendar-access-kicker {
+  color: var(--gold-deep);
+  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
 }
 
-.course-info h4 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #2d3436;
-  margin-bottom: 10px;
+.calendar-access-card h4 {
+  margin-top: 7px;
+  color: var(--ink);
+  font-size: 21px;
 }
 
-.course-stats {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 10px;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: #d4524f;
-  transition: width 0.3s;
-}
-
-.btn-continue {
-  padding: 10px 24px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  background: #d4524f;
-  border-radius: 8px;
-  transition: all 0.3s;
-  white-space: nowrap;
-}
-
-.btn-continue:hover {
-  background: #c0392b;
+.calendar-access-card p {
+  max-width: 520px;
+  margin-top: 8px;
+  color: var(--ink-soft);
+  line-height: 1.7;
 }
 
 /* 设置表单 */
@@ -971,13 +728,14 @@ export default {
     padding: 25px 20px;
   }
 
-  .course-card {
-    grid-template-columns: 1fr;
-    text-align: center;
+  .calendar-access-card {
+    grid-template-columns: auto 1fr;
   }
 
-  .course-cover {
-    margin: 0 auto;
+  .calendar-access-card .btn-action {
+    grid-column: 1 / -1;
+    width: 100%;
   }
+
 }
 </style>

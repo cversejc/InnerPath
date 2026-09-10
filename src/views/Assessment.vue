@@ -236,20 +236,20 @@
         <div v-if="currentStep === 3" class="step-content form-panel">
           <div v-if="isGenerating" class="generating">
             <div class="loading-compass" aria-hidden="true"></div>
-            <h2>正在整理你的专属说明书</h2>
-            <p>系统正在把先天属性、当下时序和现实议题放到同一张地图上。</p>
+            <h2>正在为你生成专属报告</h2>
+            <p>你的个人特质、当下处境与关注的议题，正在汇成一张更清晰的自我地图。</p>
             <div class="generating-steps">
-              <div class="gen-step" :class="{ active: genStep >= 1 }">定位先天坐标</div>
-              <div class="gen-step" :class="{ active: genStep >= 2 }">翻译性格密码</div>
-              <div class="gen-step" :class="{ active: genStep >= 3 }">照见重复模式</div>
-              <div class="gen-step" :class="{ active: genStep >= 4 }">整理下一步方向</div>
+              <div class="gen-step" :class="{ active: genStep >= 1 }">认识你的起点</div>
+              <div class="gen-step" :class="{ active: genStep >= 2 }">看见你的特质</div>
+              <div class="gen-step" :class="{ active: genStep >= 3 }">找到重复模式</div>
+              <div class="gen-step" :class="{ active: genStep >= 4 }">获得下一步提示</div>
             </div>
           </div>
 
           <div v-else class="result-success">
             <span class="seal-badge">已生成</span>
             <h2>你的人生说明书已经完成</h2>
-            <p>说明书已保存到你的辰鉴账户。先读懂自己，再决定是否需要行动端的陪伴。</p>
+            <p>这份报告已经属于你。先读懂自己，再把洞察放进每天的决策节奏。</p>
 
             <div class="result-preview paper-card">
               <div>
@@ -268,8 +268,7 @@
 
             <div class="button-row">
               <button class="primary-button" @click="viewFullReport">查看报告</button>
-              <button class="secondary-button" @click="goToBooking">预约咨询</button>
-              <button class="secondary-button" @click="goToCourse">查看课程</button>
+              <button class="secondary-button" @click="goToCalendar">打开决策日历</button>
             </div>
           </div>
         </div>
@@ -446,11 +445,8 @@ export default {
         this.$router.push(`/pages/report/detail?id=${this.currentReportId}`)
       }
     },
-    goToBooking() {
-      this.$router.push('/pages/booking/booking')
-    },
-    goToCourse() {
-      this.$router.push('/pages/course/course')
+    goToCalendar() {
+      this.$router.push('/pages/calendar/calendar')
     }
   }
 }

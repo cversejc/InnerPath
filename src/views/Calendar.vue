@@ -3,14 +3,14 @@
     <BrandNav />
 
     <main v-if="loading" class="calendar-empty-state">
-      <div class="container"><h1>正在加载你的个性化日历…</h1></div>
+      <div class="container"><h1>正在为你打开决策日历…</h1></div>
     </main>
 
     <main v-else-if="!calendar || !days.length" class="calendar-empty-state">
       <div class="container paper-card">
         <span class="seal-badge">PERSONAL TIMEZONE</span>
-        <h1>等待管理员维护你的日历</h1>
-        <p>你的个性化决策日历发布后，会在这里显示。</p>
+        <h1>你的决策日历还在准备中</h1>
+        <p>完成个人报告后，你会在这里看到适合你的阶段节奏与每日提示。</p>
       </div>
     </main>
 
@@ -26,7 +26,7 @@
               <span class="hero-chip hero-chip-date">{{ meta.dateLabel }}</span>
               <span v-if="meta.pillars" class="hero-chip">{{ meta.pillars }}</span>
               <span class="hero-chip hero-chip-rhythm">{{ meta.rhythm }}</span>
-              <span v-if="calendarSource === 'mock'" class="hero-chip hero-chip-demo">示例数据 · 发布后自动替换</span>
+              <span v-if="calendarSource === 'mock'" class="hero-chip hero-chip-demo">参考节奏</span>
             </div>
           </div>
 
@@ -56,7 +56,7 @@
               <p class="section-kicker">MONTHLY OVERVIEW</p>
               <h2 class="section-title">这个月，不急着证明自己在前进</h2>
             </div>
-            <p class="section-desc">这张日历像一张低声运转的后台地图：表面动作不多，判断、整合与等待都在发生。</p>
+            <p class="section-desc">这张日历不是催你每天做更多，而是帮你分辨什么时候适合推进，什么时候适合停下来整理。</p>
           </div>
 
           <div class="overview-grid">
@@ -70,9 +70,9 @@
               <article class="paper-card focus-card">
                 <span class="mini-label">本月只做三件事</span>
                 <ol>
-                  <li><span>01</span>把辰鉴的产品框架落实到纸面或可交付文档。</li>
-                  <li><span>02</span>积累至少3—5个真实的决策日志。</li>
-                  <li><span>03</span>与导师的邮件沟通闭环，等待回复即可。</li>
+                  <li><span>01</span>把眼下最重要的事情写下来，找到清晰的下一步。</li>
+                  <li><span>02</span>记录 3—5 次真实选择，回看自己如何做决定。</li>
+                  <li><span>03</span>给重要的人和事情留出沟通与等待的时间。</li>
                 </ol>
               </article>
               <div class="phase-progress" aria-label="本月四个能量阶段">
@@ -261,7 +261,7 @@
                     <label><span>记录类型</span><select v-model="recordDraft.kind"><option value="action">行动</option><option value="decision">决策</option></select></label>
                     <label><span>当前状态</span><select v-model="recordDraft.status"><option value="done">已完成</option><option value="doing">进行中</option><option value="skipped">跳过</option></select></label>
                   </div>
-                  <label class="record-form-field"><span>实际发生了什么</span><textarea v-model.trim="recordDraft.content" rows="3" maxlength="240" placeholder="例如：完成了产品首页第一版文案"></textarea></label>
+                  <label class="record-form-field"><span>实际发生了什么</span><textarea v-model.trim="recordDraft.content" rows="3" maxlength="240" placeholder="例如：完成了今天最重要的一件事"></textarea></label>
                   <label class="record-form-field"><span>结果 / 备注（可选）</span><input v-model.trim="recordDraft.note" maxlength="240" placeholder="例如：比预想顺利，明天继续细化"></label>
                   <div class="record-form-actions">
                     <button class="secondary-button" type="button" @click="closeRecordForm">取消</button>
@@ -425,7 +425,7 @@ export default {
       mobileDetailOpen: false,
       decisionNodes: [],
       recordPrompts: [],
-      cautionNotes: ['', '', '日历内容由辰鉴管理员维护'],
+      cautionNotes: ['', '', '今天不需要做到完美，只需要完成一件真正重要的事。'],
       decisionLogs: [],
       recordSource: 'local',
       showRecordForm: false,
@@ -574,7 +574,7 @@ export default {
             dateLabel: `${startDate} — ${calendar.end_date || this.days[this.days.length - 1]?.date || ''}`,
             pillars: '',
             rhythm: '少说，多做，多记录',
-            intro: '这是一张由辰鉴为你维护的个性化决策时机参照系。',
+            intro: '这是一张属于你的决策时机参照系，帮你在重要选择前留出观察、行动与复盘的空间。',
             overview: []
           }
       this.todayDate = this.days.find(day => isToday(day.date))?.date || this.days[0]?.date || null
@@ -590,7 +590,7 @@ export default {
           }))
       this.phases = source === 'mock' ? mockPhaseDefinitions : this.buildPhases()
       this.recordPrompts = source === 'mock' ? mockRecordPrompts : []
-      this.cautionNotes = source === 'mock' ? mockCautionNotes : ['', '', '日历内容由辰鉴管理员维护']
+      this.cautionNotes = source === 'mock' ? mockCautionNotes : ['', '', '今天不需要做到完美，只需要完成一件真正重要的事。']
       this.mobileDetailOpen = !(window.matchMedia('(max-width: 900px)').matches)
     },
     buildPhases() {

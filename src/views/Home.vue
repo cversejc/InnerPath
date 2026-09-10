@@ -8,11 +8,11 @@
           <p class="section-kicker">CHENJIAN / LIFE ORIENTATION</p>
           <h1>星辰引路，<br />镜子照见</h1>
           <p class="hero-subtitle">
-            星辰的运行规律，帮你照见人生选择的方向。辰鉴把个人属性、当下时序和后天行动放在同一张地图上。
+            把你的个人特质、当下节奏和现实选择放在一张地图上，帮你更清楚地走下一步。
           </p>
           <div class="hero-actions">
-            <button class="primary-button" @click="goToAssessment">开始测评</button>
-            <button class="secondary-button" @click="goToBooking">预约咨询</button>
+            <button class="primary-button" @click="goToAssessment">生成个人报告</button>
+            <button class="secondary-button" @click="goToCalendar">打开决策日历</button>
           </div>
         </div>
         <div class="compass-visual" aria-hidden="true">
@@ -33,7 +33,7 @@
         </div>
         <div class="paper-card prose-card">
           <p>你不一定缺少努力，也不一定需要再听一句“你应该怎样”。很多时候，卡住是因为个人属性、环境时序和行动方式没有对上。</p>
-          <p>辰鉴不替你评判人生，也不替你决定未来。我们先照见你是谁、当下处在哪个阶段，再一起找到更适合你的用力方式。</p>
+          <p>辰鉴不替你评判人生，也不替你决定未来。先看见“我是谁”，再在自己的节奏里找到更适合的用力方式。</p>
           <p class="emphasis">社会属性可以被重新理解，个人属性值得被认真肯定。</p>
         </div>
       </div>
@@ -42,10 +42,10 @@
     <section class="section-band alt">
       <div class="container">
         <div class="section-heading">
-          <p class="section-kicker">OUR METHOD</p>
+          <p class="section-kicker">HOW IT HELPS</p>
           <h2 class="section-title">一张说明书，两个方向</h2>
           <p class="section-desc">
-            fi 负责理解与定位，te 负责行动与决策。我们把八字、紫微、星盘等传统工具作为观察个人属性的透镜，再用心理学和哲学把洞察翻译成能使用的语言。
+            先读懂你的特质与处境，再把洞察变成每天可以使用的行动提示。八字、紫微、星盘等传统工具提供观察角度，心理学和哲学帮助你把看见的内容用回生活。
           </p>
         </div>
         <div class="method-grid">
@@ -71,42 +71,32 @@
     <section class="section-band services-preview">
       <div class="container">
         <div class="section-heading">
-          <p class="section-kicker">SERVICE MAP</p>
-          <h2 class="section-title">从照见自己，到把日子过好</h2>
+          <p class="section-kicker">YOUR PATH</p>
+          <h2 class="section-title">从看见自己，到做出更适合的选择</h2>
+          <p class="section-desc">一份个人报告书，帮你理解自己的特质与处境；一张决策日历，帮你把重要选择放在适合的时机。</p>
         </div>
-        <div class="services-grid">
+        <div class="services-grid launch-tools-grid">
           <article class="paper-card service-card">
-            <span class="seal-badge">入门</span>
-            <h3>辰鉴·人生说明书</h3>
-            <p class="price">¥499 - ¥699</p>
+            <span class="seal-badge">01 / PERSONAL REPORT</span>
+            <h3>个人报告书</h3>
+            <p class="tool-lead">先把“我是谁、我卡在哪”写清楚。</p>
             <ul class="service-features">
               <li>个人属性、天赋与能量通路</li>
               <li>核心矛盾与人生重复模式</li>
               <li>当前阶段的环境坐标</li>
             </ul>
-            <button class="secondary-button" @click="goToBooking">了解详情</button>
+            <button class="secondary-button" @click="goToAssessment">生成我的报告</button>
           </article>
-          <article class="paper-card service-card featured">
-            <span class="seal-badge">推荐</span>
-            <h3>辰鉴·行动与决策</h3>
-            <p class="price">¥1599 - ¥3599</p>
+          <article class="paper-card service-card featured launch-calendar-card">
+            <span class="seal-badge">02 / DECISION CALENDAR</span>
+            <h3>决策日历</h3>
+            <p class="tool-lead">把“知道自己”变成每天可使用的节奏。</p>
             <ul class="service-features">
-              <li>把说明书用于具体问题</li>
-              <li>用舍由时，行藏在我</li>
-              <li>个性化日历、陪伴与复盘</li>
+              <li>查看当下阶段的行动气候</li>
+              <li>按日期获得适合与暂缓事项</li>
+              <li>留下真实行动记录，持续复盘</li>
             </ul>
-            <button class="primary-button" @click="goToBooking">立即预约</button>
-          </article>
-          <article class="paper-card service-card">
-            <span class="seal-badge">课程</span>
-            <h3>辰鉴·共鉴计划</h3>
-            <p class="price">¥399 - ¥999</p>
-            <ul class="service-features">
-              <li>玄学、心理学、哲学的分工</li>
-              <li>从见自己到知行合一</li>
-              <li>社群实践与真实案例共学</li>
-            </ul>
-            <button class="secondary-button" @click="goToCourse">查看课程</button>
+            <button class="primary-button" @click="goToCalendar">打开我的日历</button>
           </article>
         </div>
       </div>
@@ -132,11 +122,8 @@ export default {
     goToAssessment() {
       this.$router.push('/pages/assessment/assessment')
     },
-    goToBooking() {
-      this.$router.push('/pages/booking/booking')
-    },
-    goToCourse() {
-      this.$router.push('/pages/course/course')
+    goToCalendar() {
+      this.$router.push('/pages/calendar/calendar')
     }
   }
 }
@@ -296,6 +283,12 @@ export default {
   gap: 18px;
 }
 
+.services-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 860px;
+  margin: 0 auto;
+}
+
 .method-card,
 .service-card {
   padding: 26px;
@@ -314,6 +307,13 @@ export default {
   color: var(--ink);
   font-size: 22px;
   line-height: 1.35;
+}
+
+.tool-lead {
+  margin-top: 10px;
+  color: var(--ink-soft);
+  font-size: 16px;
+  line-height: 1.7;
 }
 
 .method-card p {

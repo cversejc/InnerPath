@@ -4,7 +4,7 @@
       <router-link class="auth-logo" to="/">辰鉴</router-link>
       <p class="section-kicker">INNERSEEK ACCOUNT</p>
       <h1>{{ title }}</h1>
-      <p class="auth-subtitle">手机号仅作为登录账号，不发送短信验证码。先登录，再进入你的专属说明书与行动空间。</p>
+      <p class="auth-subtitle">使用手机号登录，进入你的个人报告书与决策日历。</p>
 
       <div v-if="mode !== 'invite'" class="mode-switch" role="tablist">
         <button :class="{ active: mode === 'login' }" @click="setMode('login')">登录</button>
@@ -34,13 +34,13 @@
         </label>
 
         <button class="primary-button full-width" type="submit" :disabled="submitting">
-          {{ submitting ? '处理中…' : submitLabel }}
+          {{ submitting ? '请稍候…' : submitLabel }}
         </button>
       </form>
 
       <div v-else class="auth-help">
         <strong>忘记密码怎么办？</strong>
-        <p>当前版本不启用短信找回密码。请联系管理员在后台重置密码，重置后即可使用手机号和新密码登录。</p>
+        <p>暂时无法通过短信找回密码，请联系辰鉴支持协助重设后，再使用手机号和新密码登录。</p>
         <router-link class="text-button" to="/auth/login">返回登录</router-link>
       </div>
 

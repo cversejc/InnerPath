@@ -15,10 +15,10 @@
       </div>
     </section>
 
-    <!-- 加载中 -->
+    <!-- 打开报告时的状态 -->
     <section v-else-if="loading" class="report-header">
       <div class="container">
-        <h1>加载中...</h1>
+        <h1>正在打开你的个人报告…</h1>
       </div>
     </section>
     <section v-else class="report-header">
@@ -212,9 +212,9 @@
             <span class="icon">🔗</span>
             分享报告
           </button>
-          <button class="btn-action primary" @click="goToBooking">
-            <span class="icon">💬</span>
-            预约行动与决策
+          <button class="btn-action primary" @click="goToCalendar">
+            <span class="icon">🗓</span>
+            打开决策日历
           </button>
         </div>
       </div>
@@ -471,13 +471,13 @@ export default {
       this.$router.go(-1)
     },
     downloadPDF() {
-      alert('PDF 下载功能开发中...')
+      alert('PDF 下载即将开放，你可以先在线查看完整报告。')
     },
     shareReport() {
-      alert('分享功能开发中...')
+      alert('分享功能即将开放，你可以先在线查看这份报告。')
     },
-    goToBooking() {
-      this.$router.push('/pages/booking/booking')
+    goToCalendar() {
+      this.$router.push('/pages/calendar/calendar')
     }
   }
 }

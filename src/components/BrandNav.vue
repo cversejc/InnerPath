@@ -25,8 +25,7 @@ import { authState, hasRole, logout as logoutUser } from '../stores/auth'
 
 const navLinks = [
   { to: '/pages/home/home', label: '首页' },
-  { to: '/pages/assessment/assessment', label: '人生说明书' },
-  { to: '/pages/services/services', label: '服务' },
+  { to: '/pages/assessment/assessment', label: '个人报告书' },
   { to: '/pages/calendar/calendar', label: '决策日历' },
   { to: '/pages/about/about', label: '关于辰鉴' },
   { to: '/pages/user/user', label: '我的辰鉴' }
