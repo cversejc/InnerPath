@@ -19,10 +19,7 @@ export const authState = reactive({
 let initializationPromise = null
 
 export async function initializeAuth() {
-  if (authState.initialized && (authState.user || getAccessToken())) {
-    if (getAccessToken()) return authState.user
-    authState.initialized = false
-  }
+  if (authState.initialized) return authState.user
   if (initializationPromise) return initializationPromise
 
   authState.loading = true
