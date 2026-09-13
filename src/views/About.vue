@@ -120,7 +120,7 @@
         <p class="section-kicker">START WITH YOURSELF</p>
         <h2>任何人，都有能力把自己的生活过好</h2>
         <p>如果你正在寻找一张不审判你的地图，辰鉴从“我是谁”开始。</p>
-        <button class="primary-button" @click="goToAssessment">生成我的人生说明书</button>
+        <button class="primary-button" type="button" @click="goToAssessment"><IconMark name="reports" />生成我的人生说明书</button>
       </div>
     </section>
 
@@ -314,6 +314,24 @@ export default {
 }
 
 @media (max-width: 560px) {
+  .about-header {
+    padding: 54px 0 42px;
+  }
+
+  .about-header h1 {
+    font-size: clamp(38px, 11vw, 52px);
+  }
+
+  .about-header p:not(.section-kicker) {
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .about-story-grid {
+    gap: 22px;
+  }
+
   .boundary-grid {
     grid-template-columns: 1fr;
   }
@@ -323,5 +341,97 @@ export default {
   .lens-card {
     padding: 23px;
   }
+}
+
+/* 移动端最终密度：减少留白，让长页面更容易连续阅读。 */
+@media (max-width: 767px) {
+  .about-header {
+    padding: 38px 0 30px;
+  }
+
+  .about-header h1 {
+    font-size: clamp(32px, 10vw, 44px);
+  }
+
+  .about-header p:not(.section-kicker) {
+    margin-top: 14px;
+  }
+
+  .section-band {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .section-heading {
+    margin-bottom: 22px;
+  }
+
+  .about-story-grid {
+    gap: 14px;
+  }
+
+  .story-card,
+  .axis-card,
+  .boundary-card,
+  .lens-card {
+    min-height: 0;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .story-card {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .axis-card h3,
+  .boundary-card h3,
+  .lens-card h3 {
+    margin-top: 10px;
+    font-size: 20px;
+    line-height: 1.35;
+  }
+
+  .axis-card p,
+  .boundary-card p,
+  .lens-card p {
+    margin-top: 9px;
+  }
+
+  .axis-card ul {
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .boundary-card span {
+    font-size: 28px;
+  }
+
+  .cta-panel {
+    padding: 24px 16px;
+    border-radius: 14px;
+  }
+
+  .cta-panel h2 {
+    margin-top: 12px;
+    font-size: clamp(26px, 8vw, 36px);
+  }
+
+  .cta-panel p:not(.section-kicker) {
+    margin: 14px auto 20px;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .cta-panel button {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+  }
+}
+
+/* 按钮专项：结尾行动按钮居中、单一主色，避免与内容卡片争夺层级。 */
+.cta-panel button {
+  min-width: 220px;
 }
 </style>

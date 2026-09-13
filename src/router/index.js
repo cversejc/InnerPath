@@ -16,21 +16,21 @@ import { isLaunchFeatureEnabled } from '../config/launchScope'
 
 const routes = [
   { path: '/', redirect: '/pages/home/home' },
-  { path: '/auth/login', name: 'Login', component: Auth, meta: { public: true } },
-  { path: '/auth/register', name: 'Register', component: Auth, meta: { public: true } },
-  { path: '/auth/forgot-password', name: 'ForgotPassword', component: Auth, meta: { public: true } },
-  { path: '/auth/invite', name: 'StaffInvite', component: Auth, meta: { public: true } },
-  { path: '/pages/home/home', name: 'Home', component: Home, meta: { requiresAuth: true } },
-  { path: '/pages/services/services', name: 'Services', component: Services, meta: { requiresAuth: true, hiddenFeature: 'services' } },
-  { path: '/pages/assessment/assessment', name: 'Assessment', component: Assessment, meta: { requiresAuth: true } },
-  { path: '/pages/booking/booking', name: 'Booking', component: Booking, meta: { requiresAuth: true, hiddenFeature: 'booking' } },
-  { path: '/pages/course/course', name: 'Course', component: Course, meta: { requiresAuth: true, hiddenFeature: 'courses' } },
-  { path: '/pages/user/user', name: 'UserCenter', component: UserCenter, meta: { requiresAuth: true } },
-  { path: '/pages/report/detail', name: 'ReportDetail', component: ReportDetail, meta: { requiresAuth: true } },
-  { path: '/pages/calendar/calendar', name: 'Calendar', component: Calendar, meta: { requiresAuth: true } },
-  { path: '/pages/about/about', name: 'About', component: About, meta: { requiresAuth: true } },
-  { path: '/admin', name: 'AdminConsole', component: AdminConsole, meta: { requiresAuth: true, roles: ['admin'] } },
-  { path: '/staff', name: 'StaffConsole', component: StaffConsole, meta: { requiresAuth: true, roles: ['admin', 'consultant'] } }
+  { path: '/auth/login', name: 'Login', component: Auth, meta: { public: true, title: '登录' } },
+  { path: '/auth/register', name: 'Register', component: Auth, meta: { public: true, title: '注册' } },
+  { path: '/auth/forgot-password', name: 'ForgotPassword', component: Auth, meta: { public: true, title: '找回密码' } },
+  { path: '/auth/invite', name: 'StaffInvite', component: Auth, meta: { public: true, title: '接受邀请' } },
+  { path: '/pages/home/home', name: 'Home', component: Home, meta: { requiresAuth: true, title: '首页' } },
+  { path: '/pages/services/services', name: 'Services', component: Services, meta: { requiresAuth: true, hiddenFeature: 'services', title: '服务' } },
+  { path: '/pages/assessment/assessment', name: 'Assessment', component: Assessment, meta: { requiresAuth: true, title: '人生说明书' } },
+  { path: '/pages/booking/booking', name: 'Booking', component: Booking, meta: { requiresAuth: true, hiddenFeature: 'booking', title: '预约' } },
+  { path: '/pages/course/course', name: 'Course', component: Course, meta: { requiresAuth: true, hiddenFeature: 'courses', title: '共鉴计划' } },
+  { path: '/pages/user/user', name: 'UserCenter', component: UserCenter, meta: { requiresAuth: true, title: '个人空间' } },
+  { path: '/pages/report/detail', name: 'ReportDetail', component: ReportDetail, meta: { requiresAuth: true, title: '个人报告' } },
+  { path: '/pages/calendar/calendar', name: 'Calendar', component: Calendar, meta: { requiresAuth: true, title: '决策日历' } },
+  { path: '/pages/about/about', name: 'About', component: About, meta: { requiresAuth: true, title: '关于辰鉴' } },
+  { path: '/admin', name: 'AdminConsole', component: AdminConsole, meta: { requiresAuth: true, roles: ['admin'], title: '运营中枢' } },
+  { path: '/staff', name: 'StaffConsole', component: StaffConsole, meta: { requiresAuth: true, roles: ['admin', 'consultant'], title: '咨询工作台' } }
 ]
 
 const router = createRouter({
@@ -62,6 +62,10 @@ router.beforeEach(async to => {
     return '/pages/home/home'
   }
   return true
+})
+
+router.afterEach(to => {
+  document.title = to.meta.title ? `${to.meta.title} · 辰鉴` : '辰鉴 · 星辰引路，镜子照见'
 })
 
 export default router

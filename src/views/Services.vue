@@ -35,7 +35,7 @@
                 <p>想先知道“我是谁、我卡在哪”，再决定下一步怎么走的人。</p>
               </div>
             </div>
-            <button class="secondary-button" @click="goToBooking">预约解读</button>
+            <button class="secondary-button" type="button" @click="goToBooking"><IconMark name="person" />预约解读</button>
           </div>
         </article>
 
@@ -62,7 +62,7 @@
                 <p>面对就业、关系、家庭或自我价值选择，希望不被“你应该怎样”绑住的人。</p>
               </div>
             </div>
-            <button class="primary-button" @click="goToBooking">立即预约</button>
+            <button class="primary-button" type="button" @click="goToBooking"><IconMark name="calendar" />立即预约</button>
           </div>
         </article>
 
@@ -89,7 +89,7 @@
                 <p>不满足于短效鸡汤，愿意在长期人本方向上持续练习的人。</p>
               </div>
             </div>
-            <button class="secondary-button" @click="goToCourse">查看课程</button>
+            <button class="secondary-button" type="button" @click="goToCourse"><IconMark name="book" />查看课程</button>
           </div>
         </article>
       </div>
@@ -322,33 +322,94 @@ export default {
 
 @media (max-width: 767px) {
   .page-header {
-    padding: 70px 0 48px;
+    padding: 38px 0 30px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(32px, 10vw, 44px);
   }
 
   .page-header p:not(.section-kicker) {
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .service-item {
-    gap: 20px;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 14px;
   }
 
   .service-meta {
     align-items: flex-start;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+    padding-bottom: 12px;
   }
 
   .service-price {
-    font-size: 24px;
+    font-size: 20px;
+  }
+
+  .service-copy h2 {
+    font-size: 22px;
+  }
+
+  .service-intro {
+    margin-top: 9px;
+    line-height: 1.65;
+  }
+
+  .service-columns {
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .section-band {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .services-list {
+    gap: 12px;
+  }
+
+  .service-columns h3 {
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .service-list {
+    gap: 7px;
   }
 
   .service-copy button {
+    min-height: 46px;
     width: 100%;
+    min-width: 0;
+    margin-top: 18px;
   }
 
   .philosophy-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .philosophy-item {
+    padding: 16px;
+    border-radius: 14px;
   }
 }
+
+/* 按钮专项：每个服务块的 CTA 固定在内容末端，移动端占满卡片宽度。 */
+.service-copy button {
+  min-height: var(--button-height, 46px);
+  border-radius: var(--button-radius, 13px);
+}
+
+@media (min-width: 768px) {
+  .service-copy button {
+    justify-self: start;
+  }
+}
+
 </style>

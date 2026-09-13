@@ -11,8 +11,8 @@
             把你的个人特质、当下节奏和现实选择放在一张地图上，帮你更清楚地走下一步。
           </p>
           <div class="hero-actions">
-            <button class="primary-button" @click="goToAssessment">生成个人报告</button>
-            <button class="secondary-button" @click="goToCalendar">打开决策日历</button>
+            <button class="primary-button" type="button" @click="goToAssessment"><IconMark name="reports" />生成个人报告</button>
+            <button class="secondary-button" type="button" @click="goToCalendar"><IconMark name="calendar" />打开决策日历</button>
           </div>
         </div>
         <div class="compass-visual" aria-hidden="true">
@@ -20,7 +20,6 @@
             <span class="needle"></span>
             <span class="center-dot"></span>
           </div>
-          <p>定位此刻的卡点</p>
         </div>
       </div>
     </section>
@@ -85,7 +84,7 @@
               <li>核心矛盾与人生重复模式</li>
               <li>当前阶段的环境坐标</li>
             </ul>
-            <button class="secondary-button" @click="goToAssessment">生成我的报告</button>
+            <button class="secondary-button" type="button" @click="goToAssessment"><IconMark name="reports" />生成我的报告</button>
           </article>
           <article class="paper-card service-card featured launch-calendar-card">
             <span class="seal-badge">02 / DECISION CALENDAR</span>
@@ -96,7 +95,7 @@
               <li>按日期获得适合与暂缓事项</li>
               <li>留下真实行动记录，持续复盘</li>
             </ul>
-            <button class="primary-button" @click="goToCalendar">打开我的日历</button>
+            <button class="primary-button" type="button" @click="goToCalendar"><IconMark name="calendar" />打开我的日历</button>
           </article>
         </div>
       </div>
@@ -107,7 +106,7 @@
         <p class="section-kicker">NEXT STEP</p>
         <h2>先写一页属于你的说明书</h2>
         <p>不算命，不评判，不替你预言未来。先从“我是谁”开始。</p>
-        <button class="primary-button" @click="goToAssessment">开始探索</button>
+        <button class="primary-button" type="button" @click="goToAssessment"><IconMark name="compass" />开始探索</button>
       </div>
     </section>
 
@@ -237,14 +236,6 @@ export default {
   border-radius: 50%;
   background: var(--cinnabar-deep);
   transform: translate(-50%, -50%);
-}
-
-.compass-visual p {
-  margin-top: -22px;
-  color: var(--gold-deep);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
 }
 
 .intro-grid {
@@ -417,14 +408,14 @@ export default {
 
 @media (max-width: 767px) {
   .hero {
-    min-height: max(680px, calc(100svh - var(--nav-height) - 64px));
+    min-height: auto;
     align-items: center;
-    padding: 34px 0 38px;
+    padding: 30px 0 38px;
   }
 
   .hero-layout {
     grid-template-columns: minmax(0, 1fr);
-    gap: 26px;
+    gap: 16px;
   }
 
   .hero-copy {
@@ -432,34 +423,49 @@ export default {
   }
 
   .hero h1 {
-    font-size: clamp(42px, 13vw, 56px);
-    letter-spacing: 0;
+    font-size: clamp(36px, 10vw, 46px);
+    line-height: 1.08;
     overflow-wrap: anywhere;
+  }
+
+  .hero-subtitle {
+    margin-top: 14px;
+    font-size: 16px;
+    line-height: 1.7;
   }
 
   .hero-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 28px;
+    gap: 8px;
+    margin-top: 18px;
   }
 
   .hero-actions > * {
     width: 100%;
   }
 
+  .hero-actions .primary-button,
+  .hero-actions .secondary-button {
+    min-height: 46px;
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 13px;
+  }
+
   .compass-visual {
-    width: 154px;
+    width: 112px;
     margin-left: auto;
     opacity: 0.86;
   }
 
   .compass-ring {
-    width: 86px;
+    width: 68px;
   }
 
   .needle {
-    top: 11px;
-    height: 64px;
+    top: 10px;
+    height: 50px;
   }
 
   .compass-visual p {
@@ -469,11 +475,68 @@ export default {
   .method-card,
   .service-card,
   .prose-card {
-    padding: 22px;
+    padding: 16px;
+    border-radius: 14px;
   }
 
   .service-card {
     min-height: 0;
+  }
+
+  .section-band {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .section-heading {
+    margin-bottom: 22px;
+  }
+
+  .method-grid,
+  .services-grid {
+    gap: 12px;
+  }
+
+  .method-card span {
+    font-size: 28px;
+  }
+
+  .method-card h3,
+  .service-card h3 {
+    margin-top: 10px;
+    font-size: 20px;
+  }
+
+  .tool-lead {
+    margin-top: 8px;
+    font-size: 15px;
+  }
+
+  .service-features {
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .service-card button {
+    min-height: 46px;
+  }
+
+  .final-cta-inner {
+    padding-top: 30px;
+  }
+
+  .final-cta h2 {
+    margin-bottom: 18px;
+    font-size: clamp(26px, 8vw, 36px);
+  }
+
+  .hero-actions > *,
+  .final-cta .primary-button {
+    min-width: 0;
+  }
+
+  .final-cta .primary-button {
+    width: 100%;
   }
 }
 
@@ -482,4 +545,25 @@ export default {
     grid-template-columns: 1fr;
   }
 }
+
+/* 按钮专项：主次关系明确，按钮与纸张卡片使用同一组圆角和间距。 */
+.hero-actions {
+  align-items: stretch;
+  gap: var(--button-gap, 8px);
+}
+
+.hero-actions .primary-button,
+.hero-actions .secondary-button {
+  min-height: var(--button-height, 46px);
+}
+
+.service-card > button {
+  min-height: var(--button-height, 46px);
+  border-radius: var(--button-radius, 13px);
+}
+
+.final-cta .primary-button {
+  min-width: 180px;
+}
+
 </style>

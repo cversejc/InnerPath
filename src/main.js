@@ -4,10 +4,12 @@ import router from './router'
 import './style.css'
 import BrandNav from './components/BrandNav.vue'
 import BrandFooter from './components/BrandFooter.vue'
+import IconMark from './components/IconMark.vue'
 
 const app = createApp(App)
 
 app.component('BrandNav', BrandNav)
 app.component('BrandFooter', BrandFooter)
+app.component('IconMark', IconMark)
 
 app.use(router).mount('#app')

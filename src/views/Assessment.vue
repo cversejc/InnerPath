@@ -32,18 +32,19 @@
         <div v-if="currentStep === 1" class="step-content form-panel">
           <div class="step-heading">
             <p class="section-kicker">STEP 01</p>
-            <h2>填写出生信息</h2>
+            <h2 ref="stepHeading" tabindex="-1">填写出生信息</h2>
             <p>出生信息用于建立你的先天坐标；它不是给人生下结论，而是帮助我们找到观察自己的入口。</p>
           </div>
 
-          <form class="assessment-form">
-            <div class="form-group">
-              <label class="form-label">性别 <span class="required">*</span></label>
+          <form class="assessment-form" :aria-describedby="formMessage ? 'assessment-step-error' : undefined">
+            <fieldset class="form-group choice-fieldset">
+              <legend class="form-label">性别 <span class="required">*</span></legend>
               <div class="choice-grid two">
                 <button
                   type="button"
                   class="choice-card"
                   :class="{ selected: formData.gender === 'male' }"
+                  :aria-pressed="formData.gender === 'male'"
                   @click="formData.gender = 'male'"
                 >
                   <span>乾</span>
@@ -53,21 +54,23 @@
                   type="button"
                   class="choice-card"
                   :class="{ selected: formData.gender === 'female' }"
+                  :aria-pressed="formData.gender === 'female'"
                   @click="formData.gender = 'female'"
                 >
                   <span>坤</span>
                   <strong>女</strong>
                 </button>
               </div>
-            </div>
+            </fieldset>
 
-            <div class="form-group">
-              <label class="form-label">历法类型 <span class="required">*</span></label>
+            <fieldset class="form-group choice-fieldset">
+              <legend class="form-label">历法类型 <span class="required">*</span></legend>
               <div class="choice-grid two">
                 <button
                   type="button"
                   class="choice-card horizontal"
                   :class="{ selected: formData.calendarType === 'solar' }"
+                  :aria-pressed="formData.calendarType === 'solar'"
                   @click="formData.calendarType = 'solar'"
                 >
                   <span>日</span>
@@ -80,6 +83,7 @@
                   type="button"
                   class="choice-card horizontal"
                   :class="{ selected: formData.calendarType === 'lunar' }"
+                  :aria-pressed="formData.calendarType === 'lunar'"
                   @click="formData.calendarType = 'lunar'"
                 >
                   <span>月</span>
@@ -89,7 +93,7 @@
                   </div>
                 </button>
               </div>
-            </div>
+            </fieldset>
 
             <div class="form-group">
               <label class="form-label">出生日期 <span class="required">*</span></label>
@@ -131,13 +135,14 @@
               <p class="form-hint">请按上方选择的历法填写。</p>
             </div>
 
-            <div class="form-group">
-              <label class="form-label">出生时间 <span class="optional">(选填)</span></label>
+            <fieldset class="form-group choice-fieldset">
+              <legend class="form-label">出生时间 <span class="optional">(选填)</span></legend>
               <div class="choice-grid three">
                 <button
                   type="button"
                   class="choice-card compact"
                   :class="{ selected: formData.timeAccuracy === 'unknown' }"
+                  :aria-pressed="formData.timeAccuracy === 'unknown'"
                   @click="selectTimeAccuracy('unknown')"
                 >
                   不知道
@@ -146,6 +151,7 @@
                   type="button"
                   class="choice-card compact"
                   :class="{ selected: formData.timeAccuracy === 'approximate' }"
+                  :aria-pressed="formData.timeAccuracy === 'approximate'"
                   @click="selectTimeAccuracy('approximate')"
                 >
                   大概时间
@@ -154,6 +160,7 @@
                   type="button"
                   class="choice-card compact"
                   :class="{ selected: formData.timeAccuracy === 'exact' }"
+                  :aria-pressed="formData.timeAccuracy === 'exact'"
                   @click="selectTimeAccuracy('exact')"
                 >
                   精确时间
@@ -179,7 +186,7 @@
                   @input="validateMinute"
                 >
               </div>
-            </div>
+            </fieldset>
 
             <div class="form-group">
               <label class="form-label">出生地 <span class="optional">(选填)</span></label>
@@ -193,13 +200,14 @@
             </div>
 
             <button type="button" @click="nextStep" class="primary-button full-width">下一步</button>
+            <p v-if="formMessage" id="assessment-step-error" class="form-error" role="alert" aria-live="assertive">{{ formMessage }}</p>
           </form>
         </div>
 
         <div v-if="currentStep === 2" class="step-content form-panel">
           <div class="step-heading">
             <p class="section-kicker">STEP 02</p>
-            <h2>选择当下最关注的议题</h2>
+            <h2 ref="stepHeading" tabindex="-1">选择当下最关注的议题</h2>
             <p>可多选。你提供的真实处境，会帮助说明书回应“我卡在哪”，而不是只讲抽象结论。</p>
           </div>
 
@@ -210,9 +218,10 @@
               type="button"
               class="topic-card"
               :class="{ selected: formData.selectedTopics.includes(topic.id) }"
+              :aria-pressed="formData.selectedTopics.includes(topic.id)"
               @click="toggleTopic(topic.id)"
             >
-              <span>{{ topic.icon }}</span>
+              <IconMark :name="topic.icon" />
               <strong>{{ topic.title }}</strong>
               <small>{{ topic.desc }}</small>
             </button>
@@ -231,12 +240,13 @@
             <button type="button" @click="prevStep" class="secondary-button">上一步</button>
             <button type="button" @click="submitAssessment" class="primary-button">生成我的说明书</button>
           </div>
+          <p v-if="formMessage" id="assessment-step-error" class="form-error" role="alert" aria-live="assertive">{{ formMessage }}</p>
         </div>
 
         <div v-if="currentStep === 3" class="step-content form-panel">
           <div v-if="isGenerating" class="generating">
             <div class="loading-compass" aria-hidden="true"></div>
-            <h2>正在为你生成专属报告</h2>
+            <h2 ref="stepHeading" tabindex="-1">正在为你生成专属报告</h2>
             <p>你的个人特质、当下处境与关注的议题，正在汇成一张更清晰的自我地图。</p>
             <div class="generating-steps">
               <div class="gen-step" :class="{ active: genStep >= 1 }">认识你的起点</div>
@@ -248,7 +258,7 @@
 
           <div v-else class="result-success">
             <span class="seal-badge">已生成</span>
-            <h2>你的人生说明书已经完成</h2>
+            <h2 ref="stepHeading" tabindex="-1">你的人生说明书已经完成</h2>
             <p>这份报告已经属于你。先读懂自己，再把洞察放进每天的决策节奏。</p>
 
             <div class="result-preview paper-card">
@@ -267,8 +277,8 @@
             </div>
 
             <div class="button-row">
-              <button class="primary-button" @click="viewFullReport">查看报告</button>
-              <button class="secondary-button" @click="goToCalendar">打开决策日历</button>
+              <button type="button" class="primary-button" @click="viewFullReport">查看报告</button>
+              <button type="button" class="secondary-button" @click="goToCalendar">打开决策日历</button>
             </div>
           </div>
         </div>
@@ -289,6 +299,7 @@ export default {
       currentStep: 1,
       isGenerating: false,
       genStep: 0,
+      formMessage: '',
       formData: {
         gender: '',
         birthYear: '',
@@ -304,12 +315,12 @@ export default {
       },
       years: Array.from({ length: 127 }, (_, i) => 2026 - i),
       topics: [
-        { id: 'career', icon: '💼', title: '职业发展', desc: '职业选择、转型、瓶颈突破' },
-        { id: 'relationship', icon: '💕', title: '亲密关系', desc: '恋爱、婚姻、关系模式' },
-        { id: 'family', icon: '👨‍👩‍👧', title: '家庭议题', desc: '原生家庭、亲子关系' },
-        { id: 'self', icon: '🎯', title: '自我价值', desc: '自我认同、人生意义' },
-        { id: 'growth', icon: '🌱', title: '个人成长', desc: '突破局限、能力提升' },
-        { id: 'stress', icon: '😰', title: '压力焦虑', desc: '情绪管理、压力应对' }
+        { id: 'career', icon: 'career', title: '职业发展', desc: '职业选择、转型、瓶颈突破' },
+        { id: 'relationship', icon: 'relationship', title: '亲密关系', desc: '恋爱、婚姻、关系模式' },
+        { id: 'family', icon: 'family', title: '家庭议题', desc: '原生家庭、亲子关系' },
+        { id: 'self', icon: 'self', title: '自我价值', desc: '自我认同、人生意义' },
+        { id: 'growth', icon: 'growth', title: '个人成长', desc: '突破局限、能力提升' },
+        { id: 'stress', icon: 'stress', title: '压力焦虑', desc: '情绪管理、压力应对' }
       ],
       reportPreview: {
         energyType: '创造驱动型',
@@ -322,23 +333,42 @@ export default {
   },
   methods: {
     nextStep() {
-      console.log('点击下一步，当前表单数据:', this.formData)
+      this.formMessage = ''
       if (!this.validateStep1()) {
-        console.log('验证失败')
-        alert('请填写必填项')
+        this.formMessage = '请补充性别和完整出生日期后继续。'
         return
       }
-      console.log('验证通过，进入步骤2')
       this.currentStep = 2
-      window.scrollTo(0, 0)
+      this.focusStepHeading()
     },
     prevStep() {
       this.currentStep = 1
-      window.scrollTo(0, 0)
+      this.focusStepHeading()
+    },
+    focusStepHeading() {
+      this.$nextTick(() => {
+        const ref = this.$refs.stepHeading
+        const heading = Array.isArray(ref) ? ref[0] : ref
+        if (!heading) return
+        window.scrollTo({ top: 0, behavior: 'auto' })
+        heading.focus({ preventScroll: true })
+      })
     },
     validateStep1() {
       const { gender, birthYear, birthMonth, birthDay, calendarType } = this.formData
-      return gender && birthYear && birthMonth && birthDay && calendarType
+      if (!gender || !birthYear || !birthMonth || !birthDay || !calendarType) return false
+
+      const year = Number(birthYear)
+      const month = Number(birthMonth)
+      const day = Number(birthDay)
+      if (year < 1900 || year > 2026 || month < 1 || month > 12 || day < 1 || day > 31) return false
+
+      if (calendarType === 'solar') {
+        const date = new Date(year, month - 1, day)
+        return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
+      }
+
+      return day <= 30
     },
     selectTimeAccuracy(accuracy) {
       this.formData.timeAccuracy = accuracy
@@ -401,19 +431,17 @@ export default {
       }
     },
     async submitAssessment() {
-      console.log('开始提交评估，表单数据:', this.formData)
+      this.formMessage = ''
       this.currentStep = 3
       this.isGenerating = true
-      window.scrollTo(0, 0)
+      this.focusStepHeading()
 
       try {
         this.genStep = 1
         await new Promise(resolve => setTimeout(resolve, 1000))
 
         this.genStep = 2
-        console.log('准备调用 AI 服务...')
         this.generatedReport = await generateReportWithAI(this.formData)
-        console.log('AI 服务返回结果:', this.generatedReport)
 
         this.genStep = 3
         await new Promise(resolve => setTimeout(resolve, 800))
@@ -435,9 +463,10 @@ export default {
         this.currentReportId = this.generatedReport.id
       } catch (error) {
         console.error('报告生成失败:', error)
-        alert('报告生成失败，请稍后重试')
+        this.formMessage = '报告生成失败，请检查网络后重试。'
         this.currentStep = 2
         this.isGenerating = false
+        this.focusStepHeading()
       }
     },
     viewFullReport() {
@@ -577,6 +606,24 @@ export default {
   color: var(--muted);
   font-size: 13px;
   font-weight: 500;
+}
+
+.form-error {
+  margin-top: 12px;
+  color: var(--cinnabar-deep);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.choice-fieldset {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+
+.choice-fieldset > legend {
+  width: 100%;
+  padding: 0;
 }
 
 .choice-grid {
@@ -730,8 +777,10 @@ textarea {
   text-align: left;
 }
 
-.topic-card span {
-  font-size: 26px;
+.topic-card .icon-mark {
+  width: 26px;
+  height: 26px;
+  color: var(--cinnabar-deep);
 }
 
 .topic-card strong {
@@ -843,20 +892,30 @@ textarea {
 
 @media (max-width: 767px) {
   .page-header {
-    padding: 66px 0 42px;
+    padding: 38px 0 30px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(32px, 10vw, 44px);
+  }
+
+  .page-header p:not(.section-kicker) {
+    font-size: 16px;
   }
 
   .progress-card {
-    gap: 7px;
-    padding: 12px 8px;
+    gap: 5px;
+    margin-bottom: 12px;
+    padding: 8px 6px;
+    border-radius: 14px;
   }
 
   .progress-step {
-    width: 58px;
+    width: 52px;
   }
 
   .progress-step p {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .choice-grid.three,
@@ -868,21 +927,146 @@ textarea {
     min-height: 48px;
   }
 
+  .step-content {
+    padding: 16px 12px;
+    border-radius: 14px;
+  }
+
+  .step-heading {
+    margin-bottom: 18px;
+  }
+
+  .step-heading h2 {
+    font-size: clamp(22px, 7vw, 28px);
+  }
+
+  .assessment-form {
+    gap: 16px;
+  }
+
+  .assessment-section {
+    padding-top: 30px;
+    padding-bottom: 40px;
+  }
+
+  .form-group {
+    gap: 7px;
+  }
+
+  .form-label {
+    font-size: 14px;
+  }
+
+  .choice-grid,
+  .topics-grid {
+    gap: 9px;
+  }
+
+  .choice-card {
+    min-height: 64px;
+    padding: 9px;
+    border-radius: 12px;
+  }
+
+  .choice-card.compact {
+    min-height: 46px;
+  }
+
+  .choice-card span {
+    width: 30px;
+    height: 30px;
+  }
+
+  .topic-card {
+    min-height: 88px;
+    gap: 6px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .topic-card .icon-mark {
+    width: 22px;
+    height: 22px;
+  }
+
+  .topic-card strong {
+    font-size: 16px;
+  }
+
   .date-row {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
-    gap: 8px;
+    gap: 6px;
   }
 
   .date-row label {
-    padding: 9px 8px;
+    padding: 8px 6px;
+    border-radius: 12px;
   }
 
-  .date-row input {
+  .modern-input,
+  textarea,
+  .date-row input,
+  .time-row input {
+    min-height: 46px;
     font-size: 16px;
   }
 
   .button-row {
+    gap: 8px;
+    margin-top: 16px;
     grid-template-columns: 1fr;
   }
+
+  .button-row .primary-button,
+  .button-row .secondary-button,
+  .assessment-form > .primary-button {
+    min-height: 46px;
+  }
+
+  .loading-compass {
+    width: 68px;
+    height: 68px;
+    margin-bottom: 18px;
+  }
+
+  .loading-compass::before {
+    height: 50px;
+  }
+
+  .generating h2,
+  .result-success h2 {
+    font-size: clamp(23px, 7vw, 30px);
+  }
+
+  .generating-steps {
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .result-preview {
+    gap: 11px;
+    margin: 20px 0;
+    padding: 14px;
+    border-radius: 12px;
+  }
 }
+
+/* 按钮专项：选择项是可点击卡片，流程 CTA 使用一致的左右留白和触控高度。 */
+.choice-card,
+.topic-card {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button-row {
+  align-items: stretch;
+  gap: var(--button-gap, 8px);
+}
+
+.button-row > .primary-button,
+.button-row > .secondary-button,
+.assessment-form > .primary-button {
+  width: 100%;
+  min-height: var(--button-height, 46px);
+}
+
 </style>

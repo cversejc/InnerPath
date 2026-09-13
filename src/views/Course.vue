@@ -20,10 +20,10 @@
             <p>在一个越来越快、越来越功利的社会里，理解自己、理解关系、理解时序，是不容易被替代的长期能力。</p>
             <p>共鉴不教人给自己或别人下判断，而是练习如何把传统智慧翻译成现代生活能使用的语言，建立一套属于自己的“人生观察系统”。</p>
             <ul class="intro-benefits">
-              <li>🎯 读懂自己的性格密码与天赋</li>
-              <li>🔍 看见关系与人生重复模式</li>
-              <li>💡 在不同阶段找到合适的用力方式</li>
-              <li>🛠️ 用记录、日历和复盘把洞察落地</li>
+              <li><IconMark name="self" />读懂自己的性格密码与天赋</li>
+              <li><IconMark name="relationship" />看见关系与人生重复模式</li>
+              <li><IconMark name="spark" />在不同阶段找到合适的用力方式</li>
+              <li><IconMark name="settings" />用记录、日历和复盘把洞察落地</li>
             </ul>
           </div>
           <div class="intro-image">
@@ -58,18 +58,24 @@
 
         <div class="modules">
           <div class="module-item" v-for="(module, index) in modules" :key="index">
-            <div class="module-header" @click="toggleModule(index)">
+            <button
+              type="button"
+              class="module-header"
+              :aria-expanded="expandedModules.includes(index)"
+              :aria-controls="`module-content-${index}`"
+              @click="toggleModule(index)"
+            >
               <div class="module-title">
                 <span class="module-number">模块 {{ index + 1 }}</span>
                 <h3>{{ module.title }}</h3>
               </div>
               <span class="module-toggle">{{ expandedModules.includes(index) ? '−' : '+' }}</span>
-            </div>
-            <div class="module-content" v-show="expandedModules.includes(index)">
+            </button>
+            <div :id="`module-content-${index}`" class="module-content" v-show="expandedModules.includes(index)">
               <p class="module-desc">{{ module.description }}</p>
               <ul class="lesson-list">
                 <li v-for="(lesson, lIndex) in module.lessons" :key="lIndex">
-                  <span class="lesson-icon">📖</span>
+                  <IconMark class="lesson-icon" name="book" />
                   <span class="lesson-title">{{ lesson }}</span>
                 </li>
               </ul>
@@ -85,32 +91,32 @@
         <h2>这条路径适合谁？</h2>
         <div class="audience-grid">
           <div class="audience-card">
-            <div class="audience-icon">🌱</div>
+            <IconMark class="audience-icon" name="growth" />
             <h3>自我探索者</h3>
             <p>想理解自己的个人属性，不满足于“更好的自己”模板</p>
           </div>
           <div class="audience-card">
-            <div class="audience-icon">🎓</div>
+            <IconMark class="audience-icon" name="education" />
             <h3>心理学爱好者</h3>
             <p>愿意把玄学、心理学和哲学放在同一张桌面上对话</p>
           </div>
           <div class="audience-card">
-            <div class="audience-icon">💼</div>
+            <IconMark class="audience-icon" name="career" />
             <h3>职业发展者</h3>
             <p>正在做职业、关系或人生方向选择，希望少一点社会化审判</p>
           </div>
           <div class="audience-card">
-            <div class="audience-icon">👥</div>
+            <IconMark class="audience-icon" name="group" />
             <h3>关系经营者</h3>
             <p>想要理解关系模式，改善亲密关系、家庭关系或职场关系</p>
           </div>
           <div class="audience-card">
-            <div class="audience-icon">🔮</div>
+            <IconMark class="audience-icon" name="compass" />
             <h3>传统文化爱好者</h3>
             <p>对八字、紫微等传统文化感兴趣，希望系统化学习并应用于现代生活</p>
           </div>
           <div class="audience-card">
-            <div class="audience-icon">🚀</div>
+            <IconMark class="audience-icon" name="arrow" />
             <h3>未来从业者</h3>
             <p>计划从事个人成长、咨询相关领域，需要掌握专业工具和方法论</p>
           </div>
@@ -124,22 +130,22 @@
         <h2>共鉴的四个坚持</h2>
         <div class="features-grid">
           <div class="feature-item">
-            <div class="feature-icon">🎯</div>
+            <IconMark class="feature-icon" name="self" />
             <h3>理论与现实相接</h3>
             <p>每个概念都回到真实处境，用决策日志和小行动检验它是否真的有用。</p>
           </div>
           <div class="feature-item">
-            <div class="feature-icon">🌉</div>
+            <IconMark class="feature-icon" name="bridge" />
             <h3>多种语言互译</h3>
             <p>玄学负责看见属性，心理学负责处理旧循环，哲学负责提供人生脉络。</p>
           </div>
           <div class="feature-item">
-            <div class="feature-icon">🔄</div>
+            <IconMark class="feature-icon" name="refresh" />
             <h3>长期人本社群</h3>
             <p>不靠焦虑和排名驱动，靠真实记录、趣味练习和彼此照见保持连接。</p>
           </div>
           <div class="feature-item">
-            <div class="feature-icon">📚</div>
+            <IconMark class="feature-icon" name="book" />
             <h3>把主动权留给人</h3>
             <p>不点评命盘层次、财富等级和能力高低，不预测具体因果，只帮助你更有依据地行动。</p>
           </div>
@@ -165,7 +171,7 @@
               <li>终身回看权限</li>
               <li>学习社群</li>
             </ul>
-            <button class="btn-enroll">立即报名</button>
+            <button type="button" class="btn-enroll">立即报名</button>
           </div>
 
           <div class="pricing-card featured">
@@ -182,7 +188,7 @@
               <li>优先答疑权限</li>
               <li>线下活动优先参与</li>
             </ul>
-            <button class="btn-enroll primary">立即报名</button>
+            <button type="button" class="btn-enroll primary">立即报名</button>
           </div>
 
           <div class="pricing-card">
@@ -198,13 +204,13 @@
               <li>未来课程优惠</li>
               <li>咨询师认证路径</li>
             </ul>
-            <button class="btn-enroll">立即报名</button>
+            <button type="button" class="btn-enroll">立即报名</button>
           </div>
         </div>
 
         <div class="enrollment-notice">
-          <p>💡 具体开放时间与共鉴名额，以辰鉴最新通知为准</p>
-          <p>📧 参与咨询请联系：hello@chenjian.me</p>
+          <p>具体开放时间与共鉴名额，以辰鉴最新通知为准</p>
+          <p>参与咨询请联系：hello@chenjian.me</p>
         </div>
       </div>
     </section>
@@ -306,66 +312,23 @@ export default {
   width: 100%;
 }
 
-/* 导航栏 */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  z-index: 1000;
-}
-
-.nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-size: 24px;
-  font-weight: 600;
-  color: #d4524f;
-}
-
-.nav-menu {
-  display: flex;
-  gap: 30px;
-}
-
-.nav-link {
-  font-size: 16px;
-  color: #666;
-  transition: color 0.3s;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  color: #d4524f;
-}
-
 /* 页面标题 */
 .page-header {
   padding: 140px 20px 80px;
-  background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+  background: linear-gradient(135deg, rgba(255, 240, 223, .85) 0%, rgba(184, 92, 80, .22) 100%);
   text-align: center;
 }
 
 .page-header h1 {
   font-size: 48px;
   font-weight: 700;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 20px;
 }
 
 .page-header p {
   font-size: 18px;
-  color: #636e72;
+  color: var(--muted, #7d6653);
   line-height: 1.8;
 }
 
@@ -373,7 +336,7 @@ export default {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0;
 }
 
 /* 课程介绍 */
@@ -392,14 +355,14 @@ export default {
 .intro-text h2 {
   font-size: 32px;
   font-weight: 700;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 20px;
 }
 
 .intro-text p {
   font-size: 16px;
   line-height: 1.8;
-  color: #666;
+  color: var(--muted, #7d6653);
   margin-bottom: 15px;
 }
 
@@ -408,16 +371,27 @@ export default {
 }
 
 .intro-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   font-size: 16px;
   line-height: 2.2;
-  color: #555;
+  color: var(--muted, #7d6653);
+}
+
+.intro-benefits .icon-mark {
+  width: 19px;
+  height: 19px;
+  margin-top: 7px;
+  flex: 0 0 auto;
+  color: var(--cinnabar-deep, #9e3f35);
 }
 
 .course-card-preview {
-  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+  background: linear-gradient(135deg, rgba(255, 240, 223, .78) 0%, rgba(184, 92, 80, .12) 100%);
   padding: 40px;
   border-radius: 20px;
-  border: 2px solid #d4524f;
+  border: 2px solid var(--cinnabar, #b85c50);
   position: relative;
 }
 
@@ -425,7 +399,7 @@ export default {
   position: absolute;
   top: 20px;
   right: 20px;
-  background: #d4524f;
+  background: var(--cinnabar, #b85c50);
   color: #fff;
   padding: 6px 14px;
   border-radius: 20px;
@@ -436,7 +410,7 @@ export default {
 .course-card-preview h3 {
   font-size: 28px;
   font-weight: 700;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 30px;
   text-align: center;
 }
@@ -454,32 +428,32 @@ export default {
 .stat-number {
   font-size: 32px;
   font-weight: 700;
-  color: #d4524f;
+  color: var(--cinnabar-deep, #9e3f35);
   margin-bottom: 8px;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #666;
+  color: var(--muted, #7d6653);
 }
 
 /* 课程大纲 */
 .course-outline {
   padding: 80px 0;
-  background: #f8f9fa;
+  background: var(--surface-strong, #fffaf0);
 }
 
 .course-outline h2 {
   font-size: 42px;
   font-weight: 700;
   text-align: center;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 15px;
 }
 
 .section-desc {
   text-align: center;
-  color: #666;
+  color: var(--muted, #7d6653);
   font-size: 16px;
   margin-bottom: 50px;
 }
@@ -494,12 +468,12 @@ export default {
   border-radius: 12px;
   margin-bottom: 20px;
   overflow: hidden;
-  border: 2px solid #e0e0e0;
-  transition: all 0.3s;
+  border: 2px solid rgba(139, 90, 20, .16);
+  transition: border-color var(--motion-standard, 220ms) var(--ease-out, ease);
 }
 
 .module-item:hover {
-  border-color: #d4524f;
+  border-color: var(--cinnabar, #b85c50);
 }
 
 .module-header {
@@ -508,11 +482,11 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.3s;
+  transition: background var(--motion-standard, 220ms) var(--ease-out, ease);
 }
 
 .module-header:hover {
-  background: #f8f9fa;
+  background: var(--surface-strong, #fffaf0);
 }
 
 .module-title {
@@ -522,7 +496,7 @@ export default {
 }
 
 .module-number {
-  background: #d4524f;
+  background: var(--cinnabar, #b85c50);
   color: #fff;
   padding: 6px 14px;
   border-radius: 20px;
@@ -533,35 +507,35 @@ export default {
 .module-title h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
 }
 
 .module-toggle {
   font-size: 28px;
-  color: #d4524f;
+  color: var(--cinnabar-deep, #9e3f35);
   font-weight: 300;
 }
 
 .module-content {
   padding: 0 30px 25px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--line, rgba(139, 90, 20, .16));
 }
 
 .module-desc {
   font-size: 15px;
-  color: #666;
+  color: var(--muted, #7d6653);
   margin: 20px 0;
   line-height: 1.6;
 }
 
 .lesson-list li {
   padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--line, rgba(139, 90, 20, .16));
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 15px;
-  color: #555;
+  color: var(--muted, #7d6653);
 }
 
 .lesson-list li:last-child {
@@ -569,7 +543,10 @@ export default {
 }
 
 .lesson-icon {
-  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: var(--cinnabar-deep, #9e3f35);
 }
 
 /* 适合人群 */
@@ -582,7 +559,7 @@ export default {
   font-size: 42px;
   font-weight: 700;
   text-align: center;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 50px;
 }
 
@@ -593,47 +570,49 @@ export default {
 }
 
 .audience-card {
-  background: #f8f9fa;
+  background: var(--surface-strong, #fffaf0);
   padding: 30px;
   border-radius: 15px;
   text-align: center;
-  transition: all 0.3s;
+  transition: box-shadow var(--motion-standard, 220ms) var(--ease-out, ease);
 }
 
 .audience-card:hover {
-  transform: translateY(-5px);
+  transform: none;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .audience-icon {
-  font-size: 48px;
+  width: 42px;
+  height: 42px;
   margin-bottom: 20px;
+  color: var(--cinnabar-deep, #9e3f35);
 }
 
 .audience-card h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 15px;
 }
 
 .audience-card p {
   font-size: 14px;
   line-height: 1.7;
-  color: #666;
+  color: var(--muted, #7d6653);
 }
 
 /* 课程特色 */
 .course-features {
   padding: 80px 0;
-  background: #f8f9fa;
+  background: var(--surface-strong, #fffaf0);
 }
 
 .course-features h2 {
   font-size: 42px;
   font-weight: 700;
   text-align: center;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 50px;
 }
 
@@ -648,21 +627,23 @@ export default {
 }
 
 .feature-icon {
-  font-size: 56px;
+  width: 46px;
+  height: 46px;
   margin-bottom: 20px;
+  color: var(--cinnabar-deep, #9e3f35);
 }
 
 .feature-item h3 {
   font-size: 22px;
   font-weight: 600;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 15px;
 }
 
 .feature-item p {
   font-size: 15px;
   line-height: 1.7;
-  color: #666;
+  color: var(--muted, #7d6653);
 }
 
 /* 价格 */
@@ -675,7 +656,7 @@ export default {
   font-size: 42px;
   font-weight: 700;
   text-align: center;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 50px;
 }
 
@@ -688,30 +669,30 @@ export default {
 }
 
 .pricing-card {
-  background: #f8f9fa;
+  background: var(--surface-strong, #fffaf0);
   border-radius: 20px;
   padding: 40px;
   position: relative;
-  transition: all 0.3s;
+  transition: border-color var(--motion-standard, 220ms) var(--ease-out, ease), box-shadow var(--motion-standard, 220ms) var(--ease-out, ease), background var(--motion-standard, 220ms) var(--ease-out, ease);
   border: 2px solid transparent;
 }
 
 .pricing-card:hover {
-  transform: translateY(-5px);
+  transform: none;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-  border-color: #d4524f;
+  border-color: var(--cinnabar, #b85c50);
 }
 
 .pricing-card.featured {
-  background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
-  border-color: #d4524f;
+  background: linear-gradient(135deg, rgba(255, 240, 223, .78) 0%, rgba(184, 92, 80, .12) 100%);
+  border-color: var(--cinnabar, #b85c50);
 }
 
 .pricing-badge {
   position: absolute;
   top: 20px;
   right: 20px;
-  background: #666;
+  background: var(--muted, #7d6653);
   color: #fff;
   padding: 6px 14px;
   border-radius: 20px;
@@ -720,13 +701,13 @@ export default {
 }
 
 .pricing-badge.recommended {
-  background: #d4524f;
+  background: var(--cinnabar, #b85c50);
 }
 
 .pricing-card h3 {
   font-size: 24px;
   font-weight: 600;
-  color: #2d3436;
+  color: var(--ink, #2f241b);
   margin-bottom: 20px;
   text-align: center;
 }
@@ -739,12 +720,12 @@ export default {
 .price-amount {
   font-size: 36px;
   font-weight: 700;
-  color: #d4524f;
+  color: var(--cinnabar-deep, #9e3f35);
 }
 
 .price-original {
   font-size: 18px;
-  color: #999;
+  color: var(--muted, #7d6653);
   text-decoration: line-through;
   margin-left: 10px;
 }
@@ -755,7 +736,7 @@ export default {
 
 .pricing-includes li {
   font-size: 15px;
-  color: #666;
+  color: var(--muted, #7d6653);
   line-height: 2;
   padding-left: 20px;
   position: relative;
@@ -765,7 +746,7 @@ export default {
   content: '✓';
   position: absolute;
   left: 0;
-  color: #d4524f;
+  color: var(--cinnabar-deep, #9e3f35);
   font-weight: 600;
 }
 
@@ -774,24 +755,24 @@ export default {
   padding: 14px;
   font-size: 16px;
   font-weight: 600;
-  color: #d4524f;
-  border: 2px solid #d4524f;
+  color: var(--cinnabar, #b85c50);
+  border: 2px solid var(--cinnabar, #b85c50);
   border-radius: 50px;
-  transition: all 0.3s;
+  transition: background var(--motion-standard, 220ms) var(--ease-out, ease), color var(--motion-standard, 220ms) var(--ease-out, ease), border-color var(--motion-standard, 220ms) var(--ease-out, ease), transform var(--motion-fast, 150ms) var(--ease-out, ease);
 }
 
 .btn-enroll:hover {
-  background: #d4524f;
+  background: var(--cinnabar, #b85c50);
   color: #fff;
 }
 
 .btn-enroll.primary {
-  background: #d4524f;
+  background: var(--cinnabar, #b85c50);
   color: #fff;
 }
 
 .btn-enroll.primary:hover {
-  background: #c0392b;
+  background: var(--cinnabar-deep, #9e3f35);
 }
 
 .enrollment-notice {
@@ -801,38 +782,34 @@ export default {
 
 .enrollment-notice p {
   font-size: 15px;
-  color: #666;
+  color: var(--muted, #7d6653);
   margin-bottom: 10px;
 }
 
 /* 页脚 */
 .footer {
-  background: #2d3436;
+  background: var(--ink, #2f241b);
   padding: 40px 0;
   text-align: center;
-  color: #b2bec3;
+  color: rgba(255, 250, 240, .76);
 }
 
 /* 响应式 */
 @media (max-width: 768px) {
-  .nav-container {
-    padding: 15px 20px;
-  }
-
-  .nav-menu {
-    gap: 12px;
-  }
-
-  .nav-link {
-    font-size: 13px;
-  }
-
   .page-header {
-    padding: 100px 20px 60px;
+    padding: 56px 20px 42px;
   }
 
   .page-header h1 {
-    font-size: 32px;
+    max-width: 100%;
+    font-size: clamp(32px, 10vw, 44px);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .page-header p {
+    font-size: 16px;
+    line-height: 1.75;
   }
 
   .intro-content {
@@ -850,7 +827,7 @@ export default {
   .target-audience h2,
   .course-features h2,
   .course-pricing h2 {
-    font-size: 32px;
+    font-size: clamp(28px, 8vw, 34px);
   }
 
   .audience-grid,
@@ -859,11 +836,368 @@ export default {
   }
 
   .module-header {
-    padding: 20px;
+    min-height: 64px;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 18px 16px;
+  }
+
+  .module-title {
+    min-width: 0;
+    align-items: flex-start;
+    gap: 9px;
+  }
+
+  .module-number {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .module-title h3 {
+    min-width: 0;
+    font-size: 16px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .module-toggle {
+    flex: 0 0 auto;
+    font-size: 24px;
+    line-height: 1.1;
   }
 
   .module-content {
-    padding: 0 20px 20px;
+    padding: 0 16px 20px;
   }
+
+  .course-card-preview,
+  .pricing-card,
+  .audience-card {
+    padding: 24px 20px;
+  }
+
+  .preview-badge {
+    top: 14px;
+    right: 14px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .course-card-preview h3 {
+    margin-bottom: 24px;
+    font-size: 25px;
+  }
+
+  .preview-stats {
+    gap: 10px;
+  }
+
+  .stat-number {
+    font-size: 26px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+
+  .lesson-list li {
+    align-items: flex-start;
+    line-height: 1.6;
+  }
+
+  .lesson-icon {
+    flex: 0 0 auto;
+  }
+
+  .btn-enroll {
+    min-height: 48px;
+  }
+}
+
+/* 课程页与主站保持同一套编辑感纸张主题。 */
+.course {
+  min-height: 100dvh;
+  background: transparent;
+}
+
+.course .page-header {
+  position: relative;
+  overflow: hidden;
+  padding: 62px 0 48px;
+  background:
+    linear-gradient(105deg, rgba(255, 250, 240, 0.9), rgba(255, 239, 222, 0.72)),
+    radial-gradient(circle at 86% 20%, rgba(111, 159, 147, 0.18), transparent 25%),
+    var(--paper-deep, #ead9bf);
+}
+
+.course .page-header::after {
+  content: "共鉴";
+  position: absolute;
+  right: 8%;
+  bottom: -30px;
+  color: rgba(184, 92, 80, 0.08);
+  font-family: var(--font-display, serif);
+  font-size: 120px;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.course .page-header .container {
+  position: relative;
+  z-index: 1;
+}
+
+.course-intro,
+.target-audience,
+.course-pricing {
+  background: transparent;
+}
+
+.course-outline,
+.course-features {
+  background: rgba(255, 252, 245, 0.34);
+}
+
+.course-card-preview,
+.module-item,
+.audience-card,
+.pricing-card {
+  border-color: rgba(139, 90, 20, 0.14);
+  background: rgba(255, 252, 245, 0.76);
+  box-shadow: var(--shadow-card, 0 16px 48px -34px rgba(84, 48, 25, 0.48));
+}
+
+.course-card-preview,
+.pricing-card.featured {
+  border-color: rgba(184, 92, 80, 0.34);
+  background: linear-gradient(145deg, rgba(255, 252, 245, 0.96), rgba(255, 239, 222, 0.82));
+}
+
+.course-card-preview h3,
+.module-title h3,
+.audience-card h3,
+.pricing-card h3 {
+  font-family: var(--font-display, serif);
+}
+
+.module-number,
+.pricing-badge.recommended,
+.btn-enroll.primary {
+  background: linear-gradient(145deg, var(--cinnabar, #b5574c), var(--cinnabar-deep, #9e3f35));
+}
+
+.preview-badge {
+  background: var(--cinnabar-deep, #9e3f35);
+}
+
+/* 移动端最终密度：课程内容以短段落和可展开模块为主，避免首屏过高。 */
+@media (max-width: 768px) {
+  .course .page-header {
+    padding: 38px 0 30px;
+  }
+
+  .course .page-header::after {
+    right: 4%;
+    bottom: -18px;
+    font-size: 72px;
+  }
+
+  .course .page-header h1 {
+    font-size: clamp(32px, 10vw, 44px);
+    line-height: 1.1;
+  }
+
+  .course-intro,
+  .course-outline,
+  .target-audience,
+  .course-features,
+  .course-pricing {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .intro-content {
+    gap: 16px;
+  }
+
+  .intro-text h2,
+  .course-outline h2,
+  .target-audience h2,
+  .course-features h2,
+  .course-pricing h2 {
+    margin-bottom: 22px;
+    font-size: clamp(24px, 8vw, 30px);
+    line-height: 1.25;
+  }
+
+  .intro-benefits {
+    margin-top: 18px;
+  }
+
+  .intro-benefits li {
+    gap: 8px;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .course-card-preview,
+  .pricing-card,
+  .audience-card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .course-card-preview h3 {
+    margin-bottom: 18px;
+    font-size: 22px;
+  }
+
+  .preview-stats {
+    gap: 8px;
+  }
+
+  .stat-number {
+    font-size: 24px;
+  }
+
+  .modules {
+    width: 100%;
+  }
+
+  .module-item {
+    margin-bottom: 12px;
+    border-radius: 12px;
+  }
+
+  .module-header {
+    min-height: 56px;
+    gap: 8px;
+    padding: 14px 12px;
+  }
+
+  .module-title {
+    gap: 7px;
+  }
+
+  .module-number {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .module-title h3 {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .module-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 21px;
+  }
+
+  .module-content {
+    padding: 0 12px 16px;
+  }
+
+  .module-desc {
+    margin: 14px 0;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .lesson-list li {
+    gap: 9px;
+    padding: 10px 0;
+    font-size: 16px;
+  }
+
+  .audience-grid,
+  .pricing-cards,
+  .features-grid {
+    gap: 12px;
+  }
+
+  .audience-icon,
+  .feature-icon {
+    width: 34px;
+    height: 34px;
+    margin-bottom: 12px;
+  }
+
+  .audience-card h3,
+  .feature-item h3,
+  .pricing-card h3 {
+    margin-bottom: 10px;
+    font-size: 19px;
+  }
+
+  .audience-card p,
+  .feature-item p {
+    font-size: 16px;
+  }
+
+  .pricing-card {
+    padding-top: 20px;
+  }
+
+  .pricing-badge {
+    top: 12px;
+    right: 12px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .btn-enroll {
+    min-height: 46px;
+  }
+}
+
+/* 按钮专项：报名按钮与全站 CTA 对齐，胶囊形状只留给标签。 */
+.module-header {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.btn-enroll {
+  display: inline-flex;
+  min-height: var(--button-height, 46px);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--cinnabar, #b85c50);
+  border-radius: var(--button-radius, 13px);
+  padding: 0 18px;
+  color: var(--cinnabar-deep, #9e3f35);
+  font-family: var(--font-ui, sans-serif);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+  transition: background var(--motion-standard, 220ms) var(--ease-out, ease), color var(--motion-standard, 220ms) var(--ease-out, ease), border-color var(--motion-standard, 220ms) var(--ease-out, ease), transform var(--motion-fast, 150ms) var(--ease-out, ease);
+}
+
+.btn-enroll:hover {
+  border-color: var(--cinnabar-deep, #9e3f35);
+  background: rgba(184, 92, 80, 0.1);
+  color: var(--cinnabar-deep, #9e3f35);
+  transform: none;
+}
+
+.btn-enroll:active {
+  transform: scale(0.985);
+}
+
+.btn-enroll.primary {
+  border-color: var(--cinnabar-deep, #9e3f35);
+  background: linear-gradient(145deg, var(--cinnabar, #b5574c), var(--cinnabar-deep, #9e3f35));
+  color: #fffaf0;
+}
+
+.btn-enroll.primary:hover {
+  background: linear-gradient(145deg, var(--cinnabar, #b5574c), #8f352f);
+  color: #fffaf0;
 }
 </style>

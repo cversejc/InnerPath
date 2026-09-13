@@ -116,46 +116,61 @@
                   <h3>{{ calendarLabel }}</h3>
                   <p>{{ meta.dateLabel }}</p>
                 </div>
-                <button class="today-button" type="button" @click="showCurrentDate">回到当前聚焦 <span>↗</span></button>
+                <button class="today-button" type="button" @click="showCurrentDate">回到当前聚焦 <IconMark name="arrow" /></button>
               </header>
 
-              <div class="calendar-weekdays" aria-hidden="true">
-                <span v-for="weekday in weekdays" :key="weekday">{{ weekday }}</span>
+              <div
+                class="calendar-grid-scroll"
+                :tabindex="isMobileLayout ? 0 : -1"
+                :aria-label="isMobileLayout ? '日期网格，可横向滑动查看完整一周' : undefined"
+              >
+                <div class="calendar-weekdays" aria-hidden="true">
+                  <span v-for="weekday in weekdays" :key="weekday">{{ weekday }}</span>
+                </div>
+
+                <div class="calendar-grid" role="group" aria-label="本月日期">
+                  <template v-for="cell in calendarCells" :key="cell.key">
+                    <div v-if="cell.empty" class="calendar-empty" aria-hidden="true"></div>
+                    <button
+                      v-else
+                      type="button"
+                      class="date-cell"
+                      :class="[`tone-${cell.tone}`, { selected: selectedDate === cell.date, 'is-today': cell.isCurrentDay }]"
+                      :aria-label="`${cell.month}月${cell.day}日，${cell.statusLabel}${cell.recordCount ? `，已有${cell.recordCount}条记录` : ''}`"
+                      :aria-pressed="selectedDate === cell.date"
+                      @click="selectDate(cell.date)"
+                    >
+                      <span class="date-cell-top"><strong>{{ String(cell.day).padStart(2, '0') }}</strong><em v-if="cell.month === 10">十月</em></span>
+                      <span class="date-cell-pillar">{{ cell.dayPillar || cell.shortLabel }}</span>
+                      <span class="date-cell-keyword">{{ cell.keyword || cell.shortLabel }}</span>
+                      <span class="date-cell-status">{{ cell.statusLabel }}</span>
+                      <span v-if="cell.recordCount" class="date-cell-record"><i></i>{{ cell.recordCount }}条记录</span>
+                      <span v-if="cell.isCurrentDay" class="today-mark">今天</span>
+                    </button>
+                  </template>
+                </div>
               </div>
 
-              <div class="calendar-grid">
-                <template v-for="cell in calendarCells" :key="cell.key">
-                  <div v-if="cell.empty" class="calendar-empty" aria-hidden="true"></div>
-                  <button
-                    v-else
-                    type="button"
-                    class="date-cell"
-                    :class="[`tone-${cell.tone}`, { selected: selectedDate === cell.date, 'is-today': cell.isCurrentDay }]"
-                    :aria-label="`${cell.month}月${cell.day}日，${cell.statusLabel}${cell.recordCount ? `，已有${cell.recordCount}条记录` : ''}`"
-                    :aria-selected="selectedDate === cell.date"
-                    @click="selectDate(cell.date)"
-                  >
-                    <span class="date-cell-top"><strong>{{ String(cell.day).padStart(2, '0') }}</strong><em v-if="cell.month === 10">十月</em></span>
-                    <span class="date-cell-pillar">{{ cell.dayPillar || cell.shortLabel }}</span>
-                    <span class="date-cell-keyword">{{ cell.keyword || cell.shortLabel }}</span>
-                    <span class="date-cell-status">{{ cell.statusLabel }}</span>
-                    <span v-if="cell.recordCount" class="date-cell-record"><i></i>{{ cell.recordCount }}条记录</span>
-                    <span v-if="cell.isCurrentDay" class="today-mark">今天</span>
-                  </button>
-                </template>
-              </div>
-
-              <button v-if="!mobileDetailOpen" class="mobile-detail-launch" type="button" @click="mobileDetailOpen = true">
-                查看 {{ selectedDay.month }}月{{ selectedDay.day }}日的建议与记录 <span>↗</span>
+              <button v-if="!mobileDetailOpen" ref="detailTrigger" class="mobile-detail-launch" type="button" @click="openMobileDetail">
+                查看 {{ selectedDay.month }}月{{ selectedDay.day }}日的建议与记录 <IconMark name="arrow" />
               </button>
             </section>
 
-            <aside class="paper-card day-detail" :class="{ 'is-open': mobileDetailOpen }" aria-live="polite">
-              <button class="detail-close" type="button" aria-label="关闭日期详情" @click="mobileDetailOpen = false">×</button>
+            <aside
+              ref="dayDetail"
+              class="paper-card day-detail"
+              :class="{ 'is-open': mobileDetailOpen }"
+              :role="isMobileLayout && mobileDetailOpen ? 'dialog' : 'complementary'"
+              :aria-modal="isMobileLayout && mobileDetailOpen ? 'true' : undefined"
+              aria-labelledby="day-detail-title"
+              tabindex="-1"
+              @keydown="handleDetailKeydown"
+            >
+              <button class="detail-close" type="button" aria-label="关闭日期详情" @click="closeMobileDetail"><IconMark name="close" /></button>
               <div class="detail-header">
                 <div>
                   <span class="detail-kicker">{{ selectedEntry.isPhase ? 'PHASE NAVIGATION' : 'DAY NAVIGATION' }}</span>
-                  <h3>{{ selectedDay.month }}月{{ selectedDay.day }}日 <small>星期{{ selectedDay.weekday }}</small></h3>
+                  <h3 id="day-detail-title">{{ selectedDay.month }}月{{ selectedDay.day }}日 <small>星期{{ selectedDay.weekday }}</small></h3>
                 </div>
                 <span class="status-pill" :class="`tone-${selectedEntry.tone}`">{{ selectedEntry.statusLabel }}</span>
               </div>
@@ -252,7 +267,7 @@
                   <span>＋</span> 记录一件事 / 一个决定
                 </button>
 
-                <form v-else class="record-form" @submit.prevent="saveDecisionLog">
+                <form v-else class="record-form" :aria-describedby="recordError ? 'record-error' : undefined" @submit.prevent="saveDecisionLog">
                   <div class="record-form-head">
                     <span>新记录</span>
                     <button type="button" @click="closeRecordForm">收起</button>
@@ -265,23 +280,23 @@
                   <label class="record-form-field"><span>结果 / 备注（可选）</span><input v-model.trim="recordDraft.note" maxlength="240" placeholder="例如：比预想顺利，明天继续细化"></label>
                   <div class="record-form-actions">
                     <button class="secondary-button" type="button" @click="closeRecordForm">取消</button>
-                    <button class="primary-button" type="submit" :disabled="savingRecord">{{ savingRecord ? '保存中…' : '保存记录' }}</button>
+                    <button class="primary-button" type="submit" :disabled="savingRecord" :aria-busy="savingRecord">{{ savingRecord ? '保存中…' : '保存记录' }}</button>
                   </div>
-                  <p v-if="recordError" class="record-error">{{ recordError }}</p>
+                  <p v-if="recordError" id="record-error" class="record-error" role="alert" aria-live="assertive">{{ recordError }}</p>
                 </form>
-                <p v-if="recordFeedback" class="record-feedback">{{ recordFeedback }}</p>
+                <p v-if="recordFeedback" class="record-feedback" role="status" aria-live="polite">{{ recordFeedback }}</p>
                 <p class="record-storage-note"><i></i>{{ recordSource === 'api' ? '已同步到你的账号' : '当前暂存于本设备' }}</p>
               </section>
 
-              <button v-if="selectedDate !== todayDate" class="detail-reset" type="button" @click="showCurrentDate">回到最近可用日 <span>→</span></button>
+              <button v-if="selectedDate !== todayDate" class="detail-reset" type="button" @click="showCurrentDate">回到最近可用日 <IconMark name="arrow" /></button>
             </aside>
           </div>
 
           <div class="phase-rail" aria-label="月度能量阶段">
-            <button v-for="phase in phases" :key="phase.id" type="button" class="phase-card" :class="[`tone-${phase.tone}`, { active: selectedEntry.phaseId === phase.id }]" @click="selectDate(phase.startDate)">
+            <button v-for="phase in phases" :key="phase.id" type="button" class="phase-card" :class="[`tone-${phase.tone}`, { active: selectedEntry.phaseId === phase.id }]" :aria-pressed="selectedEntry.phaseId === phase.id" @click="selectDate(phase.startDate)">
               <span class="phase-card-index">0{{ phases.indexOf(phase) + 1 }}</span>
               <span class="phase-card-copy"><strong>{{ phase.label }}</strong><small>{{ phase.dateRange }}</small></span>
-              <span class="phase-card-arrow">↗</span>
+              <IconMark name="arrow" class="phase-card-arrow" />
             </button>
           </div>
         </div>
@@ -295,11 +310,11 @@
           </div>
           <div class="decision-table paper-card">
             <div class="decision-row decision-head"><span>日期</span><span>日柱</span><span>色块</span><span>适合决策类型</span></div>
-            <button v-for="node in decisionNodes" :key="node.date" type="button" class="decision-row" @click="selectDecisionNode(node)">
+            <button v-for="node in decisionNodes" :key="node.date" type="button" class="decision-row" :aria-pressed="selectedDate === node.dateKey" @click="selectDecisionNode(node)">
               <span><strong>{{ node.date }}</strong></span>
               <span class="node-pillar">{{ node.pillar }}</span>
               <span><i class="legend-dot" :class="`legend-dot-${node.tone}`"></i></span>
-              <span class="node-type">{{ node.type }} <b>↗</b></span>
+              <span class="node-type">{{ node.type }} <IconMark name="arrow" /></span>
             </button>
           </div>
         </div>
@@ -330,7 +345,7 @@
 
     <BrandFooter />
 
-    <div v-if="mobileDetailOpen" class="detail-scrim" @click="mobileDetailOpen = false"></div>
+    <div v-if="mobileDetailOpen" class="detail-scrim" @click="closeMobileDetail"></div>
   </div>
 </template>
 
@@ -353,6 +368,7 @@ import {
 
 const weekdays = ['日', '一', '二', '三', '四', '五', '六']
 const DECISION_LOG_STORAGE_KEY = 'innerseek:decision-logs'
+const mobileDetailMediaQuery = typeof window === 'undefined' ? null : window.matchMedia('(max-width: 900px)')
 
 function createRecordDraft() {
   return {
@@ -422,6 +438,7 @@ export default {
       weekdays: ['一', '二', '三', '四', '五', '六', '日'],
       selectedDate: null,
       todayDate: null,
+      isMobileLayout: mobileDetailMediaQuery?.matches ?? false,
       mobileDetailOpen: false,
       decisionNodes: [],
       recordPrompts: [],
@@ -522,11 +539,14 @@ export default {
   },
   async mounted() {
     window.addEventListener('keydown', this.handleEscape)
+    mobileDetailMediaQuery?.addEventListener('change', this.handleLayoutChange)
     await this.loadCalendar()
     await this.loadDecisionLogs()
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleEscape)
+    mobileDetailMediaQuery?.removeEventListener('change', this.handleLayoutChange)
+    document.body.classList.remove('dialog-open')
   },
   methods: {
     async loadCalendar() {
@@ -591,7 +611,7 @@ export default {
       this.phases = source === 'mock' ? mockPhaseDefinitions : this.buildPhases()
       this.recordPrompts = source === 'mock' ? mockRecordPrompts : []
       this.cautionNotes = source === 'mock' ? mockCautionNotes : ['', '', '今天不需要做到完美，只需要完成一件真正重要的事。']
-      this.mobileDetailOpen = !(window.matchMedia('(max-width: 900px)').matches)
+      this.mobileDetailOpen = !this.isMobileLayout
     },
     buildPhases() {
       const grouped = []
@@ -618,16 +638,66 @@ export default {
       this.closeRecordForm()
       this.recordFeedback = ''
       this.showFullGuidance = false
-      if (window.matchMedia('(max-width: 900px)').matches) {
-        this.mobileDetailOpen = true
+      if (this.isMobileLayout) {
+        this.openMobileDetail()
       }
     },
     selectDecisionNode(node) {
       this.selectDate(node.dateKey || this.selectedDate)
     },
     showCurrentDate() {
-      if (this.todayDate) this.selectDate(this.todayDate)
+      if (this.todayDate) {
+        this.selectDate(this.todayDate)
+      } else if (this.isMobileLayout) {
+        this.openMobileDetail()
+      }
+    },
+    handleLayoutChange(event) {
+      this.isMobileLayout = event.matches
+      this.mobileDetailOpen = !event.matches
+      document.body.classList.remove('dialog-open')
+    },
+    openMobileDetail() {
+      if (!this.isMobileLayout) return
       this.mobileDetailOpen = true
+      document.body.classList.add('dialog-open')
+      this.$nextTick(() => this.$refs.dayDetail?.querySelector('.detail-close')?.focus())
+    },
+    closeMobileDetail({ restoreFocus = true } = {}) {
+      this.mobileDetailOpen = false
+      document.body.classList.remove('dialog-open')
+      if (restoreFocus) {
+        this.$nextTick(() => this.$refs.detailTrigger?.focus())
+      }
+    },
+    handleDetailKeydown(event) {
+      if (!this.mobileDetailOpen) return
+
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        this.closeMobileDetail()
+        return
+      }
+
+      if (event.key !== 'Tab') return
+      const focusables = Array.from(this.$refs.dayDetail?.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+      ) || [])
+      if (!focusables.length) {
+        event.preventDefault()
+        this.$refs.dayDetail?.focus()
+        return
+      }
+
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     },
     getRecordStorageKey() {
       const userKey = authState.user?.id || 'guest'
@@ -766,7 +836,9 @@ export default {
       }
     },
     handleEscape(event) {
-      if (event.key === 'Escape') this.mobileDetailOpen = false
+      if (event.key === 'Escape' && this.isMobileLayout && this.mobileDetailOpen) {
+        this.closeMobileDetail()
+      }
     }
   }
 }
@@ -775,7 +847,7 @@ export default {
 <style scoped>
 .calendar-page {
   --calendar-ink: #2e251d;
-  --calendar-muted: #806e5f;
+  --calendar-muted: var(--muted, #7d6653);
   --calendar-line: rgba(139, 90, 20, 0.16);
   --calendar-green: #658f73;
   --calendar-yellow: #bd9550;
@@ -803,7 +875,7 @@ export default {
 }
 
 .calendar-empty-state p {
-  color: var(--calendar-muted, #806e5f);
+  color: var(--calendar-muted, #7d6653);
 }
 
 .calendar-hero {
@@ -1201,9 +1273,14 @@ export default {
 .today-button:hover,
 .mobile-detail-launch:hover,
 .detail-reset:hover { transform: translateY(-1px); background: rgba(184, 92, 80, 0.13); }
-.today-button span,
-.mobile-detail-launch span,
-.detail-reset span { margin-left: 5px; font-size: 14px; }
+.today-button .icon-mark,
+.mobile-detail-launch .icon-mark,
+.detail-reset .icon-mark { width: 16px; height: 16px; margin-left: 5px; }
+
+.calendar-grid-scroll {
+  min-width: 0;
+  max-width: 100%;
+}
 
 .calendar-weekdays,
 .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
@@ -1273,7 +1350,18 @@ export default {
 .today-mark { position: absolute; right: 9px; bottom: 9px; z-index: 2; color: var(--cinnabar-deep); font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 900; }
 .date-cell.is-today { outline: 2px solid rgba(184, 92, 80, 0.42); outline-offset: -4px; }
 
-.mobile-detail-launch { display: none; width: 100%; margin-top: 12px; }
+.mobile-detail-launch {
+  display: none;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 12px;
+  border: 1px solid rgba(184, 92, 80, 0.25);
+  border-radius: 12px;
+  background: rgba(184, 92, 80, 0.08);
+  color: var(--cinnabar-deep);
+  font-size: 13px;
+  font-weight: 800;
+}
 
 .day-detail {
   position: sticky;
@@ -1355,7 +1443,7 @@ export default {
 .guidance-good .guidance-card-head span::before { content: '＋'; margin-right: 4px; color: var(--calendar-green); }
 .guidance-bad .guidance-card-head span::before { content: '—'; margin-right: 4px; color: var(--calendar-red); }
 .guidance-card ul { display: grid; gap: 6px; margin-top: 9px; }
-.guidance-card li { position: relative; padding-left: 11px; color: var(--calendar-muted); font-size: 10px; line-height: 1.55; }
+.guidance-card li { position: relative; padding-left: 11px; color: var(--calendar-muted); font-size: 13px; line-height: 1.6; }
 .guidance-card li::before { content: '·'; position: absolute; left: 1px; color: var(--cinnabar); font-weight: 900; }
 .guidance-card li.guidance-empty { padding-left: 0; color: rgba(128, 110, 95, 0.72); }
 .guidance-card li.guidance-empty::before { display: none; }
@@ -1367,11 +1455,11 @@ export default {
 .actual-records-head > div { display: grid; gap: 6px; }
 .actual-records-head h4 { color: var(--calendar-ink); font-size: 18px; }
 .actual-count { display: inline-flex; min-height: 23px; align-items: center; border: 1px solid rgba(184, 92, 80, 0.2); border-radius: 999px; padding: 0 9px; color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 10px; font-weight: 900; }
-.actual-records-intro { margin-top: 9px; color: var(--calendar-muted); font-size: 11px; line-height: 1.65; }
+.actual-records-intro { margin-top: 9px; color: var(--calendar-muted); font-size: 13px; line-height: 1.7; }
 .actual-record-list { display: grid; gap: 8px; margin-top: 13px; }
 .actual-record-item { padding: 11px 12px; border: 1px solid rgba(139, 90, 20, 0.12); border-radius: 12px; background: rgba(255, 252, 245, 0.58); }
 .actual-record-meta { display: flex; align-items: center; gap: 6px; }
-.record-kind, .record-status { display: inline-flex; min-height: 19px; align-items: center; border-radius: 999px; padding: 0 7px; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 9px; font-weight: 900; }
+.record-kind, .record-status { display: inline-flex; min-height: 22px; align-items: center; border-radius: 999px; padding: 0 8px; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 11px; font-weight: 900; }
 .record-kind { color: var(--cinnabar-deep); background: rgba(184, 92, 80, 0.1); }
 .record-kind.kind-decision { color: var(--gold-deep); background: rgba(217, 186, 98, 0.18); }
 .record-status { color: #4f806f; background: rgba(111, 159, 147, 0.13); }
@@ -1380,15 +1468,15 @@ export default {
 .record-delete { margin-left: auto; color: var(--calendar-muted); font-size: 10px; opacity: 0; transition: color 0.2s ease, opacity 0.2s ease; }
 .actual-record-item:hover .record-delete, .record-delete:focus-visible { opacity: 1; }
 .record-delete:hover { color: var(--cinnabar-deep); }
-.actual-record-item > p { margin-top: 8px; color: var(--calendar-ink); font-size: 12px; line-height: 1.6; }
-.actual-record-item > small { display: block; margin-top: 4px; color: var(--calendar-muted); font-size: 10px; line-height: 1.55; }
-.actual-record-empty { margin-top: 13px; padding: 12px; border: 1px dashed rgba(139, 90, 20, 0.17); border-radius: 12px; color: var(--calendar-muted); font-size: 11px; line-height: 1.65; }
+.actual-record-item > p { margin-top: 8px; color: var(--calendar-ink); font-size: 13px; line-height: 1.7; }
+.actual-record-item > small { display: block; margin-top: 4px; color: var(--calendar-muted); font-size: 12px; line-height: 1.6; }
+.actual-record-empty { margin-top: 13px; padding: 12px; border: 1px dashed rgba(139, 90, 20, 0.17); border-radius: 12px; color: var(--calendar-muted); font-size: 13px; line-height: 1.7; }
 .quick-records { display: grid; gap: 7px; margin-top: 15px; }
 .quick-records-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--calendar-ink); font-size: 11px; font-weight: 900; }
 .quick-records-head small { color: var(--calendar-muted); font-size: 9px; font-weight: 500; }
-.quick-record-button { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 8px 10px; border: 1px solid rgba(111, 159, 147, 0.18); border-radius: 10px; background: rgba(111, 159, 147, 0.07); color: var(--calendar-muted); font-size: 11px; line-height: 1.4; text-align: left; transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease; }
+.quick-record-button { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid rgba(111, 159, 147, 0.18); border-radius: 10px; background: rgba(111, 159, 147, 0.07); color: var(--calendar-muted); font-size: 13px; line-height: 1.5; text-align: left; transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease; }
 .quick-record-button:hover:not(:disabled) { transform: translateX(2px); border-color: rgba(111, 159, 147, 0.42); background: rgba(111, 159, 147, 0.13); }
-.quick-record-button b { flex: 0 0 auto; color: #4f806f; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 9px; font-weight: 900; white-space: nowrap; }
+.quick-record-button b { flex: 0 0 auto; color: #4f806f; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 11px; font-weight: 900; white-space: nowrap; }
 .quick-record-button.recorded { border-color: rgba(111, 159, 147, 0.3); background: rgba(111, 159, 147, 0.12); }
 .quick-record-button:disabled { cursor: default; opacity: 0.82; }
 .record-add-button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 41px; margin-top: 13px; border: 1px dashed rgba(184, 92, 80, 0.36); border-radius: 11px; background: rgba(184, 92, 80, 0.055); color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 11px; font-weight: 900; transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
@@ -1399,16 +1487,16 @@ export default {
 .record-form-head button { color: var(--calendar-muted); font-size: 10px; }
 .record-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .record-form label { display: grid; gap: 5px; min-width: 0; }
-.record-form label > span { color: var(--calendar-muted); font-size: 10px; }
+.record-form label > span { color: var(--calendar-muted); font-size: 12px; }
 .record-form select, .record-form input, .record-form textarea { width: 100%; border: 1px solid rgba(139, 90, 20, 0.14); border-radius: 9px; padding: 8px 9px; background: rgba(255, 252, 245, 0.8); color: var(--calendar-ink); font-size: 11px; }
 .record-form textarea { resize: vertical; line-height: 1.6; }
 .record-form select:focus, .record-form input:focus, .record-form textarea:focus { border-color: rgba(184, 92, 80, 0.5); outline: 0; box-shadow: 0 0 0 3px rgba(184, 92, 80, 0.1); }
 .record-form-actions { display: flex; justify-content: end; gap: 7px; }
 .record-form-actions .primary-button, .record-form-actions .secondary-button { min-height: 36px; padding: 0 13px; font-size: 10px; }
 .record-form-actions .primary-button:disabled { cursor: wait; opacity: 0.65; }
-.record-error { color: var(--cinnabar-deep); font-size: 10px; line-height: 1.5; }
-.record-feedback { margin-top: 9px; color: #4f806f; font-size: 10px; line-height: 1.5; }
-.record-storage-note { display: flex; align-items: center; gap: 5px; margin-top: 13px; color: var(--calendar-muted); font-size: 9px; }
+.record-error { color: var(--cinnabar-deep); font-size: 12px; line-height: 1.6; }
+.record-feedback { margin-top: 9px; color: #3e745f; font-size: 12px; line-height: 1.6; }
+.record-storage-note { display: flex; align-items: center; gap: 5px; margin-top: 13px; color: var(--calendar-muted); font-size: 11px; }
 .record-storage-note i { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--calendar-green); }
 .detail-reset { position: relative; z-index: 1; margin-top: 15px; }
 
@@ -1419,7 +1507,7 @@ export default {
 .phase-card-copy { display: grid; min-width: 0; gap: 4px; }
 .phase-card-copy strong { overflow: hidden; color: var(--calendar-ink); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .phase-card-copy small { color: var(--calendar-muted); font-size: 10px; }
-.phase-card-arrow { margin-left: auto; color: var(--cinnabar-deep); font-size: 16px; }
+.phase-card-arrow { width: 16px; height: 16px; margin-left: auto; color: var(--cinnabar-deep); }
 
 .compact-heading { align-items: end; }
 
@@ -1431,8 +1519,8 @@ export default {
 .decision-head { color: var(--gold-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 0.13em; text-transform: uppercase; }
 .decision-row strong { color: var(--calendar-ink); }
 .node-pillar { color: var(--cinnabar-deep); font-weight: 900; letter-spacing: 0.08em; }
-.node-type { color: var(--calendar-ink); }
-.node-type b { float: right; color: var(--cinnabar); font-size: 16px; font-weight: 500; }
+.node-type { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 6px; color: var(--calendar-ink); }
+.node-type .icon-mark { width: 16px; height: 16px; flex: 0 0 auto; color: var(--cinnabar-deep); }
 
 .record-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }
 .record-card { position: relative; min-height: 184px; padding: 23px; overflow: hidden; }
@@ -1465,9 +1553,9 @@ export default {
   .orbit-card { justify-self: start; width: min(100%, 390px); }
   .overview-grid { grid-template-columns: 1fr; }
   .calendar-layout { display: block; }
-  .day-detail { position: fixed; z-index: 1300; left: 12px; right: 12px; bottom: 12px; top: auto; max-height: calc(100svh - 24px); overflow-y: auto; opacity: 0; visibility: hidden; transform: translateY(calc(100% + 30px)); transition: opacity 0.28s ease, visibility 0.28s ease, transform 0.28s ease; }
+  .day-detail { position: fixed; z-index: 1300; left: 12px; right: 12px; bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px)); top: auto; max-height: calc(100dvh - 88px - env(safe-area-inset-bottom, 0px)); overflow-y: auto; opacity: 0; visibility: hidden; transform: translateY(calc(100% + 30px)); transition: opacity 0.28s ease, visibility 0.28s ease, transform 0.28s ease; }
   .day-detail.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
-  .detail-close { position: absolute; z-index: 2; top: 12px; right: 15px; display: block; width: 30px; height: 30px; border: 1px solid rgba(139, 90, 20, 0.14); border-radius: 50%; color: var(--calendar-muted); font-size: 24px; line-height: 26px; }
+  .detail-close { position: absolute; z-index: 2; top: 10px; right: 12px; display: block; width: 44px; height: 44px; border: 1px solid rgba(139, 90, 20, 0.14); border-radius: 50%; color: var(--calendar-muted); font-size: 24px; line-height: 1; }
   .detail-scrim { position: fixed; z-index: 1250; inset: 0; display: block; background: rgba(47, 36, 27, 0.28); backdrop-filter: blur(3px); }
   .mobile-detail-launch { display: block; }
   .record-delete { opacity: 1; }
@@ -1475,56 +1563,179 @@ export default {
 }
 
 @media (max-width: 640px) {
+  .calendar-page,
+  .calendar-hero,
+  .calendar-hero-inner,
+  .calendar-layout,
+  .calendar-main,
+  .calendar-side {
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .calendar-hero { min-height: auto; }
-  .calendar-hero-inner { width: min(100% - 28px, 640px); padding-top: 42px; padding-bottom: 46px; }
-  .calendar-hero h1 { font-size: clamp(37px, 11vw, 55px); }
+  .calendar-hero-inner { width: min(100% - 32px, 640px); padding-top: 34px; padding-bottom: 36px; }
+  .calendar-hero h1 { font-size: clamp(32px, 10vw, 48px); line-height: 1.1; }
   .calendar-hero-intro { font-size: 16px; line-height: 1.75; }
-  .calendar-hero-meta { gap: 6px; margin-top: 23px; }
+  .calendar-hero-meta { gap: 6px; margin-top: 17px; }
   .hero-chip { font-size: 10px; }
-  .orbit-card { width: 100%; padding: 20px; }
-  .orbit-ring-outer { width: 230px; }
+  .orbit-card { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 10px; width: 100%; padding: 12px; border-radius: 14px; }
+  .orbit-ring-outer { width: 120px; }
+  .orbit-ring-outer::before { inset: 12px; }
+  .orbit-ring-outer::after { inset: 27px; }
+  .orbit-ring-inner { width: 64px; }
+  .orbit-core { width: 40px; }
+  .orbit-core span { font-size: 10px; }
+  .orbit-core strong { font-size: 18px; }
+  .orbit-glyph { font-size: 10px; }
+  .orbit-glyph-top { top: 4px; }
+  .orbit-glyph-right { right: 5px; }
+  .orbit-glyph-bottom { bottom: 4px; }
+  .orbit-glyph-left { left: 5px; }
+  .orbit-caption { margin-top: 0; text-align: left; }
+  .orbit-caption strong { font-size: 14px; }
+  .orbit-caption > span:last-child { display: none; }
   .calendar-section-heading { display: grid; gap: 15px; margin-bottom: 22px; }
   .calendar-section-heading .section-desc { text-align: left; }
   .calendar-heading-side { justify-items: start; gap: 9px; }
   .calendar-trace-summary { font-size: 11px; }
   .legend { justify-content: start; }
-  .month-board { padding: 13px; }
-  .month-board-head { margin-bottom: 18px; }
-  .month-board-head h3 { font-size: 24px; }
-  .today-button { padding: 8px 10px; font-size: 10px; }
-  .calendar-weekdays, .calendar-grid { gap: 4px; }
+  .month-board { padding: 10px; border-radius: 14px; }
+  .month-board-head { margin-bottom: 14px; }
+  .month-board-head h3 { font-size: 21px; }
+  .today-button { min-height: 44px; padding: 7px 9px; font-size: 10px; }
+  .calendar-grid-scroll {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(158, 63, 53, 0.34) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+  .calendar-grid-scroll:focus-visible { border-radius: 9px; outline-offset: 4px; }
+  .calendar-weekdays, .calendar-grid { min-width: 336px; gap: 4px; }
   .calendar-weekdays span { font-size: 9px; letter-spacing: 0.08em; }
-  .calendar-empty { min-height: 74px; border-radius: 10px; }
-  .date-cell { min-height: 74px; border-radius: 10px; padding: 7px 6px; }
+  .calendar-empty { min-height: 64px; border-radius: 10px; }
+  .date-cell { min-height: 64px; border-radius: 9px; padding: 6px 5px; }
   .date-cell::after { right: -14px; top: -14px; width: 38px; }
-  .date-cell-top strong { font-size: 18px; }
+  .date-cell-top strong { font-size: 16px; }
   .date-cell-top em { display: none; }
-  .date-cell-pillar { margin-top: 5px; font-size: 9px; letter-spacing: 0.04em; }
-  .date-cell-keyword { font-size: 10px; }
+  .date-cell-pillar { margin-top: 4px; font-size: 9px; letter-spacing: 0.03em; }
+  .date-cell-keyword { max-width: 100%; overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
   .date-cell-status { display: none; }
   .today-mark { right: 5px; bottom: 5px; font-size: 7px; }
   .date-cell-record { font-size: 7px; }
-  .phase-rail { gap: 7px; }
-  .phase-card { gap: 6px; padding: 10px 8px; }
+  .phase-rail { gap: 6px; }
+  .phase-card { min-height: 44px; gap: 6px; padding: 8px 7px; }
   .phase-card-index { font-size: 9px; }
   .phase-card-copy strong { font-size: 10px; }
   .phase-card-copy small { font-size: 9px; }
-  .phase-card-arrow { font-size: 13px; }
-  .decision-row { grid-template-columns: 0.68fr 0.55fr 0.38fr 1.6fr; gap: 7px; padding: 14px 12px; font-size: 11px; }
+  .phase-card-arrow { width: 14px; height: 14px; }
+  .decision-row { grid-template-columns: 0.68fr 0.55fr 0.38fr 1.6fr; gap: 7px; padding: 12px 10px; font-size: 11px; }
   .decision-head { font-size: 8px; }
-  .node-type b { display: none; }
+  .node-type .icon-mark { display: none; }
   .record-grid { grid-template-columns: 1fr; }
-  .record-card { min-height: 150px; }
-  .caution-strip { align-items: start; padding: 15px; }
+  .record-card { min-height: 130px; padding: 16px; border-radius: 14px; }
+  .record-card h3 { margin-top: 12px; font-size: 19px; }
+  .record-card p { margin-top: 8px; font-size: 13px; }
+  .record-line { left: 16px; bottom: 16px; }
+  .caution-strip { align-items: start; gap: 10px; margin-top: 12px; padding: 13px; border-radius: 14px; }
   .caution-strip strong { font-size: 13px; }
   .caution-strip p { line-height: 1.5; }
   .caution-mark { display: none; }
-  .day-detail { left: 8px; right: 8px; bottom: 8px; padding: 21px 18px; }
-  .detail-header h3 { font-size: 26px; }
+  .day-detail { left: 8px; right: 8px; bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px)); padding: 18px 15px; border-radius: 14px; }
+  .detail-header h3 { font-size: 23px; }
+  .day-signal-card { margin-top: 16px; padding: 13px; }
+  .day-signal-copy strong { font-size: 20px; }
   .keyword-stamp { flex-basis: 58px; width: 58px; }
   .keyword-stamp strong { font-size: 17px; }
   .actual-records-head h4 { font-size: 16px; }
   .quick-records-head { align-items: start; flex-direction: column; gap: 3px; }
+  .guidance-grid { gap: 6px; }
   .record-form-grid { grid-template-columns: 1fr; }
+  .record-form select,
+  .record-form input,
+  .record-form textarea { min-height: 44px; font-size: 16px; }
+  .quick-record-button { min-height: 48px; padding: 8px 11px; }
+  .record-delete { min-width: 44px; min-height: 44px; }
+  .record-form { padding: 12px; }
+}
+
+/* 按钮专项：日历中轻操作、记录操作和主操作分层，同时保证所有触控目标可点。 */
+.today-button,
+.mobile-detail-launch,
+.detail-reset {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 0 12px;
+}
+
+.quick-record-button {
+  min-height: 44px;
+}
+
+.guidance-toggle {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.record-delete,
+.record-form-head button {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 0 8px;
+}
+
+.record-add-button {
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.record-form-actions {
+  align-items: stretch;
+  gap: var(--button-gap, 8px);
+}
+
+.record-form-actions .primary-button,
+.record-form-actions .secondary-button {
+  min-height: var(--button-height, 46px);
+  padding: 0 14px;
+  border-radius: var(--button-radius, 13px);
+  font-size: 14px;
+}
+
+.phase-card {
+  min-height: 48px;
+}
+
+.decision-row {
+  min-height: 48px;
+}
+
+@media (max-width: 900px) {
+  .detail-close {
+    display: grid;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 50%;
+  }
+
+  .detail-close .icon-mark {
+    width: 20px;
+    height: 20px;
+  }
 }
 </style>
