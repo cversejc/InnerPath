@@ -11,6 +11,8 @@ import Home from '../views/Home.vue'
 import ReportDetail from '../views/ReportDetail.vue'
 import Services from '../views/Services.vue'
 import StaffConsole from '../views/StaffConsole.vue'
+import ServiceRequestForm from '../views/ServiceRequestForm.vue'
+import ServiceRequests from '../views/ServiceRequests.vue'
 import UserCenter from '../views/UserCenter.vue'
 import { isLaunchFeatureEnabled } from '../config/launchScope'
 
@@ -26,6 +28,8 @@ const routes = [
   { path: '/pages/booking/booking', name: 'Booking', component: Booking, meta: { requiresAuth: true, hiddenFeature: 'booking', title: '预约' } },
   { path: '/pages/course/course', name: 'Course', component: Course, meta: { requiresAuth: true, hiddenFeature: 'courses', title: '共鉴计划' } },
   { path: '/pages/user/user', name: 'UserCenter', component: UserCenter, meta: { requiresAuth: true, title: '个人空间' } },
+  { path: '/pages/requests/requests', name: 'ServiceRequests', component: ServiceRequests, meta: { requiresAuth: true, title: '我的申请' } },
+  { path: '/pages/requests/new', name: 'ServiceRequestForm', component: ServiceRequestForm, meta: { requiresAuth: true, title: '申请决策日历' } },
   { path: '/pages/report/detail', name: 'ReportDetail', component: ReportDetail, meta: { requiresAuth: true, title: '个人报告' } },
   { path: '/pages/calendar/calendar', name: 'Calendar', component: Calendar, meta: { requiresAuth: true, title: '决策日历' } },
   { path: '/pages/about/about', name: 'About', component: About, meta: { requiresAuth: true, title: '关于辰鉴' } },

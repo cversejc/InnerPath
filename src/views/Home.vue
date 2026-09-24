@@ -11,7 +11,7 @@
             把你的个人特质、当下节奏和现实选择放在一张地图上，帮你更清楚地走下一步。
           </p>
           <div class="hero-actions">
-            <button class="primary-button" type="button" @click="goToAssessment"><IconMark name="reports" />生成个人报告</button>
+            <button class="primary-button" type="button" @click="goToAssessment"><IconMark name="reports" />申请人生说明书</button>
             <button class="secondary-button" type="button" @click="goToCalendar"><IconMark name="calendar" />打开决策日历</button>
           </div>
         </div>
@@ -84,7 +84,7 @@
               <li>核心矛盾与人生重复模式</li>
               <li>当前阶段的环境坐标</li>
             </ul>
-            <button class="secondary-button" type="button" @click="goToAssessment"><IconMark name="reports" />生成我的报告</button>
+            <button class="secondary-button" type="button" @click="goToAssessment"><IconMark name="reports" />申请我的说明书</button>
           </article>
           <article class="paper-card service-card featured launch-calendar-card">
             <span class="seal-badge">02 / DECISION CALENDAR</span>

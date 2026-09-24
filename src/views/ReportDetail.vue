@@ -239,7 +239,9 @@ export default {
       try {
         const reportData = await getReportDetail(reportId)
         this.report = this.normalizeReportData(reportData)
-        if (this.report.aiGeneratedContent) {
+        if (this.report.contentPayload?.foundation_data) {
+          this.foundationData = this.report.contentPayload.foundation_data
+        } else if (this.report.aiGeneratedContent) {
           this.parseFoundationData(this.report.aiGeneratedContent)
         }
       } catch (error) {
@@ -250,36 +252,46 @@ export default {
     },
     normalizeReportData(report) {
       // 标准化数据结构，处理可能的字段名差异
-      const rawBasicInfo = report.basicInfo || report.basic_info || {}
+      const contentPayload = report.content_payload || report.contentPayload || null
+      const source = contentPayload || report
+      const rawBasicInfo = source.basicInfo || source.basic_info || report.basicInfo || report.basic_info || {}
+      const rawEnergy = source.energyProfile || source.energy_profile || report.energyProfile || report.energy_profile || {}
+      const rawCareer = source.careerGuidance || source.career_guidance || report.careerGuidance || report.career_guidance || {}
+      const rawRelationship = source.relationshipPattern || source.relationship_pattern || report.relationshipPattern || report.relationship_pattern || {}
+      const rawGrowth = source.personalGrowth || source.personal_growth || report.personalGrowth || report.personal_growth || {}
       const normalized = {
         basicInfo: {
           ...rawBasicInfo,
           name: rawBasicInfo.name || '用户',
           reportDate: rawBasicInfo.reportDate || rawBasicInfo.report_date || new Date().toISOString().split('T')[0]
         },
-        structuredSections: report.structuredSections || report.structured_sections || null,
-        energyProfile: report.energyProfile || report.energy_profile || {},
-        careerGuidance: report.careerGuidance || report.career_guidance || {},
-        relationshipPattern: report.relationshipPattern || report.relationship_pattern || {},
-        personalGrowth: report.personalGrowth || report.personal_growth || {},
-        summary: report.summary || '',
-        aiGeneratedContent: report.aiGeneratedContent || report.ai_generated_content || report.ai_raw_content || null
-      }
-
-      // Debug: 打印 structuredSections 的内容
-      console.log('structuredSections 内容:', normalized.structuredSections)
-      if (normalized.structuredSections) {
-        console.log('structuredSections keys:', Object.keys(normalized.structuredSections))
-        console.log('energy:', normalized.structuredSections.energy)
-        console.log('topics:', normalized.structuredSections.topics)
-        console.log('summary:', normalized.structuredSections.summary)
-      }
-
-      // Debug: 打印 aiGeneratedContent
-      console.log('aiGeneratedContent 存在吗?', !!normalized.aiGeneratedContent)
-      console.log('aiGeneratedContent 长度:', normalized.aiGeneratedContent?.length)
-      if (normalized.aiGeneratedContent) {
-        console.log('aiGeneratedContent 预览:', normalized.aiGeneratedContent.substring(0, 200))
+        contentPayload,
+        structuredSections: source.structuredSections || source.structured_sections || report.structuredSections || report.structured_sections || null,
+        energyProfile: {
+          ...rawEnergy,
+          coreTraits: rawEnergy.coreTraits || rawEnergy.core_traits || ''
+        },
+        careerGuidance: {
+          ...rawCareer,
+          suitablePaths: rawCareer.suitablePaths || rawCareer.suitable_paths || [],
+          workStyle: rawCareer.workStyle || rawCareer.work_style || '',
+          developmentSuggestions: rawCareer.developmentSuggestions || rawCareer.development_suggestions || []
+        },
+        relationshipPattern: {
+          ...rawRelationship,
+          growthDirection: rawRelationship.growthDirection || rawRelationship.growth_direction || '',
+          strengths: rawRelationship.strengths || [],
+          challenges: rawRelationship.challenges || []
+        },
+        personalGrowth: {
+          ...rawGrowth,
+          currentIssues: rawGrowth.currentIssues || rawGrowth.current_issues || [],
+          actionPlan: rawGrowth.actionPlan || rawGrowth.action_plan || [],
+          resources: rawGrowth.resources || []
+        },
+        summary: source.summary || report.summary || '',
+        // 新交付报告只能使用人工编辑后的结构化内容；历史报告继续兼容原始 Markdown。
+        aiGeneratedContent: contentPayload ? null : (report.aiGeneratedContent || report.ai_generated_content || report.ai_raw_content || null)
       }
 
       return normalized

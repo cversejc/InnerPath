@@ -5,8 +5,8 @@
     <section class="page-header">
       <div class="container header-inner">
         <p class="section-kicker">FI / YOUR LIFE MANUAL</p>
-        <h1>生成你的人生说明书</h1>
-        <p>从个人属性、能量通路与人生时序出发，先见自己，再知其序。</p>
+        <h1>申请你的人生说明书</h1>
+        <p>从个人属性、能量通路与人生时序出发，提交申请后由咨询师完成 AI 初稿审校与最终交付。</p>
       </div>
     </section>
 
@@ -25,7 +25,7 @@
           <div class="progress-line" :class="{ active: currentStep > 2 }"></div>
           <div class="progress-step" :class="{ active: currentStep >= 3 }">
             <span>3</span>
-            <p>生成说明书</p>
+            <p>提交申请</p>
           </div>
         </div>
 
@@ -61,6 +61,7 @@
                   <strong>女</strong>
                 </button>
               </div>
+              <p v-if="fieldErrors.gender" class="field-error" role="alert">{{ fieldErrors.gender }}</p>
             </fieldset>
 
             <fieldset class="form-group choice-fieldset">
@@ -93,6 +94,7 @@
                   </div>
                 </button>
               </div>
+              <p v-if="fieldErrors.calendarType" class="field-error" role="alert">{{ fieldErrors.calendarType }}</p>
             </fieldset>
 
             <div class="form-group">
@@ -132,6 +134,7 @@
                   <span>日</span>
                 </label>
               </div>
+              <p v-if="fieldErrors.birth" class="field-error" role="alert">{{ fieldErrors.birth }}</p>
               <p class="form-hint">请按上方选择的历法填写。</p>
             </div>
 
@@ -238,47 +241,29 @@
 
           <div class="button-row">
             <button type="button" @click="prevStep" class="secondary-button">上一步</button>
-            <button type="button" @click="submitAssessment" class="primary-button">生成我的说明书</button>
+            <button type="button" @click="submitAssessment" class="primary-button" :disabled="isSubmitting" :aria-busy="isSubmitting">{{ isSubmitting ? '提交中…' : editingRequestId ? '更新并重新提交' : '提交报告申请' }}</button>
           </div>
           <p v-if="formMessage" id="assessment-step-error" class="form-error" role="alert" aria-live="assertive">{{ formMessage }}</p>
         </div>
 
         <div v-if="currentStep === 3" class="step-content form-panel">
-          <div v-if="isGenerating" class="generating">
+          <div v-if="isSubmitting" class="generating" role="status" aria-live="polite">
             <div class="loading-compass" aria-hidden="true"></div>
-            <h2 ref="stepHeading" tabindex="-1">正在为你生成专属报告</h2>
-            <p>你的个人特质、当下处境与关注的议题，正在汇成一张更清晰的自我地图。</p>
-            <div class="generating-steps">
-              <div class="gen-step" :class="{ active: genStep >= 1 }">认识你的起点</div>
-              <div class="gen-step" :class="{ active: genStep >= 2 }">看见你的特质</div>
-              <div class="gen-step" :class="{ active: genStep >= 3 }">找到重复模式</div>
-              <div class="gen-step" :class="{ active: genStep >= 4 }">获得下一步提示</div>
-            </div>
+            <h2 ref="stepHeading" tabindex="-1">正在提交你的申请</h2>
+            <p>资料正在安全保存。提交完成后，咨询师会在工作台接单并开始准备初步分析。</p>
           </div>
 
           <div v-else class="result-success">
-            <span class="seal-badge">已生成</span>
-            <h2 ref="stepHeading" tabindex="-1">你的人生说明书已经完成</h2>
-            <p>这份报告已经属于你。先读懂自己，再把洞察放进每天的决策节奏。</p>
-
-            <div class="result-preview paper-card">
-              <div>
-                <span>个人属性</span>
-                <strong>{{ reportPreview.energyType }}</strong>
-              </div>
-              <div>
-                <span>核心天赋</span>
-                <strong>{{ reportPreview.coreTraits }}</strong>
-              </div>
-              <div>
-                <span>行动提示</span>
-                <strong>{{ reportPreview.talents }}</strong>
-              </div>
+            <span class="seal-badge">已提交</span>
+            <h2 ref="stepHeading" tabindex="-1">申请已收到</h2>
+            <p>接下来会经历“咨询师接单—AI 初稿—人工审校—交付”。AI 初稿不会直接展示给你，最终报告交付后会出现在报告列表。</p>
+            <div class="application-status paper-card">
+              <div><span>申请编号</span><strong>#{{ requestId || '—' }}</strong></div>
+              <div><span>当前状态</span><strong>{{ requestStatusLabel }}</strong></div>
             </div>
-
             <div class="button-row">
-              <button type="button" class="primary-button" @click="viewFullReport">查看报告</button>
-              <button type="button" class="secondary-button" @click="goToCalendar">打开决策日历</button>
+              <button type="button" class="primary-button" @click="viewRequests">查看我的申请</button>
+              <button type="button" class="secondary-button" @click="goToCalendar">了解决策日历</button>
             </div>
           </div>
         </div>
@@ -290,16 +275,30 @@
 </template>
 
 <script>
-import { generateReportWithAI } from '../utils/aiService.js'
+import { getCurrentUser } from '../utils/authService'
+import {
+  createServiceRequest,
+  getMyServiceRequest,
+  resubmitServiceRequest,
+  updateServiceRequest
+} from '../utils/serviceRequestService'
 
 export default {
   name: 'Assessment',
   data() {
     return {
       currentStep: 1,
-      isGenerating: false,
-      genStep: 0,
+      isSubmitting: false,
       formMessage: '',
+      fieldErrors: {
+        gender: '',
+        calendarType: '',
+        birth: ''
+      },
+      requestId: null,
+      requestStatus: 'submitted',
+      editingRequestId: null,
+      idempotencyKey: null,
       formData: {
         gender: '',
         birthYear: '',
@@ -322,16 +321,70 @@ export default {
         { id: 'growth', icon: 'growth', title: '个人成长', desc: '突破局限、能力提升' },
         { id: 'stress', icon: 'stress', title: '压力焦虑', desc: '情绪管理、压力应对' }
       ],
-      reportPreview: {
-        energyType: '创造驱动型',
-        coreTraits: '独立思考、创新求变、追求自我表达',
-        talents: '适合创意型、研究型工作，擅长整合资源'
-      },
-      generatedReport: null,
-      currentReportId: null
+      currentUser: null
     }
   },
+  computed: {
+    requestStatusLabel() {
+      return {
+        submitted: '等待咨询师接单',
+        accepted: '咨询师已接单',
+        needs_info: '需要补充资料'
+      }[this.requestStatus] || '等待咨询师处理'
+    }
+  },
+  async mounted() {
+    await this.loadInitialData()
+  },
   methods: {
+    async loadInitialData() {
+      try {
+        const user = await getCurrentUser()
+        this.currentUser = user
+        this.applyUserProfile(user)
+        const requestId = this.$route.query.requestId ? Number(this.$route.query.requestId) : null
+        if (requestId) {
+          const serviceRequest = await getMyServiceRequest(requestId)
+          if (serviceRequest.service_type !== 'report' || serviceRequest.status !== 'needs_info') {
+            this.formMessage = '这份申请当前不需要补充资料。'
+          } else {
+            this.editingRequestId = requestId
+            this.requestId = requestId
+            this.requestStatus = serviceRequest.status
+            this.applyRequestPayload(serviceRequest.request_payload)
+          }
+        }
+      } catch (error) {
+        this.formMessage = this.errorText(error)
+      }
+    },
+    applyUserProfile(user) {
+      this.formData.gender = user.gender || this.formData.gender
+      this.formData.birthYear = user.birth_year || this.formData.birthYear
+      this.formData.birthMonth = user.birth_month || this.formData.birthMonth
+      this.formData.birthDay = user.birth_day || this.formData.birthDay
+      this.formData.birthHour = user.birth_hour ?? this.formData.birthHour
+      this.formData.birthMinute = user.birth_minute ?? this.formData.birthMinute
+      this.formData.birthPlace = user.birth_place || this.formData.birthPlace
+      if (user.birth_hour !== null && user.birth_hour !== undefined) this.formData.timeAccuracy = 'approximate'
+    },
+    applyRequestPayload(payload = {}) {
+      const profile = payload.profile || {}
+      this.formData = {
+        ...this.formData,
+        birthYear: profile.birth_year || '',
+        birthMonth: profile.birth_month || '',
+        birthDay: profile.birth_day || '',
+        birthHour: profile.birth_hour ?? '',
+        birthMinute: profile.birth_minute ?? '',
+        birthPlace: profile.birth_place || '',
+        gender: profile.gender || '',
+        calendarType: profile.calendar_type || 'solar',
+        timeAccuracy: profile.time_accuracy || 'unknown',
+        selectedTopics: payload.selected_topics || [],
+        additionalInfo: payload.additional_info || ''
+      }
+    },
     nextStep() {
       this.formMessage = ''
       if (!this.validateStep1()) {
@@ -356,19 +409,33 @@ export default {
     },
     validateStep1() {
       const { gender, birthYear, birthMonth, birthDay, calendarType } = this.formData
-      if (!gender || !birthYear || !birthMonth || !birthDay || !calendarType) return false
+      const errors = { gender: '', calendarType: '', birth: '' }
+      if (!gender) errors.gender = '请选择性别'
+      if (!calendarType) errors.calendarType = '请选择历法类型'
+      if (!birthYear || !birthMonth || !birthDay) errors.birth = '请填写完整出生日期'
+      if (Object.values(errors).some(Boolean)) {
+        this.fieldErrors = errors
+        return false
+      }
 
       const year = Number(birthYear)
       const month = Number(birthMonth)
       const day = Number(birthDay)
-      if (year < 1900 || year > 2026 || month < 1 || month > 12 || day < 1 || day > 31) return false
+      if (year < 1900 || year > 2026 || month < 1 || month > 12 || day < 1 || day > 31) {
+        this.fieldErrors = { ...errors, birth: '出生日期格式不正确' }
+        return false
+      }
 
       if (calendarType === 'solar') {
         const date = new Date(year, month - 1, day)
-        return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
+        const valid = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
+        this.fieldErrors = valid ? errors : { ...errors, birth: '出生日期不存在' }
+        return valid
       }
 
-      return day <= 30
+      const valid = day <= 30
+      this.fieldErrors = valid ? errors : { ...errors, birth: '农历日期不能超过 30 日' }
+      return valid
     },
     selectTimeAccuracy(accuracy) {
       this.formData.timeAccuracy = accuracy
@@ -432,50 +499,66 @@ export default {
     },
     async submitAssessment() {
       this.formMessage = ''
+      if (this.isSubmitting) return
+      if (!this.validateStep1()) {
+        this.formMessage = '请补充性别和完整出生日期后继续。'
+        this.currentStep = 1
+        this.focusStepHeading()
+        return
+      }
       this.currentStep = 3
-      this.isGenerating = true
+      this.isSubmitting = true
       this.focusStepHeading()
 
       try {
-        this.genStep = 1
-        await new Promise(resolve => setTimeout(resolve, 1000))
-
-        this.genStep = 2
-        this.generatedReport = await generateReportWithAI(this.formData)
-
-        this.genStep = 3
-        await new Promise(resolve => setTimeout(resolve, 800))
-
-        this.genStep = 4
-        await new Promise(resolve => setTimeout(resolve, 800))
-
-        this.reportPreview = {
-          energyType: this.generatedReport.energyProfile?.type || '综合型',
-          coreTraits: this.generatedReport.energyProfile?.coreTraits || '独特的个人特质',
-          talents: Array.isArray(this.generatedReport.careerGuidance?.suitablePaths)
-            ? this.generatedReport.careerGuidance.suitablePaths.join('、')
-            : '多元发展'
+        const payload = {
+          profile: {
+            name: this.currentUser?.name || null,
+            gender: this.formData.gender,
+            birth_year: Number(this.formData.birthYear),
+            birth_month: Number(this.formData.birthMonth),
+            birth_day: Number(this.formData.birthDay),
+            birth_hour: this.formData.timeAccuracy === 'unknown' ? null : Number(this.formData.birthHour),
+            birth_minute: this.formData.timeAccuracy === 'unknown' ? null : Number(this.formData.birthMinute || 0),
+            birth_place: this.formData.birthPlace || null,
+            calendar_type: this.formData.calendarType,
+            time_accuracy: this.formData.timeAccuracy
+          },
+          selected_topics: this.formData.selectedTopics,
+          additional_info: this.formData.additionalInfo || null
         }
-
-        await new Promise(resolve => setTimeout(resolve, 500))
-        this.isGenerating = false
-
-        this.currentReportId = this.generatedReport.id
+        let result
+        if (this.editingRequestId) {
+          await updateServiceRequest(this.editingRequestId, payload)
+          result = await resubmitServiceRequest(this.editingRequestId)
+        } else {
+          this.idempotencyKey = this.idempotencyKey || `report-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+          result = await createServiceRequest({
+            service_type: 'report',
+            ...payload,
+            idempotency_key: this.idempotencyKey
+          })
+        }
+        this.requestId = result.id
+        this.requestStatus = result.status
+        this.isSubmitting = false
+        this.focusStepHeading()
       } catch (error) {
-        console.error('报告生成失败:', error)
-        this.formMessage = '报告生成失败，请检查网络后重试。'
+        console.error('报告申请提交失败:', error)
+        this.formMessage = this.errorText(error)
         this.currentStep = 2
-        this.isGenerating = false
+        this.isSubmitting = false
         this.focusStepHeading()
       }
     },
-    viewFullReport() {
-      if (this.currentReportId) {
-        this.$router.push(`/pages/report/detail?id=${this.currentReportId}`)
-      }
+    viewRequests() {
+      this.$router.push('/pages/requests/requests')
     },
     goToCalendar() {
-      this.$router.push('/pages/calendar/calendar')
+      this.$router.push('/pages/requests/new?type=calendar')
+    },
+    errorText(error) {
+      return error.response?.data?.detail || '申请提交失败，请检查网络后重试。'
     }
   }
 }
@@ -613,6 +696,14 @@ export default {
   color: var(--cinnabar-deep);
   font-size: 14px;
   line-height: 1.6;
+}
+
+.field-error {
+  margin: 0;
+  color: var(--cinnabar-deep);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 .choice-fieldset {
@@ -890,6 +981,31 @@ textarea {
   line-height: 1.55;
 }
 
+.application-status {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 28px 0;
+  padding: 20px;
+  text-align: left;
+}
+
+.application-status div {
+  display: grid;
+  gap: 5px;
+}
+
+.application-status span {
+  color: var(--gold-deep);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.application-status strong {
+  color: var(--ink);
+  line-height: 1.55;
+}
+
 @media (max-width: 767px) {
   .page-header {
     padding: 38px 0 30px;
@@ -1043,6 +1159,13 @@ textarea {
   }
 
   .result-preview {
+    gap: 11px;
+    margin: 20px 0;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .application-status {
     gap: 11px;
     margin: 20px 0;
     padding: 14px;

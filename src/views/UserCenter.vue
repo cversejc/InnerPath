@@ -57,7 +57,7 @@
               <div v-if="reports.length === 0" class="empty-state">
                 <IconMark class="empty-icon" name="document" />
                 <p>暂无报告</p>
-                <button type="button" class="btn-action" @click="goToAssessment">生成说明书</button>
+                <button type="button" class="btn-action" @click="goToAssessment">申请说明书</button>
               </div>
               <div v-else class="reports-list">
                 <div v-for="report in reports" :key="report.id" class="report-card">
@@ -91,6 +91,28 @@
                   <p>查看阶段行动节奏，记录真实发生的事。</p>
                 </div>
                 <button type="button" class="btn-action" @click="goToCalendar">打开决策日历</button>
+              </div>
+            </div>
+
+            <!-- 我的申请 -->
+            <div v-if="activeTab === 'requests'" id="user-panel-requests" class="content-section" role="tabpanel" aria-labelledby="user-tab-requests" tabindex="0">
+              <div class="requests-section-heading">
+                <div><h3 class="section-title">我的申请</h3><p>申请会经过咨询师接单、AI 初稿和人工审校，交付后才能查看最终结果。</p></div>
+                <router-link class="btn-action" to="/pages/requests/requests">查看全部</router-link>
+              </div>
+              <div v-if="!requests.length" class="empty-state">
+                <IconMark class="empty-icon" name="compass" />
+                <p>还没有申请记录</p>
+                <div class="request-quick-actions"><router-link class="btn-action" to="/pages/assessment/assessment">申请报告</router-link><router-link class="btn-action secondary" to="/pages/requests/new?type=calendar">申请日历</router-link></div>
+              </div>
+              <div v-else class="center-request-list">
+                <article v-for="request in requests.slice(0, 5)" :key="request.id" class="center-request-card">
+                  <div><span class="center-request-type">{{ request.service_type === 'calendar' ? '决策日历' : '人生说明书' }}</span><strong>申请 #{{ request.id }}</strong><small>{{ formatDate(request.created_at) }}</small></div>
+                  <span class="center-request-status">{{ requestStatusLabel(request.status) }}</span>
+                  <router-link v-if="request.status === 'needs_info'" class="center-request-action" :to="requestEditPath(request)">补充资料</router-link>
+                  <router-link v-else-if="request.status === 'delivered' && request.result_type === 'report'" class="center-request-action" :to="`/pages/report/detail?id=${request.result_id}`">查看报告</router-link>
+                  <router-link v-else-if="request.status === 'delivered' && request.result_type === 'calendar'" class="center-request-action" to="/pages/calendar/calendar">打开日历</router-link>
+                </article>
               </div>
             </div>
 
@@ -160,6 +182,7 @@
 <script>
 import { changePassword, getCurrentUser, updateUserProfile } from '../utils/authService'
 import { getUserReports } from '../utils/aiService'
+import { getMyServiceRequests } from '../utils/serviceRequestService'
 import { hasRole, logout as logoutUser } from '../stores/auth'
 
 export default {
@@ -174,9 +197,11 @@ export default {
       tabs: [
         { id: 'reports', icon: 'reports', label: '报告' },
         { id: 'calendar', icon: 'calendar', label: '日历' },
+        { id: 'requests', icon: 'document', label: '我的申请' },
         { id: 'settings', icon: 'settings', label: '设置' }
       ],
       reports: [],
+      requests: [],
       settings: {
         name: '',
         gender: '',
@@ -209,6 +234,13 @@ export default {
           getCurrentUser(),
           getUserReports()
         ])
+        let requestResponse = { items: [] }
+        try {
+          requestResponse = await getMyServiceRequests()
+        } catch (error) {
+          // 申请分区不能阻断历史报告和账户设置的打开。
+          this.message = this.message || '申请记录暂时无法同步，请稍后重试'
+        }
         this.userName = user.name
         this.userType = user.role === 'admin' ? '管理员' : user.role === 'consultant' ? '咨询师' : '成长探索者'
         this.settings = {
@@ -227,6 +259,7 @@ export default {
           energyType: report.energy_type || '综合型',
           coreTraits: report.core_traits || '—'
         }))
+        this.requests = requestResponse.items || []
       } catch (error) {
         this.message = error.response?.data?.detail || '暂时无法打开你的个人空间，请稍后再试'
       } finally {
@@ -238,6 +271,25 @@ export default {
     },
     goToCalendar() {
       this.$router.push('/pages/calendar/calendar')
+    },
+    requestStatusLabel(status) {
+      return {
+        submitted: '等待接单',
+        accepted: '已接单',
+        ai_processing: '准备分析',
+        ai_ready: '等待审校',
+        reviewing: '审校中',
+        needs_info: '需补资料',
+        failed: '分析失败',
+        delivered: '已完成',
+        withdrawn: '已撤回',
+        rejected: '暂未受理'
+      }[status] || status
+    },
+    requestEditPath(request) {
+      return request.service_type === 'report'
+        ? `/pages/assessment/assessment?requestId=${request.id}`
+        : `/pages/requests/new?type=calendar&requestId=${request.id}`
     },
     viewReport(reportId) {
       this.$router.push(`/pages/report/detail?id=${reportId}`)
@@ -1507,6 +1559,73 @@ export default {
 
 .calendar-access-card .btn-action {
   min-width: 160px;
+}
+
+.requests-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.requests-section-heading p {
+  margin: -8px 0 20px;
+  color: var(--muted, #7d6653);
+  line-height: 1.6;
+}
+
+.request-quick-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn-action.secondary {
+  border-color: rgba(80, 54, 32, .18);
+  background: rgba(255, 250, 240, .7);
+  color: var(--cinnabar-deep, #9e3f35);
+}
+
+.center-request-list {
+  display: grid;
+  gap: 8px;
+}
+
+.center-request-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(80, 54, 32, .11);
+  border-radius: 12px;
+  padding: 13px;
+  background: rgba(255, 250, 240, .56);
+}
+
+.center-request-card > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.center-request-type,
+.center-request-card small {
+  color: var(--muted, #7d6653);
+  font-size: 12px;
+}
+
+.center-request-card strong { color: var(--ink, #3b2d24); }
+.center-request-status { color: var(--gold-deep, #8a621b); font-size: 13px; font-weight: 800; white-space: nowrap; }
+.center-request-action { color: var(--cinnabar-deep, #9e3f35); font-size: 13px; font-weight: 800; text-decoration: none; white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .requests-section-heading { display: grid; gap: 8px; }
+  .requests-section-heading > .btn-action { width: 100%; }
+  .center-request-card { grid-template-columns: 1fr auto; }
+  .center-request-status { grid-column: 2; grid-row: 1; }
+  .center-request-action { grid-column: 1 / -1; justify-self: start; min-height: 44px; display: inline-flex; align-items: center; }
 }
 
 @media (max-width: 768px) {

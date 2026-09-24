@@ -9,8 +9,12 @@
     <main v-else-if="!calendar || !days.length" class="calendar-empty-state">
       <div class="container paper-card">
         <span class="seal-badge">PERSONAL TIMEZONE</span>
-        <h1>你的决策日历还在准备中</h1>
-        <p>完成个人报告后，你会在这里看到适合你的阶段节奏与每日提示。</p>
+        <h1>还没有已交付的决策日历</h1>
+        <p>{{ calendarError || '提交申请后，咨询师会基于你的起始日期和关注目标，完成一段 30 天的 AI 初稿与人工审校。' }}</p>
+        <div class="calendar-empty-actions">
+          <router-link class="primary-button" to="/pages/requests/new?type=calendar">申请决策日历</router-link>
+          <router-link class="secondary-button" to="/pages/requests/requests">查看我的申请</router-link>
+        </div>
       </div>
     </main>
 
@@ -199,7 +203,7 @@
                   </div>
                 </div>
               </div>
-              <p class="detail-summary">{{ selectedEntry.isPhase ? selectedEntry.summary : `这一日适合把“${selectedEntry.keyword}”放在第一位。` }}</p>
+              <p class="detail-summary">{{ selectedEntry.summary || `这一日适合把“${selectedEntry.keyword}”放在第一位。` }}</p>
 
               <div class="rhythm-strip">
                 <div class="rhythm-strip-head"><span>今日节奏</span><small>把力气放在合适的时段</small></div>
@@ -369,6 +373,7 @@ import {
 const weekdays = ['日', '一', '二', '三', '四', '五', '六']
 const DECISION_LOG_STORAGE_KEY = 'innerseek:decision-logs'
 const mobileDetailMediaQuery = typeof window === 'undefined' ? null : window.matchMedia('(max-width: 900px)')
+const allowDemoCalendar = import.meta.env.DEV && import.meta.env.VITE_DEMO_CALENDAR === 'true'
 
 function createRecordDraft() {
   return {
@@ -432,6 +437,7 @@ export default {
       loading: true,
       calendar: null,
       calendarSource: 'api',
+      calendarError: '',
       meta: {},
       phases: [],
       days: [],
@@ -552,10 +558,28 @@ export default {
     async loadCalendar() {
       try {
         const response = await getMyCalendars()
-        const publishedCalendar = response.items?.find(item => item.entries?.length) || null
-        this.applyCalendar(publishedCalendar || createMockCalendar(), publishedCalendar ? 'api' : 'mock')
+        const publishedCalendar = response.items?.find(item => item.status === 'published' && item.entries?.length) || null
+        if (publishedCalendar) {
+          this.calendarError = ''
+          this.applyCalendar(publishedCalendar, 'api')
+        } else if (allowDemoCalendar) {
+          this.applyCalendar(createMockCalendar(), 'mock')
+        } else {
+          this.calendar = null
+          this.calendarSource = 'empty'
+          this.days = []
+          this.meta = {}
+        }
       } catch (error) {
-        this.applyCalendar(createMockCalendar(), 'mock')
+        if (allowDemoCalendar) {
+          this.applyCalendar(createMockCalendar(), 'mock')
+        } else {
+          this.calendar = null
+          this.calendarSource = 'empty'
+          this.days = []
+          this.meta = {}
+          this.calendarError = '暂时无法读取已交付日历，请稍后重试或先提交一份申请。'
+        }
       } finally {
         this.loading = false
       }
@@ -586,16 +610,17 @@ export default {
       }).filter(Boolean)
       const startDate = calendar.start_date || this.days[0]?.date || ''
       const year = startDate.slice(0, 4)
+      const calendarMeta = calendar.meta_payload || calendar.metaPayload || {}
       this.meta = source === 'mock'
         ? mockCalendarMeta
         : {
             title: calendar.title,
-            subtitle: 'PERSONAL TIMEZONE',
-            dateLabel: `${startDate} — ${calendar.end_date || this.days[this.days.length - 1]?.date || ''}`,
-            pillars: '',
-            rhythm: '少说，多做，多记录',
-            intro: '这是一张属于你的决策时机参照系，帮你在重要选择前留出观察、行动与复盘的空间。',
-            overview: []
+            subtitle: calendarMeta.subtitle || 'PERSONAL TIMEZONE',
+            dateLabel: calendarMeta.dateLabel || `${startDate} — ${calendar.end_date || this.days[this.days.length - 1]?.date || ''}`,
+            pillars: calendarMeta.pillars || '',
+            rhythm: calendarMeta.rhythm || '少说，多做，多记录',
+            intro: calendarMeta.intro || '这是一张属于你的决策时机参照系，帮你在重要选择前留出观察、行动与复盘的空间。',
+            overview: Array.isArray(calendarMeta.overview) ? calendarMeta.overview : []
           }
       this.todayDate = this.days.find(day => isToday(day.date))?.date || this.days[0]?.date || null
       this.selectedDate = this.todayDate
@@ -876,6 +901,15 @@ export default {
 
 .calendar-empty-state p {
   color: var(--calendar-muted, #7d6653);
+  line-height: 1.75;
+}
+
+.calendar-empty-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
 }
 
 .calendar-hero {

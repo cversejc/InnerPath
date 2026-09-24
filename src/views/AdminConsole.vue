@@ -10,6 +10,7 @@
         </div>
         <div class="hero-actions">
           <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
+          <router-link class="secondary-button compact-button" to="/staff">申请工作台</router-link>
           <button class="secondary-button compact-button" type="button" :disabled="activeLoading" @click="refreshActive"><IconMark name="refresh" /> <span>刷新</span></button>
           <button class="admin-account-button" type="button" :disabled="loggingOut" :aria-busy="loggingOut" @click="handleLogout">
             <IconMark name="logout" />
