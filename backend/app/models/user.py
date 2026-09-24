@@ -5,7 +5,7 @@ from app.db.base import Base, TimestampMixin
 class User(Base, TimestampMixin):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     phone = Column(String(20), unique=True, nullable=False, index=True)
     wechat_openid = Column(String(100), unique=True, nullable=True, index=True)
     name = Column(String(50), nullable=False)
@@ -38,7 +38,7 @@ class User(Base, TimestampMixin):
 class AuthSession(Base, TimestampMixin):
     __tablename__ = "auth_sessions"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     token_hash = Column(String(128), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime, nullable=False, index=True)
@@ -50,7 +50,7 @@ class AuthSession(Base, TimestampMixin):
 class StaffInvite(Base, TimestampMixin):
     __tablename__ = "staff_invites"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     phone = Column(String(20), nullable=False, index=True)
     role = Column(String(20), nullable=False)
     token_hash = Column(String(128), unique=True, nullable=False, index=True)
@@ -62,7 +62,7 @@ class StaffInvite(Base, TimestampMixin):
 class AuditLog(Base, TimestampMixin):
     __tablename__ = "audit_logs"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     actor_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     target_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     action = Column(String(100), nullable=False, index=True)

@@ -28,7 +28,12 @@ async def get_my_calendars(
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    calendars = await get_user_calendars(db, current_user.id, published_only=True)
+    calendars = await get_user_calendars(
+        db,
+        current_user.id,
+        published_only=True,
+        include_internal=False,
+    )
     return CalendarListResponse(items=calendars)
 
 

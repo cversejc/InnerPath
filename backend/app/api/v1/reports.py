@@ -58,39 +58,10 @@ async def create_report(
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Create a report generation task for the authenticated user."""
-    task_id = str(uuid4())
-
-    task_input = report_data.model_dump()
-    task_input["name"] = task_input.get("name") or current_user.name
-    await create_report_task(db, task_id, current_user.id, input_snapshot=task_input)
-    await record_audit(
-        db,
-        current_user.id,
-        "report.task.create",
-        "report_task",
-        task_id,
-        target_user_id=current_user.id,
-        details={"selected_topics": task_input.get("selected_topics", [])},
-        request=request,
-    )
-    await db.commit()
-
-    await cache_set(
-        f"report:task:{task_id}",
-        {"status": "processing", "progress": 0, "message": "Report task queued"},
-        expire=600,
-    )
-    generate_report_task.apply_async(
-        args=[current_user.id, task_input],
-        task_id=task_id,
-    )
-    logger.info(f"Report generation task queued | task_id: {task_id}")
-
-    return ReportTaskResponse(
-        task_id=task_id,
-        status="processing",
-        estimated_time=60,
+    """Prevent legacy callers from bypassing consultant review."""
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail="Direct report generation is retired; create a service request instead",
     )
 
 

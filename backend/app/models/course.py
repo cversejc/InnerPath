@@ -6,7 +6,7 @@ from app.db.base import Base, TimestampMixin
 class Course(Base, TimestampMixin):
     __tablename__ = "courses"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     title = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     cover_image = Column(String(255), nullable=True)
@@ -32,7 +32,7 @@ class UserCourse(Base, TimestampMixin):
     __tablename__ = "user_courses"
     __table_args__ = (UniqueConstraint('user_id', 'course_id', name='uq_user_course'),)
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"), nullable=False, index=True)
 

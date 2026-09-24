@@ -5,7 +5,7 @@ celery_app = Celery(
     "innerpath",
     broker=settings.CELERY_BROKER_URL,
     backend=settings.CELERY_RESULT_BACKEND,
-    include=["app.tasks.report_tasks"]
+    include=["app.tasks.report_tasks", "app.tasks.service_request_tasks"]
 )
 
 celery_app.conf.update(

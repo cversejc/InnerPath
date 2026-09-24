@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.core.cache import init_redis, close_redis
 from app.core.logging_config import setup_logging, get_logger
-from app.api.v1 import admin, auth, bookings, calendar, courses, reports, staff, users
+from app.api.v1 import admin, auth, bookings, calendar, courses, reports, service_requests, staff, users
 import time
 from uuid import uuid4
 
@@ -130,6 +130,10 @@ app.include_router(courses.router, prefix="/api/v1/courses", tags=["Courses"])
 app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["Calendar"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 app.include_router(staff.router, prefix="/api/v1/staff", tags=["Staff"])
+app.include_router(service_requests.router, prefix="/api/v1/service-requests", tags=["Service Requests"])
+app.include_router(service_requests.staff_router, prefix="/api/v1/staff/service-requests", tags=["Staff Service Requests"])
+app.include_router(service_requests.task_router, prefix="/api/v1/staff/service-request-tasks", tags=["Staff Service Request Tasks"])
+app.include_router(service_requests.admin_router, prefix="/api/v1/admin/service-requests", tags=["Admin Service Requests"])
 
 
 @app.get("/")

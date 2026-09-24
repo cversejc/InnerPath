@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Time, Text, Boolean, ForeignKey, ARRAY
+from sqlalchemy import Column, Integer, String, Date, Time, Text, Boolean, ForeignKey, ARRAY, DateTime
 from sqlalchemy.dialects.postgresql import JSONB
 from app.config import settings
 from app.db.base import Base, TimestampMixin
@@ -7,8 +7,9 @@ from app.db.base import Base, TimestampMixin
 class Report(Base, TimestampMixin):
     __tablename__ = "reports"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    request_id = Column(Integer, ForeignKey("service_requests.id", ondelete="SET NULL"), nullable=True, index=True)
     title = Column(String(100), default="辰鉴·人生说明书", nullable=False)
 
     # Basic info
@@ -24,10 +25,15 @@ class Report(Base, TimestampMixin):
     relationship_pattern = Column(JSONB, nullable=False)
     personal_growth = Column(JSONB, nullable=False)
     summary = Column(Text, nullable=True)
+    # The consultant-reviewed structured payload.  Legacy reports can leave
+    # this null and continue to use the existing structured/raw fields.
+    content_payload = Column(JSONB, nullable=True)
 
     # AI generated content
     ai_raw_content = Column(Text, nullable=True)
     ai_model = Column(String(50), default=settings.DEEPSEEK_MODEL, nullable=False)
+    reviewed_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
 
     # Metadata
     generation_time_ms = Column(Integer, nullable=True)

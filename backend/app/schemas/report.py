@@ -57,7 +57,9 @@ class ReportResponse(BaseModel):
     relationship_pattern: Dict[str, Any]
     personal_growth: Dict[str, Any]
     summary: Optional[str]
-    ai_generated_content: Optional[str]
+    content_payload: Optional[Dict[str, Any]] = None
+    ai_generated_content: Optional[str] = None
+    reviewed_at: Optional[datetime] = None
     created_at: datetime
 
     class Config:

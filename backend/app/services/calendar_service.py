@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.booking import Booking
 from app.models.calendar import CalendarEntry, DecisionLog, UserCalendar
+from app.models.service_request import ServiceRequest
 from app.schemas.calendar import CalendarCreate, CalendarEntryInput, CalendarUpdate, DecisionLogInput
 from app.services.audit_service import record_audit
 
@@ -37,8 +38,32 @@ async def _load_calendar_entries(db: AsyncSession, calendar_id: int) -> list[Cal
     return list(result.scalars().all())
 
 
-async def serialize_calendar(db: AsyncSession, calendar: UserCalendar) -> dict:
+async def serialize_calendar(
+    db: AsyncSession,
+    calendar: UserCalendar,
+    *,
+    include_internal: bool = True,
+) -> dict:
     entries = await _load_calendar_entries(db, calendar.id)
+    if not include_internal:
+        # Consultant notes are internal working material.  Keep the response
+        # shape compatible while removing their contents from user reads.
+        entries = [
+            {
+                "id": entry.id,
+                "entry_date": entry.entry_date,
+                "day_pillar": entry.day_pillar,
+                "tone": entry.tone,
+                "status_label": entry.status_label,
+                "keyword": entry.keyword,
+                "summary": entry.summary,
+                "suitable": entry.suitable or [],
+                "unsuitable": entry.unsuitable or [],
+                "time_window": entry.time_window,
+                "admin_note": None,
+            }
+            for entry in entries
+        ]
     return {
         "id": calendar.id,
         "user_id": calendar.user_id,
@@ -49,6 +74,7 @@ async def serialize_calendar(db: AsyncSession, calendar: UserCalendar) -> dict:
         "start_date": calendar.start_date,
         "end_date": calendar.end_date,
         "status": calendar.status,
+        "meta_payload": calendar.meta_payload,
         "published_at": calendar.published_at,
         "entries": entries,
         "created_at": calendar.created_at,
@@ -72,6 +98,7 @@ async def create_calendar(
         start_date=data.start_date,
         end_date=data.end_date,
         status="draft",
+        meta_payload=data.meta_payload,
         created_by=created_by,
         updated_by=created_by,
     )
@@ -158,6 +185,7 @@ async def clone_calendar_as_draft(
         start_date=calendar.start_date,
         end_date=calendar.end_date,
         status="draft",
+        meta_payload=calendar.meta_payload,
         created_by=created_by,
         updated_by=created_by,
     )
@@ -253,6 +281,8 @@ async def get_user_calendars(
     db: AsyncSession,
     user_id: int,
     published_only: bool = True,
+    *,
+    include_internal: bool = True,
 ) -> list[dict]:
     query = select(UserCalendar).where(UserCalendar.user_id == user_id)
     if published_only:
@@ -260,7 +290,10 @@ async def get_user_calendars(
     query = query.order_by(UserCalendar.updated_at.desc())
     result = await db.execute(query)
     calendars = result.scalars().all()
-    return [await serialize_calendar(db, calendar) for calendar in calendars]
+    return [
+        await serialize_calendar(db, calendar, include_internal=include_internal)
+        for calendar in calendars
+    ]
 
 
 async def get_user_decision_logs(
@@ -333,14 +366,23 @@ async def delete_user_decision_log(
 
 
 async def has_staff_assignment(db: AsyncSession, staff_id: int, user_id: int) -> bool:
-    assignment = await db.execute(
+    booking_assignment = await db.execute(
         select(Booking.id).where(
             Booking.user_id == user_id,
             Booking.consultant_id == staff_id,
             Booking.status != "cancelled",
         ).limit(1)
     )
-    return assignment.scalar_one_or_none() is not None
+    if booking_assignment.scalar_one_or_none() is not None:
+        return True
+    request_assignment = await db.execute(
+        select(ServiceRequest.id).where(
+            ServiceRequest.user_id == user_id,
+            ServiceRequest.assigned_consultant_id == staff_id,
+            ServiceRequest.status.not_in(("withdrawn", "rejected")),
+        ).limit(1)
+    )
+    return request_assignment.scalar_one_or_none() is not None
 
 
 async def get_calendar_for_staff(db: AsyncSession, staff_id: int, user_id: int) -> list[dict]:

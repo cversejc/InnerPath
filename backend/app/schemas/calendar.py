@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -48,6 +48,7 @@ class CalendarCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=150)
     start_date: Optional[date] = None
     end_date: Optional[date] = None
+    meta_payload: Optional[Dict[str, Any]] = None
     entries: List[CalendarEntryInput] = Field(default_factory=list)
 
 
@@ -55,6 +56,7 @@ class CalendarUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=150)
     start_date: Optional[date] = None
     end_date: Optional[date] = None
+    meta_payload: Optional[Dict[str, Any]] = None
     status: Optional[str] = Field(None, pattern="^(draft|published|archived)$")
     entries: Optional[List[CalendarEntryInput]] = None
 
@@ -69,6 +71,7 @@ class CalendarResponse(BaseModel):
     start_date: Optional[date]
     end_date: Optional[date]
     status: str
+    meta_payload: Optional[Dict[str, Any]] = None
     published_at: Optional[datetime]
     entries: List[CalendarEntryResponse] = Field(default_factory=list)
     created_at: datetime
@@ -80,6 +83,7 @@ class CalendarImportRequest(BaseModel):
     title: str = Field(..., min_length=1, max_length=150)
     start_date: Optional[date] = None
     end_date: Optional[date] = None
+    meta_payload: Optional[Dict[str, Any]] = None
     entries: List[CalendarEntryInput] = Field(..., min_length=1)
 
 

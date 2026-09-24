@@ -104,7 +104,7 @@ async def get_report_by_id(db: AsyncSession, report_id: int, user_id: Optional[i
 
     query = select(Report).where(Report.id == report_id, Report.is_deleted == False)
     if user_id:
-        query = query.where(Report.user_id == user_id)
+        query = query.where(Report.user_id == user_id, Report.status == "completed")
 
     result = await db.execute(query)
     report = result.scalar_one_or_none()
@@ -127,7 +127,8 @@ async def get_user_reports(
     # Get total count
     count_query = select(Report).where(
         Report.user_id == user_id,
-        Report.is_deleted == False
+        Report.is_deleted == False,
+        Report.status == "completed",
     )
     count_result = await db.execute(count_query)
     total = len(count_result.all())
@@ -135,7 +136,8 @@ async def get_user_reports(
     # Get reports
     query = select(Report).where(
         Report.user_id == user_id,
-        Report.is_deleted == False
+        Report.is_deleted == False,
+        Report.status == "completed",
     ).order_by(desc(Report.created_at)).offset(skip).limit(limit)
 
     result = await db.execute(query)
@@ -157,6 +159,11 @@ async def delete_report(db: AsyncSession, report_id: int, user_id: int) -> bool:
 
 def format_report_response(report: Report) -> Dict[str, Any]:
     """Format report for API response"""
+    content_payload = dict(report.content_payload or {}) if report.content_payload else None
+    if content_payload is not None:
+        # The private AI source remains available to staff through the request
+        # workspace, never through the public report response.
+        content_payload.pop("ai_generated_content", None)
     return {
         "id": report.id,
         "title": report.title,
@@ -164,13 +171,15 @@ def format_report_response(report: Report) -> Dict[str, Any]:
             "name": (report.input_snapshot or {}).get("name") or "用户",
             "birth_date": report.birth_date.isoformat(),
             "report_date": report.created_at.date().isoformat(),
-            "generated_by": "DeepSeek AI" if report.ai_raw_content else "Basic Algorithm"
+            "generated_by": "咨询师审校 + AI 初稿" if report.reviewed_at else ("DeepSeek AI" if report.ai_raw_content else "Basic Algorithm")
         },
         "energy_profile": report.energy_profile,
         "career_guidance": report.career_guidance,
         "relationship_pattern": report.relationship_pattern,
         "personal_growth": report.personal_growth,
         "summary": report.summary,
-        "ai_generated_content": report.ai_raw_content,
+        "content_payload": content_payload,
+        "ai_generated_content": report.ai_raw_content if not report.content_payload else None,
+        "reviewed_at": report.reviewed_at,
         "created_at": report.created_at
     }

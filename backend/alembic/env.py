@@ -15,6 +15,7 @@ from app.models.report import Report, ReportTask
 from app.models.booking import Booking
 from app.models.course import Course, UserCourse
 from app.models.calendar import CalendarEntry, DecisionLog, UserCalendar
+from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
 
 # this is the Alembic Config object
 config = context.config

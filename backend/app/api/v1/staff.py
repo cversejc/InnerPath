@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
+from app.models.service_request import ServiceRequest
 from app.schemas.booking import BookingAdminUpdate, BookingListResponse, BookingResponse
 from app.schemas.calendar import CalendarListResponse
 from app.schemas.report import ReportListItem, ReportListResponse, ReportResponse
