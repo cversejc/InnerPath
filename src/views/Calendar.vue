@@ -343,6 +343,117 @@
       </section>
     </main>
 
+    <section v-if="!loading" class="section-band calendar-request-section">
+      <div class="container">
+        <div class="calendar-section-heading request-heading">
+          <div>
+            <p class="section-kicker">CALENDAR REQUEST</p>
+            <h2 class="section-title">为下一阶段申请一张日历</h2>
+          </div>
+          <p class="section-desc">日历会复用你的个人档案，但会根据这一次的周期、用途和决策目标重新制定。</p>
+        </div>
+
+        <div v-if="!showCalendarRequestForm" class="calendar-request-cta paper-card">
+          <div>
+            <span class="mini-label">PROFILE + CURRENT GOAL</span>
+            <h3>让日历回应眼前这一段路</h3>
+            <p>提交申请后，后台会按你的档案版本审核并沿用现有的创建、发布流程。</p>
+          </div>
+          <button type="button" class="btn-action" @click="openCalendarRequest">申请新日历</button>
+        </div>
+
+        <div v-else class="calendar-request-card paper-card">
+          <div class="request-card-head">
+            <div>
+              <span class="mini-label">APPLICATION CONTEXT</span>
+              <h3>补充这一次的日历目标</h3>
+            </div>
+            <button type="button" class="request-close" @click="closeCalendarRequest">收起</button>
+          </div>
+
+          <ProfileSummary v-if="profile" :profile="profile" :profile-version="profile.profile_version" :last-confirmed-at="profile.profile_last_confirmed_at" @edit="goToProfile" />
+          <div v-if="profile && Number(profile.profile_completion || 0) < 100" class="request-profile-warning" role="alert">
+            个人档案的性别和出生日期还未完成，请先补充档案后再提交日历申请。
+            <button type="button" @click="goToProfile">去完善个人档案</button>
+          </div>
+
+          <form class="calendar-request-form" novalidate @submit.prevent="submitCalendarRequest">
+            <div class="request-date-grid">
+              <div class="request-form-field">
+                <label for="calendar-request-start">开始日期 <span class="required">*</span></label>
+                <input id="calendar-request-start" v-model="calendarRequestDraft.start_date" type="date" required>
+              </div>
+              <div class="request-form-field">
+                <label for="calendar-request-end">结束日期 <span class="required">*</span></label>
+                <input id="calendar-request-end" v-model="calendarRequestDraft.end_date" type="date" required>
+              </div>
+            </div>
+
+            <div class="request-form-field">
+              <label for="calendar-request-purpose">日历用途 <span class="required">*</span></label>
+              <select id="calendar-request-purpose" v-model="calendarRequestDraft.usage_scenario" required>
+                <option value="">请选择这张日历主要服务什么</option>
+                <option v-for="option in calendarUsageOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+
+            <fieldset class="request-form-field">
+              <legend>关注领域 <span class="required">*</span> <small>最多 3 项</small></legend>
+              <div class="request-option-grid">
+                <button v-for="topic in calendarTopicOptions" :key="topic.value" type="button" class="request-option" :class="{ selected: calendarRequestDraft.focus_topics.includes(topic.value) }" :aria-pressed="calendarRequestDraft.focus_topics.includes(topic.value)" @click="toggleCalendarTopic(topic.value)">{{ topic.label }}</button>
+              </div>
+            </fieldset>
+
+            <div class="request-form-field">
+              <label for="calendar-request-goal">当前决策目标 <span class="required">*</span></label>
+              <textarea id="calendar-request-goal" v-model="calendarRequestDraft.goal" rows="4" maxlength="1000" placeholder="这段周期里，你最希望推进、观察或理清什么？"></textarea>
+            </div>
+
+            <fieldset class="request-form-field">
+              <legend>期望输出 <span class="required">*</span> <small>至少 1 项，最多 7 项</small></legend>
+              <div class="request-check-grid">
+                <label v-for="outcome in calendarOutcomeOptions" :key="outcome.value" class="request-check-option">
+                  <input type="checkbox" :checked="calendarRequestDraft.expected_outcomes.includes(outcome.value)" @change="toggleCalendarOutcome(outcome.value)">
+                  <span>{{ outcome.label }}</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <details class="calendar-request-details">
+              <summary>补充决策背景（选填）</summary>
+              <div class="request-optional-grid">
+                <div class="request-form-field field-wide">
+                  <label for="calendar-request-decision">重要决策描述</label>
+                  <input id="calendar-request-decision" v-model="calendarRequestDraft.decision_description" type="text" maxlength="1000" placeholder="如：是否在本季度接受新的工作机会">
+                </div>
+                <div class="request-form-field field-wide">
+                  <label for="calendar-request-additional">补充说明</label>
+                  <textarea id="calendar-request-additional" v-model="calendarRequestDraft.additional_info" rows="3" maxlength="2000" placeholder="只填写与这次日历目标有关的背景"></textarea>
+                </div>
+              </div>
+            </details>
+
+            <p v-if="calendarRequestError" class="request-error" role="alert">{{ calendarRequestError }}</p>
+            <p v-if="calendarRequestFeedback" class="request-feedback" role="status">{{ calendarRequestFeedback }}</p>
+            <div class="request-actions">
+              <button type="button" class="btn-secondary" @click="closeCalendarRequest">取消</button>
+              <button type="submit" class="btn-action" :disabled="submittingCalendarRequest" :aria-busy="submittingCalendarRequest">{{ submittingCalendarRequest ? '提交中…' : '提交日历申请' }}</button>
+            </div>
+          </form>
+        </div>
+
+        <div v-if="calendarRequests.length" class="calendar-request-history">
+          <div class="history-heading"><span class="mini-label">REQUEST HISTORY</span><strong>我的申请记录</strong></div>
+          <div class="request-history-list">
+            <article v-for="item in calendarRequests" :key="item.id" class="request-history-item">
+              <div><strong>{{ formatRequestDate(item.start_date, item.end_date) }}</strong><span>{{ item.goal }}</span></div>
+              <span class="request-status" :class="`status-${item.status}`">{{ calendarRequestStatus(item.status) }}</span>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <BrandFooter />
 
     <div v-if="mobileDetailOpen" class="detail-scrim" @click="closeMobileDetail"></div>
@@ -351,12 +462,16 @@
 
 <script>
 import { authState } from '../stores/auth'
+import { getCurrentUser } from '../utils/authService'
 import {
+  createCalendarRequest,
   createDecisionLog,
   deleteDecisionLog,
+  getCalendarRequests,
   getMyCalendars,
   getMyDecisionLogs
 } from '../utils/businessService'
+import ProfileSummary from '../components/ProfileSummary.vue'
 import {
   calendarMeta as mockCalendarMeta,
   cautionNotes as mockCautionNotes,
@@ -427,6 +542,7 @@ function dateKeyFromLabel(label, year) {
 
 export default {
   name: 'Calendar',
+  components: { ProfileSummary },
   data() {
     return {
       loading: true,
@@ -450,7 +566,52 @@ export default {
       recordDraft: createRecordDraft(),
       recordError: '',
       recordFeedback: '',
-      savingRecord: false
+      savingRecord: false,
+      profile: null,
+      calendarRequests: [],
+      showCalendarRequestForm: false,
+      submittingCalendarRequest: false,
+      calendarRequestError: '',
+      calendarRequestFeedback: '',
+      calendarRequestDraft: {
+        profile_version: null,
+        start_date: '',
+        end_date: '',
+        focus_topics: [],
+        usage_scenario: '',
+        goal: '',
+        expected_outcomes: [],
+        decision_description: '',
+        additional_info: ''
+      },
+      calendarTopicOptions: [
+        { value: 'career', label: '事业发展' },
+        { value: 'relationship', label: '感情关系' },
+        { value: 'family', label: '家庭议题' },
+        { value: 'finance', label: '财务规划' },
+        { value: 'health', label: '身心健康' },
+        { value: 'social', label: '人际关系' },
+        { value: 'self', label: '个人成长' },
+        { value: 'children', label: '子女教育' },
+        { value: 'other', label: '其他' }
+      ],
+      calendarUsageOptions: [
+        { value: 'morning_planning', label: '每天早上规划一天' },
+        { value: 'evening_review', label: '每天晚上复盘反思' },
+        { value: 'when_confused', label: '遇到困惑时查找指引' },
+        { value: 'before_decision', label: '做重要决策前参考' },
+        { value: 'emotional_support', label: '情绪低落时寻求安慰' },
+        { value: 'other', label: '其他' }
+      ],
+      calendarOutcomeOptions: [
+        { value: 'action_windows', label: '看见适合推进的时间' },
+        { value: 'pause_windows', label: '知道什么时候适合观察或休整' },
+        { value: 'daily_prompt', label: '获得每日行动提示' },
+        { value: 'decision_review', label: '在重要决策前获得参考' },
+        { value: 'reflection', label: '记录并复盘真实选择' },
+        { value: 'emotional_support', label: '获得稳定情绪的提醒' },
+        { value: 'other', label: '其他' }
+      ]
     }
   },
   computed: {
@@ -542,6 +703,7 @@ export default {
     mobileDetailMediaQuery?.addEventListener('change', this.handleLayoutChange)
     await this.loadCalendar()
     await this.loadDecisionLogs()
+    await this.loadCalendarRequestData()
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleEscape)
@@ -549,6 +711,94 @@ export default {
     document.body.classList.remove('dialog-open')
   },
   methods: {
+    async loadCalendarRequestData() {
+      try {
+        const [user, requestResponse] = await Promise.all([getCurrentUser(), getCalendarRequests()])
+        this.profile = user
+        this.calendarRequestDraft.profile_version = user.profile_version || 1
+        this.calendarRequests = requestResponse.items || []
+      } catch (error) {
+        this.profile = this.profile || authState.user
+        this.calendarRequests = []
+      }
+    },
+    openCalendarRequest() {
+      this.calendarRequestError = ''
+      this.calendarRequestFeedback = ''
+      this.showCalendarRequestForm = true
+      this.calendarRequestDraft.profile_version = this.profile?.profile_version || authState.user?.profile_version || 1
+      this.$nextTick(() => document.getElementById('calendar-request-start')?.focus())
+    },
+    closeCalendarRequest() {
+      this.showCalendarRequestForm = false
+      this.calendarRequestError = ''
+    },
+    goToProfile() {
+      this.$router.push({ path: '/pages/user/user', query: { tab: 'settings' } })
+    },
+    toggleCalendarTopic(value) {
+      const topics = [...this.calendarRequestDraft.focus_topics]
+      const index = topics.indexOf(value)
+      if (index >= 0) topics.splice(index, 1)
+      else if (topics.length < 3) topics.push(value)
+      this.calendarRequestDraft.focus_topics = topics
+    },
+    toggleCalendarOutcome(value) {
+      const outcomes = [...this.calendarRequestDraft.expected_outcomes]
+      const index = outcomes.indexOf(value)
+      if (index >= 0) outcomes.splice(index, 1)
+      else if (outcomes.length < 7) outcomes.push(value)
+      this.calendarRequestDraft.expected_outcomes = outcomes
+    },
+    validateCalendarRequest() {
+      const draft = this.calendarRequestDraft
+      if (!this.profile || Number(this.profile.profile_completion || 0) < 100) return '请先完成个人档案中的性别和出生日期。'
+      if (!draft.start_date || !draft.end_date) return '请选择完整的日历周期。'
+      if (draft.start_date > draft.end_date) return '日历开始日期不能晚于结束日期。'
+      if (!draft.usage_scenario) return '请选择日历用途。'
+      if (!draft.focus_topics.length) return '至少选择一个关注领域。'
+      if (!draft.goal.trim()) return '请填写当前决策目标。'
+      if (!draft.expected_outcomes.length) return '至少选择一个期望输出。'
+      return ''
+    },
+    async submitCalendarRequest() {
+      if (this.submittingCalendarRequest) return
+      this.calendarRequestError = ''
+      this.calendarRequestFeedback = ''
+      const validationError = this.validateCalendarRequest()
+      if (validationError) {
+        this.calendarRequestError = validationError
+        return
+      }
+      this.submittingCalendarRequest = true
+      try {
+        const created = await createCalendarRequest({ ...this.calendarRequestDraft, profile_version: this.profile?.profile_version || 1 })
+        this.calendarRequests = [created, ...this.calendarRequests]
+        this.calendarRequestFeedback = '申请已提交，后台会按你的档案版本审核。'
+        this.calendarRequestDraft = {
+          profile_version: this.profile?.profile_version || 1,
+          start_date: '',
+          end_date: '',
+          focus_topics: [],
+          usage_scenario: '',
+          goal: '',
+          expected_outcomes: [],
+          decision_description: '',
+          additional_info: ''
+        }
+      } catch (error) {
+        this.calendarRequestError = error.response?.data?.detail || '申请提交失败，请稍后再试。'
+      } finally {
+        this.submittingCalendarRequest = false
+      }
+    },
+    formatRequestDate(start, end) {
+      if (!start || !end) return '未设置周期'
+      return `${start} — ${end}`
+    },
+    calendarRequestStatus(status) {
+      return { pending: '待审核', reviewing: '审核中', fulfilled: '已完成', rejected: '已退回', cancelled: '已取消' }[status] || status
+    },
     async loadCalendar() {
       try {
         const response = await getMyCalendars()
@@ -1737,5 +1987,276 @@ export default {
     width: 20px;
     height: 20px;
   }
+}
+
+.calendar-request-section {
+  background: linear-gradient(180deg, rgba(255, 250, 240, .58), rgba(234, 217, 191, .26));
+}
+
+.request-heading {
+  align-items: start;
+}
+
+.request-heading .section-title {
+  margin-bottom: 0;
+}
+
+.calendar-request-cta,
+.calendar-request-card {
+  border: 1px solid rgba(184, 92, 80, .18);
+  background: rgba(255, 252, 245, .78);
+}
+
+.calendar-request-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px 28px;
+}
+
+.calendar-request-cta h3,
+.request-card-head h3 {
+  margin-top: 6px;
+  color: var(--calendar-ink);
+  font-size: 23px;
+}
+
+.calendar-request-cta p {
+  margin-top: 7px;
+  color: var(--calendar-muted);
+  font-size: 13px;
+}
+
+.calendar-request-card {
+  display: grid;
+  gap: 22px;
+  padding: clamp(18px, 4vw, 30px);
+}
+
+.request-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.request-close,
+.btn-secondary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--calendar-line);
+  border-radius: 12px;
+  padding: 0 14px;
+  color: var(--calendar-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.request-close:hover,
+.btn-secondary:hover {
+  border-color: var(--cinnabar);
+  color: var(--cinnabar-deep);
+}
+
+.request-profile-warning {
+  border: 1px solid rgba(184, 92, 80, .22);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(184, 92, 80, .07);
+  color: var(--cinnabar-deep);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.request-profile-warning button {
+  margin-left: 8px;
+  color: var(--cinnabar-deep);
+  font-weight: 900;
+  text-decoration: underline;
+}
+
+.calendar-request-form {
+  display: grid;
+  gap: 20px;
+}
+
+.request-date-grid,
+.request-optional-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.request-form-field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.request-form-field label,
+.request-form-field legend {
+  color: var(--calendar-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.request-form-field legend {
+  display: block;
+  width: 100%;
+}
+
+.request-form-field legend small {
+  color: var(--calendar-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.request-form-field input,
+.request-form-field select,
+.request-form-field textarea {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(139, 90, 20, .2);
+  border-radius: 12px;
+  padding: 11px 13px;
+  background: rgba(255, 255, 255, .82);
+  color: var(--calendar-ink);
+  font-size: 16px;
+}
+
+.request-form-field textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
+.request-form-field input:focus,
+.request-form-field select:focus,
+.request-form-field textarea:focus {
+  border-color: var(--cinnabar);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(184, 92, 80, .12);
+}
+
+.request-option-grid,
+.request-check-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.request-option {
+  min-height: 46px;
+  border: 1px solid var(--calendar-line);
+  border-radius: 11px;
+  padding: 8px 10px;
+  background: rgba(255, 250, 240, .64);
+  color: var(--calendar-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.request-option.selected {
+  border-color: var(--cinnabar);
+  background: rgba(184, 92, 80, .1);
+  color: var(--cinnabar-deep);
+}
+
+.request-check-option {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--calendar-line);
+  border-radius: 11px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, .55);
+  color: var(--calendar-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.request-check-option input {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  accent-color: var(--cinnabar);
+}
+
+.calendar-request-details {
+  border-top: 1px solid var(--calendar-line);
+  padding-top: 8px;
+}
+
+.calendar-request-details summary {
+  min-height: 44px;
+  padding: 8px 0;
+  color: var(--cinnabar-deep);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+.request-error { color: var(--cinnabar-deep); font-size: 13px; }
+.request-feedback { color: var(--jade); font-size: 13px; }
+
+.request-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.calendar-request-history {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.history-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.history-heading strong { color: var(--calendar-ink); font-size: 15px; }
+
+.request-history-list { display: grid; gap: 8px; }
+
+.request-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--calendar-line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 252, 245, .62);
+}
+
+.request-history-item > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.request-history-item strong { color: var(--calendar-ink); font-size: 13px; }
+.request-history-item div span { overflow: hidden; color: var(--calendar-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.request-status { display: inline-flex; min-height: 28px; align-items: center; flex: 0 0 auto; border-radius: 999px; padding: 0 10px; background: rgba(139, 90, 20, .1); color: var(--calendar-muted); font-size: 11px; font-weight: 800; }
+.status-fulfilled { background: rgba(111, 159, 147, .14); color: #4c7569; }
+.status-rejected, .status-cancelled { background: rgba(184, 92, 80, .1); color: var(--cinnabar-deep); }
+
+@media (max-width: 700px) {
+  .calendar-request-cta { align-items: start; flex-direction: column; padding: 20px; }
+  .calendar-request-cta .btn-action { width: 100%; }
+  .request-date-grid, .request-optional-grid, .request-option-grid, .request-check-grid { grid-template-columns: 1fr; }
+  .request-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .request-actions > button { width: 100%; }
 }
 </style>

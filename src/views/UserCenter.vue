@@ -24,6 +24,14 @@
       <div class="container">
         <p v-if="loading" class="dashboard-message" role="status" aria-live="polite">正在打开你的个人空间…</p>
         <p v-if="message" class="dashboard-message" role="status" aria-live="polite">{{ message }}</p>
+        <ProfileGrowthCard
+          v-if="!loading"
+          class="user-growth-card"
+          :profile="settings"
+          :completion="profileCompletion"
+          :last-confirmed-at="profileLastConfirmedAt"
+          @edit="openProfileSettings"
+        />
         <div class="content-layout">
           <!-- 侧边栏 -->
           <aside class="sidebar">
@@ -96,34 +104,23 @@
 
             <!-- 账户设置 -->
             <div v-if="activeTab === 'settings'" id="user-panel-settings" class="content-section" role="tabpanel" aria-labelledby="user-tab-settings" tabindex="0">
-              <h3 class="section-title">账户设置</h3>
-              <form class="settings-form">
-                <div class="form-group">
-                  <label>姓名</label>
-                  <input v-model="settings.name" type="text" autocomplete="name">
+              <h3 class="section-title">个人档案与账户设置</h3>
+              <form class="settings-form" @submit.prevent="saveSettings">
+                <ProfileFields
+                  v-model="settings"
+                  id-prefix="user-profile"
+                  :show-optional="true"
+                  :optional-collapsible="true"
+                  v-model:optional-expanded="optionalProfileExpanded"
+                  :errors="settingsErrors"
+                />
+                <div class="form-group account-contact-field">
+                  <label for="user-contact">账户联系方式</label>
+                  <input id="user-contact" v-model="settings.contact" type="tel" autocomplete="tel" readonly>
+                  <p class="form-hint">联系方式由账户系统管理，不会发送给报告分析模型。</p>
                 </div>
-                <fieldset class="form-group choice-fieldset">
-                  <legend>性别</legend>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input v-model="settings.gender" type="radio" value="male">
-                      <span>男</span>
-                    </label>
-                    <label class="radio-label">
-                      <input v-model="settings.gender" type="radio" value="female">
-                      <span>女</span>
-                    </label>
-                  </div>
-                </fieldset>
-                <div class="form-group">
-                  <label>联系方式</label>
-                  <input v-model="settings.contact" type="tel" autocomplete="tel" readonly>
-                </div>
-                <div class="form-group">
-                  <label>出生日期</label>
-                  <input v-model="settings.birthDate" type="date">
-                </div>
-                <button type="button" class="btn-save" :disabled="savingSettings" :aria-busy="savingSettings" @click="saveSettings">{{ savingSettings ? '保存中…' : '保存设置' }}</button>
+                <button type="submit" class="btn-save" :disabled="savingSettings" :aria-busy="savingSettings">{{ savingSettings ? '保存中…' : '保存个人档案' }}</button>
+                <p v-if="settingsError" class="settings-error" role="alert">{{ settingsError }}</p>
               </form>
               <form class="password-form" @submit.prevent="savePassword">
                 <h4>修改密码</h4>
@@ -160,10 +157,13 @@
 <script>
 import { changePassword, getCurrentUser, updateUserProfile } from '../utils/authService'
 import { getUserReports } from '../utils/aiService'
-import { hasRole, logout as logoutUser } from '../stores/auth'
+import { hasRole, logout as logoutUser, setAuthenticatedUser } from '../stores/auth'
+import ProfileFields from '../components/ProfileFields.vue'
+import ProfileGrowthCard from '../components/ProfileGrowthCard.vue'
 
 export default {
   name: 'UserCenter',
+  components: { ProfileFields, ProfileGrowthCard },
   data() {
     return {
       userName: '用户',
@@ -181,9 +181,32 @@ export default {
         name: '',
         gender: '',
         contact: '',
-        birthDate: '',
-        email: ''
+        calendar_type: 'solar',
+        birth_year: null,
+        birth_month: null,
+        birth_day: null,
+        birth_hour: null,
+        birth_minute: null,
+        birth_place: '',
+        birth_time_precision: 'unknown',
+        current_residence: '',
+        marital_status: '',
+        occupation_status: '',
+        highest_education: '',
+        mbti: '',
+        personality_keywords: [],
+        strengths: '',
+        limitations: '',
+        mingli_experience: [],
+        mingli_attitude: '',
+        preferred_content_depth: '',
+        default_usage_scenarios: []
       },
+      profileCompletion: 0,
+      profileLastConfirmedAt: null,
+      optionalProfileExpanded: false,
+      settingsErrors: {},
+      settingsError: '',
       passwordForm: {
         current: '',
         next: ''
@@ -199,6 +222,7 @@ export default {
     }
   },
   async mounted() {
+    if (['reports', 'calendar', 'settings'].includes(this.$route.query.tab)) this.activeTab = this.$route.query.tab
     await this.loadDashboard()
   },
   methods: {
@@ -215,11 +239,30 @@ export default {
           name: user.name || '',
           gender: user.gender || '',
           contact: user.phone || '',
-          birthDate: user.birth_year && user.birth_month && user.birth_day
-            ? `${user.birth_year}-${String(user.birth_month).padStart(2, '0')}-${String(user.birth_day).padStart(2, '0')}`
-            : '',
-          email: ''
+          calendar_type: user.calendar_type || 'solar',
+          birth_year: user.birth_year || null,
+          birth_month: user.birth_month || null,
+          birth_day: user.birth_day || null,
+          birth_hour: user.birth_hour ?? null,
+          birth_minute: user.birth_minute ?? null,
+          birth_place: user.birth_place || '',
+          birth_time_precision: user.birth_time_precision || 'unknown',
+          current_residence: user.current_residence || '',
+          marital_status: user.marital_status || '',
+          occupation_status: user.occupation_status || '',
+          highest_education: user.highest_education || '',
+          mbti: user.mbti || '',
+          personality_keywords: Array.isArray(user.personality_keywords) ? [...user.personality_keywords] : [],
+          strengths: user.strengths || '',
+          limitations: user.limitations || '',
+          mingli_experience: Array.isArray(user.mingli_experience) ? [...user.mingli_experience] : [],
+          mingli_attitude: user.mingli_attitude || '',
+          preferred_content_depth: user.preferred_content_depth || '',
+          default_usage_scenarios: Array.isArray(user.default_usage_scenarios) ? [...user.default_usage_scenarios] : []
         }
+        this.profileCompletion = Number(user.profile_completion || 0)
+        this.profileLastConfirmedAt = user.profile_last_confirmed_at || null
+        this.optionalProfileExpanded = this.profileCompletion < 100
         this.reports = (reportResponse.items || []).map(report => ({
           id: report.id,
           title: report.title,
@@ -245,6 +288,11 @@ export default {
     selectTab(tabId) {
       this.activeTab = tabId
     },
+    openProfileSettings() {
+      this.activeTab = 'settings'
+      this.optionalProfileExpanded = true
+      this.$nextTick(() => document.getElementById('user-profile-name')?.focus())
+    },
     moveTab(offset) {
       const currentIndex = this.tabs.findIndex(tab => tab.id === this.activeTab)
       const nextIndex = (currentIndex + offset + this.tabs.length) % this.tabs.length
@@ -255,22 +303,55 @@ export default {
     formatDate(value) {
       return value ? new Date(value).toLocaleDateString('zh-CN') : '—'
     },
+    validateSettings() {
+      const errors = {}
+      const profile = this.settings
+      if (!String(profile.name || '').trim()) errors.name = '请填写称呼。'
+      if (!profile.gender) errors.gender = '请选择性别。'
+      const year = Number(profile.birth_year)
+      const month = Number(profile.birth_month)
+      const day = Number(profile.birth_day)
+      if (!year || year < 1900 || year > new Date().getFullYear()) errors.birth_date = '请填写有效的出生年份。'
+      if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期。'
+      if (profile.calendar_type === 'solar' && year && month && day) {
+        const date = new Date(year, month - 1, day)
+        if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期。'
+      }
+      if (profile.birth_time_precision !== 'unknown' && (profile.birth_hour === null || profile.birth_hour === undefined || profile.birth_minute === null || profile.birth_minute === undefined)) errors.birth_time = '请选择完整的出生小时和分钟。'
+      this.settingsErrors = errors
+      return Object.keys(errors).length === 0
+    },
+    settingsPayload() {
+      const profile = { ...this.settings }
+      delete profile.contact
+      profile.name = String(profile.name || '').trim()
+      ;['birth_place', 'current_residence', 'mbti', 'strengths', 'limitations', 'marital_status', 'occupation_status', 'highest_education', 'mingli_attitude', 'preferred_content_depth'].forEach(field => {
+        profile[field] = String(profile[field] || '').trim() || null
+      })
+      profile.birth_year = profile.birth_year ? Number(profile.birth_year) : null
+      profile.birth_month = profile.birth_month ? Number(profile.birth_month) : null
+      profile.birth_day = profile.birth_day ? Number(profile.birth_day) : null
+      profile.birth_hour = profile.birth_time_precision === 'unknown' || profile.birth_hour === '' ? null : Number(profile.birth_hour)
+      profile.birth_minute = profile.birth_time_precision === 'unknown' || profile.birth_minute === '' ? null : Number(profile.birth_minute)
+      return profile
+    },
     async saveSettings() {
+      this.settingsError = ''
+      if (!this.validateSettings()) {
+        this.settingsError = '请先检查档案中的必填项。'
+        return
+      }
       this.savingSettings = true
       try {
-        const payload = {
-          name: this.settings.name,
-          gender: this.settings.gender || null
-        }
-        if (this.settings.birthDate) {
-          const [year, month, day] = this.settings.birthDate.split('-').map(Number)
-          Object.assign(payload, { birth_year: year, birth_month: month, birth_day: day })
-        }
-        const user = await updateUserProfile(payload)
+        const user = await updateUserProfile(this.settingsPayload())
+        setAuthenticatedUser(user)
         this.userName = user.name
-        this.message = '设置已保存'
+        this.profileCompletion = Number(user.profile_completion || 0)
+        this.profileLastConfirmedAt = user.profile_last_confirmed_at || null
+        this.settingsError = ''
+        this.message = `个人档案已保存（版本 v${user.profile_version || 1}）`
       } catch (error) {
-        this.message = error.response?.data?.detail || '设置保存失败'
+        this.settingsError = error.response?.data?.detail || '设置保存失败'
       } finally {
         this.savingSettings = false
       }
@@ -648,6 +729,51 @@ export default {
 /* 设置表单 */
 .settings-form {
   max-width: 600px;
+}
+
+.profile-completion-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  border: 1px solid rgba(111, 159, 147, .24);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: rgba(111, 159, 147, .08);
+}
+
+.profile-completion-banner > div {
+  display: grid;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.profile-completion-banner span {
+  color: var(--muted, #7d6653);
+  font-size: 12px;
+}
+
+.profile-completion-banner strong {
+  color: var(--jade, #6f9f93);
+  font-size: 24px;
+}
+
+.profile-completion-banner p,
+.account-contact-field .form-hint {
+  color: var(--muted, #7d6653);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.account-contact-field {
+  margin-top: 22px;
+}
+
+.settings-error {
+  margin-top: 10px;
+  color: var(--cinnabar-deep, #9e3f35);
+  font-size: 13px;
 }
 
 .password-form {
@@ -1526,6 +1652,30 @@ export default {
 
   .calendar-access-card .btn-action {
     min-width: 0;
+  }
+}
+
+.user-growth-card {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .user-growth-card {
+    margin-bottom: 12px;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: calc(var(--nav-height, 62px) + env(safe-area-inset-top));
+    z-index: 8;
+    box-shadow: 0 10px 24px -22px rgba(47, 36, 27, .78);
+  }
+
+  .settings-form .btn-save {
+    position: sticky;
+    bottom: calc(68px + var(--safe-bottom, 0px));
+    z-index: 5;
+    box-shadow: 0 8px 20px -14px rgba(47, 36, 27, .82);
   }
 }
 </style>

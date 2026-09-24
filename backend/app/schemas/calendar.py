@@ -69,6 +69,7 @@ class CalendarResponse(BaseModel):
     start_date: Optional[date]
     end_date: Optional[date]
     status: str
+    calendar_request_id: Optional[int] = None
     published_at: Optional[datetime]
     entries: List[CalendarEntryResponse] = Field(default_factory=list)
     created_at: datetime
@@ -85,6 +86,45 @@ class CalendarImportRequest(BaseModel):
 
 class CalendarListResponse(BaseModel):
     items: List[CalendarResponse]
+
+
+class CalendarRequestCreate(BaseModel):
+    profile_version: Optional[int] = Field(None, ge=1)
+    source_report_id: Optional[int] = Field(None, ge=1)
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    focus_topics: List[str] = Field(default_factory=list, max_length=3)
+    usage_scenario: Optional[str] = Field(None, max_length=50)
+    goal: Optional[str] = Field(None, max_length=1000)
+    decision_description: Optional[str] = Field(None, max_length=1000)
+    expected_outcomes: List[str] = Field(default_factory=list, max_length=7)
+    additional_info: Optional[str] = Field(None, max_length=2000)
+
+
+class CalendarRequestResponse(CalendarRequestCreate):
+    id: int
+    user_id: int
+    status: str
+    source_report_id: Optional[int] = None
+    calendar_id: Optional[int] = None
+    reviewer_id: Optional[int] = None
+    reviewed_at: Optional[datetime] = None
+    review_note: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class CalendarRequestListResponse(BaseModel):
+    items: List[CalendarRequestResponse]
+
+
+class CalendarRequestAdminUpdate(BaseModel):
+    status: str = Field(..., pattern="^(pending|reviewing|fulfilled|rejected|cancelled)$")
+    review_note: Optional[str] = Field(None, max_length=1000)
+    calendar_id: Optional[int] = Field(None, ge=1)
 
 
 class StaffInviteCreate(BaseModel):

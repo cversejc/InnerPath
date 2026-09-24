@@ -74,49 +74,24 @@
             <div class="step-heading">
               <p class="section-kicker">CONTACT</p>
               <h2>留下你的现实问题</h2>
+              <p>个人档案会自动用于准备服务，这里只确认本次预约的联系方式与目标。</p>
             </div>
 
-            <div class="form-grid two">
-              <div class="form-group">
-                <label>姓名 <span class="required">*</span></label>
-                <input v-model="bookingData.name" type="text" autocomplete="name" placeholder="请输入你的姓名" required>
-              </div>
-
-              <div class="form-group">
-                <label>联系方式 <span class="required">*</span></label>
-                <input v-model="bookingData.contact" type="tel" inputmode="tel" autocomplete="tel" placeholder="手机号或微信" required>
-              </div>
+            <div v-if="profile" class="booking-profile-block">
+              <ProfileSummary
+                :profile="profile"
+                :profile-version="profile.profile_version"
+                :last-confirmed-at="profile.profile_last_confirmed_at"
+                @edit="goToProfile"
+              />
+              <p class="booking-profile-note">以上资料来自你的个人档案。预约不会再次收集姓名、性别和出生资料；需要调整时，可先去个人档案更新。</p>
             </div>
-
-            <fieldset class="form-group choice-fieldset">
-              <legend class="form-label">性别 <span class="required">*</span></legend>
-              <div class="radio-cards">
-                <label :class="{ selected: bookingData.gender === 'male' }">
-                  <input v-model="bookingData.gender" type="radio" value="male" required>
-                  <span>男</span>
-                </label>
-                <label :class="{ selected: bookingData.gender === 'female' }">
-                  <input v-model="bookingData.gender" type="radio" value="female" required>
-                  <span>女</span>
-                </label>
-              </div>
-            </fieldset>
+            <div v-else class="booking-profile-loading" role="status">正在读取你的个人档案…</div>
 
             <div class="form-group">
-              <label>出生日期 <span class="required">*</span></label>
-              <div class="date-inputs">
-                <input v-model="bookingData.birthYear" type="number" aria-label="出生年份" placeholder="年" min="1900" max="2026" required>
-                <input v-model="bookingData.birthMonth" type="number" aria-label="出生月份" placeholder="月" min="1" max="12" required>
-                <input v-model="bookingData.birthDay" type="number" aria-label="出生日期" placeholder="日" min="1" max="31" required>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>出生时间 <span class="optional">(选填)</span></label>
-              <div class="time-inputs">
-                <input v-model="bookingData.birthHour" type="number" aria-label="出生小时" placeholder="时" min="0" max="23">
-                <input v-model="bookingData.birthMinute" type="number" aria-label="出生分钟" placeholder="分" min="0" max="59">
-              </div>
+              <label for="booking-contact">本次联系方式 <span class="required">*</span></label>
+              <input id="booking-contact" v-model="bookingData.contact" type="tel" inputmode="tel" autocomplete="tel" placeholder="手机号或微信" required>
+              <p class="form-hint">默认使用账户联系方式；如希望团队联系其他方式，可在这里临时修改。</p>
             </div>
 
             <div class="form-group">
@@ -201,15 +176,9 @@ export default {
     return {
       selectedService: null,
       bookingSuccess: false,
+      profile: null,
       bookingData: {
-        name: '',
-        gender: '',
         contact: '',
-        birthYear: '',
-        birthMonth: '',
-        birthDay: '',
-        birthHour: '',
-        birthMinute: '',
         preferredTime: '',
         topics: [],
         notes: ''
@@ -229,14 +198,8 @@ export default {
   async mounted() {
     try {
       const user = await getCurrentUser()
-      this.bookingData.name = user.name || ''
+      this.profile = user
       this.bookingData.contact = user.phone || ''
-      this.bookingData.gender = user.gender || ''
-      this.bookingData.birthYear = user.birth_year || ''
-      this.bookingData.birthMonth = user.birth_month || ''
-      this.bookingData.birthDay = user.birth_day || ''
-      this.bookingData.birthHour = user.birth_hour ?? ''
-      this.bookingData.birthMinute = user.birth_minute ?? ''
     } catch (error) {
       this.errorMessage = error.response?.data?.detail || '账户信息加载失败'
     }
@@ -265,10 +228,11 @@ export default {
       }
       return prices[service] || ''
     },
+    goToProfile() {
+      this.$router.push('/pages/user/user?tab=settings')
+    },
     async submitBooking() {
-      if (!this.bookingData.name || !this.bookingData.gender || !this.bookingData.contact ||
-          !this.bookingData.birthYear || !this.bookingData.birthMonth || !this.bookingData.birthDay ||
-          !this.bookingData.preferredTime || this.bookingData.topics.length === 0) {
+      if (!this.profile || !this.bookingData.contact || !this.bookingData.preferredTime || this.bookingData.topics.length === 0) {
         this.errorMessage = '请补充所有带 * 的必填项后再提交。'
         return
       }
@@ -486,6 +450,33 @@ export default {
   display: grid;
   gap: 22px;
   padding: clamp(22px, 4vw, 36px);
+}
+
+.booking-form .step-heading > p:not(.section-kicker) {
+  max-width: 560px;
+  margin: 10px auto 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.booking-profile-block {
+  display: grid;
+  gap: 10px;
+}
+
+.booking-profile-note,
+.booking-profile-loading {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.booking-profile-loading {
+  border: 1px dashed rgba(139, 90, 20, .2);
+  border-radius: 14px;
+  padding: 16px;
+  background: rgba(255, 250, 240, .54);
 }
 
 .booking-form h2 {

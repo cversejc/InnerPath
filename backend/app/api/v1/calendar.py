@@ -7,17 +7,23 @@ from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.user import User
 from app.schemas.calendar import (
+    CalendarRequestCreate,
+    CalendarRequestListResponse,
+    CalendarRequestResponse,
     DecisionLogInput,
     DecisionLogListResponse,
     DecisionLogResponse,
     CalendarListResponse,
 )
 from app.services.calendar_service import (
+    create_calendar_request,
     create_user_decision_log,
     delete_user_decision_log,
     get_calendar_for_staff,
+    get_user_calendar_requests,
     get_user_calendars,
     get_user_decision_logs,
+    serialize_calendar_request,
 )
 
 router = APIRouter()
@@ -30,6 +36,40 @@ async def get_my_calendars(
 ):
     calendars = await get_user_calendars(db, current_user.id, published_only=True)
     return CalendarListResponse(items=calendars)
+
+
+@router.post("/requests", response_model=CalendarRequestResponse, status_code=status.HTTP_201_CREATED)
+async def create_my_calendar_request(
+    data: CalendarRequestCreate,
+    request: Request,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        calendar_request = await create_calendar_request(db, current_user, data, request=request)
+    except ValueError as error:
+        message_map = {
+            "profile_version_conflict": "个人档案已更新，请刷新后确认最新资料再提交。",
+            "calendar_request_profile_incomplete": "请先完成个人档案中的性别和完整出生日期。",
+            "calendar_request_requires_date_range": "请选择完整的日历周期。",
+            "invalid_calendar_range": "日历开始日期不能晚于结束日期。",
+            "calendar_request_requires_focus_topics": "至少选择一个关注领域。",
+            "calendar_request_requires_usage_scenario": "请选择日历用途。",
+            "calendar_request_requires_goal": "请填写当前决策目标。",
+            "calendar_request_requires_expected_outcomes": "至少选择一个期望输出。",
+            "calendar_request_source_report_mismatch": "来源报告不存在或不属于当前账号。",
+        }
+        code = status.HTTP_409_CONFLICT if str(error) == "profile_version_conflict" else status.HTTP_422_UNPROCESSABLE_ENTITY
+        raise HTTPException(status_code=code, detail=message_map.get(str(error), str(error)))
+    return await serialize_calendar_request(db, calendar_request)
+
+
+@router.get("/requests", response_model=CalendarRequestListResponse)
+async def get_my_calendar_requests(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return CalendarRequestListResponse(items=await get_user_calendar_requests(db, current_user.id))
 
 
 @router.get("/decision-logs", response_model=DecisionLogListResponse)

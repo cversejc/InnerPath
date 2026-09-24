@@ -178,6 +178,22 @@
         </div>
       </section>
 
+      <section v-else-if="activeTab === 'calendar-requests'" class="content-view calendar-request-admin-view">
+        <div class="view-heading">
+          <div><p class="eyebrow">CALENDAR / INTAKE QUEUE</p><h2>日历申请审核</h2><p>按用户提交时的档案版本审核；发布日历后可在这里绑定来源申请。</p></div>
+          <div class="filter-bar compact-filter"><select v-model="calendarRequestStatusFilter" aria-label="按申请状态筛选" @change="loadCalendarRequests"><option value="">全部状态</option><option value="pending">待审核</option><option value="reviewing">审核中</option><option value="fulfilled">已完成</option><option value="rejected">已退回</option><option value="cancelled">已取消</option></select><button class="secondary-button compact-button" type="button" @click="loadCalendarRequests">刷新申请</button></div>
+        </div>
+        <div v-if="calendarRequestsLoading" class="list-loading" aria-label="正在加载日历申请"><i v-for="index in 4" :key="index"></i></div>
+        <div v-else class="calendar-request-admin-list">
+          <article v-for="item in calendarRequests" :key="item.id" class="panel-surface calendar-request-admin-card">
+            <div class="calendar-request-admin-head"><div><p class="eyebrow">REQUEST #{{ item.id }} · USER #{{ item.user_id }}</p><h3>{{ item.start_date }} — {{ item.end_date }}</h3><span>档案版本 v{{ item.profile_version }} · 提交于 {{ formatDateTime(item.created_at) }}</span></div><span :class="['status-badge', `request-${item._status}`]">{{ calendarRequestStatusText(item._status) }}</span></div>
+            <div class="calendar-request-admin-body"><div><span>关注领域</span><strong>{{ item.focus_topics?.join('、') || '—' }}</strong></div><div><span>日历用途</span><strong>{{ item.usage_scenario || '—' }}</strong></div><div class="request-goal"><span>当前决策目标</span><p>{{ item.goal || '—' }}</p></div><div class="request-goal"><span>期望输出</span><p>{{ item.expected_outcomes?.join('、') || '—' }}</p></div></div>
+            <div class="calendar-request-admin-actions"><label>处理状态<select v-model="item._status"><option value="pending">待审核</option><option value="reviewing">审核中</option><option value="fulfilled">已完成</option><option value="rejected">已退回</option><option value="cancelled">已取消</option></select></label><label>绑定日历 ID<input v-model.number="item._calendarId" type="number" min="1" placeholder="发布后填写"></label><label class="request-note-field">审核备注<input v-model.trim="item._reviewNote" maxlength="1000" placeholder="给内部处理人员的备注"></label><button class="primary-button compact-button" type="button" :disabled="calendarRequestsLoading" @click="reviewCalendarRequest(item)">保存审核</button></div>
+          </article>
+          <p v-if="!calendarRequests.length" class="empty-cell">暂无符合条件的日历申请。</p>
+        </div>
+      </section>
+
       <section v-else-if="activeTab === 'calendar'" class="content-view calendar-view">
         <div class="view-heading"><div><p class="eyebrow">PERSONAL TIMEZONE / EDITOR</p><h2>用户日历</h2><p>结构化维护每日节奏，已发布内容通过新版本上线。</p></div><button class="secondary-button" type="button" @click="toggleImportPanel">{{ showCalendarImport ? '收起 JSON 导入' : '批量 JSON 导入' }}</button></div>
         <div v-if="showCalendarImport" class="import-panel"><div><strong>批量导入日历</strong><p>格式支持 `{ title, entries }` 或直接传入条目数组；导入后默认为草稿。</p></div><textarea v-model="calendarImportJson" rows="4" placeholder='{"title":"2026 秋季行动日历","entries":[{"entry_date":"2026-09-07","tone":"yellow","keyword":"观察","summary":"先理清信息","suitable":["整理计划"],"unsuitable":["仓促拍板"]}]}'></textarea><div class="action-row"><button class="primary-button compact-button" type="button" :disabled="calendarSaving" @click="importCalendarJson">导入为草稿</button></div></div>
@@ -242,6 +258,7 @@ import {
   getAdminAuditLogs,
   getAdminBookings,
   getAdminCalendars,
+  getAdminCalendarRequests,
   getAdminDashboard,
   getAdminDecisionLogs,
   getAdminReport,
@@ -260,6 +277,7 @@ import {
   retryAdminReportTask,
   updateAdminBooking,
   updateAdminCalendar,
+  updateAdminCalendarRequest,
   updateAdminUserProfile,
   updateAdminUserRole,
   updateAdminUserStatus,
@@ -299,10 +317,11 @@ export default {
         { id: 'overview', index: '01', label: '总览' },
         { id: 'users', index: '02', label: '用户' },
         { id: 'bookings', index: '03', label: '预约' },
-        { id: 'calendar', index: '04', label: '日历' },
-        { id: 'reports', index: '05', label: '报告' },
-        { id: 'logs', index: '06', label: '日志' },
-        { id: 'staff', index: '07', label: '后台成员' }
+        { id: 'calendar-requests', index: '04', label: '日历申请' },
+        { id: 'calendar', index: '05', label: '日历' },
+        { id: 'reports', index: '06', label: '报告' },
+        { id: 'logs', index: '07', label: '日志' },
+        { id: 'staff', index: '08', label: '后台成员' }
       ],
       dashboardRanges: [{ id: '7d', label: '7 天' }, { id: '30d', label: '30 天' }, { id: '90d', label: '90 天' }],
       dashboardRange: '30d',
@@ -364,6 +383,9 @@ export default {
       selectedCalendarUser: null,
       calendars: [],
       calendarLoading: false,
+      calendarRequests: [],
+      calendarRequestsLoading: false,
+      calendarRequestStatusFilter: '',
       calendarUsersLoading: false,
       calendarForm: { visible: false, id: null, title: '', note: '', start_date: '', end_date: '', status: '', version_number: 1, entries: [] },
       calendarSaving: false,
@@ -379,7 +401,7 @@ export default {
   },
   computed: {
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.bookingsLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.bookingSaving || this.profileSaving || this.inviteSaving
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.bookingsLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.calendarRequestsLoading || this.staffLoading || this.bookingSaving || this.profileSaving || this.inviteSaving
     },
     metricCards() {
       const metrics = this.dashboard?.metrics || {}
@@ -469,6 +491,7 @@ export default {
       if (tab === 'overview') await this.loadDashboard()
       if (tab === 'users') await this.loadUsers()
       if (tab === 'bookings') await this.loadBookings()
+      if (tab === 'calendar-requests') await this.loadCalendarRequests()
       if (tab === 'calendar' && !this.calendarUsers.length) await this.loadCalendarUsers()
       if (tab === 'reports') await this.loadReports()
       if (tab === 'logs') await this.loadAuditLogs()
@@ -478,6 +501,7 @@ export default {
       if (this.activeTab === 'overview') return this.loadDashboard()
       if (this.activeTab === 'users') return this.loadUsers()
       if (this.activeTab === 'bookings') return this.loadBookings()
+      if (this.activeTab === 'calendar-requests') return this.loadCalendarRequests()
       if (this.activeTab === 'calendar') return this.selectedCalendarUser ? this.loadCalendars() : this.loadCalendarUsers()
       if (this.activeTab === 'reports') return this.reportSection === 'reports' ? this.loadReports() : this.loadReportTasks()
        if (this.activeTab === 'logs') return this.logSection === 'audit' ? this.loadAuditLogs() : this.logSection === 'behavior' ? this.loadDecisionLogs() : this.loadReportTasks()
@@ -621,6 +645,40 @@ export default {
       this.calendarUsersLoading = true
       try { const response = await getAllAdminUsers({ search: this.calendarUserSearch || undefined, size: 100 }); this.calendarUsers = response.items || [] } catch (error) { this.message = this.errorText(error) } finally { this.calendarUsersLoading = false }
     },
+    async loadCalendarRequests() {
+      this.calendarRequestsLoading = true
+      try {
+        const response = await getAdminCalendarRequests({ status: this.calendarRequestStatusFilter || undefined })
+        this.calendarRequests = (response.items || []).map(item => ({
+          ...item,
+          _status: item.status,
+          _reviewNote: item.review_note || '',
+          _calendarId: item.calendar_id || null
+        }))
+      } catch (error) {
+        this.message = this.errorText(error)
+      } finally {
+        this.calendarRequestsLoading = false
+      }
+    },
+    calendarRequestStatusText(status) {
+      return { pending: '待审核', reviewing: '审核中', fulfilled: '已完成', rejected: '已退回', cancelled: '已取消' }[status] || status
+    },
+    async reviewCalendarRequest(item) {
+      this.calendarRequestsLoading = true
+      try {
+        await updateAdminCalendarRequest(item.id, {
+          status: item._status,
+          review_note: item._reviewNote || null,
+          calendar_id: item._calendarId || null
+        })
+        this.message = `日历申请 #${item.id} 已更新`
+        await this.loadCalendarRequests()
+      } catch (error) {
+        this.message = this.errorText(error)
+        this.calendarRequestsLoading = false
+      }
+    },
     async openCalendarForUser(user) { this.closeUserDetail({ restoreFocus: false }); this.activeTab = 'calendar'; this.selectedCalendarUser = user; this.calendarForm.visible = false; await this.loadCalendarUsers(); await this.loadCalendars(); this.syncAutoRefresh() },
     async selectCalendarUser(user) { this.selectedCalendarUser = user; this.cancelCalendarEdit(); await this.loadCalendars() },
     async loadCalendars() {
@@ -722,8 +780,8 @@ export default {
     calendarStatusText(value) { return { draft: '草稿', published: '已发布', archived: '已归档' }[value] || value || '—' },
     decisionStatusText(value) { return { done: '已完成', doing: '进行中', skipped: '已跳过' }[value] || value || '—' },
     roleText(value) { return { user: '用户', consultant: '咨询师', admin: '管理员' }[value] || value || '—' },
-    resourceLabel(value) { return { user: '用户', booking: '预约', calendar: '日历', report: '报告', report_task: '报告任务', decision_log: '行动记录', user_course: '课程进度', staff_invite: '成员邀请', auth: '认证' }[value] || value || '—' },
-    actionLabel(value) { return { 'auth.register': '注册账号', 'auth.login.success': '登录成功', 'auth.login.failure': '登录失败', 'auth.logout': '退出登录', 'user.profile.update': '更新资料', 'user.profile.update.admin': '管理员更新资料', 'user.status.update': '更新账号状态', 'user.role.update': '更新角色', 'user.password.reset': '重置密码', 'user.password.change': '修改密码', 'booking.create': '创建预约', 'booking.cancel': '取消预约', 'booking.update': '更新预约', 'booking.staff.update': '咨询师更新预约', 'calendar.create': '创建日历', 'calendar.import': '导入日历', 'calendar.update': '更新日历', 'calendar.revision.create': '创建日历版本', 'calendar.publish': '发布日历', 'calendar.archive': '归档日历', 'decision_log.create': '新增行动记录', 'decision_log.delete': '删除行动记录', 'course.progress.update': '更新课程进度', 'report.task.create': '创建报告任务', 'report.task.completed': '报告生成完成', 'report.task.failed': '报告生成失败', 'report.task.retry': '重试报告任务', 'report.delete': '删除报告', 'staff.invite.create': '创建成员邀请', 'staff.invite.accept': '接受成员邀请' }[value] || value || '未知操作' },
+    resourceLabel(value) { return { user: '用户', booking: '预约', calendar: '日历', calendar_request: '日历申请', report: '报告', report_task: '报告任务', decision_log: '行动记录', user_course: '课程进度', staff_invite: '成员邀请', auth: '认证' }[value] || value || '—' },
+    actionLabel(value) { return { 'auth.register': '注册账号', 'auth.login.success': '登录成功', 'auth.login.failure': '登录失败', 'auth.logout': '退出登录', 'user.profile.update': '更新资料', 'user.profile.update.admin': '管理员更新资料', 'user.status.update': '更新账号状态', 'user.role.update': '更新角色', 'user.password.reset': '重置密码', 'user.password.change': '修改密码', 'booking.create': '创建预约', 'booking.cancel': '取消预约', 'booking.update': '更新预约', 'booking.staff.update': '咨询师更新预约', 'calendar.create': '创建日历', 'calendar.import': '导入日历', 'calendar.update': '更新日历', 'calendar.revision.create': '创建日历版本', 'calendar.publish': '发布日历', 'calendar.archive': '归档日历', 'calendar.request.create': '提交日历申请', 'calendar.request.update': '处理日历申请', 'decision_log.create': '新增行动记录', 'decision_log.delete': '删除行动记录', 'course.progress.update': '更新课程进度', 'report.task.create': '创建报告任务', 'report.task.completed': '报告生成完成', 'report.task.failed': '报告生成失败', 'report.task.retry': '重试报告任务', 'report.delete': '删除报告', 'staff.invite.create': '创建成员邀请', 'staff.invite.accept': '接受成员邀请' }[value] || value || '未知操作' },
     prettyJson(value) { if (value === null || value === undefined || value === '') return '—'; if (typeof value === 'string') { try { return JSON.stringify(JSON.parse(value), null, 2) } catch { return value } } return JSON.stringify(value, null, 2) },
     errorText(error) { return error.response?.data?.detail || error.message || '请求失败，请稍后重试' }
   }
@@ -1164,5 +1222,121 @@ export default {
 .admin-shell .chart-label { fill: var(--muted, #7d6653); font-size: 11px; }
 .admin-shell .muted-text { color: var(--muted, #7d6653) !important; }
 .admin-shell .empty-cell { color: var(--muted, #7d6653) !important; font-size: 13px; }
+
+.calendar-request-admin-view .view-heading {
+  align-items: end;
+}
+
+.compact-filter {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.calendar-request-admin-list {
+  display: grid;
+  gap: 14px;
+}
+
+.calendar-request-admin-card {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+}
+
+.calendar-request-admin-head,
+.calendar-request-admin-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.calendar-request-admin-head h3 {
+  margin-top: 4px;
+  color: var(--ink);
+  font-size: 21px;
+}
+
+.calendar-request-admin-head > div > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.calendar-request-admin-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 15px 0;
+}
+
+.calendar-request-admin-body > div {
+  display: grid;
+  gap: 4px;
+}
+
+.calendar-request-admin-body span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.calendar-request-admin-body strong,
+.calendar-request-admin-body p {
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.calendar-request-admin-actions {
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.calendar-request-admin-actions label {
+  display: grid;
+  min-width: 150px;
+  flex: 1 1 150px;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.calendar-request-admin-actions .request-note-field {
+  flex-basis: 240px;
+}
+
+.calendar-request-admin-actions input,
+.calendar-request-admin-actions select {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 0 10px;
+  background: var(--surface-strong);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.request-pending { background: rgba(217, 186, 98, .16); color: var(--gold-deep); }
+.request-reviewing { background: rgba(111, 159, 147, .14); color: #4c7569; }
+.request-fulfilled { background: rgba(111, 159, 147, .18); color: #4c7569; }
+.request-rejected, .request-cancelled { background: rgba(184, 92, 80, .1); color: var(--cinnabar-deep); }
+
+@media (max-width: 700px) {
+  .calendar-request-admin-view .view-heading,
+  .calendar-request-admin-head,
+  .calendar-request-admin-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .calendar-request-admin-body { grid-template-columns: 1fr; }
+  .calendar-request-admin-actions label,
+  .calendar-request-admin-actions .request-note-field,
+  .calendar-request-admin-actions .primary-button { width: 100%; flex-basis: auto; }
+}
 
 </style>

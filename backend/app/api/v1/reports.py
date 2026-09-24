@@ -10,8 +10,10 @@ from app.core.logging_config import get_logger
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.booking import Booking
+from app.models.report import Report
 from app.models.user import User
 from app.schemas.report import (
+    LatestReportContextResponse,
     ReportCreate,
     ReportListItem,
     ReportListResponse,
@@ -29,6 +31,7 @@ from app.services.report_service import (
     get_user_reports,
 )
 from app.services.audit_service import record_audit
+from app.services.intake_service import build_intake_snapshot, flatten_snapshot_for_ai, normalize_context
 from app.tasks.report_tasks import generate_report_task
 
 router = APIRouter()
@@ -61,8 +64,58 @@ async def create_report(
     """Create a report generation task for the authenticated user."""
     task_id = str(uuid4())
 
-    task_input = report_data.model_dump()
-    task_input["name"] = task_input.get("name") or current_user.name
+    unified_request = report_data.profile_version is not None or report_data.context is not None
+    if unified_request:
+        if current_user.profile_completion < 100:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="请先完成个人档案中的性别和完整出生日期。",
+            )
+        if report_data.context is not None:
+            context = report_data.context.model_dump(exclude_none=False)
+        else:
+            context = normalize_context(
+                selected_topics=report_data.selected_topics,
+                additional_info=report_data.additional_info,
+            )
+        context = normalize_context(context)
+        if not context["focus_topics"]:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="至少选择一个关注领域。")
+        if not context.get("current_challenge"):
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="请填写当前困惑。")
+        if not context["expected_outcomes"]:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="至少选择一个期望获得的结果。")
+        try:
+            snapshot = build_intake_snapshot(
+                current_user,
+                context,
+                request_type="report",
+                profile_version=report_data.profile_version,
+            )
+        except ValueError as error:
+            if str(error) == "profile_version_conflict":
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="个人档案已更新，请刷新后确认最新资料再提交。",
+                )
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
+        task_input = flatten_snapshot_for_ai(snapshot)
+        task_input.update(
+            {
+                "schema_version": snapshot["schema_version"],
+                "profile_version": snapshot["profile_version"],
+                "request_type": snapshot["request_type"],
+                "profile": snapshot["profile"],
+                "context": snapshot["context"],
+                "derived": snapshot["derived"],
+            }
+        )
+    else:
+        # Legacy clients can continue to submit the original flat payload.
+        # Their contact/account fields are still not sent to the AI pipeline.
+        task_input = report_data.model_dump(exclude_none=True)
+        task_input["name"] = task_input.get("name") or current_user.name
+    task_input["name"] = current_user.name if unified_request else task_input.get("name")
     await create_report_task(db, task_id, current_user.id, input_snapshot=task_input)
     await record_audit(
         db,
@@ -71,7 +124,11 @@ async def create_report(
         "report_task",
         task_id,
         target_user_id=current_user.id,
-        details={"selected_topics": task_input.get("selected_topics", [])},
+        details={
+            "selected_topics": task_input.get("selected_topics", []),
+            "profile_version": task_input.get("profile_version"),
+            "schema_version": task_input.get("schema_version", 1),
+        },
         request=request,
     )
     await db.commit()
@@ -198,6 +255,34 @@ async def get_admin_user_reports(
 ):
     reports, total = await get_user_reports(db, user_id)
     return ReportListResponse(total=total, items=format_report_list(reports))
+
+
+@router.get("/latest/context", response_model=LatestReportContextResponse)
+async def get_latest_report_context(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Report)
+        .where(Report.user_id == current_user.id, Report.is_deleted.is_(False))
+        .order_by(Report.created_at.desc())
+        .limit(1)
+    )
+    report = result.scalar_one_or_none()
+    if report is None:
+        return LatestReportContextResponse()
+    snapshot = report.input_snapshot or {}
+    context = snapshot.get("context")
+    if not context:
+        context = normalize_context(
+            selected_topics=snapshot.get("selected_topics") or report.selected_topics or [],
+            additional_info=snapshot.get("additional_info") or report.additional_info,
+        )
+    return LatestReportContextResponse(
+        report_id=report.id,
+        created_at=report.created_at,
+        context=context,
+    )
 
 
 @router.get("/{report_id}", response_model=ReportResponse)

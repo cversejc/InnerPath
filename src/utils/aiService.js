@@ -1,19 +1,34 @@
 import apiClient from './apiClient'
 
 export async function generateReportWithAI(userData) {
-  const requestData = {
-    name: userData.name || null,
-    gender: userData.gender,
-    birth_year: Number(userData.birthYear),
-    birth_month: Number(userData.birthMonth),
-    birth_day: Number(userData.birthDay),
-    birth_hour: userData.birthHour === '' ? null : Number(userData.birthHour),
-    birth_minute: userData.birthMinute === '' ? null : Number(userData.birthMinute),
-    birth_place: userData.birthPlace || null,
-    calendar_type: userData.calendarType || 'solar',
-    selected_topics: userData.selectedTopics || [],
-    additional_info: userData.additionalInfo || null
-  }
+  const requestData = userData.context || userData.profile_version
+    ? {
+        profile_version: userData.profile_version ? Number(userData.profile_version) : null,
+        context: {
+          focus_topics: userData.context?.focus_topics || [],
+          current_challenge: userData.context?.current_challenge?.trim() || null,
+          expected_outcomes: userData.context?.expected_outcomes || [],
+          issue_duration: userData.context?.issue_duration || null,
+          impact_level: userData.context?.impact_level || null,
+          decision_status: userData.context?.decision_status || null,
+          decision_description: userData.context?.decision_description?.trim() || null,
+          decision_style: userData.context?.decision_style || [],
+          additional_info: userData.context?.additional_info?.trim() || null
+        }
+      }
+    : {
+        name: userData.name || null,
+        gender: userData.gender,
+        birth_year: Number(userData.birthYear),
+        birth_month: Number(userData.birthMonth),
+        birth_day: Number(userData.birthDay),
+        birth_hour: userData.birthHour === '' ? null : Number(userData.birthHour),
+        birth_minute: userData.birthMinute === '' ? null : Number(userData.birthMinute),
+        birth_place: userData.birthPlace || null,
+        calendar_type: userData.calendarType || 'solar',
+        selected_topics: userData.selectedTopics || [],
+        additional_info: userData.additionalInfo || null
+      }
 
   const createResponse = await apiClient.post('/reports', requestData)
   return pollTaskStatus(createResponse.data.task_id)
@@ -66,6 +81,11 @@ export async function getReportDetail(reportId) {
   return response.data
 }
 
+export async function getLatestReportContext() {
+  const response = await apiClient.get('/reports/latest/context')
+  return response.data
+}
+
 export async function deleteReport(reportId) {
   const response = await apiClient.delete(`/reports/${reportId}`)
   return response.data
@@ -75,5 +95,6 @@ export default {
   generateReportWithAI,
   getUserReports,
   getReportDetail,
+  getLatestReportContext,
   deleteReport
 }

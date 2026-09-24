@@ -1,6 +1,8 @@
 import json
 from typing import Any, Dict
 
+from app.services.intake_service import context_for_prompt, profile_context_for_prompt
+
 
 def build_prompt(user_data: Dict[str, Any]) -> str:
     """Build the Chenjian life-manual prompt from deterministic foundation data."""
@@ -11,20 +13,32 @@ def build_prompt(user_data: Dict[str, Any]) -> str:
     birth_day = user_data.get("birth_day", "")
     birth_hour = user_data.get("birth_hour")
     birth_minute = user_data.get("birth_minute")
+    calendar_type = user_data.get("calendar_type", "solar")
+    birth_time_precision = user_data.get("birth_time_precision", "unknown")
     selected_topics = user_data.get("selected_topics", [])
     additional_info = user_data.get("additional_info", "")
     foundation_data = user_data.get("foundation_data")
+    context = user_data.get("context") or {
+        "focus_topics": selected_topics,
+        "additional_info": additional_info,
+    }
 
     if not foundation_data:
         raise ValueError("缺少确定性命理基础，不能生成AI解读")
 
     gender_text = "男" if gender == "male" else "女"
     birth_time = f"{birth_hour}时{birth_minute}分" if birth_hour is not None and birth_minute is not None else "时辰未知"
+    calendar_text = "农历" if calendar_type == "lunar" else "公历"
+    precision_text = {"unknown": "未知", "approximate": "大概时间", "exact": "精确时间"}.get(birth_time_precision, birth_time_precision or "未知")
 
     topic_map = {
         "career": "职业发展",
         "relationship": "亲密关系",
         "family": "家庭议题",
+        "finance": "财务规划",
+        "health": "身心健康",
+        "social": "人际关系",
+        "children": "子女教育",
         "self": "自我价值",
         "growth": "个人成长",
         "stress": "压力焦虑",
@@ -32,6 +46,8 @@ def build_prompt(user_data: Dict[str, Any]) -> str:
 
     topics_text = "、".join([topic_map.get(t, t) for t in selected_topics]) if selected_topics else "全面自我探索"
     additional_section = f"【补充说明】\n{additional_info}\n" if additional_info else ""
+    context_section = context_for_prompt(context)
+    profile_section = profile_context_for_prompt(user_data)
     foundation_section = f"""
 
 【确定性命理基础】
@@ -45,10 +61,16 @@ def build_prompt(user_data: Dict[str, Any]) -> str:
 【基本信息】
 姓名：{name}
 性别：{gender_text}
-出生日期：{birth_year}年{birth_month}月{birth_day}日 {birth_time}
+出生日期：{birth_year}年{birth_month}月{birth_day}日（{calendar_text}）{birth_time}
+出生时间准确度：{precision_text}
+
+【可复用个人背景】
+{profile_section or "暂无补充背景"}
 
 【关注议题】
 {topics_text}
+【本次申请情境】
+{context_section or "暂无补充情境"}
 {foundation_section}
 
 {additional_section}
