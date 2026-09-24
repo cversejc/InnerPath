@@ -79,6 +79,7 @@ class Settings(BaseSettings):
         # 读取项目根目录的 .env 文件
         env_file = Path(__file__).parent.parent.parent / ".env"
         case_sensitive = True
+        extra = "ignore"
 
 
 settings = Settings()

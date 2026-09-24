@@ -1,7 +1,7 @@
 """Add consultant-assisted service requests and private AI drafts.
 
-Revision ID: 005
-Revises: 004
+Revision ID: 007
+Revises: 006
 Create Date: 2026-09-14
 """
 
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 
-revision = "005"
-down_revision = "004"
+revision = "007"
+down_revision = "006"
 branch_labels = None
 depends_on = None
 
@@ -68,7 +68,6 @@ def upgrade():
         sa.ForeignKeyConstraint(["request_id"], ["service_requests.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["updated_by"], ["users.id"], ondelete="SET NULL"),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("request_id"),
     )
     op.create_index("ix_service_request_drafts_request_id", "service_request_drafts", ["request_id"], unique=True)
 

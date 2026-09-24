@@ -24,6 +24,17 @@
       </div>
     </section>
 
+    <section v-if="profile" class="section-band profile-journey-section">
+      <div class="container profile-journey-shell">
+        <ProfileGrowthCard
+          :profile="profile"
+          :completion="profileCompletion"
+          :last-confirmed-at="profile.profile_last_confirmed_at"
+          @edit="goToProfile"
+        />
+      </div>
+    </section>
+
     <section class="section-band intro-section">
       <div class="container intro-grid">
         <div>
@@ -115,14 +126,37 @@
 </template>
 
 <script>
+import { getCurrentUser } from '../utils/authService'
+import ProfileGrowthCard from '../components/ProfileGrowthCard.vue'
+
 export default {
   name: 'Home',
+  components: { ProfileGrowthCard },
+  data() {
+    return {
+      profile: null,
+      profileCompletion: 0
+    }
+  },
+  async mounted() {
+    try {
+      const user = await getCurrentUser()
+      this.profile = user
+      this.profileCompletion = Number(user.profile_completion || 0)
+    } catch (error) {
+      // 首页仍然可以浏览，档案卡片只在用户资料读取成功时出现。
+      console.warn('读取首页个人档案失败', error)
+    }
+  },
   methods: {
     goToAssessment() {
       this.$router.push('/pages/assessment/assessment')
     },
     goToCalendar() {
       this.$router.push('/pages/calendar/calendar')
+    },
+    goToProfile() {
+      this.$router.push('/pages/user/user?tab=settings')
     }
   }
 }
@@ -165,6 +199,15 @@ export default {
   color: var(--ink-soft);
   font-size: clamp(17px, 2vw, 22px);
   line-height: 1.8;
+}
+
+.profile-journey-section {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.profile-journey-shell {
+  width: min(900px, 100%);
 }
 
 .hero-actions {
@@ -486,6 +529,11 @@ export default {
   .section-band {
     padding-top: 40px;
     padding-bottom: 40px;
+  }
+
+  .profile-journey-section {
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   .section-heading {

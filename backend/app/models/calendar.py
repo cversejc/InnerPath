@@ -29,6 +29,31 @@ class UserCalendar(Base, TimestampMixin):
     created_by = Column(Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
     updated_by = Column(Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
     published_at = Column(DateTime, nullable=True)
+    calendar_request_id = Column(Integer, ForeignKey("calendar_requests.id", ondelete="SET NULL"), nullable=True, index=True)
+
+
+class CalendarRequest(Base, TimestampMixin):
+    """A user-submitted request for a new decision calendar."""
+
+    __tablename__ = "calendar_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    source_report_id = Column(Integer, ForeignKey("reports.id", ondelete="SET NULL"), nullable=True, index=True)
+    profile_version = Column(Integer, nullable=False, default=1)
+    start_date = Column(Date, nullable=True)
+    end_date = Column(Date, nullable=True)
+    focus_topics = Column(JSONB, nullable=False, default=list)
+    usage_scenario = Column(String(50), nullable=True)
+    goal = Column(Text, nullable=True)
+    decision_description = Column(Text, nullable=True)
+    expected_outcomes = Column(JSONB, nullable=False, default=list)
+    additional_info = Column(Text, nullable=True)
+    status = Column(String(20), nullable=False, default="pending", index=True)
+    input_snapshot = Column(JSONB, nullable=True)
+    reviewer_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
+    review_note = Column(Text, nullable=True)
 
 
 class CalendarEntry(Base, TimestampMixin):

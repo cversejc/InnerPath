@@ -164,11 +164,12 @@ def format_report_response(report: Report) -> Dict[str, Any]:
         # The private AI source remains available to staff through the request
         # workspace, never through the public report response.
         content_payload.pop("ai_generated_content", None)
+    snapshot = report.input_snapshot or {}
     return {
         "id": report.id,
         "title": report.title,
         "basic_info": {
-            "name": (report.input_snapshot or {}).get("name") or "用户",
+            "name": snapshot.get("name") or (snapshot.get("profile") or {}).get("name") or "用户",
             "birth_date": report.birth_date.isoformat(),
             "report_date": report.created_at.date().isoformat(),
             "generated_by": "咨询师审校 + AI 初稿" if report.reviewed_at else ("DeepSeek AI" if report.ai_raw_content else "Basic Algorithm")
@@ -181,5 +182,8 @@ def format_report_response(report: Report) -> Dict[str, Any]:
         "content_payload": content_payload,
         "ai_generated_content": report.ai_raw_content if not report.content_payload else None,
         "reviewed_at": report.reviewed_at,
+        "input_snapshot": snapshot,
+        "profile_version": snapshot.get("profile_version"),
+        "context": snapshot.get("context"),
         "created_at": report.created_at
     }

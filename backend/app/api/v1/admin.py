@@ -14,7 +14,7 @@ from app.config import settings
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.booking import Booking
-from app.models.calendar import DecisionLog, UserCalendar
+from app.models.calendar import CalendarRequest, DecisionLog, UserCalendar
 from app.models.course import Course, UserCourse
 from app.models.report import Report, ReportTask
 from app.models.user import AuditLog, User
@@ -47,6 +47,9 @@ from app.schemas.calendar import (
     CalendarCreate,
     CalendarImportRequest,
     CalendarListResponse,
+    CalendarRequestAdminUpdate,
+    CalendarRequestListResponse,
+    CalendarRequestResponse,
     CalendarResponse,
     CalendarUpdate,
     StaffInviteCreate,
@@ -61,12 +64,16 @@ from app.services.calendar_service import (
     archive_calendar,
     clone_calendar_as_draft,
     create_calendar,
+    get_calendar_requests_for_admin,
     get_user_calendars,
     publish_calendar,
     serialize_calendar,
+    serialize_calendar_request,
+    update_calendar_request,
     update_calendar,
 )
 from app.services.report_service import create_report_task, format_report_response, get_report_by_id
+from app.services.user_service import apply_user_profile_update
 
 
 router = APIRouter()
@@ -680,11 +687,20 @@ async def update_user_profile_by_admin(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     if "name" in data.model_fields_set and data.name is None:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Name cannot be empty")
-    changed_fields = []
-    for field, value in data.model_dump(exclude_unset=True).items():
-        if getattr(user, field) != value:
-            setattr(user, field, value)
-            changed_fields.append(field)
+    try:
+        changed_fields = apply_user_profile_update(user, data.model_dump(exclude_unset=True))
+    except ValueError as error:
+        detail_map = {
+            "name_required": "请填写称呼。",
+            "calendar_type_required": "请选择历法类型。",
+            "birth_date_invalid": "出生日期无效，请检查年月日。",
+            "birth_time_requires_hour_and_minute": "请同时填写出生时间的小时和分钟。",
+            "birth_time_requires_precision": "填写出生时间前，请先选择时间准确度。",
+        }
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=detail_map.get(str(error), str(error)),
+        )
     if changed_fields:
         await record_audit(
             db,
@@ -693,7 +709,7 @@ async def update_user_profile_by_admin(
             "user",
             str(user.id),
             target_user_id=user.id,
-            details={"changed_fields": changed_fields},
+            details={"changed_fields": changed_fields, "profile_version": user.profile_version},
             request=request,
         )
         await db.commit()
@@ -836,6 +852,34 @@ async def list_user_calendars(
     if not await db.get(User, user_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return CalendarListResponse(items=await get_user_calendars(db, user_id, published_only=False))
+
+
+@router.get("/calendar-requests", response_model=CalendarRequestListResponse)
+async def list_calendar_requests(
+    status_filter: Optional[str] = Query(None, alias="status"),
+    user_id: Optional[int] = Query(None, ge=1),
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    items = await get_calendar_requests_for_admin(db, status_filter=status_filter, user_id=user_id)
+    return CalendarRequestListResponse(items=items)
+
+
+@router.patch("/calendar-requests/{request_id}", response_model=CalendarRequestResponse)
+async def review_calendar_request(
+    request_id: int,
+    data: CalendarRequestAdminUpdate,
+    request: Request,
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    calendar_request = await db.get(CalendarRequest, request_id)
+    if not calendar_request:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Calendar request not found")
+    try:
+        return await update_calendar_request(db, calendar_request, current_user.id, data, request=request)
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
 
 
 @router.post("/users/{user_id}/calendars", response_model=CalendarResponse, status_code=status.HTTP_201_CREATED)

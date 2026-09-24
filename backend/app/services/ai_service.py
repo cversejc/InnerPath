@@ -6,6 +6,7 @@ from typing import Dict, Any, Optional, List
 from app.config import settings
 from app.core.logging_config import get_logger, log_external_api
 from app.services.bazi_calculator import calculate_mingli_foundation
+from app.services.intake_service import context_for_prompt, flatten_snapshot_for_ai, profile_context_for_prompt
 from app.services.report_prompt import build_prompt
 
 logger = get_logger(__name__)
@@ -126,11 +127,17 @@ class MultiStepReportGenerator:
             "career": "职业发展",
             "relationship": "亲密关系",
             "family": "家庭议题",
+            "finance": "财务规划",
+            "health": "身心健康",
+            "social": "人际关系",
+            "children": "子女教育",
             "self": "自我价值",
             "growth": "个人成长",
             "stress": "压力焦虑"
         }
         topics_text = "、".join([topic_map.get(t, t) for t in selected_topics]) if selected_topics else "全面自我探索"
+        context_text = context_for_prompt(user_data.get("context") or {"focus_topics": selected_topics})
+        profile_text = profile_context_for_prompt(user_data.get("profile") or user_data)
 
         # Format foundation data for display
         foundation_str = json.dumps(foundation_data, ensure_ascii=False, indent=2)
@@ -144,7 +151,13 @@ class MultiStepReportGenerator:
 
 【性别】{gender_text}
 
+【可复用个人背景】
+{profile_text or "暂无补充背景"}
+
 【用户关注领域】{topics_text}（这些是用户当前关注的生命领域，解读时需考虑这些背景）
+
+【本次申请情境】
+{context_text or "暂无补充情境"}
 
 请提供：
 
@@ -190,11 +203,20 @@ class MultiStepReportGenerator:
         """Build Step 3 prompt: Topic-specific analysis"""
         selected_topics = user_data.get("selected_topics", [])
         additional_info = user_data.get("additional_info", "")
+        context_text = context_for_prompt(user_data.get("context") or {
+            "focus_topics": selected_topics,
+            "additional_info": additional_info,
+        })
+        profile_text = profile_context_for_prompt(user_data.get("profile") or user_data)
 
         topic_map = {
             "career": "职业发展",
             "relationship": "亲密关系",
             "family": "家庭议题",
+            "finance": "财务规划",
+            "health": "身心健康",
+            "social": "人际关系",
+            "children": "子女教育",
             "self": "自我价值",
             "growth": "个人成长",
             "stress": "压力焦虑"
@@ -250,8 +272,13 @@ class MultiStepReportGenerator:
 能量特质：
 {energy_profile}
 
+【可复用个人背景】
+{profile_text or "暂无补充背景"}
+
 【用户选择的关注议题】
 {topics_text}
+【本次申请情境】
+{context_text or "暂无补充情境"}
 {additional_section}
 
 重要：用户专门选择了这些议题，说明这些是他们当前最关心的领域。你的分析必须直接回应这些议题，并结合补充说明中的具体情境。请先肯定用户已有的能力与处境，再讨论可以调整的行动。
@@ -871,6 +898,13 @@ async def generate_report_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]:
     Call DeepSeek API to generate report
     Supports both multi-step and single-step generation
     """
+    if user_data.get("schema_version") == 2 and user_data.get("profile"):
+        # The API stores a nested snapshot, while the existing calculator and
+        # parsers consume the compatible flat representation.
+        snapshot = dict(user_data)
+        user_data = flatten_snapshot_for_ai(snapshot)
+        user_data["profile"] = snapshot.get("profile") or {}
+
     # Check if multi-step generation is enabled
     use_multistep = os.getenv("USE_MULTISTEP_GENERATION", "false").lower() == "true"
 

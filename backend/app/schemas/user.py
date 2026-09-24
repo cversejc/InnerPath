@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
 
 
@@ -12,6 +12,20 @@ class UserBase(BaseModel):
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
+    calendar_type: str = Field("solar", pattern="^(solar|lunar)$")
+    birth_time_precision: str = Field("unknown", pattern="^(unknown|approximate|exact)$")
+    current_residence: Optional[str] = Field(None, max_length=100)
+    marital_status: Optional[str] = Field(None, max_length=30)
+    occupation_status: Optional[str] = Field(None, max_length=30)
+    highest_education: Optional[str] = Field(None, max_length=30)
+    mbti: Optional[str] = Field(None, pattern=r"^[A-Za-z]{4}$")
+    personality_keywords: List[str] = Field(default_factory=list, max_length=5)
+    strengths: Optional[str] = Field(None, max_length=500)
+    limitations: Optional[str] = Field(None, max_length=500)
+    mingli_experience: List[str] = Field(default_factory=list, max_length=3)
+    mingli_attitude: Optional[str] = Field(None, max_length=30)
+    preferred_content_depth: Optional[str] = Field(None, max_length=30)
+    default_usage_scenarios: List[str] = Field(default_factory=list, max_length=6)
 
 
 class UserCreate(UserBase):
@@ -27,6 +41,20 @@ class UserUpdate(BaseModel):
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
+    calendar_type: Optional[str] = Field(None, pattern="^(solar|lunar)$")
+    birth_time_precision: Optional[str] = Field(None, pattern="^(unknown|approximate|exact)$")
+    current_residence: Optional[str] = Field(None, max_length=100)
+    marital_status: Optional[str] = Field(None, max_length=30)
+    occupation_status: Optional[str] = Field(None, max_length=30)
+    highest_education: Optional[str] = Field(None, max_length=30)
+    mbti: Optional[str] = Field(None, pattern=r"^[A-Za-z]{4}$")
+    personality_keywords: Optional[List[str]] = Field(None, max_length=5)
+    strengths: Optional[str] = Field(None, max_length=500)
+    limitations: Optional[str] = Field(None, max_length=500)
+    mingli_experience: Optional[List[str]] = Field(None, max_length=3)
+    mingli_attitude: Optional[str] = Field(None, max_length=30)
+    preferred_content_depth: Optional[str] = Field(None, max_length=30)
+    default_usage_scenarios: Optional[List[str]] = Field(None, max_length=6)
     avatar_url: Optional[str] = None
 
 
@@ -46,6 +74,23 @@ class UserResponse(BaseModel):
     birth_hour: Optional[int]
     birth_minute: Optional[int]
     birth_place: Optional[str]
+    calendar_type: str
+    birth_time_precision: str
+    current_residence: Optional[str]
+    marital_status: Optional[str]
+    occupation_status: Optional[str]
+    highest_education: Optional[str]
+    mbti: Optional[str]
+    personality_keywords: List[str]
+    strengths: Optional[str]
+    limitations: Optional[str]
+    mingli_experience: List[str]
+    mingli_attitude: Optional[str]
+    preferred_content_depth: Optional[str]
+    default_usage_scenarios: List[str]
+    profile_version: int
+    profile_last_confirmed_at: Optional[datetime]
+    profile_completion: int
     avatar_url: Optional[str]
     user_type: str
     role: str

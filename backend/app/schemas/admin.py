@@ -30,6 +30,20 @@ class AdminUserUpdate(BaseModel):
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
+    calendar_type: Optional[str] = Field(None, pattern="^(solar|lunar)$")
+    birth_time_precision: Optional[str] = Field(None, pattern="^(unknown|approximate|exact)$")
+    current_residence: Optional[str] = Field(None, max_length=100)
+    marital_status: Optional[str] = Field(None, max_length=30)
+    occupation_status: Optional[str] = Field(None, max_length=30)
+    highest_education: Optional[str] = Field(None, max_length=30)
+    mbti: Optional[str] = Field(None, pattern=r"^[A-Za-z]{4}$")
+    personality_keywords: Optional[list[str]] = Field(None, max_length=5)
+    strengths: Optional[str] = Field(None, max_length=500)
+    limitations: Optional[str] = Field(None, max_length=500)
+    mingli_experience: Optional[list[str]] = Field(None, max_length=3)
+    mingli_attitude: Optional[str] = Field(None, max_length=30)
+    preferred_content_depth: Optional[str] = Field(None, max_length=30)
+    default_usage_scenarios: Optional[list[str]] = Field(None, max_length=6)
     avatar_url: Optional[str] = None
 
 

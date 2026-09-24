@@ -3,18 +3,36 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 
+class ReportContext(BaseModel):
+    """Per-request context; deliberately separate from the reusable profile."""
+
+    focus_topics: List[str] = Field(default_factory=list, max_length=3)
+    current_challenge: Optional[str] = Field(None, max_length=2000)
+    expected_outcomes: List[str] = Field(default_factory=list, max_length=7)
+    issue_duration: Optional[str] = Field(None, max_length=50)
+    impact_level: Optional[str] = Field(None, max_length=50)
+    decision_status: Optional[str] = Field(None, max_length=50)
+    decision_description: Optional[str] = Field(None, max_length=1000)
+    decision_style: List[str] = Field(default_factory=list, max_length=6)
+    additional_info: Optional[str] = Field(None, max_length=2000)
+
+
 class ReportCreate(BaseModel):
+    # Legacy flat fields remain optional so older clients can continue to call
+    # POST /reports. New clients should provide profile_version + context.
     name: Optional[str] = Field(None, min_length=1, max_length=50)
-    gender: str = Field(..., pattern="^(male|female)$")
-    birth_year: int = Field(..., ge=1900, le=2026)
-    birth_month: int = Field(..., ge=1, le=12)
-    birth_day: int = Field(..., ge=1, le=31)
+    gender: Optional[str] = Field(None, pattern="^(male|female)$")
+    birth_year: Optional[int] = Field(None, ge=1900, le=2026)
+    birth_month: Optional[int] = Field(None, ge=1, le=12)
+    birth_day: Optional[int] = Field(None, ge=1, le=31)
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
     calendar_type: str = Field("solar", pattern="^(solar|lunar)$")
     selected_topics: List[str] = Field(default_factory=list)
-    additional_info: Optional[str] = None
+    additional_info: Optional[str] = Field(None, max_length=2000)
+    profile_version: Optional[int] = Field(None, ge=1)
+    context: Optional[ReportContext] = None
 
 
 class ReportTaskResponse(BaseModel):
@@ -60,7 +78,16 @@ class ReportResponse(BaseModel):
     content_payload: Optional[Dict[str, Any]] = None
     ai_generated_content: Optional[str] = None
     reviewed_at: Optional[datetime] = None
+    input_snapshot: Optional[Dict[str, Any]] = None
+    profile_version: Optional[int] = None
+    context: Optional[ReportContext] = None
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class LatestReportContextResponse(BaseModel):
+    report_id: Optional[int] = None
+    created_at: Optional[datetime] = None
+    context: Optional[ReportContext] = None

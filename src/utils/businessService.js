@@ -31,6 +31,16 @@ export async function getMyCalendars() {
   return response.data
 }
 
+export async function getCalendarRequests() {
+  const response = await apiClient.get('/calendar/requests')
+  return response.data
+}
+
+export async function createCalendarRequest(requestData) {
+  const response = await apiClient.post('/calendar/requests', requestData)
+  return response.data
+}
+
 export async function getMyDecisionLogs(params = {}) {
   const response = await apiClient.get('/calendar/decision-logs', { params })
   return response.data
@@ -176,6 +186,16 @@ export async function updateStaffBooking(bookingId, data) {
 
 export async function getAdminCalendars(userId) {
   const response = await apiClient.get(`/admin/users/${userId}/calendars`)
+  return response.data
+}
+
+export async function getAdminCalendarRequests(params = {}) {
+  const response = await apiClient.get('/admin/calendar-requests', { params })
+  return response.data
+}
+
+export async function updateAdminCalendarRequest(requestId, data) {
+  const response = await apiClient.patch(`/admin/calendar-requests/${requestId}`, data)
   return response.data
 }
 

@@ -1,269 +1,245 @@
 <template>
-  <div class="page-shell assessment">
+  <div class="page-shell assessment-page">
     <BrandNav />
 
     <section class="page-header">
       <div class="container header-inner">
         <p class="section-kicker">FI / YOUR LIFE MANUAL</p>
-        <h1>申请你的人生说明书</h1>
-        <p>从个人属性、能量通路与人生时序出发，提交申请后由咨询师完成 AI 初稿审校与最终交付。</p>
+        <h1>生成你的人生说明书</h1>
+        <p>先建立一份可复用的个人档案，再把这一次真正想看的问题交给说明书。</p>
       </div>
     </section>
 
     <section class="section-band assessment-section">
       <div class="container assessment-container">
-        <div class="progress-card paper-card">
+        <div class="progress-card paper-card" aria-label="申请进度">
+          <div class="progress-current" aria-live="polite">
+            <span>申请进度</span>
+            <strong>第 {{ currentStep }} 步 · {{ currentStepLabel }}</strong>
+            <span>{{ stepProgress }}%</span>
+          </div>
           <div class="progress-step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
-            <span>1</span>
-            <p>出生信息</p>
+            <span>1</span><p>个人档案</p>
           </div>
           <div class="progress-line" :class="{ active: currentStep > 1 }"></div>
           <div class="progress-step" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
-            <span>2</span>
-            <p>当下处境</p>
+            <span>2</span><p>本次问题</p>
           </div>
           <div class="progress-line" :class="{ active: currentStep > 2 }"></div>
           <div class="progress-step" :class="{ active: currentStep >= 3 }">
-            <span>3</span>
-            <p>提交申请</p>
+            <span>3</span><p>生成说明书</p>
           </div>
         </div>
 
-        <div v-if="currentStep === 1" class="step-content form-panel">
+        <div v-if="loadingProfile" class="step-content form-panel loading-panel" aria-live="polite">
+          <div class="loading-compass" aria-hidden="true"></div>
+          <h2>正在读取你的个人档案</h2>
+          <p>只需要等待片刻，已有资料不会要求你重新填写。</p>
+        </div>
+
+        <div v-else-if="currentStep === 1" class="step-content form-panel">
           <div class="step-heading">
             <p class="section-kicker">STEP 01</p>
-            <h2 ref="stepHeading" tabindex="-1">填写出生信息</h2>
-            <p>出生信息用于建立你的先天坐标；它不是给人生下结论，而是帮助我们找到观察自己的入口。</p>
+            <h2 ref="stepHeading" tabindex="-1">{{ hasExistingProfile ? '确认你的个人档案' : '建立你的个人档案' }}</h2>
+            <p>{{ hasExistingProfile ? '档案会用于后续报告与日历申请。你可以只修改发生变化的内容。' : '核心资料用于建立命理基础，画像信息先填你愿意分享的部分。' }}</p>
+            <div v-if="draftRestored || draftStatus" class="draft-status" role="status" aria-live="polite">
+              <span class="draft-status-dot" aria-hidden="true"></span>
+              <span>{{ draftRestored ? '已恢复上次未完成的草稿，你可以继续编辑。' : draftStatus }}</span>
+            </div>
           </div>
 
-          <form class="assessment-form" :aria-describedby="formMessage ? 'assessment-step-error' : undefined">
-            <fieldset class="form-group choice-fieldset">
-              <legend class="form-label">性别 <span class="required">*</span></legend>
-              <div class="choice-grid two">
-                <button
-                  type="button"
-                  class="choice-card"
-                  :class="{ selected: formData.gender === 'male' }"
-                  :aria-pressed="formData.gender === 'male'"
-                  @click="formData.gender = 'male'"
-                >
-                  <span>乾</span>
-                  <strong>男</strong>
-                </button>
-                <button
-                  type="button"
-                  class="choice-card"
-                  :class="{ selected: formData.gender === 'female' }"
-                  :aria-pressed="formData.gender === 'female'"
-                  @click="formData.gender = 'female'"
-                >
-                  <span>坤</span>
-                  <strong>女</strong>
-                </button>
-              </div>
-              <p v-if="fieldErrors.gender" class="field-error" role="alert">{{ fieldErrors.gender }}</p>
-            </fieldset>
+          <form class="assessment-form" novalidate @submit.prevent="saveProfileAndContinue">
+            <ProfileFields
+              v-model="profileDraft"
+              id-prefix="assessment-profile"
+              :show-optional="showOptionalProfile"
+              :errors="profileErrors"
+            />
 
-            <fieldset class="form-group choice-fieldset">
-              <legend class="form-label">历法类型 <span class="required">*</span></legend>
-              <div class="choice-grid two">
-                <button
-                  type="button"
-                  class="choice-card horizontal"
-                  :class="{ selected: formData.calendarType === 'solar' }"
-                  :aria-pressed="formData.calendarType === 'solar'"
-                  @click="formData.calendarType = 'solar'"
-                >
-                  <span>日</span>
-                  <div>
-                    <strong>公历</strong>
-                    <small>身份证日期</small>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  class="choice-card horizontal"
-                  :class="{ selected: formData.calendarType === 'lunar' }"
-                  :aria-pressed="formData.calendarType === 'lunar'"
-                  @click="formData.calendarType = 'lunar'"
-                >
-                  <span>月</span>
-                  <div>
-                    <strong>农历</strong>
-                    <small>传统阴历</small>
-                  </div>
-                </button>
-              </div>
-              <p v-if="fieldErrors.calendarType" class="field-error" role="alert">{{ fieldErrors.calendarType }}</p>
-            </fieldset>
+            <button type="button" class="fold-toggle" :aria-expanded="showOptionalProfile" @click="showOptionalProfile = !showOptionalProfile">
+              <span>{{ showOptionalProfile ? '收起个人画像选填项' : '完善个人画像（选填，之后可修改）' }}</span>
+              <span aria-hidden="true">{{ showOptionalProfile ? '−' : '+' }}</span>
+            </button>
 
-            <div class="form-group">
-              <label class="form-label">出生日期 <span class="required">*</span></label>
-              <div class="date-row">
-                <label>
-                  <input
-                    v-model="formData.birthYear"
-                    type="tel"
-                    inputmode="numeric"
-                    placeholder="1990"
-                    maxlength="4"
-                    @input="validateYear"
-                  >
-                  <span>年</span>
-                </label>
-                <label>
-                  <input
-                    v-model="formData.birthMonth"
-                    type="tel"
-                    inputmode="numeric"
-                    placeholder="01"
-                    maxlength="2"
-                    @input="validateMonth"
-                  >
-                  <span>月</span>
-                </label>
-                <label>
-                  <input
-                    v-model="formData.birthDay"
-                    type="tel"
-                    inputmode="numeric"
-                    placeholder="01"
-                    maxlength="2"
-                    @input="validateDay"
-                  >
-                  <span>日</span>
-                </label>
-              </div>
-              <p v-if="fieldErrors.birth" class="field-error" role="alert">{{ fieldErrors.birth }}</p>
-              <p class="form-hint">请按上方选择的历法填写。</p>
+            <div class="privacy-note">
+              <span class="privacy-mark" aria-hidden="true">私</span>
+              <p>姓名和出生资料只用于你的账户服务。当前困惑、关系和身心状态不会自动写入长期档案。</p>
             </div>
 
-            <fieldset class="form-group choice-fieldset">
-              <legend class="form-label">出生时间 <span class="optional">(选填)</span></legend>
-              <div class="choice-grid three">
-                <button
-                  type="button"
-                  class="choice-card compact"
-                  :class="{ selected: formData.timeAccuracy === 'unknown' }"
-                  :aria-pressed="formData.timeAccuracy === 'unknown'"
-                  @click="selectTimeAccuracy('unknown')"
-                >
-                  不知道
-                </button>
-                <button
-                  type="button"
-                  class="choice-card compact"
-                  :class="{ selected: formData.timeAccuracy === 'approximate' }"
-                  :aria-pressed="formData.timeAccuracy === 'approximate'"
-                  @click="selectTimeAccuracy('approximate')"
-                >
-                  大概时间
-                </button>
-                <button
-                  type="button"
-                  class="choice-card compact"
-                  :class="{ selected: formData.timeAccuracy === 'exact' }"
-                  :aria-pressed="formData.timeAccuracy === 'exact'"
-                  @click="selectTimeAccuracy('exact')"
-                >
-                  精确时间
-                </button>
-              </div>
-
-              <div v-if="formData.timeAccuracy !== 'unknown'" class="time-row">
-                <input
-                  v-model="formData.birthHour"
-                  type="tel"
-                  inputmode="numeric"
-                  placeholder="08"
-                  maxlength="2"
-                  @input="validateHour"
-                >
-                <span>:</span>
-                <input
-                  v-model="formData.birthMinute"
-                  type="tel"
-                  inputmode="numeric"
-                  placeholder="30"
-                  maxlength="2"
-                  @input="validateMinute"
-                >
-              </div>
-            </fieldset>
-
-            <div class="form-group">
-              <label class="form-label">出生地 <span class="optional">(选填)</span></label>
-              <input
-                v-model="formData.birthPlace"
-                type="text"
-                placeholder="如：北京、上海、广州"
-                class="modern-input"
-              >
-              <p class="form-hint">用于真太阳时校正，提升分析精度。</p>
+            <div v-if="profileErrorSummary.length" class="error-summary" role="alert" aria-live="assertive">
+              <strong>请先检查以下内容</strong>
+              <ul><li v-for="error in profileErrorSummary" :key="error">{{ error }}</li></ul>
             </div>
-
-            <button type="button" @click="nextStep" class="primary-button full-width">下一步</button>
-            <p v-if="formMessage" id="assessment-step-error" class="form-error" role="alert" aria-live="assertive">{{ formMessage }}</p>
+            <p v-if="formMessage" class="form-message" role="alert" aria-live="assertive">{{ formMessage }}</p>
+            <div class="form-submit-bar">
+              <button type="submit" class="primary-button full-width" :disabled="savingProfile" :aria-busy="savingProfile">
+                {{ savingProfile ? '保存中…' : '保存档案并继续' }}
+              </button>
+            </div>
           </form>
         </div>
 
-        <div v-if="currentStep === 2" class="step-content form-panel">
+        <div v-else-if="currentStep === 2" class="step-content form-panel">
           <div class="step-heading">
             <p class="section-kicker">STEP 02</p>
-            <h2 ref="stepHeading" tabindex="-1">选择当下最关注的议题</h2>
-            <p>可多选。你提供的真实处境，会帮助说明书回应“我卡在哪”，而不是只讲抽象结论。</p>
+            <h2 ref="stepHeading" tabindex="-1">这一次，你想看什么</h2>
+            <p>当前问题只属于本次报告。每次申请都可以换一个问题，不会覆盖你的个人档案。</p>
+            <div v-if="draftRestored || draftStatus" class="draft-status" role="status" aria-live="polite">
+              <span class="draft-status-dot" aria-hidden="true"></span>
+              <span>{{ draftRestored ? '已恢复上次未完成的草稿，你可以继续编辑。' : draftStatus }}</span>
+            </div>
           </div>
 
-          <div class="topics-grid">
-            <button
-              v-for="topic in topics"
-              :key="topic.id"
-              type="button"
-              class="topic-card"
-              :class="{ selected: formData.selectedTopics.includes(topic.id) }"
-              :aria-pressed="formData.selectedTopics.includes(topic.id)"
-              @click="toggleTopic(topic.id)"
-            >
-              <IconMark :name="topic.icon" />
-              <strong>{{ topic.title }}</strong>
-              <small>{{ topic.desc }}</small>
-            </button>
-          </div>
+          <ProfileSummary :profile="profileDraft" :profile-version="profileVersion" :last-confirmed-at="profileLastConfirmedAt" @edit="editProfile" />
 
-          <div class="form-group">
-            <label class="form-label">补充说明 <span class="optional">(选填)</span></label>
-            <textarea
-              v-model="formData.additionalInfo"
-              placeholder="如果有具体问题，可以写在这里。"
-              rows="4"
-            ></textarea>
+          <div v-if="lastContext" class="reuse-context-card">
+            <div>
+              <span class="mini-label">上次申请背景</span>
+              <p>{{ truncate(lastContext.current_challenge, 96) || '已保存上次报告的情境' }}</p>
+            </div>
+            <button type="button" class="secondary-button small-button" @click="reusePreviousContext">沿用上次背景并编辑</button>
           </div>
+          <p v-if="contextMessage" class="context-message" role="status">{{ contextMessage }}</p>
+          <p class="context-scope-note">本次困惑、关系和身心状态只用于这份申请，默认不会写入长期档案。</p>
 
-          <div class="button-row">
-            <button type="button" @click="prevStep" class="secondary-button">上一步</button>
-            <button type="button" @click="submitAssessment" class="primary-button" :disabled="isSubmitting" :aria-busy="isSubmitting">{{ isSubmitting ? '提交中…' : editingRequestId ? '更新并重新提交' : '提交报告申请' }}</button>
-          </div>
-          <p v-if="formMessage" id="assessment-step-error" class="form-error" role="alert" aria-live="assertive">{{ formMessage }}</p>
+          <form class="assessment-form context-form" novalidate @submit.prevent="submitAssessment">
+            <fieldset class="form-group choice-fieldset" :aria-describedby="contextErrors.focus_topics ? 'assessment-focus-topics-error' : undefined">
+              <legend class="form-label">当前最关注的生活领域 <span class="required">*</span> <span class="form-hint">最多选择 3 项</span> <span class="selection-count">{{ contextDraft.focus_topics.length }}/3</span></legend>
+              <div class="topics-grid">
+                <button
+                  v-for="topic in topics"
+                  :key="topic.id"
+                  type="button"
+                  class="topic-card"
+                  :class="{ selected: contextDraft.focus_topics.includes(topic.id) }"
+                  :aria-pressed="contextDraft.focus_topics.includes(topic.id)"
+                  @click="toggleTopic(topic.id)"
+                >
+                  <strong>{{ topic.title }}</strong>
+                  <small>{{ topic.desc }}</small>
+                </button>
+              </div>
+              <p v-if="contextErrors.focus_topics" id="assessment-focus-topics-error" class="field-error" role="alert">{{ contextErrors.focus_topics }}</p>
+            </fieldset>
+
+            <div class="form-group">
+              <label class="form-label" for="assessment-current-challenge">现在面临的最大困惑或挑战 <span class="required">*</span></label>
+              <textarea id="assessment-current-challenge" v-model="contextDraft.current_challenge" rows="5" maxlength="2000" placeholder="请尽可能具体地描述：发生了什么，你卡在哪里？" :aria-invalid="Boolean(contextErrors.current_challenge)" :aria-describedby="contextErrors.current_challenge ? 'assessment-current-challenge-error' : 'assessment-current-challenge-hint'" @blur="validateContextField('current_challenge')"></textarea>
+              <div class="field-meta">
+                <p id="assessment-current-challenge-hint" class="form-hint">例如：想转行但不确定方向，已经反复犹豫半年。</p>
+                <span class="char-count" aria-live="polite">{{ String(contextDraft.current_challenge || '').length }}/2000</span>
+              </div>
+              <p v-if="contextErrors.current_challenge" id="assessment-current-challenge-error" class="field-error" role="alert">{{ contextErrors.current_challenge }}</p>
+            </div>
+
+            <fieldset class="form-group choice-fieldset" :aria-describedby="contextErrors.expected_outcomes ? 'assessment-expected-outcomes-error' : undefined">
+              <legend class="form-label">希望通过说明书获得什么 <span class="required">*</span> <span class="form-hint">至少选择 1 项</span> <span class="selection-count">{{ contextDraft.expected_outcomes.length }} 项</span></legend>
+              <div class="expected-grid">
+                <label v-for="outcome in expectedOutcomeOptions" :key="outcome.value" class="expected-card">
+                  <input type="checkbox" :checked="contextDraft.expected_outcomes.includes(outcome.value)" @change="toggleExpectedOutcome(outcome.value)">
+                  <span>{{ outcome.label }}</span>
+                </label>
+              </div>
+              <p v-if="contextErrors.expected_outcomes" id="assessment-expected-outcomes-error" class="field-error" role="alert">{{ contextErrors.expected_outcomes }}</p>
+            </fieldset>
+
+            <details class="context-details" :open="showAdvancedContext">
+              <summary @click.prevent="showAdvancedContext = !showAdvancedContext">
+                <span>补充背景（选填，能让建议更贴近你）</span><span aria-hidden="true">{{ showAdvancedContext ? '−' : '+' }}</span>
+              </summary>
+              <div v-if="showAdvancedContext" class="advanced-context-grid">
+                <div class="form-group">
+                  <label class="form-label" for="assessment-issue-duration">这个困惑持续多久了</label>
+                  <select id="assessment-issue-duration" v-model="contextDraft.issue_duration">
+                    <option value="">暂不填写</option>
+                    <option value="近1周内">近 1 周内</option>
+                    <option value="近1个月内">近 1 个月内</option>
+                    <option value="近半年">近半年</option>
+                    <option value="一直存在">说不清楚，感觉一直存在</option>
+                    <option value="暂无">暂无</option>
+                    <option value="其他">其他</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="assessment-impact-level">对生活的影响程度</label>
+                  <select id="assessment-impact-level" v-model="contextDraft.impact_level">
+                    <option value="">暂不填写</option>
+                    <option value="none">几乎不影响</option>
+                    <option value="some">有些影响</option>
+                    <option value="serious">严重影响日常生活</option>
+                    <option value="暂无">暂无</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="assessment-decision-status">最近是否面临重要决策</label>
+                  <select id="assessment-decision-status" v-model="contextDraft.decision_status">
+                    <option value="">暂不填写</option>
+                    <option value="yes">是</option>
+                    <option value="no">否</option>
+                    <option value="uncertain">不确定，正在犹豫中</option>
+                  </select>
+                </div>
+                <div v-if="contextDraft.decision_status === 'yes' || contextDraft.decision_status === 'uncertain'" class="form-group">
+                  <label class="form-label" for="assessment-decision-description">重要决策描述</label>
+                  <input id="assessment-decision-description" v-model="contextDraft.decision_description" type="text" maxlength="1000" placeholder="例如：是否接受一份新的工作机会">
+                </div>
+                <fieldset class="form-group choice-fieldset field-wide">
+                  <legend class="form-label">做重要决定时，通常会怎么做 <span class="form-hint">最多选择 6 项</span></legend>
+                  <div class="expected-grid decision-grid">
+                    <label v-for="style in decisionStyleOptions" :key="style.value" class="expected-card">
+                      <input type="checkbox" :checked="contextDraft.decision_style.includes(style.value)" @change="toggleDecisionStyle(style.value)">
+                      <span>{{ style.label }}</span>
+                    </label>
+                  </div>
+                </fieldset>
+                <div class="form-group field-wide">
+                  <label class="form-label" for="assessment-additional-info">还想告诉我们的事</label>
+                  <textarea id="assessment-additional-info" v-model="contextDraft.additional_info" rows="4" maxlength="2000" placeholder="任何你觉得与这一次问题有关的背景信息或期待"></textarea>
+                  <div class="field-meta">
+                    <span></span>
+                    <span class="char-count" aria-live="polite">{{ String(contextDraft.additional_info || '').length }}/2000</span>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <div v-if="contextErrorSummary.length" class="error-summary" role="alert" aria-live="assertive">
+              <strong>请先补充本次申请信息</strong>
+              <ul><li v-for="error in contextErrorSummary" :key="error">{{ error }}</li></ul>
+            </div>
+            <p v-if="formMessage" class="form-message" role="alert" aria-live="assertive">{{ formMessage }}</p>
+            <div class="button-row form-submit-bar">
+              <button type="button" class="secondary-button" @click="editProfile">修改档案</button>
+              <button type="submit" class="primary-button" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '生成我的说明书' }}</button>
+            </div>
+          </form>
         </div>
 
-        <div v-if="currentStep === 3" class="step-content form-panel">
-          <div v-if="isSubmitting" class="generating" role="status" aria-live="polite">
+        <div v-else class="step-content form-panel">
+          <div v-if="isGenerating" class="generating">
             <div class="loading-compass" aria-hidden="true"></div>
-            <h2 ref="stepHeading" tabindex="-1">正在提交你的申请</h2>
-            <p>资料正在安全保存。提交完成后，咨询师会在工作台接单并开始准备初步分析。</p>
+            <h2 ref="stepHeading" tabindex="-1">正在为你生成专属报告</h2>
+            <p>你的个人特质、当下处境与关注的议题，正在汇成一张更清晰的自我地图。</p>
+            <div class="generating-steps">
+              <div class="gen-step" :class="{ active: genStep >= 1 }">认识你的起点</div>
+              <div class="gen-step" :class="{ active: genStep >= 2 }">看见你的特质</div>
+              <div class="gen-step" :class="{ active: genStep >= 3 }">找到重复模式</div>
+              <div class="gen-step" :class="{ active: genStep >= 4 }">获得下一步提示</div>
+            </div>
           </div>
 
           <div v-else class="result-success">
-            <span class="seal-badge">已提交</span>
-            <h2 ref="stepHeading" tabindex="-1">申请已收到</h2>
-            <p>接下来会经历“咨询师接单—AI 初稿—人工审校—交付”。AI 初稿不会直接展示给你，最终报告交付后会出现在报告列表。</p>
-            <div class="application-status paper-card">
-              <div><span>申请编号</span><strong>#{{ requestId || '—' }}</strong></div>
-              <div><span>当前状态</span><strong>{{ requestStatusLabel }}</strong></div>
+            <span class="seal-badge">已生成</span>
+            <h2 ref="stepHeading" tabindex="-1">你的人生说明书已经完成</h2>
+            <p>这份报告保留了提交时的资料快照。之后更新档案，不会改变这份历史报告。</p>
+            <div class="result-preview paper-card">
+              <div><span>个人属性</span><strong>{{ reportPreview.energyType }}</strong></div>
+              <div><span>核心特质</span><strong>{{ reportPreview.coreTraits }}</strong></div>
+              <div><span>行动提示</span><strong>{{ reportPreview.talents }}</strong></div>
             </div>
             <div class="button-row">
-              <button type="button" class="primary-button" @click="viewRequests">查看我的申请</button>
-              <button type="button" class="secondary-button" @click="goToCalendar">了解决策日历</button>
+              <button type="button" class="primary-button" @click="viewFullReport">查看报告</button>
+              <button type="button" class="secondary-button" @click="goToCalendar">打开决策日历</button>
             </div>
           </div>
         </div>
@@ -275,290 +251,337 @@
 </template>
 
 <script>
-import { getCurrentUser } from '../utils/authService'
-import {
-  createServiceRequest,
-  getMyServiceRequest,
-  resubmitServiceRequest,
-  updateServiceRequest
-} from '../utils/serviceRequestService'
+import { generateReportWithAI, getLatestReportContext } from '../utils/aiService.js'
+import { getCurrentUser, updateUserProfile } from '../utils/authService.js'
+import { setAuthenticatedUser } from '../stores/auth.js'
+import ProfileFields from '../components/ProfileFields.vue'
+import ProfileSummary from '../components/ProfileSummary.vue'
+
+const STORAGE_KEY = 'assessment-intake-draft'
+
+function emptyProfile() {
+  return {
+    name: '', gender: '', calendar_type: 'solar', birth_year: null, birth_month: null, birth_day: null,
+    birth_hour: null, birth_minute: null, birth_place: '', birth_time_precision: 'unknown',
+    current_residence: '', marital_status: '', occupation_status: '', highest_education: '', mbti: '',
+    personality_keywords: [], strengths: '', limitations: '', mingli_experience: [], mingli_attitude: '',
+    preferred_content_depth: '', default_usage_scenarios: []
+  }
+}
+
+function emptyContext() {
+  return {
+    focus_topics: [], current_challenge: '', expected_outcomes: [], issue_duration: '', impact_level: '',
+    decision_status: '', decision_description: '', decision_style: [], additional_info: ''
+  }
+}
+
+function profileFromUser(user) {
+  const base = emptyProfile()
+  Object.keys(base).forEach(field => {
+    if (user[field] !== undefined && user[field] !== null) base[field] = Array.isArray(user[field]) ? [...user[field]] : user[field]
+  })
+  return base
+}
 
 export default {
   name: 'Assessment',
+  components: { ProfileFields, ProfileSummary },
   data() {
     return {
       currentStep: 1,
-      isSubmitting: false,
+      loadingProfile: true,
+      savingProfile: false,
+      submitting: false,
+      isGenerating: false,
+      genStep: 0,
       formMessage: '',
-      fieldErrors: {
-        gender: '',
-        calendarType: '',
-        birth: ''
-      },
-      requestId: null,
-      requestStatus: 'submitted',
-      editingRequestId: null,
-      idempotencyKey: null,
-      formData: {
-        gender: '',
-        birthYear: '',
-        birthMonth: '',
-        birthDay: '',
-        birthHour: '',
-        birthMinute: '',
-        birthPlace: '',
-        timeAccuracy: 'unknown',
-        calendarType: 'solar',
-        selectedTopics: [],
-        additionalInfo: ''
-      },
-      years: Array.from({ length: 127 }, (_, i) => 2026 - i),
+      contextMessage: '',
+      showOptionalProfile: false,
+      showAdvancedContext: false,
+      hasExistingProfile: false,
+      profileDraft: emptyProfile(),
+      profileVersion: 1,
+      profileLastConfirmedAt: null,
+      profileErrors: {},
+      contextDraft: emptyContext(),
+      contextErrors: {},
+      draftStatus: '',
+      draftRestored: false,
+      draftSavedAt: null,
+      lastContext: null,
+      lastContextReportId: null,
+      reportPreview: { energyType: '综合型', coreTraits: '独特的个人特质', talents: '多元发展' },
+      generatedReport: null,
+      currentReportId: null,
       topics: [
-        { id: 'career', icon: 'career', title: '职业发展', desc: '职业选择、转型、瓶颈突破' },
-        { id: 'relationship', icon: 'relationship', title: '亲密关系', desc: '恋爱、婚姻、关系模式' },
-        { id: 'family', icon: 'family', title: '家庭议题', desc: '原生家庭、亲子关系' },
-        { id: 'self', icon: 'self', title: '自我价值', desc: '自我认同、人生意义' },
-        { id: 'growth', icon: 'growth', title: '个人成长', desc: '突破局限、能力提升' },
-        { id: 'stress', icon: 'stress', title: '压力焦虑', desc: '情绪管理、压力应对' }
+        { id: 'career', title: '事业发展', desc: '职业选择、转型与瓶颈突破' },
+        { id: 'relationship', title: '感情关系', desc: '恋爱、婚姻与关系模式' },
+        { id: 'family', title: '家庭议题', desc: '原生家庭、亲子与家庭沟通' },
+        { id: 'finance', title: '财务规划', desc: '经济安排与资源分配' },
+        { id: 'health', title: '身心健康', desc: '压力、情绪与身心节奏' },
+        { id: 'social', title: '人际关系', desc: '社交圈、朋友与边界' },
+        { id: 'self', title: '个人成长', desc: '自我实现与认知提升' },
+        { id: 'children', title: '子女教育', desc: '陪伴、沟通与成长支持' },
+        { id: 'other', title: '其他', desc: '你想带入说明书的主题' }
       ],
-      currentUser: null
+      expectedOutcomeOptions: [
+        { value: '认识自己', label: '更清晰地认识自己' },
+        { value: '解决方案', label: '找到当前问题的解决方案' },
+        { value: '方向指引', label: '获得对未来方向的指引' },
+        { value: '验证判断', label: '验证自己已有的判断' },
+        { value: '心理支持', label: '获得心理上的安慰与支持' },
+        { value: '节奏参考', label: '了解自己的命理 / 运势节奏' },
+        { value: '其他', label: '其他' }
+      ],
+      decisionStyleOptions: [
+        { value: 'intuition', label: '凭直觉判断' },
+        { value: 'rational', label: '理性分析利弊' },
+        { value: 'family_friends', label: '咨询家人 / 朋友意见' },
+        { value: 'professional', label: '寻求专业人士建议' },
+        { value: 'wait', label: '顺其自然，等时间给答案' },
+        { value: 'other', label: '其他' }
+      ]
     }
   },
   computed: {
-    requestStatusLabel() {
-      return {
-        submitted: '等待咨询师接单',
-        accepted: '咨询师已接单',
-        needs_info: '需要补充资料'
-      }[this.requestStatus] || '等待咨询师处理'
+    profileErrorSummary() {
+      return Object.values(this.profileErrors)
+    },
+    contextErrorSummary() {
+      return Object.values(this.contextErrors)
+    },
+    currentStepLabel() {
+      return ['个人档案', '本次问题', '生成说明书'][this.currentStep - 1] || '申请'
+    },
+    stepProgress() {
+      return Math.round((this.currentStep / 3) * 100)
     }
   },
+  watch: {
+    profileDraft: { deep: true, handler: 'saveDraft' },
+    contextDraft: { deep: true, handler: 'saveDraft' }
+  },
   async mounted() {
-    await this.loadInitialData()
+    try {
+      const user = await getCurrentUser()
+      this.profileDraft = profileFromUser(user)
+      this.profileVersion = user.profile_version || 1
+      this.profileLastConfirmedAt = user.profile_last_confirmed_at || null
+      this.hasExistingProfile = Number(user.profile_completion || 0) >= 100
+      this.restoreDraft()
+    } catch (error) {
+      this.formMessage = error.response?.data?.detail || '暂时无法读取个人档案，请刷新后重试。'
+    }
+    try {
+      const latest = await getLatestReportContext()
+      if (latest?.context) {
+        this.lastContext = latest.context
+        this.lastContextReportId = latest.report_id
+      }
+    } catch (error) {
+      // The report form remains usable if a legacy deployment has no context endpoint yet.
+      console.warn('读取上次申请背景失败', error)
+    } finally {
+      this.loadingProfile = false
+    }
   },
   methods: {
-    async loadInitialData() {
+    saveDraft() {
+      if (this.loadingProfile) return
       try {
-        const user = await getCurrentUser()
-        this.currentUser = user
-        this.applyUserProfile(user)
-        const requestId = this.$route.query.requestId ? Number(this.$route.query.requestId) : null
-        if (requestId) {
-          const serviceRequest = await getMyServiceRequest(requestId)
-          if (serviceRequest.service_type !== 'report' || serviceRequest.status !== 'needs_info') {
-            this.formMessage = '这份申请当前不需要补充资料。'
-          } else {
-            this.editingRequestId = requestId
-            this.requestId = requestId
-            this.requestStatus = serviceRequest.status
-            this.applyRequestPayload(serviceRequest.request_payload)
-          }
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ profileVersion: this.profileVersion, profile: this.profileDraft, context: this.contextDraft }))
+        this.draftSavedAt = new Date()
+        this.draftStatus = '草稿已自动保存 · 刚刚'
+      } catch {
+        // Draft recovery is a convenience; it should never block form input.
+      }
+    },
+    restoreDraft() {
+      try {
+        const stored = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null')
+        if (!stored) return
+        if (stored.profileVersion === this.profileVersion && stored.profile) {
+          this.profileDraft = { ...this.profileDraft, ...stored.profile }
+          this.draftRestored = true
         }
-      } catch (error) {
-        this.formMessage = this.errorText(error)
+        if (stored.context) {
+          this.contextDraft = { ...emptyContext(), ...stored.context }
+          this.draftRestored = true
+        }
+      } catch {
+        sessionStorage.removeItem(STORAGE_KEY)
       }
     },
-    applyUserProfile(user) {
-      this.formData.gender = user.gender || this.formData.gender
-      this.formData.birthYear = user.birth_year || this.formData.birthYear
-      this.formData.birthMonth = user.birth_month || this.formData.birthMonth
-      this.formData.birthDay = user.birth_day || this.formData.birthDay
-      this.formData.birthHour = user.birth_hour ?? this.formData.birthHour
-      this.formData.birthMinute = user.birth_minute ?? this.formData.birthMinute
-      this.formData.birthPlace = user.birth_place || this.formData.birthPlace
-      if (user.birth_hour !== null && user.birth_hour !== undefined) this.formData.timeAccuracy = 'approximate'
-    },
-    applyRequestPayload(payload = {}) {
-      const profile = payload.profile || {}
-      this.formData = {
-        ...this.formData,
-        birthYear: profile.birth_year || '',
-        birthMonth: profile.birth_month || '',
-        birthDay: profile.birth_day || '',
-        birthHour: profile.birth_hour ?? '',
-        birthMinute: profile.birth_minute ?? '',
-        birthPlace: profile.birth_place || '',
-        gender: profile.gender || '',
-        calendarType: profile.calendar_type || 'solar',
-        timeAccuracy: profile.time_accuracy || 'unknown',
-        selectedTopics: payload.selected_topics || [],
-        additionalInfo: payload.additional_info || ''
+    validateProfile() {
+      const profile = this.profileDraft
+      const errors = {}
+      if (!String(profile.name || '').trim()) errors.name = '请填写称呼。'
+      if (!profile.gender) errors.gender = '请选择性别。'
+      if (!profile.calendar_type) errors.calendar_type = '请选择历法类型。'
+      const year = Number(profile.birth_year)
+      const month = Number(profile.birth_month)
+      const day = Number(profile.birth_day)
+      if (!year || year < 1900 || year > new Date().getFullYear()) errors.birth_date = '请填写有效的出生日期。'
+      else if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期。'
+      else if (profile.calendar_type === 'solar') {
+        const date = new Date(year, month - 1, day)
+        if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期。'
+      } else if (day > 30) errors.birth_date = '农历日期的日期不能超过 30。'
+      if (!['unknown', 'approximate', 'exact'].includes(profile.birth_time_precision)) errors.birth_time_precision = '请选择出生时间准确度。'
+      if (profile.birth_time_precision !== 'unknown') {
+        if (profile.birth_hour === null || profile.birth_hour === '' || profile.birth_hour === undefined || profile.birth_minute === null || profile.birth_minute === '' || profile.birth_minute === undefined) errors.birth_time = '请选择完整的出生小时和分钟。'
+        else if (Number(profile.birth_hour) > 23 || Number(profile.birth_minute) > 59) errors.birth_time = '出生时间范围不正确。'
       }
+      this.profileErrors = errors
+      return Object.keys(errors).length === 0
     },
-    nextStep() {
+    profilePayload() {
+      const profile = { ...this.profileDraft }
+      profile.name = String(profile.name || '').trim()
+      profile.birth_place = String(profile.birth_place || '').trim() || null
+      profile.current_residence = String(profile.current_residence || '').trim() || null
+      profile.mbti = String(profile.mbti || '').trim().toUpperCase() || null
+      ;['strengths', 'limitations', 'marital_status', 'occupation_status', 'highest_education', 'mingli_attitude', 'preferred_content_depth'].forEach(field => {
+        profile[field] = String(profile[field] || '').trim() || null
+      })
+      profile.personality_keywords = Array.isArray(profile.personality_keywords) ? profile.personality_keywords : []
+      profile.mingli_experience = Array.isArray(profile.mingli_experience) ? profile.mingli_experience : []
+      profile.default_usage_scenarios = Array.isArray(profile.default_usage_scenarios) ? profile.default_usage_scenarios : []
+      profile.birth_year = profile.birth_year ? Number(profile.birth_year) : null
+      profile.birth_month = profile.birth_month ? Number(profile.birth_month) : null
+      profile.birth_day = profile.birth_day ? Number(profile.birth_day) : null
+      profile.birth_hour = profile.birth_time_precision === 'unknown' || profile.birth_hour === '' ? null : Number(profile.birth_hour)
+      profile.birth_minute = profile.birth_time_precision === 'unknown' || profile.birth_minute === '' ? null : Number(profile.birth_minute)
+      return profile
+    },
+    async saveProfileAndContinue() {
       this.formMessage = ''
-      if (!this.validateStep1()) {
-        this.formMessage = '请补充性别和完整出生日期后继续。'
+      if (!this.validateProfile()) {
+        this.formMessage = '请先补充个人档案中的必填项。'
+        this.focusStepHeading()
         return
       }
-      this.currentStep = 2
-      this.focusStepHeading()
+      this.savingProfile = true
+      try {
+        const user = await updateUserProfile(this.profilePayload())
+        setAuthenticatedUser(user)
+        this.profileDraft = profileFromUser(user)
+        this.profileVersion = user.profile_version || this.profileVersion
+        this.profileLastConfirmedAt = user.profile_last_confirmed_at || null
+        this.hasExistingProfile = true
+        this.draftStatus = `档案已确认 · 版本 v${this.profileVersion}`
+        this.currentStep = 2
+        this.focusStepHeading()
+      } catch (error) {
+        this.formMessage = error.response?.data?.detail || '档案保存失败，请检查网络后重试。'
+      } finally {
+        this.savingProfile = false
+      }
     },
-    prevStep() {
+    editProfile() {
+      this.formMessage = ''
       this.currentStep = 1
       this.focusStepHeading()
     },
+    toggleTopic(topicId) {
+      const topics = [...this.contextDraft.focus_topics]
+      const index = topics.indexOf(topicId)
+      if (index >= 0) topics.splice(index, 1)
+      else if (topics.length < 3) topics.push(topicId)
+      this.contextDraft.focus_topics = topics
+      if (topics.length) delete this.contextErrors.focus_topics
+    },
+    toggleExpectedOutcome(value) {
+      const outcomes = [...this.contextDraft.expected_outcomes]
+      const index = outcomes.indexOf(value)
+      if (index >= 0) outcomes.splice(index, 1)
+      else if (outcomes.length < 7) outcomes.push(value)
+      this.contextDraft.expected_outcomes = outcomes
+      if (outcomes.length) delete this.contextErrors.expected_outcomes
+    },
+    toggleDecisionStyle(value) {
+      const styles = [...this.contextDraft.decision_style]
+      const index = styles.indexOf(value)
+      if (index >= 0) styles.splice(index, 1)
+      else if (styles.length < 6) styles.push(value)
+      this.contextDraft.decision_style = styles
+    },
+    validateContextField(field) {
+      if (field === 'current_challenge' && String(this.contextDraft.current_challenge || '').trim()) delete this.contextErrors.current_challenge
+    },
+    validateContext() {
+      const errors = {}
+      if (!this.contextDraft.focus_topics.length) errors.focus_topics = '至少选择一个关注领域。'
+      if (!String(this.contextDraft.current_challenge || '').trim()) errors.current_challenge = '请描述当前困惑或挑战。'
+      if (!this.contextDraft.expected_outcomes.length) errors.expected_outcomes = '至少选择一个期望获得的结果。'
+      this.contextErrors = errors
+      return Object.keys(errors).length === 0
+    },
+    reusePreviousContext() {
+      this.contextDraft = { ...emptyContext(), ...(this.lastContext || {}), focus_topics: [...(this.lastContext?.focus_topics || [])], expected_outcomes: [...(this.lastContext?.expected_outcomes || [])], decision_style: [...(this.lastContext?.decision_style || [])] }
+      this.contextMessage = this.lastContextReportId ? `已带入报告 #${this.lastContextReportId} 的背景，请按这一次的情况编辑。` : '已带入上次背景，请按这一次的情况编辑。'
+      this.$nextTick(() => document.getElementById('assessment-current-challenge')?.focus())
+    },
+    async submitAssessment() {
+      if (this.submitting) return
+      this.formMessage = ''
+      if (!this.validateContext()) {
+        this.formMessage = '请先补充本次申请的必填信息。'
+        this.showAdvancedContext = true
+        this.focusStepHeading()
+        return
+      }
+      this.submitting = true
+      this.currentStep = 3
+      this.isGenerating = true
+      this.focusStepHeading()
+      try {
+        this.genStep = 1
+        await new Promise(resolve => setTimeout(resolve, 350))
+        this.genStep = 2
+        this.generatedReport = await generateReportWithAI({ profile_version: this.profileVersion, context: this.contextDraft })
+        this.genStep = 3
+        await new Promise(resolve => setTimeout(resolve, 350))
+        this.genStep = 4
+        this.reportPreview = {
+          energyType: this.generatedReport.energyProfile?.type || '综合型',
+          coreTraits: this.generatedReport.energyProfile?.coreTraits || '独特的个人特质',
+          talents: Array.isArray(this.generatedReport.careerGuidance?.suitablePaths) ? this.generatedReport.careerGuidance.suitablePaths.join('、') : '多元发展'
+        }
+        await new Promise(resolve => setTimeout(resolve, 350))
+        this.currentReportId = this.generatedReport.id
+        this.isGenerating = false
+        sessionStorage.removeItem(STORAGE_KEY)
+        this.draftStatus = ''
+        this.draftRestored = false
+      } catch (error) {
+        console.error('报告生成失败:', error)
+        this.formMessage = error.response?.data?.detail || error.message || '报告生成失败，请检查网络后重试。'
+        this.currentStep = 2
+        this.isGenerating = false
+        this.focusStepHeading()
+      } finally {
+        this.submitting = false
+      }
+    },
     focusStepHeading() {
       this.$nextTick(() => {
-        const ref = this.$refs.stepHeading
-        const heading = Array.isArray(ref) ? ref[0] : ref
+        const heading = Array.isArray(this.$refs.stepHeading) ? this.$refs.stepHeading[0] : this.$refs.stepHeading
         if (!heading) return
         window.scrollTo({ top: 0, behavior: 'auto' })
         heading.focus({ preventScroll: true })
       })
     },
-    validateStep1() {
-      const { gender, birthYear, birthMonth, birthDay, calendarType } = this.formData
-      const errors = { gender: '', calendarType: '', birth: '' }
-      if (!gender) errors.gender = '请选择性别'
-      if (!calendarType) errors.calendarType = '请选择历法类型'
-      if (!birthYear || !birthMonth || !birthDay) errors.birth = '请填写完整出生日期'
-      if (Object.values(errors).some(Boolean)) {
-        this.fieldErrors = errors
-        return false
-      }
-
-      const year = Number(birthYear)
-      const month = Number(birthMonth)
-      const day = Number(birthDay)
-      if (year < 1900 || year > 2026 || month < 1 || month > 12 || day < 1 || day > 31) {
-        this.fieldErrors = { ...errors, birth: '出生日期格式不正确' }
-        return false
-      }
-
-      if (calendarType === 'solar') {
-        const date = new Date(year, month - 1, day)
-        const valid = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
-        this.fieldErrors = valid ? errors : { ...errors, birth: '出生日期不存在' }
-        return valid
-      }
-
-      const valid = day <= 30
-      this.fieldErrors = valid ? errors : { ...errors, birth: '农历日期不能超过 30 日' }
-      return valid
+    truncate(value, length) {
+      const text = String(value || '')
+      return text.length > length ? `${text.slice(0, length)}…` : text
     },
-    selectTimeAccuracy(accuracy) {
-      this.formData.timeAccuracy = accuracy
-      if (accuracy === 'unknown') {
-        this.formData.birthHour = ''
-        this.formData.birthMinute = ''
-      }
-    },
-    validateYear(e) {
-      let value = e.target.value.replace(/[^\d]/g, '')
-      if (value.length === 4) {
-        const num = parseInt(value)
-        if (num < 1900) value = '1900'
-        if (num > 2026) value = '2026'
-      }
-      this.formData.birthYear = value
-    },
-    validateMonth(e) {
-      let value = e.target.value.replace(/[^\d]/g, '')
-      if (value) {
-        const num = parseInt(value)
-        if (num > 12) value = '12'
-        if (num < 1 && value.length === 2) value = '01'
-      }
-      this.formData.birthMonth = value
-    },
-    validateDay(e) {
-      let value = e.target.value.replace(/[^\d]/g, '')
-      if (value) {
-        const num = parseInt(value)
-        if (num > 31) value = '31'
-        if (num < 1 && value.length === 2) value = '01'
-      }
-      this.formData.birthDay = value
-    },
-    validateHour(e) {
-      let value = e.target.value.replace(/[^\d]/g, '')
-      if (value) {
-        const num = parseInt(value)
-        if (num > 23) value = '23'
-        if (num < 0) value = '0'
-      }
-      this.formData.birthHour = value
-    },
-    validateMinute(e) {
-      let value = e.target.value.replace(/[^\d]/g, '')
-      if (value) {
-        const num = parseInt(value)
-        if (num > 59) value = '59'
-        if (num < 0) value = '0'
-      }
-      this.formData.birthMinute = value
-    },
-    toggleTopic(topicId) {
-      const index = this.formData.selectedTopics.indexOf(topicId)
-      if (index > -1) {
-        this.formData.selectedTopics.splice(index, 1)
-      } else {
-        this.formData.selectedTopics.push(topicId)
-      }
-    },
-    async submitAssessment() {
-      this.formMessage = ''
-      if (this.isSubmitting) return
-      if (!this.validateStep1()) {
-        this.formMessage = '请补充性别和完整出生日期后继续。'
-        this.currentStep = 1
-        this.focusStepHeading()
-        return
-      }
-      this.currentStep = 3
-      this.isSubmitting = true
-      this.focusStepHeading()
-
-      try {
-        const payload = {
-          profile: {
-            name: this.currentUser?.name || null,
-            gender: this.formData.gender,
-            birth_year: Number(this.formData.birthYear),
-            birth_month: Number(this.formData.birthMonth),
-            birth_day: Number(this.formData.birthDay),
-            birth_hour: this.formData.timeAccuracy === 'unknown' ? null : Number(this.formData.birthHour),
-            birth_minute: this.formData.timeAccuracy === 'unknown' ? null : Number(this.formData.birthMinute || 0),
-            birth_place: this.formData.birthPlace || null,
-            calendar_type: this.formData.calendarType,
-            time_accuracy: this.formData.timeAccuracy
-          },
-          selected_topics: this.formData.selectedTopics,
-          additional_info: this.formData.additionalInfo || null
-        }
-        let result
-        if (this.editingRequestId) {
-          await updateServiceRequest(this.editingRequestId, payload)
-          result = await resubmitServiceRequest(this.editingRequestId)
-        } else {
-          this.idempotencyKey = this.idempotencyKey || `report-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
-          result = await createServiceRequest({
-            service_type: 'report',
-            ...payload,
-            idempotency_key: this.idempotencyKey
-          })
-        }
-        this.requestId = result.id
-        this.requestStatus = result.status
-        this.isSubmitting = false
-        this.focusStepHeading()
-      } catch (error) {
-        console.error('报告申请提交失败:', error)
-        this.formMessage = this.errorText(error)
-        this.currentStep = 2
-        this.isSubmitting = false
-        this.focusStepHeading()
-      }
-    },
-    viewRequests() {
-      this.$router.push('/pages/requests/requests')
+    viewFullReport() {
+      if (this.currentReportId) this.$router.push(`/pages/report/detail?id=${this.currentReportId}`)
     },
     goToCalendar() {
-      this.$router.push('/pages/requests/new?type=calendar')
-    },
-    errorText(error) {
-      return error.response?.data?.detail || '申请提交失败，请检查网络后重试。'
+      this.$router.push('/pages/calendar/calendar')
     }
   }
 }
@@ -570,14 +593,9 @@ export default {
   text-align: center;
 }
 
-.header-inner {
-  max-width: 760px;
-}
+.header-inner { max-width: 760px; }
 
-.page-header h1 {
-  font-size: clamp(40px, 8vw, 72px);
-  line-height: 1.08;
-}
+.page-header h1 { font-size: clamp(40px, 8vw, 72px); line-height: 1.08; }
 
 .page-header p:not(.section-kicker) {
   margin-top: 18px;
@@ -586,9 +604,8 @@ export default {
   line-height: 1.75;
 }
 
-.assessment-container {
-  max-width: 860px;
-}
+.assessment-section { padding-bottom: 84px; }
+.assessment-container { max-width: 900px; }
 
 .progress-card {
   display: grid;
@@ -599,597 +616,171 @@ export default {
   padding: 14px;
 }
 
-.progress-step {
-  display: grid;
-  justify-items: center;
-  gap: 7px;
-  width: 72px;
-  min-width: 0;
-  color: var(--muted);
+.progress-current {
+  display: none;
 }
 
-.progress-step span {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: rgba(255, 250, 240, 0.72);
-  font-family: "Manrope", sans-serif;
-  font-weight: 900;
-}
+.progress-step { display: grid; justify-items: center; gap: 7px; width: 80px; color: var(--muted); }
+.progress-step span { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: rgba(255,250,240,.72); font-weight: 900; }
+.progress-step p { font-size: 12px; font-weight: 800; white-space: nowrap; }
+.progress-step.active, .progress-step.completed { color: var(--cinnabar-deep); }
+.progress-step.active span, .progress-step.completed span { border-color: rgba(184,92,80,.34); background: rgba(184,92,80,.1); }
+.progress-line { height: 1px; background: var(--line); }
+.progress-line.active { background: linear-gradient(90deg, var(--cinnabar), var(--gold)); }
 
-.progress-step p {
-  font-size: 12px;
-  font-weight: 700;
-}
+.step-content { padding: clamp(20px, 4vw, 38px); }
+.step-heading { margin-bottom: 26px; text-align: center; }
+.step-heading h2 { font-size: clamp(26px, 5vw, 40px); line-height: 1.2; }
+.step-heading p:not(.section-kicker) { margin-top: 10px; color: var(--ink-soft); line-height: 1.65; }
+.draft-status { display: inline-flex; align-items: center; justify-content: center; gap: 7px; margin-top: 12px; color: var(--jade); font-size: 12px; line-height: 1.5; }
+.draft-status-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--jade); box-shadow: 0 0 0 4px rgba(111,159,147,.1); }
+.assessment-form { display: grid; gap: 22px; }
+.context-form { margin-top: 24px; }
+.form-group { display: grid; gap: 10px; }
+.form-label { color: var(--ink); font-weight: 800; }
+.required { color: var(--cinnabar-deep); }
+.form-hint { color: var(--muted); font-size: 12px; font-weight: 500; }
+.field-meta { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+.char-count { flex: 0 0 auto; color: var(--muted); font-size: 11px; line-height: 1.6; }
+.field-error { color: var(--cinnabar-deep); font-size: 12px; line-height: 1.5; }
+.selection-count { color: var(--cinnabar-deep); font-size: 11px; font-weight: 800; white-space: nowrap; }
+.choice-fieldset { min-width: 0; border: 0; padding: 0; }
 
-.progress-step.active,
-.progress-step.completed {
-  color: var(--cinnabar-deep);
-}
-
-.progress-step.active span,
-.progress-step.completed span {
-  border-color: rgba(184, 92, 80, 0.34);
-  background: rgba(184, 92, 80, 0.1);
-}
-
-.progress-line {
-  height: 1px;
-  background: var(--line);
-}
-
-.progress-line.active {
-  background: linear-gradient(90deg, var(--cinnabar), var(--gold));
-}
-
-.step-content {
-  padding: clamp(22px, 4vw, 38px);
-}
-
-.step-heading {
-  margin-bottom: 26px;
-  text-align: center;
-}
-
-.step-heading h2 {
-  font-size: clamp(26px, 5vw, 40px);
-  line-height: 1.2;
-}
-
-.step-heading p:not(.section-kicker) {
-  margin-top: 10px;
-  color: var(--ink-soft);
-  line-height: 1.65;
-}
-
-.assessment-form,
-.form-group {
-  display: grid;
-  gap: 14px;
-}
-
-.assessment-form {
-  gap: 26px;
-}
-
-.form-label {
+textarea, select, .context-form input[type="text"] {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(139,90,20,.2);
+  border-radius: 12px;
+  padding: 11px 13px;
+  background: rgba(255,255,255,.78);
   color: var(--ink);
-  font-weight: 800;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
-.required {
-  color: var(--cinnabar-deep);
-}
+textarea { min-height: 110px; resize: vertical; }
+textarea:focus, select:focus, .context-form input[type="text"]:focus { border-color: var(--cinnabar); outline: 0; box-shadow: 0 0 0 3px rgba(184,92,80,.12); }
 
-.optional,
-.form-hint {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.form-error {
-  margin-top: 12px;
+.fold-toggle {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px dashed rgba(139,90,20,.3);
+  border-radius: 13px;
+  padding: 0 14px;
   color: var(--cinnabar-deep);
   font-size: 14px;
-  line-height: 1.6;
-}
-
-.field-error {
-  margin: 0;
-  color: var(--cinnabar-deep);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.choice-fieldset {
-  min-width: 0;
-  border: 0;
-  padding: 0;
-}
-
-.choice-fieldset > legend {
-  width: 100%;
-  padding: 0;
-}
-
-.choice-grid {
-  display: grid;
-  gap: 10px;
-}
-
-.choice-grid.two {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.choice-grid.three {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.choice-card,
-.topic-card {
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: rgba(255, 250, 240, 0.64);
-  color: var(--ink);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
-}
-
-.choice-card {
-  display: grid;
-  min-width: 0;
-  width: 100%;
-  place-items: center;
-  min-height: 88px;
-  gap: 8px;
-  padding: 14px;
-}
-
-.choice-card.horizontal {
-  grid-template-columns: auto 1fr;
-  place-items: center start;
-  text-align: left;
-}
-
-.choice-card.horizontal > div {
-  min-width: 0;
-}
-
-.choice-card.compact {
-  min-height: 52px;
   font-weight: 800;
-}
-
-.choice-card span {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: rgba(184, 92, 80, 0.09);
-  color: var(--cinnabar-deep);
-  font-weight: 900;
-}
-
-.choice-card small {
-  display: block;
-  margin-top: 3px;
-  color: var(--muted);
-}
-
-.choice-card.selected,
-.topic-card.selected {
-  border-color: rgba(184, 92, 80, 0.52);
-  background: rgba(255, 239, 222, 0.84);
-  transform: translateY(-1px);
-}
-
-.date-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
-  gap: 10px;
-}
-
-.date-row label {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: rgba(255, 250, 240, 0.64);
-  padding: 10px 12px;
-}
-
-.date-row input {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  text-align: center;
-  font-family: "Manrope", sans-serif;
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.date-row span {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.time-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 6px;
-}
-
-.time-row input {
-  max-width: 100%;
-  width: 86px;
-  padding: 13px;
-  text-align: center;
-  font-family: "Manrope", sans-serif;
-  font-size: 22px;
-  font-weight: 900;
-}
-
-.modern-input,
-textarea {
-  width: 100%;
-  padding: 14px 16px;
-}
-
-.full-width {
-  width: 100%;
-}
-
-.topics-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 26px;
-}
-
-.topic-card {
-  display: grid;
-  min-width: 0;
-  min-height: 142px;
-  align-content: start;
-  justify-items: start;
-  gap: 8px;
-  padding: 18px;
   text-align: left;
 }
+.fold-toggle:hover { background: rgba(184,92,80,.06); }
 
-.topic-card .icon-mark {
-  width: 26px;
-  height: 26px;
-  color: var(--cinnabar-deep);
-}
-
-.topic-card strong {
-  font-size: 17px;
-}
-
-.topic-card small {
-  color: var(--ink-soft);
-  line-height: 1.5;
-}
-
-.button-row {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
+.privacy-note, .reuse-context-card {
+  display: flex;
+  align-items: center;
   gap: 12px;
-  margin-top: 24px;
-}
-
-.generating,
-.result-success {
-  text-align: center;
-}
-
-.loading-compass {
-  position: relative;
-  width: 86px;
-  height: 86px;
-  margin: 0 auto 24px;
-  border: 1px solid rgba(184, 92, 80, 0.32);
-  border-radius: 50%;
-}
-
-.loading-compass::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 12px;
-  width: 2px;
-  height: 62px;
-  border-radius: 999px;
-  background: linear-gradient(var(--cinnabar-deep) 0 48%, var(--gold) 49% 100%);
-  transform: translateX(-50%);
-  animation: spin 1.4s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: translateX(-50%) rotate(360deg);
-  }
-}
-
-.generating h2,
-.result-success h2 {
-  margin-bottom: 12px;
-  font-size: clamp(25px, 5vw, 38px);
-}
-
-.generating p,
-.result-success > p {
-  color: var(--ink-soft);
-  line-height: 1.7;
-}
-
-.generating-steps {
-  display: grid;
-  gap: 10px;
-  margin-top: 28px;
-  text-align: left;
-}
-
-.gen-step {
-  border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 13px 16px;
-  background: rgba(255, 250, 240, 0.54);
-  color: var(--muted);
+  padding: 13px 15px;
+  background: rgba(111,159,147,.09);
 }
+.privacy-mark { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(111,159,147,.4); border-radius: 50%; color: var(--jade); font-size: 12px; font-weight: 900; }
+.privacy-note p { color: var(--ink-soft); font-size: 12px; line-height: 1.6; }
 
-.gen-step.active {
-  border-color: rgba(184, 92, 80, 0.34);
-  background: rgba(255, 239, 222, 0.74);
-  color: var(--ink);
-  font-weight: 800;
-}
+.reuse-context-card { justify-content: space-between; background: rgba(217,186,98,.1); }
+.reuse-context-card > div { min-width: 0; }
+.reuse-context-card p { margin-top: 3px; overflow: hidden; color: var(--ink-soft); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.mini-label { color: var(--gold-deep); font-size: 11px; font-weight: 900; letter-spacing: .08em; }
+.context-message { color: var(--jade); font-size: 13px; }
+.context-scope-note { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }
 
-.result-preview {
-  display: grid;
-  gap: 14px;
-  margin: 28px 0;
-  padding: 20px;
-  text-align: left;
-}
-
-.result-preview div {
-  display: grid;
-  gap: 5px;
-}
-
-.result-preview span {
-  color: var(--gold-deep);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.result-preview strong {
-  color: var(--ink);
-  line-height: 1.55;
-}
-
-.application-status {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin: 28px 0;
-  padding: 20px;
-  text-align: left;
-}
-
-.application-status div {
-  display: grid;
-  gap: 5px;
-}
-
-.application-status span {
-  color: var(--gold-deep);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.application-status strong {
-  color: var(--ink);
-  line-height: 1.55;
-}
-
-@media (max-width: 767px) {
-  .page-header {
-    padding: 38px 0 30px;
-  }
-
-  .page-header h1 {
-    font-size: clamp(32px, 10vw, 44px);
-  }
-
-  .page-header p:not(.section-kicker) {
-    font-size: 16px;
-  }
-
-  .progress-card {
-    gap: 5px;
-    margin-bottom: 12px;
-    padding: 8px 6px;
-    border-radius: 14px;
-  }
-
-  .progress-step {
-    width: 52px;
-  }
-
-  .progress-step p {
-    font-size: 10px;
-  }
-
-  .choice-grid.three,
-  .topics-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .choice-card.compact {
-    min-height: 48px;
-  }
-
-  .step-content {
-    padding: 16px 12px;
-    border-radius: 14px;
-  }
-
-  .step-heading {
-    margin-bottom: 18px;
-  }
-
-  .step-heading h2 {
-    font-size: clamp(22px, 7vw, 28px);
-  }
-
-  .assessment-form {
-    gap: 16px;
-  }
-
-  .assessment-section {
-    padding-top: 30px;
-    padding-bottom: 40px;
-  }
-
-  .form-group {
-    gap: 7px;
-  }
-
-  .form-label {
-    font-size: 14px;
-  }
-
-  .choice-grid,
-  .topics-grid {
-    gap: 9px;
-  }
-
-  .choice-card {
-    min-height: 64px;
-    padding: 9px;
-    border-radius: 12px;
-  }
-
-  .choice-card.compact {
-    min-height: 46px;
-  }
-
-  .choice-card span {
-    width: 30px;
-    height: 30px;
-  }
-
-  .topic-card {
-    min-height: 88px;
-    gap: 6px;
-    padding: 12px;
-    border-radius: 12px;
-  }
-
-  .topic-card .icon-mark {
-    width: 22px;
-    height: 22px;
-  }
-
-  .topic-card strong {
-    font-size: 16px;
-  }
-
-  .date-row {
-    gap: 6px;
-  }
-
-  .date-row label {
-    padding: 8px 6px;
-    border-radius: 12px;
-  }
-
-  .modern-input,
-  textarea,
-  .date-row input,
-  .time-row input {
-    min-height: 46px;
-    font-size: 16px;
-  }
-
-  .button-row {
-    gap: 8px;
-    margin-top: 16px;
-    grid-template-columns: 1fr;
-  }
-
-  .button-row .primary-button,
-  .button-row .secondary-button,
-  .assessment-form > .primary-button {
-    min-height: 46px;
-  }
-
-  .loading-compass {
-    width: 68px;
-    height: 68px;
-    margin-bottom: 18px;
-  }
-
-  .loading-compass::before {
-    height: 50px;
-  }
-
-  .generating h2,
-  .result-success h2 {
-    font-size: clamp(23px, 7vw, 30px);
-  }
-
-  .generating-steps {
-    gap: 8px;
-    margin-top: 20px;
-  }
-
-  .result-preview {
-    gap: 11px;
-    margin: 20px 0;
-    padding: 14px;
-    border-radius: 12px;
-  }
-
-  .application-status {
-    gap: 11px;
-    margin: 20px 0;
-    padding: 14px;
-    border-radius: 12px;
-  }
-}
-
-/* 按钮专项：选择项是可点击卡片，流程 CTA 使用一致的左右留白和触控高度。 */
-.choice-card,
+.topics-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
 .topic-card {
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  display: grid;
+  min-height: 86px;
+  align-content: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 12px;
+  background: rgba(255,250,240,.64);
+  color: var(--ink);
+  text-align: left;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.topic-card:hover { border-color: rgba(184,92,80,.45); transform: translateY(-1px); }
+.topic-card.selected { border-color: var(--cinnabar); background: rgba(184,92,80,.1); color: var(--cinnabar-deep); }
+.topic-card strong { font-size: 14px; }
+.topic-card small { color: var(--muted); font-size: 11px; line-height: 1.45; }
+
+.expected-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+.expected-card { display: flex; min-height: 46px; align-items: center; gap: 9px; border: 1px solid var(--line); border-radius: 11px; padding: 8px 10px; background: rgba(255,255,255,.52); color: var(--ink-soft); font-size: 13px; line-height: 1.35; }
+.expected-card input { width: 17px; height: 17px; flex: 0 0 auto; accent-color: var(--cinnabar); }
+.context-details { border-top: 1px solid var(--line); padding-top: 6px; }
+.context-details summary { display: flex; min-height: 48px; align-items: center; justify-content: space-between; color: var(--cinnabar-deep); cursor: pointer; font-size: 14px; font-weight: 800; list-style: none; }
+.context-details summary::-webkit-details-marker { display: none; }
+.advanced-context-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; padding: 12px 0 4px; }
+.field-wide { grid-column: 1 / -1; }
+
+.error-summary { border: 1px solid rgba(158,63,53,.25); border-radius: 12px; padding: 12px 14px; background: rgba(184,92,80,.07); color: var(--cinnabar-deep); font-size: 13px; }
+.error-summary ul { margin: 5px 0 0 18px; list-style: disc; }
+.error-summary li { list-style: disc; }
+.form-message { color: var(--cinnabar-deep); font-size: 14px; line-height: 1.6; }
+.button-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.form-submit-bar { position: relative; }
+.primary-button, .secondary-button { display: inline-flex; min-height: var(--button-height); align-items: center; justify-content: center; border-radius: var(--button-radius); padding: 0 22px; font-size: 14px; font-weight: 800; }
+.primary-button { background: var(--cinnabar); color: #fff; }
+.primary-button:hover { background: var(--cinnabar-deep); }
+.primary-button:disabled, .secondary-button:disabled { cursor: wait; opacity: .62; }
+.secondary-button { border: 1px solid rgba(139,90,20,.22); background: rgba(255,255,255,.62); color: var(--ink-soft); }
+.secondary-button:hover { border-color: var(--cinnabar); color: var(--cinnabar-deep); }
+.small-button { min-height: 42px; padding: 0 14px; font-size: 12px; white-space: nowrap; }
+.full-width { width: 100%; }
+
+.loading-panel, .generating, .result-success { min-height: 360px; display: grid; place-items: center; align-content: center; gap: 15px; text-align: center; }
+.loading-panel h2, .generating h2, .result-success h2 { font-size: clamp(26px, 5vw, 38px); }
+.loading-panel p, .generating p, .result-success > p { max-width: 560px; color: var(--ink-soft); line-height: 1.7; }
+.loading-compass { width: 58px; height: 58px; border: 1px solid rgba(184,92,80,.26); border-top-color: var(--cinnabar); border-radius: 50%; animation: spin 1.2s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.generating-steps { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); width: min(620px, 100%); gap: 8px; margin-top: 15px; }
+.gen-step { border-top: 2px solid var(--line); padding-top: 8px; color: var(--muted); font-size: 12px; }
+.gen-step.active { border-color: var(--cinnabar); color: var(--cinnabar-deep); }
+.seal-badge { display: inline-flex; min-height: 30px; align-items: center; border: 1px solid rgba(184,92,80,.26); border-radius: 999px; padding: 0 12px; color: var(--cinnabar-deep); font-size: 12px; font-weight: 900; }
+.result-preview { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); width: 100%; gap: 12px; margin: 10px 0; padding: 18px; text-align: left; }
+.result-preview div { display: grid; gap: 4px; min-width: 0; }
+.result-preview span { color: var(--muted); font-size: 11px; }
+.result-preview strong { color: var(--ink); font-size: 13px; line-height: 1.5; }
+
+@media (max-width: 700px) {
+  .page-header { padding: 60px 0 38px; }
+  .progress-card { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto; gap: 4px; padding: 10px 7px; }
+  .progress-current { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 8px; padding: 1px 3px 7px; color: var(--muted); font-size: 11px; }
+  .progress-current strong { color: var(--ink-soft); font-size: 12px; }
+  .progress-current span:last-child { color: var(--cinnabar-deep); font-weight: 900; }
+  .progress-step { width: 64px; }
+  .progress-step p { font-size: 10px; }
+  .topics-grid, .advanced-context-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .reuse-context-card { align-items: start; flex-direction: column; }
+  .result-preview { grid-template-columns: 1fr; }
+  .form-submit-bar {
+    position: sticky;
+    bottom: calc(68px + var(--safe-bottom, 0px));
+    z-index: 6;
+    margin: 0 -4px;
+    padding: 10px 4px;
+    border-top: 1px solid rgba(139,90,20,.12);
+    background: linear-gradient(180deg, rgba(255,250,240,.62), rgba(255,250,240,.97) 26%);
+    box-shadow: 0 -10px 20px -18px rgba(47,36,27,.78);
+  }
 }
 
-.button-row {
-  align-items: stretch;
-  gap: var(--button-gap, 8px);
+@media (max-width: 430px) {
+  .assessment-section { padding-bottom: 78px; }
+  .step-content { padding: 16px 12px; }
+  .topics-grid, .expected-grid, .advanced-context-grid { grid-template-columns: 1fr; }
+  .button-row > button { width: 100%; }
+  .progress-current { padding-right: 1px; padding-left: 1px; }
+  .progress-current span:first-child { display: none; }
+  .generating-steps { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
-
-.button-row > .primary-button,
-.button-row > .secondary-button,
-.assessment-form > .primary-button {
-  width: 100%;
-  min-height: var(--button-height, 46px);
-}
-
 </style>
