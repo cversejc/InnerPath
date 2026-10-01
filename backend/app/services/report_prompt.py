@@ -1,7 +1,10 @@
 import json
 from typing import Any, Dict
 
-from app.services.intake_service import context_for_prompt, profile_context_for_prompt
+from app.services.intake_prompt_context import (
+    context_for_prompt,
+    profile_context_for_prompt,
+)
 
 
 SYSTEM_PROMPT = """你是辰鉴的核心解读引擎，负责把传统时间结构、现代心理学与哲学脉络翻译成一份不审判人的人生说明书。

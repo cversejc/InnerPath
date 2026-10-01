@@ -1,7 +1,10 @@
 import json
 from typing import Any, Dict
 
-from app.services.intake_service import context_for_prompt, profile_context_for_prompt
+from app.services.intake_prompt_context import (
+    context_for_prompt,
+    profile_context_for_prompt,
+)
 
 
 class MultiStepReportPrompts:

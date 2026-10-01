@@ -71,7 +71,11 @@ def profile_snapshot(user: User) -> dict[str, Any]:
     snapshot: dict[str, Any] = {}
     for field in PROFILE_SNAPSHOT_FIELDS:
         value = getattr(user, field, None)
-        if field in {"personality_keywords", "mingli_experience", "default_usage_scenarios"}:
+        if field in {
+            "personality_keywords",
+            "mingli_experience",
+            "default_usage_scenarios",
+        }:
             value = _list_value(value)
         snapshot[field] = value
     return snapshot
@@ -113,7 +117,12 @@ def calculate_age(
     try:
         current = today or date.today()
         birthday = date(int(birth_year), int(birth_month), int(birth_day))
-        return max(0, current.year - birthday.year - ((current.month, current.day) < (birthday.month, birthday.day)))
+        return max(
+            0,
+            current.year
+            - birthday.year
+            - ((current.month, current.day) < (birthday.month, birthday.day)),
+        )
     except (TypeError, ValueError):
         return None
 
@@ -128,7 +137,9 @@ def build_intake_snapshot(
     extra: Optional[Mapping[str, Any]] = None,
 ) -> dict[str, Any]:
     """Build the canonical immutable snapshot for a request or background job."""
-    if profile_version is not None and int(profile_version) != int(user.profile_version or 1):
+    if profile_version is not None and int(profile_version) != int(
+        user.profile_version or 1
+    ):
         raise ValueError("profile_version_conflict")
 
     normalized_context = normalize_context(context)
@@ -139,7 +150,9 @@ def build_intake_snapshot(
         "profile": profile_snapshot(user),
         "context": normalized_context,
         "derived": {
-            "age_at_request": calculate_age(user.birth_year, user.birth_month, user.birth_day),
+            "age_at_request": calculate_age(
+                user.birth_year, user.birth_month, user.birth_day
+            ),
         },
     }
     if source_report_id is not None:
@@ -166,45 +179,3 @@ def flatten_snapshot_for_ai(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         }
     )
     return flattened
-
-
-def context_for_prompt(context: Mapping[str, Any]) -> str:
-    """Render current request context without exposing account contact data."""
-    normalized = normalize_context(context)
-    labels = (
-        ("当前困惑", normalized.get("current_challenge")),
-        ("期望获得", "、".join(normalized.get("expected_outcomes") or [])),
-        ("困惑持续时间", normalized.get("issue_duration")),
-        ("影响程度", normalized.get("impact_level")),
-        ("重要决策状态", normalized.get("decision_status")),
-        ("决策描述", normalized.get("decision_description")),
-        ("决策方式", "、".join(normalized.get("decision_style") or [])),
-        ("补充说明", normalized.get("additional_info")),
-    )
-    lines = [f"{label}：{value}" for label, value in labels if value]
-    return "\n".join(lines)
-
-
-def profile_context_for_prompt(profile: Mapping[str, Any]) -> str:
-    """Render only stable, analytical profile fields for an AI prompt."""
-    labels = (
-        ("当前居住地", "current_residence"),
-        ("婚姻状态", "marital_status"),
-        ("职业状态", "occupation_status"),
-        ("学历", "highest_education"),
-        ("MBTI", "mbti"),
-        ("性格关键词", "personality_keywords"),
-        ("优势", "strengths"),
-        ("限制", "limitations"),
-        ("命理体验", "mingli_experience"),
-        ("命理态度", "mingli_attitude"),
-        ("内容偏好", "preferred_content_depth"),
-    )
-    lines = []
-    for label, field in labels:
-        value = profile.get(field)
-        if isinstance(value, (list, tuple)):
-            value = "、".join(str(item) for item in value if item)
-        if value:
-            lines.append(f"{label}：{value}")
-    return "\n".join(lines)
