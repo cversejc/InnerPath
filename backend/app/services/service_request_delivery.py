@@ -16,7 +16,7 @@ from app.models.service_request import ServiceRequest, ServiceRequestDraft
 from app.models.user import User
 from app.schemas.calendar import CalendarEntryInput
 from app.services.audit_service import record_audit
-from app.services.service_request_payloads import validate_draft
+from app.services.service_request_drafts import validate_draft
 from app.services.service_request_repository import (
     _append_revision,
     _get_draft,

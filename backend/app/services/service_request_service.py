@@ -4,10 +4,12 @@ from app.services.service_request_payloads import (
     PUBLIC_STATUS_LABELS,
     _normalize_payload,
     flatten_ai_input,
-    normalize_calendar_draft,
-    normalize_report_draft,
     payload_from_create,
     payload_from_update,
+)
+from app.services.service_request_drafts import (
+    normalize_calendar_draft,
+    normalize_report_draft,
     validate_draft,
 )
 from app.services.service_request_repository import _append_revision

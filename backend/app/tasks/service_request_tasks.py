@@ -14,9 +14,9 @@ from app.models.user import User  # noqa: F401 - registers user foreign keys in 
 from app.services.ai_service import generate_report_with_ai
 from app.services.audit_service import record_audit
 from app.services.calendar_ai_service import generate_calendar_with_ai
-from app.services.service_request_service import (
-    _append_revision,
-    flatten_ai_input,
+from app.services.service_request_repository import _append_revision
+from app.services.service_request_payloads import flatten_ai_input
+from app.services.service_request_drafts import (
     normalize_calendar_draft,
     normalize_report_draft,
     validate_draft,
