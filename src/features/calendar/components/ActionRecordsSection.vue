@@ -59,7 +59,7 @@ function updateDraft(field, value) {
         <div class="actual-record-meta">
           <span class="record-kind" :class="`kind-${record.kind}`">{{ record.kind === 'decision' ? '决策' : '行动' }}</span>
           <span class="record-status" :class="`status-${record.status}`">{{ statusText(record.status) }}</span>
-          <button class="record-delete" type="button" @click.stop="emit('remove-record', record)">删除</button>
+          <VanButton class="record-delete" type="default" plain size="mini" native-type="button" @click.stop="emit('remove-record', record)">删除</VanButton>
         </div>
         <p>{{ record.content }}</p>
         <small v-if="record.note">{{ record.note }}</small>
@@ -69,17 +69,19 @@ function updateDraft(field, value) {
 
     <div v-if="selectedEntry.suitable?.length" class="quick-records">
       <div class="quick-records-head"><span>从今日建议记一笔</span><small>已经做过的可以直接加入</small></div>
-      <button
+      <VanButton
         v-for="item in selectedEntry.suitable"
         :key="item"
-        type="button"
         class="quick-record-button"
+        type="default"
+        plain
+        native-type="button"
         :class="{ recorded: isQuickRecordSaved(item) }"
         :disabled="isQuickRecordSaved(item) || savingRecord"
         @click="emit('quick-record', item)"
       >
         <span>{{ item }}</span><b>{{ isQuickRecordSaved(item) ? '已记录' : '＋ 已做' }}</b>
-      </button>
+      </VanButton>
     </div>
 
     <VanButton v-if="!showRecordForm" class="record-add-button" native-type="button" @click="emit('open-record-form')">

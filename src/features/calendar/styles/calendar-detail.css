@@ -80,7 +80,7 @@
 .calendar-page .record-status { color: #4f806f; background: rgba(111, 159, 147, 0.13); }
 .calendar-page .record-status.status-doing { color: var(--gold-deep); background: rgba(217, 186, 98, 0.18); }
 .calendar-page .record-status.status-skipped { color: var(--calendar-red); background: rgba(180, 93, 88, 0.1); }
-.calendar-page .record-delete { margin-left: auto; color: var(--calendar-muted); font-size: 10px; opacity: 0; transition: color 0.2s ease, opacity 0.2s ease; }
+.calendar-page .record-delete { height: auto; min-width: 0; min-height: 0; margin-left: auto; border: 0; padding: 0; color: var(--calendar-muted); background: transparent; font-size: 10px; opacity: 0; transition: color 0.2s ease, opacity 0.2s ease; }
 .calendar-page .actual-record-item:hover .record-delete, .calendar-page .record-delete:focus-visible { opacity: 1; }
 .calendar-page .record-delete:hover { color: var(--cinnabar-deep); }
 .calendar-page .actual-record-item > p { margin-top: 8px; color: var(--calendar-ink); font-size: 13px; line-height: 1.7; }
@@ -89,7 +89,8 @@
 .calendar-page .quick-records { display: grid; gap: 7px; margin-top: 15px; }
 .calendar-page .quick-records-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--calendar-ink); font-size: 11px; font-weight: 900; }
 .calendar-page .quick-records-head small { color: var(--calendar-muted); font-size: 9px; font-weight: 500; }
-.calendar-page .quick-record-button { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid rgba(111, 159, 147, 0.18); border-radius: 10px; background: rgba(111, 159, 147, 0.07); color: var(--calendar-muted); font-size: 13px; line-height: 1.5; text-align: left; transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease; }
+.calendar-page .quick-record-button { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; height: auto; min-width: 0; min-height: 44px; padding: 8px 10px; border: 1px solid rgba(111, 159, 147, 0.18); border-radius: 10px; background: rgba(111, 159, 147, 0.07); color: var(--calendar-muted); font-size: 13px; line-height: 1.5; text-align: left; transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease; }
+.calendar-page .quick-record-button .van-button__content { width: 100%; justify-content: space-between; text-align: left; }
 .calendar-page .quick-record-button:hover:not(:disabled) { transform: translateX(2px); border-color: rgba(111, 159, 147, 0.42); background: rgba(111, 159, 147, 0.13); }
 .calendar-page .quick-record-button b { flex: 0 0 auto; color: #4f806f; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 11px; font-weight: 900; white-space: nowrap; }
 .calendar-page .quick-record-button.recorded { border-color: rgba(111, 159, 147, 0.3); background: rgba(111, 159, 147, 0.12); }
