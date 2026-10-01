@@ -28,11 +28,11 @@ async def update_current_user(
         updated_user = await update_user_profile(db, current_user, user_update)
     except ValueError as error:
         detail_map = {
-            "name_required": "请填写称呼。",
-            "calendar_type_required": "请选择历法类型。",
-            "birth_date_invalid": "出生日期无效，请检查年月日。",
-            "birth_time_requires_hour_and_minute": "请同时填写出生时间的小时和分钟。",
-            "birth_time_requires_precision": "填写出生时间前，请先选择时间准确度。",
+            "name_required": "请填写称呼",
+            "calendar_type_required": "请选择历法类型",
+            "birth_date_invalid": "出生日期无效，请检查年月日",
+            "birth_time_requires_hour_and_minute": "请同时填写出生时间的小时和分钟",
+            "birth_time_requires_precision": "填写出生时间前，请先选择时间准确度",
         }
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

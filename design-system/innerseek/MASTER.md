@@ -1,12 +1,12 @@
-# Innerseek / 辰鉴 Design System
+# chenvis / 辰鉴 Design System
 
 > This file records the visual system that the current implementation actually uses.
-> The canonical global tokens live in `src/style.css`; page-level calendar and admin
-> tokens are documented as scoped extensions below.
+> The canonical global tokens live in `src/styles/foundation.css` and are assembled
+> by `src/style.css`; page-level calendar and admin tokens are scoped extensions below.
 
 ---
 
-**Project:** Innerseek / 辰鉴
+**Project:** chenvis / 辰鉴
 
 **Updated:** 2026-09-13
 

@@ -30,7 +30,7 @@ function listIncludes(field, value) {
         <p class="section-kicker">OPTIONAL PORTRAIT</p>
         <h3 id="profile-optional-title">完善个人画像</h3>
       </div>
-      <p>选填信息会作为稳定背景复用；当前困惑、关系和身心状态只放在本次申请里。</p>
+      <p>选填信息会作为稳定背景复用；当前困惑、关系和身心状态只放在本次申请里</p>
     </div>
 
     <div class="profile-optional-grid">
@@ -95,7 +95,7 @@ function listIncludes(field, value) {
           placeholder="用逗号分隔，如：独立、敏感、好奇"
           @input="emit('set-keywords', $event.target.value)"
         >
-        <p class="profile-hint">建议填写 3—5 个关键词。</p>
+        <p class="profile-hint">建议填写 3—5 个关键词</p>
       </div>
 
       <div class="profile-field profile-field-wide">
@@ -110,7 +110,7 @@ function listIncludes(field, value) {
 
       <fieldset class="profile-field profile-field-wide profile-choice-fieldset">
         <legend class="profile-label">命理 / 玄学体验 <span class="optional">选填</span></legend>
-        <p class="profile-hint">最多选择 3 项。</p>
+        <p class="profile-hint">最多选择 3 项</p>
         <div class="profile-check-grid">
           <label v-for="option in experienceOptions" :key="option.value" class="profile-check-card">
             <input type="checkbox" :checked="listIncludes('mingli_experience', option.value)" @change="emit('toggle-list', 'mingli_experience', option.value, 3)">
@@ -141,7 +141,7 @@ function listIncludes(field, value) {
 
       <fieldset class="profile-field profile-field-wide profile-choice-fieldset">
         <legend class="profile-label">希望使用说明书 / 日历的场景 <span class="optional">选填</span></legend>
-        <p class="profile-hint">最多选择 6 项。</p>
+        <p class="profile-hint">最多选择 6 项</p>
         <div class="profile-check-grid">
           <label v-for="option in usageOptions" :key="option.value" class="profile-check-card">
             <input type="checkbox" :checked="listIncludes('default_usage_scenarios', option.value)" @change="emit('toggle-list', 'default_usage_scenarios', option.value, 6)">

@@ -6,7 +6,7 @@
       <div>
         <span class="calendar-access-kicker">PERSONAL TIMEZONE</span>
         <h4>把报告里的洞察带回每天</h4>
-        <p>查看阶段行动节奏，记录真实发生的事。</p>
+        <p>查看阶段行动节奏，记录真实发生的事</p>
       </div>
       <button type="button" class="btn-action" @click="$emit('open-calendar')">打开决策日历</button>
     </div>

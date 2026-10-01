@@ -55,3 +55,8 @@ backend/htmlcov/
 
 # Claude Code
 .claude/
+
+# Local verification artifacts
+.tmp-fonts/
+.tmp-fonttools/
+.tmp-review-2/

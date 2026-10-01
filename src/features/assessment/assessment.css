@@ -20,24 +20,28 @@
 
 :deep(.progress-card) {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 22px;
   padding: 14px;
 }
 
-:deep(.progress-current) {
-  display: none;
+:deep(.progress-summary) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
 }
 
-:deep(.progress-step) { display: grid; justify-items: center; gap: 7px; width: 80px; color: var(--muted); }
-:deep(.progress-step span) { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: rgba(255,250,240,.72); font-weight: 900; }
-:deep(.progress-step p) { font-size: 12px; font-weight: 800; white-space: nowrap; }
+:deep(.progress-summary strong) { color: var(--ink-soft); font-size: 13px; }
+:deep(.progress-steps) { display: grid; gap: 8px; }
+:deep(.progress-track) { height: 3px; overflow: hidden; background: var(--line); }
+:deep(.progress-track span) { display: block; height: 100%; background: linear-gradient(90deg, var(--cinnabar), var(--gold)); transition: width var(--motion-standard) ease; }
+:deep(.progress-step-list) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+:deep(.progress-step) { min-width: 0; color: var(--muted); text-align: center; }
+:deep(.progress-step-name) { font-size: 12px; font-weight: 800; }
 :deep(.progress-step.active), :deep(.progress-step.completed) { color: var(--cinnabar-deep); }
-:deep(.progress-step.active span), :deep(.progress-step.completed span) { border-color: rgba(184,92,80,.34); background: rgba(184,92,80,.1); }
-:deep(.progress-line) { height: 1px; background: var(--line); }
-:deep(.progress-line.active) { background: linear-gradient(90deg, var(--cinnabar), var(--gold)); }
 
 :deep(.step-content) { padding: clamp(20px, 4vw, 38px); }
 :deep(.step-heading) { margin-bottom: 26px; text-align: center; }
@@ -164,12 +168,10 @@
 
 @media (max-width: 700px) {
   :deep(.page-header) { padding: 60px 0 38px; }
-  :deep(.progress-card) { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto; gap: 4px; padding: 10px 7px; }
-  :deep(.progress-current) { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 8px; padding: 1px 3px 7px; color: var(--muted); font-size: 11px; }
-  :deep(.progress-current strong) { color: var(--ink-soft); font-size: 12px; }
-  :deep(.progress-current span:last-child) { color: var(--cinnabar-deep); font-weight: 900; }
-  :deep(.progress-step) { width: 64px; }
-  :deep(.progress-step p) { font-size: 10px; }
+  :deep(.progress-card) { gap: 8px; padding: 10px; }
+  :deep(.progress-summary) { font-size: 11px; }
+  :deep(.progress-summary strong) { font-size: 12px; }
+  :deep(.progress-step-name) { font-size: 10px; }
   :deep(.topics-grid), :deep(.advanced-context-grid) { grid-template-columns: repeat(2, minmax(0,1fr)); }
   :deep(.reuse-context-card) { align-items: start; flex-direction: column; }
   :deep(.result-preview) { grid-template-columns: 1fr; }
@@ -190,7 +192,5 @@
   :deep(.step-content) { padding: 16px 12px; }
   :deep(.topics-grid), :deep(.expected-grid), :deep(.advanced-context-grid) { grid-template-columns: 1fr; }
   :deep(.button-row > button) { width: 100%; }
-  :deep(.progress-current) { padding-right: 1px; padding-left: 1px; }
-  :deep(.progress-current span:first-child) { display: none; }
   :deep(.generating-steps) { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }

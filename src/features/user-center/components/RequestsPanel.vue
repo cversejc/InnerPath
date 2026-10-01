@@ -3,7 +3,7 @@
     <div class="requests-section-heading">
       <div>
         <h3 class="section-title">我的申请</h3>
-        <p>申请会经过咨询师接单、AI 初稿和人工审校，交付后才能查看最终结果。</p>
+        <p>申请会经过咨询师接单、AI 初稿和人工审校，交付后才能查看最终结果</p>
       </div>
       <router-link class="btn-action" to="/pages/requests/requests">查看全部</router-link>
     </div>

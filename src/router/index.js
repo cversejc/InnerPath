@@ -59,7 +59,7 @@ router.beforeEach(async to => {
 })
 
 router.afterEach(to => {
-  document.title = to.meta.title ? `${to.meta.title} · 辰鉴` : '辰鉴 · 星辰引路，镜子照见'
+  document.title = to.meta.title ? `${to.meta.title} · 辰鉴` : 'chenvis · 辰鉴 Life Timeline'
 })
 
 export default router

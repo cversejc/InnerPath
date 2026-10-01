@@ -31,7 +31,7 @@ async def create_admin(phone: str, name: str, password: str) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="InnerSeek account administration")
+    parser = argparse.ArgumentParser(description="chenvis account administration")
     subparsers = parser.add_subparsers(dest="command", required=True)
     admin_parser = subparsers.add_parser("create-admin", help="Create or promote an administrator")
     admin_parser.add_argument("--phone", required=True)

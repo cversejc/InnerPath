@@ -77,7 +77,7 @@
   .calendar-page .calendar-weekdays span { font-size: 9px; letter-spacing: 0.08em; }
   .calendar-page .calendar-empty { min-height: 64px; border-radius: 10px; }
   .calendar-page .date-cell { min-height: 64px; border-radius: 9px; padding: 6px 5px; }
-  .calendar-page .date-cell::after { right: -14px; top: -14px; width: 38px; }
+  .calendar-page .date-cell::after { right: -16px; top: -16px; width: 44px; opacity: 0.48; }
   .calendar-page .date-cell-top strong { font-size: 16px; }
   .calendar-page .date-cell-top em { display: none; }
   .calendar-page .date-cell-pillar { margin-top: 4px; font-size: 9px; letter-spacing: 0.03em; }

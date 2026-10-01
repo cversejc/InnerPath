@@ -5,7 +5,9 @@ import {
   acceptStaffInviteRequest,
   loginRequest,
   logoutRequest,
-  registerRequest
+  registerRequest,
+  resetPasswordRequest,
+  sendVerificationCodeRequest
 } from './api.js'
 
 test('authentication API maps actions to their endpoint payloads', async () => {
@@ -17,12 +19,16 @@ test('authentication API maps actions to their endpoint payloads', async () => {
   }
 
   try {
-    assert.deepEqual(await registerRequest('13800000000', 'secret', '林一'), { ok: true })
+    assert.deepEqual(await sendVerificationCodeRequest('13800000000', 'register'), { ok: true })
+    assert.deepEqual(await registerRequest('13800000000', 'secret', '林一', '123456'), { ok: true })
+    assert.deepEqual(await resetPasswordRequest('13800000000', '654321', 'new-secret'), { ok: true })
     assert.deepEqual(await loginRequest('13800000000', 'secret'), { ok: true })
     assert.deepEqual(await acceptStaffInviteRequest('invite', '13800000000', 'secret', '林一'), { ok: true })
     assert.deepEqual(await logoutRequest(), { ok: true })
     assert.deepEqual(requests, [
-      ['/auth/register', { phone: '13800000000', password: 'secret', name: '林一' }],
+      ['/auth/verification-code', { phone: '13800000000', purpose: 'register' }],
+      ['/auth/register', { phone: '13800000000', password: 'secret', name: '林一', code: '123456' }],
+      ['/auth/password/reset', { phone: '13800000000', code: '654321', new_password: 'new-secret' }],
       ['/auth/login', { phone: '13800000000', password: 'secret' }],
       ['/auth/staff/accept-invite', {
         token: 'invite',

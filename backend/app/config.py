@@ -43,14 +43,10 @@ class Settings(BaseSettings):
     ADMIN_EXPORT_MAX_ROWS: int = 10000
 
     # SMS Service
-    SMS_PROVIDER: str = "aliyun"
-    SMS_ACCESS_KEY: str = ""
-    SMS_SECRET_KEY: str = ""
-    SMS_SIGN_NAME: str = "辰鉴"
-    SMS_TEMPLATE_CODE: str = ""
+    SMS_SPUG_TOKEN: str = ""
 
     # CORS
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3003,http://192.168.2.47:3003,http://8.135.25.206"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3003,http://192.168.2.47:3003,https://chenvis.com,https://www.chenvis.com"
 
     @property
     def cors_origins_list(self) -> List[str]:

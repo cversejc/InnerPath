@@ -1,55 +1,95 @@
 <template>
   <div class="auth-page">
-    <div class="auth-card paper-card">
-      <router-link class="auth-logo" to="/">辰鉴</router-link>
-      <h1>{{ title }}</h1>
-      <p v-if="mode !== 'reset'" class="auth-subtitle">{{ subtitle }}</p>
-
-      <div v-if="mode !== 'invite'" class="mode-switch" role="tablist" aria-label="认证方式">
-        <button id="auth-tab-login" type="button" role="tab" aria-controls="auth-panel" :aria-selected="mode === 'login'" :tabindex="mode === 'login' ? 0 : -1" :class="{ active: mode === 'login' }" @click="setMode('login')" @keydown.left.prevent="moveMode(-1)" @keydown.right.prevent="moveMode(1)">登录</button>
-        <button id="auth-tab-register" type="button" role="tab" aria-controls="auth-panel" :aria-selected="mode === 'register'" :tabindex="mode === 'register' ? 0 : -1" :class="{ active: mode === 'register' }" @click="setMode('register')" @keydown.left.prevent="moveMode(-1)" @keydown.right.prevent="moveMode(1)">注册</button>
-        <button id="auth-tab-reset" type="button" role="tab" aria-controls="auth-panel" :aria-selected="mode === 'reset'" :tabindex="mode === 'reset' ? 0 : -1" :class="{ active: mode === 'reset' }" @click="setMode('reset')" @keydown.left.prevent="moveMode(-1)" @keydown.right.prevent="moveMode(1)">找回密码</button>
-      </div>
-
-      <div id="auth-panel" :role="mode === 'invite' ? 'region' : 'tabpanel'" :aria-labelledby="mode === 'invite' ? undefined : `auth-tab-${mode}`" tabindex="-1">
-        <form v-if="mode !== 'reset'" class="auth-form" :aria-describedby="errorMessage ? 'auth-error' : undefined" @submit.prevent="submit">
-          <label v-if="mode === 'register' || mode === 'invite'">
-            <span>姓名</span>
-            <input v-model.trim="form.name" type="text" autocomplete="name" required placeholder="你的称呼">
-          </label>
-
-          <label>
-            <span>手机号</span>
-            <input v-model.trim="form.phone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="11" required placeholder="11位手机号">
-          </label>
-
-          <label v-if="mode === 'invite'">
-            <span>邀请令牌</span>
-            <input v-model.trim="form.token" type="text" autocomplete="one-time-code" required placeholder="粘贴邀请令牌">
-          </label>
-
-          <label v-if="mode === 'login' || mode === 'register' || mode === 'invite'">
-            <span>{{ mode === 'login' ? '密码' : '设置密码' }}</span>
-            <input v-model="form.password" type="password" :autocomplete="mode === 'login' ? 'current-password' : 'new-password'" minlength="8" maxlength="128" required placeholder="至少8位密码">
-          </label>
-
-          <button class="primary-button full-width" type="submit" :disabled="submitting" :aria-busy="submitting">
-            {{ submitting ? '请稍候…' : submitLabel }}
-          </button>
-        </form>
-
-        <div v-else class="auth-help">
-          <strong>忘记密码？</strong>
-          <p>请联系辰鉴支持重设密码，再用手机号登录。</p>
-          <router-link class="text-button" to="/auth/login">返回登录</router-link>
+    <Transition name="auth-intro">
+      <section v-if="showIntro" class="auth-intro" aria-label="辰鉴入场动画">
+        <div class="auth-intro-lockup" aria-hidden="true">
+          <img class="auth-intro-logo" src="/brand-logo.png" alt="" />
         </div>
-      </div>
+      </section>
+    </Transition>
 
-      <p v-if="errorMessage" id="auth-error" class="auth-message error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
-      <p v-if="successMessage" id="auth-success" class="auth-message success" role="status" aria-live="polite">{{ successMessage }}</p>
+    <div class="auth-shell" :aria-hidden="showIntro ? 'true' : undefined" :inert="showIntro">
+      <header class="auth-topbar">
+        <router-link class="auth-logo" to="/" aria-label="辰鉴首页">
+          <img class="auth-logo-mark" src="/brand-emblem.png" alt="" />
+          <span>辰鉴</span>
+        </router-link>
+      </header>
 
-      <button v-if="mode === 'login'" class="text-button" type="button" @click="setMode('register')">创建账号</button>
-      <button v-if="mode === 'invite'" class="text-button" type="button" @click="setMode('login')">返回登录</button>
+      <main class="auth-card">
+        <header class="auth-head">
+          <h1>{{ title }}</h1>
+          <p class="auth-subtitle">{{ subtitle }}</p>
+        </header>
+
+        <p v-if="errorMessage" id="auth-error" class="auth-message error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
+        <p v-if="successMessage" id="auth-success" class="auth-message success" role="status" aria-live="polite">{{ successMessage }}</p>
+
+        <div id="auth-panel" ref="authPanel" class="auth-panel" role="region" :aria-label="title" tabindex="-1">
+          <form class="auth-form" :aria-describedby="errorMessage ? 'auth-error' : undefined" @submit.prevent="submit">
+            <div class="auth-fields">
+              <label v-if="mode === 'register' || mode === 'invite'" class="auth-field">
+                <span>姓名</span>
+                <input v-model.trim="form.name" type="text" autocomplete="name" required placeholder="你的称呼">
+              </label>
+
+              <label class="auth-field">
+                <span>手机号</span>
+                <input v-model.trim="form.phone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="11" pattern="[0-9]{11}" required placeholder="请输入手机号">
+              </label>
+
+              <label v-if="mode === 'invite'" class="auth-field">
+                <span>邀请令牌</span>
+                <input v-model.trim="form.token" type="text" autocomplete="one-time-code" required placeholder="粘贴邀请令牌">
+              </label>
+
+              <div v-if="requiresCode" class="auth-field">
+                <label for="auth-verification-code">短信验证码</label>
+                <div class="auth-code-row">
+                  <input id="auth-verification-code" v-model.trim="form.code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required placeholder="输入 6 位验证码">
+                  <button class="auth-code-button" type="button" :disabled="sendingCode || codeCooldown > 0" @click="sendCode">
+                    {{ codeButtonLabel }}
+                  </button>
+                </div>
+              </div>
+
+              <label class="auth-field">
+                <span>{{ mode === 'reset' ? '新密码' : mode === 'login' ? '密码' : '设置密码' }}</span>
+                <input v-model="form.password" type="password" :autocomplete="mode === 'login' ? 'current-password' : 'new-password'" minlength="8" maxlength="128" required :placeholder="mode === 'login' ? '请输入密码' : '至少 8 位密码'">
+              </label>
+
+              <label v-if="mode === 'reset'" class="auth-field">
+                <span>确认新密码</span>
+                <input v-model="form.passwordConfirmation" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="再次输入新密码">
+              </label>
+            </div>
+
+            <button class="primary-button full-width auth-submit" type="submit" :disabled="submitting" :aria-busy="submitting">
+              {{ submitting ? '请稍候…' : submitLabel }}
+            </button>
+          </form>
+
+          <nav class="auth-actions" aria-label="账号操作">
+            <p v-if="mode === 'login'" class="auth-switch">
+              还没有账号？
+              <button class="auth-inline-link" type="button" @click="openMode('register')">立即注册</button>
+            </p>
+            <p v-else-if="mode === 'register'" class="auth-switch">
+              已有账号？
+              <button class="auth-inline-link" type="button" @click="openMode('login')">立即登录</button>
+            </p>
+            <button v-else-if="mode === 'invite'" class="auth-inline-link" type="button" @click="openMode('login')">返回登录</button>
+
+            <div class="auth-action-links">
+              <button v-if="mode === 'login' || mode === 'register'" class="text-button" type="button" @click="openMode('reset')">忘记密码</button>
+              <template v-else-if="mode === 'reset'">
+                <button class="text-button" type="button" @click="openMode('login')">返回登录</button>
+                <button class="text-button" type="button" @click="openMode('register')">注册</button>
+              </template>
+            </div>
+          </nav>
+        </div>
+      </main>
     </div>
   </div>
 </template>

@@ -56,15 +56,15 @@ async def create_my_calendar_request(
         calendar_request = await create_calendar_request(db, current_user, data, request=request)
     except ValueError as error:
         message_map = {
-            "profile_version_conflict": "个人档案已更新，请刷新后确认最新资料再提交。",
-            "calendar_request_profile_incomplete": "请先完成个人档案中的性别和完整出生日期。",
-            "calendar_request_requires_date_range": "请选择完整的日历周期。",
-            "invalid_calendar_range": "日历开始日期不能晚于结束日期。",
-            "calendar_request_requires_focus_topics": "至少选择一个关注领域。",
-            "calendar_request_requires_usage_scenario": "请选择日历用途。",
-            "calendar_request_requires_goal": "请填写当前决策目标。",
-            "calendar_request_requires_expected_outcomes": "至少选择一个期望输出。",
-            "calendar_request_source_report_mismatch": "来源报告不存在或不属于当前账号。",
+            "profile_version_conflict": "个人档案已更新，请刷新后确认最新资料再提交",
+            "calendar_request_profile_incomplete": "请先完成个人档案中的性别和完整出生日期",
+            "calendar_request_requires_date_range": "请选择完整的日历周期",
+            "invalid_calendar_range": "日历开始日期不能晚于结束日期",
+            "calendar_request_requires_focus_topics": "至少选择一个关注领域",
+            "calendar_request_requires_usage_scenario": "请选择日历用途",
+            "calendar_request_requires_goal": "请填写当前决策目标",
+            "calendar_request_requires_expected_outcomes": "至少选择一个期望输出",
+            "calendar_request_source_report_mismatch": "来源报告不存在或不属于当前账号",
         }
         code = status.HTTP_409_CONFLICT if str(error) == "profile_version_conflict" else status.HTTP_422_UNPROCESSABLE_ENTITY
         raise HTTPException(status_code=code, detail=message_map.get(str(error), str(error)))

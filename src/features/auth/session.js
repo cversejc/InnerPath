@@ -6,7 +6,9 @@ import {
   acceptStaffInviteRequest,
   loginRequest,
   logoutRequest,
-  registerRequest
+  registerRequest,
+  resetPasswordRequest,
+  sendVerificationCodeRequest
 } from './api.js'
 
 function saveSession(data) {
@@ -17,8 +19,16 @@ function saveSession(data) {
   return data
 }
 
-export async function register(phone, password, name) {
-  return saveSession(await registerRequest(phone, password, name))
+export async function sendVerificationCode(phone, purpose) {
+  return sendVerificationCodeRequest(phone, purpose)
+}
+
+export async function register(phone, password, name, code) {
+  return saveSession(await registerRequest(phone, password, name, code))
+}
+
+export async function resetPassword(phone, code, newPassword) {
+  return resetPasswordRequest(phone, code, newPassword)
 }
 
 export async function login(phone, password) {

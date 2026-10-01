@@ -27,7 +27,7 @@ SYSTEM_PROMPT = """你是辰鉴的核心解读引擎，负责把传统时间结�
 
 
 def build_prompt(user_data: Dict[str, Any]) -> str:
-    """Build the Chenjian life-manual prompt from deterministic foundation data."""
+    """Build the chenvis life-manual prompt from deterministic foundation data."""
     name = user_data.get("name", "")
     gender = user_data.get("gender", "")
     birth_year = user_data.get("birth_year", "")

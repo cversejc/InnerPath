@@ -1,40 +1,40 @@
 
 .hero {
-  min-height: max(640px, calc(100svh - var(--nav-height) - 56px));
-  display: flex;
+  display: grid;
+  min-height: 520px;
   align-items: center;
-  padding: 56px 0 92px;
+  padding: 64px 0 76px;
 }
 
 .hero-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  align-items: center;
-  gap: 48px;
+  display: block;
 }
 
 .hero-copy {
-  width: 100%;
-  max-width: 680px;
+  width: min(100%, 880px);
 }
 
 .hero h1 {
   width: 100%;
-  max-width: 760px;
+  max-width: 100%;
   color: var(--ink);
-  font-size: clamp(46px, 8vw, 84px);
+  font-size: 96px;
   font-weight: 900;
   line-height: 1.06;
   letter-spacing: 0.02em;
 }
 
-.hero-subtitle {
+.hero-intro {
   width: 100%;
-  max-width: 580px;
-  margin-top: 24px;
+  max-width: 720px;
+  margin-top: 18px;
   color: var(--ink-soft);
-  font-size: clamp(17px, 2vw, 22px);
+  font-size: 18px;
   line-height: 1.8;
+}
+
+.home .section-kicker {
+  text-transform: none;
 }
 
 .profile-journey-section {
@@ -51,7 +51,7 @@
   width: 100%;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 34px;
+  margin-top: 48px;
 }
 
 .hero-actions > * {

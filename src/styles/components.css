@@ -19,7 +19,7 @@
   padding: 0 12px;
   background: rgba(184, 92, 80, 0.08);
   color: var(--cinnabar-deep);
-  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-family: var(--font-accent);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -35,7 +35,7 @@
   gap: var(--button-gap);
   border-radius: var(--button-radius);
   padding: 0 18px;
-  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-family: var(--font-ui);
   font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -125,7 +125,32 @@
 
 .footer {
   border-top: 1px solid rgba(139, 90, 20, 0.14);
-  background: rgba(47, 36, 27, 0.92);
-  color: rgba(255, 250, 240, 0.76);
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.74), rgba(248, 240, 227, 0.94));
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.footer p {
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.footer-brand .brand-emblem {
+  height: 26px;
+}
+
+.footer .version {
+  margin-top: 8px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
 

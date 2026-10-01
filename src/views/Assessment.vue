@@ -6,28 +6,32 @@
       <div class="container header-inner">
         <p class="section-kicker">FI / YOUR LIFE MANUAL</p>
         <h1>生成你的人生说明书</h1>
-        <p>先建立一份可复用的个人档案，再把这一次真正想看的问题交给说明书。</p>
+        <p>先建立一份可复用的个人档案，再把这一次真正想看的问题交给说明书</p>
       </div>
     </section>
 
     <section class="section-band assessment-section">
       <div class="container assessment-container">
-        <div class="progress-card paper-card" aria-label="申请进度">
-          <div class="progress-current" aria-live="polite">
-            <span>申请进度</span>
-            <strong>第 {{ currentStep }} 步 · {{ currentStepLabel }}</strong>
-            <span>{{ stepProgress }}%</span>
-          </div>
-          <div class="progress-step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
-            <span>1</span><p>个人档案</p>
-          </div>
-          <div class="progress-line" :class="{ active: currentStep > 1 }"></div>
-          <div class="progress-step" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
-            <span>2</span><p>本次问题</p>
-          </div>
-          <div class="progress-line" :class="{ active: currentStep > 2 }"></div>
-          <div class="progress-step" :class="{ active: currentStep >= 3 }">
-            <span>3</span><p>生成说明书</p>
+        <div class="progress-card paper-card" role="group" aria-label="人生说明书申请进度">
+          <p class="progress-summary" role="status" aria-live="polite">
+            <span>第 {{ currentStep }} 步 / 共 3 步</span>
+            <strong>{{ currentStepLabel }}</strong>
+          </p>
+          <div class="progress-steps">
+            <div class="progress-track" aria-hidden="true">
+              <span :style="{ width: `${stepProgress}%` }"></span>
+            </div>
+            <ol class="progress-step-list" aria-label="申请步骤">
+              <li class="progress-step" :class="{ active: currentStep === 1, completed: currentStep > 1 }" :aria-current="currentStep === 1 ? 'step' : undefined">
+                <span class="progress-step-name">个人档案</span>
+              </li>
+              <li class="progress-step" :class="{ active: currentStep === 2, completed: currentStep > 2 }" :aria-current="currentStep === 2 ? 'step' : undefined">
+                <span class="progress-step-name">本次问题</span>
+              </li>
+              <li class="progress-step" :class="{ active: currentStep === 3 }" :aria-current="currentStep === 3 ? 'step' : undefined">
+                <span class="progress-step-name">生成说明书</span>
+              </li>
+            </ol>
           </div>
         </div>
 

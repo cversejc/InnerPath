@@ -20,7 +20,7 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
         <p class="section-kicker">CORE PROFILE</p>
         <h3 id="profile-core-title">建立你的个人档案</h3>
       </div>
-      <p>这些资料会被报告与日历复用。之后只需在资料发生变化时更新。</p>
+      <p>这些资料会被报告与日历复用，之后只需在资料发生变化时更新</p>
     </div>
 
     <div class="profile-field-stack">
@@ -132,13 +132,13 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
             <span>日</span>
           </label>
         </div>
-        <p class="profile-hint">按上方选择的历法填写，年龄会由出生日期自动计算。</p>
+        <p class="profile-hint">按上方选择的历法填写，年龄会由出生日期自动计算</p>
         <p v-if="errors.birth_date" :id="idPrefix + '-birth-date-error'" class="profile-error" role="alert">{{ errors.birth_date }}</p>
       </div>
 
       <fieldset class="profile-field profile-choice-fieldset" :aria-describedby="errors.birth_time_precision || errors.birth_time ? idPrefix + '-birth-time-error' : undefined">
         <legend class="profile-label">出生时间准确度 <span class="required">*</span></legend>
-        <p class="profile-hint">不知道也可以跳过；有省 / 市级出生地时，分析更容易做真太阳时校正。</p>
+          <p class="profile-hint">不知道也可以跳过；有省 / 市级出生地时，分析更容易做真太阳时校正</p>
         <div class="profile-choice-grid three">
           <button
             v-for="option in timeOptions"
@@ -199,7 +199,7 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
           placeholder="如：广东省广州市"
           @input="emit('set-field', 'birth_place', $event.target.value)"
         >
-        <p class="profile-hint">建议填写到省 / 市；无法提供时仍可继续，但分析精度可能受影响。</p>
+        <p class="profile-hint">建议填写到省 / 市；无法提供时仍可继续，但分析精度可能受影响</p>
       </div>
     </div>
   </section>

@@ -4,9 +4,9 @@
     <main class="admin-main">
       <header class="admin-hero">
         <div>
-          <p class="section-kicker">CHENJIAN / OPERATIONS ROOM</p>
+          <p class="section-kicker">CHENVIS / OPERATIONS ROOM</p>
           <h1>辰鉴运营中枢</h1>
-          <p class="hero-caption">把每一个用户、时机与行动，整理成可以被照看的全局。</p>
+          <p class="hero-caption">把每一个用户、时机与行动，整理成可以被照看的全局</p>
         </div>
         <div class="hero-actions">
           <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>

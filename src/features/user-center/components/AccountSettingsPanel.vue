@@ -15,7 +15,7 @@
       <div class="form-group account-contact-field">
         <label for="user-contact">账户联系方式</label>
         <input id="user-contact" :value="settings.contact" type="tel" autocomplete="tel" readonly>
-        <p class="form-hint">联系方式由账户系统管理，不会发送给报告分析模型。</p>
+        <p class="form-hint">联系方式由账户系统管理，不会发送给报告分析模型</p>
       </div>
       <button type="submit" class="btn-save" :disabled="savingSettings" :aria-busy="savingSettings">{{ savingSettings ? '保存中…' : '保存个人档案' }}</button>
       <p v-if="settingsError" class="settings-error" role="alert">{{ settingsError }}</p>
@@ -35,7 +35,7 @@
     <section class="account-actions" aria-labelledby="account-actions-title">
       <div>
         <h4 id="account-actions-title">账号操作</h4>
-        <p>退出当前设备上的辰鉴账号。</p>
+        <p>退出当前设备上的辰鉴账号</p>
       </div>
       <button type="button" class="btn-logout" :disabled="loggingOut" :aria-busy="loggingOut" @click="$emit('logout')">
         <IconMark name="logout" />
