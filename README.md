@@ -77,32 +77,47 @@ python -m app.cli create-admin --phone 13800138000 --name 系统管理员
 
 ## 部署到生产环境
 
-### 远程首次部署
+### 远程 HTTPS 部署
+
+部署脚本会在启动前检查证书有效期、域名、证书私钥匹配关系、HTTPS Cookie 和 CORS 配置。证书不打包进代码包，必须先由证书任务写入服务器。
 
 ```bash
-# 1. 配置服务器信息
-export REMOTE_HOST=your-server.com
+# 1. 先在服务器写入证书
+#    /opt/innerpath/ssl/fullchain.pem
+#    /opt/innerpath/ssl/privkey.pem
+
+# 2. 配置服务器和域名
+export REMOTE_HOST=8.135.25.206
 export REMOTE_USER=root
 export REMOTE_DIR=/opt/innerpath
+export DOMAIN=chenvis.com
+export SSL_DIR=/opt/innerpath/ssl
 
-# 2. 执行部署
+# 3. 首次部署
 ./scripts/deploy.sh remote init
-
-# 3. 登录服务器编辑配置
-ssh root@your-server.com
+# 如果服务器还没有 .env，脚本会先创建并停止；编辑下面的文件后重新运行
+ssh root@8.135.25.206
 vim /opt/innerpath/current/.env
-# 修改 DEEPSEEK_API_KEY、数据库密码、SECRET_KEY 等
+# 至少确认：
+# SESSION_COOKIE_SECURE=true
+# CORS_ORIGINS 中包含 https://chenvis.com
+# 并填入 DEEPSEEK_API_KEY、数据库密码、SECRET_KEY 等生产配置
 
-# 4. 重启服务
-cd /opt/innerpath/current
-docker-compose restart
+# 4. 后续更新代码
+./scripts/deploy.sh remote update
+```
+
+部署完成后访问 `https://chenvis.com`。脚本会在服务启动后自动请求 `/health` 验证 HTTPS；证书更新任务的重启命令使用：
+
+```bash
+docker exec innerpath-frontend nginx -s reload
 ```
 
 ### 快速更新代码
 
 ```bash
-# 本地修改代码后，快速更新到生产环境
-export REMOTE_HOST=your-server.com
+export REMOTE_HOST=8.135.25.206
+export DOMAIN=chenvis.com
 ./scripts/deploy.sh remote update
 ```
 
@@ -249,13 +264,13 @@ docker-compose up -d --build
 
 ```bash
 # 查看日志
-ssh root@your-server.com "cd /opt/innerpath/current && docker-compose logs -f"
-
-# 重启服务
-ssh root@your-server.com "cd /opt/innerpath/current && docker-compose restart"
+ssh root@8.135.25.206 "cd /opt/innerpath/current && docker compose logs -f"
 
 # 查看服务状态
-ssh root@your-server.com "cd /opt/innerpath/current && docker-compose ps"
+ssh root@8.135.25.206 "cd /opt/innerpath/current && docker compose ps"
+
+# 仅重载证书和 Nginx 配置
+ssh root@8.135.25.206 "docker exec innerpath-frontend nginx -s reload"
 ```
 
 ---
@@ -402,7 +417,7 @@ DEBUG=false
 USE_MULTISTEP_GENERATION=false
 
 # CORS 配置（生产环境添加实际域名）
-CORS_ORIGINS=http://localhost:3000,https://yourdomain.com
+CORS_ORIGINS=http://localhost:3000,https://chenvis.com,https://www.chenvis.com
 ```
 
 完整配置说明见 `.env.example` 文件；多步生成的流程、降级和排查方式见
