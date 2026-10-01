@@ -18,7 +18,7 @@ from app.domains.calendar.schemas import (
     CalendarResponse,
     CalendarUpdate,
 )
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from app.domains.calendar.service import (
     archive_calendar,
     clone_calendar_as_draft,

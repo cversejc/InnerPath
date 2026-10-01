@@ -7,12 +7,13 @@ from app.db.base import Base
 from app.domains.calendar.models import UserCalendar
 from app.domains.reports.models import Report, ReportTask
 from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
-from app.models.user import AuditLog, User
+from app.models.user import User
+from app.domains.audit.models import AuditLog
 from app.domains.auth.models import AuthSession, StaffInvite
 from app.main import app
 from app.domains.calendar.schemas import CalendarEntryInput
 from app.schemas.admin import AdminReportTaskResponse
-from app.services.audit_service import _safe_value, parse_audit_details
+from app.domains.audit.service import _safe_value, parse_audit_details
 from app.domains.calendar.service import _validate_entries
 
 

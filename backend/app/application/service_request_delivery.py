@@ -15,7 +15,7 @@ from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarEntryInput
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from app.domains.service_requests.drafts import validate_draft
 from app.domains.service_requests.repository import (
     _append_revision,

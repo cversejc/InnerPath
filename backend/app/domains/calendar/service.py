@@ -14,7 +14,7 @@ from app.domains.calendar.schemas import (
     CalendarEntryInput,
     CalendarUpdate,
 )
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from app.domains.calendar.query_service import load_calendar_entries
 
 

@@ -7,8 +7,9 @@ from sqlalchemy.orm import aliased
 
 from app.api.v1.admin_support import _count, _date_filter
 from app.domains.calendar.models import DecisionLog
-from app.models.user import AuditLog, User
-from app.services.audit_service import parse_audit_details
+from app.models.user import User
+from app.domains.audit.models import AuditLog
+from app.domains.audit.service import parse_audit_details
 
 
 def _serialize_audit(log: AuditLog, actor_name: Optional[str] = None, target_name: Optional[str] = None) -> dict[str, Any]:

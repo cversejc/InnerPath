@@ -19,7 +19,8 @@ from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.calendar.models import DecisionLog, UserCalendar
 from app.domains.reports.models import Report, ReportTask
-from app.models.user import AuditLog, User
+from app.models.user import User
+from app.domains.audit.models import AuditLog
 from app.schemas.admin import (
     AuditLogResponse,
     DashboardAlert,

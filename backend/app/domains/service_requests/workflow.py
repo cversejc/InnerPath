@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .models import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
 from app.models.user import User
 from .schemas import ServiceRequestDraftUpdate, ServiceRequestInfoInput
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from .drafts import validate_draft
 from .repository import (
     _append_revision,

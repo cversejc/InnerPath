@@ -12,7 +12,7 @@ from app.domains.reports.models import ReportTask
 from app.models.user import User  # noqa: F401
 from app.services.ai_service import generate_report_with_ai
 from app.domains.reports.service import create_report
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from app.tasks.celery_app import celery_app
 
 logger = get_logger(__name__)

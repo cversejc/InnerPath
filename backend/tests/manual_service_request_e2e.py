@@ -26,7 +26,8 @@ from app.domains.service_requests.models import (
     ServiceRequestDraft,
     ServiceRequestTask,
 )
-from app.models.user import AuditLog, User
+from app.models.user import User
+from app.domains.audit.models import AuditLog
 
 
 BASE_URL = "http://localhost:8000"

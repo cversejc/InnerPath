@@ -37,7 +37,7 @@ from app.domains.auth.service import (
     revoke_auth_session,
     rotate_auth_session,
 )
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 
 router = APIRouter()
 logger = get_logger(__name__)

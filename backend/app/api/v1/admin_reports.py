@@ -18,7 +18,7 @@ from app.schemas.admin import (
     AdminReportTaskListResponse,
     AdminReportTaskResponse,
 )
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from app.domains.reports.service import format_report_response, get_report_by_id
 from app.domains.reports.task_service import create_report_task
 

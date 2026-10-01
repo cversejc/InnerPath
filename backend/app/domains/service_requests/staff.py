@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import ServiceRequest, ServiceRequestTask
 from app.models.user import User
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from .repository import _get_draft, _get_latest_task, _get_request_for_update
 
 

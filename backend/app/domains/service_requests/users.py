@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .models import ServiceRequest
 from app.models.user import User
 from .schemas import ServiceRequestCreate, ServiceRequestUpdate
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from .payloads import _normalize_payload, payload_from_create, payload_from_update
 from .repository import _append_revision, _get_draft, _get_request_for_update
 

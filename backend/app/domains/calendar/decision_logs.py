@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.calendar.models import DecisionLog
 from app.domains.calendar.schemas import DecisionLogInput
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 
 
 async def get_user_decision_logs(

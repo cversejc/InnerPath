@@ -5,7 +5,7 @@ from app.dependencies import get_current_active_user
 from app.models.user import User
 from app.schemas.user import ChangePasswordRequest, UserResponse, UserUpdate
 from app.services.user_service import change_user_password, update_user_profile
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 
 router = APIRouter()
 

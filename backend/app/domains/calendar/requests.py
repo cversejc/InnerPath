@@ -11,7 +11,7 @@ from app.domains.calendar.models import CalendarRequest, UserCalendar
 from app.domains.reports.models import Report
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarRequestAdminUpdate, CalendarRequestCreate
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from app.services.intake_service import build_intake_snapshot
 
 def _calendar_request_context(data: CalendarRequestCreate) -> dict:

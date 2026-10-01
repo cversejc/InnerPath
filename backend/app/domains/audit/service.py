@@ -1,6 +1,6 @@
 """Structured business audit helpers.
 
-Audit events are deliberately kept separate from application log files.  The
+Audit events are deliberately kept separate from application log files. The
 former are queryable business facts, while the latter remain useful for
 diagnosing infrastructure and programming errors.
 """
@@ -11,7 +11,7 @@ from typing import Any, Optional
 from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user import AuditLog
+from app.domains.audit.models import AuditLog
 
 
 _SECRET_KEYS = {

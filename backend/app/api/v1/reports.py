@@ -18,7 +18,7 @@ from app.domains.reports.service import (
     get_report_by_id,
     get_user_reports,
 )
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from app.services.intake_service import normalize_context
 from app.domains.service_requests.service import has_staff_assignment
 

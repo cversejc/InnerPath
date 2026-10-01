@@ -14,7 +14,7 @@ from app.domains.reports.schemas import (
     ReportTaskResponse,
     ReportTaskStatusResponse,
 )
-from app.services.audit_service import record_audit
+from app.domains.audit.service import record_audit
 from app.services.intake_service import (
     build_intake_snapshot,
     flatten_snapshot_for_ai,

@@ -25,7 +25,8 @@ from app.db.session import AsyncSessionLocal
 from app.domains.calendar.models import CalendarEntry, UserCalendar
 from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest
-from app.models.user import AuditLog, User
+from app.models.user import User
+from app.domains.audit.models import AuditLog
 
 STATE_PATH = Path("/app/logs/ui_fixture_state.json")
 PASSWORD = "UiCheck123!"
