@@ -12,14 +12,28 @@ function saveSession(data) {
   return data
 }
 
-export async function register(phone, password, name) {
-  const response = await apiClient.post('/auth/register', { phone, password, name })
+export async function sendVerificationCode(phone, purpose) {
+  const response = await apiClient.post('/auth/verification-code', { phone, purpose })
+  return response.data
+}
+
+export async function register(phone, password, name, code) {
+  const response = await apiClient.post('/auth/register', { phone, password, name, code })
   return saveSession(response.data)
 }
 
 export async function login(phone, password) {
   const response = await apiClient.post('/auth/login', { phone, password })
   return saveSession(response.data)
+}
+
+export async function resetPassword(phone, code, newPassword) {
+  const response = await apiClient.post('/auth/password/reset', {
+    phone,
+    code,
+    new_password: newPassword
+  })
+  return response.data
 }
 
 export async function acceptStaffInvite(token, phone, password, name) {
@@ -79,8 +93,10 @@ export function getStoredUser() {
 export { refreshAccessToken }
 
 export default {
+  sendVerificationCode,
   register,
   login,
+  resetPassword,
   acceptStaffInvite,
   logout,
   getCurrentUser,

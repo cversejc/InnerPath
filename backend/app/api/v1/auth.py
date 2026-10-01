@@ -1,17 +1,31 @@
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.core.sms import (
+    SmsCooldownError,
+    SmsDeliveryError,
+    SmsProviderNotConfigured,
+    SmsRateLimitError,
+    enforce_sms_rate_limit,
+    send_verification_code,
+    verify_code,
+)
 from app.core.security import create_access_token
+from app.core.logging_config import get_logger
 from app.db.session import get_db
+from app.models.user import User
 from app.schemas.auth import (
     LoginRequest,
+    ResetPasswordRequest,
     RefreshTokenResponse,
-    RegisterRequest,
+    SendVerificationCodeRequest,
     StaffInviteAcceptRequest,
     TokenResponse,
+    VerifiedRegisterRequest,
 )
 from app.schemas.user import UserResponse
 from app.services.auth_service import (
@@ -19,12 +33,14 @@ from app.services.auth_service import (
     authenticate_with_password,
     create_auth_session,
     register_user,
+    reset_password_with_code,
     revoke_auth_session,
     rotate_auth_session,
 )
 from app.services.audit_service import record_audit
 
 router = APIRouter()
+logger = get_logger(__name__)
 
 
 def serialize_user(user) -> UserResponse:
@@ -78,13 +94,54 @@ async def issue_token_response(
     )
 
 
+@router.post("/verification-code", status_code=status.HTTP_202_ACCEPTED)
+async def request_verification_code(
+    payload: SendVerificationCodeRequest,
+    http_request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        await enforce_sms_rate_limit(
+            payload.phone,
+            http_request.client.host if http_request.client else None,
+        )
+    except SmsRateLimitError:
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Too many code requests")
+
+    result = await db.execute(select(User).where(User.phone == payload.phone))
+    user = result.scalar_one_or_none()
+    if payload.purpose == "register" and user:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Phone already registered")
+    if payload.purpose != "register" and not user:
+        return {"success": True, "message": "If this phone is registered, a verification code will be sent"}
+
+    try:
+        await send_verification_code(payload.phone, payload.purpose)
+    except SmsCooldownError:
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Please wait before requesting another code")
+    except SmsProviderNotConfigured:
+        logger.warning("SMS verification code request failed: provider is not configured")
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="SMS service is not configured")
+    except SmsDeliveryError as error:
+        logger.warning("SMS verification code delivery rejected by provider: %s", error)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to send verification code",
+        )
+
+    return {"success": True, "message": "If this phone is registered, a verification code will be sent"}
+
+
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def register(
-    request: RegisterRequest,
+    request: VerifiedRegisterRequest,
     response: Response,
     http_request: Request,
     db: AsyncSession = Depends(get_db),
 ):
+    if not await verify_code(request.phone, request.code, "register"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification code")
+
     try:
         user = await register_user(
             db,
@@ -92,6 +149,7 @@ async def register(
             request.password,
             request.name,
             ip_address=http_request.client.host if http_request.client else None,
+            phone_verified=True,
         )
     except ValueError as error:
         if str(error) == "phone_already_registered":
@@ -114,6 +172,34 @@ async def register(
     )
     await db.commit()
     return token_response
+
+
+@router.post("/password/reset")
+async def reset_password(
+    request: ResetPasswordRequest,
+    http_request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    if not await verify_code(request.phone, request.code, "reset"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification code")
+
+    result = await db.execute(select(User).where(User.phone == request.phone))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification code")
+
+    await reset_password_with_code(db, user, request.new_password)
+    await record_audit(
+        db,
+        user.id,
+        "auth.password.reset",
+        "user",
+        str(user.id),
+        target_user_id=user.id,
+        request=http_request,
+    )
+    await db.commit()
+    return {"success": True, "message": "Password reset successfully"}
 
 
 @router.post("/login", response_model=TokenResponse)
