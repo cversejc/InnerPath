@@ -15,7 +15,7 @@ from app.schemas.calendar import (
     DecisionLogResponse,
     CalendarListResponse,
 )
-from app.services.calendar_service import get_user_calendars
+from app.services.calendar_query_service import get_user_calendars
 from app.services.decision_log_service import (
     create_user_decision_log,
     delete_user_decision_log,

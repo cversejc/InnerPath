@@ -15,6 +15,7 @@ from app.schemas.calendar import (
     CalendarUpdate,
 )
 from app.services.audit_service import record_audit
+from app.services.calendar_query_service import load_calendar_entries
 
 
 def _validate_entries(
@@ -31,60 +32,6 @@ def _validate_entries(
         raise ValueError("entry_outside_calendar_range")
     if end_date and any(entry_date > end_date for entry_date in dates):
         raise ValueError("entry_outside_calendar_range")
-
-
-async def _load_calendar_entries(db: AsyncSession, calendar_id: int) -> list[CalendarEntry]:
-    result = await db.execute(
-        select(CalendarEntry)
-        .where(CalendarEntry.calendar_id == calendar_id)
-        .order_by(CalendarEntry.entry_date)
-    )
-    return list(result.scalars().all())
-
-
-async def serialize_calendar(
-    db: AsyncSession,
-    calendar: UserCalendar,
-    *,
-    include_internal: bool = True,
-) -> dict:
-    entries = await _load_calendar_entries(db, calendar.id)
-    if not include_internal:
-        # Consultant notes are internal working material.  Keep the response
-        # shape compatible while removing their contents from user reads.
-        entries = [
-            {
-                "id": entry.id,
-                "entry_date": entry.entry_date,
-                "day_pillar": entry.day_pillar,
-                "tone": entry.tone,
-                "status_label": entry.status_label,
-                "keyword": entry.keyword,
-                "summary": entry.summary,
-                "suitable": entry.suitable or [],
-                "unsuitable": entry.unsuitable or [],
-                "time_window": entry.time_window,
-                "admin_note": None,
-            }
-            for entry in entries
-        ]
-    return {
-        "id": calendar.id,
-        "user_id": calendar.user_id,
-        "series_id": calendar.series_id,
-        "version_number": calendar.version_number,
-        "is_current": calendar.status == "published",
-        "title": calendar.title,
-        "start_date": calendar.start_date,
-        "end_date": calendar.end_date,
-        "status": calendar.status,
-        "meta_payload": calendar.meta_payload,
-        "calendar_request_id": calendar.calendar_request_id,
-        "published_at": calendar.published_at,
-        "entries": entries,
-        "created_at": calendar.created_at,
-        "updated_at": calendar.updated_at,
-    }
 
 
 async def create_calendar(
@@ -127,7 +74,6 @@ async def create_calendar(
 
 
 
-
 async def update_calendar(
     db: AsyncSession,
     calendar: UserCalendar,
@@ -145,14 +91,14 @@ async def update_calendar(
     next_end_date = update_data.get("end_date", calendar.end_date)
     entries_for_validation = data.entries
     if entries_for_validation is None:
-        entries_for_validation = await _load_calendar_entries(db, calendar.id)
+        entries_for_validation = await load_calendar_entries(db, calendar.id)
     _validate_entries(entries_for_validation, next_start_date, next_end_date)
     for field, value in update_data.items():
         setattr(calendar, field, value)
     calendar.updated_by = updated_by
 
     if data.entries is not None:
-        existing_entries = await _load_calendar_entries(db, calendar.id)
+        existing_entries = await load_calendar_entries(db, calendar.id)
         for entry in existing_entries:
             await db.delete(entry)
         await db.flush()
@@ -180,7 +126,7 @@ async def clone_calendar_as_draft(
     created_by: int,
     request: Optional[Request] = None,
 ) -> UserCalendar:
-    entries = await _load_calendar_entries(db, calendar.id)
+    entries = await load_calendar_entries(db, calendar.id)
     max_version = await db.scalar(
         select(func.max(UserCalendar.version_number)).where(UserCalendar.series_id == calendar.series_id)
     )
@@ -231,7 +177,7 @@ async def clone_calendar_as_draft(
 
 
 async def publish_calendar(db: AsyncSession, calendar: UserCalendar, updated_by: int, request: Optional[Request] = None) -> UserCalendar:
-    entries = await _load_calendar_entries(db, calendar.id)
+    entries = await load_calendar_entries(db, calendar.id)
     if not entries:
         raise ValueError("calendar_without_entries")
     if calendar.status == "archived":
@@ -283,22 +229,3 @@ async def archive_calendar(db: AsyncSession, calendar: UserCalendar, updated_by:
     await db.commit()
     await db.refresh(calendar)
     return calendar
-
-
-async def get_user_calendars(
-    db: AsyncSession,
-    user_id: int,
-    published_only: bool = True,
-    *,
-    include_internal: bool = True,
-) -> list[dict]:
-    query = select(UserCalendar).where(UserCalendar.user_id == user_id)
-    if published_only:
-        query = query.where(UserCalendar.status == "published")
-    query = query.order_by(UserCalendar.updated_at.desc())
-    result = await db.execute(query)
-    calendars = result.scalars().all()
-    return [
-        await serialize_calendar(db, calendar, include_internal=include_internal)
-        for calendar in calendars
-    ]
