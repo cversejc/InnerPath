@@ -121,6 +121,7 @@
         :weekdays="weekdays"
         @close-mobile-detail="closeMobileDetail"
         @detail-keydown="handleDetailKeydown"
+        @close-record-form="closeRecordForm"
         @open-mobile-detail="openMobileDetail"
         @open-record-form="openRecordForm"
         @quick-record="quickRecord"
