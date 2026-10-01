@@ -1,0 +1,214 @@
+.auth-page {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 28px 18px;
+  background: radial-gradient(circle at top, rgba(245, 219, 176, 0.35), transparent 52%), #f6efe4;
+}
+
+.auth-card {
+  width: min(100%, 480px);
+  padding: 36px;
+}
+
+.auth-logo {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: var(--cinnabar-deep, #8f352f);
+  font-family: serif;
+  font-size: 28px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.auth-card h1 {
+  margin: 8px 0 10px;
+  color: var(--ink, #2d251e);
+  font-size: clamp(30px, 7vw, 44px);
+}
+
+.auth-subtitle {
+  margin: 0;
+  color: var(--muted, #7d6653);
+  line-height: 1.7;
+}
+
+.auth-help {
+  margin-top: 16px;
+}
+
+.auth-help p {
+  margin: 9px 0 0;
+  color: var(--muted, #7d6653);
+  line-height: 1.6;
+}
+
+.mode-switch {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin: 20px 0 18px;
+  padding: 4px;
+  border: 1px solid rgba(80, 54, 32, 0.12);
+  border-radius: 12px;
+}
+
+.mode-switch button,
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--muted, #7d6653);
+  cursor: pointer;
+}
+
+.mode-switch button {
+  padding: 10px 6px;
+  border-radius: 9px;
+}
+
+.mode-switch button.active {
+  background: #fffaf0;
+  color: var(--cinnabar-deep, #8f352f);
+  font-weight: 800;
+}
+
+.auth-form {
+  display: grid;
+  gap: 17px;
+  margin-top: 18px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--ink-soft, #51463d);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid rgba(80, 54, 32, 0.16);
+  border-radius: 10px;
+  background: rgba(255, 252, 246, 0.78);
+  color: var(--ink, #2d251e);
+  font: inherit;
+}
+
+.auth-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.auth-message {
+  margin-top: 16px;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+.auth-message.error { color: var(--cinnabar-deep, #9e3f35); }
+.auth-message.success { color: #39724e; }
+
+.text-button {
+  display: block;
+  margin: 18px auto 0;
+  padding: 4px;
+  text-decoration: underline;
+}
+
+@media (max-width: 540px) {
+  .auth-page {
+    padding: 12px 12px calc(12px + var(--safe-bottom, 0px));
+  }
+
+  .auth-card {
+    width: min(100%, 360px);
+    padding: 20px 16px 18px;
+    border-radius: 16px;
+  }
+
+  .auth-logo {
+    margin-bottom: 10px;
+    font-size: 24px;
+  }
+
+  .auth-card h1 {
+    margin-top: 0;
+    font-size: clamp(27px, 8vw, 34px);
+  }
+
+  .auth-subtitle {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .mode-switch {
+    width: min(100%, 300px);
+    margin: 14px 0 12px;
+    font-size: 12px;
+  }
+
+  .mode-switch button {
+    min-height: 44px;
+    padding: 8px 3px;
+  }
+
+  .auth-form {
+    gap: 11px;
+    margin-top: 14px;
+  }
+
+  .auth-form label {
+    gap: 6px;
+    font-size: 13px;
+  }
+
+  .auth-form input {
+    min-height: 46px;
+    font-size: 16px;
+    padding: 11px 12px;
+    border-radius: 12px;
+  }
+
+  .auth-form .primary-button {
+    width: min(100%, 260px);
+    min-height: 46px;
+    justify-self: center;
+  }
+
+  .text-button {
+    margin-top: 14px;
+    font-size: 13px;
+  }
+}
+
+/* 按钮专项：登录页的模式切换保持分段控件，辅助动作保持轻量文字样式。 */
+.mode-switch {
+  gap: 8px;
+}
+
+.mode-switch button {
+  min-height: 44px;
+  border-radius: 9px;
+}
+
+.text-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  padding: 0 8px;
+  color: var(--cinnabar-deep, #9e3f35);
+  transition: background var(--motion-fast, 150ms) ease, color var(--motion-fast, 150ms) ease;
+}
+
+.text-button:hover,
+.text-button:focus-visible {
+  background: rgba(184, 92, 80, 0.08);
+}
+
+.auth-form .primary-button {
+  border-radius: var(--button-radius, 13px);
+}
