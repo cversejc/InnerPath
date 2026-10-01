@@ -192,6 +192,7 @@
     height: 44px;
     place-items: center;
     border-radius: 50%;
+    background: rgba(255, 252, 245, 0.9);
   }
 
   .calendar-page .detail-close .icon-mark {

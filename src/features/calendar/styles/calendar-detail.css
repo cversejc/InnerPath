@@ -1,4 +1,4 @@
-.calendar-page .detail-close { display: none; }
+.calendar-page .detail-close { display: none; height: auto; border-color: rgba(139, 90, 20, 0.14); padding: 0; color: var(--calendar-muted); background: transparent; }
 
 .calendar-page .detail-header,
 .calendar-page .detail-title-row { position: relative; z-index: 1; display: flex; align-items: start; justify-content: space-between; gap: 12px; }
@@ -62,8 +62,8 @@
 .calendar-page .guidance-card li::before { content: '·'; position: absolute; left: 1px; color: var(--cinnabar); font-weight: 900; }
 .calendar-page .guidance-card li.guidance-empty { padding-left: 0; color: rgba(128, 110, 95, 0.72); }
 .calendar-page .guidance-card li.guidance-empty::before { display: none; }
-.calendar-page .guidance-toggle { position: relative; z-index: 1; display: block; width: 100%; margin-top: 8px; color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 10px; font-weight: 900; text-align: center; }
-.calendar-page .guidance-toggle span { margin-left: 3px; font-size: 13px; }
+.calendar-page .guidance-toggle { position: relative; z-index: 1; display: block; width: 100%; height: auto; margin-top: 8px; border: 0; padding: 0; color: var(--cinnabar-deep); background: transparent; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 10px; font-weight: 900; line-height: 1.5; text-align: center; }
+.calendar-page .guidance-toggle .guidance-toggle-icon { margin-left: 3px; font-size: 13px; }
 
 .calendar-page .actual-records { position: relative; z-index: 1; margin-top: 24px; padding-top: 19px; border-top: 1px solid rgba(184, 92, 80, 0.18); }
 .calendar-page .actual-records-head { display: flex; align-items: end; justify-content: space-between; gap: 10px; }
@@ -117,7 +117,7 @@
 .calendar-page .record-feedback { margin-top: 9px; color: #3e745f; font-size: 12px; line-height: 1.6; }
 .calendar-page .record-storage-note { display: flex; align-items: center; gap: 5px; margin-top: 13px; color: var(--calendar-muted); font-size: 11px; }
 .calendar-page .record-storage-note i { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--calendar-green); }
-.calendar-page .detail-reset { position: relative; z-index: 1; margin-top: 15px; }
+.calendar-page .detail-reset { position: relative; z-index: 1; height: auto; min-width: 0; margin-top: 15px; line-height: 1.4; }
 
 .calendar-page .phase-rail { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
 .calendar-page .phase-card { display: flex; min-width: 0; align-items: center; gap: 10px; border: 1px solid rgba(139, 90, 20, 0.13); border-radius: 15px; padding: 13px; background: rgba(255, 252, 245, 0.5); text-align: left; transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease; }

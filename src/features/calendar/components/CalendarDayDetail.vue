@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { Button as VanButton } from 'vant'
 import ActionRecordsSection from './ActionRecordsSection.vue'
 
 defineProps({
@@ -67,7 +68,9 @@ defineExpose({ focusCloseButton, focusContainer, getFocusableItems })
     tabindex="-1"
     @keydown="emit('detail-keydown', $event)"
   >
-    <button class="detail-close" type="button" aria-label="关闭日期详情" @click="emit('close-mobile-detail')"><IconMark name="close" /></button>
+    <VanButton class="detail-close" type="default" plain native-type="button" aria-label="关闭日期详情" @click="emit('close-mobile-detail')">
+      <template #icon><IconMark name="close" /></template>
+    </VanButton>
     <div class="detail-header">
       <div>
         <span class="detail-kicker">{{ selectedEntry.isPhase ? 'PHASE NAVIGATION' : 'DAY NAVIGATION' }}</span>
@@ -122,9 +125,18 @@ defineExpose({ focusCloseButton, focusContainer, getFocusableItems })
         <ul><li v-if="!selectedEntry.unsuitable.length" class="guidance-empty">暂无特别避开事项</li><li v-for="item in visibleUnsuitable" :key="item">{{ item }}</li></ul>
       </div>
     </div>
-    <button v-if="hiddenGuidanceCount" class="guidance-toggle" type="button" @click="emit('toggle-guidance')">
-      {{ showFullGuidance ? '收起详细建议' : `展开其余 ${hiddenGuidanceCount} 条建议` }} <span>{{ showFullGuidance ? '↑' : '↓' }}</span>
-    </button>
+    <VanButton
+      v-if="hiddenGuidanceCount"
+      class="guidance-toggle"
+      type="default"
+      plain
+      native-type="button"
+      :aria-expanded="showFullGuidance"
+      @click="emit('toggle-guidance')"
+    >
+      {{ showFullGuidance ? '收起详细建议' : `展开其余 ${hiddenGuidanceCount} 条建议` }}
+      <span class="guidance-toggle-icon">{{ showFullGuidance ? '↑' : '↓' }}</span>
+    </VanButton>
 
     <ActionRecordsSection
       :record-draft="recordDraft"
@@ -145,6 +157,8 @@ defineExpose({ focusCloseButton, focusContainer, getFocusableItems })
       @update-record-draft="emit('update-record-draft', $event)"
     />
 
-    <button v-if="selectedDate !== todayDate" class="detail-reset" type="button" @click="emit('show-current-date')">回到最近可用日 <IconMark name="arrow" /></button>
+    <VanButton v-if="selectedDate !== todayDate" class="detail-reset" type="default" plain native-type="button" @click="emit('show-current-date')">
+      回到最近可用日 <IconMark name="arrow" />
+    </VanButton>
   </aside>
 </template>
