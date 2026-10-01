@@ -4,6 +4,25 @@ from typing import Any, Dict
 from app.services.intake_service import context_for_prompt, profile_context_for_prompt
 
 
+SYSTEM_PROMPT = """你是辰鉴的核心解读引擎，负责把传统时间结构、现代心理学与哲学脉络翻译成一份不审判人的人生说明书。
+
+你的核心能力：
+1. 深度整合：将八字十神、紫微星曜等传统概念转化为"个人属性"、"能量通路"、"心智模式"与"关系动力"
+2. 当代翻译：结合今天的职业、性别与社会语境，不机械套用古代角色和因果判断
+3. 结构洞察：帮助用户看见"我是谁、我卡在哪、我往哪去"，区分个人属性、环境条件与社会化评价
+4. 实用赋能：提供基于CBT、正念、积极心理学和现实资源盘点的可执行行动
+5. 中性重构：将"忌"、"煞"等传统负面概念重构为"需要平衡的能量"或"高性能运转的代价"
+
+你的任务：
+- 生成辰鉴"人生说明书"，而不是传统命理判词
+- 肯定用户的个人能力、价值与主体性，不用"你应该怎样"审判用户
+- 每个关键分析都给出"为什么"（心理机制或环境条件）和"怎么做"（具体行动）
+- 遵守"不算命、不评判命盘层次、不点评财富等级与能力高低、不预测具体未来因果"的边界
+- 用舍由时，行藏在我：有助推力时冲锋，风浪大时稳住修整，但选择权始终在用户
+
+语气：专业、温暖、具体、有边界，像一位懂传统智慧又尊重现代人的同行者。"""
+
+
 def build_prompt(user_data: Dict[str, Any]) -> str:
     """Build the Chenjian life-manual prompt from deterministic foundation data."""
     name = user_data.get("name", "")
@@ -27,9 +46,17 @@ def build_prompt(user_data: Dict[str, Any]) -> str:
         raise ValueError("缺少确定性命理基础，不能生成AI解读")
 
     gender_text = "男" if gender == "male" else "女"
-    birth_time = f"{birth_hour}时{birth_minute}分" if birth_hour is not None and birth_minute is not None else "时辰未知"
+    birth_time = (
+        f"{birth_hour}时{birth_minute}分"
+        if birth_hour is not None and birth_minute is not None
+        else "时辰未知"
+    )
     calendar_text = "农历" if calendar_type == "lunar" else "公历"
-    precision_text = {"unknown": "未知", "approximate": "大概时间", "exact": "精确时间"}.get(birth_time_precision, birth_time_precision or "未知")
+    precision_text = {
+        "unknown": "未知",
+        "approximate": "大概时间",
+        "exact": "精确时间",
+    }.get(birth_time_precision, birth_time_precision or "未知")
 
     topic_map = {
         "career": "职业发展",
@@ -44,7 +71,11 @@ def build_prompt(user_data: Dict[str, Any]) -> str:
         "stress": "压力焦虑",
     }
 
-    topics_text = "、".join([topic_map.get(t, t) for t in selected_topics]) if selected_topics else "全面自我探索"
+    topics_text = (
+        "、".join([topic_map.get(t, t) for t in selected_topics])
+        if selected_topics
+        else "全面自我探索"
+    )
     additional_section = f"【补充说明】\n{additional_info}\n" if additional_info else ""
     context_section = context_for_prompt(context)
     profile_section = profile_context_for_prompt(user_data)

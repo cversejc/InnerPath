@@ -8,7 +8,7 @@ from app.services.mingli_foundation import calculate_mingli_foundation
 from app.services.multi_step_report_parser import MultiStepReportParser
 from app.services.multi_step_report_prompts import MultiStepReportPrompts
 from app.services.multi_step_report_sections import MultiStepReportSections
-from app.services.single_step_report import _extract_chat_content
+from app.services.report_response_parser import extract_chat_content
 
 logger = get_logger("app.services.ai_service")
 
@@ -117,7 +117,7 @@ class MultiStepReportGenerator(
 
             response.raise_for_status()
             response_data = response.json()
-            return _extract_chat_content(response_data)
+            return extract_chat_content(response_data)
 
     def _assemble_report(
         self,
