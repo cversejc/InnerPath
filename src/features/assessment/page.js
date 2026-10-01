@@ -1,7 +1,8 @@
 import { getLatestReportContext } from '../../utils/aiService.js'
 import { getCurrentUser } from '../../utils/authService.js'
-import ProfileFields from '../../components/ProfileFields.vue'
-import ProfileSummary from '../../components/ProfileSummary.vue'
+import AssessmentProfileStep from './components/AssessmentProfileStep.vue'
+import AssessmentContextStep from './components/AssessmentContextStep.vue'
+import AssessmentResultStep from './components/AssessmentResultStep.vue'
 import { createEmptyProfile, mapUserToProfile } from '../user-center/profile.js'
 import {
   assessmentTopics,
@@ -17,7 +18,7 @@ import navigationMethods from './methods/navigation.js'
 
 export default {
   name: 'Assessment',
-  components: { ProfileFields, ProfileSummary },
+  components: { AssessmentProfileStep, AssessmentContextStep, AssessmentResultStep },
   data() {
     return {
       currentStep: 1,

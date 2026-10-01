@@ -1,10 +1,10 @@
 export default {
   focusStepHeading() {
     this.$nextTick(() => {
-      const heading = Array.isArray(this.$refs.stepHeading) ? this.$refs.stepHeading[0] : this.$refs.stepHeading
-      if (!heading) return
+      const stepContent = this.$refs.stepContent
+      if (!stepContent) return
       window.scrollTo({ top: 0, behavior: 'auto' })
-      heading.focus({ preventScroll: true })
+      stepContent.focusStepHeading()
     })
   },
   truncate(value, length) {
