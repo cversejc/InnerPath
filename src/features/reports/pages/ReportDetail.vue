@@ -4,7 +4,7 @@
 
     <section v-if="report" class="report-header">
       <div class="container">
-        <button class="btn-back" type="button" @click="goBack"><IconMark name="arrow-left" />返回</button>
+        <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
         <h1>辰鉴·人生说明书</h1>
         <div class="report-meta">
           <span>生成日期：{{ report.basicInfo?.reportDate || '今天' }}</span>
@@ -19,7 +19,7 @@
     </section>
     <section v-else class="report-header">
       <div class="container">
-        <button class="btn-back" type="button" @click="goBack"><IconMark name="arrow-left" />返回</button>
+        <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
         <h1>{{ loadError || '报告不存在或无权访问' }}</h1>
       </div>
     </section>
@@ -34,10 +34,10 @@
         />
 
         <div class="report-actions">
-          <button class="btn-action primary" type="button" @click="goToCalendar">
-            <IconMark class="icon" name="calendar" />
+          <VanButton type="primary" native-type="button" class="btn-action primary" @click="goToCalendar">
+            <template #icon><IconMark class="icon" name="calendar" /></template>
             打开决策日历
-          </button>
+          </VanButton>
         </div>
       </div>
     </section>
@@ -47,13 +47,14 @@
 </template>
 
 <script>
+import { Button as VanButton } from 'vant'
 import { getReportDetail } from '../api.js'
 import ReportContent from '../components/ReportContent.vue'
 import { normalizeReportData, parseLegacyReportContent } from '../report-content.js'
 
 export default {
   name: 'ReportDetail',
-  components: { ReportContent },
+  components: { ReportContent, VanButton },
   data() {
     return {
       report: null,
