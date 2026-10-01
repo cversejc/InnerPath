@@ -23,5 +23,3 @@ async def get_staff_task(
     if not service_request or not staff_can_access(service_request, current_user):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Task is not assigned")
     return ServiceRequestTaskResponse.model_validate(serialize_task(task))
-
-

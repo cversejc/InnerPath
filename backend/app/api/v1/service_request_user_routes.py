@@ -110,5 +110,3 @@ async def withdraw_my_request(
     except ValueError as error:
         _raise_value_error(error)
     return await _serialize_public(db, service_request)
-
-

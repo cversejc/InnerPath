@@ -217,4 +217,3 @@ class MultiStepReportParser:
             "type": "summary",
             "content": "你是独特的个体，拥有无限的成长潜力。"
         }
-
