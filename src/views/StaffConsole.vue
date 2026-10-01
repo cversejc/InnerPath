@@ -6,7 +6,7 @@
         <div>
           <p class="section-kicker">SERVICE REQUESTS / REVIEW ROOM</p>
           <h1>咨询申请工作台</h1>
-          <p>接收用户申请，参考 AI 初稿完成结构化审校，再将可交付的结果发回用户。</p>
+          <p>接收用户申请，参考 AI 初稿完成结构化审校，再将可交付的结果发回用户</p>
         </div>
         <div class="heading-actions">
           <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask }"></i>{{ pollingTask ? 'AI 初稿处理中' : loading ? '正在同步' : '已同步' }}</span>
@@ -35,17 +35,17 @@
               <span class="request-item-copy"><strong>{{ item.service_type === 'report' ? '人生说明书' : '决策日历' }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · #{{ item.id }}</small><em>{{ formatDate(item.created_at) }}</em></span>
               <span class="request-item-status">{{ statusLabel(item.status) }}</span>
             </button>
-            <div v-if="!requests.items.length" class="empty-cell">当前筛选下没有申请。</div>
+            <div v-if="!requests.items.length" class="empty-cell">当前筛选下没有申请</div>
           </div>
         </aside>
 
         <section class="console-card paper-card workspace-panel" aria-live="polite">
           <div v-if="selectedRequest && !workspace" class="request-preview">
             <div class="workspace-header"><div><p class="eyebrow">REQUEST #{{ selectedRequest.id }}</p><h2>{{ selectedRequest.service_type === 'report' ? '人生说明书申请' : '决策日历申请' }}</h2></div><span :class="['status-badge', `staff-status-${selectedRequest.status}`]">{{ statusLabel(selectedRequest.status) }}</span></div>
-            <div class="preview-note"><strong>{{ selectedRequest.user_name || `用户 #${selectedRequest.user_id}` }}</strong><p>这是待接单申请的摘要。接受申请后，才能查看完整出生资料并进入工作区。</p></div>
+            <div class="preview-note"><strong>{{ selectedRequest.user_name || `用户 #${selectedRequest.user_id}` }}</strong><p>这是待接单申请的摘要，接受申请后，才能查看完整出生资料并进入工作区</p></div>
             <dl class="detail-list"><div><dt>关注目标</dt><dd>{{ requestGoal(selectedRequest) }}</dd></div><div><dt>补充说明</dt><dd>{{ selectedRequest.request_preview?.additional_info || '—' }}</dd></div><div v-if="selectedRequest.service_type === 'calendar'"><dt>起始日期</dt><dd>{{ selectedRequest.request_preview?.start_date || '—' }}</dd></div></dl>
             <button v-if="selectedRequest.status === 'submitted' && !selectedRequest.assigned_consultant_id" class="primary-button" type="button" :disabled="accepting" :aria-busy="accepting" @click="acceptRequest">{{ accepting ? '接单中…' : '接受申请' }}</button>
-            <p v-else class="preview-lock">这份申请已经被其他咨询师接收，列表刷新后会更新状态。</p>
+            <p v-else class="preview-lock">这份申请已经被其他咨询师接收，列表刷新后会更新状态</p>
           </div>
 
           <div v-else-if="workspace" class="workspace-content">
@@ -56,7 +56,7 @@
 
             <div v-if="admin" class="assignment-row">
               <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving" @change="assignConsultant"><option :value="null">未分配</option><option v-for="consultant in consultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
-              <small>管理员可改派；改派不会覆盖已有版本。</small>
+              <small>管理员可改派；改派不会覆盖已有版本</small>
             </div>
 
             <div class="workspace-actions">
@@ -70,7 +70,7 @@
             </div>
 
             <div v-if="showInfoPanel" class="info-panel">
-              <label>请补充的资料或原因<textarea v-model.trim="infoReason" rows="3" maxlength="1000" placeholder="说明用户需要补充什么，以及为什么这会影响分析。"></textarea></label>
+              <label>请补充的资料或原因<textarea v-model.trim="infoReason" rows="3" maxlength="1000" placeholder="说明用户需要补充什么，以及为什么这会影响分析"></textarea></label>
               <div><button class="secondary-button compact-button" type="button" @click="showInfoPanel = false">取消</button><button class="primary-button compact-button" type="button" :disabled="infoSaving || !infoReason" @click="requestInfo">{{ infoSaving ? '发送中…' : '标记待补充' }}</button></div>
             </div>
 
@@ -82,10 +82,10 @@
 
               <section v-if="workspace.draft" class="ai-panel">
                 <div class="panel-heading"><div><p class="eyebrow">AI SOURCE / PRIVATE</p><h3>AI 初稿参考</h3></div><span>v{{ workspace.draft.ai_version }}</span></div>
-                <p class="ai-privacy">仅咨询师和管理员可见。请以用户资料与专业判断为准，不要直接交付未审校内容。</p>
+                <p class="ai-privacy">仅咨询师和管理员可见，请以用户资料与专业判断为准，不要直接交付未审校内容</p>
                 <details class="ai-details"><summary>查看 AI 初稿字段</summary><pre>{{ pretty(workspace.draft.ai_payload) }}</pre></details>
               </section>
-              <section v-else class="ai-panel ai-empty"><div class="panel-heading"><div><p class="eyebrow">AI SOURCE / PRIVATE</p><h3>等待生成初稿</h3></div></div><p>确认资料后，点击“生成 AI 初稿”。</p></section>
+              <section v-else class="ai-panel ai-empty"><div class="panel-heading"><div><p class="eyebrow">AI SOURCE / PRIVATE</p><h3>等待生成初稿</h3></div></div><p>确认资料后，点击“生成 AI 初稿”</p></section>
             </div>
 
             <section v-if="workspace.draft" class="editor-panel">
@@ -111,7 +111,7 @@
             <p v-if="workspace.task && workspace.task.status === 'failed'" class="task-error" role="alert">AI 初稿生成失败：{{ workspace.task.error || workspace.request.last_error || '请重试' }}</p>
           </div>
 
-          <div v-else class="empty-state"><IconMark class="empty-icon" name="compass" /><p>从左侧选择一份申请开始处理。</p><small>待接单申请只展示必要摘要；接单后才会打开完整资料。</small></div>
+          <div v-else class="empty-state"><IconMark class="empty-icon" name="compass" /><p>从左侧选择一份申请开始处理</p><small>待接单申请只展示必要摘要；接单后才会打开完整资料</small></div>
         </section>
       </section>
     </main>
@@ -228,9 +228,9 @@ export default {
   },
   computed: {
     scopeDescription() {
-      if (this.scope === 'available') return '仅展示还未被接单的申请。'
-      if (this.scope === 'mine') return '展示分配给当前咨询师的申请。'
-      return '管理员可查看全量申请并介入处理。'
+      if (this.scope === 'available') return '仅展示还未被接单的申请'
+      if (this.scope === 'mine') return '展示分配给当前咨询师的申请'
+      return '管理员可查看全量申请并介入处理'
     },
     birthSummary() {
       const profile = this.workspace?.request?.request_payload?.profile || {}
@@ -300,7 +300,7 @@ export default {
       this.accepting = true
       try {
         await acceptStaffServiceRequest(this.selectedRequest.id)
-        this.message = '申请已接收，完整资料已开放。'
+        this.message = '申请已接收，完整资料已开放'
         await this.loadRequests()
         await this.loadWorkspace(this.selectedRequest.id)
       } catch (error) {
@@ -317,7 +317,7 @@ export default {
         const task = await startStaffAIDraft(this.workspace.request.id)
         this.task = task
         this.workspace.task = task
-        this.message = 'AI 初稿已启动，完成后会出现在工作区。'
+        this.message = 'AI 初稿已启动，完成后会出现在工作区'
         this.startPolling(task)
       } catch (error) {
         this.message = this.errorText(error)
@@ -333,7 +333,7 @@ export default {
         const task = await retryStaffAIDraft(this.workspace.request.id, true)
         this.task = task
         this.workspace.task = task
-        this.message = '已保存当前版本并重新启动 AI 初稿。'
+        this.message = '已保存当前版本并重新启动 AI 初稿'
         this.startPolling(task)
       } catch (error) {
         this.message = this.errorText(error)
@@ -356,7 +356,7 @@ export default {
           } else {
             this.pollingTask = false
             await this.loadWorkspace(this.workspace?.request?.id || task.request_id)
-            this.message = updated.status === 'completed' ? 'AI 初稿已准备完成，请开始审校。' : 'AI 初稿生成失败，可在工作区重试。'
+            this.message = updated.status === 'completed' ? 'AI 初稿已准备完成，请开始审校' : 'AI 初稿生成失败，可在工作区重试'
           }
         } catch (error) {
           this.pollingTask = false
@@ -414,7 +414,7 @@ export default {
         this.workspace.request.status = 'reviewing'
         if (this.workspace.request.service_type === 'report') this.reportEditor = reportEditorFromPayload(saved.editable_payload)
         else this.calendarEditor = calendarEditorFromPayload(saved.editable_payload)
-        this.message = '咨询师修改已保存。'
+        this.message = '咨询师修改已保存'
       } catch (error) {
         this.message = this.errorText(error)
         if (error.response?.status === 409) await this.loadWorkspace(this.workspace.request.id)
@@ -428,7 +428,7 @@ export default {
       try {
         const updated = await requestStaffInfo(this.workspace.request.id, this.infoReason)
         this.workspace.request = { ...this.workspace.request, ...updated }
-        this.message = '已标记为待用户补充，用户会在申请中心看到原因。'
+        this.message = '已标记为待用户补充，用户会在申请中心看到原因'
         this.showInfoPanel = false
         this.infoReason = ''
         await this.loadRequests()
@@ -440,12 +440,12 @@ export default {
     },
     async deliver() {
       if (!this.workspace || this.delivering) return
-      if (!window.confirm('确认已完成人工审校并交付给用户吗？交付后申请和结果将进入只读状态。')) return
+      if (!window.confirm('确认已完成人工审校并交付给用户吗？交付后申请和结果将进入只读状态')) return
       this.delivering = true
       try {
         const updated = await deliverStaffServiceRequest(this.workspace.request.id)
         this.workspace.request = { ...this.workspace.request, ...updated }
-        this.message = '申请已交付，用户现在可以查看最终结果。'
+        this.message = '申请已交付，用户现在可以查看最终结果'
         await this.loadRequests()
       } catch (error) {
         this.message = this.errorText(error)
@@ -460,7 +460,7 @@ export default {
       try {
         const updated = await rejectAdminServiceRequest(this.workspace.request.id, reason.trim())
         this.workspace.request = { ...this.workspace.request, ...updated }
-        this.message = '申请已关闭，用户会在申请中心看到状态。'
+        this.message = '申请已关闭，用户会在申请中心看到状态'
         await this.loadRequests()
       } catch (error) {
         this.message = this.errorText(error)
@@ -487,7 +487,7 @@ export default {
       try {
         const updated = await updateAdminServiceRequestAssignment(this.workspace.request.id, this.assignmentId ? Number(this.assignmentId) : null)
         this.workspace.request = { ...this.workspace.request, ...updated }
-        this.message = this.assignmentId ? '已改派咨询师。' : '已取消分配，申请回到待接单池。'
+        this.message = this.assignmentId ? '已改派咨询师' : '已取消分配，申请回到待接单池'
         await this.loadRequests()
       } catch (error) {
         this.message = this.errorText(error)

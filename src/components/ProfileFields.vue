@@ -6,7 +6,7 @@
           <p class="section-kicker">CORE PROFILE</p>
           <h3 id="profile-core-title">建立你的个人档案</h3>
         </div>
-        <p>这些资料会被报告与日历复用。之后只需在资料发生变化时更新。</p>
+        <p>这些资料会被报告与日历复用，之后只需在资料发生变化时更新</p>
       </div>
 
       <div class="profile-field-stack">
@@ -118,13 +118,13 @@
               <span>日</span>
             </label>
           </div>
-          <p class="profile-hint">按上方选择的历法填写，年龄会由出生日期自动计算。</p>
+          <p class="profile-hint">按上方选择的历法填写，年龄会由出生日期自动计算</p>
           <p v-if="errors.birth_date" :id="`${idPrefix}-birth-date-error`" class="profile-error" role="alert">{{ errors.birth_date }}</p>
         </div>
 
         <fieldset class="profile-field profile-choice-fieldset" :aria-describedby="errors.birth_time_precision || errors.birth_time ? idPrefix + '-birth-time-error' : undefined">
           <legend class="profile-label">出生时间准确度 <span class="required">*</span></legend>
-          <p class="profile-hint">不知道也可以跳过；有省 / 市级出生地时，分析更容易做真太阳时校正。</p>
+          <p class="profile-hint">不知道也可以跳过；有省 / 市级出生地时，分析更容易做真太阳时校正</p>
           <div class="profile-choice-grid three">
             <button
               v-for="option in timeOptions"
@@ -185,7 +185,7 @@
             placeholder="如：广东省广州市"
             @input="setField('birth_place', $event.target.value)"
           >
-          <p class="profile-hint">建议填写到省 / 市；无法提供时仍可继续，但分析精度可能受影响。</p>
+          <p class="profile-hint">建议填写到省 / 市；无法提供时仍可继续，但分析精度可能受影响</p>
         </div>
       </div>
     </section>
@@ -209,7 +209,7 @@
           <p class="section-kicker">OPTIONAL PORTRAIT</p>
           <h3 id="profile-optional-title">完善个人画像</h3>
         </div>
-        <p>选填信息会作为稳定背景复用；当前困惑、关系和身心状态只放在本次申请里。</p>
+        <p>选填信息会作为稳定背景复用；当前困惑、关系和身心状态只放在本次申请里</p>
       </div>
 
       <div class="profile-optional-grid">
@@ -274,7 +274,7 @@
             placeholder="用逗号分隔，如：独立、敏感、好奇"
             @input="setKeywords($event.target.value)"
           >
-          <p class="profile-hint">建议填写 3—5 个关键词。</p>
+          <p class="profile-hint">建议填写 3—5 个关键词</p>
         </div>
 
         <div class="profile-field profile-field-wide">
@@ -289,7 +289,7 @@
 
         <fieldset class="profile-field profile-field-wide profile-choice-fieldset">
           <legend class="profile-label">命理 / 玄学体验 <span class="optional">选填</span></legend>
-          <p class="profile-hint">最多选择 3 项。</p>
+          <p class="profile-hint">最多选择 3 项</p>
           <div class="profile-check-grid">
             <label v-for="option in experienceOptions" :key="option.value" class="profile-check-card">
               <input type="checkbox" :checked="listIncludes('mingli_experience', option.value)" @change="toggleList('mingli_experience', option.value, 3)">
@@ -320,7 +320,7 @@
 
         <fieldset class="profile-field profile-field-wide profile-choice-fieldset">
           <legend class="profile-label">希望使用说明书 / 日历的场景 <span class="optional">选填</span></legend>
-          <p class="profile-hint">最多选择 6 项。</p>
+          <p class="profile-hint">最多选择 6 项</p>
           <div class="profile-check-grid">
             <label v-for="option in usageOptions" :key="option.value" class="profile-check-card">
               <input type="checkbox" :checked="listIncludes('default_usage_scenarios', option.value)" @change="toggleList('default_usage_scenarios', option.value, 6)">

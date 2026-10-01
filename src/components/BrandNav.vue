@@ -339,7 +339,7 @@ async function handleLogout() {
   .nav-mobile-kicker {
     padding: 4px 8px 8px;
     color: var(--gold-deep, #8b5a14);
-    font-family: "Manrope", "PingFang SC", sans-serif;
+    font-family: var(--font-ui);
     font-size: 10px;
     font-weight: 900;
     letter-spacing: 0.16em;

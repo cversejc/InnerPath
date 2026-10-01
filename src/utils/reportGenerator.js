@@ -9,47 +9,47 @@ export const energyTypeMapping = {
   wood: {
     name: '生长驱动型',
     traits: ['创新求变', '积极进取', '富有创造力', '追求成长'],
-    description: '你的能量倾向于向外扩展和生长，喜欢探索新事物，具有强烈的成长动力。',
+    description: '你的能量倾向于向外扩展和生长，喜欢探索新事物，具有强烈的成长动力',
     strengths: ['创新思维', '适应能力强', '富有活力', '目标导向'],
     challenges: ['容易急躁', '缺乏耐心', '过度扩张', '难以坚持'],
     careerPath: ['创业者', '产品经理', '创意设计', '市场开拓'],
-    relationshipStyle: '在关系中追求新鲜感和成长空间，需要伴侣理解你的独立性。'
+    relationshipStyle: '在关系中追求新鲜感和成长空间，需要伴侣理解你的独立性'
   },
   fire: {
     name: '表达驱动型',
     traits: ['热情洋溢', '善于表达', '富有感染力', '追求认可'],
-    description: '你的能量倾向于向外散发和表达，喜欢与人互动，具有强烈的表现欲。',
+    description: '你的能量倾向于向外散发和表达，喜欢与人互动，具有强烈的表现欲',
     strengths: ['沟通能力强', '富有魅力', '乐观积极', '善于激励他人'],
     challenges: ['情绪波动大', '过度消耗', '需要外界认可', '难以独处'],
     careerPath: ['演讲者', '销售', '媒体工作', '公关传播'],
-    relationshipStyle: '在关系中需要被看见和认可，渴望热烈的情感表达。'
+    relationshipStyle: '在关系中需要被看见和认可，渴望热烈的情感表达'
   },
   earth: {
     name: '稳定承载型',
     traits: ['踏实稳重', '包容接纳', '注重安全', '追求稳定'],
-    description: '你的能量倾向于稳定和承载，喜欢建立秩序，具有强烈的责任感。',
+    description: '你的能量倾向于稳定和承载，喜欢建立秩序，具有强烈的责任感',
     strengths: ['可靠稳定', '善于整合', '耐心细致', '责任心强'],
     challenges: ['过度保守', '难以改变', '容易焦虑', '过度负责'],
     careerPath: ['管理者', '财务会计', '人力资源', '项目协调'],
-    relationshipStyle: '在关系中追求稳定和安全感，愿意为关系付出和承担。'
+    relationshipStyle: '在关系中追求稳定和安全感，愿意为关系付出和承担'
   },
   metal: {
     name: '秩序驱动型',
     traits: ['理性客观', '追求完美', '注重规则', '善于分析'],
-    description: '你的能量倾向于收敛和精炼，喜欢建立标准，具有强烈的原则性。',
+    description: '你的能量倾向于收敛和精炼，喜欢建立标准，具有强烈的原则性',
     strengths: ['逻辑清晰', '执行力强', '追求卓越', '自律性高'],
     challenges: ['过度严苛', '难以变通', '情感压抑', '完美主义'],
     careerPath: ['技术专家', '质量管理', '法律顾问', '研究分析'],
-    relationshipStyle: '在关系中追求清晰的界限和规则，需要学习情感表达。'
+    relationshipStyle: '在关系中追求清晰的界限和规则，需要学习情感表达'
   },
   water: {
     name: '智慧流动型',
     traits: ['深思熟虑', '善于观察', '灵活变通', '追求智慧'],
-    description: '你的能量倾向于向内流动和沉淀，喜欢深度思考，具有强烈的洞察力。',
+    description: '你的能量倾向于向内流动和沉淀，喜欢深度思考，具有强烈的洞察力',
     strengths: ['洞察力强', '适应性好', '智慧深邃', '善于策略'],
     challenges: ['过度思虑', '缺乏行动', '情绪内敛', '难以信任'],
     careerPath: ['咨询顾问', '心理咨询', '战略规划', '学术研究'],
-    relationshipStyle: '在关系中需要深度连接和理解，倾向于观察和等待。'
+    relationshipStyle: '在关系中需要深度连接和理解，倾向于观察和等待'
   }
 }
 
@@ -191,11 +191,11 @@ function analyzeDominantElement(year, month, day) {
  */
 function getWorkStyle(element) {
   const styles = {
-    wood: '你适合需要创新和开拓的工作环境，喜欢自主性强的工作方式。',
-    fire: '你适合需要沟通和表达的工作环境，喜欢团队协作和互动。',
-    earth: '你适合需要稳定和协调的工作环境，喜欢有明确流程的工作方式。',
-    metal: '你适合需要专业和精准的工作环境，喜欢有标准和规范的工作方式。',
-    water: '你适合需要思考和策略的工作环境，喜欢灵活和自由的工作方式。'
+    wood: '你适合需要创新和开拓的工作环境，喜欢自主性强的工作方式',
+    fire: '你适合需要沟通和表达的工作环境，喜欢团队协作和互动',
+    earth: '你适合需要稳定和协调的工作环境，喜欢有明确流程的工作方式',
+    metal: '你适合需要专业和精准的工作环境，喜欢有标准和规范的工作方式',
+    water: '你适合需要思考和策略的工作环境，喜欢灵活和自由的工作方式'
   }
   return styles[element]
 }
@@ -266,12 +266,12 @@ function getRelationshipGrowth(element) {
  */
 function analyzeCurrentIssues(topics) {
   const issueMap = {
-    career: '你当前在职业发展上可能面临选择或瓶颈，需要重新审视自己的优势和方向。',
-    relationship: '你当前在亲密关系上可能面临模式重复或沟通困难，需要理解自己的关系模式。',
-    family: '你当前在家庭议题上可能面临原生家庭影响或代际模式，需要建立新的互动方式。',
-    self: '你当前在自我价值上可能面临认同困惑或意义缺失，需要重建内在稳定感。',
-    growth: '你当前在个人成长上可能面临突破瓶颈或方向迷茫，需要找到适合的成长路径。',
-    stress: '你当前在压力管理上可能面临情绪困扰或能量耗竭，需要建立应对策略。'
+    career: '你当前在职业发展上可能面临选择或瓶颈，需要重新审视自己的优势和方向',
+    relationship: '你当前在亲密关系上可能面临模式重复或沟通困难，需要理解自己的关系模式',
+    family: '你当前在家庭议题上可能面临原生家庭影响或代际模式，需要建立新的互动方式',
+    self: '你当前在自我价值上可能面临认同困惑或意义缺失，需要重建内在稳定感',
+    growth: '你当前在个人成长上可能面临突破瓶颈或方向迷茫，需要找到适合的成长路径',
+    stress: '你当前在压力管理上可能面临情绪困扰或能量耗竭，需要建立应对策略'
   }
 
   return topics.map(topic => issueMap[topic]).filter(Boolean)
@@ -325,7 +325,7 @@ function getGrowthResources(topics) {
  * 生成总结
  */
 function generateSummary(energyType, topics) {
-  return `你的个人属性呈现出${energyType.traits.slice(0, 2).join('、')}的特质。当前你最关注的是${topics.length > 0 ? '现实处境' : '自我探索'}相关议题。辰鉴不替你预测未来，而是邀请你先看见自己的能量通路，再在合适的时机做出属于你的选择。`
+  return `你的个人属性呈现出${energyType.traits.slice(0, 2).join('、')}的特质，当前你最关注的是${topics.length > 0 ? '现实处境' : '自我探索'}相关议题，辰鉴不替你预测未来，而是邀请你先看见自己的能量通路，再在合适的时机做出属于你的选择`
 }
 
 export default {

@@ -7,7 +7,7 @@
         <div>
           <p class="section-kicker">MY REQUESTS / SERVICE FLOW</p>
           <h1>我的申请</h1>
-          <p>申请提交后，会由咨询师接单、生成 AI 初稿并完成审校，最终结果只在交付后向你开放。</p>
+          <p>申请提交后，会由咨询师接单、生成 AI 初稿并完成审校，最终结果只在交付后向你开放</p>
         </div>
         <div class="hero-actions">
           <router-link class="secondary-button" to="/pages/assessment/assessment">申请人生说明书</router-link>
@@ -37,7 +37,7 @@
         <div>
           <p class="eyebrow">A QUIET START</p>
           <h2>还没有申请记录</h2>
-          <p>从一份人生说明书，或一段 30 天的决策日历开始。</p>
+          <p>从一份人生说明书，或一段 30 天的决策日历开始</p>
         </div>
         <div class="empty-actions">
           <router-link class="primary-button" to="/pages/assessment/assessment">申请报告</router-link>
@@ -63,11 +63,11 @@
             <p v-if="payload(item).additional_info" class="request-note">补充说明：{{ payload(item).additional_info }}</p>
             <div v-if="item.status === 'needs_info'" class="needs-info-note" role="alert">
               <strong>请补充资料</strong>
-              <p>{{ item.needs_info_reason || '咨询师希望进一步了解你的需求。' }}</p>
+              <p>{{ item.needs_info_reason || '咨询师希望进一步了解你的需求' }}</p>
             </div>
             <div v-if="item.status === 'failed'" class="needs-info-note failed-note" role="alert">
               <strong>初步分析暂未完成</strong>
-              <p>咨询师会在工作台中重试，当前申请仍可继续跟进。</p>
+              <p>咨询师会在工作台中重试，当前申请仍可继续跟进</p>
             </div>
           </div>
 
@@ -128,7 +128,7 @@ export default {
   async mounted() {
     await this.loadRequests()
     if (this.$route.query.submitted) {
-      this.message = `申请 #${this.$route.query.submitted} 已提交，接下来等待咨询师接单。`
+      this.message = `申请 #${this.$route.query.submitted} 已提交，接下来等待咨询师接单`
       this.messageType = 'info'
     }
   },
@@ -178,7 +178,7 @@ export default {
     },
     async withdraw(item) {
       if (!this.canWithdraw(item.status) || this.withdrawnId) return
-      if (!window.confirm('确定撤回这份申请吗？撤回后需要重新提交才能继续。')) return
+      if (!window.confirm('确定撤回这份申请吗？撤回后需要重新提交才能继续')) return
       this.withdrawnId = item.id
       try {
         const updated = await withdrawServiceRequest(item.id)

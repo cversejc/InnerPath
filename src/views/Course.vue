@@ -17,8 +17,8 @@
         <div class="intro-content">
           <div class="intro-text">
             <h2>为什么要加入共鉴？</h2>
-            <p>在一个越来越快、越来越功利的社会里，理解自己、理解关系、理解时序，是不容易被替代的长期能力。</p>
-            <p>共鉴不教人给自己或别人下判断，而是练习如何把传统智慧翻译成现代生活能使用的语言，建立一套属于自己的“人生观察系统”。</p>
+            <p>在一个越来越快、越来越功利的社会里，理解自己、理解关系、理解时序，是不容易被替代的长期能力</p>
+            <p>共鉴不教人给自己或别人下判断，而是练习如何把传统智慧翻译成现代生活能使用的语言，建立一套属于自己的“人生观察系统”</p>
             <ul class="intro-benefits">
               <li><IconMark name="self" />读懂自己的性格密码与天赋</li>
               <li><IconMark name="relationship" />看见关系与人生重复模式</li>
@@ -54,7 +54,7 @@
     <section class="course-outline">
       <div class="container">
         <h2>共鉴路径</h2>
-        <p class="section-desc">不追求一次学会，追求每次都能在生活里多看见一点。</p>
+        <p class="section-desc">不追求一次学会，追求每次都能在生活里多看见一点</p>
 
         <div class="modules">
           <div class="module-item" v-for="(module, index) in modules" :key="index">
@@ -132,22 +132,22 @@
           <div class="feature-item">
             <IconMark class="feature-icon" name="self" />
             <h3>理论与现实相接</h3>
-            <p>每个概念都回到真实处境，用决策日志和小行动检验它是否真的有用。</p>
+            <p>每个概念都回到真实处境，用决策日志和小行动检验它是否真的有用</p>
           </div>
           <div class="feature-item">
             <IconMark class="feature-icon" name="bridge" />
             <h3>多种语言互译</h3>
-            <p>玄学负责看见属性，心理学负责处理旧循环，哲学负责提供人生脉络。</p>
+            <p>玄学负责看见属性，心理学负责处理旧循环，哲学负责提供人生脉络</p>
           </div>
           <div class="feature-item">
             <IconMark class="feature-icon" name="refresh" />
             <h3>长期人本社群</h3>
-            <p>不靠焦虑和排名驱动，靠真实记录、趣味练习和彼此照见保持连接。</p>
+            <p>不靠焦虑和排名驱动，靠真实记录、趣味练习和彼此照见保持连接</p>
           </div>
           <div class="feature-item">
             <IconMark class="feature-icon" name="book" />
             <h3>把主动权留给人</h3>
-            <p>不点评命盘层次、财富等级和能力高低，不预测具体因果，只帮助你更有依据地行动。</p>
+            <p>不点评命盘层次、财富等级和能力高低，不预测具体因果，只帮助你更有依据地行动</p>
           </div>
         </div>
       </div>
@@ -788,10 +788,10 @@ export default {
 
 /* 页脚 */
 .footer {
-  background: var(--ink, #2f241b);
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.6), rgba(255, 250, 240, 0.92));
   padding: 40px 0;
   text-align: center;
-  color: rgba(255, 250, 240, .76);
+  color: var(--ink-soft, #5c4a3c);
 }
 
 /* 响应式 */
@@ -915,7 +915,7 @@ export default {
   }
 }
 
-/* 课程页与主站保持同一套编辑感纸张主题。 */
+/* 课程页与主站保持同一套编辑感纸张主题 */
 .course {
   min-height: 100dvh;
   background: transparent;
@@ -992,7 +992,7 @@ export default {
   background: var(--cinnabar-deep, #9e3f35);
 }
 
-/* 移动端最终密度：课程内容以短段落和可展开模块为主，避免首屏过高。 */
+/* 移动端最终密度：课程内容以短段落和可展开模块为主，避免首屏过高 */
 @media (max-width: 768px) {
   .course .page-header {
     padding: 38px 0 30px;
@@ -1154,7 +1154,7 @@ export default {
   }
 }
 
-/* 按钮专项：报名按钮与全站 CTA 对齐，胶囊形状只留给标签。 */
+/* 按钮专项：报名按钮与全站 CTA 对齐，胶囊形状只留给标签 */
 .module-header {
   width: 100%;
   border: 0;

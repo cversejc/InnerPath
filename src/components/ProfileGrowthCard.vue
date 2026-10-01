@@ -22,8 +22,8 @@
     <div class="growth-card-body">
       <p>
         {{ safeCompletion >= 100
-          ? '以后只在信息发生变化时更新。每次申请都会使用当时的资料快照，历史报告不会被改写。'
-          : '这不是一次性问卷。每次愿意补充一小点，之后的报告、日历和预约就会更贴近你。' }}
+          ? '以后只在信息发生变化时更新，每次申请都会使用当时的资料快照，历史报告不会被改写'
+          : '这不是一次性问卷，每次愿意补充一小点，之后的报告、日历和预约就会更贴近你' }}
       </p>
       <ul v-if="suggestions.length" class="growth-suggestions" aria-label="可以继续完善的内容">
         <li v-for="suggestion in suggestions" :key="suggestion">{{ suggestion }}</li>
@@ -68,10 +68,10 @@ export default {
       if (this.safeCompletion >= 100) return []
       const profile = this.profile || {}
       const hints = []
-      if (!String(profile.birth_place || '').trim()) hints.push('补充到省 / 市出生地，可帮助做真太阳时校正。')
-      if (!profile.birth_time_precision || profile.birth_time_precision === 'unknown') hints.push('出生时间不确定没关系，以后想起来时再补充。')
-      if (!profile.current_residence && !profile.occupation_status) hints.push('补充一条当前近况，让建议更贴近你的现实。')
-      if (!profile.preferred_content_depth) hints.push('告诉我们你喜欢简洁还是深入的内容。')
+      if (!String(profile.birth_place || '').trim()) hints.push('补充到省 / 市出生地，可帮助做真太阳时校正')
+      if (!profile.birth_time_precision || profile.birth_time_precision === 'unknown') hints.push('出生时间不确定没关系，以后想起来时再补充')
+      if (!profile.current_residence && !profile.occupation_status) hints.push('补充一条当前近况，让建议更贴近你的现实')
+      if (!profile.preferred_content_depth) hints.push('告诉我们你喜欢简洁还是深入的内容')
       return hints.slice(0, 2)
     }
   },

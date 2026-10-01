@@ -13,5 +13,18 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  // 生产构建预览同样开放局域网访问，并带上后端代理，
+  // 手机连同一个 Wi-Fi 时可以直接登录、查看报告与日历
+  preview: {
+    host: '0.0.0.0',
+    port: 4176,
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true
+      }
+    }
   }
 })

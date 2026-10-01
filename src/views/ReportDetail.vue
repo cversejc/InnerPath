@@ -290,7 +290,7 @@ export default {
           resources: rawGrowth.resources || []
         },
         summary: source.summary || report.summary || '',
-        // 新交付报告只能使用人工编辑后的结构化内容；历史报告继续兼容原始 Markdown。
+        // 新交付报告只能使用人工编辑后的结构化内容；历史报告继续兼容原始 Markdown，
         aiGeneratedContent: contentPayload ? null : (report.aiGeneratedContent || report.ai_generated_content || report.ai_raw_content || null)
       }
 
@@ -1292,10 +1292,10 @@ export default {
 
 /* 页脚 */
 .footer {
-  background: var(--ink, #2f241b);
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.6), rgba(255, 250, 240, 0.92));
   padding: 40px 0;
   text-align: center;
-  color: rgba(255, 250, 240, .76);
+  color: var(--ink-soft, #5c4a3c);
 }
 
 /* 响应式 */
@@ -1438,7 +1438,7 @@ export default {
   }
 }
 
-/* 报告页采用同一套纸张阅读层，长文本在手机上更像连续阅读而不是后台白板。 */
+/* 报告页采用同一套纸张阅读层，长文本在手机上更像连续阅读而不是后台白板 */
 .report-detail {
   background: transparent;
 }
@@ -1554,7 +1554,7 @@ export default {
   background: linear-gradient(145deg, rgba(255, 247, 231, 0.94), rgba(255, 232, 220, 0.78));
 }
 
-/* 移动端最终密度：报告按阅读流排列，减少卡片边距与标题占高。 */
+/* 移动端最终密度：报告按阅读流排列，减少卡片边距与标题占高 */
 @media (max-width: 768px) {
   .report-header {
     padding: 38px 0 24px;
@@ -1657,7 +1657,7 @@ export default {
   }
 }
 
-/* 按钮专项：返回动作弱化，唯一主行动按钮固定在报告阅读流末端。 */
+/* 按钮专项：返回动作弱化，唯一主行动按钮固定在报告阅读流末端 */
 .btn-back,
 .btn-action {
   display: inline-flex;

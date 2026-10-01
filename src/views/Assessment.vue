@@ -6,45 +6,52 @@
       <div class="container header-inner">
         <p class="section-kicker">FI / YOUR LIFE MANUAL</p>
         <h1>生成你的人生说明书</h1>
-        <p>先建立一份可复用的个人档案，再把这一次真正想看的问题交给说明书。</p>
+        <p>先建立一份可复用的个人档案，再把这一次真正想看的问题交给说明书</p>
       </div>
     </section>
 
     <section class="section-band assessment-section">
       <div class="container assessment-container">
-        <div class="progress-card paper-card" aria-label="申请进度">
-          <div class="progress-current" aria-live="polite">
-            <span>申请进度</span>
-            <strong>第 {{ currentStep }} 步 · {{ currentStepLabel }}</strong>
-            <span>{{ stepProgress }}%</span>
-          </div>
-          <div class="progress-step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
-            <span>1</span><p>个人档案</p>
-          </div>
-          <div class="progress-line" :class="{ active: currentStep > 1 }"></div>
-          <div class="progress-step" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
-            <span>2</span><p>本次问题</p>
-          </div>
-          <div class="progress-line" :class="{ active: currentStep > 2 }"></div>
-          <div class="progress-step" :class="{ active: currentStep >= 3 }">
-            <span>3</span><p>生成说明书</p>
+        <div class="progress-card paper-card" role="group" aria-label="人生说明书申请进度">
+          <p class="progress-summary" role="status" aria-live="polite">
+            <span>第 {{ currentStep }} 步 / 共 3 步</span>
+            <strong>{{ currentStepLabel }}</strong>
+          </p>
+          <div class="progress-steps">
+            <div class="progress-track" aria-hidden="true">
+              <span :style="{ width: `${stepProgress}%` }"></span>
+            </div>
+            <ol class="progress-step-list" aria-label="申请步骤">
+              <li class="progress-step" :class="{ active: currentStep === 1, completed: currentStep > 1 }" :aria-current="currentStep === 1 ? 'step' : undefined">
+                <span class="progress-step-index" aria-hidden="true">01</span>
+                <span class="progress-step-name">个人档案</span>
+              </li>
+              <li class="progress-step" :class="{ active: currentStep === 2, completed: currentStep > 2 }" :aria-current="currentStep === 2 ? 'step' : undefined">
+                <span class="progress-step-index" aria-hidden="true">02</span>
+                <span class="progress-step-name">本次问题</span>
+              </li>
+              <li class="progress-step" :class="{ active: currentStep === 3, completed: currentStep > 3 }" :aria-current="currentStep === 3 ? 'step' : undefined">
+                <span class="progress-step-index" aria-hidden="true">03</span>
+                <span class="progress-step-name">生成说明书</span>
+              </li>
+            </ol>
           </div>
         </div>
 
         <div v-if="loadingProfile" class="step-content form-panel loading-panel" aria-live="polite">
           <div class="loading-compass" aria-hidden="true"></div>
           <h2>正在读取你的个人档案</h2>
-          <p>只需要等待片刻，已有资料不会要求你重新填写。</p>
+          <p>只需要等待片刻，已有资料不会要求你重新填写</p>
         </div>
 
         <div v-else-if="currentStep === 1" class="step-content form-panel">
           <div class="step-heading">
             <p class="section-kicker">STEP 01</p>
             <h2 ref="stepHeading" tabindex="-1">{{ hasExistingProfile ? '确认你的个人档案' : '建立你的个人档案' }}</h2>
-            <p>{{ hasExistingProfile ? '档案会用于后续报告与日历申请。你可以只修改发生变化的内容。' : '核心资料用于建立命理基础，画像信息先填你愿意分享的部分。' }}</p>
+            <p>{{ hasExistingProfile ? '档案会用于后续报告与日历申请，你可以只修改发生变化的内容' : '核心资料用于建立命理基础，画像信息先填你愿意分享的部分' }}</p>
             <div v-if="draftRestored || draftStatus" class="draft-status" role="status" aria-live="polite">
               <span class="draft-status-dot" aria-hidden="true"></span>
-              <span>{{ draftRestored ? '已恢复上次未完成的草稿，你可以继续编辑。' : draftStatus }}</span>
+              <span>{{ draftRestored ? '已恢复上次未完成的草稿，你可以继续编辑' : draftStatus }}</span>
             </div>
           </div>
 
@@ -63,7 +70,7 @@
 
             <div class="privacy-note">
               <span class="privacy-mark" aria-hidden="true">私</span>
-              <p>姓名和出生资料只用于你的账户服务。当前困惑、关系和身心状态不会自动写入长期档案。</p>
+              <p>姓名和出生资料只用于你的账户服务，当前困惑、关系和身心状态不会自动写入长期档案</p>
             </div>
 
             <div v-if="profileErrorSummary.length" class="error-summary" role="alert" aria-live="assertive">
@@ -83,10 +90,10 @@
           <div class="step-heading">
             <p class="section-kicker">STEP 02</p>
             <h2 ref="stepHeading" tabindex="-1">这一次，你想看什么</h2>
-            <p>当前问题只属于本次报告。每次申请都可以换一个问题，不会覆盖你的个人档案。</p>
+            <p>当前问题只属于本次报告，每次申请都可以换一个问题，不会覆盖你的个人档案</p>
             <div v-if="draftRestored || draftStatus" class="draft-status" role="status" aria-live="polite">
               <span class="draft-status-dot" aria-hidden="true"></span>
-              <span>{{ draftRestored ? '已恢复上次未完成的草稿，你可以继续编辑。' : draftStatus }}</span>
+              <span>{{ draftRestored ? '已恢复上次未完成的草稿，你可以继续编辑' : draftStatus }}</span>
             </div>
           </div>
 
@@ -100,7 +107,7 @@
             <button type="button" class="secondary-button small-button" @click="reusePreviousContext">沿用上次背景并编辑</button>
           </div>
           <p v-if="contextMessage" class="context-message" role="status">{{ contextMessage }}</p>
-          <p class="context-scope-note">本次困惑、关系和身心状态只用于这份申请，默认不会写入长期档案。</p>
+          <p class="context-scope-note">本次困惑、关系和身心状态只用于这份申请，默认不会写入长期档案</p>
 
           <form class="assessment-form context-form" novalidate @submit.prevent="submitAssessment">
             <fieldset class="form-group choice-fieldset" :aria-describedby="contextErrors.focus_topics ? 'assessment-focus-topics-error' : undefined">
@@ -126,7 +133,7 @@
               <label class="form-label" for="assessment-current-challenge">现在面临的最大困惑或挑战 <span class="required">*</span></label>
               <textarea id="assessment-current-challenge" v-model="contextDraft.current_challenge" rows="5" maxlength="2000" placeholder="请尽可能具体地描述：发生了什么，你卡在哪里？" :aria-invalid="Boolean(contextErrors.current_challenge)" :aria-describedby="contextErrors.current_challenge ? 'assessment-current-challenge-error' : 'assessment-current-challenge-hint'" @blur="validateContextField('current_challenge')"></textarea>
               <div class="field-meta">
-                <p id="assessment-current-challenge-hint" class="form-hint">例如：想转行但不确定方向，已经反复犹豫半年。</p>
+                <p id="assessment-current-challenge-hint" class="form-hint">例如：想转行但不确定方向，已经反复犹豫半年</p>
                 <span class="char-count" aria-live="polite">{{ String(contextDraft.current_challenge || '').length }}/2000</span>
               </div>
               <p v-if="contextErrors.current_challenge" id="assessment-current-challenge-error" class="field-error" role="alert">{{ contextErrors.current_challenge }}</p>
@@ -219,7 +226,7 @@
           <div v-if="isGenerating" class="generating">
             <div class="loading-compass" aria-hidden="true"></div>
             <h2 ref="stepHeading" tabindex="-1">正在为你生成专属报告</h2>
-            <p>你的个人特质、当下处境与关注的议题，正在汇成一张更清晰的自我地图。</p>
+            <p>你的个人特质、当下处境与关注的议题，正在汇成一张更清晰的自我地图</p>
             <div class="generating-steps">
               <div class="gen-step" :class="{ active: genStep >= 1 }">认识你的起点</div>
               <div class="gen-step" :class="{ active: genStep >= 2 }">看见你的特质</div>
@@ -231,7 +238,7 @@
           <div v-else class="result-success">
             <span class="seal-badge">已生成</span>
             <h2 ref="stepHeading" tabindex="-1">你的人生说明书已经完成</h2>
-            <p>这份报告保留了提交时的资料快照。之后更新档案，不会改变这份历史报告。</p>
+            <p>这份报告保留了提交时的资料快照，之后更新档案，不会改变这份历史报告</p>
             <div class="result-preview paper-card">
               <div><span>个人属性</span><strong>{{ reportPreview.energyType }}</strong></div>
               <div><span>核心特质</span><strong>{{ reportPreview.coreTraits }}</strong></div>
@@ -345,17 +352,17 @@ export default {
     }
   },
   computed: {
+    currentStepLabel() {
+      return ['个人档案', '本次问题', '生成说明书'][this.currentStep - 1] || '个人档案'
+    },
+    stepProgress() {
+      return Math.round(((this.currentStep - 1) / 2) * 100)
+    },
     profileErrorSummary() {
       return Object.values(this.profileErrors)
     },
     contextErrorSummary() {
       return Object.values(this.contextErrors)
-    },
-    currentStepLabel() {
-      return ['个人档案', '本次问题', '生成说明书'][this.currentStep - 1] || '申请'
-    },
-    stepProgress() {
-      return Math.round((this.currentStep / 3) * 100)
     }
   },
   watch: {
@@ -371,7 +378,7 @@ export default {
       this.hasExistingProfile = Number(user.profile_completion || 0) >= 100
       this.restoreDraft()
     } catch (error) {
-      this.formMessage = error.response?.data?.detail || '暂时无法读取个人档案，请刷新后重试。'
+      this.formMessage = error.response?.data?.detail || '暂时无法读取个人档案，请刷新后重试'
     }
     try {
       const latest = await getLatestReportContext()
@@ -416,22 +423,22 @@ export default {
     validateProfile() {
       const profile = this.profileDraft
       const errors = {}
-      if (!String(profile.name || '').trim()) errors.name = '请填写称呼。'
-      if (!profile.gender) errors.gender = '请选择性别。'
-      if (!profile.calendar_type) errors.calendar_type = '请选择历法类型。'
+      if (!String(profile.name || '').trim()) errors.name = '请填写称呼'
+      if (!profile.gender) errors.gender = '请选择性别'
+      if (!profile.calendar_type) errors.calendar_type = '请选择历法类型'
       const year = Number(profile.birth_year)
       const month = Number(profile.birth_month)
       const day = Number(profile.birth_day)
-      if (!year || year < 1900 || year > new Date().getFullYear()) errors.birth_date = '请填写有效的出生日期。'
-      else if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期。'
+      if (!year || year < 1900 || year > new Date().getFullYear()) errors.birth_date = '请填写有效的出生日期'
+      else if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期'
       else if (profile.calendar_type === 'solar') {
         const date = new Date(year, month - 1, day)
-        if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期。'
-      } else if (day > 30) errors.birth_date = '农历日期的日期不能超过 30。'
-      if (!['unknown', 'approximate', 'exact'].includes(profile.birth_time_precision)) errors.birth_time_precision = '请选择出生时间准确度。'
+        if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期'
+      } else if (day > 30) errors.birth_date = '农历日期的日期不能超过 30'
+      if (!['unknown', 'approximate', 'exact'].includes(profile.birth_time_precision)) errors.birth_time_precision = '请选择出生时间准确度'
       if (profile.birth_time_precision !== 'unknown') {
-        if (profile.birth_hour === null || profile.birth_hour === '' || profile.birth_hour === undefined || profile.birth_minute === null || profile.birth_minute === '' || profile.birth_minute === undefined) errors.birth_time = '请选择完整的出生小时和分钟。'
-        else if (Number(profile.birth_hour) > 23 || Number(profile.birth_minute) > 59) errors.birth_time = '出生时间范围不正确。'
+        if (profile.birth_hour === null || profile.birth_hour === '' || profile.birth_hour === undefined || profile.birth_minute === null || profile.birth_minute === '' || profile.birth_minute === undefined) errors.birth_time = '请选择完整的出生小时和分钟'
+        else if (Number(profile.birth_hour) > 23 || Number(profile.birth_minute) > 59) errors.birth_time = '出生时间范围不正确'
       }
       this.profileErrors = errors
       return Object.keys(errors).length === 0
@@ -458,7 +465,7 @@ export default {
     async saveProfileAndContinue() {
       this.formMessage = ''
       if (!this.validateProfile()) {
-        this.formMessage = '请先补充个人档案中的必填项。'
+        this.formMessage = '请先补充个人档案中的必填项'
         this.focusStepHeading()
         return
       }
@@ -474,7 +481,7 @@ export default {
         this.currentStep = 2
         this.focusStepHeading()
       } catch (error) {
-        this.formMessage = error.response?.data?.detail || '档案保存失败，请检查网络后重试。'
+        this.formMessage = error.response?.data?.detail || '档案保存失败，请检查网络后重试'
       } finally {
         this.savingProfile = false
       }
@@ -512,22 +519,22 @@ export default {
     },
     validateContext() {
       const errors = {}
-      if (!this.contextDraft.focus_topics.length) errors.focus_topics = '至少选择一个关注领域。'
-      if (!String(this.contextDraft.current_challenge || '').trim()) errors.current_challenge = '请描述当前困惑或挑战。'
-      if (!this.contextDraft.expected_outcomes.length) errors.expected_outcomes = '至少选择一个期望获得的结果。'
+      if (!this.contextDraft.focus_topics.length) errors.focus_topics = '至少选择一个关注领域'
+      if (!String(this.contextDraft.current_challenge || '').trim()) errors.current_challenge = '请描述当前困惑或挑战'
+      if (!this.contextDraft.expected_outcomes.length) errors.expected_outcomes = '至少选择一个期望获得的结果'
       this.contextErrors = errors
       return Object.keys(errors).length === 0
     },
     reusePreviousContext() {
       this.contextDraft = { ...emptyContext(), ...(this.lastContext || {}), focus_topics: [...(this.lastContext?.focus_topics || [])], expected_outcomes: [...(this.lastContext?.expected_outcomes || [])], decision_style: [...(this.lastContext?.decision_style || [])] }
-      this.contextMessage = this.lastContextReportId ? `已带入报告 #${this.lastContextReportId} 的背景，请按这一次的情况编辑。` : '已带入上次背景，请按这一次的情况编辑。'
+      this.contextMessage = this.lastContextReportId ? `已带入报告 #${this.lastContextReportId} 的背景，请按这一次的情况编辑` : '已带入上次背景，请按这一次的情况编辑'
       this.$nextTick(() => document.getElementById('assessment-current-challenge')?.focus())
     },
     async submitAssessment() {
       if (this.submitting) return
       this.formMessage = ''
       if (!this.validateContext()) {
-        this.formMessage = '请先补充本次申请的必填信息。'
+        this.formMessage = '请先补充本次申请的必填信息'
         this.showAdvancedContext = true
         this.focusStepHeading()
         return
@@ -557,7 +564,7 @@ export default {
         this.draftRestored = false
       } catch (error) {
         console.error('报告生成失败:', error)
-        this.formMessage = error.response?.data?.detail || error.message || '报告生成失败，请检查网络后重试。'
+        this.formMessage = error.response?.data?.detail || error.message || '报告生成失败，请检查网络后重试'
         this.currentStep = 2
         this.isGenerating = false
         this.focusStepHeading()
@@ -609,24 +616,89 @@ export default {
 
 .progress-card {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 22px;
-  padding: 14px;
+  gap: 18px;
+  width: min(760px, 100%);
+  margin: 0 auto 22px;
+  padding: 20px 28px 18px;
+  border-radius: 18px;
 }
 
-.progress-current {
-  display: none;
+.progress-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
 }
 
-.progress-step { display: grid; justify-items: center; gap: 7px; width: 80px; color: var(--muted); }
-.progress-step span { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: rgba(255,250,240,.72); font-weight: 900; }
-.progress-step p { font-size: 12px; font-weight: 800; white-space: nowrap; }
-.progress-step.active, .progress-step.completed { color: var(--cinnabar-deep); }
-.progress-step.active span, .progress-step.completed span { border-color: rgba(184,92,80,.34); background: rgba(184,92,80,.1); }
-.progress-line { height: 1px; background: var(--line); }
-.progress-line.active { background: linear-gradient(90deg, var(--cinnabar), var(--gold)); }
+.progress-summary strong {
+  margin-left: auto;
+  color: var(--cinnabar-deep);
+  font-size: 15px;
+}
+
+.progress-steps { position: relative; }
+
+.progress-track {
+  position: absolute;
+  top: 17px;
+  right: calc(16.666% + 18px);
+  left: calc(16.666% + 18px);
+  height: 2px;
+  background: var(--line);
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  background: var(--cinnabar);
+  transition: width var(--motion-standard, 220ms) ease;
+}
+
+.progress-step-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.progress-step {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.progress-step-index {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper-soft);
+  color: inherit;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 800;
+  transition: border-color var(--motion-standard, 220ms) ease, background var(--motion-standard, 220ms) ease, color var(--motion-standard, 220ms) ease;
+}
+
+.progress-step-name {
+  max-width: 100%;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.progress-step.active { color: var(--cinnabar-deep); }
+.progress-step.active .progress-step-index { border-color: var(--cinnabar-deep); background: var(--cinnabar-deep); color: #fff; }
+.progress-step.completed { color: var(--ink-soft); }
+.progress-step.completed .progress-step-index { border-color: rgba(111,159,147,.55); background: rgba(111,159,147,.14); color: #4c7569; }
 
 .step-content { padding: clamp(20px, 4vw, 38px); }
 .step-heading { margin-bottom: 26px; text-align: center; }
@@ -751,14 +823,27 @@ textarea:focus, select:focus, .context-form input[type="text"]:focus { border-co
 .result-preview span { color: var(--muted); font-size: 11px; }
 .result-preview strong { color: var(--ink); font-size: 13px; line-height: 1.5; }
 
+@media (min-width: 701px) {
+  .assessment-container { max-width: 1040px; }
+  .step-content { padding: 40px clamp(32px, 4vw, 52px); }
+  .step-heading { max-width: 800px; margin: 0 0 28px; text-align: left; }
+  .step-heading p:not(.section-kicker) { max-width: 760px; }
+  .draft-status { justify-content: flex-start; }
+  .button-row { justify-content: flex-end; }
+  .form-submit-bar { display: flex; justify-content: flex-end; }
+  .form-submit-bar .full-width { width: auto; min-width: 220px; }
+}
+
 @media (max-width: 700px) {
   .page-header { padding: 60px 0 38px; }
-  .progress-card { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto; gap: 4px; padding: 10px 7px; }
-  .progress-current { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 8px; padding: 1px 3px 7px; color: var(--muted); font-size: 11px; }
-  .progress-current strong { color: var(--ink-soft); font-size: 12px; }
-  .progress-current span:last-child { color: var(--cinnabar-deep); font-weight: 900; }
-  .progress-step { width: 64px; }
-  .progress-step p { font-size: 10px; }
+  .progress-card { gap: 12px; padding: 12px 14px; border-radius: 14px; }
+  .progress-summary { gap: 6px; font-size: 11px; }
+  .progress-summary strong { font-size: 12px; }
+  .progress-track { top: 12px; right: calc(16.666% + 13px); left: calc(16.666% + 13px); }
+  .progress-step-list { gap: 4px; }
+  .progress-step { gap: 6px; }
+  .progress-step-index { width: 26px; height: 26px; font-size: 9px; }
+  .progress-step-name { font-size: 11px; }
   .topics-grid, .advanced-context-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .reuse-context-card { align-items: start; flex-direction: column; }
   .result-preview { grid-template-columns: 1fr; }
@@ -779,8 +864,9 @@ textarea:focus, select:focus, .context-form input[type="text"]:focus { border-co
   .step-content { padding: 16px 12px; }
   .topics-grid, .expected-grid, .advanced-context-grid { grid-template-columns: 1fr; }
   .button-row > button { width: 100%; }
-  .progress-current { padding-right: 1px; padding-left: 1px; }
-  .progress-current span:first-child { display: none; }
+  .progress-card { width: 100%; }
+  .progress-summary { flex-wrap: wrap; }
+  .progress-step-name { font-size: 10px; }
   .generating-steps { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
 </style>

@@ -96,7 +96,7 @@
                 <div>
                   <span class="calendar-access-kicker">PERSONAL TIMEZONE</span>
                   <h4>把报告里的洞察带回每天</h4>
-                  <p>查看阶段行动节奏，记录真实发生的事。</p>
+                  <p>查看阶段行动节奏，记录真实发生的事</p>
                 </div>
                 <button type="button" class="btn-action" @click="goToCalendar">打开决策日历</button>
               </div>
@@ -105,7 +105,7 @@
             <!-- 我的申请 -->
             <div v-if="activeTab === 'requests'" id="user-panel-requests" class="content-section" role="tabpanel" aria-labelledby="user-tab-requests" tabindex="0">
               <div class="requests-section-heading">
-                <div><h3 class="section-title">我的申请</h3><p>申请会经过咨询师接单、AI 初稿和人工审校，交付后才能查看最终结果。</p></div>
+                <div><h3 class="section-title">我的申请</h3><p>申请会经过咨询师接单、AI 初稿和人工审校，交付后才能查看最终结果</p></div>
                 <router-link class="btn-action" to="/pages/requests/requests">查看全部</router-link>
               </div>
               <div v-if="!requests.length" class="empty-state">
@@ -139,7 +139,7 @@
                 <div class="form-group account-contact-field">
                   <label for="user-contact">账户联系方式</label>
                   <input id="user-contact" v-model="settings.contact" type="tel" autocomplete="tel" readonly>
-                  <p class="form-hint">联系方式由账户系统管理，不会发送给报告分析模型。</p>
+                  <p class="form-hint">联系方式由账户系统管理，不会发送给报告分析模型</p>
                 </div>
                 <button type="submit" class="btn-save" :disabled="savingSettings" :aria-busy="savingSettings">{{ savingSettings ? '保存中…' : '保存个人档案' }}</button>
                 <p v-if="settingsError" class="settings-error" role="alert">{{ settingsError }}</p>
@@ -159,7 +159,7 @@
               <section class="account-actions" aria-labelledby="account-actions-title">
                 <div>
                   <h4 id="account-actions-title">账号操作</h4>
-                  <p>退出当前设备上的辰鉴账号。</p>
+                  <p>退出当前设备上的辰鉴账号</p>
                 </div>
                 <button type="button" class="btn-logout" :disabled="loggingOut" :aria-busy="loggingOut" @click="handleLogout">
                   <IconMark name="logout" />
@@ -262,7 +262,7 @@ export default {
         try {
           requestResponse = await getMyServiceRequests()
         } catch (error) {
-          // 申请分区不能阻断历史报告和账户设置的打开。
+          // 申请分区不能阻断历史报告和账户设置的打开，
           this.message = this.message || '申请记录暂时无法同步，请稍后重试'
         }
         this.userName = user.name
@@ -358,18 +358,18 @@ export default {
     validateSettings() {
       const errors = {}
       const profile = this.settings
-      if (!String(profile.name || '').trim()) errors.name = '请填写称呼。'
-      if (!profile.gender) errors.gender = '请选择性别。'
+      if (!String(profile.name || '').trim()) errors.name = '请填写称呼'
+      if (!profile.gender) errors.gender = '请选择性别'
       const year = Number(profile.birth_year)
       const month = Number(profile.birth_month)
       const day = Number(profile.birth_day)
-      if (!year || year < 1900 || year > new Date().getFullYear()) errors.birth_date = '请填写有效的出生年份。'
-      if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期。'
+      if (!year || year < 1900 || year > new Date().getFullYear()) errors.birth_date = '请填写有效的出生年份'
+      if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期'
       if (profile.calendar_type === 'solar' && year && month && day) {
         const date = new Date(year, month - 1, day)
-        if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期。'
+        if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期'
       }
-      if (profile.birth_time_precision !== 'unknown' && (profile.birth_hour === null || profile.birth_hour === undefined || profile.birth_minute === null || profile.birth_minute === undefined)) errors.birth_time = '请选择完整的出生小时和分钟。'
+      if (profile.birth_time_precision !== 'unknown' && (profile.birth_hour === null || profile.birth_hour === undefined || profile.birth_minute === null || profile.birth_minute === undefined)) errors.birth_time = '请选择完整的出生小时和分钟'
       this.settingsErrors = errors
       return Object.keys(errors).length === 0
     },
@@ -390,7 +390,7 @@ export default {
     async saveSettings() {
       this.settingsError = ''
       if (!this.validateSettings()) {
-        this.settingsError = '请先检查档案中的必填项。'
+        this.settingsError = '请先检查档案中的必填项'
         return
       }
       this.savingSettings = true
@@ -425,7 +425,7 @@ export default {
       try {
         await logoutUser()
       } catch {
-        // 本地会话由 logoutUser 在 finally 中清理，即使服务端请求失败也能退出当前设备。
+        // 本地会话由 logoutUser 在 finally 中清理，即使服务端请求失败也能退出当前设备
       } finally {
         await this.$router.replace('/auth/login')
       }
@@ -759,7 +759,7 @@ export default {
 
 .calendar-access-kicker {
   color: var(--gold-deep);
-  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.18em;
@@ -990,10 +990,11 @@ export default {
 
 /* 页脚 */
 .footer {
-  background: var(--ink, #2f241b);
+  border-top: 1px solid rgba(139, 90, 20, 0.14);
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.74), rgba(248, 240, 227, 0.94));
   padding: 40px 0;
   text-align: center;
-  color: rgba(255, 250, 240, .76);
+  color: var(--ink-soft, #5c4a3c);
 }
 
 /* 响应式 */
@@ -1044,17 +1045,23 @@ export default {
   }
 
   .sidebar-nav {
-    flex-direction: row;
-    overflow-x: auto;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    overflow: visible;
   }
 
   .nav-item {
+    width: 100%;
+    min-width: 0;
     flex-direction: column;
+    justify-content: center;
     gap: 5px;
-    padding: 12px 20px;
+    padding: 12px 8px;
     border-left: none;
     border-bottom: 3px solid transparent;
-    white-space: nowrap;
+    text-align: center;
+    white-space: normal;
   }
 
   .nav-item.active {
@@ -1148,7 +1155,7 @@ export default {
   }
 }
 
-/* 与主站纸张视觉统一，减少旧版后台面板的生硬白底。 */
+/* 与主站纸张视觉统一，减少旧版后台面板的生硬白底 */
 .user-center {
   background: transparent;
 }
@@ -1164,15 +1171,11 @@ export default {
 }
 
 .user-header::after {
-  content: "辰鉴";
+  content: "";
   position: absolute;
-  right: 7%;
-  bottom: -40px;
-  color: rgba(184, 92, 80, 0.08);
-  font-family: var(--font-display, serif);
-  font-size: 150px;
-  font-weight: 900;
-  line-height: 1;
+  inset: auto 0 0;
+  height: 58%;
+  background: linear-gradient(180deg, rgba(255, 250, 240, 0), rgba(255, 250, 240, 0.62));
   pointer-events: none;
 }
 
@@ -1191,7 +1194,10 @@ export default {
   height: 66px;
   border: 1px solid rgba(184, 92, 80, 0.28);
   background: linear-gradient(145deg, var(--cinnabar, #b5574c), var(--cinnabar-deep, #9e3f35));
-  box-shadow: 0 12px 22px -15px rgba(158, 63, 53, 0.86);
+  box-shadow:
+    0 12px 22px -15px rgba(158, 63, 53, 0.86),
+    0 0 0 6px rgba(255, 250, 240, 0.72),
+    0 0 0 7px rgba(184, 92, 80, 0.2);
   font-family: var(--font-display, serif);
 }
 
@@ -1261,12 +1267,6 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .user-header::after {
-    right: 2%;
-    bottom: -18px;
-    font-size: 86px;
-  }
-
   .content-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
@@ -1277,25 +1277,22 @@ export default {
   }
 
   .sidebar-nav {
-    flex-direction: row;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .sidebar-nav::-webkit-scrollbar {
-    display: none;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    overflow: visible;
   }
 
   .nav-item {
-    width: auto;
-    min-width: 92px;
-    min-height: 48px;
-    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: 54px;
     justify-content: center;
-    gap: 6px;
+    gap: 5px;
     border-left: 0;
     border-bottom: 2px solid transparent;
-    padding: 8px 10px;
+    padding: 9px 6px;
+    text-align: center;
   }
 
   .nav-icon {
@@ -1439,7 +1436,7 @@ export default {
   }
 
   .nav-item {
-    min-width: 86px;
+    min-width: 0;
     padding-right: 8px;
     padding-left: 8px;
   }
@@ -1449,16 +1446,20 @@ export default {
   }
 }
 
-/* 最终移动端紧凑版：保留触控尺寸，减少视觉体积与空白。 */
+/* 最终移动端紧凑版：保留触控尺寸，减少视觉体积与空白 */
 @media (max-width: 768px) {
   .user-header {
     padding: 34px 0 20px;
   }
 
-  .user-header::after {
-    right: 2%;
-    bottom: -14px;
-    font-size: 72px;
+  .user-header-inner {
+    align-items: center;
+    text-align: center;
+  }
+
+  .user-info {
+    justify-content: center;
+    text-align: center;
   }
 
   .user-avatar {
@@ -1490,11 +1491,16 @@ export default {
   }
 
   .sidebar-nav {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
     gap: 0;
+    overflow: visible;
   }
 
   .nav-item {
-    min-width: 82px;
+    width: 100%;
+    min-width: 0;
     min-height: 44px;
     gap: 4px;
     padding: 7px 8px;
@@ -1619,10 +1625,6 @@ export default {
     padding: 30px 0 18px;
   }
 
-  .user-header::after {
-    font-size: 60px;
-  }
-
   .user-avatar {
     width: 52px;
     height: 52px;
@@ -1638,13 +1640,13 @@ export default {
   }
 
   .nav-item {
-    min-width: 78px;
+    min-width: 0;
     padding-right: 6px;
     padding-left: 6px;
   }
 }
 
-/* 按钮专项：个人中心的主操作统一为卡片内 CTA，表单按钮移动端全宽。 */
+/* 按钮专项：个人中心的主操作统一为卡片内 CTA，表单按钮移动端全宽 */
 .btn-action,
 .btn-save,
 .btn-view {

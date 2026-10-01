@@ -6,7 +6,7 @@
       <div class="container header-inner">
         <p class="section-kicker">TE / WALK WITH YOUR CHOICE</p>
         <h1>预约辰鉴行动端</h1>
-        <p>带着一个具体问题来，把人生说明书用到现实里。</p>
+        <p>带着一个具体问题来，把人生说明书用到现实里</p>
       </div>
     </section>
 
@@ -74,7 +74,7 @@
             <div class="step-heading">
               <p class="section-kicker">CONTACT</p>
               <h2>留下你的现实问题</h2>
-              <p>个人档案会自动用于准备服务，这里只确认本次预约的联系方式与目标。</p>
+              <p>个人档案会自动用于准备服务，这里只确认本次预约的联系方式与目标</p>
             </div>
 
             <div v-if="profile" class="booking-profile-block">
@@ -84,14 +84,14 @@
                 :last-confirmed-at="profile.profile_last_confirmed_at"
                 @edit="goToProfile"
               />
-              <p class="booking-profile-note">以上资料来自你的个人档案。预约不会再次收集姓名、性别和出生资料；需要调整时，可先去个人档案更新。</p>
+              <p class="booking-profile-note">以上资料来自你的个人档案，预约不会再次收集姓名、性别和出生资料；需要调整时，可先去个人档案更新</p>
             </div>
             <div v-else class="booking-profile-loading" role="status">正在读取你的个人档案…</div>
 
             <div class="form-group">
               <label for="booking-contact">本次联系方式 <span class="required">*</span></label>
               <input id="booking-contact" v-model="bookingData.contact" type="tel" inputmode="tel" autocomplete="tel" placeholder="手机号或微信" required>
-              <p class="form-hint">默认使用账户联系方式；如希望团队联系其他方式，可在这里临时修改。</p>
+              <p class="form-hint">默认使用账户联系方式；如希望团队联系其他方式，可在这里临时修改</p>
             </div>
 
             <div class="form-group">
@@ -125,13 +125,13 @@
               <label>补充说明 <span class="optional">(选填)</span></label>
               <textarea
                 v-model="bookingData.notes"
-                placeholder="如果有具体问题，可以写在这里。"
+                placeholder="如果有具体问题，可以写在这里"
                 rows="4"
               ></textarea>
             </div>
 
             <div class="form-notice">
-              提交后，辰鉴团队会在 24 小时内与你联系，确认具体形式与时间。这里不是医疗或危机干预服务。
+              提交后，辰鉴团队会在 24 小时内与你联系，确认具体形式与时间，这里不是医疗或危机干预服务
             </div>
 
             <button ref="successTrigger" type="submit" class="primary-button full-width" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '提交预约' }}</button>
@@ -152,7 +152,7 @@
           >
             <span class="seal-badge">预约成功</span>
             <h2 id="booking-success-title">我们已收到你的预约信息</h2>
-            <p id="booking-success-description">辰鉴团队将通过 <strong>{{ bookingData.contact }}</strong> 与你联系。</p>
+            <p id="booking-success-description">辰鉴团队将通过 <strong>{{ bookingData.contact }}</strong> 与你联系</p>
             <div class="success-actions">
               <button type="button" @click="closeSuccess" class="secondary-button">关闭</button>
               <button type="button" @click="goToHome" class="primary-button">返回首页</button>
@@ -233,7 +233,7 @@ export default {
     },
     async submitBooking() {
       if (!this.profile || !this.bookingData.contact || !this.bookingData.preferredTime || this.bookingData.topics.length === 0) {
-        this.errorMessage = '请补充所有带 * 的必填项后再提交。'
+        this.errorMessage = '请补充所有带 * 的必填项后再提交'
         return
       }
       this.submitting = true
@@ -379,7 +379,7 @@ export default {
 .service-price {
   margin: 14px 0 18px;
   color: var(--cinnabar-deep);
-  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-family: var(--font-ui);
   font-size: 25px;
   font-weight: 900;
 }
@@ -441,7 +441,7 @@ export default {
 .selected-service p {
   margin-top: 8px;
   color: var(--cinnabar-deep);
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font-ui);
   font-size: 22px;
   font-weight: 900;
 }
@@ -805,7 +805,7 @@ export default {
   }
 }
 
-/* 按钮专项：返回是轻量文字动作，选择/提交是卡片内的明确主次 CTA。 */
+/* 按钮专项：返回是轻量文字动作，选择/提交是卡片内的明确主次 CTA */
 .back-link {
   display: inline-flex;
   min-height: 44px;

@@ -10,7 +10,7 @@
       <div class="container paper-card">
         <span class="seal-badge">PERSONAL TIMEZONE</span>
         <h1>还没有已交付的决策日历</h1>
-        <p>{{ calendarError || '提交申请后，咨询师会基于你的起始日期和关注目标，完成一段 30 天的 AI 初稿与人工审校。' }}</p>
+        <p>{{ calendarError || '提交申请后，咨询师会基于你的起始日期和关注目标，完成一段 30 天的 AI 初稿与人工审校' }}</p>
         <div class="calendar-empty-actions">
           <router-link class="primary-button" to="/pages/requests/new?type=calendar">申请决策日历</router-link>
           <router-link class="secondary-button" to="/pages/requests/requests">查看我的申请</router-link>
@@ -47,7 +47,7 @@
             <div class="orbit-caption">
               <span class="orbit-caption-label">辰鉴 · 本月北极星</span>
               <strong>让行动服从于时机</strong>
-              <span>先看见，再决定下一步。</span>
+              <span>先看见，再决定下一步</span>
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@
               <p class="section-kicker">MONTHLY OVERVIEW</p>
               <h2 class="section-title">这个月，不急着证明自己在前进</h2>
             </div>
-            <p class="section-desc">这张日历不是催你每天做更多，而是帮你分辨什么时候适合推进，什么时候适合停下来整理。</p>
+            <p class="section-desc">这张日历不是催你每天做更多，而是帮你分辨什么时候适合推进，什么时候适合停下来整理</p>
           </div>
 
           <div class="overview-grid">
@@ -74,9 +74,9 @@
               <article class="paper-card focus-card">
                 <span class="mini-label">本月只做三件事</span>
                 <ol>
-                  <li><span>01</span>把眼下最重要的事情写下来，找到清晰的下一步。</li>
-                  <li><span>02</span>记录 3—5 次真实选择，回看自己如何做决定。</li>
-                  <li><span>03</span>给重要的人和事情留出沟通与等待的时间。</li>
+                  <li><span>01</span>把眼下最重要的事情写下来，找到清晰的下一步</li>
+                  <li><span>02</span>记录 3—5 次真实选择，回看自己如何做决定</li>
+                  <li><span>03</span>给重要的人和事情留出沟通与等待的时间</li>
                 </ol>
               </article>
               <div class="phase-progress" aria-label="本月四个能量阶段">
@@ -203,7 +203,7 @@
                   </div>
                 </div>
               </div>
-              <p class="detail-summary">{{ selectedEntry.summary || `这一日适合把“${selectedEntry.keyword}”放在第一位。` }}</p>
+              <p class="detail-summary">{{ selectedEntry.summary || `这一日适合把“${selectedEntry.keyword}”放在第一位` }}</p>
 
               <div class="rhythm-strip">
                 <div class="rhythm-strip-head"><span>今日节奏</span><small>把力气放在合适的时段</small></div>
@@ -237,7 +237,7 @@
                   </div>
                   <span class="actual-count">{{ selectedRecords.length }} 条</span>
                 </div>
-                <p class="actual-records-intro">把建议和真实发生的事并排保存，日后才能看见自己的节奏。</p>
+                <p class="actual-records-intro">把建议和真实发生的事并排保存，日后才能看见自己的节奏</p>
 
                 <div v-if="selectedRecords.length" class="actual-record-list">
                   <article v-for="record in selectedRecords" :key="record.id" class="actual-record-item">
@@ -250,7 +250,7 @@
                     <small v-if="record.note">{{ record.note }}</small>
                   </article>
                 </div>
-                <p v-else class="actual-record-empty">还没有记录。可以从下面的建议开始，也可以写下一件今天真实发生的事。</p>
+                <p v-else class="actual-record-empty">还没有记录，可以从下面的建议开始，也可以写下一件今天真实发生的事</p>
 
                 <div v-if="selectedEntry.suitable?.length" class="quick-records">
                   <div class="quick-records-head"><span>从今日建议记一笔</span><small>已经做过的可以直接加入</small></div>
@@ -310,7 +310,7 @@
         <div class="container">
           <div class="calendar-section-heading compact-heading">
             <div><p class="section-kicker">DECISION WINDOWS</p><h2 class="section-title">本月关键决策节点</h2></div>
-            <p class="section-desc">不是每一天都需要完成大事。把重要动作交给真正支持它的窗口。</p>
+            <p class="section-desc">不是每一天都需要完成大事，把重要动作交给真正支持它的窗口</p>
           </div>
           <div class="decision-table paper-card">
             <div class="decision-row decision-head"><span>日期</span><span>日柱</span><span>色块</span><span>适合决策类型</span></div>
@@ -328,7 +328,7 @@
         <div class="container">
           <div class="calendar-section-heading compact-heading">
             <div><p class="section-kicker">KEEP A TRACE</p><h2 class="section-title">把这个月，留下一点可回看的证据</h2></div>
-            <p class="section-desc">日期详情已经把“适合做什么”和“实际做了什么”放在一起；这里保留几种适合长期坚持的记录方式。</p>
+            <p class="section-desc">日期详情已经把“适合做什么”和“实际做了什么”放在一起；这里保留几种适合长期坚持的记录方式</p>
           </div>
           <div class="record-grid">
             <article v-for="prompt in recordPrompts" :key="prompt.index" class="paper-card record-card">
@@ -354,14 +354,14 @@
             <p class="section-kicker">CALENDAR REQUEST</p>
             <h2 class="section-title">为下一阶段申请一张日历</h2>
           </div>
-          <p class="section-desc">日历会复用你的个人档案，但会根据这一次的周期、用途和决策目标重新制定。</p>
+          <p class="section-desc">日历会复用你的个人档案，但会根据这一次的周期、用途和决策目标重新制定</p>
         </div>
 
         <div v-if="!showCalendarRequestForm" class="calendar-request-cta paper-card">
           <div>
             <span class="mini-label">PROFILE + CURRENT GOAL</span>
             <h3>让日历回应眼前这一段路</h3>
-            <p>提交申请后，后台会按你的档案版本审核并沿用现有的创建、发布流程。</p>
+            <p>提交申请后，后台会按你的档案版本审核并沿用现有的创建、发布流程</p>
           </div>
           <button type="button" class="btn-action" @click="openCalendarRequest">申请新日历</button>
         </div>
@@ -377,7 +377,7 @@
 
           <ProfileSummary v-if="profile" :profile="profile" :profile-version="profile.profile_version" :last-confirmed-at="profile.profile_last_confirmed_at" @edit="goToProfile" />
           <div v-if="profile && Number(profile.profile_completion || 0) < 100" class="request-profile-warning" role="alert">
-            个人档案的性别和出生日期还未完成，请先补充档案后再提交日历申请。
+            个人档案的性别和出生日期还未完成，请先补充档案后再提交日历申请
             <button type="button" @click="goToProfile">去完善个人档案</button>
           </div>
 
@@ -564,7 +564,7 @@ export default {
       mobileDetailOpen: false,
       decisionNodes: [],
       recordPrompts: [],
-      cautionNotes: ['', '', '今天不需要做到完美，只需要完成一件真正重要的事。'],
+      cautionNotes: ['', '', '今天不需要做到完美，只需要完成一件真正重要的事'],
       decisionLogs: [],
       recordSource: 'local',
       showRecordForm: false,
@@ -629,13 +629,13 @@ export default {
     },
     actionClimate() {
       const climateByTone = {
-        green: { label: '推进窗口', caption: '适合把已经想清楚的事做成。', position: 84 },
-        'green-yellow': { label: '先推进，再收束', caption: '上午打开行动，后半天留一点余地。', position: 72 },
-        'yellow-green': { label: '先准备，再行动', caption: '先把信息理顺，下午再迈出下一步。', position: 58 },
-        yellow: { label: '观察与准备', caption: '今天更适合整理判断，而不是急着拍板。', position: 45 },
-        'red-yellow': { label: '缓冲后再判断', caption: '先降低消耗，等思路重新变得清楚。', position: 29 },
-        red: { label: '先收气', caption: '今天更适合减少消耗，为下一次行动留力。', position: 16 },
-        rest: { label: '先收气', caption: '今天更适合减少消耗，为下一次行动留力。', position: 16 }
+        green: { label: '推进窗口', caption: '适合把已经想清楚的事做成', position: 84 },
+        'green-yellow': { label: '先推进，再收束', caption: '上午打开行动，后半天留一点余地', position: 72 },
+        'yellow-green': { label: '先准备，再行动', caption: '先把信息理顺，下午再迈出下一步', position: 58 },
+        yellow: { label: '观察与准备', caption: '今天更适合整理判断，而不是急着拍板', position: 45 },
+        'red-yellow': { label: '缓冲后再判断', caption: '先降低消耗，等思路重新变得清楚', position: 29 },
+        red: { label: '先收气', caption: '今天更适合减少消耗，为下一次行动留力', position: 16 },
+        rest: { label: '先收气', caption: '今天更适合减少消耗，为下一次行动留力', position: 16 }
       }
       return climateByTone[this.selectedEntry.tone] || climateByTone.yellow
     },
@@ -758,13 +758,13 @@ export default {
     },
     validateCalendarRequest() {
       const draft = this.calendarRequestDraft
-      if (!this.profile || Number(this.profile.profile_completion || 0) < 100) return '请先完成个人档案中的性别和出生日期。'
-      if (!draft.start_date || !draft.end_date) return '请选择完整的日历周期。'
-      if (draft.start_date > draft.end_date) return '日历开始日期不能晚于结束日期。'
-      if (!draft.usage_scenario) return '请选择日历用途。'
-      if (!draft.focus_topics.length) return '至少选择一个关注领域。'
-      if (!draft.goal.trim()) return '请填写当前决策目标。'
-      if (!draft.expected_outcomes.length) return '至少选择一个期望输出。'
+      if (!this.profile || Number(this.profile.profile_completion || 0) < 100) return '请先完成个人档案中的性别和出生日期'
+      if (!draft.start_date || !draft.end_date) return '请选择完整的日历周期'
+      if (draft.start_date > draft.end_date) return '日历开始日期不能晚于结束日期'
+      if (!draft.usage_scenario) return '请选择日历用途'
+      if (!draft.focus_topics.length) return '至少选择一个关注领域'
+      if (!draft.goal.trim()) return '请填写当前决策目标'
+      if (!draft.expected_outcomes.length) return '至少选择一个期望输出'
       return ''
     },
     async submitCalendarRequest() {
@@ -780,7 +780,7 @@ export default {
       try {
         const created = await createCalendarRequest({ ...this.calendarRequestDraft, profile_version: this.profile?.profile_version || 1 })
         this.calendarRequests = [created, ...this.calendarRequests]
-        this.calendarRequestFeedback = '申请已提交，后台会按你的档案版本审核。'
+        this.calendarRequestFeedback = '申请已提交，后台会按你的档案版本审核'
         this.calendarRequestDraft = {
           profile_version: this.profile?.profile_version || 1,
           start_date: '',
@@ -793,7 +793,7 @@ export default {
           additional_info: ''
         }
       } catch (error) {
-        this.calendarRequestError = error.response?.data?.detail || '申请提交失败，请稍后再试。'
+        this.calendarRequestError = error.response?.data?.detail || '申请提交失败，请稍后再试'
       } finally {
         this.submittingCalendarRequest = false
       }
@@ -828,7 +828,7 @@ export default {
           this.calendarSource = 'empty'
           this.days = []
           this.meta = {}
-          this.calendarError = '暂时无法读取已交付日历，请稍后重试或先提交一份申请。'
+          this.calendarError = '暂时无法读取已交付日历，请稍后重试或先提交一份申请'
         }
       } finally {
         this.loading = false
@@ -852,7 +852,7 @@ export default {
           shortLabel: entry.keyword || entry.shortLabel || entry.status_label || entry.statusLabel || '查看',
           phaseId: entry.phase_id || entry.phaseId || entry.tone || 'default',
           phaseLabel: entry.phase_label || entry.phaseLabel || entry.status_label || entry.statusLabel || entry.tone || '',
-          timeWindow: entry.time_window || entry.timeWindow || '按你的节奏安排，给决定留出换气空间。',
+          timeWindow: entry.time_window || entry.timeWindow || '按你的节奏安排，给决定留出换气空间',
           suitable: entry.suitable || [],
           unsuitable: entry.unsuitable || [],
           isPhase: entry.is_phase ?? entry.isPhase ?? false
@@ -869,7 +869,7 @@ export default {
             dateLabel: calendarMeta.dateLabel || `${startDate} — ${calendar.end_date || this.days[this.days.length - 1]?.date || ''}`,
             pillars: calendarMeta.pillars || '',
             rhythm: calendarMeta.rhythm || '少说，多做，多记录',
-            intro: calendarMeta.intro || '这是一张属于你的决策时机参照系，帮你在重要选择前留出观察、行动与复盘的空间。',
+            intro: calendarMeta.intro || '这是一张属于你的决策时机参照系，帮你在重要选择前留出观察、行动与复盘的空间',
             overview: Array.isArray(calendarMeta.overview) ? calendarMeta.overview : []
           }
       this.todayDate = this.days.find(day => isToday(day.date))?.date || this.days[0]?.date || null
@@ -885,7 +885,7 @@ export default {
           }))
       this.phases = source === 'mock' ? mockPhaseDefinitions : this.buildPhases()
       this.recordPrompts = source === 'mock' ? mockRecordPrompts : []
-      this.cautionNotes = source === 'mock' ? mockCautionNotes : ['', '', '今天不需要做到完美，只需要完成一件真正重要的事。']
+      this.cautionNotes = source === 'mock' ? mockCautionNotes : ['', '', '今天不需要做到完美，只需要完成一件真正重要的事']
       this.mobileDetailOpen = !this.isMobileLayout
     },
     buildPhases() {
@@ -1052,7 +1052,7 @@ export default {
         await this.persistDecisionLog(payload)
         this.recordFeedback = message
       } catch (error) {
-        this.recordError = '记录没有保存成功，请稍后再试。'
+        this.recordError = '记录没有保存成功，请稍后再试'
       } finally {
         this.savingRecord = false
       }
@@ -1070,7 +1070,7 @@ export default {
     async saveDecisionLog() {
       const content = this.recordDraft.content.trim()
       if (!content) {
-        this.recordError = '先写下今天实际发生的事。'
+        this.recordError = '先写下今天实际发生的事'
         return
       }
 
@@ -1079,7 +1079,7 @@ export default {
         status: this.recordDraft.status,
         content,
         note: this.recordDraft.note.trim()
-      }, '已把这件事留在今天。')
+      }, '已把这件事留在今天')
 
       if (!this.recordError) {
         this.recordDraft = createRecordDraft()
@@ -1091,7 +1091,7 @@ export default {
     },
     async quickRecord(item) {
       if (this.isQuickRecordSaved(item)) return
-      await this.loadRecordAndGiveFeedback({ kind: 'action', status: 'done', content: item, note: '' }, '已把这条建议记为今天做过的事。')
+      await this.loadRecordAndGiveFeedback({ kind: 'action', status: 'done', content: item, note: '' }, '已把这条建议记为今天做过的事')
     },
     statusText(status) {
       return { done: '已完成', doing: '进行中', skipped: '已跳过' }[status] || '已记录'
@@ -1105,9 +1105,9 @@ export default {
         }
         this.decisionLogs = this.decisionLogs.filter(item => item.id !== record.id)
         if (this.recordSource === 'local' || typeof record.id !== 'number') this.persistLocalDecisionLogs()
-        this.recordFeedback = '记录已移除。'
+        this.recordFeedback = '记录已移除'
       } catch (error) {
-        this.recordError = '删除没有成功，请稍后再试。'
+        this.recordError = '删除没有成功，请稍后再试'
       }
     },
     handleEscape(event) {
@@ -1217,7 +1217,7 @@ export default {
 .calendar-overline {
   margin-top: 22px;
   color: var(--cinnabar-deep);
-  font-family: 'Manrope', 'PingFang SC', sans-serif;
+  font-family: var(--font-ui);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.13em;
@@ -1265,7 +1265,7 @@ export default {
   padding: 0 13px;
   background: rgba(255, 252, 245, 0.54);
   color: var(--calendar-muted);
-  font-family: 'Manrope', 'PingFang SC', sans-serif;
+  font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -1358,7 +1358,7 @@ export default {
   position: absolute;
   z-index: 2;
   color: var(--cinnabar-deep);
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 15px;
   font-weight: 800;
 }
@@ -1380,7 +1380,7 @@ export default {
 .detail-kicker,
 .mini-label {
   color: var(--gold-deep);
-  font-family: 'Manrope', 'PingFang SC', sans-serif;
+  font-family: var(--font-ui);
   font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.18em;
@@ -1482,7 +1482,7 @@ export default {
 
 .focus-card li span {
   color: var(--cinnabar);
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.06em;
@@ -1509,7 +1509,7 @@ export default {
 
 .calendar-heading-side { display: grid; justify-items: end; gap: 12px; }
 .calendar-trace-summary { display: flex; align-items: baseline; gap: 9px; color: var(--calendar-muted); font-size: 12px; }
-.calendar-trace-summary strong { color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 12px; letter-spacing: 0.04em; }
+.calendar-trace-summary strong { color: var(--cinnabar-deep); font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.04em; }
 .legend { display: flex; flex-wrap: wrap; justify-content: end; gap: 13px; color: var(--calendar-muted); font-size: 12px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--calendar-muted); }
@@ -1547,7 +1547,7 @@ export default {
   padding: 9px 13px;
   background: rgba(184, 92, 80, 0.07);
   color: var(--cinnabar-deep);
-  font-family: 'Manrope', 'PingFang SC', sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
@@ -1574,7 +1574,7 @@ export default {
 .calendar-weekdays span {
   padding: 0 4px 4px;
   color: var(--calendar-muted);
-  font-family: 'Manrope', 'PingFang SC', sans-serif;
+  font-family: var(--font-ui);
   font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.16em;
@@ -1603,35 +1603,38 @@ export default {
 .date-cell::after {
   content: '';
   position: absolute;
-  right: -17px;
-  top: -17px;
-  width: 48px;
+  right: -20px;
+  top: -20px;
+  width: 72px;
   aspect-ratio: 1;
   border-radius: 50%;
-  opacity: 0.35;
+  opacity: 0.22;
   background: currentColor;
 }
 
 .date-cell:hover { transform: translateY(-2px); border-color: rgba(184, 92, 80, 0.36); box-shadow: 0 12px 24px -20px rgba(84, 48, 25, 0.8); }
 .date-cell.selected { border-color: var(--cinnabar-deep); box-shadow: 0 0 0 3px rgba(184, 92, 80, 0.12), 0 16px 26px -20px rgba(158, 63, 53, 0.76); }
 
-.date-cell.tone-yellow { color: var(--calendar-yellow); background: linear-gradient(145deg, rgba(255, 251, 235, 0.92), rgba(246, 232, 190, 0.42)); }
-.date-cell.tone-green { color: var(--calendar-green); background: linear-gradient(145deg, rgba(241, 249, 239, 0.88), rgba(205, 229, 215, 0.42)); }
-.date-cell.tone-red { color: var(--calendar-red); background: linear-gradient(145deg, rgba(255, 244, 238, 0.9), rgba(237, 204, 196, 0.42)); }
-.date-cell.tone-yellow-green { color: var(--calendar-green); background: linear-gradient(135deg, rgba(247, 235, 195, 0.76) 0 51%, rgba(211, 231, 215, 0.68) 52%); }
-.date-cell.tone-red-yellow { color: var(--calendar-yellow); background: linear-gradient(135deg, rgba(239, 207, 199, 0.76) 0 51%, rgba(247, 235, 195, 0.68) 52%); }
-.date-cell.tone-green-yellow { color: var(--calendar-green); background: linear-gradient(135deg, rgba(211, 231, 215, 0.76) 0 51%, rgba(247, 235, 195, 0.68) 52%); }
-.date-cell.tone-rest { color: var(--calendar-red); background: linear-gradient(135deg, rgba(247, 235, 195, 0.62), rgba(239, 207, 199, 0.64)); }
+.date-cell.tone-yellow { color: #fff; background: var(--calendar-yellow); }
+.date-cell.tone-green { color: #fff; background: var(--calendar-green); }
+.date-cell.tone-red { color: #fff; background: var(--calendar-red); }
+.date-cell.tone-yellow-green { color: #fff; background: linear-gradient(135deg, var(--calendar-yellow) 0 51%, var(--calendar-green) 52%); }
+.date-cell.tone-red-yellow { color: #fff; background: linear-gradient(135deg, var(--calendar-red) 0 51%, var(--calendar-yellow) 52%); }
+.date-cell.tone-green-yellow { color: #fff; background: linear-gradient(135deg, var(--calendar-green) 0 51%, var(--calendar-yellow) 52%); }
+.date-cell.tone-rest { color: #fff; background: linear-gradient(135deg, var(--calendar-yellow), var(--calendar-red)); }
+.date-cell[class*='tone-'] { text-shadow: 0 1px 2px rgba(47, 36, 27, 0.28); }
+.date-cell[class*='tone-']:hover { border-color: rgba(255, 255, 255, 0.72); }
+.date-cell[class*='tone-'].selected { border-color: rgba(255, 255, 255, 0.92); }
 
-.date-cell-top { display: flex; align-items: baseline; gap: 5px; color: var(--calendar-ink); }
+.date-cell-top { display: flex; align-items: baseline; gap: 5px; color: inherit; }
 .date-cell-top strong { font-size: 23px; line-height: 1; }
-.date-cell-top em { color: var(--calendar-muted); font-size: 9px; font-style: normal; }
+.date-cell-top em { color: inherit; font-size: 9px; font-style: normal; opacity: 0.8; }
 .date-cell-pillar { position: relative; z-index: 1; margin-top: 9px; color: currentColor; font-size: 12px; font-weight: 900; letter-spacing: 0.12em; }
-.date-cell-keyword { position: relative; z-index: 1; margin-top: auto; color: var(--calendar-ink); font-size: 12px; font-weight: 800; }
-.date-cell-status { position: relative; z-index: 1; max-width: 100%; margin-top: 5px; overflow: hidden; color: var(--calendar-muted); font-size: 9px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
-.date-cell-record { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 8px; font-weight: 900; }
-.date-cell-record i { display: inline-block; width: 6px; height: 6px; border: 1px solid var(--cinnabar); border-radius: 50%; background: rgba(184, 92, 80, 0.22); }
-.today-mark { position: absolute; right: 9px; bottom: 9px; z-index: 2; color: var(--cinnabar-deep); font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 900; }
+.date-cell-keyword { position: relative; z-index: 1; margin-top: auto; color: inherit; font-size: 12px; font-weight: 800; }
+.date-cell-status { position: relative; z-index: 1; max-width: 100%; margin-top: 5px; overflow: hidden; color: inherit; font-size: 9px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; opacity: 0.88; }
+.date-cell-record { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; color: inherit; font-family: var(--font-ui); font-size: 8px; font-weight: 900; }
+.date-cell-record i { display: inline-block; width: 6px; height: 6px; border: 1px solid currentColor; border-radius: 50%; background: rgba(255, 255, 255, 0.24); }
+.today-mark { position: absolute; right: 9px; bottom: 9px; z-index: 2; color: inherit; font-family: var(--font-ui); font-size: 9px; font-weight: 900; }
 .date-cell.is-today { outline: 2px solid rgba(184, 92, 80, 0.42); outline-offset: -4px; }
 
 .mobile-detail-launch {
@@ -1674,19 +1677,20 @@ export default {
 .detail-header h3 { margin-top: 8px; color: var(--calendar-ink); font-size: 30px; }
 .detail-header h3 small { color: var(--calendar-muted); font-size: 12px; font-weight: 500; }
 
-.status-pill { display: inline-flex; max-width: 126px; align-items: center; border-radius: 999px; padding: 7px 10px; color: #fff; font-size: 10px; font-weight: 800; line-height: 1.35; text-align: center; }
+.status-pill { display: inline-flex; max-width: 126px; align-items: center; border-radius: 999px; padding: 7px 10px; color: #fff; font-size: 10px; font-weight: 800; line-height: 1.35; text-align: center; text-shadow: 0 1px 1px rgba(47, 36, 27, 0.22); }
 .status-pill.tone-yellow { background: var(--calendar-yellow); }
 .status-pill.tone-green { background: var(--calendar-green); }
 .status-pill.tone-red { background: var(--calendar-red); }
-.status-pill.tone-yellow-green, .status-pill.tone-green-yellow { color: #566b45; background: linear-gradient(90deg, #d1ad5e, #92b39a); }
-.status-pill.tone-red-yellow { color: #704c32; background: linear-gradient(90deg, #ba6861, #d2ad5c); }
-.status-pill.tone-rest { color: #704c32; background: linear-gradient(90deg, #d2ad5c, #ba6861); }
+.status-pill.tone-yellow-green { color: #fff; background: linear-gradient(105deg, #bd9550, #658f73); }
+.status-pill.tone-green-yellow { color: #fff; background: linear-gradient(105deg, #658f73, #bd9550); }
+.status-pill.tone-red-yellow { color: #fff; background: linear-gradient(105deg, #b45d58, #bd9550); }
+.status-pill.tone-rest { color: #fff; background: linear-gradient(105deg, #bd9550, #b45d58); }
 
 .detail-title-row { align-items: center; margin-top: 18px; }
 .detail-pillar { color: var(--cinnabar-deep); font-size: 15px; font-weight: 900; letter-spacing: 0.12em; }
 .detail-phase { color: var(--calendar-muted); font-size: 11px; }
 
-.detail-section-kicker { color: var(--gold-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 9px; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase; }
+.detail-section-kicker { color: var(--gold-deep); font-family: var(--font-ui); font-size: 9px; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase; }
 .day-signal-card { position: relative; z-index: 1; margin-top: 22px; padding: 16px; overflow: hidden; border: 1px solid rgba(184, 92, 80, 0.2); border-radius: 16px; background: linear-gradient(145deg, rgba(255, 252, 245, 0.92), rgba(239, 231, 209, 0.72)); }
 .day-signal-card::after { content: '日'; position: absolute; right: -11px; bottom: -31px; color: rgba(184, 92, 80, 0.09); font-size: 104px; font-weight: 900; line-height: 1; }
 .day-signal-top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -1695,9 +1699,9 @@ export default {
 .day-signal-copy p { max-width: 220px; margin-top: 6px; color: var(--calendar-muted); font-size: 11px; line-height: 1.6; }
 .keyword-stamp { display: grid; flex: 0 0 66px; place-items: center; width: 66px; aspect-ratio: 1; border: 1px solid rgba(184, 92, 80, 0.43); border-radius: 50%; background: rgba(255, 250, 240, 0.72); box-shadow: 0 8px 18px -14px rgba(158, 63, 53, 0.9); transform: rotate(5deg); }
 .keyword-stamp strong { color: var(--cinnabar-deep); font-size: 20px; line-height: 1; }
-.keyword-stamp span { margin-top: -1px; color: var(--calendar-muted); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 8px; font-weight: 800; letter-spacing: 0.12em; }
+.keyword-stamp span { margin-top: -1px; color: var(--calendar-muted); font-family: var(--font-ui); font-size: 8px; font-weight: 800; letter-spacing: 0.12em; }
 .climate-meter { position: relative; z-index: 1; margin-top: 18px; }
-.climate-meter-labels { display: flex; justify-content: space-between; color: var(--calendar-muted); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 8px; font-weight: 800; }
+.climate-meter-labels { display: flex; justify-content: space-between; color: var(--calendar-muted); font-family: var(--font-ui); font-size: 8px; font-weight: 800; }
 .climate-meter-track { position: relative; height: 8px; margin-top: 8px; overflow: visible; border-radius: 999px; background: linear-gradient(90deg, rgba(180, 93, 88, 0.78), rgba(209, 173, 94, 0.78) 48%, rgba(111, 159, 147, 0.82)); }
 .climate-meter-fill { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: rgba(255, 252, 245, 0.54); }
 .climate-meter-track > i { position: absolute; top: 50%; width: 17px; height: 17px; border: 3px solid #fffaf0; border-radius: 50%; box-shadow: 0 3px 10px -5px rgba(47, 36, 27, 0.9); transform: translate(-50%, -50%); }
@@ -1711,7 +1715,7 @@ export default {
 .rhythm-strip-head small { color: #5b7065; font-size: 9px; font-weight: 500; }
 .rhythm-track { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 10px; }
 .rhythm-segment { display: grid; min-height: 45px; align-content: space-between; padding: 7px 8px; border-radius: 9px; }
-.rhythm-segment span { color: var(--calendar-muted); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 8px; font-weight: 800; }
+.rhythm-segment span { color: var(--calendar-muted); font-family: var(--font-ui); font-size: 8px; font-weight: 800; }
 .rhythm-segment strong { color: var(--calendar-ink); font-size: 11px; }
 .rhythm-green { background: rgba(111, 159, 147, 0.2); }
 .rhythm-yellow { background: rgba(217, 186, 98, 0.22); }
@@ -1723,7 +1727,7 @@ export default {
 .guidance-good { border-color: rgba(111, 159, 147, 0.24); background: rgba(111, 159, 147, 0.09); }
 .guidance-bad { border-color: rgba(180, 93, 88, 0.18); background: rgba(180, 93, 88, 0.06); }
 .guidance-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--calendar-ink); font-size: 11px; font-weight: 900; }
-.guidance-card-head b { display: inline-grid; width: 19px; height: 19px; place-items: center; border-radius: 50%; color: var(--calendar-muted); background: rgba(255, 252, 245, 0.7); font-family: 'Manrope', sans-serif; font-size: 9px; }
+.guidance-card-head b { display: inline-grid; width: 19px; height: 19px; place-items: center; border-radius: 50%; color: var(--calendar-muted); background: rgba(255, 252, 245, 0.7); font-family: var(--font-ui); font-size: 9px; }
 .guidance-good .guidance-card-head span::before { content: '＋'; margin-right: 4px; color: var(--calendar-green); }
 .guidance-bad .guidance-card-head span::before { content: '—'; margin-right: 4px; color: var(--calendar-red); }
 .guidance-card ul { display: grid; gap: 6px; margin-top: 9px; }
@@ -1731,19 +1735,19 @@ export default {
 .guidance-card li::before { content: '·'; position: absolute; left: 1px; color: var(--cinnabar); font-weight: 900; }
 .guidance-card li.guidance-empty { padding-left: 0; color: rgba(128, 110, 95, 0.72); }
 .guidance-card li.guidance-empty::before { display: none; }
-.guidance-toggle { position: relative; z-index: 1; display: block; width: 100%; margin-top: 8px; color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 10px; font-weight: 900; text-align: center; }
+.guidance-toggle { position: relative; z-index: 1; display: block; width: 100%; margin-top: 8px; color: var(--cinnabar-deep); font-family: var(--font-ui); font-size: 10px; font-weight: 900; text-align: center; }
 .guidance-toggle span { margin-left: 3px; font-size: 13px; }
 
 .actual-records { position: relative; z-index: 1; margin-top: 24px; padding-top: 19px; border-top: 1px solid rgba(184, 92, 80, 0.18); }
 .actual-records-head { display: flex; align-items: end; justify-content: space-between; gap: 10px; }
 .actual-records-head > div { display: grid; gap: 6px; }
 .actual-records-head h4 { color: var(--calendar-ink); font-size: 18px; }
-.actual-count { display: inline-flex; min-height: 23px; align-items: center; border: 1px solid rgba(184, 92, 80, 0.2); border-radius: 999px; padding: 0 9px; color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 10px; font-weight: 900; }
+.actual-count { display: inline-flex; min-height: 23px; align-items: center; border: 1px solid rgba(184, 92, 80, 0.2); border-radius: 999px; padding: 0 9px; color: var(--cinnabar-deep); font-family: var(--font-ui); font-size: 10px; font-weight: 900; }
 .actual-records-intro { margin-top: 9px; color: var(--calendar-muted); font-size: 13px; line-height: 1.7; }
 .actual-record-list { display: grid; gap: 8px; margin-top: 13px; }
 .actual-record-item { padding: 11px 12px; border: 1px solid rgba(139, 90, 20, 0.12); border-radius: 12px; background: rgba(255, 252, 245, 0.58); }
 .actual-record-meta { display: flex; align-items: center; gap: 6px; }
-.record-kind, .record-status { display: inline-flex; min-height: 22px; align-items: center; border-radius: 999px; padding: 0 8px; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 11px; font-weight: 900; }
+.record-kind, .record-status { display: inline-flex; min-height: 22px; align-items: center; border-radius: 999px; padding: 0 8px; font-family: var(--font-ui); font-size: 11px; font-weight: 900; }
 .record-kind { color: var(--cinnabar-deep); background: rgba(184, 92, 80, 0.1); }
 .record-kind.kind-decision { color: var(--gold-deep); background: rgba(217, 186, 98, 0.18); }
 .record-status { color: #4f806f; background: rgba(111, 159, 147, 0.13); }
@@ -1760,10 +1764,10 @@ export default {
 .quick-records-head small { color: var(--calendar-muted); font-size: 9px; font-weight: 500; }
 .quick-record-button { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 44px; padding: 8px 10px; border: 1px solid rgba(111, 159, 147, 0.18); border-radius: 10px; background: rgba(111, 159, 147, 0.07); color: var(--calendar-muted); font-size: 13px; line-height: 1.5; text-align: left; transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease; }
 .quick-record-button:hover:not(:disabled) { transform: translateX(2px); border-color: rgba(111, 159, 147, 0.42); background: rgba(111, 159, 147, 0.13); }
-.quick-record-button b { flex: 0 0 auto; color: #4f806f; font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 11px; font-weight: 900; white-space: nowrap; }
+.quick-record-button b { flex: 0 0 auto; color: #4f806f; font-family: var(--font-ui); font-size: 11px; font-weight: 900; white-space: nowrap; }
 .quick-record-button.recorded { border-color: rgba(111, 159, 147, 0.3); background: rgba(111, 159, 147, 0.12); }
 .quick-record-button:disabled { cursor: default; opacity: 0.82; }
-.record-add-button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 41px; margin-top: 13px; border: 1px dashed rgba(184, 92, 80, 0.36); border-radius: 11px; background: rgba(184, 92, 80, 0.055); color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 11px; font-weight: 900; transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+.record-add-button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 41px; margin-top: 13px; border: 1px dashed rgba(184, 92, 80, 0.36); border-radius: 11px; background: rgba(184, 92, 80, 0.055); color: var(--cinnabar-deep); font-family: var(--font-ui); font-size: 11px; font-weight: 900; transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
 .record-add-button span { margin-right: 5px; font-size: 16px; font-weight: 500; }
 .record-add-button:hover { transform: translateY(-1px); border-color: rgba(184, 92, 80, 0.58); background: rgba(184, 92, 80, 0.1); }
 .record-form { display: grid; gap: 11px; margin-top: 13px; padding: 14px; border: 1px solid rgba(184, 92, 80, 0.2); border-radius: 13px; background: rgba(255, 250, 240, 0.66); }
@@ -1787,7 +1791,7 @@ export default {
 .phase-rail { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
 .phase-card { display: flex; min-width: 0; align-items: center; gap: 10px; border: 1px solid rgba(139, 90, 20, 0.13); border-radius: 15px; padding: 13px; background: rgba(255, 252, 245, 0.5); text-align: left; transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease; }
 .phase-card:hover, .phase-card.active { transform: translateY(-2px); border-color: rgba(184, 92, 80, 0.33); background: rgba(255, 252, 245, 0.9); }
-.phase-card-index { color: var(--cinnabar); font-family: 'Manrope', sans-serif; font-size: 10px; font-weight: 900; }
+.phase-card-index { color: var(--cinnabar); font-family: var(--font-ui); font-size: 10px; font-weight: 900; }
 .phase-card-copy { display: grid; min-width: 0; gap: 4px; }
 .phase-card-copy strong { overflow: hidden; color: var(--calendar-ink); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .phase-card-copy small { color: var(--calendar-muted); font-size: 10px; }
@@ -1800,7 +1804,7 @@ export default {
 .decision-row:last-child { border-bottom: 0; }
 .decision-row:not(.decision-head) { transition: background 0.2s ease; }
 .decision-row:not(.decision-head):hover { background: rgba(184, 92, 80, 0.06); }
-.decision-head { color: var(--gold-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 10px; font-weight: 900; letter-spacing: 0.13em; text-transform: uppercase; }
+.decision-head { color: var(--gold-deep); font-family: var(--font-ui); font-size: 10px; font-weight: 900; letter-spacing: 0.13em; text-transform: uppercase; }
 .decision-row strong { color: var(--calendar-ink); }
 .node-pillar { color: var(--cinnabar-deep); font-weight: 900; letter-spacing: 0.08em; }
 .node-type { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 6px; color: var(--calendar-ink); }
@@ -1809,7 +1813,7 @@ export default {
 .record-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }
 .record-card { position: relative; min-height: 184px; padding: 23px; overflow: hidden; }
 .record-card::after { content: ''; position: absolute; right: -24px; bottom: -42px; width: 105px; aspect-ratio: 1; border: 1px solid rgba(184, 92, 80, 0.12); border-radius: 50%; box-shadow: 0 0 0 16px rgba(184, 92, 80, 0.05), 0 0 0 32px rgba(184, 92, 80, 0.04); }
-.record-index { color: var(--cinnabar); font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 900; letter-spacing: 0.14em; }
+.record-index { color: var(--cinnabar); font-family: var(--font-ui); font-size: 11px; font-weight: 900; letter-spacing: 0.14em; }
 .record-card h3 { margin-top: 17px; color: var(--calendar-ink); font-size: 21px; }
 .record-card p { max-width: 250px; margin-top: 10px; color: var(--calendar-muted); font-size: 13px; line-height: 1.7; }
 .record-line { position: absolute; left: 23px; bottom: 22px; width: 45px; height: 2px; background: var(--cinnabar); }
@@ -1901,7 +1905,7 @@ export default {
   .calendar-weekdays span { font-size: 9px; letter-spacing: 0.08em; }
   .calendar-empty { min-height: 64px; border-radius: 10px; }
   .date-cell { min-height: 64px; border-radius: 9px; padding: 6px 5px; }
-  .date-cell::after { right: -14px; top: -14px; width: 38px; }
+  .date-cell::after { right: -16px; top: -16px; width: 44px; opacity: 0.48; }
   .date-cell-top strong { font-size: 16px; }
   .date-cell-top em { display: none; }
   .date-cell-pillar { margin-top: 4px; font-size: 9px; letter-spacing: 0.03em; }
@@ -1945,7 +1949,7 @@ export default {
   .record-form { padding: 12px; }
 }
 
-/* 按钮专项：日历中轻操作、记录操作和主操作分层，同时保证所有触控目标可点。 */
+/* 按钮专项：日历中轻操作、记录操作和主操作分层，同时保证所有触控目标可点 */
 .today-button,
 .mobile-detail-launch,
 .detail-reset {

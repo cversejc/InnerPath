@@ -6,7 +6,7 @@
       <div class="container header-inner">
         <p class="section-kicker">CHENJIAN / FI + TE</p>
         <h1>把看见自己，变成可使用的方向</h1>
-        <p>辰鉴用 fi 端写人生说明书，用 te 端陪你做行动与决策。不是替你判断，而是让你更有依据地选择。</p>
+        <p>辰鉴用 fi 端写人生说明书，用 te 端陪你做行动与决策，不是替你判断，而是让你更有依据地选择</p>
       </div>
     </section>
 
@@ -19,7 +19,7 @@
           </div>
           <div class="service-copy">
             <h2>辰鉴·人生说明书</h2>
-            <p class="service-intro">一份写给你的个人说明书：从先天属性出发，照见当下的位置与人生重复出现的题目。</p>
+            <p class="service-intro">一份写给你的个人说明书：从先天属性出发，照见当下的位置与人生重复出现的题目</p>
             <div class="service-columns">
               <div>
                 <h3>服务内容</h3>
@@ -32,7 +32,7 @@
               </div>
               <div>
                 <h3>适合人群</h3>
-                <p>想先知道“我是谁、我卡在哪”，再决定下一步怎么走的人。</p>
+                <p>想先知道“我是谁、我卡在哪”，再决定下一步怎么走的人</p>
               </div>
             </div>
             <button class="secondary-button" type="button" @click="goToBooking"><IconMark name="person" />预约解读</button>
@@ -46,7 +46,7 @@
           </div>
           <div class="service-copy">
             <h2>辰鉴·行动与决策</h2>
-            <p class="service-intro">把说明书带回现实：围绕一个具体问题，找到能执行、能复盘、适合你当下时序的行动方案。</p>
+            <p class="service-intro">把说明书带回现实：围绕一个具体问题，找到能执行、能复盘、适合你当下时序的行动方案</p>
             <div class="service-columns">
               <div>
                 <h3>服务内容</h3>
@@ -59,7 +59,7 @@
               </div>
               <div>
                 <h3>适合人群</h3>
-                <p>面对就业、关系、家庭或自我价值选择，希望不被“你应该怎样”绑住的人。</p>
+                <p>面对就业、关系、家庭或自我价值选择，希望不被“你应该怎样”绑住的人</p>
               </div>
             </div>
             <button class="primary-button" type="button" @click="goToBooking"><IconMark name="calendar" />立即预约</button>
@@ -73,7 +73,7 @@
           </div>
           <div class="service-copy">
             <h2>辰鉴·共鉴计划</h2>
-            <p class="service-intro">和一群愿意长期理解自己的人，一起学习、记录、实践，让理论在生活里长出答案。</p>
+            <p class="service-intro">和一群愿意长期理解自己的人，一起学习、记录、实践，让理论在生活里长出答案</p>
             <div class="service-columns">
               <div>
                 <h3>课程内容</h3>
@@ -86,7 +86,7 @@
               </div>
               <div>
                 <h3>适合人群</h3>
-                <p>不满足于短效鸡汤，愿意在长期人本方向上持续练习的人。</p>
+                <p>不满足于短效鸡汤，愿意在长期人本方向上持续练习的人</p>
               </div>
             </div>
             <button class="secondary-button" type="button" @click="goToCourse"><IconMark name="book" />查看课程</button>
@@ -104,19 +104,19 @@
         <div class="philosophy-grid">
           <article class="paper-card philosophy-item">
             <span>不算命</span>
-            <p>命盘是照见个人属性的工具，不是决定人生的判决书。</p>
+            <p>命盘是照见个人属性的工具，不是决定人生的判决书</p>
           </article>
           <article class="paper-card philosophy-item">
             <span>不审判</span>
-            <p>不点评财富等级和能力高低，先肯定你已经拥有的个性与能力。</p>
+            <p>不点评财富等级和能力高低，先肯定你已经拥有的个性与能力</p>
           </article>
           <article class="paper-card philosophy-item">
             <span>不预言</span>
-            <p>可以给希望，但不替你预测具体未来，更不制造因果恐惧。</p>
+            <p>可以给希望，但不替你预测具体未来，更不制造因果恐惧</p>
           </article>
           <article class="paper-card philosophy-item">
             <span>顺势而为</span>
-            <p>有助推力时冲锋，风浪大时稳住修整，把主动权留在你手里。</p>
+            <p>有助推力时冲锋，风浪大时稳住修整，把主动权留在你手里</p>
           </article>
         </div>
       </div>
@@ -195,7 +195,7 @@ export default {
 
 .service-price {
   color: var(--cinnabar-deep);
-  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-family: var(--font-ui);
   font-size: 28px;
   font-weight: 900;
   line-height: 1.1;
@@ -400,7 +400,7 @@ export default {
   }
 }
 
-/* 按钮专项：每个服务块的 CTA 固定在内容末端，移动端占满卡片宽度。 */
+/* 按钮专项：每个服务块的 CTA 固定在内容末端，移动端占满卡片宽度 */
 .service-copy button {
   min-height: var(--button-height, 46px);
   border-radius: var(--button-radius, 13px);
