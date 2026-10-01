@@ -4,7 +4,7 @@
 
     <section class="page-header">
       <div class="container header-inner">
-        <p class="section-kicker">CHENJIAN / FI + TE</p>
+        <p class="section-kicker">CHENVIS / FI + TE</p>
         <h1>把看见自己，变成可使用的方向</h1>
         <p>辰鉴用 fi 端写人生说明书，用 te 端陪你做行动与决策，不是替你判断，而是让你更有依据地选择</p>
       </div>

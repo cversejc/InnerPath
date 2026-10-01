@@ -5,7 +5,7 @@ from app.services.intake_service import context_for_prompt, profile_context_for_
 
 
 def build_prompt(user_data: Dict[str, Any]) -> str:
-    """Build the Chenjian life-manual prompt from deterministic foundation data."""
+    """Build the chenvis life-manual prompt from deterministic foundation data."""
     name = user_data.get("name", "")
     gender = user_data.get("gender", "")
     birth_year = user_data.get("birth_year", "")

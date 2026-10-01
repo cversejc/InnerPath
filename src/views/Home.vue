@@ -5,7 +5,7 @@
     <section class="landscape-hero hero">
       <div class="container hero-layout">
         <div class="hero-copy">
-          <p class="section-kicker">Life Timeline / CHEN JIAN</p>
+          <p class="section-kicker">Life Timeline / CHENVIS</p>
           <h1>辰鉴</h1>
           <p class="hero-intro">
             把你的个人特质、当下节奏和现实选择放在一张地图上，帮你更清楚地走下一步

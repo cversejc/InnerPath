@@ -140,7 +140,7 @@ app.include_router(service_requests.admin_router, prefix="/api/v1/admin/service-
 async def root():
     """Root endpoint"""
     return {
-        "message": "Welcome to Chenjian API",
+        "message": "Welcome to chenvis API",
         "version": settings.APP_VERSION,
         "docs": "/docs",
         "redoc": "/redoc"

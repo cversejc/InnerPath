@@ -1,4 +1,4 @@
-# 辰鉴（ChenJian）
+# 辰鉴（chenvis）
 
 星辰引路，镜子照见——用人生说明书与行动决策，陪你见自己、知其序、行其路。
 
@@ -457,10 +457,10 @@ CORS_ORIGINS=http://localhost:3000,https://yourdomain.com
 
 - 微信：chenjian2026
 - 邮箱：hello@chenjian.me
-- 公众号：辰鉴 ChenJian
+- 公众号：辰鉴 chenvis
 
 ---
 
 ## License
 
-Copyright © 2026 辰鉴 ChenJian
+Copyright © 2026 辰鉴 chenvis

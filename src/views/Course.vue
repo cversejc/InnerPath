@@ -5,7 +5,7 @@
     <!-- 页面标题 -->
     <section class="page-header">
       <div class="container">
-        <p class="section-kicker">CHENJIAN / CO-EXPLORATION</p>
+        <p class="section-kicker">CHENVIS / CO-EXPLORATION</p>
         <h1>辰鉴·共鉴计划</h1>
         <p>把玄学、心理学与哲学放回生活<br>在长期的人本实践里，学会见自己、知其序、行其路</p>
       </div>
