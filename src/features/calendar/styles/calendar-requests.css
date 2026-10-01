@@ -53,12 +53,14 @@
 .calendar-page .request-close,
 .calendar-page .btn-secondary {
   display: inline-flex;
+  height: auto;
   min-height: 44px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--calendar-line);
   border-radius: 12px;
   padding: 0 14px;
+  background: transparent;
   color: var(--calendar-muted);
   font-size: 13px;
   font-weight: 800;
@@ -80,11 +82,19 @@
   line-height: 1.6;
 }
 
-.calendar-page .request-profile-warning button {
+.calendar-page .request-profile-link.van-button {
+  display: inline-flex;
+  height: auto;
+  min-height: 36px;
   margin-left: 8px;
+  border: 0;
+  padding: 0 4px;
+  background: transparent;
   color: var(--cinnabar-deep);
+  font: inherit;
   font-weight: 900;
   text-decoration: underline;
+  vertical-align: baseline;
 }
 
 .calendar-page .calendar-request-form {
@@ -158,6 +168,7 @@
 }
 
 .calendar-page .request-option {
+  height: auto;
   min-height: 46px;
   border: 1px solid var(--calendar-line);
   border-radius: 11px;

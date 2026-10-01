@@ -1,4 +1,5 @@
 <script setup>
+import { Button as VanButton } from 'vant'
 import ProfileSummary from '../../../components/ProfileSummary.vue'
 
 defineProps({
@@ -50,7 +51,7 @@ function requestStatusLabel(status) {
           <h3>让日历回应眼前这一段路</h3>
           <p>提交申请后，后台会按你的档案版本审核并沿用现有的创建、发布流程。</p>
         </div>
-        <button type="button" class="btn-action" @click="$emit('open')">申请新日历</button>
+        <VanButton type="primary" native-type="button" class="btn-action" @click="$emit('open')">申请新日历</VanButton>
       </div>
 
       <div v-else class="calendar-request-card paper-card">
@@ -59,7 +60,7 @@ function requestStatusLabel(status) {
             <span class="mini-label">APPLICATION CONTEXT</span>
             <h3>补充这一次的日历目标</h3>
           </div>
-          <button type="button" class="request-close" @click="$emit('close')">收起</button>
+          <VanButton type="default" plain native-type="button" class="request-close" @click="$emit('close')">收起</VanButton>
         </div>
 
         <ProfileSummary
@@ -71,7 +72,7 @@ function requestStatusLabel(status) {
         />
         <div v-if="profile && Number(profile.profile_completion || 0) < 100" class="request-profile-warning" role="alert">
           个人档案的性别和出生日期还未完成，请先补充档案后再提交日历申请。
-          <button type="button" @click="$emit('go-to-profile')">去完善个人档案</button>
+          <VanButton type="default" plain native-type="button" class="request-profile-link" @click="$emit('go-to-profile')">去完善个人档案</VanButton>
         </div>
 
         <form class="calendar-request-form" novalidate @submit.prevent="$emit('submit')">
@@ -97,15 +98,17 @@ function requestStatusLabel(status) {
           <fieldset class="request-form-field">
             <legend>关注领域 <span class="required">*</span> <small>最多 3 项</small></legend>
             <div class="request-option-grid">
-              <button
+              <VanButton
                 v-for="topic in topicOptions"
                 :key="topic.value"
-                type="button"
+                type="default"
+                plain
+                native-type="button"
                 class="request-option"
                 :class="{ selected: draft.focus_topics.includes(topic.value) }"
                 :aria-pressed="draft.focus_topics.includes(topic.value)"
                 @click="$emit('toggle-topic', topic.value)"
-              >{{ topic.label }}</button>
+              >{{ topic.label }}</VanButton>
             </div>
           </fieldset>
 
@@ -145,8 +148,8 @@ function requestStatusLabel(status) {
           <p v-if="error" class="request-error" role="alert">{{ error }}</p>
           <p v-if="feedback" class="request-feedback" role="status">{{ feedback }}</p>
           <div class="request-actions">
-            <button type="button" class="btn-secondary" @click="$emit('close')">取消</button>
-            <button type="submit" class="btn-action" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '提交日历申请' }}</button>
+            <VanButton type="default" plain native-type="button" class="btn-secondary" @click="$emit('close')">取消</VanButton>
+            <VanButton type="primary" native-type="submit" class="btn-action" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '提交日历申请' }}</VanButton>
           </div>
         </form>
       </div>
