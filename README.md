@@ -107,7 +107,7 @@ vim /opt/innerpath/current/.env
 ./scripts/deploy.sh remote update
 ```
 
-部署完成后访问 `https://chenvis.com`。脚本会在服务启动后自动请求 `/health` 验证 HTTPS；证书更新任务的重启命令使用：
+规范访问地址为 `https://chenvis.com`。HTTP 请求会使用 308 跳转到 HTTPS 裸域名，`www.chenvis.com` 也会跳转到裸域名，并保留路径和查询参数。脚本会在服务启动后自动请求 `/health` 验证 HTTPS；证书更新任务的重启命令使用：
 
 ```bash
 docker exec innerpath-frontend nginx -s reload
@@ -417,7 +417,7 @@ DEBUG=false
 USE_MULTISTEP_GENERATION=false
 
 # CORS 配置（生产环境添加实际域名）
-CORS_ORIGINS=http://localhost:3000,https://chenvis.com,https://www.chenvis.com
+CORS_ORIGINS=http://localhost:3000,https://chenvis.com
 ```
 
 完整配置说明见 `.env.example` 文件；多步生成的流程、降级和排查方式见

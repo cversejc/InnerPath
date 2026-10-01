@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     SMS_SPUG_TOKEN: str = ""
 
     # CORS
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3003,http://192.168.2.47:3003,https://chenvis.com,https://www.chenvis.com"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3003,http://192.168.2.47:3003,https://chenvis.com"
 
     @property
     def cors_origins_list(self) -> List[str]:
