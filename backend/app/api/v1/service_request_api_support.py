@@ -2,9 +2,9 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.service_request import ServiceRequest
+from app.domains.service_requests.models import ServiceRequest
 from app.models.user import User
-from app.schemas.service_request import (
+from app.domains.service_requests.schemas import (
     ServiceRequestDraftResponse,
     ServiceRequestResponse,
     ServiceRequestTaskResponse,

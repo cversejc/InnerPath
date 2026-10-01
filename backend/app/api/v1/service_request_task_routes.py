@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
-from app.schemas.service_request import ServiceRequestTaskResponse
+from app.domains.service_requests.schemas import ServiceRequestTaskResponse
 from app.services.service_request_service import get_service_request, serialize_task, staff_can_access
 
 task_router = APIRouter()
@@ -14,7 +14,7 @@ async def get_staff_task(
     current_user: User = Depends(require_roles("admin", "consultant")),
     db: AsyncSession = Depends(get_db),
 ):
-    from app.models.service_request import ServiceRequestTask
+    from app.domains.service_requests.models import ServiceRequestTask
 
     task = await db.get(ServiceRequestTask, task_id)
     if not task:

@@ -9,7 +9,7 @@ from sqlalchemy import select
 from app.core.cache import cache_set, close_redis
 from app.core.logging_config import get_logger
 from app.db.session import AsyncSessionLocal, engine
-from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
+from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
 from app.models.user import User  # noqa: F401 - registers user foreign keys in the worker process
 from app.services.ai_service import generate_report_with_ai
 from app.services.audit_service import record_audit

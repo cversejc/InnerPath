@@ -13,7 +13,7 @@ from app.core.security import get_password_hash
 from app.db.session import AsyncSessionLocal, engine
 from app.domains.calendar.models import UserCalendar
 from app.domains.reports.models import Report
-from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
+from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
 from app.models.user import AuditLog, User
 
 

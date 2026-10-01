@@ -1,1 +1,1 @@
-from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
+from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask

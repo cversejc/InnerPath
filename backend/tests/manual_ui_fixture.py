@@ -24,7 +24,7 @@ from app.core.security import get_password_hash
 from app.db.session import AsyncSessionLocal
 from app.domains.calendar.models import CalendarEntry, UserCalendar
 from app.domains.reports.models import Report
-from app.models.service_request import ServiceRequest
+from app.domains.service_requests.models import ServiceRequest
 from app.models.user import AuditLog, User
 
 STATE_PATH = Path("/app/logs/ui_fixture_state.json")

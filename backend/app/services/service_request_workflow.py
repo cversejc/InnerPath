@@ -9,9 +9,9 @@ from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
+from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
 from app.models.user import User
-from app.schemas.service_request import ServiceRequestDraftUpdate, ServiceRequestInfoInput
+from app.domains.service_requests.schemas import ServiceRequestDraftUpdate, ServiceRequestInfoInput
 from app.services.audit_service import record_audit
 from app.services.service_request_drafts import validate_draft
 from app.services.service_request_repository import (

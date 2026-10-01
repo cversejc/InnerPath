@@ -6,7 +6,7 @@ from app.api.v1.admin_dashboard import _dashboard_range
 from app.db.base import Base
 from app.domains.calendar.models import UserCalendar
 from app.domains.reports.models import Report, ReportTask
-from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
+from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
 from app.models.user import AuditLog, AuthSession, StaffInvite, User
 from app.main import app
 from app.domains.calendar.schemas import CalendarEntryInput

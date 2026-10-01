@@ -4,7 +4,7 @@ from copy import deepcopy
 from datetime import date, timedelta
 from typing import Any
 
-from app.models.service_request import ServiceRequest
+from app.domains.service_requests.models import ServiceRequest
 from app.domains.calendar.schemas import CalendarEntryInput
 from app.services.service_request_payloads import ensure_service_type
 

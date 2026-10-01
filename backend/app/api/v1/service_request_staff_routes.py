@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
-from app.schemas.service_request import (
+from app.domains.service_requests.schemas import (
     ServiceRequestDraftResponse,
     ServiceRequestDraftUpdate,
     ServiceRequestInfoInput,

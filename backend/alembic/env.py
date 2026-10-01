@@ -13,7 +13,7 @@ from app.db.base import Base
 from app.models.user import AuditLog, AuthSession, StaffInvite, User
 from app.domains.reports.models import Report, ReportTask
 from app.domains.calendar.models import CalendarEntry, CalendarRequest, DecisionLog, UserCalendar
-from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
+from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
 
 # this is the Alembic Config object
 config = context.config

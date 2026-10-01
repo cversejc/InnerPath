@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import get_current_active_user
 from app.models.user import User
-from app.schemas.service_request import (
+from app.domains.service_requests.schemas import (
     ServiceRequestCreate,
     ServiceRequestListResponse,
     ServiceRequestResponse,
