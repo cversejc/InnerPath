@@ -1,0 +1,254 @@
+
+.hero {
+  min-height: max(640px, calc(100svh - var(--nav-height) - 56px));
+  display: flex;
+  align-items: center;
+  padding: 56px 0 92px;
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  align-items: center;
+  gap: 48px;
+}
+
+.hero-copy {
+  width: 100%;
+  max-width: 680px;
+}
+
+.hero h1 {
+  width: 100%;
+  max-width: 760px;
+  color: var(--ink);
+  font-size: clamp(46px, 8vw, 84px);
+  font-weight: 900;
+  line-height: 1.06;
+  letter-spacing: 0.02em;
+}
+
+.hero-subtitle {
+  width: 100%;
+  max-width: 580px;
+  margin-top: 24px;
+  color: var(--ink-soft);
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.8;
+}
+
+.profile-journey-section {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.profile-journey-shell {
+  width: min(900px, 100%);
+}
+
+.hero-actions {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.hero-actions > * {
+  min-width: 0;
+}
+
+.compass-visual {
+  justify-self: end;
+  display: grid;
+  place-items: center;
+  width: 260px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(139, 90, 20, 0.18);
+  border-radius: 50%;
+  background: rgba(255, 252, 245, 0.34);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.64);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.compass-ring {
+  position: relative;
+  width: 138px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(184, 92, 80, 0.34);
+  border-radius: 50%;
+}
+
+.compass-ring::before,
+.compass-ring::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(217, 186, 98, 0.34);
+}
+
+.compass-ring::after {
+  inset: 44px;
+  background: rgba(184, 92, 80, 0.12);
+}
+
+.needle {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  width: 2px;
+  height: 102px;
+  border-radius: 999px;
+  background: linear-gradient(var(--cinnabar-deep) 0 48%, var(--gold) 49% 100%);
+  transform: translateX(-50%) rotate(24deg);
+  transform-origin: 50% 50%;
+}
+
+.center-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--cinnabar-deep);
+  transform: translate(-50%, -50%);
+}
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 36px;
+  align-items: start;
+}
+
+.prose-card {
+  padding: clamp(24px, 4vw, 38px);
+  color: var(--ink-soft);
+  font-size: 17px;
+  line-height: 1.9;
+}
+
+.prose-card p + p {
+  margin-top: 14px;
+}
+
+.prose-card .emphasis {
+  color: var(--cinnabar-deep);
+  font-weight: 800;
+}
+
+.section-heading {
+  max-width: 760px;
+  margin: 0 auto 34px;
+  text-align: center;
+}
+
+.method-grid,
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.services-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.method-card,
+.service-card {
+  padding: 26px;
+}
+
+.method-card span {
+  color: rgba(184, 92, 80, 0.34);
+  font-family: "Manrope", sans-serif;
+  font-size: 38px;
+  font-weight: 900;
+}
+
+.method-card h3,
+.service-card h3 {
+  margin-top: 14px;
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+.tool-lead {
+  margin-top: 10px;
+  color: var(--ink-soft);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.method-card p {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  line-height: 1.75;
+}
+
+.service-card {
+  display: flex;
+  min-height: 420px;
+  flex-direction: column;
+}
+
+.service-card.featured {
+  border-color: rgba(184, 92, 80, 0.32);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 245, 0.96), rgba(255, 239, 222, 0.82));
+}
+
+.service-features {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 24px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.service-features li {
+  position: relative;
+  padding-left: 18px;
+}
+
+.service-features li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.service-card button {
+  width: 100%;
+  margin-top: auto;
+}
+
+.final-cta {
+  text-align: center;
+}
+
+.final-cta-inner {
+  border-top: 1px solid var(--line);
+  padding-top: 44px;
+}
+
+.final-cta h2 {
+  margin-bottom: 24px;
+  font-size: clamp(28px, 6vw, 46px);
+  line-height: 1.2;
+}
+
+.footer {
+  padding: 34px 0 calc(34px + var(--safe-bottom));
+  text-align: center;
+}

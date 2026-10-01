@@ -1,0 +1,177 @@
+@media (max-width: 900px) {
+  .hero-layout,
+  .intro-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .compass-visual {
+    justify-self: start;
+    width: 196px;
+  }
+
+  .method-grid,
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero {
+    min-height: auto;
+    align-items: center;
+    padding: 30px 0 38px;
+  }
+
+  .hero-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .hero-copy {
+    width: 100%;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 10vw, 46px);
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-subtitle {
+    margin-top: 14px;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .hero-actions > * {
+    width: 100%;
+  }
+
+  .hero-actions .primary-button,
+  .hero-actions .secondary-button {
+    min-height: 46px;
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 13px;
+  }
+
+  .compass-visual {
+    width: 112px;
+    margin-left: auto;
+    opacity: 0.86;
+  }
+
+  .compass-ring {
+    width: 68px;
+  }
+
+  .needle {
+    top: 10px;
+    height: 50px;
+  }
+
+  .method-card,
+  .service-card,
+  .prose-card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .service-card {
+    min-height: 0;
+  }
+
+  .section-band {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .profile-journey-section {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .section-heading {
+    margin-bottom: 22px;
+  }
+
+  .method-grid,
+  .services-grid {
+    gap: 12px;
+  }
+
+  .method-card span {
+    font-size: 28px;
+  }
+
+  .method-card h3,
+  .service-card h3 {
+    margin-top: 10px;
+    font-size: 20px;
+  }
+
+  .tool-lead {
+    margin-top: 8px;
+    font-size: 15px;
+  }
+
+  .service-features {
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .service-card button {
+    min-height: 46px;
+  }
+
+  .final-cta-inner {
+    padding-top: 30px;
+  }
+
+  .final-cta h2 {
+    margin-bottom: 18px;
+    font-size: clamp(26px, 8vw, 36px);
+  }
+
+  .hero-actions > *,
+  .final-cta .primary-button {
+    min-width: 0;
+  }
+
+  .final-cta .primary-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 按钮专项：主次关系明确，按钮与纸张卡片使用同一组圆角和间距。 */
+.hero-actions {
+  align-items: stretch;
+  gap: var(--button-gap, 8px);
+}
+
+.hero-actions .primary-button,
+.hero-actions .secondary-button {
+  min-height: var(--button-height, 46px);
+}
+
+.service-card > button {
+  min-height: var(--button-height, 46px);
+  border-radius: var(--button-radius, 13px);
+}
+
+.final-cta .primary-button {
+  min-width: 180px;
+}
