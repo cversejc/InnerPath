@@ -47,9 +47,9 @@
 </template>
 
 <script>
-import { getReportDetail } from '../features/reports/api.js'
-import ReportContent from '../features/reports/components/ReportContent.vue'
-import { normalizeReportData, parseLegacyReportContent } from '../features/reports/report-content.js'
+import { getReportDetail } from '../api.js'
+import ReportContent from '../components/ReportContent.vue'
+import { normalizeReportData, parseLegacyReportContent } from '../report-content.js'
 
 export default {
   name: 'ReportDetail',
@@ -95,6 +95,6 @@ export default {
 }
 </script>
 
-<style scoped src="../features/reports/styles/report-detail-base.css"></style>
-<style scoped src="../features/reports/styles/report-layout.css"></style>
-<style scoped src="../features/reports/styles/report-responsive-overrides.css"></style>
+<style scoped src="../styles/report-detail-base.css"></style>
+<style scoped src="../styles/report-layout.css"></style>
+<style scoped src="../styles/report-responsive-overrides.css"></style>
