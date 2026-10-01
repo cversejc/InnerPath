@@ -4,11 +4,11 @@
 }
 
 .optional-toggle {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
+  display: flex;
+  width: 100%;
   min-height: 48px;
   align-items: center;
-  gap: 12px;
+  justify-content: flex-start;
   border: 1px solid rgba(139, 90, 20, .14);
   border-radius: 14px;
   padding: 0 14px;
@@ -18,6 +18,15 @@
   font-weight: 800;
   text-align: left;
   transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.optional-toggle :deep(.van-button__text) {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
 }
 
 .optional-toggle:hover {
@@ -33,7 +42,7 @@
 }
 
 @media (max-width: 640px) {
-  .optional-toggle {
+  .optional-toggle :deep(.van-button__text) {
     grid-template-columns: 1fr auto;
     gap: 8px;
   }

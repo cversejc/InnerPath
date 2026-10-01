@@ -97,6 +97,7 @@ shapes for statuses, seals, tags and compact metadata.
 - Import only the components a view uses, with their component styles; do not globally register the full library.
 - Vant theme variables are mapped to the project tokens in `src/styles/vant.css`. Do not set one-off palette values in individual pages.
 - Use Vant `Field` for reusable text entry and Vant `Button` for common form actions; retain native date and select controls when their platform picker behavior is the better fit.
+- Branded choice cards may use Vant `Button` with `aria-pressed`; keep their card composition and selected-state styling in project CSS.
 - Keep brand-specific compositions such as navigation, profile summaries and report sections in project-owned components; use Vant for their common interactive controls.
 
 ### Buttons

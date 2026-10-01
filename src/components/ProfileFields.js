@@ -1,10 +1,11 @@
 import { createProfileFieldOptions } from './profile-fields-options.js'
 import ProfileCoreFields from './profile-fields/CoreFields.vue'
 import ProfileExtendedFields from './profile-fields/ExtendedFields.vue'
+import { Button as VanButton } from 'vant'
 
 export default {
   name: 'ProfileFields',
-  components: { ProfileCoreFields, ProfileExtendedFields },
+  components: { ProfileCoreFields, ProfileExtendedFields, VanButton },
   props: {
     modelValue: {
       type: Object,

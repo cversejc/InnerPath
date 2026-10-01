@@ -12,10 +12,11 @@
       @select-time-precision="selectTimePrecision"
     />
 
-    <button
+    <VanButton
       v-if="showOptional && optionalCollapsible"
-      type="button"
+      native-type="button"
       class="optional-toggle"
+      plain
       :aria-expanded="optionalExpanded"
       :aria-controls="`${idPrefix}-optional-section`"
       @click="$emit('update:optionalExpanded', !optionalExpanded)"
@@ -23,7 +24,7 @@
       <span>{{ optionalExpanded ? '收起个人画像' : '展开个人画像' }}</span>
       <span class="optional-toggle-meta">{{ optionalExpanded ? '稳定背景，可随时更新' : '还有可选信息' }}</span>
       <span aria-hidden="true">{{ optionalExpanded ? '−' : '+' }}</span>
-    </button>
+    </VanButton>
 
     <ProfileExtendedFields
       v-if="showOptional && (!optionalCollapsible || optionalExpanded)"

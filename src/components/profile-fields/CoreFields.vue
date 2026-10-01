@@ -1,5 +1,6 @@
 <script setup>
 import { toRefs } from 'vue'
+import { Button as VanButton } from 'vant'
 
 const props = defineProps({
   profile: { type: Object, required: true },
@@ -44,10 +45,11 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
       <fieldset class="profile-field profile-choice-fieldset" :aria-describedby="errors.gender ? idPrefix + '-gender-error' : undefined">
         <legend class="profile-label">性别 <span class="required">*</span></legend>
         <div class="profile-choice-grid two">
-          <button
+          <VanButton
             v-for="option in genderOptions"
             :key="option.value"
-            type="button"
+            native-type="button"
+            plain
             class="profile-choice-card"
             :class="{ selected: profile.gender === option.value }"
             :aria-pressed="profile.gender === option.value"
@@ -56,7 +58,7 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
           >
             <span class="profile-choice-mark">{{ option.mark }}</span>
             <strong>{{ option.label }}</strong>
-          </button>
+          </VanButton>
         </div>
         <p v-if="errors.gender" :id="idPrefix + '-gender-error'" class="profile-error" role="alert">{{ errors.gender }}</p>
       </fieldset>
@@ -64,10 +66,11 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
       <fieldset class="profile-field profile-choice-fieldset" :aria-describedby="errors.calendar_type ? idPrefix + '-calendar-type-error' : undefined">
         <legend class="profile-label">历法类型 <span class="required">*</span></legend>
         <div class="profile-choice-grid two">
-          <button
+          <VanButton
             v-for="option in calendarOptions"
             :key="option.value"
-            type="button"
+            native-type="button"
+            plain
             class="profile-choice-card horizontal"
             :class="{ selected: profile.calendar_type === option.value }"
             :aria-pressed="profile.calendar_type === option.value"
@@ -78,7 +81,7 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
               <strong>{{ option.label }}</strong>
               <small>{{ option.hint }}</small>
             </span>
-          </button>
+          </VanButton>
         </div>
         <p v-if="errors.calendar_type" :id="idPrefix + '-calendar-type-error'" class="profile-error" role="alert">{{ errors.calendar_type }}</p>
       </fieldset>
@@ -140,16 +143,17 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
         <legend class="profile-label">出生时间准确度 <span class="required">*</span></legend>
           <p class="profile-hint">不知道也可以跳过；有省 / 市级出生地时，分析更容易做真太阳时校正</p>
         <div class="profile-choice-grid three">
-          <button
+          <VanButton
             v-for="option in timeOptions"
             :key="option.value"
-            type="button"
+            native-type="button"
+            plain
             class="profile-choice-card compact"
             :class="{ selected: profile.birth_time_precision === option.value }"
             :aria-pressed="profile.birth_time_precision === option.value"
             :aria-describedby="errors.birth_time_precision || errors.birth_time ? idPrefix + '-birth-time-error' : undefined"
             @click="emit('select-time-precision', option.value)"
-          >{{ option.label }}</button>
+          >{{ option.label }}</VanButton>
         </div>
         <div v-if="profile.birth_time_precision !== 'unknown'" class="profile-time-grid">
           <label :for="idPrefix + '-birth-hour'">

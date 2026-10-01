@@ -131,6 +131,7 @@
 
 .profile-choice-card {
   display: grid;
+  width: 100%;
   min-height: 74px;
   place-items: center;
   gap: 6px;
@@ -143,9 +144,18 @@
   transition: border-color .2s ease, background .2s ease, transform .2s ease;
 }
 
+.profile-choice-card :deep(.van-button__text) {
+  display: contents;
+}
+
 .profile-choice-card:hover {
   border-color: rgba(184, 92, 80, .46);
   transform: translateY(-1px);
+}
+
+.profile-choice-card:focus-visible {
+  outline: 3px solid rgba(184, 92, 80, .34);
+  outline-offset: 2px;
 }
 
 .profile-choice-card.selected {
