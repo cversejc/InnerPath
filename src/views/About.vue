@@ -140,3 +140,4 @@ export default {
 </script>
 
 <style scoped src="./About.css"></style>
+<style scoped src="./About-responsive.css"></style>
