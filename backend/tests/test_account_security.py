@@ -7,6 +7,7 @@ from pydantic import ValidationError
 
 from app.core.security import get_password_hash, verify_password
 from app.dependencies import require_roles
+from app.main import app
 from app.domains.auth.schemas import LoginRequest, RegisterRequest
 from app.domains.calendar.schemas import CalendarEntryInput
 from app.domains.calendar.service import _validate_entries
@@ -32,6 +33,25 @@ def test_auth_schemas_require_eleven_digit_phone_numbers():
     )
     assert request.phone == "13800138000"
     assert "code" not in request.model_dump()
+
+
+def test_auth_route_aggregator_preserves_public_paths():
+    expected_routes = {
+        ("/api/v1/auth/verification-code", "POST"),
+        ("/api/v1/auth/register", "POST"),
+        ("/api/v1/auth/password/reset", "POST"),
+        ("/api/v1/auth/login", "POST"),
+        ("/api/v1/auth/refresh", "POST"),
+        ("/api/v1/auth/logout", "POST"),
+        ("/api/v1/auth/staff/accept-invite", "POST"),
+    }
+    actual_routes = {
+        (route.path, method)
+        for route in app.routes
+        for method in getattr(route, "methods", set())
+    }
+
+    assert expected_routes.issubset(actual_routes)
 
 
 @pytest.mark.asyncio
