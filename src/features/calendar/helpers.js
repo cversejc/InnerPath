@@ -5,7 +5,7 @@ export function parseDateKey(value) {
   return new Date(year, month - 1, day)
 }
 
-function formatDateKey(date) {
+export function formatDateKey(date) {
   const pad = value => String(value).padStart(2, '0')
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
