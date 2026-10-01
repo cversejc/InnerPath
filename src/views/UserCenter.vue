@@ -179,7 +179,7 @@
 <script>
 import { changePassword, getCurrentUser, updateUserProfile } from '../utils/authService'
 import { getUserReports } from '../utils/aiService'
-import { getMyServiceRequests } from '../utils/serviceRequestService'
+import { getMyServiceRequests } from '../features/service-requests/api'
 import { hasRole, logout as logoutUser, setAuthenticatedUser } from '../stores/auth'
 import ProfileFields from '../components/ProfileFields.vue'
 import ProfileGrowthCard from '../components/ProfileGrowthCard.vue'

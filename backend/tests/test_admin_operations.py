@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from app.api.v1.admin import _dashboard_range
+from app.api.v1.admin_dashboard import _dashboard_range
 from app.models.calendar import UserCalendar
 from app.schemas.calendar import CalendarEntryInput
 from app.schemas.admin import AdminReportTaskResponse

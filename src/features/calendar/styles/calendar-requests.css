@@ -1,0 +1,270 @@
+.calendar-page .calendar-request-section {
+  background: linear-gradient(180deg, rgba(255, 250, 240, .58), rgba(234, 217, 191, .26));
+}
+
+.calendar-page .request-heading {
+  align-items: start;
+}
+
+.calendar-page .request-heading .section-title {
+  margin-bottom: 0;
+}
+
+.calendar-page .calendar-request-cta,
+.calendar-page .calendar-request-card {
+  border: 1px solid rgba(184, 92, 80, .18);
+  background: rgba(255, 252, 245, .78);
+}
+
+.calendar-page .calendar-request-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px 28px;
+}
+
+.calendar-page .calendar-request-cta h3,
+.calendar-page .request-card-head h3 {
+  margin-top: 6px;
+  color: var(--calendar-ink);
+  font-size: 23px;
+}
+
+.calendar-page .calendar-request-cta p {
+  margin-top: 7px;
+  color: var(--calendar-muted);
+  font-size: 13px;
+}
+
+.calendar-page .calendar-request-card {
+  display: grid;
+  gap: 22px;
+  padding: clamp(18px, 4vw, 30px);
+}
+
+.calendar-page .request-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.calendar-page .request-close,
+.calendar-page .btn-secondary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--calendar-line);
+  border-radius: 12px;
+  padding: 0 14px;
+  color: var(--calendar-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.calendar-page .request-close:hover,
+.calendar-page .btn-secondary:hover {
+  border-color: var(--cinnabar);
+  color: var(--cinnabar-deep);
+}
+
+.calendar-page .request-profile-warning {
+  border: 1px solid rgba(184, 92, 80, .22);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(184, 92, 80, .07);
+  color: var(--cinnabar-deep);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.calendar-page .request-profile-warning button {
+  margin-left: 8px;
+  color: var(--cinnabar-deep);
+  font-weight: 900;
+  text-decoration: underline;
+}
+
+.calendar-page .calendar-request-form {
+  display: grid;
+  gap: 20px;
+}
+
+.calendar-page .request-date-grid,
+.calendar-page .request-optional-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.calendar-page .request-form-field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.calendar-page .request-form-field label,
+.calendar-page .request-form-field legend {
+  color: var(--calendar-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.calendar-page .request-form-field legend {
+  display: block;
+  width: 100%;
+}
+
+.calendar-page .request-form-field legend small {
+  color: var(--calendar-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.calendar-page .request-form-field input,
+.calendar-page .request-form-field select,
+.calendar-page .request-form-field textarea {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(139, 90, 20, .2);
+  border-radius: 12px;
+  padding: 11px 13px;
+  background: rgba(255, 255, 255, .82);
+  color: var(--calendar-ink);
+  font-size: 16px;
+}
+
+.calendar-page .request-form-field textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
+.calendar-page .request-form-field input:focus,
+.calendar-page .request-form-field select:focus,
+.calendar-page .request-form-field textarea:focus {
+  border-color: var(--cinnabar);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(184, 92, 80, .12);
+}
+
+.calendar-page .request-option-grid,
+.calendar-page .request-check-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.calendar-page .request-option {
+  min-height: 46px;
+  border: 1px solid var(--calendar-line);
+  border-radius: 11px;
+  padding: 8px 10px;
+  background: rgba(255, 250, 240, .64);
+  color: var(--calendar-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.calendar-page .request-option.selected {
+  border-color: var(--cinnabar);
+  background: rgba(184, 92, 80, .1);
+  color: var(--cinnabar-deep);
+}
+
+.calendar-page .request-check-option {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--calendar-line);
+  border-radius: 11px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, .55);
+  color: var(--calendar-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.calendar-page .request-check-option input {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  accent-color: var(--cinnabar);
+}
+
+.calendar-page .calendar-request-details {
+  border-top: 1px solid var(--calendar-line);
+  padding-top: 8px;
+}
+
+.calendar-page .calendar-request-details summary {
+  min-height: 44px;
+  padding: 8px 0;
+  color: var(--cinnabar-deep);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.calendar-page .field-wide {
+  grid-column: 1 / -1;
+}
+
+.calendar-page .request-error { color: var(--cinnabar-deep); font-size: 13px; }
+.calendar-page .request-feedback { color: var(--jade); font-size: 13px; }
+
+.calendar-page .request-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.calendar-page .calendar-request-history {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.calendar-page .history-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.calendar-page .history-heading strong { color: var(--calendar-ink); font-size: 15px; }
+
+.calendar-page .request-history-list { display: grid; gap: 8px; }
+
+.calendar-page .request-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--calendar-line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 252, 245, .62);
+}
+
+.calendar-page .request-history-item > div {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.calendar-page .request-history-item strong { color: var(--calendar-ink); font-size: 13px; }
+.calendar-page .request-history-item div span { overflow: hidden; color: var(--calendar-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-page .request-status { display: inline-flex; min-height: 28px; align-items: center; flex: 0 0 auto; border-radius: 999px; padding: 0 10px; background: rgba(139, 90, 20, .1); color: var(--calendar-muted); font-size: 11px; font-weight: 800; }
+.calendar-page .status-fulfilled { background: rgba(111, 159, 147, .14); color: #4c7569; }
+.calendar-page .status-rejected, .calendar-page .status-cancelled { background: rgba(184, 92, 80, .1); color: var(--cinnabar-deep); }
+
+@media (max-width: 700px) {
+  .calendar-page .calendar-request-cta { align-items: start; flex-direction: column; padding: 20px; }
+  .calendar-page .calendar-request-cta .btn-action { width: 100%; }
+  .calendar-page .request-date-grid, .calendar-page .request-optional-grid, .calendar-page .request-option-grid, .calendar-page .request-check-grid { grid-template-columns: 1fr; }
+  .calendar-page .request-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .calendar-page .request-actions > button { width: 100%; }
+}

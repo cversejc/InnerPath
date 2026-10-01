@@ -5,7 +5,17 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.core.cache import init_redis, close_redis
 from app.core.logging_config import setup_logging, get_logger
-from app.api.v1 import admin, auth, bookings, calendar, courses, reports, service_requests, staff, users
+from app.api.v1 import (
+    admin,
+    auth,
+    bookings,
+    calendar,
+    courses,
+    reports,
+    service_requests,
+    staff,
+    users,
+)
 import time
 from uuid import uuid4
 

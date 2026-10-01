@@ -1,0 +1,165 @@
+<script setup>
+import ProfileSummary from '../../../components/ProfileSummary.vue'
+
+defineProps({
+  calendarRequests: { type: Array, default: () => [] },
+  showForm: { type: Boolean, default: false },
+  draft: { type: Object, required: true },
+  profile: { type: Object, default: null },
+  submitting: { type: Boolean, default: false },
+  error: { type: String, default: '' },
+  feedback: { type: String, default: '' },
+  topicOptions: { type: Array, default: () => [] },
+  usageOptions: { type: Array, default: () => [] },
+  outcomeOptions: { type: Array, default: () => [] }
+})
+
+defineEmits([
+  'open',
+  'close',
+  'go-to-profile',
+  'submit',
+  'toggle-topic',
+  'toggle-outcome'
+])
+
+function formatRequestDate(start, end) {
+  if (!start || !end) return '未设置周期'
+  return `${start} — ${end}`
+}
+
+function requestStatusLabel(status) {
+  return { pending: '待审核', reviewing: '审核中', fulfilled: '已完成', rejected: '已退回', cancelled: '已取消' }[status] || status
+}
+</script>
+
+<template>
+  <section class="section-band calendar-request-section">
+    <div class="container">
+      <div class="calendar-section-heading request-heading">
+        <div>
+          <p class="section-kicker">CALENDAR REQUEST</p>
+          <h2 class="section-title">为下一阶段申请一张日历</h2>
+        </div>
+        <p class="section-desc">日历会复用你的个人档案，但会根据这一次的周期、用途和决策目标重新制定。</p>
+      </div>
+
+      <div v-if="!showForm" class="calendar-request-cta paper-card">
+        <div>
+          <span class="mini-label">PROFILE + CURRENT GOAL</span>
+          <h3>让日历回应眼前这一段路</h3>
+          <p>提交申请后，后台会按你的档案版本审核并沿用现有的创建、发布流程。</p>
+        </div>
+        <button type="button" class="btn-action" @click="$emit('open')">申请新日历</button>
+      </div>
+
+      <div v-else class="calendar-request-card paper-card">
+        <div class="request-card-head">
+          <div>
+            <span class="mini-label">APPLICATION CONTEXT</span>
+            <h3>补充这一次的日历目标</h3>
+          </div>
+          <button type="button" class="request-close" @click="$emit('close')">收起</button>
+        </div>
+
+        <ProfileSummary
+          v-if="profile"
+          :profile="profile"
+          :profile-version="profile.profile_version"
+          :last-confirmed-at="profile.profile_last_confirmed_at"
+          @edit="$emit('go-to-profile')"
+        />
+        <div v-if="profile && Number(profile.profile_completion || 0) < 100" class="request-profile-warning" role="alert">
+          个人档案的性别和出生日期还未完成，请先补充档案后再提交日历申请。
+          <button type="button" @click="$emit('go-to-profile')">去完善个人档案</button>
+        </div>
+
+        <form class="calendar-request-form" novalidate @submit.prevent="$emit('submit')">
+          <div class="request-date-grid">
+            <div class="request-form-field">
+              <label for="calendar-request-start">开始日期 <span class="required">*</span></label>
+              <input id="calendar-request-start" v-model="draft.start_date" type="date" required>
+            </div>
+            <div class="request-form-field">
+              <label for="calendar-request-end">结束日期 <span class="required">*</span></label>
+              <input id="calendar-request-end" v-model="draft.end_date" type="date" required>
+            </div>
+          </div>
+
+          <div class="request-form-field">
+            <label for="calendar-request-purpose">日历用途 <span class="required">*</span></label>
+            <select id="calendar-request-purpose" v-model="draft.usage_scenario" required>
+              <option value="">请选择这张日历主要服务什么</option>
+              <option v-for="option in usageOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+            </select>
+          </div>
+
+          <fieldset class="request-form-field">
+            <legend>关注领域 <span class="required">*</span> <small>最多 3 项</small></legend>
+            <div class="request-option-grid">
+              <button
+                v-for="topic in topicOptions"
+                :key="topic.value"
+                type="button"
+                class="request-option"
+                :class="{ selected: draft.focus_topics.includes(topic.value) }"
+                :aria-pressed="draft.focus_topics.includes(topic.value)"
+                @click="$emit('toggle-topic', topic.value)"
+              >{{ topic.label }}</button>
+            </div>
+          </fieldset>
+
+          <div class="request-form-field">
+            <label for="calendar-request-goal">当前决策目标 <span class="required">*</span></label>
+            <textarea id="calendar-request-goal" v-model="draft.goal" rows="4" maxlength="1000" placeholder="这段周期里，你最希望推进、观察或理清什么？"></textarea>
+          </div>
+
+          <fieldset class="request-form-field">
+            <legend>期望输出 <span class="required">*</span> <small>至少 1 项，最多 7 项</small></legend>
+            <div class="request-check-grid">
+              <label v-for="outcome in outcomeOptions" :key="outcome.value" class="request-check-option">
+                <input
+                  type="checkbox"
+                  :checked="draft.expected_outcomes.includes(outcome.value)"
+                  @change="$emit('toggle-outcome', outcome.value)"
+                >
+                <span>{{ outcome.label }}</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <details class="calendar-request-details">
+            <summary>补充决策背景（选填）</summary>
+            <div class="request-optional-grid">
+              <div class="request-form-field field-wide">
+                <label for="calendar-request-decision">重要决策描述</label>
+                <input id="calendar-request-decision" v-model="draft.decision_description" type="text" maxlength="1000" placeholder="如：是否在本季度接受新的工作机会">
+              </div>
+              <div class="request-form-field field-wide">
+                <label for="calendar-request-additional">补充说明</label>
+                <textarea id="calendar-request-additional" v-model="draft.additional_info" rows="3" maxlength="2000" placeholder="只填写与这次日历目标有关的背景"></textarea>
+              </div>
+            </div>
+          </details>
+
+          <p v-if="error" class="request-error" role="alert">{{ error }}</p>
+          <p v-if="feedback" class="request-feedback" role="status">{{ feedback }}</p>
+          <div class="request-actions">
+            <button type="button" class="btn-secondary" @click="$emit('close')">取消</button>
+            <button type="submit" class="btn-action" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '提交日历申请' }}</button>
+          </div>
+        </form>
+      </div>
+
+      <div v-if="calendarRequests.length" class="calendar-request-history">
+        <div class="history-heading"><span class="mini-label">REQUEST HISTORY</span><strong>我的申请记录</strong></div>
+        <div class="request-history-list">
+          <article v-for="item in calendarRequests" :key="item.id" class="request-history-item">
+            <div><strong>{{ formatRequestDate(item.start_date, item.end_date) }}</strong><span>{{ item.goal }}</span></div>
+            <span class="request-status" :class="`status-${item.status}`">{{ requestStatusLabel(item.status) }}</span>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>

@@ -1,4 +1,4 @@
-import apiClient from './apiClient'
+import apiClient from '../../utils/apiClient'
 
 // 用户端申请
 export async function createServiceRequest(data) {

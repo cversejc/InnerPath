@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { getMyServiceRequests, withdrawServiceRequest } from '../utils/serviceRequestService'
+import { getMyServiceRequests, withdrawServiceRequest } from '../features/service-requests/api'
 
 const STATUS_LABELS = {
   submitted: '等待咨询师接单',

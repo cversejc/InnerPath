@@ -1,0 +1,99 @@
+.admin-shell .calendar-request-admin-view .view-heading {
+  align-items: end;
+}
+.admin-shell .compact-filter {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.admin-shell .calendar-request-admin-list {
+  display: grid;
+  gap: 14px;
+}
+.admin-shell .calendar-request-admin-card {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+}
+.admin-shell .calendar-request-admin-head,
+.admin-shell .calendar-request-admin-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.admin-shell .calendar-request-admin-head h3 {
+  margin-top: 4px;
+  color: var(--ink);
+  font-size: 21px;
+}
+.admin-shell .calendar-request-admin-head > div > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.admin-shell .calendar-request-admin-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 15px 0;
+}
+.admin-shell .calendar-request-admin-body > div {
+  display: grid;
+  gap: 4px;
+}
+.admin-shell .calendar-request-admin-body span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.admin-shell .calendar-request-admin-body strong,
+.admin-shell .calendar-request-admin-body p {
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.admin-shell .calendar-request-admin-actions {
+  align-items: end;
+  flex-wrap: wrap;
+}
+.admin-shell .calendar-request-admin-actions label {
+  display: grid;
+  min-width: 150px;
+  flex: 1 1 150px;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+.admin-shell .calendar-request-admin-actions .request-note-field {
+  flex-basis: 240px;
+}
+.admin-shell .calendar-request-admin-actions input,
+.admin-shell .calendar-request-admin-actions select {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 0 10px;
+  background: var(--surface-strong);
+  color: var(--ink);
+  font-size: 13px;
+}
+.admin-shell .request-pending { background: rgba(217, 186, 98, .16); color: var(--gold-deep); }
+.admin-shell .request-reviewing { background: rgba(111, 159, 147, .14); color: #4c7569; }
+.admin-shell .request-fulfilled { background: rgba(111, 159, 147, .18); color: #4c7569; }
+.admin-shell .request-rejected, .admin-shell .request-cancelled { background: rgba(184, 92, 80, .1); color: var(--cinnabar-deep); }
+@media (max-width: 700px) {
+  .admin-shell .calendar-request-admin-view .view-heading,
+  .admin-shell .calendar-request-admin-head,
+  .admin-shell .calendar-request-admin-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-shell .calendar-request-admin-body { grid-template-columns: 1fr; }
+  .admin-shell .calendar-request-admin-actions label,
+  .admin-shell .calendar-request-admin-actions .request-note-field,
+  .admin-shell .calendar-request-admin-actions .primary-button { width: 100%; flex-basis: auto; }
+}

@@ -167,8 +167,8 @@
 </template>
 
 <script>
-import { getCurrentUser } from '../utils/authService'
-import { createBooking } from '../utils/businessService'
+import { getCurrentUser } from '../../utils/authService'
+import { createBooking } from '../bookings/api'
 
 export default {
   name: 'Booking',

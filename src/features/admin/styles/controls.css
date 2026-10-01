@@ -1,0 +1,109 @@
+/* 按钮专项：后台高频操作用紧凑矩形，危险操作保持文字按钮并与主操作分开。 */
+.admin-shell .panel-link,
+.admin-shell .filter-reset {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  padding: 0 8px;
+}
+.admin-shell .directory-search button {
+  display: inline-flex;
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+.admin-shell .range-switch button,
+.admin-shell .admin-tab {
+  min-height: 44px;
+}
+.admin-shell .drawer-close {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+.admin-shell .drawer-tabs button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+}
+.admin-shell .course-progress-editor button {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  padding: 0 8px;
+}
+.admin-shell .admin-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.admin-shell .admin-table-wrap:focus-visible {
+  outline: 2px solid var(--cinnabar, #b85c50);
+  outline-offset: -2px;
+}
+.admin-shell .admin-table th:first-child,
+.admin-shell .admin-table td:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--surface-strong, #fffaf0);
+  box-shadow: 8px 0 14px -14px rgba(47, 36, 27, .7);
+}
+.admin-shell .admin-table thead th:first-child {
+  z-index: 3;
+  background: #fbf4e9;
+}
+.admin-shell .admin-table th {
+  white-space: nowrap;
+}
+/* 后台辅助信息统一使用可读的次级文本色，避免浅色小字在纸面上失去层次。 */
+.admin-shell .admin-table th { color: var(--gold-deep, #8b5a14); }
+.admin-shell .admin-table td small,
+.admin-shell .person-cell small,
+.admin-shell .drawer-list-item small,
+.admin-shell .team-row small,
+.admin-shell .course-admin-row small,
+.admin-shell .drawer-header small,
+.admin-shell .drawer-tabs button,
+.admin-shell .drawer-loading,
+.admin-shell .profile-summary span,
+.admin-shell .section-caption > span,
+.admin-shell .report-meta-grid span,
+.admin-shell .detail-facts span,
+.admin-shell .json-view > span,
+.admin-shell .date-filter span,
+.admin-shell .panel-note,
+.admin-shell .panel-heading > span,
+.admin-shell .alert-item small,
+.admin-shell .distribution-title small,
+.admin-shell .activity-item p,
+.admin-shell .activity-item time,
+.admin-shell .import-panel p,
+.admin-shell .directory-list button small,
+.admin-shell .calendar-card-top small,
+.admin-shell .entry-toolbar small,
+.admin-shell .entry-editor-head label,
+.admin-shell .editor-banner span:last-child,
+.admin-shell .invite-result span,
+.admin-shell .course-progress-editor span,
+.admin-shell .course-stat-row small,
+.admin-shell .course-stat-numbers span {
+  color: var(--muted, #7d6653);
+  font-size: 11px;
+}
+.admin-shell .chart-label { fill: var(--muted, #7d6653); font-size: 11px; }
+.admin-shell .muted-text { color: var(--muted, #7d6653) !important; }
+.admin-shell .empty-cell { color: var(--muted, #7d6653) !important; font-size: 13px; }

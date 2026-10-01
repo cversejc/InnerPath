@@ -82,7 +82,7 @@ import {
   getMyServiceRequest,
   resubmitServiceRequest,
   updateServiceRequest
-} from '../utils/serviceRequestService'
+} from '../features/service-requests/api'
 
 function localDateKey(date = new Date()) {
   const pad = value => String(value).padStart(2, '0')

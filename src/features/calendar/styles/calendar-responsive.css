@@ -1,0 +1,200 @@
+@media (max-width: 1000px) {
+  .calendar-page .calendar-hero-inner { grid-template-columns: minmax(0, 1fr) minmax(280px, 0.74fr); gap: 28px; }
+  .calendar-page .calendar-hero h1 { font-size: clamp(41px, 6vw, 64px); }
+  .calendar-page .calendar-layout { grid-template-columns: minmax(0, 1fr) minmax(290px, 0.7fr); }
+  .calendar-page .date-cell, .calendar-page .calendar-empty { min-height: 100px; }
+  .calendar-page .date-cell-status { font-size: 8px; }
+  .calendar-page .phase-card { padding: 11px 9px; }
+}
+
+@media (max-width: 900px) {
+  .calendar-page .calendar-hero-inner { grid-template-columns: 1fr; min-height: auto; padding-top: 58px; }
+  .calendar-page .calendar-hero-copy { max-width: 720px; }
+  .calendar-page .orbit-card { justify-self: start; width: min(100%, 390px); }
+  .calendar-page .overview-grid { grid-template-columns: 1fr; }
+  .calendar-page .calendar-layout { display: block; }
+  .calendar-page .day-detail { position: fixed; z-index: 1300; left: 12px; right: 12px; bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px)); top: auto; max-height: calc(100dvh - 88px - env(safe-area-inset-bottom, 0px)); overflow-y: auto; opacity: 0; visibility: hidden; transform: translateY(calc(100% + 30px)); transition: opacity 0.28s ease, visibility 0.28s ease, transform 0.28s ease; }
+  .calendar-page .day-detail.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
+  .calendar-page .detail-close { position: absolute; z-index: 2; top: 10px; right: 12px; display: block; width: 44px; height: 44px; border: 1px solid rgba(139, 90, 20, 0.14); border-radius: 50%; color: var(--calendar-muted); font-size: 24px; line-height: 1; }
+  .calendar-page .detail-scrim { position: fixed; z-index: 1250; inset: 0; display: block; background: rgba(47, 36, 27, 0.28); backdrop-filter: blur(3px); }
+  .calendar-page .mobile-detail-launch { display: block; }
+  .calendar-page .record-delete { opacity: 1; }
+  .calendar-page .phase-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .calendar-page,
+  .calendar-page .calendar-hero,
+  .calendar-page .calendar-hero-inner,
+  .calendar-page .calendar-layout,
+  .calendar-page .calendar-main,
+  .calendar-page .calendar-side {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .calendar-page .calendar-hero { min-height: auto; }
+  .calendar-page .calendar-hero-inner { width: min(100% - 32px, 640px); padding-top: 34px; padding-bottom: 36px; }
+  .calendar-page .calendar-hero h1 { font-size: clamp(32px, 10vw, 48px); line-height: 1.1; }
+  .calendar-page .calendar-hero-intro { font-size: 16px; line-height: 1.75; }
+  .calendar-page .calendar-hero-meta { gap: 6px; margin-top: 17px; }
+  .calendar-page .hero-chip { font-size: 10px; }
+  .calendar-page .orbit-card { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 10px; width: 100%; padding: 12px; border-radius: 14px; }
+  .calendar-page .orbit-ring-outer { width: 120px; }
+  .calendar-page .orbit-ring-outer::before { inset: 12px; }
+  .calendar-page .orbit-ring-outer::after { inset: 27px; }
+  .calendar-page .orbit-ring-inner { width: 64px; }
+  .calendar-page .orbit-core { width: 40px; }
+  .calendar-page .orbit-core span { font-size: 10px; }
+  .calendar-page .orbit-core strong { font-size: 18px; }
+  .calendar-page .orbit-glyph { font-size: 10px; }
+  .calendar-page .orbit-glyph-top { top: 4px; }
+  .calendar-page .orbit-glyph-right { right: 5px; }
+  .calendar-page .orbit-glyph-bottom { bottom: 4px; }
+  .calendar-page .orbit-glyph-left { left: 5px; }
+  .calendar-page .orbit-caption { margin-top: 0; text-align: left; }
+  .calendar-page .orbit-caption strong { font-size: 14px; }
+  .calendar-page .orbit-caption > span:last-child { display: none; }
+  .calendar-page .calendar-section-heading { display: grid; gap: 15px; margin-bottom: 22px; }
+  .calendar-page .calendar-section-heading .section-desc { text-align: left; }
+  .calendar-page .calendar-heading-side { justify-items: start; gap: 9px; }
+  .calendar-page .calendar-trace-summary { font-size: 11px; }
+  .calendar-page .legend { justify-content: start; }
+  .calendar-page .month-board { padding: 10px; border-radius: 14px; }
+  .calendar-page .month-board-head { margin-bottom: 14px; }
+  .calendar-page .month-board-head h3 { font-size: 21px; }
+  .calendar-page .today-button { min-height: 44px; padding: 7px 9px; font-size: 10px; }
+  .calendar-page .calendar-grid-scroll {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(158, 63, 53, 0.34) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+  .calendar-page .calendar-grid-scroll:focus-visible { border-radius: 9px; outline-offset: 4px; }
+  .calendar-page .calendar-weekdays, .calendar-page .calendar-grid { min-width: 336px; gap: 4px; }
+  .calendar-page .calendar-weekdays span { font-size: 9px; letter-spacing: 0.08em; }
+  .calendar-page .calendar-empty { min-height: 64px; border-radius: 10px; }
+  .calendar-page .date-cell { min-height: 64px; border-radius: 9px; padding: 6px 5px; }
+  .calendar-page .date-cell::after { right: -14px; top: -14px; width: 38px; }
+  .calendar-page .date-cell-top strong { font-size: 16px; }
+  .calendar-page .date-cell-top em { display: none; }
+  .calendar-page .date-cell-pillar { margin-top: 4px; font-size: 9px; letter-spacing: 0.03em; }
+  .calendar-page .date-cell-keyword { max-width: 100%; overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+  .calendar-page .date-cell-status { display: none; }
+  .calendar-page .today-mark { right: 5px; bottom: 5px; font-size: 7px; }
+  .calendar-page .date-cell-record { font-size: 7px; }
+  .calendar-page .phase-rail { gap: 6px; }
+  .calendar-page .phase-card { min-height: 44px; gap: 6px; padding: 8px 7px; }
+  .calendar-page .phase-card-index { font-size: 9px; }
+  .calendar-page .phase-card-copy strong { font-size: 10px; }
+  .calendar-page .phase-card-copy small { font-size: 9px; }
+  .calendar-page .phase-card-arrow { width: 14px; height: 14px; }
+  .calendar-page .decision-row { grid-template-columns: 0.68fr 0.55fr 0.38fr 1.6fr; gap: 7px; padding: 12px 10px; font-size: 11px; }
+  .calendar-page .decision-head { font-size: 8px; }
+  .calendar-page .node-type .icon-mark { display: none; }
+  .calendar-page .record-grid { grid-template-columns: 1fr; }
+  .calendar-page .record-card { min-height: 130px; padding: 16px; border-radius: 14px; }
+  .calendar-page .record-card h3 { margin-top: 12px; font-size: 19px; }
+  .calendar-page .record-card p { margin-top: 8px; font-size: 13px; }
+  .calendar-page .record-line { left: 16px; bottom: 16px; }
+  .calendar-page .caution-strip { align-items: start; gap: 10px; margin-top: 12px; padding: 13px; border-radius: 14px; }
+  .calendar-page .caution-strip strong { font-size: 13px; }
+  .calendar-page .caution-strip p { line-height: 1.5; }
+  .calendar-page .caution-mark { display: none; }
+  .calendar-page .day-detail { left: 8px; right: 8px; bottom: calc(var(--mobile-nav-height, 64px) + env(safe-area-inset-bottom, 0px)); padding: 18px 15px; border-radius: 14px; }
+  .calendar-page .detail-header h3 { font-size: 23px; }
+  .calendar-page .day-signal-card { margin-top: 16px; padding: 13px; }
+  .calendar-page .day-signal-copy strong { font-size: 20px; }
+  .calendar-page .keyword-stamp { flex-basis: 58px; width: 58px; }
+  .calendar-page .keyword-stamp strong { font-size: 17px; }
+  .calendar-page .actual-records-head h4 { font-size: 16px; }
+  .calendar-page .quick-records-head { align-items: start; flex-direction: column; gap: 3px; }
+  .calendar-page .guidance-grid { gap: 6px; }
+  .calendar-page .record-form-grid { grid-template-columns: 1fr; }
+  .calendar-page .record-form select,
+  .calendar-page .record-form input,
+  .calendar-page .record-form textarea { min-height: 44px; font-size: 16px; }
+  .calendar-page .quick-record-button { min-height: 48px; padding: 8px 11px; }
+  .calendar-page .record-delete { min-width: 44px; min-height: 44px; }
+  .calendar-page .record-form { padding: 12px; }
+}
+
+/* 按钮专项：日历中轻操作、记录操作和主操作分层，同时保证所有触控目标可点。 */
+.calendar-page .today-button,
+.calendar-page .mobile-detail-launch,
+.calendar-page .detail-reset {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 0 12px;
+}
+
+.calendar-page .quick-record-button {
+  min-height: 44px;
+}
+
+.calendar-page .guidance-toggle {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.calendar-page .record-delete,
+.calendar-page .record-form-head button {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 0 8px;
+}
+
+.calendar-page .record-add-button {
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.calendar-page .record-form-actions {
+  align-items: stretch;
+  gap: var(--button-gap, 8px);
+}
+
+.calendar-page .record-form-actions .primary-button,
+.calendar-page .record-form-actions .secondary-button {
+  min-height: var(--button-height, 46px);
+  padding: 0 14px;
+  border-radius: var(--button-radius, 13px);
+  font-size: 14px;
+}
+
+.calendar-page .phase-card {
+  min-height: 48px;
+}
+
+.calendar-page .decision-row {
+  min-height: 48px;
+}
+
+@media (max-width: 900px) {
+  .calendar-page .detail-close {
+    display: grid;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 50%;
+  }
+
+  .calendar-page .detail-close .icon-mark {
+    width: 20px;
+    height: 20px;
+  }
+}

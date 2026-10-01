@@ -4,12 +4,9 @@ import About from '../views/About.vue'
 import AdminConsole from '../views/AdminConsole.vue'
 import Assessment from '../views/Assessment.vue'
 import Auth from '../views/Auth.vue'
-import Booking from '../views/Booking.vue'
 import Calendar from '../views/Calendar.vue'
-import Course from '../views/Course.vue'
 import Home from '../views/Home.vue'
 import ReportDetail from '../views/ReportDetail.vue'
-import Services from '../views/Services.vue'
 import StaffConsole from '../views/StaffConsole.vue'
 import ServiceRequestForm from '../views/ServiceRequestForm.vue'
 import ServiceRequests from '../views/ServiceRequests.vue'
@@ -23,10 +20,10 @@ const routes = [
   { path: '/auth/forgot-password', name: 'ForgotPassword', component: Auth, meta: { public: true, title: '找回密码' } },
   { path: '/auth/invite', name: 'StaffInvite', component: Auth, meta: { public: true, title: '接受邀请' } },
   { path: '/pages/home/home', name: 'Home', component: Home, meta: { requiresAuth: true, title: '首页' } },
-  { path: '/pages/services/services', name: 'Services', component: Services, meta: { requiresAuth: true, hiddenFeature: 'services', title: '服务' } },
+  { path: '/pages/services/services', name: 'Services', component: () => import('../features/paused-commerce/Services.vue'), meta: { requiresAuth: true, hiddenFeature: 'services', title: '服务' } },
   { path: '/pages/assessment/assessment', name: 'Assessment', component: Assessment, meta: { requiresAuth: true, title: '人生说明书' } },
-  { path: '/pages/booking/booking', name: 'Booking', component: Booking, meta: { requiresAuth: true, hiddenFeature: 'booking', title: '预约' } },
-  { path: '/pages/course/course', name: 'Course', component: Course, meta: { requiresAuth: true, hiddenFeature: 'courses', title: '共鉴计划' } },
+  { path: '/pages/booking/booking', name: 'Booking', component: () => import('../features/paused-commerce/Booking.vue'), meta: { requiresAuth: true, hiddenFeature: 'booking', title: '预约' } },
+  { path: '/pages/course/course', name: 'Course', component: () => import('../features/paused-commerce/Course.vue'), meta: { requiresAuth: true, hiddenFeature: 'courses', title: '共鉴计划' } },
   { path: '/pages/user/user', name: 'UserCenter', component: UserCenter, meta: { requiresAuth: true, title: '个人空间' } },
   { path: '/pages/requests/requests', name: 'ServiceRequests', component: ServiceRequests, meta: { requiresAuth: true, title: '我的申请' } },
   { path: '/pages/requests/new', name: 'ServiceRequestForm', component: ServiceRequestForm, meta: { requiresAuth: true, title: '申请决策日历' } },

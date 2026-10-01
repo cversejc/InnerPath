@@ -1,0 +1,147 @@
+.calendar-page .calendar-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.32fr) minmax(330px, 0.68fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.calendar-page .month-board { min-width: 0; padding: 23px; }
+
+.calendar-page .month-board-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.calendar-page .month-board-head h3 { margin-top: 7px; color: var(--calendar-ink); font-size: 29px; letter-spacing: 0.04em; }
+.calendar-page .month-board-head p { margin-top: 4px; color: var(--calendar-muted); font-size: 12px; }
+
+.calendar-page .today-button,
+.calendar-page .mobile-detail-launch,
+.calendar-page .detail-reset {
+  border: 1px solid rgba(184, 92, 80, 0.23);
+  border-radius: 999px;
+  padding: 9px 13px;
+  background: rgba(184, 92, 80, 0.07);
+  color: var(--cinnabar-deep);
+  font-family: 'Manrope', 'PingFang SC', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.calendar-page .today-button:hover,
+.calendar-page .mobile-detail-launch:hover,
+.calendar-page .detail-reset:hover { transform: translateY(-1px); background: rgba(184, 92, 80, 0.13); }
+.calendar-page .today-button .icon-mark,
+.calendar-page .mobile-detail-launch .icon-mark,
+.calendar-page .detail-reset .icon-mark { width: 16px; height: 16px; margin-left: 5px; }
+
+.calendar-page .calendar-grid-scroll {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.calendar-page .calendar-weekdays,
+.calendar-page .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+
+.calendar-page .calendar-weekdays { margin-bottom: 8px; }
+
+.calendar-page .calendar-weekdays span {
+  padding: 0 4px 4px;
+  color: var(--calendar-muted);
+  font-family: 'Manrope', 'PingFang SC', sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-align: center;
+}
+
+.calendar-page .calendar-empty { min-height: 112px; border: 1px dashed rgba(139, 90, 20, 0.08); border-radius: 14px; }
+
+.calendar-page .date-cell {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 112px;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid rgba(139, 90, 20, 0.12);
+  border-radius: 14px;
+  padding: 11px 11px 10px;
+  overflow: hidden;
+  background: rgba(255, 252, 245, 0.53);
+  color: var(--calendar-ink);
+  text-align: left;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.calendar-page .date-cell::after {
+  content: '';
+  position: absolute;
+  right: -17px;
+  top: -17px;
+  width: 48px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  opacity: 0.35;
+  background: currentColor;
+}
+
+.calendar-page .date-cell:hover { transform: translateY(-2px); border-color: rgba(184, 92, 80, 0.36); box-shadow: 0 12px 24px -20px rgba(84, 48, 25, 0.8); }
+.calendar-page .date-cell.selected { border-color: var(--cinnabar-deep); box-shadow: 0 0 0 3px rgba(184, 92, 80, 0.12), 0 16px 26px -20px rgba(158, 63, 53, 0.76); }
+
+.calendar-page .date-cell.tone-yellow { color: var(--calendar-yellow); background: linear-gradient(145deg, rgba(255, 251, 235, 0.92), rgba(246, 232, 190, 0.42)); }
+.calendar-page .date-cell.tone-green { color: var(--calendar-green); background: linear-gradient(145deg, rgba(241, 249, 239, 0.88), rgba(205, 229, 215, 0.42)); }
+.calendar-page .date-cell.tone-red { color: var(--calendar-red); background: linear-gradient(145deg, rgba(255, 244, 238, 0.9), rgba(237, 204, 196, 0.42)); }
+.calendar-page .date-cell.tone-yellow-green { color: var(--calendar-green); background: linear-gradient(135deg, rgba(247, 235, 195, 0.76) 0 51%, rgba(211, 231, 215, 0.68) 52%); }
+.calendar-page .date-cell.tone-red-yellow { color: var(--calendar-yellow); background: linear-gradient(135deg, rgba(239, 207, 199, 0.76) 0 51%, rgba(247, 235, 195, 0.68) 52%); }
+.calendar-page .date-cell.tone-green-yellow { color: var(--calendar-green); background: linear-gradient(135deg, rgba(211, 231, 215, 0.76) 0 51%, rgba(247, 235, 195, 0.68) 52%); }
+.calendar-page .date-cell.tone-rest { color: var(--calendar-red); background: linear-gradient(135deg, rgba(247, 235, 195, 0.62), rgba(239, 207, 199, 0.64)); }
+
+.calendar-page .date-cell-top { display: flex; align-items: baseline; gap: 5px; color: var(--calendar-ink); }
+.calendar-page .date-cell-top strong { font-size: 23px; line-height: 1; }
+.calendar-page .date-cell-top em { color: var(--calendar-muted); font-size: 9px; font-style: normal; }
+.calendar-page .date-cell-pillar { position: relative; z-index: 1; margin-top: 9px; color: currentColor; font-size: 12px; font-weight: 900; letter-spacing: 0.12em; }
+.calendar-page .date-cell-keyword { position: relative; z-index: 1; margin-top: auto; color: var(--calendar-ink); font-size: 12px; font-weight: 800; }
+.calendar-page .date-cell-status { position: relative; z-index: 1; max-width: 100%; margin-top: 5px; overflow: hidden; color: var(--calendar-muted); font-size: 9px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-page .date-cell-record { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 8px; font-weight: 900; }
+.calendar-page .date-cell-record i { display: inline-block; width: 6px; height: 6px; border: 1px solid var(--cinnabar); border-radius: 50%; background: rgba(184, 92, 80, 0.22); }
+.calendar-page .today-mark { position: absolute; right: 9px; bottom: 9px; z-index: 2; color: var(--cinnabar-deep); font-family: 'Manrope', sans-serif; font-size: 9px; font-weight: 900; }
+.calendar-page .date-cell.is-today { outline: 2px solid rgba(184, 92, 80, 0.42); outline-offset: -4px; }
+
+.calendar-page .mobile-detail-launch {
+  display: none;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 12px;
+  border: 1px solid rgba(184, 92, 80, 0.25);
+  border-radius: 12px;
+  background: rgba(184, 92, 80, 0.08);
+  color: var(--cinnabar-deep);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.calendar-page .day-detail {
+  position: sticky;
+  top: 88px;
+  min-width: 0;
+  padding: 25px;
+  overflow: hidden;
+  background: linear-gradient(155deg, rgba(255, 252, 245, 0.96), rgba(249, 239, 218, 0.82));
+}
+
+.calendar-page .day-detail::after {
+  content: '时';
+  position: absolute;
+  right: -22px;
+  bottom: -60px;
+  color: rgba(111, 159, 147, 0.1);
+  font-size: 180px;
+  font-weight: 900;
+  line-height: 1;
+}

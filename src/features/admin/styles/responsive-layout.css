@@ -1,0 +1,222 @@
+@media (max-width: 767px) {
+  .admin-shell .admin-main {
+    width: calc(100% - 32px);
+    padding-top: 24px;
+    padding-bottom: calc(92px + var(--safe-bottom, 0px));
+  }
+
+  .admin-shell .admin-hero {
+    gap: 14px;
+    padding: 18px 0 20px;
+  }
+
+  .admin-shell .admin-hero h1 {
+    font-size: clamp(28px, 9vw, 38px);
+    line-height: 1.12;
+  }
+
+  .admin-shell .view-heading h2 {
+    font-size: clamp(22px, 7vw, 28px);
+  }
+
+  .admin-shell .dashboard-grid,
+  .admin-shell .content-view {
+    gap: 14px;
+  }
+
+  .admin-shell .dashboard-panel,
+  .admin-shell .panel-surface {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .admin-shell .metric-card {
+    min-height: 108px;
+    padding: 12px;
+  }
+
+  .admin-shell .metric-card > strong {
+    margin-top: 9px;
+    font-size: 22px;
+  }
+
+  .admin-shell .trend-chart,
+  .admin-shell .trend-chart svg {
+    min-height: 190px;
+    height: 190px;
+  }
+
+  .admin-shell .hero-caption,
+  .admin-shell .view-heading p,
+  .admin-shell .dashboard-toolbar p {
+    font-size: 15px;
+  }
+
+  .admin-shell .hero-actions,
+  .admin-shell .toolbar-controls {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .admin-shell .hero-actions .secondary-button {
+    width: 100%;
+  }
+
+  .admin-shell .hero-actions .admin-account-button {
+    width: 100%;
+  }
+
+  .admin-shell .admin-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 16px 0 20px;
+    scrollbar-width: none;
+  }
+
+  .admin-shell .admin-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-shell .admin-tab {
+    flex: 0 0 auto;
+    min-height: 44px;
+  }
+
+  .admin-shell .range-switch {
+    width: 100%;
+  }
+
+  .admin-shell .range-switch button {
+    flex: 1;
+    min-height: 44px;
+  }
+
+  .admin-shell .auto-refresh {
+    min-height: 44px;
+  }
+
+  .admin-shell .dashboard-skeleton {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-shell .filter-bar {
+    align-items: stretch;
+  }
+
+  .admin-shell .filter-bar > input,
+  .admin-shell .filter-bar > select,
+  .admin-shell .filter-bar .date-filter,
+  .admin-shell .filter-bar .primary-button {
+    flex: 1 1 100%;
+    min-height: 46px;
+  }
+
+  .admin-shell .date-filter input {
+    width: 100%;
+  }
+
+  .admin-shell .filter-reset {
+    min-height: 44px;
+  }
+
+  .admin-shell .admin-table th,
+  .admin-shell .admin-table td {
+    padding: 10px;
+  }
+
+  .admin-shell .admin-table td {
+    font-size: 13px;
+  }
+
+  .admin-shell .admin-table-wrap {
+    scrollbar-width: thin;
+  }
+
+  .admin-shell .admin-table-wrap::before {
+    content: '左右滑动查看全部字段';
+    display: block;
+    padding: 7px 10px;
+    color: var(--muted, #7d6653);
+    background: rgba(234, 217, 191, .2);
+    font-size: 11px;
+    line-height: 1.4;
+    text-align: right;
+  }
+
+  .admin-shell .row-actions button,
+  .admin-shell .row-open,
+  .admin-shell .detail-link {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    padding: 0 8px;
+  }
+
+  .admin-shell .compact-button,
+  .admin-shell .filter-bar .primary-button,
+  .admin-shell .pagination .secondary-button {
+    min-height: 46px;
+  }
+
+  .admin-shell .panel-link,
+  .admin-shell .filter-reset,
+  .admin-shell .directory-search button {
+    min-height: 44px;
+  }
+
+  .admin-shell .drawer-layer {
+    padding-bottom: var(--safe-bottom, 0px);
+  }
+
+  .admin-shell .drawer,
+  .admin-shell .user-drawer,
+  .admin-shell .booking-drawer,
+  .admin-shell .report-drawer,
+  .admin-shell .log-drawer {
+    width: 100%;
+    border-left: 0;
+  }
+
+  .admin-shell .drawer-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: 16px;
+  }
+
+  .admin-shell .drawer-header h2 {
+    max-width: 68vw;
+    font-size: 22px;
+  }
+
+  .admin-shell .drawer-close {
+    display: inline-flex;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .admin-shell .drawer-body {
+    padding: 18px 14px calc(88px + var(--safe-bottom, 0px));
+  }
+
+  .admin-shell .drawer-section {
+    gap: 14px;
+  }
+
+  .admin-shell .profile-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-shell .detail-facts p {
+    grid-template-columns: minmax(64px, .38fr) minmax(0, 1fr);
+  }
+}

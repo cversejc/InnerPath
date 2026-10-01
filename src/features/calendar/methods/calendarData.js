@@ -1,0 +1,105 @@
+export default {
+  async loadCalendar() {
+      try {
+        const response = await getMyCalendars()
+        const publishedCalendar = response.items?.find(item => item.status === 'published' && item.entries?.length) || null
+        if (publishedCalendar) {
+          this.calendarError = ''
+          this.applyCalendar(publishedCalendar, 'api')
+        } else if (allowDemoCalendar) {
+          this.applyCalendar(createMockCalendar(), 'mock')
+        } else {
+          this.calendar = null
+          this.calendarSource = 'empty'
+          this.days = []
+          this.meta = {}
+        }
+      } catch (error) {
+        if (allowDemoCalendar) {
+          this.applyCalendar(createMockCalendar(), 'mock')
+        } else {
+          this.calendar = null
+          this.calendarSource = 'empty'
+          this.days = []
+          this.meta = {}
+          this.calendarError = '暂时无法读取已交付日历，请稍后重试或先提交一份申请。'
+        }
+      } finally {
+        this.loading = false
+      }
+    },
+  applyCalendar(calendar, source) {
+      this.calendar = calendar
+      this.calendarSource = source
+      this.days = (calendar.entries || []).map(entry => {
+        const entryDate = entry.entry_date || entry.date
+        if (!entryDate) return null
+        const date = parseDateKey(entryDate)
+        return {
+          ...entry,
+          date: entryDate,
+          month: date.getMonth() + 1,
+          day: date.getDate(),
+          weekday: weekdays[date.getDay()],
+          dayPillar: entry.day_pillar || entry.dayPillar || '',
+          statusLabel: entry.status_label || entry.statusLabel || '',
+          shortLabel: entry.keyword || entry.shortLabel || entry.status_label || entry.statusLabel || '查看',
+          phaseId: entry.phase_id || entry.phaseId || entry.tone || 'default',
+          phaseLabel: entry.phase_label || entry.phaseLabel || entry.status_label || entry.statusLabel || entry.tone || '',
+          timeWindow: entry.time_window || entry.timeWindow || '按你的节奏安排，给决定留出换气空间。',
+          suitable: entry.suitable || [],
+          unsuitable: entry.unsuitable || [],
+          isPhase: entry.is_phase ?? entry.isPhase ?? false
+        }
+      }).filter(Boolean)
+      const startDate = calendar.start_date || this.days[0]?.date || ''
+      const year = startDate.slice(0, 4)
+      const calendarMeta = calendar.meta_payload || calendar.metaPayload || {}
+      this.meta = source === 'mock'
+        ? mockCalendarMeta
+        : {
+            title: calendar.title,
+            subtitle: calendarMeta.subtitle || 'PERSONAL TIMEZONE',
+            dateLabel: calendarMeta.dateLabel || `${startDate} — ${calendar.end_date || this.days[this.days.length - 1]?.date || ''}`,
+            pillars: calendarMeta.pillars || '',
+            rhythm: calendarMeta.rhythm || '少说，多做，多记录',
+            intro: calendarMeta.intro || '这是一张属于你的决策时机参照系，帮你在重要选择前留出观察、行动与复盘的空间。',
+            overview: Array.isArray(calendarMeta.overview) ? calendarMeta.overview : []
+          }
+      this.todayDate = this.days.find(day => isToday(day.date))?.date || this.days[0]?.date || null
+      this.selectedDate = this.todayDate
+      this.decisionNodes = source === 'mock'
+        ? mockDecisionNodes.map(node => ({ ...node, dateKey: dateKeyFromLabel(node.date, year) }))
+        : this.days.map(day => ({
+            date: `${day.month}月${day.day}日`,
+            dateKey: day.date,
+            pillar: day.dayPillar || '—',
+            tone: day.tone || 'yellow',
+            type: day.keyword || day.statusLabel || '查看详情'
+          }))
+      this.phases = source === 'mock' ? mockPhaseDefinitions : this.buildPhases()
+      this.recordPrompts = source === 'mock' ? mockRecordPrompts : []
+      this.cautionNotes = source === 'mock' ? mockCautionNotes : ['', '', '今天不需要做到完美，只需要完成一件真正重要的事。']
+      this.mobileDetailOpen = !this.isMobileLayout
+    },
+  buildPhases() {
+      const grouped = []
+      for (const day of this.days) {
+        const existing = grouped.find(phase => phase.id === day.phaseId)
+        if (existing) {
+          existing.endDate = day.date
+          existing.dateRange = `${existing.startDate}—${existing.endDate}`
+        } else {
+          grouped.push({
+            id: day.phaseId,
+            label: day.phaseLabel || day.shortLabel,
+            tone: day.tone || 'yellow',
+            startDate: day.date,
+            endDate: day.date,
+            dateRange: day.date
+          })
+        }
+      }
+      return grouped
+    }
+}
