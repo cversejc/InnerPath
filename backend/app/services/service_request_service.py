@@ -29,8 +29,8 @@ from app.services.service_request_staff import (
     serialize_task,
     staff_can_access,
 )
-from app.services.service_request_delivery import (
-    deliver_service_request,
+from app.services.service_request_delivery import deliver_service_request
+from app.services.service_request_workflow import (
     enqueue_ai_draft,
     request_more_info,
     save_service_request_draft,
