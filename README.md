@@ -212,24 +212,28 @@ InnerPath/
 │   ├── components/       # BrandNav、BrandFooter 等共享组件
 │   ├── data/             # 决策日历等前端数据
 │   ├── features/         # 按领域组织的页面、API、样式和状态
-│   │   ├── admin/ / assessment/ / calendar/
-│   │   ├── reports/ / service-requests/ / user-center/
-│   ├── views/            # 页面组件
-│   │   ├── Home.vue / Assessment.vue / ReportDetail.vue
-│   │   ├── Calendar.vue / About.vue / UserCenter.vue
+│   │   ├── admin/ / assessment/ / auth/ / calendar/
+│   │   ├── navigation/ / reports/ / service-requests/
+│   │   └── user-center/ / users/
 │   ├── router/           # 路由配置
-│   ├── utils/            # API 与报告工具函数
+│   ├── stores/           # 跨页面会话状态
+│   ├── styles/           # 全站基础、布局和共享控件样式
+│   ├── utils/            # apiClient 等共享基础工具
+│   ├── views/            # 路由视图壳与页面组合
 │   ├── App.vue
 │   ├── main.js
-│   └── style.css
+│   └── style.css         # 全局样式入口
 │
 └── backend/              # 后端源码
     ├── app/
-    │   ├── api/         # API 路由
-    │   ├── core/        # 核心配置
-    │   ├── models/      # 数据模型
-    │   ├── schemas/     # Pydantic 模式
-    │   ├── services/    # 业务逻辑
+    │   ├── api/v1/      # HTTP 路由适配层
+    │   ├── application/ # 跨领域用例与流程编排
+    │   ├── core/ / db/  # 平台基础能力与数据库连接
+    │   ├── domains/     # audit、auth、calendar、reports、service_requests、users
+    │   ├── models/      # 跨领域共享 ORM 实体
+    │   ├── schemas/     # 共享数据契约
+    │   ├── services/    # 共享平台能力与尚未成组迁移的服务
+    │   ├── tasks/       # Celery 任务入口
     │   ├── config.py    # 配置管理
     │   └── main.py      # 应用入口
     ├── alembic/         # 数据库迁移
