@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { Button as VanButton } from 'vant'
 
 defineProps({
   genStep: { type: Number, default: 0 },
@@ -41,8 +42,8 @@ defineExpose({ focusStepHeading })
         <div><span>行动提示</span><strong>{{ reportPreview.talents }}</strong></div>
       </div>
       <div class="button-row">
-        <button type="button" class="primary-button" @click="emit('view-report')">查看报告</button>
-        <button type="button" class="secondary-button" @click="emit('go-to-calendar')">打开决策日历</button>
+        <VanButton type="primary" native-type="button" class="primary-button" @click="emit('view-report')">查看报告</VanButton>
+        <VanButton type="default" native-type="button" class="secondary-button" @click="emit('go-to-calendar')">打开决策日历</VanButton>
       </div>
     </div>
   </div>

@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { Button as VanButton } from 'vant'
 import ProfileFields from '../../../components/ProfileFields.vue'
 
 defineProps({
@@ -45,15 +46,17 @@ defineExpose({ focusStepHeading })
         @update:model-value="emit('update:profile-draft', $event)"
       />
 
-      <button
-        type="button"
+      <VanButton
+        native-type="button"
+        type="default"
+        plain
         class="fold-toggle"
         :aria-expanded="showOptionalProfile"
         @click="emit('update:show-optional-profile', !showOptionalProfile)"
       >
         <span>{{ showOptionalProfile ? '收起个人画像选填项' : '完善个人画像（选填，之后可修改）' }}</span>
         <span aria-hidden="true">{{ showOptionalProfile ? '−' : '+' }}</span>
-      </button>
+      </VanButton>
 
       <div class="privacy-note">
         <span class="privacy-mark" aria-hidden="true">私</span>
@@ -66,9 +69,9 @@ defineExpose({ focusStepHeading })
       </div>
       <p v-if="formMessage" class="form-message" role="alert" aria-live="assertive">{{ formMessage }}</p>
       <div class="form-submit-bar">
-        <button type="submit" class="primary-button full-width" :disabled="savingProfile" :aria-busy="savingProfile">
+        <VanButton type="primary" native-type="submit" class="primary-button full-width" :disabled="savingProfile" :aria-busy="savingProfile">
           {{ savingProfile ? '保存中…' : '保存档案并继续' }}
-        </button>
+        </VanButton>
       </div>
     </form>
   </div>

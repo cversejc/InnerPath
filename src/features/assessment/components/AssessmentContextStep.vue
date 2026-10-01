@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { Button as VanButton } from 'vant'
 import ProfileSummary from '../../../components/ProfileSummary.vue'
 
 const props = defineProps({
@@ -70,7 +71,7 @@ defineExpose({ focusStepHeading })
         <span class="mini-label">上次申请背景</span>
         <p>{{ truncate(lastContext.current_challenge, 96) || '已保存上次报告的情境' }}</p>
       </div>
-      <button type="button" class="secondary-button small-button" @click="emit('reuse-context')">沿用上次背景并编辑</button>
+      <VanButton type="default" native-type="button" class="secondary-button small-button" @click="emit('reuse-context')">沿用上次背景并编辑</VanButton>
     </div>
     <p v-if="contextMessage" class="context-message" role="status">{{ contextMessage }}</p>
     <p class="context-scope-note">本次困惑、关系和身心状态只用于这份申请，默认不会写入长期档案。</p>
@@ -79,10 +80,12 @@ defineExpose({ focusStepHeading })
       <fieldset class="form-group choice-fieldset" :aria-describedby="contextErrors.focus_topics ? 'assessment-focus-topics-error' : undefined">
         <legend class="form-label">当前最关注的生活领域 <span class="required">*</span> <span class="form-hint">最多选择 3 项</span> <span class="selection-count">{{ contextDraft.focus_topics.length }}/3</span></legend>
         <div class="topics-grid">
-          <button
+          <VanButton
             v-for="topic in topics"
             :key="topic.id"
-            type="button"
+            type="default"
+            native-type="button"
+            plain
             class="topic-card"
             :class="{ selected: contextDraft.focus_topics.includes(topic.id) }"
             :aria-pressed="contextDraft.focus_topics.includes(topic.id)"
@@ -90,7 +93,7 @@ defineExpose({ focusStepHeading })
           >
             <strong>{{ topic.title }}</strong>
             <small>{{ topic.desc }}</small>
-          </button>
+          </VanButton>
         </div>
         <p v-if="contextErrors.focus_topics" id="assessment-focus-topics-error" class="field-error" role="alert">{{ contextErrors.focus_topics }}</p>
       </fieldset>
@@ -182,8 +185,8 @@ defineExpose({ focusStepHeading })
       </div>
       <p v-if="formMessage" class="form-message" role="alert" aria-live="assertive">{{ formMessage }}</p>
       <div class="button-row form-submit-bar">
-        <button type="button" class="secondary-button" @click="emit('edit-profile')">修改档案</button>
-        <button type="submit" class="primary-button" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '生成我的说明书' }}</button>
+        <VanButton type="default" native-type="button" class="secondary-button" @click="emit('edit-profile')">修改档案</VanButton>
+        <VanButton type="primary" native-type="submit" class="primary-button" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '生成我的说明书' }}</VanButton>
       </div>
     </form>
   </div>
