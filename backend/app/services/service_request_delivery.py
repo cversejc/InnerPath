@@ -10,11 +10,11 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.models.calendar import CalendarEntry, UserCalendar
+from app.domains.calendar.models import CalendarEntry, UserCalendar
 from app.domains.reports.models import Report
 from app.models.service_request import ServiceRequest, ServiceRequestDraft
 from app.models.user import User
-from app.schemas.calendar import CalendarEntryInput
+from app.domains.calendar.schemas import CalendarEntryInput
 from app.services.audit_service import record_audit
 from app.services.service_request_drafts import validate_draft
 from app.services.service_request_repository import (

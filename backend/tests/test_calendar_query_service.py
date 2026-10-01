@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from app.services.calendar_query_service import serialize_calendar
+from app.domains.calendar.query_service import serialize_calendar
 
 
 class CalendarDatabase:

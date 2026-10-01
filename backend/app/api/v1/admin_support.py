@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.calendar import UserCalendar
+from app.domains.calendar.models import UserCalendar
 
 
 USER_ROLE_LABELS = {"user": "用户", "consultant": "咨询师", "admin": "管理员"}

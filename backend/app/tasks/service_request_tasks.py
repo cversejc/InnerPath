@@ -13,7 +13,7 @@ from app.models.service_request import ServiceRequest, ServiceRequestDraft, Serv
 from app.models.user import User  # noqa: F401 - registers user foreign keys in the worker process
 from app.services.ai_service import generate_report_with_ai
 from app.services.audit_service import record_audit
-from app.services.calendar_ai_service import generate_calendar_with_ai
+from app.domains.calendar.generation import generate_calendar_with_ai
 from app.services.service_request_repository import _append_revision
 from app.services.service_request_payloads import flatten_ai_input
 from app.services.service_request_drafts import (

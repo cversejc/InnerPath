@@ -8,8 +8,8 @@ from pydantic import ValidationError
 from app.core.security import get_password_hash, verify_password
 from app.dependencies import require_roles
 from app.domains.auth.schemas import LoginRequest, RegisterRequest
-from app.schemas.calendar import CalendarEntryInput
-from app.services.calendar_service import _validate_entries
+from app.domains.calendar.schemas import CalendarEntryInput
+from app.domains.calendar.service import _validate_entries
 
 
 def test_passwords_are_stored_as_verifiable_hashes():

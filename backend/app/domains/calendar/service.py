@@ -8,14 +8,14 @@ from fastapi import Request
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.calendar import CalendarEntry, UserCalendar
-from app.schemas.calendar import (
+from app.domains.calendar.models import CalendarEntry, UserCalendar
+from app.domains.calendar.schemas import (
     CalendarCreate,
     CalendarEntryInput,
     CalendarUpdate,
 )
 from app.services.audit_service import record_audit
-from app.services.calendar_query_service import load_calendar_entries
+from app.domains.calendar.query_service import load_calendar_entries
 
 
 def _validate_entries(

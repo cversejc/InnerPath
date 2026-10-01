@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.user import User
-from app.schemas.calendar import (
+from app.domains.calendar.schemas import (
     CalendarRequestCreate,
     CalendarRequestListResponse,
     CalendarRequestResponse,
@@ -15,14 +15,14 @@ from app.schemas.calendar import (
     DecisionLogResponse,
     CalendarListResponse,
 )
-from app.services.calendar_query_service import get_user_calendars
-from app.services.decision_log_service import (
+from app.domains.calendar.query_service import get_user_calendars
+from app.domains.calendar.decision_logs import (
     create_user_decision_log,
     delete_user_decision_log,
     get_user_decision_logs,
 )
 from app.services.staff_calendar_service import get_calendar_for_staff
-from app.services.calendar_request_service import (
+from app.domains.calendar.requests import (
     create_calendar_request,
     get_user_calendar_requests,
     serialize_calendar_request,

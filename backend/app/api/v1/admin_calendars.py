@@ -6,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.v1.admin_support import _get_calendar_or_404
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.models.calendar import CalendarRequest
+from app.domains.calendar.models import CalendarRequest
 from app.models.user import User
-from app.schemas.calendar import (
+from app.domains.calendar.schemas import (
     CalendarCreate,
     CalendarImportRequest,
     CalendarListResponse,
@@ -19,15 +19,15 @@ from app.schemas.calendar import (
     CalendarUpdate,
 )
 from app.services.audit_service import record_audit
-from app.services.calendar_service import (
+from app.domains.calendar.service import (
     archive_calendar,
     clone_calendar_as_draft,
     create_calendar,
     publish_calendar,
     update_calendar,
 )
-from app.services.calendar_query_service import get_user_calendars, serialize_calendar
-from app.services.calendar_request_service import (
+from app.domains.calendar.query_service import get_user_calendars, serialize_calendar
+from app.domains.calendar.requests import (
     get_calendar_requests_for_admin,
     update_calendar_request,
 )

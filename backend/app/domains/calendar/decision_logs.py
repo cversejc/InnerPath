@@ -7,8 +7,8 @@ from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.calendar import DecisionLog
-from app.schemas.calendar import DecisionLogInput
+from app.domains.calendar.models import DecisionLog
+from app.domains.calendar.schemas import DecisionLogInput
 from app.services.audit_service import record_audit
 
 

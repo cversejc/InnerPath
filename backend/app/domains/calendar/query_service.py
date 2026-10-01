@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.calendar import CalendarEntry, UserCalendar
+from app.domains.calendar.models import CalendarEntry, UserCalendar
 
 
 async def load_calendar_entries(

@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.services.calendar_query_service import get_user_calendars
+from app.domains.calendar.query_service import get_user_calendars
 from app.services.service_request_staff import has_staff_assignment
 
 

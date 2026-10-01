@@ -7,10 +7,10 @@ from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.calendar import CalendarRequest, UserCalendar
+from app.domains.calendar.models import CalendarRequest, UserCalendar
 from app.domains.reports.models import Report
 from app.models.user import User
-from app.schemas.calendar import CalendarRequestAdminUpdate, CalendarRequestCreate
+from app.domains.calendar.schemas import CalendarRequestAdminUpdate, CalendarRequestCreate
 from app.services.audit_service import record_audit
 from app.services.intake_service import build_intake_snapshot
 

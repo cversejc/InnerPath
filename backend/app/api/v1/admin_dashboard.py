@@ -17,7 +17,7 @@ from app.api.v1.admin_activity_support import _load_audits
 from app.api.v1.admin_dashboard_support import _daily_counts
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.models.calendar import DecisionLog, UserCalendar
+from app.domains.calendar.models import DecisionLog, UserCalendar
 from app.domains.reports.models import Report, ReportTask
 from app.models.user import AuditLog, User
 from app.schemas.admin import (

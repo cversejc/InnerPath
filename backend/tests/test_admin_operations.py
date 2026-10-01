@@ -4,15 +4,15 @@ import pytest
 
 from app.api.v1.admin_dashboard import _dashboard_range
 from app.db.base import Base
-from app.models.calendar import UserCalendar
+from app.domains.calendar.models import UserCalendar
 from app.domains.reports.models import Report, ReportTask
 from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
 from app.models.user import AuditLog, AuthSession, StaffInvite, User
 from app.main import app
-from app.schemas.calendar import CalendarEntryInput
+from app.domains.calendar.schemas import CalendarEntryInput
 from app.schemas.admin import AdminReportTaskResponse
 from app.services.audit_service import _safe_value, parse_audit_details
-from app.services.calendar_service import _validate_entries
+from app.domains.calendar.service import _validate_entries
 
 
 def test_booking_and_course_routes_and_tables_are_removed():

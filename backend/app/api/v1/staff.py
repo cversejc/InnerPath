@@ -4,10 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
-from app.schemas.calendar import CalendarListResponse
+from app.domains.calendar.schemas import CalendarListResponse
 from app.domains.reports.schemas import ReportListItem, ReportListResponse, ReportResponse
 from app.schemas.user import UserResponse
-from app.services.calendar_query_service import get_user_calendars
+from app.domains.calendar.query_service import get_user_calendars
 from app.domains.reports.service import format_report_response, get_report_by_id, get_user_reports
 from app.services.service_request_service import has_staff_assignment
 

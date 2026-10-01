@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.v1.admin_support import _count, _date_filter
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.models.calendar import DecisionLog, UserCalendar
+from app.domains.calendar.models import DecisionLog, UserCalendar
 from app.domains.reports.models import Report
 from app.models.user import User
 from app.schemas.admin import (
