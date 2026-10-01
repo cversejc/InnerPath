@@ -186,6 +186,7 @@
 
 .auth-code-button {
   display: inline-flex;
+  height: auto;
   min-width: 124px;
   min-height: 46px;
   flex: 0 0 auto;
@@ -219,6 +220,7 @@
 }
 
 .auth-submit {
+  height: auto;
   min-height: 54px;
   border-radius: var(--button-radius, 13px);
   font-size: 16px;
@@ -242,11 +244,14 @@
 
 .auth-inline-link {
   display: inline-flex;
+  height: auto;
   min-height: 40px;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
+  border: 0;
   padding: 0 4px;
+  background: transparent;
   color: var(--cinnabar-deep, #9e3f35);
   font-size: inherit;
   font-weight: 700;
@@ -262,11 +267,14 @@
 
 .text-button {
   display: inline-flex;
+  height: auto;
   min-height: 40px;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
+  border: 0;
   padding: 0 8px;
+  background: transparent;
   color: var(--muted, #7d6653);
   font-size: 14px;
   transition: background var(--motion-fast, 150ms) ease, color var(--motion-fast, 150ms) ease;

@@ -1,3 +1,4 @@
+import { Button as VanButton } from 'vant'
 import authModeMethods from './methods/mode.js'
 import authSessionMethods from './methods/session.js'
 import authVerificationMethods from './methods/verification.js'
@@ -9,6 +10,7 @@ import {
 
 export default {
   name: 'Auth',
+  components: { VanButton },
   data() {
     const isLoginRoute = this.$route.path === '/auth/login' && (!this.$route.query.mode || this.$route.query.mode === 'login')
     const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches

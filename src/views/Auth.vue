@@ -47,9 +47,9 @@
                 <label for="auth-verification-code">短信验证码</label>
                 <div class="auth-code-row">
                   <input id="auth-verification-code" v-model.trim="form.code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required placeholder="输入 6 位验证码">
-                  <button class="auth-code-button" type="button" :disabled="sendingCode || codeCooldown > 0" @click="sendCode">
+                  <VanButton type="default" plain native-type="button" class="auth-code-button" :disabled="sendingCode || codeCooldown > 0" @click="sendCode">
                     {{ codeButtonLabel }}
-                  </button>
+                  </VanButton>
                 </div>
               </div>
 
@@ -64,27 +64,27 @@
               </label>
             </div>
 
-            <button class="primary-button full-width auth-submit" type="submit" :disabled="submitting" :aria-busy="submitting">
+            <VanButton type="primary" native-type="submit" class="primary-button full-width auth-submit" :disabled="submitting" :aria-busy="submitting">
               {{ submitting ? '请稍候…' : submitLabel }}
-            </button>
+            </VanButton>
           </form>
 
           <nav class="auth-actions" aria-label="账号操作">
             <p v-if="mode === 'login'" class="auth-switch">
               还没有账号？
-              <button class="auth-inline-link" type="button" @click="openMode('register')">立即注册</button>
+              <VanButton type="default" plain native-type="button" class="auth-inline-link" @click="openMode('register')">立即注册</VanButton>
             </p>
             <p v-else-if="mode === 'register'" class="auth-switch">
               已有账号？
-              <button class="auth-inline-link" type="button" @click="openMode('login')">立即登录</button>
+              <VanButton type="default" plain native-type="button" class="auth-inline-link" @click="openMode('login')">立即登录</VanButton>
             </p>
-            <button v-else-if="mode === 'invite'" class="auth-inline-link" type="button" @click="openMode('login')">返回登录</button>
+            <VanButton v-else-if="mode === 'invite'" type="default" plain native-type="button" class="auth-inline-link" @click="openMode('login')">返回登录</VanButton>
 
             <div class="auth-action-links">
-              <button v-if="mode === 'login' || mode === 'register'" class="text-button" type="button" @click="openMode('reset')">忘记密码</button>
+              <VanButton v-if="mode === 'login' || mode === 'register'" type="default" plain native-type="button" class="text-button" @click="openMode('reset')">忘记密码</VanButton>
               <template v-else-if="mode === 'reset'">
-                <button class="text-button" type="button" @click="openMode('login')">返回登录</button>
-                <button class="text-button" type="button" @click="openMode('register')">注册</button>
+                <VanButton type="default" plain native-type="button" class="text-button" @click="openMode('login')">返回登录</VanButton>
+                <VanButton type="default" plain native-type="button" class="text-button" @click="openMode('register')">注册</VanButton>
               </template>
             </div>
           </nav>
