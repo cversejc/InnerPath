@@ -1,3 +1,5 @@
+import { getAdminDashboard } from '../api'
+
 export default {
   async loadDashboard(silent = false) {
       if (!silent) this.dashboardLoading = true

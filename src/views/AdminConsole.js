@@ -1,39 +1,4 @@
 
-import {
-  createStaffInvite,
-  downloadAdminExport,
-  getAdminAuditLogs,
-  getAdminDashboard,
-  getAdminUser,
-  getAdminUserSummary,
-  getAllAdminUsers,
-  getAdminUsers,
-  resetAdminUserPassword,
-  updateAdminUserProfile,
-  updateAdminUserRole,
-  updateAdminUserStatus
-} from '../features/admin/api'
-import {
-  archiveAdminCalendar,
-  createAdminCalendar,
-  createAdminCalendarDraft,
-  getAdminCalendars,
-  getAdminCalendarRequests,
-  getAdminDecisionLogs,
-  getAdminUserDecisionLogs,
-  importAdminCalendar,
-  publishAdminCalendar,
-  updateAdminCalendar,
-  updateAdminCalendarRequest
-} from '../features/calendar/api'
-import {
-  getAdminReport,
-  getAdminReportTasks,
-  getAdminReports,
-  retryAdminReportTask
-} from '../features/reports/api'
-import { logout as logoutUser } from '../stores/auth'
-
 import navigationMethods from '../features/admin/methods/navigation.js'
 import adminFormatters from '../features/admin/formatters.js'
 import AdminDashboardSection from '../features/admin/components/AdminDashboardSection.vue'
@@ -53,27 +18,6 @@ import staffMethods from '../features/admin/methods/staff.js'
 import exportsMethods from '../features/admin/methods/exports.js'
 
 const EMPTY_PAGE = { total: 0, items: [] }
-
-function todayKey() {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-}
-
-function createEntry(date = todayKey()) {
-  return {
-    _key: `entry-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    entry_date: date,
-    day_pillar: '',
-    tone: 'yellow',
-    status_label: '',
-    keyword: '',
-    summary: '',
-    suitableText: '',
-    unsuitableText: '',
-    time_window: '',
-    admin_note: ''
-  }
-}
 
 export default {
   name: 'AdminConsole',

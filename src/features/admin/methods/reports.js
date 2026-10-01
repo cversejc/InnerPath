@@ -1,3 +1,10 @@
+import {
+  getAdminReport,
+  getAdminReportTasks,
+  getAdminReports,
+  retryAdminReportTask
+} from '../../reports/api'
+
 export default {
   async setReportSection(section) {
       this.reportSection = section

@@ -1,3 +1,17 @@
+import {
+  getAdminAuditLogs,
+  getAdminUser,
+  getAdminUserSummary,
+  getAdminUsers,
+  getAllAdminUsers,
+  resetAdminUserPassword,
+  updateAdminUserProfile,
+  updateAdminUserRole,
+  updateAdminUserStatus
+} from '../api'
+import { getAdminCalendars, getAdminUserDecisionLogs } from '../../calendar/api'
+import { getAdminReports } from '../../reports/api'
+
 export default {
   async loadUsers() {
       this.usersLoading = true

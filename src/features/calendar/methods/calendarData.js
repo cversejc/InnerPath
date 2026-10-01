@@ -1,3 +1,42 @@
+import { getMyCalendars } from '../api.js'
+import {
+  calendarMeta as mockCalendarMeta,
+  cautionNotes as mockCautionNotes,
+  createCalendarDays as createMockCalendarDays,
+  decisionNodes as mockDecisionNodes,
+  phaseDefinitions as mockPhaseDefinitions,
+  recordPrompts as mockRecordPrompts
+} from '../../../data/decisionCalendar.js'
+import { dateKeyFromLabel, isToday, parseDateKey, weekdays } from '../helpers.js'
+
+const allowDemoCalendar = import.meta.env.DEV && import.meta.env.VITE_DEMO_CALENDAR === 'true'
+
+function createMockCalendar() {
+  return {
+    id: 'demo-calendar',
+    user_id: null,
+    title: mockCalendarMeta.title,
+    start_date: mockCalendarMeta.startDate,
+    end_date: mockCalendarMeta.endDate,
+    status: 'published',
+    entries: createMockCalendarDays().map((entry, index) => ({
+      id: `demo-entry-${index + 1}`,
+      entry_date: entry.date,
+      day_pillar: entry.dayPillar || null,
+      tone: entry.tone || null,
+      status_label: entry.statusLabel || null,
+      keyword: entry.keyword || null,
+      summary: entry.summary || null,
+      suitable: entry.suitable || [],
+      unsuitable: entry.unsuitable || [],
+      time_window: entry.timeWindow || null,
+      phase_id: entry.phaseId || null,
+      phase_label: entry.phaseLabel || null,
+      is_phase: entry.isPhase || false
+    }))
+  }
+}
+
 export default {
   async loadCalendar() {
       try {

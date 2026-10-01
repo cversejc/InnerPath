@@ -1,3 +1,37 @@
+import { getAllAdminUsers } from '../api'
+import {
+  archiveAdminCalendar,
+  createAdminCalendar,
+  createAdminCalendarDraft,
+  getAdminCalendarRequests,
+  getAdminCalendars,
+  importAdminCalendar,
+  publishAdminCalendar,
+  updateAdminCalendar,
+  updateAdminCalendarRequest
+} from '../../calendar/api'
+
+function todayKey() {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+}
+
+function createEntry(date = todayKey()) {
+  return {
+    _key: `entry-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    entry_date: date,
+    day_pillar: '',
+    tone: 'yellow',
+    status_label: '',
+    keyword: '',
+    summary: '',
+    suitableText: '',
+    unsuitableText: '',
+    time_window: '',
+    admin_note: ''
+  }
+}
+
 export default {
   async loadCalendarUsers() {
       this.calendarUsersLoading = true

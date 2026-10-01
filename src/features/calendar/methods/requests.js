@@ -1,3 +1,7 @@
+import { authState } from '../../../stores/auth'
+import { getCurrentUser } from '../../../utils/authService'
+import { createCalendarRequest, getCalendarRequests } from '../api.js'
+
 export default {
   async loadCalendarRequestData() {
       try {

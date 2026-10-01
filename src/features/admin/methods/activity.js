@@ -1,3 +1,6 @@
+import { getAdminAuditLogs } from '../api'
+import { getAdminDecisionLogs } from '../../calendar/api'
+
 export default {
   async setLogSection(section) { this.logSection = section; if (section === 'audit') await this.loadAuditLogs(); else if (section === 'behavior') await this.loadDecisionLogs(); else await this.loadReportTasks() },
   async loadAuditLogs() { this.auditLoading = true; try { this.auditLogs = await getAdminAuditLogs({ ...this.cleanParams(this.logFilters), page: this.logPage, size: this.logPageSize }) } catch (error) { this.message = this.errorText(error) } finally { this.auditLoading = false } },

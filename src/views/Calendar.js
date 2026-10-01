@@ -1,89 +1,13 @@
 
-import { authState } from '../stores/auth'
-import { getCurrentUser } from '../utils/authService'
-import {
-  createCalendarRequest,
-  createDecisionLog,
-  deleteDecisionLog,
-  getCalendarRequests,
-  getMyCalendars,
-  getMyDecisionLogs
-} from '../features/calendar/api'
 import CalendarRequestSection from '../features/calendar/components/CalendarRequestSection.vue'
 import CalendarPlanningSection from '../features/calendar/components/CalendarPlanningSection.vue'
-import {
-  calendarMeta as mockCalendarMeta,
-  cautionNotes as mockCautionNotes,
-  createCalendarDays as createMockCalendarDays,
-  decisionNodes as mockDecisionNodes,
-  phaseDefinitions as mockPhaseDefinitions,
-  recordPrompts as mockRecordPrompts
-} from '../data/decisionCalendar'
-
+import { isToday, parseDateKey } from '../features/calendar/helpers.js'
 import requestsMethods from '../features/calendar/methods/requests.js'
 import calendarDataMethods from '../features/calendar/methods/calendarData.js'
 import selectionMethods from '../features/calendar/methods/selection.js'
-import recordsMethods from '../features/calendar/methods/records.js'
+import recordsMethods, { createRecordDraft } from '../features/calendar/methods/records.js'
 
-const weekdays = ['日', '一', '二', '三', '四', '五', '六']
-const DECISION_LOG_STORAGE_KEY = 'innerseek:decision-logs'
 const mobileDetailMediaQuery = typeof window === 'undefined' ? null : window.matchMedia('(max-width: 900px)')
-const allowDemoCalendar = import.meta.env.DEV && import.meta.env.VITE_DEMO_CALENDAR === 'true'
-
-function createRecordDraft() {
-  return {
-    kind: 'action',
-    status: 'done',
-    content: '',
-    note: ''
-  }
-}
-
-function parseDateKey(value) {
-  const [year, month, day] = value.split('-').map(Number)
-  return new Date(year, month - 1, day)
-}
-
-function formatDateKey(date) {
-  const pad = value => String(value).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
-}
-
-function isToday(dateKey) {
-  return formatDateKey(new Date()) === dateKey
-}
-
-function createMockCalendar() {
-  return {
-    id: 'demo-calendar',
-    user_id: null,
-    title: mockCalendarMeta.title,
-    start_date: mockCalendarMeta.startDate,
-    end_date: mockCalendarMeta.endDate,
-    status: 'published',
-    entries: createMockCalendarDays().map((entry, index) => ({
-      id: `demo-entry-${index + 1}`,
-      entry_date: entry.date,
-      day_pillar: entry.dayPillar || null,
-      tone: entry.tone || null,
-      status_label: entry.statusLabel || null,
-      keyword: entry.keyword || null,
-      summary: entry.summary || null,
-      suitable: entry.suitable || [],
-      unsuitable: entry.unsuitable || [],
-      time_window: entry.timeWindow || null,
-      phase_id: entry.phaseId || null,
-      phase_label: entry.phaseLabel || null,
-      is_phase: entry.isPhase || false
-    }))
-  }
-}
-
-function dateKeyFromLabel(label, year) {
-  const [, month, day] = label.match(/(\d+)月(\d+)日/) || []
-  if (!month || !day) return null
-  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-}
 
 export default {
   name: 'Calendar',

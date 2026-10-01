@@ -1,3 +1,5 @@
+import { logout as logoutUser } from '../../../stores/auth'
+
 export default {
   syncDrawerBodyLock() {
       const hasOpenDrawer = Boolean(this.detailUser || this.reportDetail || this.logDetail)

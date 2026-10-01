@@ -1,3 +1,17 @@
+import { authState } from '../../../stores/auth'
+import { createDecisionLog, deleteDecisionLog, getMyDecisionLogs } from '../api.js'
+
+const DECISION_LOG_STORAGE_KEY = 'innerseek:decision-logs'
+
+export function createRecordDraft() {
+  return {
+    kind: 'action',
+    status: 'done',
+    content: '',
+    note: ''
+  }
+}
+
 export default {
   getRecordStorageKey() {
       const userKey = authState.user?.id || 'guest'
