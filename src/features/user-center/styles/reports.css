@@ -1,0 +1,175 @@
+.reports-list {
+  display: grid;
+  gap: 20px;
+}
+
+.report-card {
+  background: var(--surface-strong, #fffaf0);
+  border-radius: 12px;
+  padding: 25px;
+  transition: box-shadow var(--motion-standard, 220ms) var(--ease-out, ease);
+}
+
+.report-card:hover {
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.report-header h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink, #2f241b);
+}
+
+.report-date {
+  font-size: 14px;
+  color: var(--muted, #7d6653);
+}
+
+.report-preview {
+  margin-bottom: 20px;
+}
+
+.preview-item {
+  font-size: 14px;
+  color: var(--muted, #7d6653);
+  line-height: 2;
+}
+
+.preview-item strong {
+  color: var(--ink, #2f241b);
+}
+
+.report-actions {
+  display: flex;
+  gap: 10px;
+}
+@media (max-width: 768px) {
+
+  .report-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .report-actions {
+    flex-direction: column;
+  }
+
+  .report-actions button {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 420px) {
+
+  .report-header {
+    align-items: flex-start;
+  }
+
+  .report-header h4 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .report-card {
+    padding: 19px 16px;
+  }
+}
+
+.report-card {
+  min-width: 0;
+}
+
+.report-card {
+  border: 1px solid rgba(139, 90, 20, 0.1);
+  background: rgba(248, 241, 230, 0.56);
+}
+
+@media (max-width: 768px) {
+
+  .reports-list {
+    gap: 14px;
+  }
+
+  .report-card {
+    padding: 18px 16px;
+  }
+
+  .report-header {
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .report-header h4 {
+    font-size: 16px;
+  }
+
+  .report-date {
+    font-size: 12px;
+  }
+
+  .report-preview {
+    margin-bottom: 14px;
+  }
+
+  .preview-item {
+    font-size: 13px;
+    line-height: 1.75;
+  }
+
+  .report-actions .btn-view {
+    width: 100%;
+  }
+}
+@media (max-width: 768px) {
+
+  .reports-list {
+    gap: 12px;
+  }
+
+  .report-card {
+    padding: 16px 14px;
+    border-radius: 14px;
+  }
+
+  .report-header {
+    margin-bottom: 10px;
+  }
+
+  .report-header h4 {
+    font-size: 15px;
+  }
+
+  .report-date {
+    font-size: 11px;
+  }
+
+  .report-preview {
+    margin-bottom: 12px;
+  }
+
+  .preview-item {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+}
+
+.report-actions {
+  align-items: stretch;
+  gap: var(--button-gap, 8px);
+}
+
+@media (max-width: 768px) {
+
+  .report-actions .btn-view {
+    width: 100%;
+  }
+}

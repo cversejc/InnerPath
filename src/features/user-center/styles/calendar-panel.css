@@ -1,0 +1,145 @@
+.calendar-access-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 22px;
+  border: 1px solid rgba(184, 92, 80, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fffaf0 0%, #fff0df 100%);
+  padding: 28px;
+}
+
+.calendar-access-mark {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border: 1px solid rgba(139, 90, 20, 0.2);
+  border-radius: 50%;
+  color: var(--cinnabar-deep);
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.calendar-access-kicker {
+  color: var(--gold-deep);
+  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.calendar-access-card h4 {
+  margin-top: 7px;
+  color: var(--ink);
+  font-size: 21px;
+}
+
+.calendar-access-card p {
+  max-width: 520px;
+  margin-top: 8px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+@media (max-width: 768px) {
+
+  .calendar-access-card {
+    grid-template-columns: auto 1fr;
+  }
+
+  .calendar-access-card .btn-action {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 420px) {
+
+  .calendar-access-card {
+    grid-template-columns: 1fr;
+    padding: 21px 18px;
+  }
+
+  .calendar-access-mark {
+    width: 52px;
+    height: 52px;
+    font-size: 23px;
+  }
+}
+
+.calendar-access-card {
+  min-width: 0;
+}
+
+.calendar-access-card {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
+}
+
+@media (max-width: 768px) {
+
+  .calendar-access-card {
+    gap: 14px;
+    padding: 18px;
+  }
+
+  .calendar-access-mark {
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
+  }
+
+  .calendar-access-card h4 {
+    font-size: 18px;
+  }
+
+  .calendar-access-card p {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .calendar-access-card {
+    padding: 16px;
+  }
+}
+@media (max-width: 768px) {
+
+  .calendar-access-card {
+    gap: 12px;
+    padding: 15px;
+    border-radius: 14px;
+  }
+
+  .calendar-access-mark {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .calendar-access-card h4 {
+    font-size: 17px;
+  }
+
+  .calendar-access-card p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+}
+
+.calendar-access-card .btn-action {
+  min-width: 160px;
+}
+
+@media (max-width: 768px) {
+
+  .calendar-access-card .btn-action {
+    width: 100%;
+  }
+
+  .calendar-access-card .btn-action {
+    min-width: 0;
+  }
+}
