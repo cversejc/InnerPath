@@ -8,12 +8,12 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.service_requests.models import ServiceRequest
+from .models import ServiceRequest
 from app.models.user import User
-from app.domains.service_requests.schemas import ServiceRequestCreate, ServiceRequestUpdate
+from .schemas import ServiceRequestCreate, ServiceRequestUpdate
 from app.services.audit_service import record_audit
-from app.services.service_request_payloads import _normalize_payload, payload_from_create, payload_from_update
-from app.services.service_request_repository import _append_revision, _get_draft, _get_request_for_update
+from .payloads import _normalize_payload, payload_from_create, payload_from_update
+from .repository import _append_revision, _get_draft, _get_request_for_update
 
 
 async def create_service_request(

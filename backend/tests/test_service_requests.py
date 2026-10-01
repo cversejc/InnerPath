@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from app.domains.service_requests.models import SERVICE_REQUEST_STATUSES, SERVICE_REQUEST_TYPES
-from app.services.service_request_service import (
+from app.domains.service_requests.service import (
     has_staff_assignment,
     normalize_calendar_draft,
     staff_can_access,

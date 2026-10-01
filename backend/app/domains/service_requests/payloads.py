@@ -4,9 +4,9 @@ from copy import deepcopy
 from datetime import date
 from typing import Any, Optional
 
-from app.domains.service_requests.models import SERVICE_REQUEST_TYPES, ServiceRequest
+from .models import SERVICE_REQUEST_TYPES, ServiceRequest
 from app.models.user import User
-from app.domains.service_requests.schemas import (
+from .schemas import (
     ServiceProfileSnapshot,
     ServiceRequestCreate,
     ServiceRequestUpdate,

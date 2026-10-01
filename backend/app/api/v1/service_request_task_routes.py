@@ -5,7 +5,7 @@ from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
 from app.domains.service_requests.schemas import ServiceRequestTaskResponse
-from app.services.service_request_service import get_service_request, serialize_task, staff_can_access
+from app.domains.service_requests.service import get_service_request, serialize_task, staff_can_access
 
 task_router = APIRouter()
 @task_router.get("/{task_id}", response_model=ServiceRequestTaskResponse)

@@ -10,7 +10,7 @@ from app.domains.service_requests.schemas import (
     ServiceRequestTaskResponse,
     ServiceRequestWorkspaceResponse,
 )
-from app.services.service_request_service import serialize_service_request, serialize_task
+from app.domains.service_requests.service import serialize_service_request, serialize_task
 
 
 def _detail_for_error(error: ValueError) -> tuple[int, str]:

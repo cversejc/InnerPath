@@ -8,10 +8,10 @@ from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.service_requests.models import ServiceRequest, ServiceRequestTask
+from .models import ServiceRequest, ServiceRequestTask
 from app.models.user import User
 from app.services.audit_service import record_audit
-from app.services.service_request_repository import _get_draft, _get_latest_task, _get_request_for_update
+from .repository import _get_draft, _get_latest_task, _get_request_for_update
 
 
 async def accept_service_request(

@@ -16,13 +16,13 @@ from app.domains.service_requests.models import ServiceRequest, ServiceRequestDr
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarEntryInput
 from app.services.audit_service import record_audit
-from app.services.service_request_drafts import validate_draft
-from app.services.service_request_repository import (
+from app.domains.service_requests.drafts import validate_draft
+from app.domains.service_requests.repository import (
     _append_revision,
     _get_draft,
     _get_request_for_update,
 )
-from app.services.service_request_staff import staff_can_access
+from app.domains.service_requests.staff import staff_can_access
 
 
 async def _create_final_report(

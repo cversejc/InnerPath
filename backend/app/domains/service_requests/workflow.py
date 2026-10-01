@@ -9,19 +9,19 @@ from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
+from .models import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
 from app.models.user import User
-from app.domains.service_requests.schemas import ServiceRequestDraftUpdate, ServiceRequestInfoInput
+from .schemas import ServiceRequestDraftUpdate, ServiceRequestInfoInput
 from app.services.audit_service import record_audit
-from app.services.service_request_drafts import validate_draft
-from app.services.service_request_repository import (
+from .drafts import validate_draft
+from .repository import (
     _append_revision,
     _get_draft,
     _get_draft_for_update,
     _get_latest_task,
     _get_request_for_update,
 )
-from app.services.service_request_staff import staff_can_access
+from .staff import staff_can_access
 
 
 async def enqueue_ai_draft(

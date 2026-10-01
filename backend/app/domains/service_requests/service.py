@@ -1,19 +1,19 @@
-"""Public service request API assembled from focused workflow modules."""
+"""Public Service Requests use-case facade."""
 
-from app.services.service_request_payloads import (
+from .payloads import (
     PUBLIC_STATUS_LABELS,
     _normalize_payload,
     flatten_ai_input,
     payload_from_create,
     payload_from_update,
 )
-from app.services.service_request_drafts import (
+from .drafts import (
     normalize_calendar_draft,
     normalize_report_draft,
     validate_draft,
 )
-from app.services.service_request_repository import _append_revision
-from app.services.service_request_users import (
+from .repository import _append_revision
+from .users import (
     create_service_request,
     get_service_request,
     get_user_service_requests,
@@ -21,7 +21,7 @@ from app.services.service_request_users import (
     update_user_service_request,
     withdraw_service_request,
 )
-from app.services.service_request_staff import (
+from .staff import (
     accept_service_request,
     get_workspace,
     has_staff_assignment,
@@ -31,8 +31,7 @@ from app.services.service_request_staff import (
     serialize_task,
     staff_can_access,
 )
-from app.services.service_request_delivery import deliver_service_request
-from app.services.service_request_workflow import (
+from .workflow import (
     enqueue_ai_draft,
     request_more_info,
     save_service_request_draft,
@@ -44,7 +43,6 @@ __all__ = [
     "_normalize_payload",
     "accept_service_request",
     "create_service_request",
-    "deliver_service_request",
     "enqueue_ai_draft",
     "flatten_ai_input",
     "get_service_request",

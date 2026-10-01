@@ -12,7 +12,7 @@ from app.domains.service_requests.schemas import (
     ServiceRequestResponse,
     ServiceRequestUpdate,
 )
-from app.services.service_request_service import (
+from app.domains.service_requests.service import (
     create_service_request,
     get_service_request,
     get_user_service_requests,

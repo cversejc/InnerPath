@@ -17,7 +17,7 @@ from app.domains.service_requests.schemas import (
     StaffServiceRequestListResponse,
 )
 from app.services.audit_service import record_audit
-from app.services.service_request_service import get_service_request, list_staff_service_requests
+from app.domains.service_requests.service import get_service_request, list_staff_service_requests
 from app.api.v1.service_request_api_support import _serialize_public
 
 admin_router = APIRouter()

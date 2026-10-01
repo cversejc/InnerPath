@@ -18,9 +18,9 @@ from app.domains.service_requests.schemas import (
     StaffServiceRequestListItem,
     StaffServiceRequestListResponse,
 )
-from app.services.service_request_service import (
+from app.application.service_request_delivery import deliver_service_request
+from app.domains.service_requests.service import (
     accept_service_request,
-    deliver_service_request,
     enqueue_ai_draft,
     get_service_request,
     get_workspace,

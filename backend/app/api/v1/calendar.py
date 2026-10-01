@@ -21,7 +21,7 @@ from app.domains.calendar.decision_logs import (
     delete_user_decision_log,
     get_user_decision_logs,
 )
-from app.services.staff_calendar_service import get_calendar_for_staff
+from app.application.staff_calendar_access import get_calendar_for_staff
 from app.domains.calendar.requests import (
     create_calendar_request,
     get_user_calendar_requests,

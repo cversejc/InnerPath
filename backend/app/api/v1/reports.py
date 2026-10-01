@@ -20,7 +20,7 @@ from app.domains.reports.service import (
 )
 from app.services.audit_service import record_audit
 from app.services.intake_service import normalize_context
-from app.services.service_request_service import has_staff_assignment
+from app.domains.service_requests.service import has_staff_assignment
 
 router = APIRouter()
 

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.calendar.query_service import get_user_calendars
-from app.services.service_request_staff import has_staff_assignment
+from app.domains.service_requests.service import has_staff_assignment
 
 
 async def get_calendar_for_staff(db: AsyncSession, staff_id: int, user_id: int) -> list[dict]:

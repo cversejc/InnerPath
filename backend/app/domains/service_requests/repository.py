@@ -6,7 +6,7 @@ from typing import Any, Optional
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
+from .models import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
 
 
 async def _get_request_for_update(db: AsyncSession, request_id: int) -> Optional[ServiceRequest]:

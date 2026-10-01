@@ -25,7 +25,7 @@ from app.domains.reports.task_service import (
     get_report_task,
     get_report_task_by_id,
 )
-from app.services.service_request_service import has_staff_assignment
+from app.domains.service_requests.service import has_staff_assignment
 from app.tasks.report_tasks import generate_report_task
 
 router = APIRouter()

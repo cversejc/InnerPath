@@ -6,7 +6,7 @@ from typing import Any
 
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.calendar.schemas import CalendarEntryInput
-from app.services.service_request_payloads import ensure_service_type
+from .payloads import ensure_service_type
 
 CALENDAR_TONES = {
     "green",
