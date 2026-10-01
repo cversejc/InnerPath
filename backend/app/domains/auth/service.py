@@ -3,7 +3,6 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.user import AuthSession, StaffInvite, User
-from app.schemas.user import UserUpdate
 from app.core.security import create_refresh_token, get_password_hash, hash_refresh_token, verify_password
 from app.core.cache import cache_delete, cache_get, cache_increment
 from app.config import settings
@@ -206,22 +205,3 @@ async def accept_staff_invite(
     await db.commit()
     await db.refresh(user)
     return user
-
-
-async def update_user(db: AsyncSession, user: User, user_update: UserUpdate) -> User:
-    """Update user information"""
-    update_data = user_update.model_dump(exclude_unset=True)
-
-    for field, value in update_data.items():
-        setattr(user, field, value)
-
-    user.updated_at = datetime.utcnow()
-    await db.commit()
-    await db.refresh(user)
-    return user
-
-
-async def get_user_by_id(db: AsyncSession, user_id: int) -> Optional[User]:
-    """Get user by ID"""
-    result = await db.execute(select(User).where(User.id == user_id))
-    return result.scalar_one_or_none()

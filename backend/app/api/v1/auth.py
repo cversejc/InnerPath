@@ -18,7 +18,7 @@ from app.core.security import create_access_token
 from app.core.logging_config import get_logger
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.auth import (
+from app.domains.auth.schemas import (
     LoginRequest,
     ResetPasswordRequest,
     RefreshTokenResponse,
@@ -28,7 +28,7 @@ from app.schemas.auth import (
     VerifiedRegisterRequest,
 )
 from app.schemas.user import UserResponse
-from app.services.auth_service import (
+from app.domains.auth.service import (
     accept_staff_invite,
     authenticate_with_password,
     create_auth_session,

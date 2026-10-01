@@ -129,16 +129,3 @@ class CalendarRequestAdminUpdate(BaseModel):
     status: str = Field(..., pattern="^(pending|reviewing|fulfilled|rejected|cancelled)$")
     review_note: Optional[str] = Field(None, max_length=1000)
     calendar_id: Optional[int] = Field(None, ge=1)
-
-
-class StaffInviteCreate(BaseModel):
-    phone: str = Field(..., min_length=11, max_length=11, pattern=r"^\d{11}$")
-    role: str = Field(..., pattern="^(admin|consultant)$")
-
-
-class StaffInviteResponse(BaseModel):
-    id: int
-    phone: str
-    role: str
-    token: str
-    expires_at: datetime

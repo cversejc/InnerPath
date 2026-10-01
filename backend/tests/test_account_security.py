@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from app.core.security import get_password_hash, verify_password
 from app.dependencies import require_roles
-from app.schemas.auth import LoginRequest, RegisterRequest
+from app.domains.auth.schemas import LoginRequest, RegisterRequest
 from app.schemas.calendar import CalendarEntryInput
 from app.services.calendar_service import _validate_entries
 
