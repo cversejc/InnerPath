@@ -4,7 +4,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from app.schemas.report import ReportListItem, ReportResponse
+from app.domains.reports.schemas import ReportListItem, ReportResponse
 from app.schemas.user import UserResponse
 
 

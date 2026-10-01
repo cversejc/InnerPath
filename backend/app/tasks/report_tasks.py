@@ -6,12 +6,12 @@ from typing import Any, Dict
 from app.core.cache import cache_set, close_redis
 from app.core.logging_config import get_logger
 from app.db.session import AsyncSessionLocal, engine
-from app.models.report import ReportTask
+from app.domains.reports.models import ReportTask
 # Import the user model so SQLAlchemy can resolve report foreign keys in the
 # standalone Celery process (which does not import the FastAPI routers).
 from app.models.user import User  # noqa: F401
 from app.services.ai_service import generate_report_with_ai
-from app.services.report_service import create_report
+from app.domains.reports.service import create_report
 from app.services.audit_service import record_audit
 from app.tasks.celery_app import celery_app
 

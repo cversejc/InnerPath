@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.report import ReportTask
+from app.domains.reports.models import ReportTask
 
 
 async def create_report_task(

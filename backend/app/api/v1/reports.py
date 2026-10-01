@@ -4,15 +4,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
-from app.models.report import Report
+from app.domains.reports.models import Report
 from app.models.user import User
-from app.schemas.report import (
+from app.domains.reports.schemas import (
     LatestReportContextResponse,
     ReportListItem,
     ReportListResponse,
     ReportResponse,
 )
-from app.services.report_service import (
+from app.domains.reports.service import (
     delete_report,
     format_report_response,
     get_report_by_id,

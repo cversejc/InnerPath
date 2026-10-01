@@ -3,7 +3,7 @@ from typing import List, Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from app.config import settings
-from app.models.report import Report
+from app.domains.reports.models import Report
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)

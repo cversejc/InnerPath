@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.models.calendar import CalendarEntry, UserCalendar
-from app.models.report import Report
+from app.domains.reports.models import Report
 from app.models.service_request import ServiceRequest, ServiceRequestDraft
 from app.models.user import User
 from app.schemas.calendar import CalendarEntryInput

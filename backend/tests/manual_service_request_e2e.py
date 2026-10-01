@@ -20,7 +20,7 @@ from sqlalchemy import and_, delete, or_, select
 from app.core.security import get_password_hash
 from app.db.session import AsyncSessionLocal, engine
 from app.models.calendar import UserCalendar
-from app.models.report import Report
+from app.domains.reports.models import Report
 from app.models.service_request import (
     ServiceRequest,
     ServiceRequestDraft,

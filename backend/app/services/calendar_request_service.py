@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.calendar import CalendarRequest, UserCalendar
-from app.models.report import Report
+from app.domains.reports.models import Report
 from app.models.user import User
 from app.schemas.calendar import CalendarRequestAdminUpdate, CalendarRequestCreate
 from app.services.audit_service import record_audit

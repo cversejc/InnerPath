@@ -10,7 +10,7 @@ from app.api.v1.admin_report_support import _load_admin_reports, _load_admin_tas
 from app.config import settings
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.models.report import ReportTask
+from app.domains.reports.models import ReportTask
 from app.models.user import User
 from app.schemas.admin import (
     AdminReportListResponse,
@@ -19,8 +19,8 @@ from app.schemas.admin import (
     AdminReportTaskResponse,
 )
 from app.services.audit_service import record_audit
-from app.services.report_service import format_report_response, get_report_by_id
-from app.services.report_task_service import create_report_task
+from app.domains.reports.service import format_report_response, get_report_by_id
+from app.domains.reports.task_service import create_report_task
 
 router = APIRouter()
 

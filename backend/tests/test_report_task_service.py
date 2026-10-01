@@ -1,6 +1,6 @@
 import pytest
 
-from app.services.report_task_service import create_report_task
+from app.domains.reports.task_service import create_report_task
 
 
 class TaskDatabase:

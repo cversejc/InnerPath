@@ -5,7 +5,7 @@ import pytest
 from app.api.v1.admin_dashboard import _dashboard_range
 from app.db.base import Base
 from app.models.calendar import UserCalendar
-from app.models.report import Report, ReportTask
+from app.domains.reports.models import Report, ReportTask
 from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
 from app.models.user import AuditLog, AuthSession, StaffInvite, User
 from app.main import app

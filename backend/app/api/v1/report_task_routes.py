@@ -9,7 +9,7 @@ from app.core.logging_config import get_logger
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.user import User
-from app.schemas.report import (
+from app.domains.reports.schemas import (
     ReportCreate,
     ReportTaskResponse,
     ReportTaskStatusResponse,
@@ -20,7 +20,7 @@ from app.services.intake_service import (
     flatten_snapshot_for_ai,
     normalize_context,
 )
-from app.services.report_task_service import (
+from app.domains.reports.task_service import (
     create_report_task,
     get_report_task,
     get_report_task_by_id,

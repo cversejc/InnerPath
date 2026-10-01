@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from app.config import settings
 from app.db.base import Base
 from app.models.user import AuditLog, AuthSession, StaffInvite, User
-from app.models.report import Report, ReportTask
+from app.domains.reports.models import Report, ReportTask
 from app.models.calendar import CalendarEntry, CalendarRequest, DecisionLog, UserCalendar
 from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
 

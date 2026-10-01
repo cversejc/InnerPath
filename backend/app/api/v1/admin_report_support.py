@@ -5,7 +5,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.admin_support import _count, _date_filter
-from app.models.report import Report, ReportTask
+from app.domains.reports.models import Report, ReportTask
 from app.models.user import User
 
 
