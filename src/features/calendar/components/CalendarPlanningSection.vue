@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { Button as VanButton } from 'vant'
 import CalendarDayDetail from './CalendarDayDetail.vue'
 
 const props = defineProps({
@@ -54,7 +55,8 @@ function focusCloseButton() {
 }
 
 function focusTrigger() {
-  detailTrigger.value?.focus()
+  const trigger = detailTrigger.value?.$el || detailTrigger.value
+  trigger?.focus()
 }
 
 function focusContainer() {
@@ -98,7 +100,9 @@ defineExpose({ focusCloseButton, focusContainer, focusTrigger, getFocusableItems
               <h3>{{ calendarLabel }}</h3>
               <p>{{ meta.dateLabel }}</p>
             </div>
-            <button class="today-button" type="button" @click="$emit('show-current-date')">回到当前聚焦 <IconMark name="arrow" /></button>
+            <VanButton class="today-button" type="default" plain round native-type="button" @click="$emit('show-current-date')">
+              回到当前聚焦 <IconMark name="arrow" />
+            </VanButton>
           </header>
 
           <div
@@ -133,9 +137,9 @@ defineExpose({ focusCloseButton, focusContainer, focusTrigger, getFocusableItems
             </div>
           </div>
 
-          <button v-if="!mobileDetailOpen" ref="detailTrigger" class="mobile-detail-launch" type="button" @click="$emit('open-mobile-detail')">
+          <VanButton v-if="!mobileDetailOpen" ref="detailTrigger" class="mobile-detail-launch" type="default" plain round native-type="button" @click="$emit('open-mobile-detail')">
             查看 {{ selectedDay.month }}月{{ selectedDay.day }}日的建议与记录 <IconMark name="arrow" />
-          </button>
+          </VanButton>
         </section>
 
         <CalendarDayDetail
