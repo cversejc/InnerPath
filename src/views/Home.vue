@@ -7,7 +7,6 @@
         <div class="hero-copy">
           <p class="section-kicker">Life Timeline / CHEN JIAN</p>
           <h1>辰鉴</h1>
-          <p class="hero-subtitle">星辰引路——镜子照见</p>
           <p class="hero-intro">
             把你的个人特质、当下节奏和现实选择放在一张地图上，帮你更清楚地走下一步
           </p>
@@ -183,15 +182,6 @@ export default {
   line-height: 1.04;
   letter-spacing: 0.1em;
   text-indent: 0.1em;
-}
-
-.hero-subtitle {
-  width: min(100%, 620px);
-  margin: 18px auto 0;
-  color: var(--ink);
-  font-size: clamp(16px, 2vw, 21px);
-  line-height: 1.7;
-  letter-spacing: 0.02em;
 }
 
 .hero-intro {
@@ -397,18 +387,13 @@ export default {
     font-size: 104px;
   }
 
-  .hero-subtitle {
-    margin-top: 20px;
-    font-size: 22px;
-  }
-
   .hero-intro {
     margin-top: 18px;
     font-size: 16px;
   }
 
   .hero-actions {
-    margin-top: 38px;
+    margin-top: 48px;
   }
 }
 
@@ -429,12 +414,6 @@ export default {
     line-height: 1.1;
   }
 
-  .hero-subtitle {
-    margin-top: 14px;
-    font-size: 16px;
-    line-height: 1.7;
-  }
-
   .hero-intro {
     margin-top: 12px;
     font-size: 14px;
@@ -445,7 +424,7 @@ export default {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
-    margin-top: 24px;
+    margin-top: 40px;
   }
 
   .hero-actions > * {

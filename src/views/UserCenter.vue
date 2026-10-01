@@ -1162,21 +1162,12 @@ export default {
 
 .user-header {
   position: relative;
-  overflow: hidden;
   padding: 62px 0 38px;
-  background:
-    linear-gradient(105deg, rgba(255, 250, 240, 0.82), rgba(255, 239, 222, 0.72)),
-    radial-gradient(circle at 86% 24%, rgba(111, 159, 147, 0.18), transparent 28%),
-    var(--paper-deep, #ead9bf);
+  background: transparent;
 }
 
 .user-header::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: 58%;
-  background: linear-gradient(180deg, rgba(255, 250, 240, 0), rgba(255, 250, 240, 0.62));
-  pointer-events: none;
+  content: none;
 }
 
 .user-info,
@@ -1192,12 +1183,11 @@ export default {
 .user-avatar {
   width: 66px;
   height: 66px;
-  border: 1px solid rgba(184, 92, 80, 0.28);
-  background: linear-gradient(145deg, var(--cinnabar, #b5574c), var(--cinnabar-deep, #9e3f35));
-  box-shadow:
-    0 12px 22px -15px rgba(158, 63, 53, 0.86),
-    0 0 0 6px rgba(255, 250, 240, 0.72),
-    0 0 0 7px rgba(184, 92, 80, 0.2);
+  border: 1px solid rgba(139, 90, 20, 0.22);
+  border-radius: 16px;
+  background: rgba(255, 252, 245, 0.76);
+  box-shadow: inset 0 0 0 5px rgba(217, 186, 98, 0.15);
+  color: var(--cinnabar-deep, #9e3f35);
   font-family: var(--font-display, serif);
 }
 

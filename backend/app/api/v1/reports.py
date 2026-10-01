@@ -69,7 +69,7 @@ async def create_report(
         if current_user.profile_completion < 100:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="请先完成个人档案中的性别和完整出生日期。",
+                detail="请先完成个人档案中的性别和完整出生日期",
             )
         if report_data.context is not None:
             context = report_data.context.model_dump(exclude_none=False)
@@ -80,11 +80,11 @@ async def create_report(
             )
         context = normalize_context(context)
         if not context["focus_topics"]:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="至少选择一个关注领域。")
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="至少选择一个关注领域")
         if not context.get("current_challenge"):
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="请填写当前困惑。")
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="请填写当前困惑")
         if not context["expected_outcomes"]:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="至少选择一个期望获得的结果。")
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="至少选择一个期望获得的结果")
         try:
             snapshot = build_intake_snapshot(
                 current_user,
@@ -96,7 +96,7 @@ async def create_report(
             if str(error) == "profile_version_conflict":
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
-                    detail="个人档案已更新，请刷新后确认最新资料再提交。",
+                    detail="个人档案已更新，请刷新后确认最新资料再提交",
                 )
             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error))
         task_input = flatten_snapshot_for_ai(snapshot)

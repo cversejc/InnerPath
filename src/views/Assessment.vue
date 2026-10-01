@@ -23,15 +23,12 @@
             </div>
             <ol class="progress-step-list" aria-label="申请步骤">
               <li class="progress-step" :class="{ active: currentStep === 1, completed: currentStep > 1 }" :aria-current="currentStep === 1 ? 'step' : undefined">
-                <span class="progress-step-index" aria-hidden="true">01</span>
                 <span class="progress-step-name">个人档案</span>
               </li>
               <li class="progress-step" :class="{ active: currentStep === 2, completed: currentStep > 2 }" :aria-current="currentStep === 2 ? 'step' : undefined">
-                <span class="progress-step-index" aria-hidden="true">02</span>
                 <span class="progress-step-name">本次问题</span>
               </li>
               <li class="progress-step" :class="{ active: currentStep === 3, completed: currentStep > 3 }" :aria-current="currentStep === 3 ? 'step' : undefined">
-                <span class="progress-step-index" aria-hidden="true">03</span>
                 <span class="progress-step-name">生成说明书</span>
               </li>
             </ol>
@@ -637,13 +634,13 @@ export default {
   font-size: 15px;
 }
 
-.progress-steps { position: relative; }
+.progress-steps { position: relative; padding-top: 10px; }
 
 .progress-track {
   position: absolute;
-  top: 17px;
-  right: calc(16.666% + 18px);
-  left: calc(16.666% + 18px);
+  top: 0;
+  right: 16.666%;
+  left: 16.666%;
   height: 2px;
   background: var(--line);
 }
@@ -667,24 +664,9 @@ export default {
 .progress-step {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 0;
   color: var(--muted);
   text-align: center;
-}
-
-.progress-step-index {
-  display: grid;
-  width: 36px;
-  height: 36px;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: var(--paper-soft);
-  color: inherit;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 800;
-  transition: border-color var(--motion-standard, 220ms) ease, background var(--motion-standard, 220ms) ease, color var(--motion-standard, 220ms) ease;
 }
 
 .progress-step-name {
@@ -696,9 +678,7 @@ export default {
 }
 
 .progress-step.active { color: var(--cinnabar-deep); }
-.progress-step.active .progress-step-index { border-color: var(--cinnabar-deep); background: var(--cinnabar-deep); color: #fff; }
 .progress-step.completed { color: var(--ink-soft); }
-.progress-step.completed .progress-step-index { border-color: rgba(111,159,147,.55); background: rgba(111,159,147,.14); color: #4c7569; }
 
 .step-content { padding: clamp(20px, 4vw, 38px); }
 .step-heading { margin-bottom: 26px; text-align: center; }
@@ -839,10 +819,8 @@ textarea:focus, select:focus, .context-form input[type="text"]:focus { border-co
   .progress-card { gap: 12px; padding: 12px 14px; border-radius: 14px; }
   .progress-summary { gap: 6px; font-size: 11px; }
   .progress-summary strong { font-size: 12px; }
-  .progress-track { top: 12px; right: calc(16.666% + 13px); left: calc(16.666% + 13px); }
+  .progress-track { top: 0; right: 16.666%; left: 16.666%; }
   .progress-step-list { gap: 4px; }
-  .progress-step { gap: 6px; }
-  .progress-step-index { width: 26px; height: 26px; font-size: 9px; }
   .progress-step-name { font-size: 11px; }
   .topics-grid, .advanced-context-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .reuse-context-card { align-items: start; flex-direction: column; }
