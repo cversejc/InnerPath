@@ -290,6 +290,20 @@ body.dialog-open {
   white-space: nowrap;
 }
 
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.brand-emblem {
+  display: block;
+  width: auto;
+  height: 42px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .nav-menu {
   display: flex;
   align-items: center;
@@ -524,6 +538,17 @@ body.dialog-open {
   line-height: 1.7;
 }
 
+.footer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.footer-brand .brand-emblem {
+  height: 26px;
+}
+
 .footer .version {
   margin-top: 8px;
   color: var(--muted);
@@ -572,6 +597,10 @@ body.dialog-open {
   .brand-mark {
     font-size: 20px;
     letter-spacing: 0.06em;
+  }
+
+  .logo .brand-emblem {
+    height: 36px;
   }
 
   .nav-menu {

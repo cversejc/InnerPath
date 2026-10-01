@@ -1,7 +1,10 @@
 <template>
   <nav class="navbar" :class="{ 'is-menu-open': mobileMenuOpen }" aria-label="主导航">
     <div class="nav-container">
-      <router-link to="/pages/home/home" class="logo" aria-label="返回辰鉴首页" @click="closeMobileMenu({ restoreFocus: false })">辰鉴</router-link>
+      <router-link to="/pages/home/home" class="logo" aria-label="返回辰鉴首页" @click="closeMobileMenu({ restoreFocus: false })">
+        <img class="brand-emblem" src="/brand-emblem.png" alt="" />
+        <span>辰鉴</span>
+      </router-link>
       <ul class="nav-menu" aria-label="主导航">
         <li v-for="link in navLinks" :key="link.to">
           <router-link :to="link.to" class="nav-link" @click="closeMobileMenu({ restoreFocus: false })">

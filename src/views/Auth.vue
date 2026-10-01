@@ -4,10 +4,7 @@
       <section v-if="showIntro" class="auth-intro" aria-label="辰鉴入场动画">
         <button ref="skipIntroButton" class="auth-intro-skip" type="button" @click="dismissIntro(true)">跳过</button>
         <div class="auth-intro-lockup" aria-hidden="true">
-          <span class="auth-intro-seal">辰</span>
-          <strong>辰鉴</strong>
-          <span class="auth-intro-rule"></span>
-          <small>照见人生时序</small>
+          <img class="auth-intro-logo" src="/brand-logo.png" alt="" />
         </div>
       </section>
     </Transition>
@@ -15,7 +12,7 @@
     <div class="auth-shell" :aria-hidden="showIntro ? 'true' : undefined" :inert="showIntro">
       <header class="auth-topbar">
         <router-link class="auth-logo" to="/" aria-label="辰鉴首页">
-          <span class="auth-logo-mark" aria-hidden="true">辰</span>
+          <img class="auth-logo-mark" src="/brand-emblem.png" alt="" />
           <span>辰鉴</span>
         </router-link>
       </header>
@@ -294,51 +291,17 @@ export default {
 
 .auth-intro-lockup {
   display: grid;
-  width: min(100%, 320px);
-  justify-items: center;
-  text-align: center;
-}
-
-.auth-intro-seal {
-  display: grid;
-  width: 72px;
-  height: 72px;
-  border: 1px solid rgba(255, 250, 240, 0.48);
-  border-radius: 50%;
+  width: min(100%, 420px, 62dvh);
+  aspect-ratio: 1;
   place-items: center;
-  background: var(--cinnabar-deep, #9e3f35);
-  box-shadow: 0 22px 48px -30px rgba(84, 48, 25, 0.76);
-  color: var(--paper-soft, #fffaf0);
-  font-family: var(--font-display);
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 1;
-  animation: authIntroSeal 720ms var(--ease-out) 80ms both;
 }
 
-.auth-intro-lockup strong {
-  margin-top: 20px;
-  font-family: var(--font-display);
-  font-size: 42px;
-  font-weight: 600;
-  line-height: 1.1;
-  animation: authIntroText 680ms var(--ease-out) 260ms both;
-}
-
-.auth-intro-rule {
-  width: 42px;
-  height: 1px;
-  margin-top: 16px;
-  background: rgba(139, 90, 20, 0.32);
-  animation: authIntroRule 680ms var(--ease-out) 420ms both;
-}
-
-.auth-intro-lockup small {
-  margin-top: 12px;
-  color: var(--muted, #7d6653);
-  font-size: 13px;
-  font-weight: 600;
-  animation: authIntroText 620ms var(--ease-out) 500ms both;
+.auth-intro-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: authLogoReveal 780ms var(--ease-out) 80ms both;
 }
 
 .auth-intro-leave-active {
@@ -366,19 +329,9 @@ export default {
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes authIntroSeal {
-  from { opacity: 0; transform: translateY(12px) scale(0.78); }
+@keyframes authLogoReveal {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes authIntroText {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes authIntroRule {
-  from { opacity: 0; transform: scaleX(0); }
-  to { opacity: 1; transform: scaleX(1); }
 }
 
 .auth-shell {
@@ -404,15 +357,11 @@ export default {
 }
 
 .auth-logo-mark {
-  display: grid;
-  width: 36px;
+  display: block;
+  width: auto;
   height: 36px;
   flex: 0 0 auto;
-  border-radius: 50%;
-  place-items: center;
-  background: var(--cinnabar-deep, #9e3f35);
-  color: var(--paper-soft, #fffaf0);
-  font-size: 17px;
+  object-fit: contain;
 }
 
 .auth-card {
@@ -666,17 +615,6 @@ export default {
     left: max(12px, env(safe-area-inset-left, 0px));
   }
 
-  .auth-intro-seal {
-    width: 64px;
-    height: 64px;
-    font-size: 27px;
-  }
-
-  .auth-intro-lockup strong {
-    margin-top: 18px;
-    font-size: 38px;
-  }
-
   .auth-page {
     place-items: start center;
     padding:
@@ -696,9 +634,7 @@ export default {
   }
 
   .auth-logo-mark {
-    width: 32px;
     height: 32px;
-    font-size: 15px;
   }
 
   .auth-head {
@@ -776,10 +712,7 @@ export default {
 
 @media (prefers-reduced-motion: reduce) {
   .auth-intro::before,
-  .auth-intro-seal,
-  .auth-intro-lockup strong,
-  .auth-intro-rule,
-  .auth-intro-lockup small {
+  .auth-intro-logo {
     animation: none;
   }
 
