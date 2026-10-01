@@ -1,0 +1,158 @@
+.page-shell {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  color: var(--ink);
+}
+
+.container {
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.container,
+.nav-container,
+.header-inner,
+.hero-layout,
+.hero-copy,
+.step-content,
+.progress-card,
+.service-item,
+.service-copy,
+.service-option,
+.booking-form {
+  min-width: 0;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding-top: env(safe-area-inset-top, 0px);
+  border-bottom: 1px solid rgba(139, 90, 20, 0.1);
+  background: rgba(255, 250, 240, 0.8);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.nav-container {
+  width: min(1120px, calc(100% - 28px));
+  min-height: var(--nav-height);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.logo,
+.brand-mark {
+  color: var(--cinnabar-deep);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0 14px;
+  color: var(--ink-soft);
+  font-family: "Manrope", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active,
+.router-link-active.nav-link {
+  border-color: rgba(184, 92, 80, 0.18);
+  background: rgba(184, 92, 80, 0.08);
+  color: var(--cinnabar-deep);
+}
+
+.landscape-hero,
+.page-header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.64), rgba(255, 250, 240, 0.92)),
+    url("../assets/ink-landscape.png") center bottom / cover no-repeat,
+    radial-gradient(ellipse at 50% 100%, rgba(84, 103, 93, 0.18), transparent 45%),
+    linear-gradient(145deg, #f7ecdc, #fbf7ef 56%, #ead9bf);
+}
+
+.landscape-hero::before,
+.page-header::before {
+  content: "";
+  position: absolute;
+  inset: auto -18% 0 -18%;
+  z-index: -2;
+  height: 52%;
+  background:
+    radial-gradient(ellipse at 18% 88%, rgba(48, 61, 55, 0.32) 0 12%, transparent 13%),
+    radial-gradient(ellipse at 38% 88%, rgba(61, 77, 68, 0.26) 0 18%, transparent 19%),
+    radial-gradient(ellipse at 66% 90%, rgba(74, 88, 77, 0.3) 0 18%, transparent 19%),
+    radial-gradient(ellipse at 88% 90%, rgba(43, 57, 50, 0.24) 0 14%, transparent 15%);
+  filter: blur(0.4px);
+}
+
+.landscape-hero::after,
+.page-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.78), rgba(255, 250, 240, 0.26) 45%, rgba(255, 250, 240, 0.76)),
+    radial-gradient(circle at 22% 22%, rgba(217, 186, 98, 0.2), transparent 24%),
+    radial-gradient(circle at 80% 26%, rgba(184, 92, 80, 0.1), transparent 20%);
+}
+
+.section-band {
+  padding: 72px 0;
+}
+
+.section-band.alt {
+  background: rgba(255, 252, 245, 0.36);
+}
+
+.section-kicker {
+  margin-bottom: 10px;
+  color: var(--gold-deep);
+  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  color: var(--ink);
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: 0.03em;
+}
+
+.section-desc {
+  max-width: 720px;
+  margin: 18px auto 0;
+  color: var(--ink-soft);
+  font-size: 17px;
+  line-height: 1.85;
+}
+

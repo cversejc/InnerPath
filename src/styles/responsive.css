@@ -1,0 +1,115 @@
+@media (max-width: 767px) {
+  :root {
+    --nav-height: 62px;
+    --radius-card: 16px;
+  }
+
+  body {
+    font-size: 16px;
+    background-size: 24px 24px, 24px 24px, auto, auto;
+  }
+
+  .container {
+    width: calc(100% - 32px);
+    max-width: 640px;
+  }
+
+  .page-shell,
+  .user-center,
+  .report-detail,
+  .course,
+  .staff-shell,
+  .admin-shell {
+    padding-bottom: calc(76px + var(--safe-bottom));
+  }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+  }
+
+  .nav-container {
+    width: calc(100% - 24px);
+    max-width: 640px;
+    gap: 10px;
+  }
+
+  .logo,
+  .brand-mark {
+    font-size: 20px;
+    letter-spacing: 0.06em;
+  }
+
+  .nav-menu {
+    min-width: 0;
+    max-width: 62vw;
+    flex: 0 1 auto;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav-menu::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .section-band {
+    padding: 48px 0;
+  }
+
+  .section-title {
+    letter-spacing: 0;
+  }
+
+  .section-desc {
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .primary-button,
+  .secondary-button {
+    min-height: var(--button-height);
+    padding-right: 16px;
+    padding-left: 16px;
+    font-size: 14px;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+}
+
+@media (max-width: 1023px) {
+  .page-shell,
+  .user-center,
+  .report-detail,
+  .course,
+  .staff-shell,
+  .admin-shell {
+    padding-bottom: calc(var(--mobile-nav-height) + var(--safe-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
