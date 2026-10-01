@@ -46,6 +46,11 @@
   --van-cell-right-icon-color: var(--gold-deep);
   --van-cell-group-background: transparent;
   --van-cell-group-inset-radius: 12px;
+  --van-field-label-color: var(--ink-soft);
+  --van-field-input-text-color: var(--ink);
+  --van-field-placeholder-text-color: var(--muted);
+  --van-field-error-message-color: var(--cinnabar-deep);
+  --van-field-text-area-min-height: 80px;
   --van-tabbar-height: var(--mobile-nav-height);
   --van-tabbar-z-index: 1001;
   --van-tabbar-background: var(--paper-soft);

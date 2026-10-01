@@ -114,8 +114,9 @@
   .calendar-page .guidance-grid { gap: 6px; }
   .calendar-page .record-form-grid { grid-template-columns: 1fr; }
   .calendar-page .record-form select,
-  .calendar-page .record-form input,
-  .calendar-page .record-form textarea { min-height: 44px; font-size: 16px; }
+  .calendar-page .record-form .record-field { min-height: 44px; }
+  .calendar-page .record-form select,
+  .calendar-page .record-form .record-field .van-field__control { font-size: 16px; }
   .calendar-page .quick-record-button { min-height: 48px; padding: 8px 11px; }
   .calendar-page .record-delete { min-width: 44px; min-height: 44px; }
   .calendar-page .record-form { padding: 12px; }

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { Button as VanButton, Field as VanField } from 'vant'
 
 const props = defineProps({
   recordDraft: { type: Object, required: true },
@@ -81,24 +82,46 @@ function updateDraft(field, value) {
       </button>
     </div>
 
-    <button v-if="!showRecordForm" class="record-add-button" type="button" @click="emit('open-record-form')">
+    <VanButton v-if="!showRecordForm" class="record-add-button" native-type="button" @click="emit('open-record-form')">
       <span>＋</span> 记录一件事 / 一个决定
-    </button>
+    </VanButton>
 
     <form v-else class="record-form" :aria-describedby="recordError ? 'record-error' : undefined" @submit.prevent="emit('save-record')">
       <div class="record-form-head">
         <span>新记录</span>
-        <button type="button" @click="emit('close-record-form')">收起</button>
+        <VanButton native-type="button" plain size="small" @click="emit('close-record-form')">收起</VanButton>
       </div>
       <div class="record-form-grid">
         <label><span>记录类型</span><select :value="recordDraft.kind" @change="updateDraft('kind', $event.target.value)"><option value="action">行动</option><option value="decision">决策</option></select></label>
         <label><span>当前状态</span><select :value="recordDraft.status" @change="updateDraft('status', $event.target.value)"><option value="done">已完成</option><option value="doing">进行中</option><option value="skipped">跳过</option></select></label>
       </div>
-      <label class="record-form-field"><span>实际发生了什么</span><textarea :value="recordDraft.content" rows="3" maxlength="240" placeholder="例如：完成了今天最重要的一件事" @input="updateDraft('content', $event.target.value)"></textarea></label>
-      <label class="record-form-field"><span>结果 / 备注（可选）</span><input :value="recordDraft.note" maxlength="240" placeholder="例如：比预想顺利，明天继续细化" @input="updateDraft('note', $event.target.value)"></label>
+      <label class="record-form-field">
+        <span>实际发生了什么</span>
+        <VanField
+          class="record-field"
+          type="textarea"
+          :model-value="recordDraft.content"
+          rows="3"
+          maxlength="240"
+          placeholder="例如：完成了今天最重要的一件事"
+          @update:model-value="updateDraft('content', $event)"
+        />
+      </label>
+      <label class="record-form-field">
+        <span>结果 / 备注（可选）</span>
+        <VanField
+          class="record-field"
+          :model-value="recordDraft.note"
+          maxlength="240"
+          placeholder="例如：比预想顺利，明天继续细化"
+          @update:model-value="updateDraft('note', $event)"
+        />
+      </label>
       <div class="record-form-actions">
-        <button class="secondary-button" type="button" @click="emit('close-record-form')">取消</button>
-        <button class="primary-button" type="submit" :disabled="savingRecord" :aria-busy="savingRecord">{{ savingRecord ? '保存中…' : '保存记录' }}</button>
+        <VanButton class="secondary-button" native-type="button" @click="emit('close-record-form')">取消</VanButton>
+        <VanButton class="primary-button" native-type="submit" type="primary" :disabled="savingRecord" :aria-busy="savingRecord">
+          {{ savingRecord ? '保存中…' : '保存记录' }}
+        </VanButton>
       </div>
       <p v-if="recordError" id="record-error" class="record-error" role="alert" aria-live="assertive">{{ recordError }}</p>
     </form>

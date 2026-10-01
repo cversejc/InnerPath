@@ -103,9 +103,13 @@
 .calendar-page .record-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .calendar-page .record-form label { display: grid; gap: 5px; min-width: 0; }
 .calendar-page .record-form label > span { color: var(--calendar-muted); font-size: 12px; }
-.calendar-page .record-form select, .calendar-page .record-form input, .calendar-page .record-form textarea { width: 100%; border: 1px solid rgba(139, 90, 20, 0.14); border-radius: 9px; padding: 8px 9px; background: rgba(255, 252, 245, 0.8); color: var(--calendar-ink); font-size: 11px; }
-.calendar-page .record-form textarea { resize: vertical; line-height: 1.6; }
-.calendar-page .record-form select:focus, .calendar-page .record-form input:focus, .calendar-page .record-form textarea:focus { border-color: rgba(184, 92, 80, 0.5); outline: 0; box-shadow: 0 0 0 3px rgba(184, 92, 80, 0.1); }
+.calendar-page .record-form select { width: 100%; min-height: 44px; border: 1px solid rgba(139, 90, 20, 0.14); border-radius: 9px; padding: 8px 9px; background: rgba(255, 252, 245, 0.8); color: var(--calendar-ink); font-size: 14px; }
+.calendar-page .record-form select:focus,
+.calendar-page .record-form .record-field:focus-within { border-color: rgba(184, 92, 80, 0.5); outline: 0; box-shadow: 0 0 0 3px rgba(184, 92, 80, 0.1); }
+.calendar-page .record-form .record-field { width: 100%; overflow: hidden; border: 1px solid rgba(139, 90, 20, 0.14); border-radius: 9px; padding: 0 9px; background: rgba(255, 252, 245, 0.8); }
+.calendar-page .record-form .record-field::after { display: none; }
+.calendar-page .record-form .record-field .van-field__control { color: var(--calendar-ink); font-size: 14px; }
+.calendar-page .record-form .record-field .van-field__control--min-height { min-height: 80px; resize: vertical; line-height: 1.6; }
 .calendar-page .record-form-actions { display: flex; justify-content: end; gap: 7px; }
 .calendar-page .record-form-actions .primary-button, .calendar-page .record-form-actions .secondary-button { min-height: 36px; padding: 0 13px; font-size: 10px; }
 .calendar-page .record-form-actions .primary-button:disabled { cursor: wait; opacity: 0.65; }
