@@ -31,9 +31,9 @@
     </div>
 
     <div class="growth-card-foot">
-      <button type="button" class="secondary-button growth-action" @click="$emit('edit')">
+      <VanButton native-type="button" class="secondary-button growth-action" @click="$emit('edit')">
         {{ safeCompletion >= 100 ? '查看 / 更新档案' : '继续完善档案' }}
-      </button>
+      </VanButton>
       <span v-if="lastConfirmedAt" class="growth-meta">最近确认：{{ formatDate(lastConfirmedAt) }}</span>
       <span v-else class="growth-meta">核心资料确认后即可跨场景复用</span>
     </div>
@@ -41,8 +41,11 @@
 </template>
 
 <script>
+import { Button as VanButton } from 'vant'
+
 export default {
   name: 'ProfileGrowthCard',
+  components: { VanButton },
   props: {
     profile: {
       type: Object,

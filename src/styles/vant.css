@@ -1,0 +1,27 @@
+:root:root {
+  --van-primary-color: var(--cinnabar);
+  --van-success-color: var(--jade);
+  --van-warning-color: var(--gold-deep);
+  --van-danger-color: var(--cinnabar-deep);
+  --van-text-color: var(--ink);
+  --van-text-color-2: var(--ink-soft);
+  --van-text-color-3: var(--muted);
+  --van-border-color: var(--line);
+  --van-background: var(--paper);
+  --van-background-2: var(--paper-soft);
+  --van-active-color: rgba(158, 63, 53, 0.08);
+  --van-font-size-md: 14px;
+  --van-font-bold: 600;
+  --van-button-default-height: var(--button-height);
+  --van-button-large-height: 48px;
+  --van-button-normal-font-size: 14px;
+  --van-button-default-font-size: 14px;
+  --van-button-default-color: var(--cinnabar-deep);
+  --van-button-default-background: var(--surface-strong);
+  --van-button-default-border-color: var(--line);
+  --van-button-primary-color: var(--paper-soft);
+  --van-button-primary-background: linear-gradient(180deg, var(--cinnabar), var(--cinnabar-deep));
+  --van-button-primary-border-color: var(--cinnabar-deep);
+  --van-button-plain-background: var(--surface-strong);
+  --van-button-radius: var(--button-radius);
+}

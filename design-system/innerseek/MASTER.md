@@ -8,7 +8,7 @@
 
 **Project:** chenvis / 辰鉴
 
-**Updated:** 2026-09-13
+**Updated:** 2026-10-02
 
 **Product type:** Personal insight, report and decision-calendar product
 **Visual thesis:** A calm Chinese editorial interface built from paper, ink, cinnabar,
@@ -90,6 +90,13 @@ shapes for statuses, seals, tags and compact metadata.
 - Support viewport checks at `320px`, `375px`, `768px`, `1024px` and `1440px`.
 
 ## Component conventions
+
+### Mobile UI library
+
+- Vant 4 is the shared library for mobile interaction primitives such as buttons, fields, pickers, popups and dialogs.
+- Import only the components a view uses, with their component styles; do not globally register the full library.
+- Vant theme variables are mapped to the project tokens in `src/styles/vant.css`. Do not set one-off palette values in individual pages.
+- Keep brand-specific compositions such as navigation, profile summaries and report sections in project-owned components; use Vant for their common interactive controls.
 
 ### Buttons
 

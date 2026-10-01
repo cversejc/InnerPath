@@ -5,7 +5,9 @@
         <p class="section-kicker">PROFILE SNAPSHOT</p>
         <h3 id="profile-summary-title">本次将使用的个人资料</h3>
       </div>
-      <button type="button" class="profile-summary-edit" @click="$emit('edit')">修改档案</button>
+      <VanButton native-type="button" class="secondary-button profile-summary-edit" @click="$emit('edit')">
+        修改档案
+      </VanButton>
     </div>
     <div class="profile-summary-grid">
       <div>
@@ -33,8 +35,11 @@
 </template>
 
 <script>
+import { Button as VanButton } from 'vant'
+
 export default {
   name: 'ProfileSummary',
+  components: { VanButton },
   emits: ['edit'],
   props: {
     profile: {
@@ -96,20 +101,13 @@ export default {
 }
 
 .profile-summary-edit {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  border: 1px solid rgba(158, 63, 53, .25);
-  border-radius: 999px;
+  flex: 0 0 auto;
+  min-height: var(--button-height);
+  border-radius: var(--button-radius);
   padding: 0 14px;
-  color: var(--cinnabar-deep);
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
-}
-
-.profile-summary-edit:hover {
-  background: rgba(184, 92, 80, .08);
 }
 
 .profile-summary-grid {

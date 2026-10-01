@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^1.16.1",
+    "vant": "^4.10.2",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },

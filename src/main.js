@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import 'vant/es/button/style/index'
 import App from './App.vue'
 import router from './router'
 import './style.css'
