@@ -9,6 +9,7 @@ from app.api.v1 import (
     admin,
     auth,
     calendar,
+    report_task_routes,
     reports,
     service_requests,
     staff,
@@ -132,6 +133,7 @@ async def health_check():
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
+app.include_router(report_task_routes.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["Calendar"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
