@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from app.config import settings
 from app.core.logging_config import get_logger
-from app.services.bazi_calculator import calculate_mingli_foundation
+from app.services.mingli_foundation import calculate_mingli_foundation
 from app.services.report_prompt import build_prompt
 
 logger = get_logger("app.services.ai_service")

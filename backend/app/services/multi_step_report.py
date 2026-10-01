@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 from app.config import settings
 from app.core.logging_config import get_logger
-from app.services.bazi_calculator import calculate_mingli_foundation
+from app.services.mingli_foundation import calculate_mingli_foundation
 from app.services.multi_step_report_parser import MultiStepReportParser
 from app.services.multi_step_report_prompts import MultiStepReportPrompts
 from app.services.multi_step_report_sections import MultiStepReportSections

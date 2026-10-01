@@ -6,8 +6,8 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 import pytest
-from app.services.bazi_calculator import (
-    BaziCalculator,
+from app.services.bazi_calculator import BaziCalculator
+from app.services.mingli_foundation import (
     calculate_bazi_from_user_data,
     calculate_mingli_foundation,
 )
