@@ -19,7 +19,8 @@ from app.schemas.admin import (
     AdminReportTaskResponse,
 )
 from app.services.audit_service import record_audit
-from app.services.report_service import create_report_task, format_report_response, get_report_by_id
+from app.services.report_service import format_report_response, get_report_by_id
+from app.services.report_task_service import create_report_task
 
 router = APIRouter()
 

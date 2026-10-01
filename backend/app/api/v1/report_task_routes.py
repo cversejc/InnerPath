@@ -20,7 +20,7 @@ from app.services.intake_service import (
     flatten_snapshot_for_ai,
     normalize_context,
 )
-from app.services.report_service import (
+from app.services.report_task_service import (
     create_report_task,
     get_report_task,
     get_report_task_by_id,
