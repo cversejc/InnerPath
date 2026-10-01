@@ -1,7 +1,8 @@
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from app.core.logging_config import get_logger
+from app.services.multi_step_report_topic_parser import parse_topic_sections
 
 logger = get_logger("app.services.ai_service")
 
@@ -28,7 +29,7 @@ class MultiStepReportParser:
         sections["energy"] = self._parse_energy_sections(energy_profile)
 
         # Parse topic-specific sections
-        sections["topics"] = self._parse_topic_sections(topic_analysis)
+        sections["topics"] = parse_topic_sections(topic_analysis)
 
         # Parse summary
         sections["summary"] = self._parse_summary_section(topic_analysis)
@@ -173,144 +174,6 @@ class MultiStepReportParser:
             })
 
         return sections
-
-    def _parse_topic_sections(self, content: str) -> List[Dict[str, Any]]:
-        """Parse topic-specific analysis into structured sections"""
-
-        logger.debug(f"解析议题章节，内容长度: {len(content)}")
-        logger.debug(f"议题章节内容预览: {content[:500]}")
-
-        topics = []
-
-        # Find all topic sections
-        topic_pattern = r'## 针对【(.+?)】的深度分析(.*?)(?=## 针对|## 总结|$)'
-        topic_matches = re.finditer(topic_pattern, content, re.DOTALL)
-
-        topic_icons = {
-            "职业发展": "💼",
-            "亲密关系": "💕",
-            "家庭议题": "🏠",
-            "自我价值": "✨",
-            "个人成长": "🌱",
-            "压力焦虑": "🧘"
-        }
-
-        for match in topic_matches:
-            topic_name = match.group(1)
-            topic_content = match.group(2)
-
-            logger.debug(f"找到议题: {topic_name}, 内容长度: {len(topic_content)}")
-
-            topic_section = {
-                "title": topic_name,
-                "icon": topic_icons.get(topic_name, "📌"),
-                "type": "topic",
-                "subsections": []
-            }
-
-            # Extract pattern recognition - 支持多种格式
-            pattern_patterns = [
-                r'### 1\.\s*模式识别[：:](.*?)(?=###|$)',
-                r'### 1\.\s*模式识别\s+(.*?)(?=###|$)',
-                r'\*\*模式识别\*\*[：:](.*?)(?=\*\*|###|$)'
-            ]
-
-            for pattern in pattern_patterns:
-                pattern_match = re.search(pattern, topic_content, re.DOTALL)
-                if pattern_match:
-                    topic_section["subsections"].append({
-                        "title": "模式识别",
-                        "content": pattern_match.group(1).strip()
-                    })
-                    logger.debug(f"找到 {topic_name} 的模式识别")
-                    break
-
-            # Extract psychological mechanism
-            mechanism_patterns = [
-                r'### 2\.\s*心理机制[：:](.*?)(?=###|$)',
-                r'### 2\.\s*心理机制\s+(.*?)(?=###|$)',
-                r'\*\*心理机制\*\*[：:](.*?)(?=\*\*|###|$)'
-            ]
-
-            for pattern in mechanism_patterns:
-                mechanism_match = re.search(pattern, topic_content, re.DOTALL)
-                if mechanism_match:
-                    topic_section["subsections"].append({
-                        "title": "心理机制",
-                        "content": mechanism_match.group(1).strip()
-                    })
-                    logger.debug(f"找到 {topic_name} 的心理机制")
-                    break
-
-            # Extract action plan
-            action_patterns = [
-                r'### 3\.\s*具体行动方案[：:](.*?)(?=###|$)',
-                r'### 3\.\s*具体行动方案\s+(.*?)(?=###|$)',
-                r'\*\*具体行动方案\*\*[：:](.*?)(?=\*\*|###|$)'
-            ]
-
-            for pattern in action_patterns:
-                action_match = re.search(pattern, topic_content, re.DOTALL)
-                if action_match:
-                    action_content = action_match.group(1).strip()
-                    # Parse action items
-                    actions = self._parse_action_items(action_content)
-                    topic_section["subsections"].append({
-                        "title": "具体行动方案",
-                        "content": action_content,
-                        "actions": actions
-                    })
-                    logger.debug(f"找到 {topic_name} 的具体行动方案，行动项数: {len(actions)}")
-                    break
-
-            # Extract resources
-            resource_patterns = [
-                r'### 4\.\s*成长资源[：:](.*?)(?=###|$)',
-                r'### 4\.\s*成长资源\s+(.*?)(?=###|$)',
-                r'\*\*成长资源\*\*[：:](.*?)(?=\*\*|###|$)'
-            ]
-
-            for pattern in resource_patterns:
-                resource_match = re.search(pattern, topic_content, re.DOTALL)
-                if resource_match:
-                    topic_section["subsections"].append({
-                        "title": "成长资源",
-                        "content": resource_match.group(1).strip()
-                    })
-                    logger.debug(f"找到 {topic_name} 的成长资源")
-                    break
-
-            # 如果没有找到任何子章节，将整个内容作为一个章节
-            if len(topic_section["subsections"]) == 0:
-                logger.warning(f"议题 {topic_name} 未找到任何子章节，使用完整内容")
-                topic_section["subsections"].append({
-                    "title": "分析内容",
-                    "content": topic_content.strip()
-                })
-
-            logger.debug(f"议题 {topic_name} 解析完成，子章节数: {len(topic_section['subsections'])}")
-            topics.append(topic_section)
-
-        logger.info(f"议题章节解析完成，议题数: {len(topics)}")
-        return topics
-
-    def _parse_action_items(self, content: str) -> List[Dict[str, str]]:
-        """Parse action items from content"""
-        actions = []
-
-        # Look for bullet points or numbered items
-        action_pattern = r'[*\-•]\s*[""""]?(.+?)[""""]?(?:\n|$)'
-        matches = re.finditer(action_pattern, content)
-
-        for match in matches:
-            action_text = match.group(1).strip()
-            if len(action_text) > 10:  # Filter out very short items
-                actions.append({
-                    "text": action_text,
-                    "completed": False
-                })
-
-        return actions[:5]  # Limit to 5 actions
 
     def _parse_summary_section(self, content: str) -> Dict[str, Any]:
         """Parse summary section"""
