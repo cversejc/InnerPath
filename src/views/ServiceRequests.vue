@@ -24,7 +24,7 @@
           <small>{{ filteredRequests.length }} 项记录</small>
         </div>
         <div class="request-filters" role="group" aria-label="按类型筛选">
-          <button v-for="filter in filters" :key="filter.id" type="button" :class="{ active: activeFilter === filter.id }" :aria-pressed="activeFilter === filter.id" @click="activeFilter = filter.id">{{ filter.label }}</button>
+          <VanButton v-for="filter in filters" :key="filter.id" type="default" plain native-type="button" :class="{ active: activeFilter === filter.id }" :aria-pressed="activeFilter === filter.id" @click="activeFilter = filter.id">{{ filter.label }}</VanButton>
         </div>
       </section>
 
@@ -75,7 +75,7 @@
             <router-link v-if="item.status === 'delivered' && item.result_type === 'report'" class="primary-button compact-button" :to="`/pages/report/detail?id=${item.result_id}`">查看报告</router-link>
             <router-link v-else-if="item.status === 'delivered' && item.result_type === 'calendar'" class="primary-button compact-button" to="/pages/calendar/calendar">打开日历</router-link>
             <router-link v-if="item.status === 'needs_info'" class="secondary-button compact-button" :to="editPath(item)">补充资料</router-link>
-            <button v-if="canWithdraw(item.status)" type="button" class="text-button danger-text" :disabled="withdrawnId === item.id" @click="withdraw(item)">{{ withdrawnId === item.id ? '撤回中…' : '撤回申请' }}</button>
+            <VanButton v-if="canWithdraw(item.status)" type="default" plain native-type="button" class="text-button danger-text" :disabled="withdrawnId === item.id" @click="withdraw(item)">{{ withdrawnId === item.id ? '撤回中…' : '撤回申请' }}</VanButton>
             <span v-if="item.status === 'delivered'" class="delivered-stamp">已由咨询师交付</span>
           </footer>
         </article>

@@ -12,7 +12,7 @@
 .filter-copy strong { color: var(--ink, #3b2d24); font-size: 19px; }
 .filter-copy small { color: var(--muted, #7d6653); }
 .request-filters { display: flex; flex-wrap: wrap; gap: 6px; }
-.request-filters button { min-height: 44px; border: 1px solid transparent; border-radius: 999px; padding: 0 15px; background: transparent; color: var(--muted, #7d6653); font: inherit; font-weight: 800; cursor: pointer; }
+.request-filters button { height: auto; min-height: 44px; border: 1px solid transparent; border-radius: 999px; padding: 0 15px; background: transparent; color: var(--muted, #7d6653); font: inherit; font-weight: 800; cursor: pointer; }
 .request-filters button.active { border-color: rgba(184, 92, 80, .3); background: rgba(184, 92, 80, .1); color: var(--cinnabar-deep, #9e3f35); }
 .request-loading { display: grid; gap: 12px; margin-top: 18px; }
 .request-loading i { display: block; height: 140px; border-radius: 18px; background: linear-gradient(90deg, rgba(255, 250, 240, .8), rgba(255, 239, 222, .9), rgba(255, 250, 240, .8)); background-size: 240% 100%; animation: request-shimmer 1.4s ease infinite; }
@@ -43,7 +43,7 @@
 .needs-info-note p { margin: 4px 0 0; line-height: 1.6; }
 .failed-note { background: rgba(158, 63, 53, .08); color: var(--cinnabar-deep, #9e3f35); }
 .request-card-actions { margin-left: 62px; }
-.text-button { min-height: 44px; border: 0; padding: 0 4px; background: transparent; font: inherit; font-weight: 800; cursor: pointer; }
+.text-button { height: auto; min-height: 44px; border: 0; padding: 0 4px; background: transparent; font: inherit; font-weight: 800; cursor: pointer; }
 .danger-text { color: var(--cinnabar-deep, #9e3f35); }
 .text-button:disabled { opacity: .55; cursor: wait; }
 .delivered-stamp { margin-left: auto; color: var(--jade-deep, #356b59); font-size: 13px; }

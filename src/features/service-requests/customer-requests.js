@@ -1,7 +1,9 @@
+import { Button as VanButton } from 'vant'
 import customerRequestMethods from './methods/customer-requests.js'
 
 export default {
   name: 'ServiceRequests',
+  components: { VanButton },
   data() {
     return {
       requests: [],
