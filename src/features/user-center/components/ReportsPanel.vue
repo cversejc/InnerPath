@@ -4,7 +4,7 @@
     <div v-if="reports.length === 0" class="empty-state">
       <IconMark class="empty-icon" name="document" />
       <p>暂无报告</p>
-      <button type="button" class="btn-action" @click="$emit('request-report')">申请说明书</button>
+      <VanButton type="primary" native-type="button" class="btn-action" @click="$emit('request-report')">申请说明书</VanButton>
     </div>
     <div v-else class="reports-list">
       <article v-for="report in reports" :key="report.id" class="report-card">
@@ -17,7 +17,7 @@
           <div class="preview-item"><strong>核心特质：</strong>{{ report.coreTraits }}</div>
         </div>
         <div class="report-actions">
-          <button type="button" class="btn-view" @click="$emit('view-report', report.id)">查看完整报告</button>
+          <VanButton type="primary" native-type="button" class="btn-view" @click="$emit('view-report', report.id)">查看完整报告</VanButton>
         </div>
       </article>
     </div>
@@ -25,8 +25,11 @@
 </template>
 
 <script>
+import { Button as VanButton } from 'vant'
+
 export default {
   name: 'ReportsPanel',
+  components: { VanButton },
   props: {
     reports: { type: Array, default: () => [] }
   },

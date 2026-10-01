@@ -17,7 +17,7 @@
         <input id="user-contact" :value="settings.contact" type="tel" autocomplete="tel" readonly>
         <p class="form-hint">联系方式由账户系统管理，不会发送给报告分析模型</p>
       </div>
-      <button type="submit" class="btn-save" :disabled="savingSettings" :aria-busy="savingSettings">{{ savingSettings ? '保存中…' : '保存个人档案' }}</button>
+      <VanButton type="primary" native-type="submit" class="btn-save" :disabled="savingSettings" :aria-busy="savingSettings">{{ savingSettings ? '保存中…' : '保存个人档案' }}</VanButton>
       <p v-if="settingsError" class="settings-error" role="alert">{{ settingsError }}</p>
     </form>
     <form class="password-form" @submit.prevent="$emit('save-password')">
@@ -30,27 +30,28 @@
         <label for="new-password">新密码</label>
         <input id="new-password" :value="passwordForm.next" type="password" minlength="8" maxlength="128" required autocomplete="new-password" @input="updatePassword('next', $event.target.value)">
       </div>
-      <button type="submit" class="btn-save" :disabled="savingPassword" :aria-busy="savingPassword">{{ savingPassword ? '更新中…' : '更新密码' }}</button>
+      <VanButton type="primary" native-type="submit" class="btn-save" :disabled="savingPassword" :aria-busy="savingPassword">{{ savingPassword ? '更新中…' : '更新密码' }}</VanButton>
     </form>
     <section class="account-actions" aria-labelledby="account-actions-title">
       <div>
         <h4 id="account-actions-title">账号操作</h4>
         <p>退出当前设备上的辰鉴账号</p>
       </div>
-      <button type="button" class="btn-logout" :disabled="loggingOut" :aria-busy="loggingOut" @click="$emit('logout')">
-        <IconMark name="logout" />
+      <VanButton type="default" plain native-type="button" class="btn-logout" :disabled="loggingOut" :aria-busy="loggingOut" @click="$emit('logout')">
+        <template #icon><IconMark name="logout" /></template>
         {{ loggingOut ? '退出中…' : '退出登录' }}
-      </button>
+      </VanButton>
     </section>
   </section>
 </template>
 
 <script>
+import { Button as VanButton } from 'vant'
 import ProfileFields from '../../../components/ProfileFields.vue'
 
 export default {
   name: 'AccountSettingsPanel',
-  components: { ProfileFields },
+  components: { ProfileFields, VanButton },
   props: {
     settings: { type: Object, required: true },
     optionalProfileExpanded: { type: Boolean, default: false },

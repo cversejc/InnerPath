@@ -8,14 +8,17 @@
         <h4>把报告里的洞察带回每天</h4>
         <p>查看阶段行动节奏，记录真实发生的事</p>
       </div>
-      <button type="button" class="btn-action" @click="$emit('open-calendar')">打开决策日历</button>
+      <VanButton type="primary" native-type="button" class="btn-action" @click="$emit('open-calendar')">打开决策日历</VanButton>
     </div>
   </section>
 </template>
 
 <script>
+import { Button as VanButton } from 'vant'
+
 export default {
   name: 'DecisionCalendarPanel',
+  components: { VanButton },
   emits: ['open-calendar']
 }
 </script>
