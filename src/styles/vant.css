@@ -24,4 +24,42 @@
   --van-button-primary-border-color: var(--cinnabar-deep);
   --van-button-plain-background: var(--surface-strong);
   --van-button-radius: var(--button-radius);
+  --van-action-sheet-max-height: min(70dvh, 560px);
+  --van-action-sheet-header-height: 50px;
+  --van-action-sheet-header-font-size: 16px;
+  --van-action-sheet-item-background: var(--paper-soft);
+  --van-action-sheet-item-font-size: 15px;
+  --van-action-sheet-item-text-color: var(--ink);
+  --van-action-sheet-item-line-height: 48px;
+  --van-action-sheet-cancel-text-color: var(--cinnabar-deep);
+  --van-action-sheet-cancel-padding-color: var(--paper);
+  --van-cell-font-size: 15px;
+  --van-cell-line-height: 24px;
+  --van-cell-vertical-padding: 12px;
+  --van-cell-horizontal-padding: 14px;
+  --van-cell-text-color: var(--ink);
+  --van-cell-background: transparent;
+  --van-cell-border-color: var(--line);
+  --van-cell-active-color: var(--van-active-color);
+  --van-cell-label-color: var(--ink-soft);
+  --van-cell-value-color: var(--muted);
+  --van-cell-right-icon-color: var(--gold-deep);
+  --van-cell-group-background: transparent;
+  --van-cell-group-inset-radius: 12px;
+  --van-tabbar-height: var(--mobile-nav-height);
+  --van-tabbar-z-index: 1001;
+  --van-tabbar-background: var(--paper-soft);
+  --van-tabbar-item-active-color: var(--cinnabar-deep);
+  --van-tabbar-item-active-background: transparent;
+  --van-tabbar-item-text-color: var(--muted);
+  --van-tabbar-item-font-size: 11px;
+  --van-tabbar-item-icon-size: 20px;
+  --van-tabbar-item-icon-margin-bottom: 2px;
+}
+
+.van-tabbar {
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -14px 30px -24px rgba(84, 48, 25, 0.72);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
 }

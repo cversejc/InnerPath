@@ -10,16 +10,12 @@ export function useMobileNavigationMenu() {
   const navToggleRef = ref(null)
   const mobilePanelRef = ref(null)
   const lastFocusedElement = ref(null)
+  let restoreFocusOnClose = true
   let mobileMediaQuery = null
 
   function closeMobileMenu({ restoreFocus = true } = {}) {
+    restoreFocusOnClose = restoreFocus
     mobileMenuOpen.value = false
-    if (!restoreFocus) return
-
-    nextTick(() => {
-      const target = lastFocusedElement.value || navToggleRef.value
-      if (target && typeof target.focus === 'function') target.focus()
-    })
   }
 
   async function toggleMobileMenu() {
@@ -28,6 +24,7 @@ export function useMobileNavigationMenu() {
       return
     }
 
+    restoreFocusOnClose = true
     lastFocusedElement.value = document.activeElement
     mobileMenuOpen.value = true
     await nextTick()
@@ -81,8 +78,18 @@ export function useMobileNavigationMenu() {
   }
 
   watch(() => route.fullPath, () => closeMobileMenu({ restoreFocus: false }))
-  watch(mobileMenuOpen, value => {
+  watch(mobileMenuOpen, (value, wasOpen) => {
     document.body.classList.toggle('menu-open', value)
+    if (!wasOpen || value) return
+
+    const shouldRestoreFocus = restoreFocusOnClose
+    restoreFocusOnClose = true
+    if (!shouldRestoreFocus) return
+
+    nextTick(() => {
+      const target = lastFocusedElement.value || navToggleRef.value
+      if (target && typeof target.focus === 'function') target.focus()
+    })
   })
 
   onMounted(() => {

@@ -93,7 +93,7 @@ shapes for statuses, seals, tags and compact metadata.
 
 ### Mobile UI library
 
-- Vant 4 is the shared library for mobile interaction primitives such as buttons, fields, pickers, popups and dialogs.
+- Vant 4 is the shared library for mobile interaction primitives such as buttons, cells, tab bars, fields, pickers, popups and dialogs.
 - Import only the components a view uses, with their component styles; do not globally register the full library.
 - Vant theme variables are mapped to the project tokens in `src/styles/vant.css`. Do not set one-off palette values in individual pages.
 - Keep brand-specific compositions such as navigation, profile summaries and report sections in project-owned components; use Vant for their common interactive controls.
