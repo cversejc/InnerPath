@@ -22,6 +22,7 @@ from app.services.service_request_users import (
 from app.services.service_request_staff import (
     accept_service_request,
     get_workspace,
+    has_staff_assignment,
     list_staff_service_requests,
     serialize_service_request,
     serialize_staff_user,
@@ -47,6 +48,7 @@ __all__ = [
     "get_service_request",
     "get_user_service_requests",
     "get_workspace",
+    "has_staff_assignment",
     "list_staff_service_requests",
     "normalize_calendar_draft",
     "normalize_report_draft",

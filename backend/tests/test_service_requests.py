@@ -1,10 +1,12 @@
 from datetime import date, timedelta
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
 import pytest
 
 from app.models.service_request import SERVICE_REQUEST_STATUSES, SERVICE_REQUEST_TYPES
 from app.services.service_request_service import (
+    has_staff_assignment,
     normalize_calendar_draft,
     staff_can_access,
     validate_draft,
@@ -98,3 +100,26 @@ def test_consultant_access_is_assignment_scoped_but_admin_can_intervene():
     assert staff_can_access(request, SimpleNamespace(role="consultant", id=12))
     assert not staff_can_access(request, SimpleNamespace(role="consultant", id=13))
     assert staff_can_access(request, SimpleNamespace(role="admin", id=99))
+
+
+@pytest.mark.asyncio
+async def test_user_access_assignment_uses_service_requests_not_legacy_bookings():
+    db = SimpleNamespace(
+        execute=AsyncMock(
+            side_effect=[
+                SimpleNamespace(scalar_one_or_none=lambda: 41),
+                SimpleNamespace(scalar_one_or_none=lambda: None),
+            ]
+        )
+    )
+
+    assert await has_staff_assignment(db, staff_id=12, user_id=55)
+    assert not await has_staff_assignment(db, staff_id=13, user_id=55)
+
+    for call in db.execute.await_args_list:
+        statement = call.args[0]
+        statement_text = str(statement)
+        assert "service_requests.user_id" in statement_text
+        assert "service_requests.assigned_consultant_id" in statement_text
+        assert "service_requests.status NOT IN" in statement_text
+        assert "bookings" not in statement_text

@@ -47,6 +47,20 @@ async def accept_service_request(
 def staff_can_access(service_request: ServiceRequest, user: User) -> bool:
     return user.role == "admin" or service_request.assigned_consultant_id == user.id
 
+
+async def has_staff_assignment(db: AsyncSession, staff_id: int, user_id: int) -> bool:
+    result = await db.execute(
+        select(ServiceRequest.id)
+        .where(
+            ServiceRequest.user_id == user_id,
+            ServiceRequest.assigned_consultant_id == staff_id,
+            ServiceRequest.status.not_in(("withdrawn", "rejected")),
+        )
+        .limit(1)
+    )
+    return result.scalar_one_or_none() is not None
+
+
 async def list_staff_service_requests(
     db: AsyncSession,
     user: User,

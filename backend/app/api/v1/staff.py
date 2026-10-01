@@ -12,8 +12,9 @@ from app.schemas.calendar import CalendarListResponse
 from app.schemas.report import ReportListItem, ReportListResponse, ReportResponse
 from app.schemas.user import UserResponse
 from app.services.booking_service import get_all_bookings, update_booking
-from app.services.calendar_service import get_user_calendars, has_staff_assignment
+from app.services.calendar_service import get_user_calendars
 from app.services.report_service import format_report_response, get_report_by_id, get_user_reports
+from app.services.service_request_service import has_staff_assignment
 from app.services.audit_service import record_audit
 
 router = APIRouter()

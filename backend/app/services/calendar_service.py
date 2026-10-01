@@ -8,10 +8,8 @@ from fastapi import Request
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.booking import Booking
 from app.models.calendar import CalendarEntry, CalendarRequest, DecisionLog, UserCalendar
 from app.models.report import Report
-from app.models.service_request import ServiceRequest
 from app.models.user import User
 from app.schemas.calendar import (
     CalendarCreate,
@@ -23,6 +21,7 @@ from app.schemas.calendar import (
 )
 from app.services.audit_service import record_audit
 from app.services.intake_service import build_intake_snapshot
+from app.services.service_request_staff import has_staff_assignment
 
 
 def _validate_entries(
@@ -579,26 +578,6 @@ async def delete_user_decision_log(
     )
     await db.commit()
     return True
-
-
-async def has_staff_assignment(db: AsyncSession, staff_id: int, user_id: int) -> bool:
-    booking_assignment = await db.execute(
-        select(Booking.id).where(
-            Booking.user_id == user_id,
-            Booking.consultant_id == staff_id,
-            Booking.status != "cancelled",
-        ).limit(1)
-    )
-    if booking_assignment.scalar_one_or_none() is not None:
-        return True
-    request_assignment = await db.execute(
-        select(ServiceRequest.id).where(
-            ServiceRequest.user_id == user_id,
-            ServiceRequest.assigned_consultant_id == staff_id,
-            ServiceRequest.status.not_in(("withdrawn", "rejected")),
-        ).limit(1)
-    )
-    return request_assignment.scalar_one_or_none() is not None
 
 
 async def get_calendar_for_staff(db: AsyncSession, staff_id: int, user_id: int) -> list[dict]:

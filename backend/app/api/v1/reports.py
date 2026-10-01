@@ -9,7 +9,6 @@ from app.core.cache import cache_get, cache_set
 from app.core.logging_config import get_logger
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
-from app.models.booking import Booking
 from app.models.report import Report
 from app.models.user import User
 from app.schemas.report import (
@@ -32,6 +31,7 @@ from app.services.report_service import (
 )
 from app.services.audit_service import record_audit
 from app.services.intake_service import build_intake_snapshot, flatten_snapshot_for_ai, normalize_context
+from app.services.service_request_service import has_staff_assignment
 from app.tasks.report_tasks import generate_report_task
 
 router = APIRouter()
@@ -192,14 +192,7 @@ async def get_staff_report_task_status(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
 
     if current_user.role == "consultant":
-        assignment = await db.execute(
-            select(Booking.id).where(
-                Booking.user_id == task.user_id,
-                Booking.consultant_id == current_user.id,
-                Booking.status != "cancelled",
-            ).limit(1)
-        )
-        if not assignment.scalar_one_or_none():
+        if not await has_staff_assignment(db, current_user.id, task.user_id):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not assigned")
 
     cached_status = await cache_get(f"report:task:{task_id}")
@@ -234,14 +227,7 @@ async def get_staff_user_reports(
     db: AsyncSession = Depends(get_db),
 ):
     if current_user.role == "consultant":
-        assignment = await db.execute(
-            select(Booking.id).where(
-                Booking.user_id == user_id,
-                Booking.consultant_id == current_user.id,
-                Booking.status != "cancelled",
-            ).limit(1)
-        )
-        if not assignment.scalar_one_or_none():
+        if not await has_staff_assignment(db, current_user.id, user_id):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not assigned")
     reports, total = await get_user_reports(db, user_id)
     return ReportListResponse(total=total, items=format_report_list(reports))
