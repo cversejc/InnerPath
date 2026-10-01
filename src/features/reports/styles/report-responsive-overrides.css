@@ -1,0 +1,256 @@
+.report-detail {
+  background: transparent;
+}
+
+.report-header {
+  position: relative;
+  overflow: hidden;
+  padding: 62px 0 48px;
+  background:
+    linear-gradient(104deg, rgba(255, 250, 240, 0.9), rgba(255, 239, 222, 0.72)),
+    radial-gradient(circle at 88% 18%, rgba(111, 159, 147, 0.2), transparent 25%),
+    var(--paper-deep, #ead9bf);
+}
+
+.report-header::after {
+  content: "说明书";
+  position: absolute;
+  right: 4%;
+  bottom: -33px;
+  color: rgba(184, 92, 80, 0.08);
+  font-family: var(--font-display, serif);
+  font-size: 110px;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.report-header .container {
+  position: relative;
+  z-index: 1;
+}
+
+.report-header h1 {
+  font-family: var(--font-display, serif);
+  color: var(--ink, #2f241b);
+  letter-spacing: 0.01em;
+}
+
+.report-meta {
+  color: var(--muted, #7d6653);
+}
+
+.btn-back {
+  border: 1px solid rgba(139, 90, 20, 0.16);
+  background: rgba(255, 252, 245, 0.72);
+  color: var(--cinnabar-deep, #9e3f35);
+}
+
+.report-content {
+  background: transparent;
+}
+
+.content-card {
+  border: 1px solid rgba(139, 90, 20, 0.13);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 245, 0.92), rgba(255, 247, 231, 0.72));
+  box-shadow: var(--shadow-card, 0 16px 48px -34px rgba(84, 48, 25, 0.48));
+}
+
+.content-card h2,
+.section-title {
+  font-family: var(--font-display, serif);
+  color: var(--ink, #2f241b);
+}
+
+.ai-badge,
+.type-badge,
+.pattern-tag {
+  background: linear-gradient(145deg, var(--cinnabar, #b5574c), var(--cinnabar-deep, #9e3f35));
+  box-shadow: 0 10px 22px -16px rgba(158, 63, 53, 0.86);
+}
+
+.markdown-content,
+.description,
+.traits,
+.path-list li,
+.suggestion-list li,
+.trait-list li,
+.action-detail,
+.action-timeline,
+.summary-text {
+  color: var(--ink-soft, rgba(47, 36, 27, 0.68));
+}
+
+.markdown-content h2,
+.content-card h2,
+.section-title {
+  border-bottom-color: rgba(139, 90, 20, 0.13);
+}
+
+.star-tag.main {
+  background: linear-gradient(145deg, var(--cinnabar, #b5574c), var(--cinnabar-deep, #9e3f35));
+}
+
+.report-actions {
+  gap: 10px;
+}
+
+.btn-action {
+  border-color: rgba(139, 90, 20, 0.18);
+  background: rgba(255, 252, 245, 0.82);
+  color: var(--cinnabar-deep, #9e3f35);
+}
+
+.btn-action.primary {
+  border-color: var(--cinnabar-deep, #9e3f35);
+  background: linear-gradient(145deg, var(--cinnabar, #b5574c), var(--cinnabar-deep, #9e3f35));
+}
+
+.summary-card,
+.summary-section {
+  border-color: rgba(184, 92, 80, 0.3);
+  background: linear-gradient(145deg, rgba(255, 247, 231, 0.94), rgba(255, 232, 220, 0.78));
+}
+
+/* 移动端最终密度：报告按阅读流排列，减少卡片边距与标题占高。 */
+@media (max-width: 768px) {
+  .report-header {
+    padding: 38px 0 24px;
+  }
+
+  .report-header::after {
+    right: 2%;
+    bottom: -20px;
+    font-size: 72px;
+  }
+
+  .report-header h1 {
+    font-size: clamp(24px, 7vw, 32px);
+  }
+
+  .report-content {
+    padding-top: 20px;
+    padding-bottom: calc(48px + var(--safe-bottom, 0px));
+  }
+
+  .content-card {
+    margin-bottom: 12px;
+    padding: 16px 14px;
+    border-radius: 14px;
+  }
+
+  .content-card h2,
+  .section-title {
+    gap: 7px;
+    font-size: 19px;
+  }
+
+  .subsection-title {
+    font-size: 16px;
+  }
+
+  .pillar-grid {
+    gap: 7px;
+  }
+
+  .pillar-card {
+    padding: 11px 8px;
+    border-radius: 11px;
+  }
+
+  .pillar-value {
+    font-size: 20px;
+  }
+
+  .palace-card {
+    padding: 12px;
+    border-radius: 11px;
+  }
+
+  .markdown-content {
+    line-height: 1.8;
+  }
+
+  .markdown-content h2 {
+    margin-top: 28px;
+    margin-bottom: 14px;
+    padding-bottom: 9px;
+    font-size: 19px;
+  }
+
+  .markdown-content h3 {
+    margin-top: 22px;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+
+  .type-badge {
+    padding: 8px 14px;
+    font-size: 15px;
+  }
+
+  .summary-highlight,
+  .summary-message {
+    padding: 14px;
+  }
+
+  .report-actions {
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .btn-action {
+    min-height: 46px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .btn-back,
+  .btn-action {
+    min-height: 46px;
+  }
+
+  .btn-action {
+    width: 100%;
+  }
+}
+
+/* 按钮专项：返回动作弱化，唯一主行动按钮固定在报告阅读流末端。 */
+.btn-back,
+.btn-action {
+  display: inline-flex;
+  min-height: var(--button-height, 46px);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--button-radius, 13px);
+  padding: 0 16px;
+  font-family: var(--font-ui, sans-serif);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.btn-back {
+  margin-bottom: 16px;
+  border: 1px solid rgba(139, 90, 20, 0.16);
+  background: rgba(255, 252, 245, 0.72);
+  color: var(--cinnabar-deep, #9e3f35);
+}
+
+.btn-action {
+  border: 1px solid var(--cinnabar-deep, #9e3f35);
+  background: linear-gradient(145deg, var(--cinnabar, #b5574c), var(--cinnabar-deep, #9e3f35));
+  color: #fffaf0;
+  box-shadow: 0 10px 22px -16px rgba(158, 63, 53, 0.86);
+}
+
+.btn-back:hover,
+.btn-back:focus-visible {
+  background: rgba(184, 92, 80, 0.08);
+}
+
+.btn-action:hover {
+  background: linear-gradient(145deg, var(--cinnabar, #b5574c), #8f352f);
+  transform: none;
+}

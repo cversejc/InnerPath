@@ -1,0 +1,202 @@
+
+.report-detail {
+  width: 100%;
+  background: var(--surface-strong, #fffaf0);
+  min-height: 100dvh;
+}
+
+/* 报告头部 */
+.report-header {
+  padding: 100px 20px 40px;
+  background: linear-gradient(135deg, rgba(255, 240, 223, .85) 0%, rgba(184, 92, 80, .22) 100%);
+}
+
+.btn-back {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--muted, #7d6653);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  transition: background var(--motion-standard, 220ms) var(--ease-out, ease), color var(--motion-standard, 220ms) var(--ease-out, ease), border-color var(--motion-standard, 220ms) var(--ease-out, ease);
+}
+
+.btn-back:hover {
+  background: #fff;
+  color: var(--cinnabar-deep, #9e3f35);
+}
+
+.report-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink, #2f241b);
+  margin-bottom: 15px;
+}
+
+.report-meta {
+  font-size: 15px;
+  color: var(--muted, #7d6653);
+}
+
+.divider {
+  margin: 0 10px;
+}
+
+/* 容器 */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* 报告内容 */
+.report-content {
+  padding: 40px 0 80px;
+}
+
+.content-card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.content-card h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink, #2f241b);
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--line, rgba(139, 90, 20, .16));
+}
+
+.content-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink, #2f241b);
+  margin: 20px 0 12px;
+}
+
+/* AI 内容 */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--cinnabar, #b85c50) 0%, var(--cinnabar-deep, #9e3f35) 100%);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+.badge-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.markdown-content {
+  line-height: 2;
+  color: var(--muted, #7d6653);
+}
+
+.markdown-content h2 {
+  font-size: 22px;
+  margin-top: 50px;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--line, rgba(139, 90, 20, .16));
+  color: var(--ink, #2f241b);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.markdown-content h2:first-child {
+  margin-top: 0;
+}
+
+.markdown-content h3 {
+  font-size: 18px;
+  margin-top: 35px;
+  margin-bottom: 18px;
+  color: var(--cinnabar, #b85c50);
+  font-weight: 600;
+}
+
+.markdown-content h4 {
+  font-size: 16px;
+  margin-top: 28px;
+  margin-bottom: 15px;
+  color: var(--muted, #7d6653);
+  font-weight: 600;
+}
+
+.markdown-content h5 {
+  font-size: 15px;
+  margin-top: 22px;
+  margin-bottom: 12px;
+  color: var(--muted, #7d6653);
+  font-weight: 600;
+}
+
+.markdown-content p {
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+.markdown-content hr {
+  border: none;
+  height: 3px;
+  background: linear-gradient(to right, transparent, var(--cinnabar, #b85c50), transparent);
+  margin: 45px 0;
+  position: relative;
+}
+
+.markdown-content hr::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: #fff;
+  border: 1px solid var(--cinnabar, #b85c50);
+  color: var(--cinnabar, #b85c50);
+}
+
+.markdown-content ul {
+  margin: 20px 0;
+  padding-left: 0;
+}
+
+.markdown-content li {
+  margin-bottom: 12px;
+  padding-left: 25px;
+  position: relative;
+  line-height: 2;
+}
+
+.markdown-content li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--cinnabar, #b85c50);
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.markdown-content strong {
+  color: var(--ink, #2f241b);
+  font-weight: 600;
+}
+
+.section-icon {
+  font-size: 24px;
+}
+
+/* 命理基础样式 */
