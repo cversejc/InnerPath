@@ -120,7 +120,7 @@
         <p class="section-kicker">START WITH YOURSELF</p>
         <h2>任何人，都有能力把自己的生活过好</h2>
         <p>如果你正在寻找一张不审判你的地图，辰鉴从“我是谁”开始</p>
-        <button class="primary-button" type="button" @click="goToAssessment"><IconMark name="reports" />申请我的人生说明书</button>
+        <VanButton class="primary-button" type="primary" native-type="button" @click="goToAssessment"><IconMark name="reports" />申请我的人生说明书</VanButton>
       </div>
     </section>
 
@@ -129,8 +129,11 @@
 </template>
 
 <script>
+import { Button as VanButton } from 'vant'
+
 export default {
   name: 'About',
+  components: { VanButton },
   methods: {
     goToAssessment() {
       this.$router.push('/pages/assessment/assessment')
