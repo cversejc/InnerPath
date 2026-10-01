@@ -1,0 +1,294 @@
+.about-header {
+  padding: 96px 0 78px;
+  text-align: center;
+}
+
+.about-header .header-inner {
+  max-width: 780px;
+}
+
+.about-header h1 {
+  font-size: clamp(42px, 8vw, 76px);
+  line-height: 1.08;
+}
+
+.about-header p:not(.section-kicker) {
+  max-width: 680px;
+  margin: 22px auto 0;
+  color: var(--ink-soft);
+  font-size: 18px;
+  line-height: 1.85;
+}
+
+.about-story-grid {
+  display: grid;
+  grid-template-columns: 0.86fr 1.14fr;
+  gap: 38px;
+  align-items: start;
+}
+
+.story-card {
+  padding: clamp(26px, 4vw, 42px);
+  color: var(--ink-soft);
+  font-size: 17px;
+  line-height: 1.9;
+}
+
+.story-card p + p {
+  margin-top: 15px;
+}
+
+.story-card .emphasis {
+  color: var(--cinnabar-deep);
+  font-weight: 800;
+}
+
+.axis-grid,
+.boundary-grid,
+.lens-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.axis-card,
+.boundary-card,
+.lens-card {
+  padding: 28px;
+}
+
+.axis-card {
+  min-height: 350px;
+}
+
+.axis-card.axis-fi {
+  border-top: 3px solid var(--cinnabar);
+}
+
+.axis-card.axis-te {
+  border-top: 3px solid var(--jade);
+}
+
+.axis-label,
+.lens-card > span {
+  color: var(--gold-deep);
+  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.axis-card h3,
+.boundary-card h3,
+.lens-card h3 {
+  margin-top: 14px;
+  color: var(--ink);
+  font-size: 24px;
+}
+
+.axis-card p,
+.boundary-card p,
+.lens-card p {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  line-height: 1.75;
+}
+
+.axis-card ul {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+
+.axis-card li {
+  position: relative;
+  padding-left: 18px;
+}
+
+.axis-card li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.boundary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.boundary-card span {
+  color: rgba(184, 92, 80, 0.38);
+  font-family: "Manrope", sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.boundary-card h3 {
+  font-size: 20px;
+}
+
+.lens-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.about-cta {
+  padding-top: 20px;
+}
+
+.cta-panel {
+  padding: clamp(30px, 6vw, 70px);
+  text-align: center;
+}
+
+.cta-panel h2 {
+  max-width: 760px;
+  margin: 15px auto 0;
+  font-size: clamp(30px, 6vw, 52px);
+  line-height: 1.2;
+}
+
+.cta-panel p:not(.section-kicker) {
+  margin: 18px auto 26px;
+  color: var(--ink-soft);
+  font-size: 17px;
+}
+
+@media (max-width: 900px) {
+  .about-story-grid,
+  .axis-grid,
+  .lens-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .boundary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .about-header {
+    padding: 54px 0 42px;
+  }
+
+  .about-header h1 {
+    font-size: clamp(38px, 11vw, 52px);
+  }
+
+  .about-header p:not(.section-kicker) {
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .about-story-grid {
+    gap: 22px;
+  }
+
+  .boundary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .axis-card,
+  .boundary-card,
+  .lens-card {
+    padding: 23px;
+  }
+}
+
+/* 移动端最终密度：减少留白，让长页面更容易连续阅读。 */
+@media (max-width: 767px) {
+  .about-header {
+    padding: 38px 0 30px;
+  }
+
+  .about-header h1 {
+    font-size: clamp(32px, 10vw, 44px);
+  }
+
+  .about-header p:not(.section-kicker) {
+    margin-top: 14px;
+  }
+
+  .section-band {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .section-heading {
+    margin-bottom: 22px;
+  }
+
+  .about-story-grid {
+    gap: 14px;
+  }
+
+  .story-card,
+  .axis-card,
+  .boundary-card,
+  .lens-card {
+    min-height: 0;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .story-card {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .axis-card h3,
+  .boundary-card h3,
+  .lens-card h3 {
+    margin-top: 10px;
+    font-size: 20px;
+    line-height: 1.35;
+  }
+
+  .axis-card p,
+  .boundary-card p,
+  .lens-card p {
+    margin-top: 9px;
+  }
+
+  .axis-card ul {
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .boundary-card span {
+    font-size: 28px;
+  }
+
+  .cta-panel {
+    padding: 24px 16px;
+    border-radius: 14px;
+  }
+
+  .cta-panel h2 {
+    margin-top: 12px;
+    font-size: clamp(26px, 8vw, 36px);
+  }
+
+  .cta-panel p:not(.section-kicker) {
+    margin: 14px auto 20px;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .cta-panel button {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+  }
+}
+
+/* 按钮专项：结尾行动按钮居中、单一主色，避免与内容卡片争夺层级。 */
+.cta-panel button {
+  min-width: 220px;
+}
