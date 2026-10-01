@@ -24,7 +24,7 @@ from .repository import (
 from .staff import staff_can_access
 
 
-async def enqueue_ai_draft(
+async def create_ai_draft_task(
     db: AsyncSession,
     service_request: ServiceRequest,
     actor: User,
@@ -32,7 +32,7 @@ async def enqueue_ai_draft(
     *,
     force: bool = False,
     retry_of_task_id: Optional[str] = None,
-) -> ServiceRequestTask:
+) -> tuple[ServiceRequestTask, bool]:
     if not staff_can_access(service_request, actor):
         raise ValueError("service_request_not_assigned")
     locked_request = await _get_request_for_update(db, service_request.id)
@@ -53,7 +53,7 @@ async def enqueue_ai_draft(
         )
     )
     if active:
-        return active
+        return active, False
 
     draft = await _get_draft(db, service_request.id)
     if force and draft:
@@ -96,11 +96,7 @@ async def enqueue_ai_draft(
     )
     await db.commit()
     await db.refresh(task)
-
-    from app.tasks.service_request_tasks import generate_service_request_task
-
-    generate_service_request_task.apply_async(args=[service_request.id], task_id=task_id)
-    return task
+    return task, True
 
 
 async def save_service_request_draft(

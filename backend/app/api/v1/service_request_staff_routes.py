@@ -19,9 +19,9 @@ from app.domains.service_requests.schemas import (
     StaffServiceRequestListResponse,
 )
 from app.application.service_request_delivery import deliver_service_request
+from app.application.service_request_ai import start_service_request_ai_draft
 from app.domains.service_requests.service import (
     accept_service_request,
-    enqueue_ai_draft,
     get_service_request,
     get_workspace,
     list_staff_service_requests,
@@ -30,6 +30,7 @@ from app.domains.service_requests.service import (
     serialize_task,
 )
 from app.api.v1.service_request_api_support import _raise_value_error, _serialize_public, _workspace_response
+from app.tasks.service_request_dispatch import dispatch_service_request_draft
 
 staff_router = APIRouter()
 @staff_router.get("", response_model=StaffServiceRequestListResponse)
@@ -114,7 +115,13 @@ async def start_ai_draft(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        task = await enqueue_ai_draft(db, service_request, current_user, request=request)
+        task = await start_service_request_ai_draft(
+            db,
+            service_request,
+            current_user,
+            request=request,
+            dispatch_task=dispatch_service_request_draft,
+        )
     except ValueError as error:
         _raise_value_error(error)
     return ServiceRequestTaskResponse.model_validate(serialize_task(task))
@@ -175,11 +182,12 @@ async def retry_staff_ai(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        task = await enqueue_ai_draft(
+        task = await start_service_request_ai_draft(
             db,
             service_request,
             current_user,
             request=request,
+            dispatch_task=dispatch_service_request_draft,
             force=data.confirm_overwrite,
             retry_of_task_id=None,
         )

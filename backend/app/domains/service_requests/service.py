@@ -32,7 +32,7 @@ from .staff import (
     staff_can_access,
 )
 from .workflow import (
-    enqueue_ai_draft,
+    create_ai_draft_task,
     request_more_info,
     save_service_request_draft,
 )
@@ -43,7 +43,7 @@ __all__ = [
     "_normalize_payload",
     "accept_service_request",
     "create_service_request",
-    "enqueue_ai_draft",
+    "create_ai_draft_task",
     "flatten_ai_input",
     "get_service_request",
     "get_user_service_requests",
