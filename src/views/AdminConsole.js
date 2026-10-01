@@ -1,6 +1,7 @@
 
 import navigationMethods from '../features/admin/methods/navigation.js'
 import adminFormatters from '../features/admin/formatters.js'
+import { createDashboardViewModel } from '../features/admin/dashboardViewModel.js'
 import AdminDashboardSection from '../features/admin/components/AdminDashboardSection.vue'
 import AdminUsersSection from '../features/admin/components/AdminUsersSection.vue'
 import AdminCalendarRequestsSection from '../features/admin/components/AdminCalendarRequestsSection.vue'
@@ -105,51 +106,8 @@ export default {
     activeLoading() {
       return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.calendarRequestsLoading || this.staffLoading || this.profileSaving || this.inviteSaving
     },
-    metricCards() {
-      const metrics = this.dashboard?.metrics || {}
-      return [
-        { key: 'users', label: '用户总数', value: metrics.user_total ?? 0, caption: `活跃 ${metrics.active_users ?? 0} · 本期新增 ${metrics.new_users ?? 0}`, mark: '人', tone: 'cinnabar' },
-        { key: 'reports', label: '报告总数', value: metrics.report_total ?? 0, caption: `成功率 ${metrics.report_success_rate ?? 0}%`, mark: '笺', tone: 'gold' },
-        { key: 'tasks', label: '报告任务', value: metrics.report_processing ?? 0, caption: `生成中 · 失败 ${metrics.report_failed ?? 0}`, mark: 'AI', tone: 'ink' },
-        { key: 'calendars', label: '已发布日历', value: metrics.published_calendars ?? 0, caption: `用户行动记录 ${metrics.decision_logs ?? 0}`, mark: '历', tone: 'jade' }
-      ]
-    },
-    trendMax() {
-      const values = (this.dashboard?.trends || []).flatMap(item => [item.new_users, item.reports, item.decision_logs])
-      return Math.max(1, ...values)
-    },
-    chartGridLines() {
-      return [18, 67, 116, 165, 214]
-    },
-    trendSeries() {
-      const trends = this.dashboard?.trends || []
-      const series = [
-        { key: 'new_users', label: '新增用户', color: '#b85c50' },
-        { key: 'reports', label: '报告', color: 'var(--gold-deep, #8b5a14)' },
-        { key: 'decision_logs', label: '行动记录', color: '#59483d' }
-      ]
-      return series.map(item => ({
-        ...item,
-        points: trends.map((point, index) => {
-          const x = 28 + (index * 708 / Math.max(1, trends.length - 1))
-          const y = 214 - ((point[item.key] || 0) / this.trendMax) * 196
-          return `${x.toFixed(1)},${y.toFixed(1)}`
-        }).join(' ')
-      }))
-    },
-    trendTicks() {
-      const trends = this.dashboard?.trends || []
-      if (!trends.length) return []
-      const step = Math.max(1, Math.ceil(trends.length / 6))
-      return trends.map((point, index) => ({ index, x: 28 + (index * 708 / Math.max(1, trends.length - 1)), label: this.formatShortDate(point.date) })).filter((tick, index) => index % step === 0 || index === trends.length - 1)
-    },
-    distributionGroups() {
-      const distributions = this.dashboard?.distributions || {}
-      return [
-        { key: 'roles', label: '用户角色', items: distributions.users_by_role || [] },
-        { key: 'reports', label: '报告状态', items: distributions.reports_by_status || [] },
-        { key: 'calendars', label: '日历状态', items: distributions.calendars_by_status || [] }
-      ]
+    dashboardViewModel() {
+      return createDashboardViewModel(this.dashboard)
     },
     userPanelTabs() {
       return [
