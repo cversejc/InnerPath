@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.db.session import get_db
 from app.dependencies import get_current_active_user
 from app.models.user import User
@@ -31,7 +32,12 @@ async def create_request(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        service_request = await create_service_request(db, current_user, data, request=request)
+        service_request = await create_service_request(
+            db,
+            current_user,
+            data,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         _raise_value_error(error)
     return await _serialize_public(db, service_request)
@@ -72,7 +78,13 @@ async def update_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        service_request = await update_user_service_request(db, service_request, current_user, data, request=request)
+        service_request = await update_user_service_request(
+            db,
+            service_request,
+            current_user,
+            data,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         _raise_value_error(error)
     return await _serialize_public(db, service_request)
@@ -89,7 +101,12 @@ async def resubmit_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        service_request = await resubmit_service_request(db, service_request, current_user, request=request)
+        service_request = await resubmit_service_request(
+            db,
+            service_request,
+            current_user,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         _raise_value_error(error)
     return await _serialize_public(db, service_request)
@@ -106,7 +123,12 @@ async def withdraw_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        service_request = await withdraw_service_request(db, service_request, current_user, request=request)
+        service_request = await withdraw_service_request(
+            db,
+            service_request,
+            current_user,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         _raise_value_error(error)
     return await _serialize_public(db, service_request)

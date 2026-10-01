@@ -3,7 +3,6 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .models import ServiceRequest
 from app.models.user import User
 from .schemas import ServiceRequestCreate, ServiceRequestUpdate
+from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from .payloads import _normalize_payload, payload_from_create, payload_from_update
 from .repository import _append_revision, _get_draft, _get_request_for_update
@@ -20,7 +20,7 @@ async def create_service_request(
     db: AsyncSession,
     user: User,
     data: ServiceRequestCreate,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> ServiceRequest:
     payload, idempotency_key = payload_from_create(data, user)
     if idempotency_key:
@@ -51,7 +51,7 @@ async def create_service_request(
             str(service_request.id),
             target_user_id=user.id,
             details={"service_type": data.service_type},
-            request=request,
+            audit_context=audit_context,
         )
         await db.commit()
     except IntegrityError:
@@ -94,7 +94,7 @@ async def update_user_service_request(
     service_request: ServiceRequest,
     user: User,
     data: ServiceRequestUpdate,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> ServiceRequest:
     if service_request.user_id != user.id:
         raise ValueError("service_request_not_found")
@@ -113,7 +113,7 @@ async def update_user_service_request(
         "service_request",
         str(service_request.id),
         target_user_id=user.id,
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(service_request)
@@ -123,7 +123,7 @@ async def resubmit_service_request(
     db: AsyncSession,
     service_request: ServiceRequest,
     user: User,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> ServiceRequest:
     if service_request.user_id != user.id:
         raise ValueError("service_request_not_found")
@@ -158,7 +158,7 @@ async def resubmit_service_request(
         "service_request",
         str(service_request.id),
         target_user_id=user.id,
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(service_request)
@@ -168,7 +168,7 @@ async def withdraw_service_request(
     db: AsyncSession,
     service_request: ServiceRequest,
     user: User,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> ServiceRequest:
     if service_request.user_id != user.id:
         raise ValueError("service_request_not_found")
@@ -188,7 +188,7 @@ async def withdraw_service_request(
         "service_request",
         str(service_request.id),
         target_user_id=user.id,
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(service_request)

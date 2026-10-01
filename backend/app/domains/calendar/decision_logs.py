@@ -3,12 +3,12 @@ from __future__ import annotations
 from datetime import date
 from typing import Optional
 
-from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.calendar.models import DecisionLog
 from app.domains.calendar.schemas import DecisionLogInput
+from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 
 
@@ -32,7 +32,7 @@ async def create_user_decision_log(
     db: AsyncSession,
     user_id: int,
     data: DecisionLogInput,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> DecisionLog:
     log = DecisionLog(user_id=user_id, **data.model_dump())
     db.add(log)
@@ -45,7 +45,7 @@ async def create_user_decision_log(
         str(log.id),
         target_user_id=user_id,
         details={"log_date": data.log_date.isoformat(), "kind": data.kind, "status": data.status},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(log)
@@ -56,7 +56,7 @@ async def delete_user_decision_log(
     db: AsyncSession,
     user_id: int,
     log_id: int,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> bool:
     result = await db.execute(
         select(DecisionLog).where(
@@ -75,7 +75,7 @@ async def delete_user_decision_log(
         "decision_log",
         str(log_id),
         target_user_id=user_id,
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     return True

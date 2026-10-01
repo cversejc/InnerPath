@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.domains.reports.models import Report
@@ -147,7 +148,7 @@ async def delete_report_endpoint(
         "report",
         str(report_id),
         target_user_id=current_user.id,
-        request=request,
+        audit_context=audit_context_from_request(request),
     )
     await db.commit()
 

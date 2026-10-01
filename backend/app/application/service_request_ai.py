@@ -1,8 +1,8 @@
 from typing import Callable, Optional
 
-from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domains.audit.context import AuditContext
 from app.domains.service_requests.models import ServiceRequest, ServiceRequestTask
 from app.domains.service_requests.service import create_ai_draft_task
 from app.models.user import User
@@ -14,7 +14,7 @@ async def start_service_request_ai_draft(
     db: AsyncSession,
     service_request: ServiceRequest,
     actor: User,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
     *,
     dispatch_task: TaskDispatcher,
     force: bool = False,
@@ -24,7 +24,7 @@ async def start_service_request_ai_draft(
         db,
         service_request,
         actor,
-        request=request,
+        audit_context=audit_context,
         force=force,
         retry_of_task_id=retry_of_task_id,
     )

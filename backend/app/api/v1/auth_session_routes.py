@@ -3,6 +3,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.config import settings
 from app.core.security import create_access_token
 from app.db.session import get_db
@@ -107,7 +108,15 @@ async def logout(
     if raw_token:
         user_id = await revoke_auth_session(db, raw_token)
         if user_id:
-            await record_audit(db, user_id, "auth.logout", "user", str(user_id), target_user_id=user_id, request=request)
+            await record_audit(
+                db,
+                user_id,
+                "auth.logout",
+                "user",
+                str(user_id),
+                target_user_id=user_id,
+                audit_context=audit_context_from_request(request),
+            )
             await db.commit()
     clear_refresh_cookie(response)
     return {"success": True, "message": "Logged out successfully"}

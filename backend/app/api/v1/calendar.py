@@ -3,6 +3,7 @@ from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.user import User
@@ -53,7 +54,12 @@ async def create_my_calendar_request(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        calendar_request = await create_calendar_request(db, current_user, data, request=request)
+        calendar_request = await create_calendar_request(
+            db,
+            current_user,
+            data,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         message_map = {
             "profile_version_conflict": "个人档案已更新，请刷新后确认最新资料再提交",
@@ -97,7 +103,7 @@ async def create_my_decision_log(
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    return await create_user_decision_log(db, current_user.id, data, request=request)
+    return await create_user_decision_log(db, current_user.id, data, audit_context=audit_context_from_request(request))
 
 
 @router.delete("/decision-logs/{log_id}")
@@ -107,7 +113,12 @@ async def delete_my_decision_log(
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    deleted = await delete_user_decision_log(db, current_user.id, log_id, request=request)
+    deleted = await delete_user_decision_log(
+        db,
+        current_user.id,
+        log_id,
+        audit_context=audit_context_from_request(request),
+    )
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Decision log not found")
     return {"ok": True}

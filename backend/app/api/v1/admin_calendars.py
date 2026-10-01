@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.api.v1.admin_support import _get_calendar_or_404
 from app.db.session import get_db
 from app.dependencies import require_roles
@@ -67,7 +68,13 @@ async def review_calendar_request(
     if not calendar_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Calendar request not found")
     try:
-        return await update_calendar_request(db, calendar_request, current_user.id, data, request=request)
+        return await update_calendar_request(
+            db,
+            calendar_request,
+            current_user.id,
+            data,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
 
@@ -82,7 +89,13 @@ async def create_user_calendar(
     if not await db.get(User, user_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     try:
-        calendar = await create_calendar(db, user_id, current_user.id, data, request=request)
+        calendar = await create_calendar(
+            db,
+            user_id,
+            current_user.id,
+            data,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
     return await serialize_calendar(db, calendar)
@@ -102,7 +115,7 @@ async def import_calendar(
             data.user_id,
             current_user.id,
             CalendarCreate(title=data.title, start_date=data.start_date, end_date=data.end_date, entries=data.entries),
-            request=request,
+            audit_context=audit_context_from_request(request),
         )
         await record_audit(
             db,
@@ -112,7 +125,7 @@ async def import_calendar(
             str(calendar.id),
             target_user_id=data.user_id,
             details={"entry_count": len(data.entries)},
-            request=request,
+            audit_context=audit_context_from_request(request),
         )
         await db.commit()
     except ValueError as error:
@@ -127,7 +140,12 @@ async def create_calendar_draft(
     db: AsyncSession = Depends(get_db),
 ):
     calendar = await _get_calendar_or_404(db, calendar_id)
-    draft = await clone_calendar_as_draft(db, calendar, current_user.id, request=request)
+    draft = await clone_calendar_as_draft(
+        db,
+        calendar,
+        current_user.id,
+        audit_context=audit_context_from_request(request),
+    )
     return await serialize_calendar(db, draft)
 
 @router.put("/calendars/{calendar_id}", response_model=CalendarResponse)
@@ -140,7 +158,13 @@ async def update_user_calendar(
 ):
     calendar = await _get_calendar_or_404(db, calendar_id)
     try:
-        calendar = await update_calendar(db, calendar, current_user.id, data, request=request)
+        calendar = await update_calendar(
+            db,
+            calendar,
+            current_user.id,
+            data,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
     return await serialize_calendar(db, calendar)
@@ -154,7 +178,12 @@ async def publish_user_calendar(
 ):
     calendar = await _get_calendar_or_404(db, calendar_id)
     try:
-        calendar = await publish_calendar(db, calendar, current_user.id, request=request)
+        calendar = await publish_calendar(
+            db,
+            calendar,
+            current_user.id,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
     return await serialize_calendar(db, calendar)
@@ -167,5 +196,10 @@ async def archive_user_calendar(
     db: AsyncSession = Depends(get_db),
 ):
     calendar = await _get_calendar_or_404(db, calendar_id)
-    calendar = await archive_calendar(db, calendar, current_user.id, request=request)
+    calendar = await archive_calendar(
+        db,
+        calendar,
+        current_user.id,
+        audit_context=audit_context_from_request(request),
+    )
     return await serialize_calendar(db, calendar)

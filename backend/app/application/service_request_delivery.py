@@ -5,7 +5,6 @@ from datetime import date, datetime, time as dt_time
 from typing import Optional
 from uuid import uuid4
 
-from fastapi import Request
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,6 +14,7 @@ from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarEntryInput
+from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from app.domains.service_requests.drafts import validate_draft
 from app.domains.service_requests.repository import (
@@ -128,7 +128,7 @@ async def deliver_service_request(
     db: AsyncSession,
     service_request: ServiceRequest,
     actor: User,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> ServiceRequest:
     if not staff_can_access(service_request, actor):
         raise ValueError("service_request_not_assigned")
@@ -164,7 +164,7 @@ async def deliver_service_request(
         str(locked.id),
         target_user_id=locked.user_id,
         details={"result_type": result_type, "result_id": result.id},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(locked)

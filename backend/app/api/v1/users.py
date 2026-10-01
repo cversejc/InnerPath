@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.audit_context import audit_context_from_request
+
 from app.db.session import get_db
 from app.dependencies import get_current_active_user
 from app.models.user import User
@@ -51,7 +54,7 @@ async def update_current_user(
             "changed_fields": list(user_update.model_dump(exclude_unset=True).keys()),
             "profile_version": updated_user.profile_version,
         },
-        request=request,
+        audit_context=audit_context_from_request(request),
     )
     await db.commit()
     return updated_user

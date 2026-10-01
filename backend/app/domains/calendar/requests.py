@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +10,7 @@ from app.domains.calendar.models import CalendarRequest, UserCalendar
 from app.domains.reports.models import Report
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarRequestAdminUpdate, CalendarRequestCreate
+from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from app.services.intake_service import build_intake_snapshot
 
@@ -28,7 +28,7 @@ async def create_calendar_request(
     db: AsyncSession,
     user: User,
     data: CalendarRequestCreate,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> CalendarRequest:
     """Create a user-owned calendar request with an immutable profile snapshot."""
     if user.profile_completion < 100:
@@ -98,7 +98,7 @@ async def create_calendar_request(
             "profile_version": calendar_request.profile_version,
             "focus_topics": calendar_request.focus_topics,
         },
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(calendar_request)
@@ -172,7 +172,7 @@ async def update_calendar_request(
     calendar_request: CalendarRequest,
     reviewer_id: int,
     data: CalendarRequestAdminUpdate,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> dict:
     if "calendar_id" in data.model_fields_set:
         linked_calendars = list(
@@ -209,7 +209,7 @@ async def update_calendar_request(
             "status": calendar_request.status,
             "calendar_id": data.calendar_id,
         },
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(calendar_request)

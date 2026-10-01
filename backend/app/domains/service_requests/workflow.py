@@ -5,13 +5,13 @@ from datetime import datetime
 from typing import Optional
 from uuid import uuid4
 
-from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
 from app.models.user import User
 from .schemas import ServiceRequestDraftUpdate, ServiceRequestInfoInput
+from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from .drafts import validate_draft
 from .repository import (
@@ -28,7 +28,7 @@ async def create_ai_draft_task(
     db: AsyncSession,
     service_request: ServiceRequest,
     actor: User,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
     *,
     force: bool = False,
     retry_of_task_id: Optional[str] = None,
@@ -92,7 +92,7 @@ async def create_ai_draft_task(
         str(service_request.id),
         target_user_id=service_request.user_id,
         details={"service_type": service_request.service_type, "task_id": task_id},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(task)
@@ -104,7 +104,7 @@ async def save_service_request_draft(
     service_request: ServiceRequest,
     actor: User,
     data: ServiceRequestDraftUpdate,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> ServiceRequestDraft:
     if not staff_can_access(service_request, actor):
         raise ValueError("service_request_not_assigned")
@@ -140,7 +140,7 @@ async def save_service_request_draft(
         str(service_request.id),
         target_user_id=service_request.user_id,
         details={"content_version": draft.content_version},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(draft)
@@ -152,7 +152,7 @@ async def request_more_info(
     service_request: ServiceRequest,
     actor: User,
     data: ServiceRequestInfoInput,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> ServiceRequest:
     if not staff_can_access(service_request, actor):
         raise ValueError("service_request_not_assigned")
@@ -176,7 +176,7 @@ async def request_more_info(
         str(service_request.id),
         target_user_id=service_request.user_id,
         details={"reason_provided": True},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(service_request)

@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
@@ -84,7 +85,12 @@ async def accept_staff_request(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        service_request = await accept_service_request(db, request_id, current_user, request=request)
+        service_request = await accept_service_request(
+            db,
+            request_id,
+            current_user,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         _raise_value_error(error)
     return await _serialize_public(db, service_request)
@@ -119,7 +125,7 @@ async def start_ai_draft(
             db,
             service_request,
             current_user,
-            request=request,
+            audit_context=audit_context_from_request(request),
             dispatch_task=dispatch_service_request_draft,
         )
     except ValueError as error:
@@ -139,7 +145,13 @@ async def save_staff_draft(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        draft = await save_service_request_draft(db, service_request, current_user, data, request=request)
+        draft = await save_service_request_draft(
+            db,
+            service_request,
+            current_user,
+            data,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         _raise_value_error(error)
     return ServiceRequestDraftResponse(
@@ -164,7 +176,13 @@ async def request_staff_info(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        service_request = await request_more_info(db, service_request, current_user, data, request=request)
+        service_request = await request_more_info(
+            db,
+            service_request,
+            current_user,
+            data,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         _raise_value_error(error)
     return await _serialize_public(db, service_request)
@@ -186,7 +204,7 @@ async def retry_staff_ai(
             db,
             service_request,
             current_user,
-            request=request,
+            audit_context=audit_context_from_request(request),
             dispatch_task=dispatch_service_request_draft,
             force=data.confirm_overwrite,
             retry_of_task_id=None,
@@ -207,7 +225,12 @@ async def deliver_staff_request(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        service_request = await deliver_service_request(db, service_request, current_user, request=request)
+        service_request = await deliver_service_request(
+            db,
+            service_request,
+            current_user,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         _raise_value_error(error)
     return await _serialize_public(db, service_request)

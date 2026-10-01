@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.service_requests.models import ServiceRequest
@@ -89,7 +90,7 @@ async def update_request_assignment(
         str(request_id),
         target_user_id=service_request.user_id,
         details={"consultant_id": data.consultant_id},
-        request=request,
+        audit_context=audit_context_from_request(request),
     )
     await db.commit()
     await db.refresh(service_request)
@@ -120,7 +121,7 @@ async def reject_request(
         "service_request",
         str(request_id),
         target_user_id=service_request.user_id,
-        request=request,
+        audit_context=audit_context_from_request(request),
     )
     await db.commit()
     await db.refresh(service_request)

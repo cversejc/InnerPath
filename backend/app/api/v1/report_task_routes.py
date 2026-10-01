@@ -4,6 +4,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.core.cache import cache_get, cache_set
 from app.core.logging_config import get_logger
 from app.db.session import get_db
@@ -124,7 +125,7 @@ async def create_report(
             "profile_version": task_input.get("profile_version"),
             "schema_version": task_input.get("schema_version", 1),
         },
-        request=request,
+        audit_context=audit_context_from_request(request),
     )
     await db.commit()
 

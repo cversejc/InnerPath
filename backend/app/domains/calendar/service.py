@@ -4,7 +4,6 @@ from datetime import date, datetime
 from typing import Iterable, Optional
 from uuid import uuid4
 
-from fastapi import Request
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,6 +13,7 @@ from app.domains.calendar.schemas import (
     CalendarEntryInput,
     CalendarUpdate,
 )
+from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from app.domains.calendar.query_service import load_calendar_entries
 
@@ -39,7 +39,7 @@ async def create_calendar(
     user_id: int,
     created_by: int,
     data: CalendarCreate,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> UserCalendar:
     _validate_entries(data.entries, data.start_date, data.end_date)
     calendar = UserCalendar(
@@ -66,7 +66,7 @@ async def create_calendar(
         str(calendar.id),
         target_user_id=user_id,
         details={"version_number": calendar.version_number, "entry_count": len(data.entries)},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(calendar)
@@ -79,7 +79,7 @@ async def update_calendar(
     calendar: UserCalendar,
     updated_by: int,
     data: CalendarUpdate,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> UserCalendar:
     if calendar.status != "draft":
         raise ValueError("published_calendar_requires_revision")
@@ -113,7 +113,7 @@ async def update_calendar(
         str(calendar.id),
         target_user_id=calendar.user_id,
         details={"version_number": calendar.version_number, "entry_count": len(data.entries) if data.entries is not None else None},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(calendar)
@@ -124,7 +124,7 @@ async def clone_calendar_as_draft(
     db: AsyncSession,
     calendar: UserCalendar,
     created_by: int,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> UserCalendar:
     entries = await load_calendar_entries(db, calendar.id)
     max_version = await db.scalar(
@@ -169,14 +169,14 @@ async def clone_calendar_as_draft(
         str(draft.id),
         target_user_id=calendar.user_id,
         details={"source_calendar_id": calendar.id, "version_number": draft.version_number},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(draft)
     return draft
 
 
-async def publish_calendar(db: AsyncSession, calendar: UserCalendar, updated_by: int, request: Optional[Request] = None) -> UserCalendar:
+async def publish_calendar(db: AsyncSession, calendar: UserCalendar, updated_by: int, audit_context: Optional[AuditContext] = None) -> UserCalendar:
     entries = await load_calendar_entries(db, calendar.id)
     if not entries:
         raise ValueError("calendar_without_entries")
@@ -206,14 +206,14 @@ async def publish_calendar(db: AsyncSession, calendar: UserCalendar, updated_by:
         str(calendar.id),
         target_user_id=calendar.user_id,
         details={"version_number": calendar.version_number},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(calendar)
     return calendar
 
 
-async def archive_calendar(db: AsyncSession, calendar: UserCalendar, updated_by: int, request: Optional[Request] = None) -> UserCalendar:
+async def archive_calendar(db: AsyncSession, calendar: UserCalendar, updated_by: int, audit_context: Optional[AuditContext] = None) -> UserCalendar:
     calendar.status = "archived"
     calendar.updated_by = updated_by
     await record_audit(
@@ -224,7 +224,7 @@ async def archive_calendar(db: AsyncSession, calendar: UserCalendar, updated_by:
         str(calendar.id),
         target_user_id=calendar.user_id,
         details={"version_number": calendar.version_number},
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(calendar)

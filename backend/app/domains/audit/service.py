@@ -8,9 +8,9 @@ diagnosing infrastructure and programming errors.
 import json
 from typing import Any, Optional
 
-from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domains.audit.context import AuditContext
 from app.domains.audit.models import AuditLog
 
 
@@ -66,7 +66,7 @@ async def record_audit(
     resource_id: Optional[str] = None,
     target_user_id: Optional[int] = None,
     details: Optional[dict[str, Any]] = None,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
     request_id: Optional[str] = None,
     ip_address: Optional[str] = None,
     user_agent: Optional[str] = None,
@@ -77,9 +77,10 @@ async def record_audit(
     event commit or roll back together.
     """
 
-    client_ip = request.client.host if request and request.client else ip_address
-    resolved_request_id = request_id or (getattr(request.state, "request_id", None) if request else None)
-    resolved_user_agent = user_agent or (request.headers.get("user-agent") if request else None)
+    context_ip = audit_context.ip_address if audit_context else None
+    client_ip = context_ip or ip_address
+    resolved_request_id = request_id or (audit_context.request_id if audit_context else None)
+    resolved_user_agent = user_agent or (audit_context.user_agent if audit_context else None)
     event = AuditLog(
         actor_user_id=actor_user_id,
         target_user_id=target_user_id,

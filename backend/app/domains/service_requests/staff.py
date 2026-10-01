@@ -4,12 +4,12 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, Optional
 
-from fastapi import Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import ServiceRequest, ServiceRequestTask
 from app.models.user import User
+from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from .repository import _get_draft, _get_latest_task, _get_request_for_update
 
@@ -18,7 +18,7 @@ async def accept_service_request(
     db: AsyncSession,
     request_id: int,
     consultant: User,
-    request: Optional[Request] = None,
+    audit_context: Optional[AuditContext] = None,
 ) -> ServiceRequest:
     service_request = await _get_request_for_update(db, request_id)
     if service_request is None:
@@ -38,7 +38,7 @@ async def accept_service_request(
         "service_request",
         str(request_id),
         target_user_id=service_request.user_id,
-        request=request,
+        audit_context=audit_context,
     )
     await db.commit()
     await db.refresh(service_request)

@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.api.v1.admin_report_support import _load_admin_reports, _load_admin_tasks, _serialize_task
 from app.config import settings
 from app.db.session import get_db
@@ -115,7 +116,7 @@ async def retry_admin_report_task(
         new_task_id,
         target_user_id=task.user_id,
         details={"retry_of_task_id": task.task_id, "retry_count": new_task.retry_count},
-        request=request,
+        audit_context=audit_context_from_request(request),
     )
     await db.commit()
     await db.refresh(new_task)

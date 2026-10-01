@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.api.v1.admin_support import _count, _date_filter
 from app.db.session import get_db
 from app.dependencies import require_roles
@@ -128,7 +129,7 @@ async def update_user_profile_by_admin(
             str(user.id),
             target_user_id=user.id,
             details={"changed_fields": changed_fields, "profile_version": user.profile_version},
-            request=request,
+            audit_context=audit_context_from_request(request),
         )
         await db.commit()
         await db.refresh(user)
@@ -184,7 +185,7 @@ async def update_user_status(
         str(user.id),
         target_user_id=user.id,
         details={"old_is_active": old_status, "is_active": user.is_active},
-        request=request,
+        audit_context=audit_context_from_request(request),
     )
     await db.commit()
     await db.refresh(user)
@@ -215,7 +216,7 @@ async def update_user_role(
         str(user.id),
         target_user_id=user.id,
         details={"old_role": old_role, "new_role": user.role},
-        request=request,
+        audit_context=audit_context_from_request(request),
     )
     await db.commit()
     await db.refresh(user)
@@ -233,7 +234,15 @@ async def reset_user_password_by_admin(
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     await admin_reset_password(db, user, request_data.new_password)
-    await record_audit(db, current_user.id, "user.password.reset", "user", str(user.id), target_user_id=user.id, request=request)
+    await record_audit(
+        db,
+        current_user.id,
+        "user.password.reset",
+        "user",
+        str(user.id),
+        target_user_id=user.id,
+        audit_context=audit_context_from_request(request),
+    )
     await db.commit()
     return {"success": True, "message": "Password reset successfully"}
 
@@ -245,6 +254,14 @@ async def invite_staff(
     db: AsyncSession = Depends(get_db),
 ):
     invite, token = await create_staff_invite(db, data.phone, data.role, current_user.id)
-    await record_audit(db, current_user.id, "staff.invite.create", "staff_invite", str(invite.id), details={"role": data.role}, request=request)
+    await record_audit(
+        db,
+        current_user.id,
+        "staff.invite.create",
+        "staff_invite",
+        str(invite.id),
+        details={"role": data.role},
+        audit_context=audit_context_from_request(request),
+    )
     await db.commit()
     return StaffInviteResponse(id=invite.id, phone=invite.phone, role=invite.role, token=token, expires_at=invite.expires_at)
