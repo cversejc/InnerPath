@@ -1,3 +1,4 @@
+import { Button as VanButton } from 'vant'
 import {
   addCalendarDays,
   CALENDAR_TIME_OPTIONS,
@@ -7,6 +8,7 @@ import requestFormMethods from './methods/request-form.js'
 
 export default {
   name: 'ServiceRequestForm',
+  components: { VanButton },
   data() {
     return {
       ready: false,

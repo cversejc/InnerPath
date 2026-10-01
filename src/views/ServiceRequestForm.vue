@@ -25,8 +25,8 @@
             <fieldset class="field choice-fieldset">
               <legend>性别 <b>*</b></legend>
               <div class="choice-row">
-                <button type="button" :class="{ selected: form.gender === 'male' }" :aria-pressed="form.gender === 'male'" @click="form.gender = 'male'">男</button>
-                <button type="button" :class="{ selected: form.gender === 'female' }" :aria-pressed="form.gender === 'female'" @click="form.gender = 'female'">女</button>
+                <VanButton type="default" native-type="button" :class="{ selected: form.gender === 'male' }" :aria-pressed="form.gender === 'male'" @click="form.gender = 'male'">男</VanButton>
+                <VanButton type="default" native-type="button" :class="{ selected: form.gender === 'female' }" :aria-pressed="form.gender === 'female'" @click="form.gender = 'female'">女</VanButton>
               </div>
               <small v-if="errors.gender" class="field-error">{{ errors.gender }}</small>
             </fieldset>
@@ -41,14 +41,14 @@
           <div class="form-grid two">
             <fieldset class="field choice-fieldset">
               <legend>历法类型 <b>*</b></legend>
-              <div class="choice-row"><button type="button" :class="{ selected: form.calendar_type === 'solar' }" :aria-pressed="form.calendar_type === 'solar'" @click="form.calendar_type = 'solar'">公历</button><button type="button" :class="{ selected: form.calendar_type === 'lunar' }" :aria-pressed="form.calendar_type === 'lunar'" @click="form.calendar_type = 'lunar'">农历</button></div>
+              <div class="choice-row"><VanButton type="default" native-type="button" :class="{ selected: form.calendar_type === 'solar' }" :aria-pressed="form.calendar_type === 'solar'" @click="form.calendar_type = 'solar'">公历</VanButton><VanButton type="default" native-type="button" :class="{ selected: form.calendar_type === 'lunar' }" :aria-pressed="form.calendar_type === 'lunar'" @click="form.calendar_type = 'lunar'">农历</VanButton></div>
             </fieldset>
             <label class="field"><span>出生地 <em>选填</em></span><input v-model.trim="form.birth_place" type="text" maxlength="100" placeholder="如：北京、上海"></label>
           </div>
 
           <fieldset class="field choice-fieldset">
             <legend>出生时间 <em>选填</em></legend>
-            <div class="choice-row choice-row-wide"><button v-for="item in timeOptions" :key="item.value" type="button" :class="{ selected: form.time_accuracy === item.value }" :aria-pressed="form.time_accuracy === item.value" @click="selectTimeAccuracy(item.value)">{{ item.label }}</button></div>
+            <div class="choice-row choice-row-wide"><VanButton v-for="item in timeOptions" :key="item.value" type="default" native-type="button" :class="{ selected: form.time_accuracy === item.value }" :aria-pressed="form.time_accuracy === item.value" @click="selectTimeAccuracy(item.value)">{{ item.label }}</VanButton></div>
             <div v-if="form.time_accuracy !== 'unknown'" class="time-row"><input v-model.number="form.birth_hour" type="number" min="0" max="23" placeholder="08" aria-label="出生时"><span>:</span><input v-model.number="form.birth_minute" type="number" min="0" max="59" placeholder="30" aria-label="出生分"></div>
           </fieldset>
         </section>
@@ -64,7 +64,7 @@
 
         <div class="form-footer">
           <p class="privacy-note"><span aria-hidden="true">◆</span> 提交后先进入咨询师工作台，不会直接生成或展示给其他用户。</p>
-          <div class="form-actions"><router-link class="secondary-button" to="/pages/requests/requests">返回我的申请</router-link><button class="primary-button" type="submit" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : editing ? '更新并重新提交' : '提交日历申请' }}</button></div>
+          <div class="form-actions"><router-link class="secondary-button" to="/pages/requests/requests">返回我的申请</router-link><VanButton class="primary-button" type="primary" native-type="submit" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : editing ? '更新并重新提交' : '提交日历申请' }}</VanButton></div>
           <p v-if="formMessage" class="form-error" role="alert" aria-live="assertive">{{ formMessage }}</p>
         </div>
       </form>
