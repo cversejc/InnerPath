@@ -1,8 +1,7 @@
 <template>
   <div class="auth-page">
-    <Transition name="auth-intro" @after-leave="focusAuthPanel">
+    <Transition name="auth-intro">
       <section v-if="showIntro" class="auth-intro" aria-label="辰鉴入场动画">
-        <button ref="skipIntroButton" class="auth-intro-skip" type="button" @click="dismissIntro(true)">跳过</button>
         <div class="auth-intro-lockup" aria-hidden="true">
           <img class="auth-intro-logo" src="/brand-logo.png" alt="" />
         </div>
@@ -128,8 +127,7 @@ export default {
       errorMessage: '',
       successMessage: '',
       showIntro: isLoginRoute && !reducedMotion,
-      introTimer: null,
-      introSkipped: false
+      introTimer: null
     }
   },
   computed: {
@@ -170,10 +168,7 @@ export default {
   mounted() {
     this.syncRouteMode()
     if (this.showIntro && this.mode === 'login') {
-      this.$nextTick(() => {
-        this.$refs.skipIntroButton?.focus({ preventScroll: true })
-        this.introTimer = window.setTimeout(() => this.dismissIntro(), 1500)
-      })
+      this.introTimer = window.setTimeout(() => this.dismissIntro(), 1500)
     } else {
       this.showIntro = false
     }
@@ -197,18 +192,13 @@ export default {
       this.form.token = this.$route.query.token || ''
       if (nextMode !== 'login') this.dismissIntro()
     },
-    dismissIntro(skipped = false) {
+    dismissIntro() {
       if (!this.showIntro) return
       if (this.introTimer) {
         window.clearTimeout(this.introTimer)
         this.introTimer = null
       }
-      this.introSkipped = skipped
       this.showIntro = false
-    },
-    focusAuthPanel() {
-      if (this.introSkipped) this.$refs.authPanel?.focus({ preventScroll: true })
-      this.introSkipped = false
     },
     setMode(mode) {
       this.mode = mode
@@ -352,33 +342,6 @@ export default {
   animation: authIntroFrame 900ms var(--ease-out) 80ms both;
 }
 
-.auth-intro-skip {
-  position: fixed;
-  z-index: 1;
-  top: max(18px, env(safe-area-inset-top, 0px));
-  left: max(18px, env(safe-area-inset-left, 0px));
-  display: inline-flex;
-  min-width: 64px;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(139, 90, 20, 0.14);
-  border-radius: 10px;
-  padding: 0 14px;
-  background: rgba(255, 250, 240, 0.72);
-  color: var(--ink-soft, #614d3d);
-  font-size: 13px;
-  backdrop-filter: blur(10px);
-  transition: background var(--motion-fast, 150ms) ease, border-color var(--motion-fast, 150ms) ease, color var(--motion-fast, 150ms) ease;
-}
-
-.auth-intro-skip:hover,
-.auth-intro-skip:focus-visible {
-  border-color: rgba(158, 63, 53, 0.28);
-  background: rgba(255, 250, 240, 0.94);
-  color: var(--cinnabar-deep, #9e3f35);
-}
-
 .auth-intro-lockup {
   display: grid;
   width: min(100%, 420px, 62dvh);
@@ -402,11 +365,6 @@ export default {
   opacity: 0;
   transform: translateY(-8px);
   transition: opacity 380ms ease, transform 380ms ease;
-}
-
-.auth-intro-leave-active .auth-intro-skip {
-  opacity: 0;
-  transition: opacity 220ms ease;
 }
 
 .auth-intro-leave-to {
@@ -745,11 +703,6 @@ export default {
     inset: 18px 12px;
   }
 
-  .auth-intro-skip {
-    top: max(12px, env(safe-area-inset-top, 0px));
-    left: max(12px, env(safe-area-inset-left, 0px));
-  }
-
   .auth-page {
     place-items: start center;
     padding:
@@ -862,8 +815,7 @@ export default {
   }
 
   .auth-intro-leave-active,
-  .auth-intro-leave-active .auth-intro-lockup,
-  .auth-intro-leave-active .auth-intro-skip {
+  .auth-intro-leave-active .auth-intro-lockup {
     transition: none;
   }
 
