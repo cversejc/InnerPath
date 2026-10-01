@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 
 from app.schemas.calendar import CalendarRequestCreate
-from app.services.calendar_service import create_calendar_request
+from app.services.calendar_request_service import create_calendar_request
 
 
 def make_calendar_request_data() -> CalendarRequestCreate:

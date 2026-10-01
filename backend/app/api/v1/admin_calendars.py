@@ -23,11 +23,13 @@ from app.services.calendar_service import (
     archive_calendar,
     clone_calendar_as_draft,
     create_calendar,
-    get_calendar_requests_for_admin,
     get_user_calendars,
     publish_calendar,
     serialize_calendar,
     update_calendar,
+)
+from app.services.calendar_request_service import (
+    get_calendar_requests_for_admin,
     update_calendar_request,
 )
 

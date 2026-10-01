@@ -16,13 +16,15 @@ from app.schemas.calendar import (
     CalendarListResponse,
 )
 from app.services.calendar_service import (
-    create_calendar_request,
     create_user_decision_log,
     delete_user_decision_log,
     get_calendar_for_staff,
-    get_user_calendar_requests,
     get_user_calendars,
     get_user_decision_logs,
+)
+from app.services.calendar_request_service import (
+    create_calendar_request,
+    get_user_calendar_requests,
     serialize_calendar_request,
 )
 
