@@ -98,6 +98,10 @@ export function buildProfilePayload(settings) {
   ].forEach(field => {
     profile[field] = String(profile[field] || '').trim() || null
   })
+  profile.mbti = String(profile.mbti || '').toUpperCase() || null
+  ;['personality_keywords', 'mingli_experience', 'default_usage_scenarios'].forEach(field => {
+    profile[field] = Array.isArray(profile[field]) ? profile[field] : []
+  })
   profile.birth_year = profile.birth_year ? Number(profile.birth_year) : null
   profile.birth_month = profile.birth_month ? Number(profile.birth_month) : null
   profile.birth_day = profile.birth_day ? Number(profile.birth_day) : null

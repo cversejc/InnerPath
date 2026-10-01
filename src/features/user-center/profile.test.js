@@ -43,6 +43,7 @@ test('profile payload excludes contact and normalizes values for the API', () =>
   const payload = buildProfilePayload(validProfile({
     name: ' 林一 ',
     contact: '13800000000',
+    mbti: 'infj',
     birth_year: '1992',
     birth_hour: 8,
     birth_minute: 30,
@@ -52,9 +53,11 @@ test('profile payload excludes contact and normalizes values for the API', () =>
 
   assert.equal('contact' in payload, false)
   assert.equal(payload.name, '林一')
+  assert.equal(payload.mbti, 'INFJ')
   assert.equal(payload.birth_year, 1992)
   assert.equal(payload.birth_hour, null)
   assert.equal(payload.birth_minute, null)
   assert.equal(payload.birth_place, '杭州')
   assert.equal(payload.strengths, null)
+  assert.deepEqual(payload.default_usage_scenarios, [])
 })

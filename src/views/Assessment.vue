@@ -256,33 +256,17 @@ import { getCurrentUser, updateUserProfile } from '../utils/authService.js'
 import { setAuthenticatedUser } from '../stores/auth.js'
 import ProfileFields from '../components/ProfileFields.vue'
 import ProfileSummary from '../components/ProfileSummary.vue'
+import { buildProfilePayload, createEmptyProfile, mapUserToProfile } from '../features/user-center/profile.js'
+import {
+  assessmentTopics,
+  createEmptyAssessmentContext,
+  decisionStyleOptions,
+  expectedOutcomeOptions,
+  validateAssessmentContext,
+  validateAssessmentProfile
+} from '../features/assessment/form.js'
 
 const STORAGE_KEY = 'assessment-intake-draft'
-
-function emptyProfile() {
-  return {
-    name: '', gender: '', calendar_type: 'solar', birth_year: null, birth_month: null, birth_day: null,
-    birth_hour: null, birth_minute: null, birth_place: '', birth_time_precision: 'unknown',
-    current_residence: '', marital_status: '', occupation_status: '', highest_education: '', mbti: '',
-    personality_keywords: [], strengths: '', limitations: '', mingli_experience: [], mingli_attitude: '',
-    preferred_content_depth: '', default_usage_scenarios: []
-  }
-}
-
-function emptyContext() {
-  return {
-    focus_topics: [], current_challenge: '', expected_outcomes: [], issue_duration: '', impact_level: '',
-    decision_status: '', decision_description: '', decision_style: [], additional_info: ''
-  }
-}
-
-function profileFromUser(user) {
-  const base = emptyProfile()
-  Object.keys(base).forEach(field => {
-    if (user[field] !== undefined && user[field] !== null) base[field] = Array.isArray(user[field]) ? [...user[field]] : user[field]
-  })
-  return base
-}
 
 export default {
   name: 'Assessment',
@@ -300,11 +284,11 @@ export default {
       showOptionalProfile: false,
       showAdvancedContext: false,
       hasExistingProfile: false,
-      profileDraft: emptyProfile(),
+      profileDraft: createEmptyProfile(),
       profileVersion: 1,
       profileLastConfirmedAt: null,
       profileErrors: {},
-      contextDraft: emptyContext(),
+      contextDraft: createEmptyAssessmentContext(),
       contextErrors: {},
       draftStatus: '',
       draftRestored: false,
@@ -314,34 +298,9 @@ export default {
       reportPreview: { energyType: '综合型', coreTraits: '独特的个人特质', talents: '多元发展' },
       generatedReport: null,
       currentReportId: null,
-      topics: [
-        { id: 'career', title: '事业发展', desc: '职业选择、转型与瓶颈突破' },
-        { id: 'relationship', title: '感情关系', desc: '恋爱、婚姻与关系模式' },
-        { id: 'family', title: '家庭议题', desc: '原生家庭、亲子与家庭沟通' },
-        { id: 'finance', title: '财务规划', desc: '经济安排与资源分配' },
-        { id: 'health', title: '身心健康', desc: '压力、情绪与身心节奏' },
-        { id: 'social', title: '人际关系', desc: '社交圈、朋友与边界' },
-        { id: 'self', title: '个人成长', desc: '自我实现与认知提升' },
-        { id: 'children', title: '子女教育', desc: '陪伴、沟通与成长支持' },
-        { id: 'other', title: '其他', desc: '你想带入说明书的主题' }
-      ],
-      expectedOutcomeOptions: [
-        { value: '认识自己', label: '更清晰地认识自己' },
-        { value: '解决方案', label: '找到当前问题的解决方案' },
-        { value: '方向指引', label: '获得对未来方向的指引' },
-        { value: '验证判断', label: '验证自己已有的判断' },
-        { value: '心理支持', label: '获得心理上的安慰与支持' },
-        { value: '节奏参考', label: '了解自己的命理 / 运势节奏' },
-        { value: '其他', label: '其他' }
-      ],
-      decisionStyleOptions: [
-        { value: 'intuition', label: '凭直觉判断' },
-        { value: 'rational', label: '理性分析利弊' },
-        { value: 'family_friends', label: '咨询家人 / 朋友意见' },
-        { value: 'professional', label: '寻求专业人士建议' },
-        { value: 'wait', label: '顺其自然，等时间给答案' },
-        { value: 'other', label: '其他' }
-      ]
+      topics: assessmentTopics,
+      expectedOutcomeOptions,
+      decisionStyleOptions
     }
   },
   computed: {
@@ -365,7 +324,7 @@ export default {
   async mounted() {
     try {
       const user = await getCurrentUser()
-      this.profileDraft = profileFromUser(user)
+      this.profileDraft = mapUserToProfile(user)
       this.profileVersion = user.profile_version || 1
       this.profileLastConfirmedAt = user.profile_last_confirmed_at || null
       this.hasExistingProfile = Number(user.profile_completion || 0) >= 100
@@ -406,7 +365,7 @@ export default {
           this.draftRestored = true
         }
         if (stored.context) {
-          this.contextDraft = { ...emptyContext(), ...stored.context }
+          this.contextDraft = { ...createEmptyAssessmentContext(), ...stored.context }
           this.draftRestored = true
         }
       } catch {
@@ -414,46 +373,9 @@ export default {
       }
     },
     validateProfile() {
-      const profile = this.profileDraft
-      const errors = {}
-      if (!String(profile.name || '').trim()) errors.name = '请填写称呼。'
-      if (!profile.gender) errors.gender = '请选择性别。'
-      if (!profile.calendar_type) errors.calendar_type = '请选择历法类型。'
-      const year = Number(profile.birth_year)
-      const month = Number(profile.birth_month)
-      const day = Number(profile.birth_day)
-      if (!year || year < 1900 || year > new Date().getFullYear()) errors.birth_date = '请填写有效的出生日期。'
-      else if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期。'
-      else if (profile.calendar_type === 'solar') {
-        const date = new Date(year, month - 1, day)
-        if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期。'
-      } else if (day > 30) errors.birth_date = '农历日期的日期不能超过 30。'
-      if (!['unknown', 'approximate', 'exact'].includes(profile.birth_time_precision)) errors.birth_time_precision = '请选择出生时间准确度。'
-      if (profile.birth_time_precision !== 'unknown') {
-        if (profile.birth_hour === null || profile.birth_hour === '' || profile.birth_hour === undefined || profile.birth_minute === null || profile.birth_minute === '' || profile.birth_minute === undefined) errors.birth_time = '请选择完整的出生小时和分钟。'
-        else if (Number(profile.birth_hour) > 23 || Number(profile.birth_minute) > 59) errors.birth_time = '出生时间范围不正确。'
-      }
+      const errors = validateAssessmentProfile(this.profileDraft)
       this.profileErrors = errors
       return Object.keys(errors).length === 0
-    },
-    profilePayload() {
-      const profile = { ...this.profileDraft }
-      profile.name = String(profile.name || '').trim()
-      profile.birth_place = String(profile.birth_place || '').trim() || null
-      profile.current_residence = String(profile.current_residence || '').trim() || null
-      profile.mbti = String(profile.mbti || '').trim().toUpperCase() || null
-      ;['strengths', 'limitations', 'marital_status', 'occupation_status', 'highest_education', 'mingli_attitude', 'preferred_content_depth'].forEach(field => {
-        profile[field] = String(profile[field] || '').trim() || null
-      })
-      profile.personality_keywords = Array.isArray(profile.personality_keywords) ? profile.personality_keywords : []
-      profile.mingli_experience = Array.isArray(profile.mingli_experience) ? profile.mingli_experience : []
-      profile.default_usage_scenarios = Array.isArray(profile.default_usage_scenarios) ? profile.default_usage_scenarios : []
-      profile.birth_year = profile.birth_year ? Number(profile.birth_year) : null
-      profile.birth_month = profile.birth_month ? Number(profile.birth_month) : null
-      profile.birth_day = profile.birth_day ? Number(profile.birth_day) : null
-      profile.birth_hour = profile.birth_time_precision === 'unknown' || profile.birth_hour === '' ? null : Number(profile.birth_hour)
-      profile.birth_minute = profile.birth_time_precision === 'unknown' || profile.birth_minute === '' ? null : Number(profile.birth_minute)
-      return profile
     },
     async saveProfileAndContinue() {
       this.formMessage = ''
@@ -464,9 +386,9 @@ export default {
       }
       this.savingProfile = true
       try {
-        const user = await updateUserProfile(this.profilePayload())
+        const user = await updateUserProfile(buildProfilePayload(this.profileDraft))
         setAuthenticatedUser(user)
-        this.profileDraft = profileFromUser(user)
+        this.profileDraft = mapUserToProfile(user)
         this.profileVersion = user.profile_version || this.profileVersion
         this.profileLastConfirmedAt = user.profile_last_confirmed_at || null
         this.hasExistingProfile = true
@@ -511,15 +433,12 @@ export default {
       if (field === 'current_challenge' && String(this.contextDraft.current_challenge || '').trim()) delete this.contextErrors.current_challenge
     },
     validateContext() {
-      const errors = {}
-      if (!this.contextDraft.focus_topics.length) errors.focus_topics = '至少选择一个关注领域。'
-      if (!String(this.contextDraft.current_challenge || '').trim()) errors.current_challenge = '请描述当前困惑或挑战。'
-      if (!this.contextDraft.expected_outcomes.length) errors.expected_outcomes = '至少选择一个期望获得的结果。'
+      const errors = validateAssessmentContext(this.contextDraft)
       this.contextErrors = errors
       return Object.keys(errors).length === 0
     },
     reusePreviousContext() {
-      this.contextDraft = { ...emptyContext(), ...(this.lastContext || {}), focus_topics: [...(this.lastContext?.focus_topics || [])], expected_outcomes: [...(this.lastContext?.expected_outcomes || [])], decision_style: [...(this.lastContext?.decision_style || [])] }
+      this.contextDraft = { ...createEmptyAssessmentContext(), ...(this.lastContext || {}), focus_topics: [...(this.lastContext?.focus_topics || [])], expected_outcomes: [...(this.lastContext?.expected_outcomes || [])], decision_style: [...(this.lastContext?.decision_style || [])] }
       this.contextMessage = this.lastContextReportId ? `已带入报告 #${this.lastContextReportId} 的背景，请按这一次的情况编辑。` : '已带入上次背景，请按这一次的情况编辑。'
       this.$nextTick(() => document.getElementById('assessment-current-challenge')?.focus())
     },
@@ -587,200 +506,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.page-header {
-  padding: 82px 0 58px;
-  text-align: center;
-}
-
-.header-inner { max-width: 760px; }
-
-.page-header h1 { font-size: clamp(40px, 8vw, 72px); line-height: 1.08; }
-
-.page-header p:not(.section-kicker) {
-  margin-top: 18px;
-  color: var(--ink-soft);
-  font-size: 17px;
-  line-height: 1.75;
-}
-
-.assessment-section { padding-bottom: 84px; }
-.assessment-container { max-width: 900px; }
-
-.progress-card {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 22px;
-  padding: 14px;
-}
-
-.progress-current {
-  display: none;
-}
-
-.progress-step { display: grid; justify-items: center; gap: 7px; width: 80px; color: var(--muted); }
-.progress-step span { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: rgba(255,250,240,.72); font-weight: 900; }
-.progress-step p { font-size: 12px; font-weight: 800; white-space: nowrap; }
-.progress-step.active, .progress-step.completed { color: var(--cinnabar-deep); }
-.progress-step.active span, .progress-step.completed span { border-color: rgba(184,92,80,.34); background: rgba(184,92,80,.1); }
-.progress-line { height: 1px; background: var(--line); }
-.progress-line.active { background: linear-gradient(90deg, var(--cinnabar), var(--gold)); }
-
-.step-content { padding: clamp(20px, 4vw, 38px); }
-.step-heading { margin-bottom: 26px; text-align: center; }
-.step-heading h2 { font-size: clamp(26px, 5vw, 40px); line-height: 1.2; }
-.step-heading p:not(.section-kicker) { margin-top: 10px; color: var(--ink-soft); line-height: 1.65; }
-.draft-status { display: inline-flex; align-items: center; justify-content: center; gap: 7px; margin-top: 12px; color: var(--jade); font-size: 12px; line-height: 1.5; }
-.draft-status-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--jade); box-shadow: 0 0 0 4px rgba(111,159,147,.1); }
-.assessment-form { display: grid; gap: 22px; }
-.context-form { margin-top: 24px; }
-.form-group { display: grid; gap: 10px; }
-.form-label { color: var(--ink); font-weight: 800; }
-.required { color: var(--cinnabar-deep); }
-.form-hint { color: var(--muted); font-size: 12px; font-weight: 500; }
-.field-meta { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
-.char-count { flex: 0 0 auto; color: var(--muted); font-size: 11px; line-height: 1.6; }
-.field-error { color: var(--cinnabar-deep); font-size: 12px; line-height: 1.5; }
-.selection-count { color: var(--cinnabar-deep); font-size: 11px; font-weight: 800; white-space: nowrap; }
-.choice-fieldset { min-width: 0; border: 0; padding: 0; }
-
-textarea, select, .context-form input[type="text"] {
-  width: 100%;
-  min-height: 48px;
-  border: 1px solid rgba(139,90,20,.2);
-  border-radius: 12px;
-  padding: 11px 13px;
-  background: rgba(255,255,255,.78);
-  color: var(--ink);
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-textarea { min-height: 110px; resize: vertical; }
-textarea:focus, select:focus, .context-form input[type="text"]:focus { border-color: var(--cinnabar); outline: 0; box-shadow: 0 0 0 3px rgba(184,92,80,.12); }
-
-.fold-toggle {
-  display: flex;
-  min-height: 48px;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px dashed rgba(139,90,20,.3);
-  border-radius: 13px;
-  padding: 0 14px;
-  color: var(--cinnabar-deep);
-  font-size: 14px;
-  font-weight: 800;
-  text-align: left;
-}
-.fold-toggle:hover { background: rgba(184,92,80,.06); }
-
-.privacy-note, .reuse-context-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-radius: 14px;
-  padding: 13px 15px;
-  background: rgba(111,159,147,.09);
-}
-.privacy-mark { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(111,159,147,.4); border-radius: 50%; color: var(--jade); font-size: 12px; font-weight: 900; }
-.privacy-note p { color: var(--ink-soft); font-size: 12px; line-height: 1.6; }
-
-.reuse-context-card { justify-content: space-between; background: rgba(217,186,98,.1); }
-.reuse-context-card > div { min-width: 0; }
-.reuse-context-card p { margin-top: 3px; overflow: hidden; color: var(--ink-soft); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
-.mini-label { color: var(--gold-deep); font-size: 11px; font-weight: 900; letter-spacing: .08em; }
-.context-message { color: var(--jade); font-size: 13px; }
-.context-scope-note { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }
-
-.topics-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
-.topic-card {
-  display: grid;
-  min-height: 86px;
-  align-content: center;
-  gap: 6px;
-  border: 1px solid var(--line);
-  border-radius: 15px;
-  padding: 12px;
-  background: rgba(255,250,240,.64);
-  color: var(--ink);
-  text-align: left;
-  transition: border-color .2s ease, background .2s ease, transform .2s ease;
-}
-.topic-card:hover { border-color: rgba(184,92,80,.45); transform: translateY(-1px); }
-.topic-card.selected { border-color: var(--cinnabar); background: rgba(184,92,80,.1); color: var(--cinnabar-deep); }
-.topic-card strong { font-size: 14px; }
-.topic-card small { color: var(--muted); font-size: 11px; line-height: 1.45; }
-
-.expected-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
-.expected-card { display: flex; min-height: 46px; align-items: center; gap: 9px; border: 1px solid var(--line); border-radius: 11px; padding: 8px 10px; background: rgba(255,255,255,.52); color: var(--ink-soft); font-size: 13px; line-height: 1.35; }
-.expected-card input { width: 17px; height: 17px; flex: 0 0 auto; accent-color: var(--cinnabar); }
-.context-details { border-top: 1px solid var(--line); padding-top: 6px; }
-.context-details summary { display: flex; min-height: 48px; align-items: center; justify-content: space-between; color: var(--cinnabar-deep); cursor: pointer; font-size: 14px; font-weight: 800; list-style: none; }
-.context-details summary::-webkit-details-marker { display: none; }
-.advanced-context-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; padding: 12px 0 4px; }
-.field-wide { grid-column: 1 / -1; }
-
-.error-summary { border: 1px solid rgba(158,63,53,.25); border-radius: 12px; padding: 12px 14px; background: rgba(184,92,80,.07); color: var(--cinnabar-deep); font-size: 13px; }
-.error-summary ul { margin: 5px 0 0 18px; list-style: disc; }
-.error-summary li { list-style: disc; }
-.form-message { color: var(--cinnabar-deep); font-size: 14px; line-height: 1.6; }
-.button-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.form-submit-bar { position: relative; }
-.primary-button, .secondary-button { display: inline-flex; min-height: var(--button-height); align-items: center; justify-content: center; border-radius: var(--button-radius); padding: 0 22px; font-size: 14px; font-weight: 800; }
-.primary-button { background: var(--cinnabar); color: #fff; }
-.primary-button:hover { background: var(--cinnabar-deep); }
-.primary-button:disabled, .secondary-button:disabled { cursor: wait; opacity: .62; }
-.secondary-button { border: 1px solid rgba(139,90,20,.22); background: rgba(255,255,255,.62); color: var(--ink-soft); }
-.secondary-button:hover { border-color: var(--cinnabar); color: var(--cinnabar-deep); }
-.small-button { min-height: 42px; padding: 0 14px; font-size: 12px; white-space: nowrap; }
-.full-width { width: 100%; }
-
-.loading-panel, .generating, .result-success { min-height: 360px; display: grid; place-items: center; align-content: center; gap: 15px; text-align: center; }
-.loading-panel h2, .generating h2, .result-success h2 { font-size: clamp(26px, 5vw, 38px); }
-.loading-panel p, .generating p, .result-success > p { max-width: 560px; color: var(--ink-soft); line-height: 1.7; }
-.loading-compass { width: 58px; height: 58px; border: 1px solid rgba(184,92,80,.26); border-top-color: var(--cinnabar); border-radius: 50%; animation: spin 1.2s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.generating-steps { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); width: min(620px, 100%); gap: 8px; margin-top: 15px; }
-.gen-step { border-top: 2px solid var(--line); padding-top: 8px; color: var(--muted); font-size: 12px; }
-.gen-step.active { border-color: var(--cinnabar); color: var(--cinnabar-deep); }
-.seal-badge { display: inline-flex; min-height: 30px; align-items: center; border: 1px solid rgba(184,92,80,.26); border-radius: 999px; padding: 0 12px; color: var(--cinnabar-deep); font-size: 12px; font-weight: 900; }
-.result-preview { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); width: 100%; gap: 12px; margin: 10px 0; padding: 18px; text-align: left; }
-.result-preview div { display: grid; gap: 4px; min-width: 0; }
-.result-preview span { color: var(--muted); font-size: 11px; }
-.result-preview strong { color: var(--ink); font-size: 13px; line-height: 1.5; }
-
-@media (max-width: 700px) {
-  .page-header { padding: 60px 0 38px; }
-  .progress-card { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto; gap: 4px; padding: 10px 7px; }
-  .progress-current { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 8px; padding: 1px 3px 7px; color: var(--muted); font-size: 11px; }
-  .progress-current strong { color: var(--ink-soft); font-size: 12px; }
-  .progress-current span:last-child { color: var(--cinnabar-deep); font-weight: 900; }
-  .progress-step { width: 64px; }
-  .progress-step p { font-size: 10px; }
-  .topics-grid, .advanced-context-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .reuse-context-card { align-items: start; flex-direction: column; }
-  .result-preview { grid-template-columns: 1fr; }
-  .form-submit-bar {
-    position: sticky;
-    bottom: calc(68px + var(--safe-bottom, 0px));
-    z-index: 6;
-    margin: 0 -4px;
-    padding: 10px 4px;
-    border-top: 1px solid rgba(139,90,20,.12);
-    background: linear-gradient(180deg, rgba(255,250,240,.62), rgba(255,250,240,.97) 26%);
-    box-shadow: 0 -10px 20px -18px rgba(47,36,27,.78);
-  }
-}
-
-@media (max-width: 430px) {
-  .assessment-section { padding-bottom: 78px; }
-  .step-content { padding: 16px 12px; }
-  .topics-grid, .expected-grid, .advanced-context-grid { grid-template-columns: 1fr; }
-  .button-row > button { width: 100%; }
-  .progress-current { padding-right: 1px; padding-left: 1px; }
-  .progress-current span:first-child { display: none; }
-  .generating-steps { grid-template-columns: repeat(2, minmax(0,1fr)); }
-}
-</style>
+<style scoped src="../features/assessment/assessment.css"></style>
