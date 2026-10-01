@@ -1,5 +1,5 @@
 import { authState } from '../../../stores/auth'
-import { getCurrentUser } from '../../../utils/authService'
+import { getCurrentUser } from '../../users/service.js'
 import { createCalendarRequest, getCalendarRequests } from '../api.js'
 
 export default {

@@ -1,9 +1,9 @@
 import { getLatestReportContext } from '../../utils/aiService.js'
-import { getCurrentUser } from '../../utils/authService.js'
+import { getCurrentUser } from '../users/service.js'
 import AssessmentProfileStep from './components/AssessmentProfileStep.vue'
 import AssessmentContextStep from './components/AssessmentContextStep.vue'
 import AssessmentResultStep from './components/AssessmentResultStep.vue'
-import { createEmptyProfile, mapUserToProfile } from '../user-center/profile.js'
+import { createEmptyProfile, mapUserToProfile } from '../users/profile.js'
 import {
   assessmentTopics,
   createEmptyAssessmentContext,

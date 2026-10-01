@@ -1,6 +1,6 @@
 import { setAuthenticatedUser } from '../../../stores/auth.js'
-import { updateUserProfile } from '../../../utils/authService.js'
-import { buildProfilePayload, mapUserToProfile } from '../../user-center/profile.js'
+import { updateUserProfile } from '../../users/service.js'
+import { buildProfilePayload, mapUserToProfile } from '../../users/profile.js'
 import { validateAssessmentProfile } from '../form.js'
 
 export default {

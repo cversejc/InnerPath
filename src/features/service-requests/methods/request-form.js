@@ -1,4 +1,4 @@
-import { getCurrentUser } from '../../../utils/authService.js'
+import { getCurrentUser } from '../../users/service.js'
 import {
   createServiceRequest,
   getMyServiceRequest,

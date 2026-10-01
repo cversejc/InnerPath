@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { createEmptyProfile } from '../user-center/profile.js'
+import { createEmptyProfile } from '../users/profile.js'
 import {
   createEmptyAssessmentContext,
   validateAssessmentContext,

@@ -41,26 +41,6 @@ export async function logout() {
   }
 }
 
-export async function getCurrentUser() {
-  const response = await apiClient.get('/users/me')
-  sessionStorage.setItem('user', JSON.stringify(response.data))
-  return response.data
-}
-
-export async function updateUserProfile(userData) {
-  const response = await apiClient.put('/users/me', userData)
-  sessionStorage.setItem('user', JSON.stringify(response.data))
-  return response.data
-}
-
-export async function changePassword(currentPassword, newPassword) {
-  const response = await apiClient.post('/users/me/change-password', {
-    current_password: currentPassword,
-    new_password: newPassword
-  })
-  return response.data
-}
-
 export function isAuthenticated() {
   return Boolean(sessionStorage.getItem('access_token'))
 }
@@ -83,9 +63,6 @@ export default {
   login,
   acceptStaffInvite,
   logout,
-  getCurrentUser,
-  updateUserProfile,
-  changePassword,
   isAuthenticated,
   getStoredUser,
   refreshAccessToken

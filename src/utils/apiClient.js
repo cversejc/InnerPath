@@ -1,5 +1,5 @@
 import axios from 'axios'
-import apiConfig from './apiConfig'
+import apiConfig from './apiConfig.js'
 
 const ACCESS_TOKEN_KEY = 'access_token'
 

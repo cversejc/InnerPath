@@ -4,8 +4,8 @@ import {
   getAccessToken,
   refreshAccessToken
 } from '../utils/apiClient'
+import { getCurrentUser } from '../features/users/service.js'
 import {
-  getCurrentUser,
   getStoredUser,
   logout as logoutRequest
 } from '../utils/authService'

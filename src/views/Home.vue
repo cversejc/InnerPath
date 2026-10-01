@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import { getCurrentUser } from '../utils/authService'
+import { getCurrentUser } from '../features/users/service.js'
 import ProfileGrowthCard from '../components/ProfileGrowthCard.vue'
 
 export default {

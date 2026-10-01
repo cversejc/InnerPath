@@ -1,6 +1,6 @@
-import { changePassword, updateUserProfile } from '../../../utils/authService.js'
+import { changePassword, updateUserProfile } from '../../users/service.js'
 import { logout as logoutUser, setAuthenticatedUser } from '../../../stores/auth.js'
-import { buildProfilePayload, validateProfile } from '../profile.js'
+import { buildProfilePayload, validateProfile } from '../../users/profile.js'
 
 export default {
   async saveSettings() {
