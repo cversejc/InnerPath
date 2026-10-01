@@ -1,0 +1,55 @@
+.profile-date-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 10px;
+}
+
+.profile-date-grid label,
+.profile-time-grid label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.profile-date-grid .profile-input {
+  min-width: 0;
+}
+
+.profile-time-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  max-width: 360px;
+  gap: 8px;
+}
+
+.profile-time-grid label {
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+.time-separator {
+  padding-bottom: 12px;
+  color: var(--muted);
+  font-size: 20px;
+}
+
+@media (max-width: 640px) {
+  .profile-date-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .profile-date-grid label {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+    gap: 4px;
+  }
+
+  .profile-date-grid label > span {
+    text-align: center;
+  }
+}

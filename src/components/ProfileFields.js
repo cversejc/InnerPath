@@ -1,7 +1,10 @@
 import { createProfileFieldOptions } from './profile-fields-options.js'
+import ProfileCoreFields from './profile-fields/CoreFields.vue'
+import ProfileExtendedFields from './profile-fields/ExtendedFields.vue'
 
 export default {
   name: 'ProfileFields',
+  components: { ProfileCoreFields, ProfileExtendedFields },
   props: {
     modelValue: {
       type: Object,
@@ -35,11 +38,6 @@ export default {
   computed: {
     profile() {
       return this.modelValue || {}
-    },
-    keywordsText() {
-      return Array.isArray(this.profile.personality_keywords)
-        ? this.profile.personality_keywords.join('、')
-        : (this.profile.personality_keywords || '')
     }
   },
   methods: {
@@ -68,9 +66,6 @@ export default {
         .filter(Boolean)
         .slice(0, 5)
       this.setField('personality_keywords', keywords)
-    },
-    listIncludes(field, value) {
-      return Array.isArray(this.profile[field]) && this.profile[field].includes(value)
     },
     toggleList(field, value, maxItems) {
       const current = Array.isArray(this.profile[field]) ? [...this.profile[field]] : []
