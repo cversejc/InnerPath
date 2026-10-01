@@ -1,0 +1,111 @@
+.markdown-content {
+  overflow-wrap: anywhere;
+}
+
+.markdown-content :deep(pre) {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: normal;
+}
+
+.markdown-content :deep(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .content-card {
+    margin-bottom: 18px;
+    padding: 24px 18px;
+  }
+
+  .content-card h2,
+  .section-title {
+    gap: 8px;
+    font-size: 20px;
+    line-height: 1.35;
+  }
+
+  .markdown-content {
+    font-size: 16px;
+    line-height: 1.85;
+  }
+
+  .markdown-content h2 {
+    margin-top: 36px;
+    margin-bottom: 18px;
+    padding-bottom: 11px;
+    font-size: 20px;
+  }
+
+  .markdown-content h3 {
+    margin-top: 26px;
+    margin-bottom: 12px;
+    font-size: 17px;
+  }
+
+  .markdown-content p {
+    margin-bottom: 16px;
+    text-align: left;
+  }
+
+  .markdown-content li {
+    padding-left: 20px;
+    line-height: 1.75;
+  }
+
+  .ai-badge {
+    max-width: 100%;
+    margin-bottom: 18px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .pillar-card {
+    padding: 14px 10px;
+  }
+
+  .pillar-value {
+    font-size: 22px;
+    letter-spacing: 2px;
+  }
+
+  .palace-card {
+    padding: 14px;
+  }
+
+  .type-badge {
+    max-width: 100%;
+    padding: 9px 18px;
+    font-size: 16px;
+  }
+
+  .two-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .pillar-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .palace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 380px) {
+  .content-card {
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+
+  .pillar-grid {
+    gap: 8px;
+  }
+
+  .pillar-label {
+    font-size: 11px;
+  }
+}
