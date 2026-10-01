@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.models.user import AuthSession, StaffInvite, User
+from app.domains.auth.models import AuthSession, StaffInvite
+from app.models.user import User
 from app.core.security import create_refresh_token, get_password_hash, hash_refresh_token, verify_password
 from app.core.cache import cache_delete, cache_get, cache_increment
 from app.config import settings
