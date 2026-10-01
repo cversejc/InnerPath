@@ -20,6 +20,8 @@
 }
 
 .nav-logout {
+  height: auto;
+  min-width: 0;
   border: 1px solid rgba(80, 54, 32, 0.18);
   border-radius: 999px;
   background: transparent;

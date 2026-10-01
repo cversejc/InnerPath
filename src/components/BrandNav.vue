@@ -16,7 +16,7 @@
         <router-link v-if="hasRole('admin')" to="/admin" class="nav-role-link">管理后台</router-link>
         <router-link v-else-if="hasRole('consultant')" to="/staff" class="nav-role-link">咨询工作台</router-link>
         <span class="nav-user-name">{{ authState.user.name }}</span>
-        <button class="nav-logout" type="button" @click="handleLogout">退出</button>
+        <VanButton class="nav-logout" type="default" plain round native-type="button" @click="handleLogout">退出</VanButton>
       </div>
       <BrandNavMobileMenu
         ref="mobileMenuRef"
@@ -31,6 +31,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { Button as VanButton } from 'vant'
 import BrandNavMobileMenu from './BrandNavMobileMenu.vue'
 import { authState, hasRole, logout as logoutUser } from '../stores/auth'
 
