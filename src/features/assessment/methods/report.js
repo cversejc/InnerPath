@@ -1,4 +1,4 @@
-import { generateReportWithAI } from '../../../utils/aiService.js'
+import { generateReportWithAI } from '../../reports/generation.js'
 import { clearAssessmentDraft } from '../drafts.js'
 
 const pauseBetweenGenerationSteps = () => new Promise(resolve => setTimeout(resolve, 350))

@@ -1,5 +1,5 @@
 import { getCurrentUser } from '../../users/service.js'
-import { getUserReports } from '../../../utils/aiService.js'
+import { getUserReports } from '../../reports/api.js'
 import { getMyServiceRequests } from '../../service-requests/api.js'
 import { mapUserToProfile } from '../../users/profile.js'
 import { formatUserCenterDate } from '../presentation.js'

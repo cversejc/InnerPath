@@ -1,4 +1,4 @@
-import { getLatestReportContext } from '../../utils/aiService.js'
+import { getLatestReportContext } from '../reports/api.js'
 import { getCurrentUser } from '../users/service.js'
 import AssessmentProfileStep from './components/AssessmentProfileStep.vue'
 import AssessmentContextStep from './components/AssessmentContextStep.vue'

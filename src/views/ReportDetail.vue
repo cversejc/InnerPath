@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { getReportDetail } from '../utils/aiService.js'
+import { getReportDetail } from '../features/reports/api.js'
 import ReportContent from '../features/reports/components/ReportContent.vue'
 import { normalizeReportData, parseLegacyReportContent } from '../features/reports/report-content.js'
 
