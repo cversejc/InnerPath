@@ -11,10 +11,9 @@ from app.api.v1.admin_support import (
     REPORT_STATUS_LABELS,
     USER_ROLE_LABELS,
     _date_filter,
-    _load_admin_reports,
-    _load_audits,
-    _load_decision_logs,
 )
+from app.api.v1.admin_activity_support import _load_audits, _load_decision_logs
+from app.api.v1.admin_report_support import _load_admin_reports
 from app.config import settings
 from app.db.session import get_db
 from app.dependencies import require_roles

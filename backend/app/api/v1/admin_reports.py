@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.v1.admin_support import _load_admin_reports, _load_admin_tasks, _serialize_task
+from app.api.v1.admin_report_support import _load_admin_reports, _load_admin_tasks, _serialize_task
 from app.config import settings
 from app.db.session import get_db
 from app.dependencies import require_roles

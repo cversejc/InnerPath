@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.v1.admin_support import _load_audits, _load_decision_logs
+from app.api.v1.admin_activity_support import _load_audits, _load_decision_logs
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User

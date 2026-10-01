@@ -10,11 +10,11 @@ from app.api.v1.admin_support import (
     REPORT_STATUS_LABELS,
     USER_ROLE_LABELS,
     _count,
-    _daily_counts,
     _db_end,
     _db_start,
-    _load_audits,
 )
+from app.api.v1.admin_activity_support import _load_audits
+from app.api.v1.admin_dashboard_support import _daily_counts
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.calendar import DecisionLog, UserCalendar
