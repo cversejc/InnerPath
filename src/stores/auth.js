@@ -8,7 +8,7 @@ import { getCurrentUser } from '../features/users/service.js'
 import {
   getStoredUser,
   logout as logoutRequest
-} from '../utils/authService'
+} from '../features/auth/session.js'
 
 export const authState = reactive({
   user: getStoredUser(),

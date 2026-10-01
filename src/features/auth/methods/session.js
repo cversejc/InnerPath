@@ -1,4 +1,4 @@
-import { acceptStaffInvite, login, register } from '../../../utils/authService.js'
+import { acceptStaffInvite, login, register } from '../session.js'
 import { setAuthenticatedUser } from '../../../stores/auth.js'
 
 export default {
