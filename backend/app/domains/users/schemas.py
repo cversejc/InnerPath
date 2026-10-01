@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
 
 
 class UserBase(BaseModel):
@@ -56,11 +57,6 @@ class UserUpdate(BaseModel):
     preferred_content_depth: Optional[str] = Field(None, max_length=30)
     default_usage_scenarios: Optional[List[str]] = Field(None, max_length=6)
     avatar_url: Optional[str] = None
-
-
-class ChangePasswordRequest(BaseModel):
-    current_password: str = Field(..., min_length=8, max_length=128)
-    new_password: str = Field(..., min_length=8, max_length=128)
 
 
 class UserResponse(BaseModel):

@@ -3,8 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.dependencies import get_current_active_user
 from app.models.user import User
-from app.schemas.user import ChangePasswordRequest, UserResponse, UserUpdate
-from app.services.user_service import change_user_password, update_user_profile
+from app.domains.auth.schemas import ChangePasswordRequest
+from app.domains.auth.service import change_user_password
+from app.domains.users.schemas import UserResponse, UserUpdate
+from app.domains.users.service import update_user_profile
 from app.domains.audit.service import record_audit
 
 router = APIRouter()

@@ -20,10 +20,10 @@ from app.schemas.admin import (
     UserStatusUpdate,
 )
 from app.domains.auth.schemas import StaffInviteCreate, StaffInviteResponse
-from app.schemas.user import UserResponse
+from app.domains.users.schemas import UserResponse
+from app.domains.users.service import apply_user_profile_update
 from app.domains.audit.service import record_audit
 from app.domains.auth.service import admin_reset_password, create_staff_invite
-from app.services.user_service import apply_user_profile_update
 
 router = APIRouter()
 

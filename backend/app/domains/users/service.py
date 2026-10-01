@@ -1,12 +1,11 @@
-from __future__ import annotations
-
 from datetime import date, datetime
 from typing import Optional
-from sqlalchemy.ext.asyncio import AsyncSession
+
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.domains.users.schemas import UserUpdate
 from app.models.user import User
-from app.schemas.user import UserUpdate
-from app.core.security import get_password_hash, verify_password
 
 
 PROFILE_LIST_FIELDS = {
@@ -106,8 +105,6 @@ def apply_user_profile_update(user: User, update_data: dict) -> list[str]:
         user.profile_version = int(user.profile_version or 1) + 1
         user.profile_last_confirmed_at = datetime.utcnow()
     elif any(field in PROFILE_VERSION_FIELDS for field in update_data):
-        # A no-op save still records that the user reviewed the current
-        # profile, while keeping the version stable for immutable snapshots.
         user.profile_last_confirmed_at = datetime.utcnow()
 
     return changed_fields
@@ -124,21 +121,6 @@ async def update_user_profile(db: AsyncSession, user: User, user_update: UserUpd
     update_data = user_update.model_dump(exclude_unset=True)
     apply_user_profile_update(user, update_data)
 
-    await db.commit()
-    await db.refresh(user)
-    return user
-
-
-async def change_user_password(
-    db: AsyncSession,
-    user: User,
-    current_password: str,
-    new_password: str,
-) -> User:
-    if not user.password_hash or not verify_password(current_password, user.password_hash):
-        raise ValueError("invalid_current_password")
-    user.password_hash = get_password_hash(new_password)
-    user.updated_at = datetime.utcnow()
     await db.commit()
     await db.refresh(user)
     return user

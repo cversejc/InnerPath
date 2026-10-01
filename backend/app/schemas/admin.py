@@ -5,7 +5,7 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 from app.domains.reports.schemas import ReportListItem, ReportResponse
-from app.schemas.user import UserResponse
+from app.domains.users.schemas import UserResponse
 
 
 class UserStatusUpdate(BaseModel):

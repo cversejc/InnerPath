@@ -10,7 +10,7 @@ from app.services.intake_service import (
     normalize_context,
     profile_snapshot,
 )
-from app.services.user_service import apply_user_profile_update
+from app.domains.users.service import apply_user_profile_update
 
 
 def make_user(**overrides):

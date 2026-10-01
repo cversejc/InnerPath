@@ -37,6 +37,11 @@ class StaffInviteAcceptRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=50)
 
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(..., min_length=8, max_length=128)
+    new_password: str = Field(..., min_length=8, max_length=128)
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
@@ -63,5 +68,5 @@ class StaffInviteResponse(BaseModel):
     expires_at: datetime
 
 
-from app.schemas.user import UserResponse
+from app.domains.users.schemas import UserResponse
 TokenResponse.model_rebuild()

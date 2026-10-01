@@ -6,7 +6,7 @@ from app.dependencies import require_roles
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarListResponse
 from app.domains.reports.schemas import ReportListItem, ReportListResponse, ReportResponse
-from app.schemas.user import UserResponse
+from app.domains.users.schemas import UserResponse
 from app.domains.calendar.query_service import get_user_calendars
 from app.domains.reports.service import format_report_response, get_report_by_id, get_user_reports
 from app.domains.service_requests.service import has_staff_assignment

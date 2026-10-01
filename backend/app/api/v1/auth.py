@@ -27,7 +27,7 @@ from app.domains.auth.schemas import (
     TokenResponse,
     VerifiedRegisterRequest,
 )
-from app.schemas.user import UserResponse
+from app.domains.users.schemas import UserResponse
 from app.domains.auth.service import (
     accept_staff_invite,
     authenticate_with_password,

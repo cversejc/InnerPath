@@ -99,6 +99,21 @@ async def admin_reset_password(db: AsyncSession, user: User, password: str) -> U
     return user
 
 
+async def change_user_password(
+    db: AsyncSession,
+    user: User,
+    current_password: str,
+    new_password: str,
+) -> User:
+    if not user.password_hash or not verify_password(current_password, user.password_hash):
+        raise ValueError("invalid_current_password")
+    user.password_hash = get_password_hash(new_password)
+    user.updated_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
 async def reset_password_with_code(db: AsyncSession, user: User, password: str) -> User:
     now = datetime.utcnow()
     user.password_hash = get_password_hash(password)
