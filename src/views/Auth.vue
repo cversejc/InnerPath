@@ -20,14 +20,14 @@
       <main class="auth-card">
         <header class="auth-head">
           <h1>{{ title }}</h1>
-          <p v-if="mode !== 'reset'" class="auth-subtitle">{{ subtitle }}</p>
+          <p class="auth-subtitle">{{ subtitle }}</p>
         </header>
 
         <p v-if="errorMessage" id="auth-error" class="auth-message error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
         <p v-if="successMessage" id="auth-success" class="auth-message success" role="status" aria-live="polite">{{ successMessage }}</p>
 
         <div id="auth-panel" ref="authPanel" class="auth-panel" role="region" :aria-label="title" tabindex="-1">
-          <form v-if="mode !== 'reset'" class="auth-form" :aria-describedby="errorMessage ? 'auth-error' : undefined" @submit.prevent="submit">
+          <form class="auth-form" :aria-describedby="errorMessage ? 'auth-error' : undefined" @submit.prevent="submit">
             <div class="auth-fields">
               <label v-if="mode === 'register' || mode === 'invite'" class="auth-field">
                 <span>姓名</span>
@@ -44,9 +44,24 @@
                 <input v-model.trim="form.token" type="text" autocomplete="one-time-code" required placeholder="粘贴邀请令牌">
               </label>
 
-              <label v-if="mode === 'login' || mode === 'register' || mode === 'invite'" class="auth-field">
-                <span>{{ mode === 'login' ? '密码' : '设置密码' }}</span>
+              <div v-if="requiresCode" class="auth-field">
+                <label for="auth-verification-code">短信验证码</label>
+                <div class="auth-code-row">
+                  <input id="auth-verification-code" v-model.trim="form.code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required placeholder="输入 6 位验证码">
+                  <button class="auth-code-button" type="button" :disabled="sendingCode || codeCooldown > 0" @click="sendCode">
+                    {{ codeButtonLabel }}
+                  </button>
+                </div>
+              </div>
+
+              <label class="auth-field">
+                <span>{{ mode === 'reset' ? '新密码' : mode === 'login' ? '密码' : '设置密码' }}</span>
                 <input v-model="form.password" type="password" :autocomplete="mode === 'login' ? 'current-password' : 'new-password'" minlength="8" maxlength="128" required :placeholder="mode === 'login' ? '请输入密码' : '至少 8 位密码'">
+              </label>
+
+              <label v-if="mode === 'reset'" class="auth-field">
+                <span>确认新密码</span>
+                <input v-model="form.passwordConfirmation" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="再次输入新密码">
               </label>
             </div>
 
@@ -54,10 +69,6 @@
               {{ submitting ? '请稍候…' : submitLabel }}
             </button>
           </form>
-
-          <div v-else class="auth-help">
-            <p>请联系辰鉴支持重设密码，再用手机号登录</p>
-          </div>
 
           <nav class="auth-actions" aria-label="账号操作">
             <p v-if="mode === 'login'" class="auth-switch">
@@ -71,7 +82,7 @@
             <button v-else-if="mode === 'invite'" class="auth-inline-link" type="button" @click="openMode('login')">返回登录</button>
 
             <div class="auth-action-links">
-              <button v-if="mode === 'login' || mode === 'register'" class="text-button" type="button" @click="openMode('reset')">找回密码</button>
+              <button v-if="mode === 'login' || mode === 'register'" class="text-button" type="button" @click="openMode('reset')">忘记密码</button>
               <template v-else-if="mode === 'reset'">
                 <button class="text-button" type="button" @click="openMode('login')">返回登录</button>
                 <button class="text-button" type="button" @click="openMode('register')">注册</button>
@@ -88,7 +99,9 @@
 import {
   acceptStaffInvite,
   login,
-  register
+  register,
+  resetPassword,
+  sendVerificationCode
 } from '../utils/authService'
 import { setAuthenticatedUser } from '../stores/auth'
 
@@ -104,9 +117,14 @@ export default {
         name: '',
         phone: '',
         password: '',
+        passwordConfirmation: '',
+        code: '',
         token: ''
       },
       submitting: false,
+      sendingCode: false,
+      codeCooldown: 0,
+      codeTimer: null,
       errorMessage: '',
       successMessage: '',
       showIntro: isLoginRoute && !reducedMotion,
@@ -126,11 +144,22 @@ export default {
     },
     subtitle() {
       if (this.mode === 'invite') return '设置账号后进入工作台'
-      if (this.mode === 'register') return '注册后进入报告书与决策日历'
-      return '请使用手机号注册登录'
+      if (this.mode === 'register') return '验证手机号后创建账号'
+      if (this.mode === 'reset') return '验证手机号后设置新密码'
+      return '请使用手机号和密码登录'
     },
     submitLabel() {
-      return this.mode === 'login' ? '登录' : this.mode === 'invite' ? '完成账号设置' : '注册'
+      if (this.mode === 'login') return '登录'
+      if (this.mode === 'invite') return '完成账号设置'
+      if (this.mode === 'reset') return '重置密码'
+      return '注册'
+    },
+    requiresCode() {
+      return this.mode === 'register' || this.mode === 'reset'
+    },
+    codeButtonLabel() {
+      if (this.sendingCode) return '发送中…'
+      return this.codeCooldown > 0 ? `${this.codeCooldown} 秒后重发` : '获取验证码'
     }
   },
   watch: {
@@ -151,6 +180,7 @@ export default {
   },
   beforeUnmount() {
     if (this.introTimer) window.clearTimeout(this.introTimer)
+    if (this.codeTimer) window.clearInterval(this.codeTimer)
   },
   methods: {
     syncRouteMode() {
@@ -185,6 +215,8 @@ export default {
       this.errorMessage = ''
       this.successMessage = ''
       this.form.password = ''
+      this.form.passwordConfirmation = ''
+      this.form.code = ''
     },
     openMode(mode) {
       this.setMode(mode)
@@ -194,21 +226,82 @@ export default {
       const query = { ...this.$route.query }
       delete query.mode
       delete query.token
-      this.$router.replace({ path, query }).catch(() => {})
+      const navigation = this.$router.replace({ path, query }).catch(() => {})
       this.$nextTick(() => this.$refs.authPanel?.focus({ preventScroll: true }))
+      return navigation
+    },
+    startCodeCooldown(seconds = 60) {
+      if (this.codeTimer) window.clearInterval(this.codeTimer)
+      this.codeCooldown = seconds
+      this.codeTimer = window.setInterval(() => {
+        this.codeCooldown -= 1
+        if (this.codeCooldown <= 0) {
+          this.codeCooldown = 0
+          window.clearInterval(this.codeTimer)
+          this.codeTimer = null
+        }
+      }, 1000)
+    },
+    async sendCode() {
+      this.errorMessage = ''
+      this.successMessage = ''
+      if (!/^\d{11}$/.test(this.form.phone)) {
+        this.errorMessage = '请输入正确的 11 位手机号'
+        return
+      }
+
+      const purpose = this.mode === 'register' ? 'register' : 'reset'
+      this.sendingCode = true
+      try {
+        await sendVerificationCode(this.form.phone, purpose)
+        this.form.code = ''
+        this.startCodeCooldown()
+        this.successMessage = purpose === 'register'
+          ? '验证码已发送，请注意查收。'
+          : '如该手机号已注册，验证码将发送到对应号码。'
+      } catch (error) {
+        this.errorMessage = this.errorText(error, '验证码发送失败，请稍后重试')
+      } finally {
+        this.sendingCode = false
+      }
+    },
+    errorText(error, fallback) {
+      const detail = error.response?.data?.detail
+      const messages = {
+        'Password setup required': '该账号尚未设置密码，请联系管理员完成首次密码设置',
+        'Phone already registered': '该手机号已注册，请直接登录',
+        'Invalid phone or password': '手机号或密码错误，请检查后重试',
+        'Registration temporarily limited': '注册请求过于频繁，请稍后再试',
+        'Too many code requests': '验证码请求过于频繁，请稍后再试',
+        'Please wait before requesting another code': '请稍后再重新获取验证码',
+        'SMS service is not configured': '验证码发送失败，请稍后重试',
+        'Failed to send verification code': '验证码发送失败，请稍后重试',
+        'Invalid phone or verification code': '手机号或验证码错误，请检查后重试',
+        'Invalid or expired verification code': '验证码错误或已过期，请重新获取'
+      }
+      return messages[detail] || fallback
     },
     async submit() {
       this.errorMessage = ''
       this.successMessage = ''
+      if (this.mode === 'reset' && this.form.password !== this.form.passwordConfirmation) {
+        this.errorMessage = '两次输入的新密码不一致'
+        return
+      }
       this.submitting = true
       try {
         let response
         if (this.mode === 'login') {
           response = await login(this.form.phone, this.form.password)
         } else if (this.mode === 'register') {
-          response = await register(this.form.phone, this.form.password, this.form.name)
+          response = await register(this.form.phone, this.form.password, this.form.name, this.form.code)
         } else if (this.mode === 'invite') {
           response = await acceptStaffInvite(this.form.token, this.form.phone, this.form.password, this.form.name)
+        } else if (this.mode === 'reset') {
+          await resetPassword(this.form.phone, this.form.code, this.form.password)
+          await this.openMode('login')
+          this.successMessage = '密码已重置，请使用新密码登录。'
+          return
         } else {
           return
         }
@@ -217,10 +310,7 @@ export default {
         const fallback = response.user.role === 'admin' ? '/admin' : response.user.role === 'consultant' ? '/staff' : '/pages/home/home'
         await this.$router.replace(redirect || fallback)
       } catch (error) {
-        const detail = error.response?.data?.detail
-        this.errorMessage = detail === 'Password setup required'
-          ? '该账号尚未设置密码，请联系管理员完成首次密码设置'
-          : detail || '操作失败，请检查信息后重试'
+        this.errorMessage = this.errorText(error, '操作失败，请检查信息后重试')
       } finally {
         this.submitting = false
       }
@@ -399,6 +489,11 @@ export default {
   gap: 30px;
 }
 
+.auth-code-button:focus-visible {
+  outline: 2px solid var(--cinnabar, #b5574c);
+  outline-offset: 2px;
+}
+
 .auth-fields {
   display: grid;
   gap: 22px;
@@ -437,6 +532,46 @@ export default {
   border-color: var(--cinnabar, #b5574c);
   outline: none;
   box-shadow: 0 1px 0 var(--cinnabar, #b5574c);
+}
+
+.auth-code-row {
+  display: flex;
+  min-width: 0;
+  align-items: end;
+  gap: 12px;
+}
+
+.auth-code-row input {
+  width: auto;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.auth-code-button {
+  display: inline-flex;
+  min-width: 124px;
+  min-height: 48px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(158, 63, 53, 0.32);
+  border-radius: 5px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.46);
+  color: var(--cinnabar-deep, #9e3f35);
+  font-size: 14px;
+  font-weight: 700;
+  transition: background var(--motion-fast, 150ms) ease, border-color var(--motion-fast, 150ms) ease;
+}
+
+.auth-code-button:hover:not(:disabled) {
+  border-color: var(--cinnabar-deep, #9e3f35);
+  background: rgba(181, 87, 76, 0.08);
+}
+
+.auth-code-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
 }
 
 .auth-form button:disabled {
@@ -659,6 +794,16 @@ export default {
     font-size: 17px;
   }
 
+  .auth-code-row {
+    gap: 8px;
+  }
+
+  .auth-code-button {
+    min-width: 116px;
+    padding: 0 8px;
+    font-size: 13px;
+  }
+
   .auth-form {
     gap: 26px;
   }
@@ -723,6 +868,10 @@ export default {
   }
 
   .text-button {
+    transition: none;
+  }
+
+  .auth-code-button {
     transition: none;
   }
 }

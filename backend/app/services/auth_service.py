@@ -40,6 +40,7 @@ async def register_user(
     password: str,
     name: str,
     ip_address: Optional[str] = None,
+    phone_verified: bool = False,
 ) -> User:
     await _enforce_registration_rate_limit(phone, ip_address)
 
@@ -52,6 +53,7 @@ async def register_user(
         phone=phone,
         name=name,
         password_hash=get_password_hash(password),
+        phone_verified_at=datetime.utcnow() if phone_verified else None,
         role="user",
         is_active=True,
     )
@@ -93,6 +95,23 @@ async def admin_reset_password(db: AsyncSession, user: User, password: str) -> U
     user.updated_at = datetime.utcnow()
     await db.commit()
     await revoke_all_auth_sessions(db, user.id)
+    await db.refresh(user)
+    return user
+
+
+async def reset_password_with_code(db: AsyncSession, user: User, password: str) -> User:
+    now = datetime.utcnow()
+    user.password_hash = get_password_hash(password)
+    user.phone_verified_at = user.phone_verified_at or now
+    user.updated_at = now
+
+    result = await db.execute(
+        select(AuthSession).where(AuthSession.user_id == user.id, AuthSession.revoked_at.is_(None))
+    )
+    for session in result.scalars().all():
+        session.revoked_at = now
+
+    await db.commit()
     await db.refresh(user)
     return user
 

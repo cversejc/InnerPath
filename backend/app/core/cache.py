@@ -43,6 +43,19 @@ async def cache_set(key: str, value: Any, expire: int = 300):
     await client.setex(key, expire, value)
 
 
+async def cache_set_if_absent(key: str, value: Any, expire: int = 300) -> bool:
+    """Set a cache value only when the key does not already exist."""
+    client = await get_redis()
+    return bool(await client.set(key, value, ex=expire, nx=True))
+
+
+async def cache_compare_and_delete(key: str, expected_value: str) -> bool:
+    """Delete a cache value only when it still matches the expected value."""
+    client = await get_redis()
+    script = "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end"
+    return bool(await client.eval(script, 1, key, expected_value))
+
+
 async def cache_get(key: str) -> Optional[str]:
     """Get cache value"""
     client = await get_redis()

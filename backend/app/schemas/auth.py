@@ -1,13 +1,32 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
+
+
+class SendVerificationCodeRequest(BaseModel):
+    phone: str = Field(..., min_length=11, max_length=11, pattern=r"^\d{11}$", description="手机号")
+    purpose: Literal["register", "reset"]
+
+
+class ResetPasswordRequest(BaseModel):
+    phone: str = Field(..., min_length=11, max_length=11, pattern=r"^\d{11}$", description="手机号")
+    code: str = Field(..., min_length=6, max_length=6, pattern=r"^\d{6}$", description="短信验证码")
+    new_password: str = Field(..., min_length=8, max_length=128, description="新密码")
+
+
 class LoginRequest(BaseModel):
     phone: str = Field(..., min_length=11, max_length=11, pattern=r"^\d{11}$", description="手机号")
     password: str = Field(..., min_length=8, max_length=128, description="密码")
 
 
 class RegisterRequest(BaseModel):
-    phone: str = Field(..., min_length=11, max_length=11, pattern=r"^\d{11}$", description="手机号（仅作为登录账号）")
+    phone: str = Field(..., min_length=11, max_length=11, pattern=r"^\d{11}$", description="手机号")
     password: str = Field(..., min_length=8, max_length=128, description="密码")
     name: str = Field(..., min_length=1, max_length=50, description="昵称")
+
+
+class VerifiedRegisterRequest(RegisterRequest):
+    code: str = Field(..., min_length=6, max_length=6, pattern=r"^\d{6}$", description="短信验证码")
 
 
 class StaffInviteAcceptRequest(BaseModel):
