@@ -1,21 +1,15 @@
-from typing import Optional
-
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
-from app.models.service_request import ServiceRequest
-from app.schemas.booking import BookingAdminUpdate, BookingListResponse, BookingResponse
 from app.schemas.calendar import CalendarListResponse
 from app.schemas.report import ReportListItem, ReportListResponse, ReportResponse
 from app.schemas.user import UserResponse
-from app.services.booking_service import get_all_bookings, update_booking
 from app.services.calendar_service import get_user_calendars
 from app.services.report_service import format_report_response, get_report_by_id, get_user_reports
 from app.services.service_request_service import has_staff_assignment
-from app.services.audit_service import record_audit
 
 router = APIRouter()
 
@@ -86,50 +80,3 @@ async def get_staff_report(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Report not found")
     await ensure_staff_user_access(db, current_user, report.user_id)
     return format_report_response(report)
-
-
-@router.get("/bookings", response_model=BookingListResponse)
-async def get_staff_bookings(
-    booking_status: Optional[str] = Query(None, alias="status", pattern="^(pending|confirmed|completed|cancelled)$"),
-    current_user: User = Depends(require_roles("admin", "consultant")),
-    db: AsyncSession = Depends(get_db),
-):
-    consultant_id = current_user.id if current_user.role == "consultant" else None
-    bookings, total = await get_all_bookings(db, status=booking_status, consultant_id=consultant_id)
-    return BookingListResponse(total=total, items=bookings)
-
-
-@router.patch("/bookings/{booking_id}", response_model=BookingResponse)
-async def update_staff_booking(
-    booking_id: int,
-    data: BookingAdminUpdate,
-    request: Request,
-    current_user: User = Depends(require_roles("consultant")),
-    db: AsyncSession = Depends(get_db),
-):
-    request_data = data.model_dump(exclude_unset=True, exclude={"consultant_id"})
-    try:
-        booking = await update_booking(
-            db,
-            booking_id,
-            BookingAdminUpdate(**request_data),
-            consultant_scope=current_user.id,
-            commit=False,
-        )
-    except ValueError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid booking update")
-    if not booking:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Assigned booking not found")
-    await record_audit(
-        db,
-        current_user.id,
-        "booking.staff.update",
-        "booking",
-        str(booking.id),
-        target_user_id=booking.user_id,
-        details={"changed_fields": list(request_data.keys())},
-        request=request,
-    )
-    await db.commit()
-    await db.refresh(booking)
-    return booking

@@ -12,7 +12,7 @@
 .admin-shell .drawer-body { padding: 24px 28px 50px; }
 .admin-shell .drawer-loading { padding: 60px 28px; color: var(--muted, #7d6653); text-align: center; }
 .admin-shell .drawer-section { display: grid; gap: 18px; }
-.admin-shell .profile-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+.admin-shell .profile-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
 .admin-shell .profile-summary div { border-radius: 9px; padding: 10px; background: rgba(234, 217, 191, .42); }
 .admin-shell .profile-summary span, .admin-shell .profile-summary strong { display: block; }
 .admin-shell .profile-summary span { color: var(--muted, #7d6653); font-size: 10px; }
@@ -29,6 +29,6 @@
 .admin-shell .drawer-list-item > .status-badge { flex: 0 0 auto; }
 .admin-shell .drawer-body .stack-form { margin-top: 0; }
 .admin-shell .drawer-body .primary-button { justify-self: stretch; }
-.admin-shell .booking-drawer, .admin-shell .report-drawer, .admin-shell .log-drawer { width: min(560px, 100%); }
+.admin-shell .report-drawer, .admin-shell .log-drawer { width: min(560px, 100%); }
 .admin-shell .report-body { padding-top: 22px; }
 @keyframes drawer-in { from { transform: translateX(24px); opacity: .6; } to { transform: translateX(0); opacity: 1; } }

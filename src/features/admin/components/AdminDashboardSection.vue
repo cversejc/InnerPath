@@ -48,7 +48,7 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
     </div>
 
     <div v-if="dashboardLoading && !dashboard" class="dashboard-skeleton">
-      <div v-for="index in 6" :key="index" class="skeleton-block"></div>
+      <div v-for="index in 4" :key="index" class="skeleton-block"></div>
     </div>
 
     <template v-else-if="dashboard">
@@ -66,7 +66,7 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
           <div class="trend-legend"><span v-for="series in trendSeries" :key="series.key"><i :style="{ background: series.color }"></i>{{ series.label }}</span></div>
           <div class="trend-chart" aria-label="业务流入趋势图">
             <svg viewBox="0 0 760 250" role="img" aria-labelledby="trend-title">
-              <title id="trend-title">用户、报告、预约和行动记录趋势</title>
+              <title id="trend-title">用户、报告和行动记录趋势</title>
               <line v-for="line in chartGridLines" :key="line" x1="28" :x2="736" :y1="line" :y2="line" class="chart-grid-line" />
               <polyline v-for="series in trendSeries" :key="series.key" :points="series.points" :stroke="series.color" class="trend-line" />
               <g v-for="tick in trendTicks" :key="tick.index">
@@ -107,16 +107,6 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
           <div v-else class="quiet-state"><IconMark name="reports" /><p>还没有可展示的活动记录。</p></div>
         </article>
 
-        <article class="dashboard-panel course-panel">
-          <div class="panel-heading"><div><p class="eyebrow">LEARNING / COURSE HEALTH</p><h3>课程学习概况</h3></div><span>按课程</span></div>
-          <div v-if="dashboard.course_stats?.length" class="course-stats-list">
-            <div v-for="course in dashboard.course_stats" :key="course.course_id" class="course-stat-row">
-              <div><strong>{{ course.title }}</strong><small>{{ course.enrolled_count }} 人参与 · {{ course.active_count }} 人学习中</small></div>
-              <div class="course-stat-numbers"><b>{{ course.completion_rate }}%</b><span>完成</span><small>均值 {{ course.average_progress }}%</small></div>
-            </div>
-          </div>
-          <div v-else class="quiet-state"><IconMark name="book" /><p>暂无线课程参与数据。</p></div>
-        </article>
       </div>
     </template>
   </section>

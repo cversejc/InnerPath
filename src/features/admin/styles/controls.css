@@ -36,15 +36,6 @@
   justify-content: center;
   padding: 0 10px;
 }
-.admin-shell .course-progress-editor button {
-  display: inline-flex;
-  min-width: 44px;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9px;
-  padding: 0 8px;
-}
 .admin-shell .admin-table-wrap {
   max-width: 100%;
   overflow-x: auto;
@@ -75,7 +66,6 @@
 .admin-shell .person-cell small,
 .admin-shell .drawer-list-item small,
 .admin-shell .team-row small,
-.admin-shell .course-admin-row small,
 .admin-shell .drawer-header small,
 .admin-shell .drawer-tabs button,
 .admin-shell .drawer-loading,
@@ -97,10 +87,7 @@
 .admin-shell .entry-toolbar small,
 .admin-shell .entry-editor-head label,
 .admin-shell .editor-banner span:last-child,
-.admin-shell .invite-result span,
-.admin-shell .course-progress-editor span,
-.admin-shell .course-stat-row small,
-.admin-shell .course-stat-numbers span {
+.admin-shell .invite-result span {
   color: var(--muted, #7d6653);
   font-size: 11px;
 }

@@ -103,7 +103,7 @@ def test_consultant_access_is_assignment_scoped_but_admin_can_intervene():
 
 
 @pytest.mark.asyncio
-async def test_user_access_assignment_uses_service_requests_not_legacy_bookings():
+async def test_user_access_assignment_uses_service_requests_only():
     db = SimpleNamespace(
         execute=AsyncMock(
             side_effect=[
@@ -122,4 +122,3 @@ async def test_user_access_assignment_uses_service_requests_not_legacy_bookings(
         assert "service_requests.user_id" in statement_text
         assert "service_requests.assigned_consultant_id" in statement_text
         assert "service_requests.status NOT IN" in statement_text
-        assert "bookings" not in statement_text

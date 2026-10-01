@@ -23,7 +23,7 @@
       <p>
         {{ safeCompletion >= 100
           ? '以后只在信息发生变化时更新。每次申请都会使用当时的资料快照，历史报告不会被改写。'
-          : '这不是一次性问卷。每次愿意补充一小点，之后的报告、日历和预约就会更贴近你。' }}
+          : '这不是一次性问卷。每次愿意补充一小点，之后的报告和日历就会更贴近你。' }}
       </p>
       <ul v-if="suggestions.length" class="growth-suggestions" aria-label="可以继续完善的内容">
         <li v-for="suggestion in suggestions" :key="suggestion">{{ suggestion }}</li>

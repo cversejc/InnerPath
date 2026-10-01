@@ -5,12 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.v1.admin_support import _count, _date_filter, _float_value
+from app.api.v1.admin_support import _count, _date_filter
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.models.booking import Booking
-from app.models.calendar import UserCalendar
-from app.models.course import Course, UserCourse
+from app.models.calendar import DecisionLog, UserCalendar
 from app.models.report import Report
 from app.models.user import User
 from app.schemas.admin import (
@@ -52,14 +50,13 @@ async def list_users(
     conditions.extend(_date_filter(User.created_at, created_from, created_to))
 
     report_count = select(func.count(Report.id)).where(Report.user_id == User.id, Report.is_deleted.is_(False)).correlate(User).scalar_subquery()
-    booking_count = select(func.count(Booking.id)).where(Booking.user_id == User.id).correlate(User).scalar_subquery()
     calendar_count = select(func.count(UserCalendar.id)).where(UserCalendar.user_id == User.id).correlate(User).scalar_subquery()
     count_statement = select(func.count(User.id))
     if conditions:
         count_statement = count_statement.where(*conditions)
     total = await _count(db, count_statement)
     statement = (
-        select(User, report_count.label("report_count"), booking_count.label("booking_count"), calendar_count.label("calendar_count"))
+        select(User, report_count.label("report_count"), calendar_count.label("calendar_count"))
         .order_by(User.created_at.desc())
         .offset((page - 1) * size)
         .limit(size)
@@ -78,10 +75,9 @@ async def list_users(
             "created_at": user.created_at,
             "last_login_at": user.last_login_at,
             "report_count": int(report_count_value or 0),
-            "booking_count": int(booking_count_value or 0),
             "calendar_count": int(calendar_count_value or 0),
         }
-        for user, report_count_value, booking_count_value, calendar_count_value in rows
+        for user, report_count_value, calendar_count_value in rows
     ]
     return AdminUserListResponse(total=total, page=page, size=size, items=items)
 
@@ -148,22 +144,16 @@ async def get_user_summary(
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     report_count = await _count(db, select(func.count(Report.id)).where(Report.user_id == user_id, Report.is_deleted.is_(False)))
-    booking_count = await _count(db, select(func.count(Booking.id)).where(Booking.user_id == user_id))
     calendar_count = await _count(db, select(func.count(UserCalendar.id)).where(UserCalendar.user_id == user_id))
     published_calendar_count = await _count(db, select(func.count(UserCalendar.id)).where(UserCalendar.user_id == user_id, UserCalendar.status == "published"))
     decision_log_count = await _count(db, select(func.count(DecisionLog.id)).where(DecisionLog.user_id == user_id))
-    course_count = await _count(db, select(func.count(UserCourse.id)).where(UserCourse.user_id == user_id))
-    average_progress = await _float_value(db, select(func.avg(UserCourse.progress_percentage)).where(UserCourse.user_id == user_id))
     return {
         "user": user,
         "summary": {
             "report_count": report_count,
-            "booking_count": booking_count,
             "calendar_count": calendar_count,
             "published_calendar_count": published_calendar_count,
             "decision_log_count": decision_log_count,
-            "course_count": course_count,
-            "average_course_progress": round(average_progress, 1),
         },
     }
 

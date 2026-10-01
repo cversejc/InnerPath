@@ -195,9 +195,11 @@ InnerPath/
 │   ├── assets/           # 图片资源
 │   ├── components/       # BrandNav、BrandFooter 等共享组件
 │   ├── data/             # 决策日历等前端数据
+│   ├── features/         # 按领域组织的页面、API、样式和状态
+│   │   ├── admin/ / assessment/ / calendar/
+│   │   ├── reports/ / service-requests/ / user-center/
 │   ├── views/            # 页面组件
 │   │   ├── Home.vue / Assessment.vue / ReportDetail.vue
-│   │   ├── Services.vue / Booking.vue / Course.vue
 │   │   ├── Calendar.vue / About.vue / UserCenter.vue
 │   ├── router/           # 路由配置
 │   ├── utils/            # API 与报告工具函数
@@ -338,10 +340,10 @@ docker-compose restart postgres
 - 用户为报告或决策日历提交服务申请
 - 咨询师在工作台接单、生成草稿、审校并交付
 
-### 4. 暂停模块
-- 服务介绍、用户直接预约与课程暂不属于一期开放流程
-- 前端入口关闭，旧页面按需加载；预约与课程 API、数据和后台兼容能力暂时保留
-- 清理前需确认生产数据、历史授权需求和外部调用方
+### 4. 非一期功能
+- 服务介绍、用户直接预约和课程不属于一期；相关页面、API、后台入口、服务和数据模型已移除
+- 数据库通过 Alembic 前向迁移删除预约与课程表，历史迁移记录保留
+- 服务申请属于当前交付流程，与旧预约模块分离并继续使用
 
 ### 5. 决策日历
 - 路由：`/pages/calendar/calendar`
@@ -358,7 +360,7 @@ docker-compose restart postgres
 ### 7. 账户与角色权限
 - `user` 只能访问自己的报告、服务申请和已发布日历
 - `consultant` 根据有效服务申请分配访问关联用户的资料、报告、报告任务和日历
-- `admin` 管理用户、后台邀请、服务申请、日历和审计；旧预约与课程管理能力按兼容需要保留
+- `admin` 管理用户、后台邀请、服务申请、日历、报告和审计
 
 ---
 

@@ -195,7 +195,7 @@ def extract_personal_growth(content: str) -> Dict[str, Any]:
                 "timeline": "立即开始"
             }
         ],
-        "resources": ["推荐阅读", "推荐课程", "推荐实践"]
+        "resources": ["推荐阅读", "推荐工具", "推荐实践"]
     }
 
 
@@ -288,7 +288,7 @@ def generate_basic_report(user_data: Dict[str, Any]) -> Dict[str, Any]:
                     "timeline": "立即开始"
                 }
             ],
-            "resources": ["推荐书籍", "推荐课程", "推荐实践"]
+            "resources": ["推荐书籍", "推荐工具", "推荐实践"]
         },
         "summary": f"你是{energy_type['name']}，具有{energy_type['traits']}的特质。建议你从认识自己的能量模式开始，逐步建立适合自己的成长路径。",
         "ai_generated_content": None

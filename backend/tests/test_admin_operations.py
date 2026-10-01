@@ -3,12 +3,22 @@ from datetime import date
 import pytest
 
 from app.api.v1.admin_dashboard import _dashboard_range
+from app.db.base import Base
 from app.models.calendar import UserCalendar
+from app.models.report import Report, ReportTask
+from app.models.service_request import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
+from app.models.user import AuditLog, AuthSession, StaffInvite, User
+from app.main import app
 from app.schemas.calendar import CalendarEntryInput
 from app.schemas.admin import AdminReportTaskResponse
 from app.services.audit_service import _safe_value, parse_audit_details
-from app.services.booking_service import BOOKING_STATUS_TRANSITIONS
 from app.services.calendar_service import _validate_entries
+
+
+def test_booking_and_course_routes_and_tables_are_removed():
+    route_paths = {getattr(route, "path", "") for route in app.routes}
+    assert not any("/bookings" in path or "/courses" in path for path in route_paths)
+    assert {"bookings", "courses", "user_courses"}.isdisjoint(Base.metadata.tables)
 
 
 def test_dashboard_ranges_have_expected_number_of_days():
@@ -34,12 +44,6 @@ def test_calendar_entries_validate_range_and_duplicates():
 def test_calendar_model_declares_series_version_constraint():
     constraint_names = {constraint.name for constraint in UserCalendar.__table__.constraints}
     assert "uq_user_calendar_series_version" in constraint_names
-
-
-def test_booking_status_transitions_are_forward_only():
-    assert "completed" in BOOKING_STATUS_TRANSITIONS["confirmed"]
-    assert "pending" not in BOOKING_STATUS_TRANSITIONS["completed"]
-    assert "confirmed" not in BOOKING_STATUS_TRANSITIONS["cancelled"]
 
 
 def test_audit_details_redact_secrets_and_parse_legacy_text():

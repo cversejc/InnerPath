@@ -8,9 +8,6 @@ export default {
   async searchUsers() { this.userPage = 1; await this.loadUsers() },
   resetUserFilters() { this.userFilters = { search: '', role: '', is_active: '', created_from: '', created_to: '' }; this.searchUsers() },
   async changeUserPage(offset) { const next = this.userPage + offset; if (next < 1 || next > this.pageCount(this.users.total, this.userPageSize)) return; this.userPage = next; await this.loadUsers() },
-  async loadConsultants() {
-      try { const response = await getAllAdminUsers({ role: 'consultant', is_active: true, size: 100 }); this.consultants = response.items || [] } catch (error) { this.message = this.errorText(error) }
-    },
   async loadStaff() {
       this.staffLoading = true
       try { const [admins, consultants] = await Promise.all([getAllAdminUsers({ role: 'admin', size: 100 }), getAllAdminUsers({ role: 'consultant', size: 100 })]); this.staffUsers = [...(admins.items || []), ...(consultants.items || [])].sort((a, b) => a.id - b.id) } catch (error) { this.message = this.errorText(error) } finally { this.staffLoading = false }
@@ -26,7 +23,7 @@ export default {
         this.detailUser = detail
         this.userSummary = summary
         this.userEdit = this.toUserEdit(detail)
-        this.userPanelData = { reports: null, bookings: null, courses: [], calendars: null, decisions: null, activity: null }
+      this.userPanelData = { reports: null, calendars: null, decisions: null, activity: null }
       } catch (error) { this.message = this.errorText(error); this.detailUser = null } finally { this.userPanelLoading = false }
     },
   closeUserDetail({ restoreFocus = true } = {}) { this.detailUser = null; this.userSummary = null; if (restoreFocus) this.restoreDrawerFocus() },
@@ -37,8 +34,6 @@ export default {
       try {
         const id = this.detailUser.id
         if (tab === 'reports') this.userPanelData.reports = await getAdminReports({ user_id: id, page: 1, size: 100 })
-        if (tab === 'bookings') this.userPanelData.bookings = await getAdminUserBookings(id, { page: 1, size: 100 })
-        if (tab === 'courses') this.userPanelData.courses = (await getAdminUserCourses(id)).items || []
         if (tab === 'calendar') this.userPanelData.calendars = (await getAdminCalendars(id)).items || []
         if (tab === 'decisions') this.userPanelData.decisions = await getAdminUserDecisionLogs(id, { page: 1, size: 100 })
         if (tab === 'activity') this.userPanelData.activity = await getAdminAuditLogs({ target_user_id: id, page: 1, size: 100 })
@@ -62,10 +57,10 @@ export default {
       } catch (error) { this.message = this.errorText(error) } finally { this.profileSaving = false }
     },
   async toggleUser(user) {
-      try { const updated = await updateAdminUserStatus(user.id, !user.is_active); Object.assign(user, updated); this.message = '用户状态已更新'; await Promise.all([this.loadConsultants(), this.loadStaff()]) } catch (error) { this.message = this.errorText(error) }
+      try { const updated = await updateAdminUserStatus(user.id, !user.is_active); Object.assign(user, updated); this.message = '用户状态已更新'; await this.loadStaff() } catch (error) { this.message = this.errorText(error) }
     },
   async changeRole(user, role) {
-      try { const updated = await updateAdminUserRole(user.id, role); Object.assign(user, updated); this.message = '用户角色已更新'; await Promise.all([this.loadConsultants(), this.loadStaff()]) } catch (error) { this.message = this.errorText(error); await this.loadUsers() }
+      try { const updated = await updateAdminUserRole(user.id, role); Object.assign(user, updated); this.message = '用户角色已更新'; await this.loadStaff() } catch (error) { this.message = this.errorText(error); await this.loadUsers() }
     },
   async resetUserPassword(user) {
       if (!user.is_active) { await this.toggleUser(user); return }

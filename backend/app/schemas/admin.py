@@ -4,7 +4,6 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from app.schemas.booking import BookingResponse
 from app.schemas.report import ReportListItem, ReportResponse
 from app.schemas.user import UserResponse
 
@@ -57,7 +56,6 @@ class AdminUserListItem(BaseModel):
     created_at: datetime
     last_login_at: Optional[datetime]
     report_count: int = 0
-    booking_count: int = 0
     calendar_count: int = 0
 
     class Config:
@@ -73,30 +71,14 @@ class AdminUserListResponse(BaseModel):
 
 class AdminUserSummary(BaseModel):
     report_count: int = 0
-    booking_count: int = 0
     calendar_count: int = 0
     published_calendar_count: int = 0
     decision_log_count: int = 0
-    course_count: int = 0
-    average_course_progress: float = 0
 
 
 class AdminUserSummaryResponse(BaseModel):
     user: UserResponse
     summary: AdminUserSummary
-
-
-class AdminBookingResponse(BookingResponse):
-    user_name: Optional[str] = None
-    user_phone: Optional[str] = None
-    cancellation_reason: Optional[str] = None
-
-
-class AdminBookingListResponse(BaseModel):
-    total: int
-    page: int = 1
-    size: int = 20
-    items: list[AdminBookingResponse]
 
 
 class AdminDecisionLogResponse(BaseModel):
@@ -214,19 +196,14 @@ class DashboardMetricResponse(BaseModel):
     report_success_rate: float = 0
     report_processing: int = 0
     report_failed: int = 0
-    booking_pending: int = 0
-    booking_confirmed: int = 0
-    booking_completed: int = 0
     published_calendars: int = 0
     decision_logs: int = 0
-    active_learners: int = 0
 
 
 class DashboardTrendPoint(BaseModel):
     date: date
     new_users: int = 0
     reports: int = 0
-    bookings: int = 0
     decision_logs: int = 0
 
 
@@ -238,20 +215,8 @@ class DashboardDistributionItem(BaseModel):
 
 class DashboardDistributionResponse(BaseModel):
     users_by_role: list[DashboardDistributionItem] = Field(default_factory=list)
-    bookings_by_status: list[DashboardDistributionItem] = Field(default_factory=list)
     reports_by_status: list[DashboardDistributionItem] = Field(default_factory=list)
     calendars_by_status: list[DashboardDistributionItem] = Field(default_factory=list)
-
-
-class DashboardCourseStat(BaseModel):
-    course_id: int
-    title: str
-    total_lessons: int
-    enrolled_count: int = 0
-    active_count: int = 0
-    completed_count: int = 0
-    completion_rate: float = 0
-    average_progress: float = 0
 
 
 class DashboardAlert(BaseModel):
@@ -270,7 +235,6 @@ class DashboardOverviewResponse(BaseModel):
     metrics: DashboardMetricResponse
     trends: list[DashboardTrendPoint]
     distributions: DashboardDistributionResponse
-    course_stats: list[DashboardCourseStat] = Field(default_factory=list)
     alerts: list[DashboardAlert]
     recent_activity: list[AuditLogResponse]
 

@@ -1,13 +1,12 @@
 export default {
   syncDrawerBodyLock() {
-      const hasOpenDrawer = Boolean(this.detailUser || this.bookingDetail || this.reportDetail || this.logDetail)
+      const hasOpenDrawer = Boolean(this.detailUser || this.reportDetail || this.logDetail)
       document.body.classList.toggle('dialog-open', hasOpenDrawer)
     },
   async switchTab(tab) {
       this.activeTab = tab
       if (tab === 'overview') await this.loadDashboard()
       if (tab === 'users') await this.loadUsers()
-      if (tab === 'bookings') await this.loadBookings()
       if (tab === 'calendar-requests') await this.loadCalendarRequests()
       if (tab === 'calendar' && !this.calendarUsers.length) await this.loadCalendarUsers()
       if (tab === 'reports') await this.loadReports()
@@ -17,7 +16,6 @@ export default {
   async refreshActive() {
       if (this.activeTab === 'overview') return this.loadDashboard()
       if (this.activeTab === 'users') return this.loadUsers()
-      if (this.activeTab === 'bookings') return this.loadBookings()
       if (this.activeTab === 'calendar-requests') return this.loadCalendarRequests()
       if (this.activeTab === 'calendar') return this.selectedCalendarUser ? this.loadCalendars() : this.loadCalendarUsers()
       if (this.activeTab === 'reports') return this.reportSection === 'reports' ? this.loadReports() : this.loadReportTasks()
@@ -49,14 +47,14 @@ export default {
       this.syncAutoRefresh()
     },
   goFromAlert(alert) {
-      const target = alert.route === 'calendar' ? 'calendar' : alert.route === 'reports' ? 'reports' : alert.route === 'logs' ? 'logs' : 'bookings'
+      const target = alert.route === 'calendar' ? 'calendar' : alert.route === 'reports' ? 'reports' : 'logs'
       this.switchTab(target)
     },
   getDrawer(name) { return this.$refs.adminDetailDrawers?.getDrawer(name) },
-  getOpenDrawer() { if (this.logDetail) return this.getDrawer('logDrawer'); if (this.reportDetail) return this.getDrawer('reportDrawer'); if (this.bookingDetail) return this.getDrawer('bookingDrawer'); if (this.detailUser) return this.getDrawer('userDrawer'); return null },
+  getOpenDrawer() { if (this.logDetail) return this.getDrawer('logDrawer'); if (this.reportDetail) return this.getDrawer('reportDrawer'); if (this.detailUser) return this.getDrawer('userDrawer'); return null },
   focusDrawer(name) { this.$nextTick(() => { const drawer = this.getDrawer(name); if (!drawer) return; const target = drawer.querySelector('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'); (target || drawer).focus({ preventScroll: true }) }) },
   restoreDrawerFocus() { const trigger = this.drawerTrigger; this.drawerTrigger = null; this.$nextTick(() => trigger?.focus?.()) },
-  closeActiveDrawer() { if (this.logDetail) return this.closeLogDetail(); if (this.reportDetail) return this.closeReportDetail(); if (this.bookingDetail) return this.closeBookingDetail(); if (this.detailUser) return this.closeUserDetail() },
+  closeActiveDrawer() { if (this.logDetail) return this.closeLogDetail(); if (this.reportDetail) return this.closeReportDetail(); if (this.detailUser) return this.closeUserDetail() },
   cleanParams(params) { return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== '' && value !== null && value !== undefined)) },
   errorText(error) { return error.response?.data?.detail || error.message || '请求失败，请稍后重试' }
 }

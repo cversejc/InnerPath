@@ -26,7 +26,7 @@
 .admin-shell .admin-table th, .admin-shell .admin-table td { padding: 13px 15px; border-top: 1px solid rgba(80, 54, 32, .09); text-align: left; vertical-align: middle; }
 .admin-shell .admin-table th { color: var(--gold-deep, #8b5a14); font-family: Manrope, "PingFang SC", sans-serif; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
 .admin-shell .admin-table td { color: #4d3e33; font-size: 12px; }
-.admin-shell .admin-table td small, .admin-shell .person-cell small, .admin-shell .drawer-list-item small, .admin-shell .team-row small, .admin-shell .course-admin-row small { display: block; margin-top: 4px; color: var(--muted, #7d6653); font-size: 10px; }
+.admin-shell .admin-table td small, .admin-shell .person-cell small, .admin-shell .drawer-list-item small, .admin-shell .team-row small { display: block; margin-top: 4px; color: var(--muted, #7d6653); font-size: 10px; }
 .admin-shell .admin-table tbody tr { transition: background .15s ease; }
 .admin-shell .admin-table tbody tr:hover { background: rgba(255, 240, 223, .54); }
 .admin-shell .person-cell { display: inline-flex; align-items: center; gap: 10px; }
@@ -38,10 +38,10 @@
 .admin-shell .admin-table select { max-width: 110px; border: 1px solid rgba(80, 54, 32, .14); border-radius: 7px; padding: 7px; background: #fffaf0; color: #4d3e33; }
 .admin-shell .mini-stats { display: flex; gap: 6px; color: var(--muted, #7d6653); font-family: Manrope, "PingFang SC", sans-serif; font-size: 10px; }
 .admin-shell .status-badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; background: #eee4d5; color: var(--muted, #7d6653); font-size: 10px; white-space: nowrap; }
-.admin-shell .status-badge.success, .admin-shell .status-badge.booking-completed, .admin-shell .status-badge.calendar-published, .admin-shell .status-badge.report-completed, .admin-shell .status-badge.task-completed, .admin-shell .status-badge.decision-done { background: #e1f0dc; color: #39724e; }
-.admin-shell .status-badge.muted, .admin-shell .status-badge.booking-cancelled, .admin-shell .status-badge.calendar-archived, .admin-shell .status-badge.report-failed, .admin-shell .status-badge.task-failed, .admin-shell .status-badge.decision-skipped { background: #f2dddd; color: #8f352f; }
-.admin-shell .status-badge.booking-pending, .admin-shell .status-badge.calendar-draft, .admin-shell .status-badge.decision-doing { background: #fff0c9; color: #89621a; }
-.admin-shell .status-badge.booking-confirmed, .admin-shell .status-badge.report-processing, .admin-shell .status-badge.task-processing { background: #dcebe8; color: #39776b; }
+.admin-shell .status-badge.success, .admin-shell .status-badge.calendar-published, .admin-shell .status-badge.report-completed, .admin-shell .status-badge.task-completed, .admin-shell .status-badge.decision-done { background: #e1f0dc; color: #39724e; }
+.admin-shell .status-badge.muted, .admin-shell .status-badge.calendar-archived, .admin-shell .status-badge.report-failed, .admin-shell .status-badge.task-failed, .admin-shell .status-badge.decision-skipped { background: #f2dddd; color: #8f352f; }
+.admin-shell .status-badge.calendar-draft, .admin-shell .status-badge.decision-doing { background: #fff0c9; color: #89621a; }
+.admin-shell .status-badge.report-processing, .admin-shell .status-badge.task-processing { background: #dcebe8; color: #39776b; }
 .admin-shell .muted-text { color: var(--muted, #7d6653) !important; }
 .admin-shell .row-actions { display: flex; flex-wrap: wrap; gap: 9px; }
 .admin-shell .row-actions button, .admin-shell .row-open, .admin-shell .detail-link { border: 0; background: transparent; color: #9e3f35; cursor: pointer; font-size: 11px; font-weight: 800; }
@@ -50,9 +50,6 @@
 .admin-shell .empty-cell { padding: 42px 16px !important; color: var(--muted, #7d6653) !important; text-align: center !important; }
 .admin-shell .pagination > div { display: flex; gap: 8px; }
 .admin-shell .pagination .secondary-button:disabled { cursor: not-allowed; opacity: .42; }
-.admin-shell .booking-table tbody tr { cursor: pointer; }
-.admin-shell .booking-table tbody tr:hover { background: rgba(255, 240, 223, .54); }
-.admin-shell .booking-table td:first-child strong { color: #30241b; }
 .admin-shell .progress-cell { display: grid; grid-template-columns: 38px minmax(70px, 100px); align-items: center; gap: 7px; color: #4f8875; font-family: Manrope, sans-serif; font-size: 10px; }
 .admin-shell .progress-cell i { display: block; height: 5px; border-radius: 999px; background: #e4ddd1; overflow: hidden; }
 .admin-shell .progress-cell b { display: block; height: 100%; border-radius: inherit; background: #6f9f93; }
@@ -124,13 +121,9 @@
 .admin-shell .team-list { display: grid; gap: 8px; margin-top: 18px; }
 .admin-shell .team-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; border-bottom: 1px solid rgba(80, 54, 32, .08); padding: 9px 0; }
 .admin-shell .team-row strong { color: #3b2d24; font-size: 13px; }
-.admin-shell .course-admin-list, .admin-shell .decision-list { display: grid; gap: 9px; }
-.admin-shell .course-admin-row, .admin-shell .decision-list > div { display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid rgba(80, 54, 32, .09); padding: 11px 0; }
-.admin-shell .course-admin-row strong, .admin-shell .decision-list strong { color: #3b2d24; font-size: 12px; }
-.admin-shell .course-progress-editor { display: flex; align-items: center; gap: 3px; }
-.admin-shell .course-progress-editor input { width: 55px; padding: 7px; }
-.admin-shell .course-progress-editor span { color: var(--muted, #7d6653); font-size: 11px; }
-.admin-shell .course-progress-editor button { color: #9e3f35; font-size: 11px; font-weight: 800; cursor: pointer; }
+.admin-shell .decision-list { display: grid; gap: 9px; }
+.admin-shell .decision-list > div { display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid rgba(80, 54, 32, .09); padding: 11px 0; }
+.admin-shell .decision-list strong { color: #3b2d24; font-size: 12px; }
 .admin-shell .full-button { width: 100%; margin-top: 17px; }
 .admin-shell .report-meta-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
 .admin-shell .report-meta-grid > div { border-radius: 9px; padding: 10px; background: rgba(234, 217, 191, .35); }
@@ -147,14 +140,3 @@
 .admin-shell .detail-facts strong small { display: block; margin-top: 3px; color: var(--muted, #7d6653); font-size: 10px; font-weight: 400; }
 .admin-shell .json-view { margin-top: 20px; }
 .admin-shell .json-view > span { display: block; margin-bottom: 8px; color: var(--muted, #7d6653); font-size: 10px; }
-.admin-shell .course-panel { grid-column: 1 / -1; }
-.admin-shell .course-stats-list { display: grid; gap: 0; margin-top: 12px; }
-.admin-shell .course-stat-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid rgba(80, 54, 32, .08); padding: 12px 0; }
-.admin-shell .course-stat-row:last-child { border-bottom: 0; }
-.admin-shell .course-stat-row strong, .admin-shell .course-stat-row small { display: block; }
-.admin-shell .course-stat-row strong { color: #3b2d24; font-size: 13px; }
-.admin-shell .course-stat-row small { margin-top: 4px; color: var(--muted, #7d6653); font-size: 10px; }
-.admin-shell .course-stat-numbers { display: grid; grid-template-columns: auto auto; align-items: baseline; column-gap: 5px; min-width: 125px; text-align: right; }
-.admin-shell .course-stat-numbers b { color: #39724e; font-family: Manrope, sans-serif; font-size: 18px; }
-.admin-shell .course-stat-numbers span { color: var(--muted, #7d6653); font-size: 10px; }
-.admin-shell .course-stat-numbers small { grid-column: 1 / -1; }

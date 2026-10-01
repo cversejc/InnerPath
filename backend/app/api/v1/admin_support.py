@@ -9,7 +9,6 @@ from sqlalchemy import func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
-from app.models.booking import Booking
 from app.models.calendar import DecisionLog, UserCalendar
 from app.models.report import Report, ReportTask
 from app.models.user import AuditLog, User
@@ -17,12 +16,6 @@ from app.services.audit_service import parse_audit_details
 
 
 USER_ROLE_LABELS = {"user": "用户", "consultant": "咨询师", "admin": "管理员"}
-BOOKING_STATUS_LABELS = {
-    "pending": "待确认",
-    "confirmed": "已确认",
-    "completed": "已完成",
-    "cancelled": "已取消",
-}
 REPORT_STATUS_LABELS = {"processing": "生成中", "completed": "已完成", "failed": "失败"}
 CALENDAR_STATUS_LABELS = {"draft": "草稿", "published": "已发布", "archived": "已归档"}
 LOCAL_ZONE = ZoneInfo("Asia/Shanghai")
@@ -36,9 +29,6 @@ def _db_end(date_value: date) -> datetime:
 
 async def _count(db: AsyncSession, statement) -> int:
     return int((await db.scalar(statement)) or 0)
-
-async def _float_value(db: AsyncSession, statement) -> float:
-    return float((await db.scalar(statement)) or 0)
 
 def _date_filter(column, date_from: Optional[date], date_to: Optional[date]):
     conditions = []
@@ -65,16 +55,6 @@ def _serialize_audit(log: AuditLog, actor_name: Optional[str] = None, target_nam
         "user_agent": log.user_agent,
         "created_at": log.created_at,
     }
-
-def _serialize_admin_booking(booking: Booking, user: Optional[User] = None) -> dict[str, Any]:
-    payload = {field: getattr(booking, field) for field in (
-        "id", "user_id", "service_name", "service_type", "service_price", "preferred_time",
-        "confirmed_date", "confirmed_time", "consultant_name", "consultant_id", "contact_phone",
-        "topics", "notes", "meeting_url", "meeting_notes", "cancellation_reason", "status", "created_at", "updated_at",
-    )}
-    payload["user_name"] = user.name if user else None
-    payload["user_phone"] = user.phone if user else None
-    return payload
 
 def _serialize_report(report: Report, user: User, task: Optional[ReportTask] = None) -> dict[str, Any]:
     energy_profile = report.energy_profile or {}
@@ -165,47 +145,6 @@ async def _load_audits(
         statement = statement.where(*conditions)
     rows = (await db.execute(statement)).all()
     return [_serialize_audit(log, actor_name, target_name) for log, actor_name, target_name in rows], total
-
-async def _load_admin_bookings(
-    db: AsyncSession,
-    *,
-    booking_status: Optional[str] = None,
-    consultant_id: Optional[int] = None,
-    user_id: Optional[int] = None,
-    search: Optional[str] = None,
-    date_from: Optional[date] = None,
-    date_to: Optional[date] = None,
-    page: int = 1,
-    size: int = 20,
-) -> tuple[list[dict[str, Any]], int]:
-    conditions = []
-    if booking_status:
-        conditions.append(Booking.status == booking_status)
-    if consultant_id is not None:
-        conditions.append(Booking.consultant_id == consultant_id)
-    if user_id is not None:
-        conditions.append(Booking.user_id == user_id)
-    conditions.extend(_date_filter(Booking.created_at, date_from, date_to))
-    if search:
-        like = f"%{search}%"
-        conditions.append(or_(User.name.ilike(like), User.phone.ilike(like), Booking.service_name.ilike(like)))
-
-    count_statement = select(func.count(Booking.id)).select_from(Booking).join(User, Booking.user_id == User.id)
-    if conditions:
-        count_statement = count_statement.where(*conditions)
-    total = await _count(db, count_statement)
-
-    statement = (
-        select(Booking, User)
-        .join(User, Booking.user_id == User.id)
-        .order_by(Booking.created_at.desc())
-        .offset((page - 1) * size)
-        .limit(size)
-    )
-    if conditions:
-        statement = statement.where(*conditions)
-    rows = (await db.execute(statement)).all()
-    return [_serialize_admin_booking(booking, user) for booking, user in rows], total
 
 async def _load_admin_reports(
     db: AsyncSession,

@@ -8,9 +8,7 @@ from app.core.logging_config import setup_logging, get_logger
 from app.api.v1 import (
     admin,
     auth,
-    bookings,
     calendar,
-    courses,
     reports,
     service_requests,
     staff,
@@ -135,8 +133,6 @@ async def health_check():
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
-app.include_router(bookings.router, prefix="/api/v1/bookings", tags=["Bookings"])
-app.include_router(courses.router, prefix="/api/v1/courses", tags=["Courses"])
 app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["Calendar"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 app.include_router(staff.router, prefix="/api/v1/staff", tags=["Staff"])

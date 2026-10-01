@@ -73,21 +73,6 @@
         @toggle-user="toggleUser"
       />
 
-      <AdminBookingsSection
-        v-else-if="activeTab === 'bookings'"
-        :bookings="bookings"
-        :consultants="consultants"
-        :filters="bookingFilters"
-        :loading="bookingsLoading"
-        :page="bookingPage"
-        :page-size="bookingPageSize"
-        @change-page="changeBookingPage"
-        @export="exportResource('bookings')"
-        @open-booking="openBookingDetail"
-        @reset-filters="resetBookingFilters"
-        @search="searchBookings"
-      />
-
       <AdminCalendarRequestsSection
         v-else-if="activeTab === 'calendar-requests'"
         :calendar-requests="calendarRequests"
@@ -193,10 +178,6 @@
 
       <AdminDetailDrawers
         ref="adminDetailDrawers"
-        :booking-detail="bookingDetail"
-        :booking-editor="bookingEditor"
-        :booking-saving="bookingSaving"
-        :consultants="consultants"
         :detail-user="detailUser"
         :log-detail="logDetail"
         :profile-saving="profileSaving"
@@ -208,15 +189,11 @@
         :user-panel-tabs="userPanelTabs"
         :user-summary="userSummary"
         @close-active="closeActiveDrawer"
-        @close-booking="closeBookingDetail"
         @close-log="closeLogDetail"
         @close-report="closeReportDetail"
         @close-user="closeUserDetail"
-        @open-booking-detail="openBookingDetail"
         @open-calendar-for-user="openCalendarForUser"
         @open-report="openReport"
-        @save-booking="saveBooking"
-        @save-course-progress="saveCourseProgress"
         @save-user-profile="saveUserProfile"
         @set-user-panel-tab="setUserPanelTab"
       />

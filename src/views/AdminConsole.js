@@ -14,11 +14,6 @@ import {
   updateAdminUserStatus
 } from '../features/admin/api'
 import {
-  getAdminBookings,
-  getAdminUserBookings,
-  updateAdminBooking
-} from '../features/bookings/api'
-import {
   archiveAdminCalendar,
   createAdminCalendar,
   createAdminCalendarDraft,
@@ -31,7 +26,6 @@ import {
   updateAdminCalendar,
   updateAdminCalendarRequest
 } from '../features/calendar/api'
-import { getAdminUserCourses, updateAdminUserCourseProgress } from '../features/courses/api'
 import {
   getAdminReport,
   getAdminReportTasks,
@@ -44,7 +38,6 @@ import navigationMethods from '../features/admin/methods/navigation.js'
 import adminFormatters from '../features/admin/formatters.js'
 import AdminDashboardSection from '../features/admin/components/AdminDashboardSection.vue'
 import AdminUsersSection from '../features/admin/components/AdminUsersSection.vue'
-import AdminBookingsSection from '../features/admin/components/AdminBookingsSection.vue'
 import AdminCalendarRequestsSection from '../features/admin/components/AdminCalendarRequestsSection.vue'
 import AdminReportsSection from '../features/admin/components/AdminReportsSection.vue'
 import AdminActivitySection from '../features/admin/components/AdminActivitySection.vue'
@@ -53,12 +46,10 @@ import AdminStaffSection from '../features/admin/components/AdminStaffSection.vu
 import AdminDetailDrawers from '../features/admin/components/AdminDetailDrawers.vue'
 import dashboardMethods from '../features/admin/methods/dashboard.js'
 import usersMethods from '../features/admin/methods/users.js'
-import bookingsMethods from '../features/admin/methods/bookings.js'
 import calendarMethods from '../features/admin/methods/calendar.js'
 import reportsMethods from '../features/admin/methods/reports.js'
 import activityMethods from '../features/admin/methods/activity.js'
 import staffMethods from '../features/admin/methods/staff.js'
-import coursesMethods from '../features/admin/methods/courses.js'
 import exportsMethods from '../features/admin/methods/exports.js'
 
 const EMPTY_PAGE = { total: 0, items: [] }
@@ -86,19 +77,18 @@ function createEntry(date = todayKey()) {
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminBookingsSection, AdminCalendarRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers },
+  components: { AdminDashboardSection, AdminUsersSection, AdminCalendarRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers },
   data() {
     return {
       activeTab: 'overview',
       tabs: [
         { id: 'overview', index: '01', label: '总览' },
         { id: 'users', index: '02', label: '用户' },
-        { id: 'bookings', index: '03', label: '预约' },
-        { id: 'calendar-requests', index: '04', label: '日历申请' },
-        { id: 'calendar', index: '05', label: '日历' },
-        { id: 'reports', index: '06', label: '报告' },
-        { id: 'logs', index: '07', label: '日志' },
-        { id: 'staff', index: '08', label: '后台成员' }
+        { id: 'calendar-requests', index: '03', label: '日历申请' },
+        { id: 'calendar', index: '04', label: '日历' },
+        { id: 'reports', index: '05', label: '报告' },
+        { id: 'logs', index: '06', label: '日志' },
+        { id: 'staff', index: '07', label: '后台成员' }
       ],
       dashboardRanges: [{ id: '7d', label: '7 天' }, { id: '30d', label: '30 天' }, { id: '90d', label: '90 天' }],
       dashboardRange: '30d',
@@ -112,13 +102,7 @@ export default {
       userFilters: { search: '', role: '', is_active: '', created_from: '', created_to: '' },
       userPage: 1,
       userPageSize: 12,
-      consultants: [],
       staffUsers: [],
-      bookings: { ...EMPTY_PAGE },
-      bookingsLoading: false,
-      bookingFilters: { search: '', status: '', consultant_id: '', date_from: '', date_to: '' },
-      bookingPage: 1,
-      bookingPageSize: 12,
       reports: { ...EMPTY_PAGE },
       reportsLoading: false,
       reportFilters: { search: '', status: '', ai_model: '', date_from: '', date_to: '' },
@@ -148,10 +132,7 @@ export default {
       userPanelLoading: false,
       userEdit: {},
       profileSaving: false,
-      userPanelData: { reports: null, bookings: null, courses: [], calendars: null, decisions: null, activity: null },
-      bookingDetail: null,
-      bookingEditor: {},
-      bookingSaving: false,
+      userPanelData: { reports: null, calendars: null, decisions: null, activity: null },
       reportDetail: null,
       logDetail: null,
       drawerTrigger: null,
@@ -178,21 +159,19 @@ export default {
   },
   computed: {
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.bookingsLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.calendarRequestsLoading || this.staffLoading || this.bookingSaving || this.profileSaving || this.inviteSaving
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.calendarRequestsLoading || this.staffLoading || this.profileSaving || this.inviteSaving
     },
     metricCards() {
       const metrics = this.dashboard?.metrics || {}
       return [
         { key: 'users', label: '用户总数', value: metrics.user_total ?? 0, caption: `活跃 ${metrics.active_users ?? 0} · 本期新增 ${metrics.new_users ?? 0}`, mark: '人', tone: 'cinnabar' },
         { key: 'reports', label: '报告总数', value: metrics.report_total ?? 0, caption: `成功率 ${metrics.report_success_rate ?? 0}%`, mark: '笺', tone: 'gold' },
-        { key: 'pending', label: '待确认预约', value: metrics.booking_pending ?? 0, caption: `已确认 ${metrics.booking_confirmed ?? 0} · 已完成 ${metrics.booking_completed ?? 0}`, mark: '约', tone: 'jade' },
         { key: 'tasks', label: '报告任务', value: metrics.report_processing ?? 0, caption: `生成中 · 失败 ${metrics.report_failed ?? 0}`, mark: 'AI', tone: 'ink' },
-        { key: 'calendars', label: '已发布日历', value: metrics.published_calendars ?? 0, caption: `用户行动记录 ${metrics.decision_logs ?? 0}`, mark: '历', tone: 'jade' },
-        { key: 'learners', label: '活跃学习者', value: metrics.active_learners ?? 0, caption: '正在进行中的课程账号', mark: '学', tone: 'gold' }
+        { key: 'calendars', label: '已发布日历', value: metrics.published_calendars ?? 0, caption: `用户行动记录 ${metrics.decision_logs ?? 0}`, mark: '历', tone: 'jade' }
       ]
     },
     trendMax() {
-      const values = (this.dashboard?.trends || []).flatMap(item => [item.new_users, item.reports, item.bookings, item.decision_logs])
+      const values = (this.dashboard?.trends || []).flatMap(item => [item.new_users, item.reports, item.decision_logs])
       return Math.max(1, ...values)
     },
     chartGridLines() {
@@ -203,7 +182,6 @@ export default {
       const series = [
         { key: 'new_users', label: '新增用户', color: '#b85c50' },
         { key: 'reports', label: '报告', color: 'var(--gold-deep, #8b5a14)' },
-        { key: 'bookings', label: '预约', color: '#5d917e' },
         { key: 'decision_logs', label: '行动记录', color: '#59483d' }
       ]
       return series.map(item => ({
@@ -225,7 +203,6 @@ export default {
       const distributions = this.dashboard?.distributions || {}
       return [
         { key: 'roles', label: '用户角色', items: distributions.users_by_role || [] },
-        { key: 'bookings', label: '预约状态', items: distributions.bookings_by_status || [] },
         { key: 'reports', label: '报告状态', items: distributions.reports_by_status || [] },
         { key: 'calendars', label: '日历状态', items: distributions.calendars_by_status || [] }
       ]
@@ -234,8 +211,6 @@ export default {
       return [
         { id: 'profile', label: '资料' },
         { id: 'reports', label: '报告' },
-        { id: 'bookings', label: '预约' },
-        { id: 'courses', label: '课程' },
         { id: 'calendar', label: '日历' },
         { id: 'decisions', label: '行动记录' },
         { id: 'activity', label: '审计活动' }
@@ -244,13 +219,12 @@ export default {
   },
   watch: {
     detailUser: 'syncDrawerBodyLock',
-    bookingDetail: 'syncDrawerBodyLock',
     reportDetail: 'syncDrawerBodyLock',
     logDetail: 'syncDrawerBodyLock'
   },
   async mounted() {
     document.addEventListener('visibilitychange', this.handleVisibilityChange)
-    await Promise.all([this.loadDashboard(), this.loadUsers(), this.loadConsultants(), this.loadStaff()])
+    await Promise.all([this.loadDashboard(), this.loadUsers(), this.loadStaff()])
     this.syncAutoRefresh()
   },
   beforeUnmount() {
@@ -263,12 +237,10 @@ export default {
     ...adminFormatters,
     ...dashboardMethods,
     ...usersMethods,
-    ...bookingsMethods,
     ...calendarMethods,
     ...reportsMethods,
     ...activityMethods,
     ...staffMethods,
-    ...coursesMethods,
     ...exportsMethods
   }
 }

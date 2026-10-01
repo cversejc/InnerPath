@@ -8,11 +8,9 @@ from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.admin_support import (
-    BOOKING_STATUS_LABELS,
     REPORT_STATUS_LABELS,
     USER_ROLE_LABELS,
     _date_filter,
-    _load_admin_bookings,
     _load_admin_reports,
     _load_audits,
     _load_decision_logs,
@@ -41,7 +39,6 @@ async def export_admin_resource(
     role: Optional[str] = Query(None, pattern="^(user|consultant|admin)$"),
     is_active: Optional[bool] = None,
     record_status: Optional[str] = Query(None, alias="status"),
-    consultant_id: Optional[int] = None,
     user_id: Optional[int] = None,
     action: Optional[str] = Query(None, max_length=100),
     resource_type: Optional[str] = Query(None, max_length=50),
@@ -71,10 +68,6 @@ async def export_admin_resource(
         users = (await db.execute(statement)).scalars().all()
         rows = [[user.id, user.name, user.phone, USER_ROLE_LABELS.get(user.role, user.role), "正常" if user.is_active else "已停用", user.created_at, user.last_login_at] for user in users]
         return _csv_response("users.csv", ["ID", "姓名", "手机号", "角色", "状态", "注册时间", "最近登录"], rows)
-    if resource == "bookings":
-        items, _ = await _load_admin_bookings(db, booking_status=record_status, consultant_id=consultant_id, user_id=user_id, search=search, date_from=date_from, date_to=date_to, page=1, size=limit)
-        rows = [[item["id"], item["user_name"], item["user_phone"], item["service_name"], BOOKING_STATUS_LABELS.get(item["status"], item["status"]), item["consultant_name"], item["confirmed_date"], item["confirmed_time"], item["created_at"]] for item in items]
-        return _csv_response("bookings.csv", ["ID", "用户", "联系方式", "服务", "状态", "咨询师", "确认日期", "确认时间", "创建时间"], rows)
     if resource == "reports":
         items, _ = await _load_admin_reports(db, report_status=record_status, user_id=user_id, search=search, ai_model=ai_model, date_from=date_from, date_to=date_to, page=1, size=limit)
         rows = [[item["id"], item["user_name"], item["user_phone"], item["title"], REPORT_STATUS_LABELS.get(item["status"], item["status"]), item["ai_model"], item["generation_time_ms"], item["created_at"]] for item in items]
