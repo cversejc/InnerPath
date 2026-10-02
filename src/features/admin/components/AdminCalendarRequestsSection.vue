@@ -1,4 +1,5 @@
 <script setup>
+import { Button as VanButton } from 'vant'
 import { formatDateTime } from '../formatters.js'
 
 defineProps({
@@ -20,7 +21,10 @@ function statusLabel(status) {
       <div><p class="eyebrow">CALENDAR / INTAKE QUEUE</p><h2>日历申请审核</h2><p>按用户提交时的档案版本审核；发布日历后可在这里绑定来源申请。</p></div>
       <div class="filter-bar compact-filter">
         <select :value="statusFilter" aria-label="按申请状态筛选" @change="$emit('update-status-filter', $event.target.value)"><option value="">全部状态</option><option value="pending">待审核</option><option value="reviewing">审核中</option><option value="fulfilled">已完成</option><option value="rejected">已退回</option><option value="cancelled">已取消</option></select>
-        <button class="secondary-button compact-button" type="button" @click="$emit('refresh')">刷新申请</button>
+        <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="loading" :aria-busy="loading" @click="$emit('refresh')">
+          <template #icon><IconMark name="refresh" /></template>
+          刷新申请
+        </VanButton>
       </div>
     </div>
     <div v-if="loading" class="list-loading" aria-label="正在加载日历申请"><i v-for="index in 4" :key="index"></i></div>
@@ -28,7 +32,7 @@ function statusLabel(status) {
       <article v-for="item in calendarRequests" :key="item.id" class="panel-surface calendar-request-admin-card">
         <div class="calendar-request-admin-head"><div><p class="eyebrow">REQUEST #{{ item.id }} · USER #{{ item.user_id }}</p><h3>{{ item.start_date }} — {{ item.end_date }}</h3><span>档案版本 v{{ item.profile_version }} · 提交于 {{ formatDateTime(item.created_at) }}</span></div><span :class="['status-badge', `request-${item._status}`]">{{ statusLabel(item._status) }}</span></div>
         <div class="calendar-request-admin-body"><div><span>关注领域</span><strong>{{ item.focus_topics?.join('、') || '—' }}</strong></div><div><span>日历用途</span><strong>{{ item.usage_scenario || '—' }}</strong></div><div class="request-goal"><span>当前决策目标</span><p>{{ item.goal || '—' }}</p></div><div class="request-goal"><span>期望输出</span><p>{{ item.expected_outcomes?.join('、') || '—' }}</p></div></div>
-        <div class="calendar-request-admin-actions"><label>处理状态<select v-model="item._status"><option value="pending">待审核</option><option value="reviewing">审核中</option><option value="fulfilled">已完成</option><option value="rejected">已退回</option><option value="cancelled">已取消</option></select></label><label>绑定日历 ID<input v-model.number="item._calendarId" type="number" min="1" placeholder="发布后填写"></label><label class="request-note-field">审核备注<input v-model.trim="item._reviewNote" maxlength="1000" placeholder="给内部处理人员的备注"></label><button class="primary-button compact-button" type="button" :disabled="loading" @click="$emit('review', item)">保存审核</button></div>
+        <div class="calendar-request-admin-actions"><label>处理状态<select v-model="item._status"><option value="pending">待审核</option><option value="reviewing">审核中</option><option value="fulfilled">已完成</option><option value="rejected">已退回</option><option value="cancelled">已取消</option></select></label><label>绑定日历 ID<input v-model.number="item._calendarId" type="number" min="1" placeholder="发布后填写"></label><label class="request-note-field">审核备注<input v-model.trim="item._reviewNote" maxlength="1000" placeholder="给内部处理人员的备注"></label><VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="loading" :aria-busy="loading" @click="$emit('review', item)">保存审核</VanButton></div>
       </article>
       <p v-if="!calendarRequests.length" class="empty-cell">暂无符合条件的日历申请。</p>
     </div>
