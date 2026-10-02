@@ -1,4 +1,5 @@
 <script setup>
+import { Button as VanButton } from 'vant'
 import { roleText } from '../formatters.js'
 
 defineProps({
@@ -21,7 +22,7 @@ defineEmits(['invite'])
         <form class="stack-form" @submit.prevent="$emit('invite')">
           <label>手机号<input v-model.trim="inviteForm.phone" type="tel" inputmode="numeric" autocomplete="tel" required maxlength="11" placeholder="11 位手机号"></label>
           <label>角色<select v-model="inviteForm.role"><option value="consultant">咨询师</option><option value="admin">管理员</option></select></label>
-          <button class="primary-button" type="submit" :disabled="inviteSaving" :aria-busy="inviteSaving">{{ inviteSaving ? '生成中…' : '生成邀请链接' }}</button>
+          <VanButton class="primary-button" type="primary" native-type="submit" :disabled="inviteSaving" :loading="inviteSaving" loading-text="生成中…" :aria-busy="inviteSaving">生成邀请链接</VanButton>
         </form>
         <div v-if="inviteToken" class="invite-result" role="status" aria-live="polite"><span>本次令牌</span><code>{{ inviteToken }}</code><router-link :to="{ path: '/auth/invite', query: { token: inviteToken } }">打开邀请页面 →</router-link></div>
       </article>
