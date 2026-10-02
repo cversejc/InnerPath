@@ -3,7 +3,10 @@
 """Streamlit rendering adapter for the Reports-owned Zi Wei chart calculator."""
 import streamlit as st
 
-from app.domains.reports.generation.ziwei_chart import (
+from app.domains.reports.generation.ziwei_chart import compute_ziwei_chart
+from app.domains.reports.generation.ziwei_models import ZiweiChart, ZiweiPalace
+from app.domains.reports.generation.ziwei_rules import _compute_feixing
+from app.domains.reports.generation.ziwei_tables import (
     EARTHLY_BRANCHES,
     HEAVENLY_STEMS,
     HOUR_BRANCH_NAMES,
@@ -13,10 +16,6 @@ from app.domains.reports.generation.ziwei_chart import (
     TIANFU_GROUP,
     WU_XING_JU_NAMES,
     ZIWEI_GROUP,
-    ZiweiChart,
-    ZiweiPalace,
-    compute_ziwei_chart,
-    _compute_feixing,
 )
 from astro.ziwei_vietnamese import (
     VIETNAMESE_CULTURAL_NOTE,
