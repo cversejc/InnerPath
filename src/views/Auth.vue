@@ -164,3 +164,4 @@
 <script src="../features/auth/page.js"></script>
 
 <style scoped src="../features/auth/auth.css"></style>
+<style scoped src="../features/auth/auth-responsive.css"></style>
