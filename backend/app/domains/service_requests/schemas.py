@@ -75,6 +75,9 @@ class ServiceRequestResponse(BaseModel):
     delivered_at: Optional[datetime] = None
     withdrawn_at: Optional[datetime] = None
     rejected_at: Optional[datetime] = None
+    report_case_id: Optional[int] = None
+    report_case_status: Optional[str] = None
+    current_step_key: Optional[str] = None
 
 
 class ServiceRequestListResponse(BaseModel):

@@ -34,7 +34,10 @@ logger = get_logger(__name__)
 
 
 @router.post(
-    "", response_model=ReportTaskResponse, status_code=status.HTTP_202_ACCEPTED
+    "",
+    response_model=ReportTaskResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+    deprecated=True,
 )
 async def create_report(
     report_data: ReportCreate,
@@ -42,7 +45,7 @@ async def create_report(
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Create a report generation task for the authenticated user."""
+    """Legacy self-service generation entry point; new clients should submit a report request."""
     task_id = str(uuid4())
 
     unified_request = (

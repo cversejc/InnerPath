@@ -14,7 +14,6 @@ from app.domains.service_requests.schemas import (
     ServiceRequestUpdate,
 )
 from app.domains.service_requests.service import (
-    create_service_request,
     get_service_request,
     get_user_service_requests,
     resubmit_service_request,
@@ -22,6 +21,7 @@ from app.domains.service_requests.service import (
     withdraw_service_request,
 )
 from app.api.v1.service_request_api_support import _raise_value_error, _serialize_public
+from app.application.report_cases import create_user_service_request
 
 router = APIRouter()
 @router.post("", response_model=ServiceRequestResponse, status_code=status.HTTP_201_CREATED)
@@ -32,7 +32,7 @@ async def create_request(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        service_request = await create_service_request(
+        service_request, _ = await create_user_service_request(
             db,
             current_user,
             data,

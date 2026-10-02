@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.service_requests.models import ServiceRequest
+from app.domains.workflow.models import ReportCase, StepTask
 from app.models.user import User
 from app.domains.service_requests.schemas import (
     ServiceRequestDraftResponse,
@@ -39,9 +40,26 @@ async def _serialize_public(db: AsyncSession, service_request: ServiceRequest) -
         consultant_name = await db.scalar(
             select(User.name).where(User.id == service_request.assigned_consultant_id)
         )
-    return ServiceRequestResponse.model_validate(
-        serialize_service_request(service_request, consultant_name=consultant_name)
-    )
+    payload = serialize_service_request(service_request, consultant_name=consultant_name)
+    if service_request.service_type == "report":
+        report_case = await db.scalar(
+            select(ReportCase).where(ReportCase.service_request_id == service_request.id)
+        )
+        if report_case:
+            payload["report_case_id"] = report_case.id
+            payload["report_case_status"] = report_case.status
+            if report_case.workflow_instance_id:
+                current_step = await db.scalar(
+                    select(StepTask)
+                    .where(
+                        StepTask.workflow_instance_id == report_case.workflow_instance_id,
+                        StepTask.status.in_(["READY", "IN_REVIEW", "EXECUTING", "WAITING_REVIEW"]),
+                    )
+                    .order_by(StepTask.sequence_no)
+                    .limit(1)
+                )
+                payload["current_step_key"] = current_step.step_key if current_step else None
+    return ServiceRequestResponse.model_validate(payload)
 
 
 def _workspace_response(workspace: dict) -> ServiceRequestWorkspaceResponse:

@@ -16,6 +16,13 @@ from app.domains.auth.models import AuthSession, StaffInvite
 from app.domains.reports.models import Report, ReportTask
 from app.domains.calendar.models import CalendarEntry, CalendarRequest, DecisionLog, UserCalendar
 from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestRevision, ServiceRequestTask
+from app.domains.workflow.models import (
+    ReportCase,
+    StepTask,
+    WorkflowInstance,
+    WorkflowOutbox,
+    WorkflowVersion,
+)
 
 # this is the Alembic Config object
 config = context.config
