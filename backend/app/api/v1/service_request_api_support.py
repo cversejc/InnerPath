@@ -14,6 +14,24 @@ from app.domains.service_requests.schemas import (
 from app.domains.service_requests.service import serialize_service_request, serialize_task
 
 
+def project_report_case_status(case_status: str, step_status: str | None, fallback: str) -> str:
+    if fallback in {"withdrawn", "rejected"}:
+        return fallback
+    if case_status == "READY_TO_DELIVER":
+        return "workflow_complete"
+    if case_status == "DELIVERED":
+        return "delivered"
+    if case_status == "BLOCKED":
+        return "needs_info"
+    if case_status == "CANCELLED":
+        return fallback if fallback in {"withdrawn", "rejected"} else "rejected"
+    if fallback == "submitted":
+        return "submitted"
+    if step_status == "IN_REVIEW":
+        return "reviewing"
+    return "accepted"
+
+
 def _detail_for_error(error: ValueError) -> tuple[int, str]:
     code = str(error)
     if code in {"service_request_not_found", "service_request_draft_not_found"}:
@@ -22,6 +40,8 @@ def _detail_for_error(error: ValueError) -> tuple[int, str]:
         return status.HTTP_403_FORBIDDEN, "Service request is not assigned to this consultant"
     if code in {"draft_version_conflict"}:
         return status.HTTP_409_CONFLICT, "Draft has changed; refresh before saving"
+    if code == "profile_version_conflict":
+        return status.HTTP_409_CONFLICT, "Profile has changed; refresh before submitting"
     if code in {"service_request_locked", "service_request_already_taken"}:
         return status.HTTP_409_CONFLICT, code
     if code in {"service_request_cannot_withdraw", "service_request_not_waiting_for_info"}:
@@ -48,6 +68,7 @@ async def _serialize_public(db: AsyncSession, service_request: ServiceRequest) -
         if report_case:
             payload["report_case_id"] = report_case.id
             payload["report_case_status"] = report_case.status
+            current_step = None
             if report_case.workflow_instance_id:
                 current_step = await db.scalar(
                     select(StepTask)
@@ -59,6 +80,11 @@ async def _serialize_public(db: AsyncSession, service_request: ServiceRequest) -
                     .limit(1)
                 )
                 payload["current_step_key"] = current_step.step_key if current_step else None
+            payload["status"] = project_report_case_status(
+                report_case.status,
+                current_step.status if current_step else None,
+                service_request.status,
+            )
     return ServiceRequestResponse.model_validate(payload)
 
 

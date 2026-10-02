@@ -21,7 +21,10 @@ from app.domains.service_requests.service import (
     withdraw_service_request,
 )
 from app.api.v1.service_request_api_support import _raise_value_error, _serialize_public
-from app.application.report_cases import create_user_service_request
+from app.application.report_cases import (
+    cancel_report_case_for_service_request,
+    create_user_service_request,
+)
 
 router = APIRouter()
 @router.post("", response_model=ServiceRequestResponse, status_code=status.HTTP_201_CREATED)
@@ -123,6 +126,13 @@ async def withdraw_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
+        if (
+            service_request.service_type == "report"
+            and service_request.status in {"submitted", "needs_info"}
+        ):
+            await cancel_report_case_for_service_request(
+                db, service_request.id, reason="user_withdrew_request"
+            )
         service_request = await withdraw_service_request(
             db,
             service_request,

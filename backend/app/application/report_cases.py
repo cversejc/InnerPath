@@ -14,7 +14,7 @@ from app.domains.workflow.definitions import (
     default_workflow_definition,
 )
 from app.domains.workflow.models import ReportCase, WorkflowVersion
-from app.domains.workflow.service import create_report_case
+from app.domains.workflow.service import cancel_case, create_report_case
 from app.models.user import User
 
 
@@ -114,3 +114,16 @@ async def create_user_service_request(
     if report_case:
         await db.refresh(report_case)
     return request, report_case
+
+
+async def cancel_report_case_for_service_request(
+    db: AsyncSession, service_request_id: int, *, reason: str
+) -> Optional[ReportCase]:
+    report_case = await db.scalar(
+        select(ReportCase)
+        .where(ReportCase.service_request_id == service_request_id)
+        .with_for_update()
+    )
+    if report_case is None:
+        return None
+    return await cancel_case(db, report_case.id, reason=reason)

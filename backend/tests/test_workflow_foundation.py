@@ -35,6 +35,7 @@ from app.domains.workflow.models import (
 )
 from app.domains.workflow.service import (
     CompletionGate,
+    cancel_case,
     complete_step,
     create_report_case,
     create_workflow_draft,
@@ -255,6 +256,39 @@ async def test_return_and_reopen_increment_activation_and_reset_downstream_steps
     assert tasks[0].status == "READY"
     assert tasks[0].activation_no == 3
     assert tasks[1].status == "PENDING"
+
+
+@pytest.mark.asyncio
+async def test_cancel_case_stops_active_work_and_preserves_completed_step_history(
+    workflow_db,
+):
+    report_case = await _create_case(workflow_db)
+    await _complete_step(workflow_db, report_case.id, "S1")
+
+    cancelled = await cancel_case(
+        workflow_db, report_case.id, reason="user_withdrew_request"
+    )
+    instance = await workflow_db.get(WorkflowInstance, report_case.workflow_instance_id)
+    tasks = list(
+        (
+            await workflow_db.scalars(
+                select(StepTask)
+                .where(StepTask.workflow_instance_id == instance.id)
+                .order_by(StepTask.sequence_no)
+            )
+        ).all()
+    )
+    event = await workflow_db.scalar(
+        select(WorkflowOutbox).where(
+            WorkflowOutbox.event_type == "report_case.cancelled"
+        )
+    )
+
+    assert cancelled.status == "CANCELLED"
+    assert instance.status == "CANCELLED"
+    assert tasks[0].status == "COMPLETED"
+    assert all(task.status == "CANCELLED" for task in tasks[1:])
+    assert event.payload_json["reason"] == "user_withdrew_request"
 
 
 @pytest.mark.asyncio

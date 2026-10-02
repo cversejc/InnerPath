@@ -107,7 +107,10 @@ async def get_staff_request_workspace(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     if not staff_can_access(service_request, current_user):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Service request is not assigned")
-    return _workspace_response(await get_workspace(db, service_request))
+    workspace = await get_workspace(db, service_request)
+    if service_request.service_type == "report":
+        workspace["request"] = (await _serialize_public(db, service_request)).model_dump()
+    return _workspace_response(workspace)
 
 
 @staff_router.post("/{request_id}/ai-draft", response_model=ServiceRequestTaskResponse, status_code=status.HTTP_202_ACCEPTED)

@@ -37,6 +37,8 @@ class ServiceProfileSnapshot(BaseModel):
 class ServiceRequestCreate(BaseModel):
     service_type: ServiceType
     profile: ServiceProfileSnapshot
+    profile_version: Optional[int] = Field(None, ge=1)
+    context: Optional[Dict[str, Any]] = None
     selected_topics: List[str] = Field(default_factory=list, max_length=12)
     additional_info: Optional[str] = Field(None, max_length=4000)
     calendar_goal: Optional[str] = Field(None, max_length=500)

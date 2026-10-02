@@ -7,6 +7,7 @@ export const SERVICE_REQUEST_STATUS_LABELS = {
   needs_info: '待补资料',
   failed: '生成失败',
   delivered: '已交付',
+  workflow_complete: '内容审核完成',
   withdrawn: '已撤回',
   rejected: '已拒绝'
 }

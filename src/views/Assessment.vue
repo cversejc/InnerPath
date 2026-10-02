@@ -5,8 +5,8 @@
     <section class="page-header">
       <div class="container header-inner">
         <p class="section-kicker">FI / YOUR LIFE MANUAL</p>
-        <h1>生成你的人生说明书</h1>
-        <p>先建立一份可复用的个人档案，再把这一次真正想看的问题交给说明书</p>
+        <h1>申请人生说明书</h1>
+        <p>先建立一份可复用的个人档案，再把这一次真正想看的问题交给咨询师</p>
       </div>
     </section>
 
@@ -93,9 +93,9 @@
           ref="stepContent"
           :gen-step="genStep"
           :is-generating="isGenerating"
-          :report-preview="reportPreview"
-          @go-to-calendar="goToCalendar"
-          @view-report="viewFullReport"
+          :request-id="currentRequestId"
+          @view-requests="viewMyRequests"
+          @new-application="startAnotherApplication"
         />
       </div>
     </section>

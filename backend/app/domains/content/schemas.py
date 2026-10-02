@@ -35,6 +35,7 @@ class EvidenceResponse(BaseModel):
 
 
 class FindingRevisionCreate(BaseModel):
+    expected_revision_no: Optional[int] = Field(None, ge=1)
     claim: str = Field(..., min_length=1, max_length=5000)
     kind: Literal["FINDING", "SIGNAL"] = "FINDING"
     semantic_role: str = Field(..., min_length=1, max_length=48)
@@ -78,6 +79,7 @@ class FindingRevisionResponse(BaseModel):
 
 
 class ContentFragmentRevisionCreate(BaseModel):
+    expected_revision_no: Optional[int] = Field(None, ge=1)
     fragment_type: Literal["ANALYSIS", "REPORT"] = "ANALYSIS"
     title: Optional[str] = Field(None, max_length=240)
     content: str = Field(..., min_length=1, max_length=30000)
@@ -111,3 +113,9 @@ class ContentFragmentRevisionResponse(BaseModel):
     stale_reason: Optional[str] = None
     created_by: Optional[int] = None
     created_at: datetime
+
+
+class ReportCaseContentResponse(BaseModel):
+    evidence: list[EvidenceResponse]
+    findings: list[FindingRevisionResponse]
+    fragments: list[ContentFragmentRevisionResponse]

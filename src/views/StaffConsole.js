@@ -17,6 +17,7 @@ import {
 import assignmentMethods from '../features/service-requests/methods/assignment.js'
 import queueMethods from '../features/service-requests/methods/queue.js'
 import workflowMethods from '../features/service-requests/methods/workflow.js'
+import reportCaseMethods from '../features/service-requests/methods/report-case.js'
 import { confirmAction } from '../utils/confirmAction.js'
 
 export default {
@@ -36,6 +37,18 @@ export default {
       requests: { total: 0, items: [] },
       selectedRequest: null,
       workspace: null,
+      reportCase: null,
+      reportCaseContent: { evidence: [], findings: [], fragments: [] },
+      reportCaseLoading: false,
+      reportStepSaving: false,
+      reportStepReturn: { visible: false, targetStepKey: '', reason: '' },
+      editingFindingKey: null,
+      reportFindingDraft: null,
+      newReportFinding: { finding_key: '', claim: '', semantic_role: '', evidence_refs: '' },
+      reportFindingSaving: false,
+      reportFragmentDrafts: {},
+      newReportFragment: { fragment_key: '', title: '', content: '', finding_refs: '', evidence_refs: '' },
+      reportFragmentSaving: false,
       loading: false,
       accepting: false,
       aiStarting: false,
@@ -58,6 +71,17 @@ export default {
     }
   },
   computed: {
+    currentReportStep() {
+      const steps = this.reportCase?.workflow_instance?.steps || []
+      return steps.find(step => ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status)) || null
+    },
+    reportReturnTargets() {
+      const active = this.currentReportStep
+      if (!active) return []
+      return (this.reportCase?.workflow_instance?.steps || []).filter(step =>
+        step.sequence_no < active.sequence_no && step.status === 'COMPLETED'
+      )
+    },
     scopeDescription() {
       if (this.scope === 'available') return '仅展示还未被接单的申请。'
       if (this.scope === 'mine') return '展示分配给当前咨询师的申请。'
@@ -78,6 +102,7 @@ export default {
     confirmAction,
     ...queueMethods,
     ...workflowMethods,
+    ...reportCaseMethods,
     ...assignmentMethods,
     addEntry() {
       this.calendarEditor.entries.push({

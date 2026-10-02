@@ -16,6 +16,24 @@ from app.application.workflow_commands import (
 )
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
+from app.domains.content.models import (
+    CaseEvidenceItem,
+    ContentFragmentRevision,
+    FindingRevision,
+)
+from app.domains.content.schemas import (
+    ContentFragmentRevisionCreate,
+    ContentFragmentRevisionResponse,
+    FindingRevisionCreate,
+    FindingRevisionResponse,
+    EvidenceResponse,
+    ReportCaseContentResponse,
+)
+from app.domains.content.service import (
+    create_content_fragment_revision,
+    create_finding_revision,
+)
+from app.domains.content.findings import current_finding
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.workflow.models import (
     ReportCase,
@@ -47,6 +65,9 @@ def _workflow_error(error: ValueError) -> None:
         "workflow_instance_not_found",
         "step_task_not_found",
         "workflow_version_not_found",
+        "case_evidence_not_found",
+        "finding_not_found",
+        "fragment_not_found",
     }:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
     if code in {
@@ -59,6 +80,10 @@ def _workflow_error(error: ValueError) -> None:
         "step_cannot_reopen",
         "return_target_must_be_previous",
         "workflow_version_immutable",
+        "workflow_case_already_delivered",
+        "finding_revision_conflict",
+        "fragment_revision_conflict",
+        "step_not_current",
     }:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=code)
     if code.startswith("workflow_") or code.startswith("step_"):
@@ -106,22 +131,82 @@ async def _case_for_read_or_action(
 
 
 async def _authorize_step_action(
-    db: AsyncSession, case_id: int, step_key: str, actor: User
-) -> ReportCase:
+    db: AsyncSession,
+    case_id: int,
+    step_key: str,
+    actor: User,
+    *,
+    require_current_review: bool = False,
+) -> tuple[ReportCase, StepTask]:
     report_case = await _case_for_read_or_action(db, case_id, actor, action=True)
-    if actor.role == "consultant" and report_case.workflow_instance_id is not None:
-        task = await db.scalar(
-            select(StepTask).where(
-                StepTask.workflow_instance_id == report_case.workflow_instance_id,
-                StepTask.step_key == step_key,
-            )
+    task = await db.scalar(
+        select(StepTask)
+        .where(
+            StepTask.workflow_instance_id == report_case.workflow_instance_id,
+            StepTask.step_key == step_key,
         )
-        if task is not None and task.assignee_id not in (None, actor.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Step is assigned to another consultant",
+        .with_for_update()
+    )
+    if task is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Step not found")
+    capabilities = {"consultant": {"consultant"}, "admin": {"*"}}
+    if (
+        task.required_capability
+        and "*" not in capabilities.get(actor.role, set())
+        and task.required_capability not in capabilities.get(actor.role, set())
+    ):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Step capability is required")
+    if actor.role == "consultant" and task.assignee_id not in (None, actor.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Step is assigned to another consultant",
+        )
+    if require_current_review:
+        current = await db.scalar(
+            select(StepTask)
+            .where(
+                StepTask.workflow_instance_id == report_case.workflow_instance_id,
+                StepTask.status.in_({"READY", "IN_REVIEW", "EXECUTING", "WAITING_REVIEW"}),
             )
-    return report_case
+            .order_by(StepTask.sequence_no)
+            .limit(1)
+        )
+        if current is None or current.id != task.id:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="step_not_current")
+        if task.status != "IN_REVIEW":
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="step_not_in_review")
+    return report_case, task
+
+
+async def _serialize_case_content(
+    db: AsyncSession, case_id: int
+) -> ReportCaseContentResponse:
+    evidence_rows = await db.scalars(
+        select(CaseEvidenceItem)
+        .where(CaseEvidenceItem.report_case_id == case_id)
+        .order_by(CaseEvidenceItem.created_at, CaseEvidenceItem.id)
+    )
+    finding_rows = await db.scalars(
+        select(FindingRevision)
+        .where(
+            FindingRevision.report_case_id == case_id,
+            FindingRevision.is_current.is_(True),
+        )
+        .order_by(FindingRevision.finding_key)
+    )
+    fragment_rows = await db.scalars(
+        select(ContentFragmentRevision)
+        .where(
+            ContentFragmentRevision.report_case_id == case_id,
+            ContentFragmentRevision.is_current.is_(True),
+        )
+        .order_by(ContentFragmentRevision.fragment_key)
+    )
+    return ReportCaseContentResponse(
+        evidence=[EvidenceResponse.model_validate(row) for row in evidence_rows],
+        findings=[FindingRevisionResponse.model_validate(row) for row in finding_rows],
+        fragments=[ContentFragmentRevisionResponse.model_validate(row) for row in fragment_rows],
+    )
 
 
 async def _serialize_case(
@@ -233,6 +318,105 @@ async def get_report_case(
 ):
     report_case = await _case_for_read_or_action(db, case_id, current_user)
     return await _serialize_case(db, report_case)
+
+
+@router.get("/{case_id}/content", response_model=ReportCaseContentResponse)
+async def get_report_case_content(
+    case_id: int,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _case_for_read_or_action(db, case_id, current_user, action=True)
+    return await _serialize_case_content(db, case_id)
+
+
+@router.put(
+    "/{case_id}/steps/{step_key}/findings/{finding_key}",
+    response_model=FindingRevisionResponse,
+)
+async def revise_report_case_finding(
+    case_id: int,
+    step_key: str,
+    finding_key: str,
+    data: FindingRevisionCreate,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    _, task = await _authorize_step_action(
+        db, case_id, step_key, current_user, require_current_review=True
+    )
+    current = await current_finding(db, case_id, finding_key)
+    current_revision = current.revision_no if current else None
+    if current_revision != data.expected_revision_no:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="finding_revision_conflict",
+        )
+    values = data.model_dump(exclude={"expected_revision_no"})
+    try:
+        revision = await create_finding_revision(
+            db,
+            report_case_id=case_id,
+            finding_key=finding_key,
+            **values,
+            owner_step_task_id=task.id,
+            created_by=current_user.id,
+        )
+        await db.commit()
+        await db.refresh(revision)
+        return revision
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.put(
+    "/{case_id}/steps/{step_key}/fragments/{fragment_key}",
+    response_model=ContentFragmentRevisionResponse,
+)
+async def revise_report_case_fragment(
+    case_id: int,
+    step_key: str,
+    fragment_key: str,
+    data: ContentFragmentRevisionCreate,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    _, task = await _authorize_step_action(
+        db, case_id, step_key, current_user, require_current_review=True
+    )
+    current = await db.scalar(
+        select(ContentFragmentRevision)
+        .where(
+            ContentFragmentRevision.report_case_id == case_id,
+            ContentFragmentRevision.fragment_key == fragment_key,
+            ContentFragmentRevision.is_current.is_(True),
+        )
+        .with_for_update()
+    )
+    current_revision = current.revision_no if current else None
+    if current_revision != data.expected_revision_no:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="fragment_revision_conflict",
+        )
+    values = data.model_dump(exclude={"expected_revision_no"})
+    values.pop("owner_step_task_id", None)
+    try:
+        revision = await create_content_fragment_revision(
+            db,
+            report_case_id=case_id,
+            fragment_key=fragment_key,
+            **values,
+            owner_step_task_id=task.id,
+            created_by=current_user.id,
+        )
+        await db.commit()
+        await db.refresh(revision)
+        return revision
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
 
 
 @router.post(

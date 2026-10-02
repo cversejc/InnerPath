@@ -35,6 +35,8 @@ export default {
     this.stopPolling()
     this.selectedRequest = item
     this.workspace = null
+    this.reportCase = null
+    this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
     this.message = ''
     if (item.assigned_consultant_id || this.admin) await this.loadWorkspace(item.id)
   },
@@ -49,6 +51,12 @@ export default {
         } else {
           this.calendarEditor = calendarEditorFromPayload(this.workspace.draft.editable_payload)
         }
+      }
+      if (this.workspace.request.service_type === 'report' && this.workspace.request.report_case_id) {
+        await this.loadReportCaseData(this.workspace.request.report_case_id)
+      } else {
+        this.reportCase = null
+        this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
       }
       if (this.workspace.task?.status === 'processing') this.startPolling(this.workspace.task)
     } catch (error) {

@@ -272,6 +272,41 @@ async def start_step(db: AsyncSession, case_id: int, step_key: str) -> StepTask:
     return task
 
 
+async def cancel_case(
+    db: AsyncSession, case_id: int, *, reason: str = "request_closed"
+) -> ReportCase:
+    report_case, instance, tasks = await _lock_case_and_tasks(db, case_id)
+    if report_case.status == "CANCELLED":
+        return report_case
+    if report_case.status == "DELIVERED":
+        raise ValueError("workflow_case_already_delivered")
+    now = _now()
+    report_case.status = "CANCELLED"
+    report_case.cancelled_at = now
+    report_case.updated_at = now
+    instance.status = "CANCELLED"
+    instance.completed_at = None
+    instance.suspended_at = None
+    instance.updated_at = now
+    for task in tasks:
+        if task.status != "COMPLETED":
+            task.status = "CANCELLED"
+            task.updated_at = now
+    await enqueue_outbox_event(
+        db,
+        aggregate_type="report_case",
+        aggregate_id=report_case.id,
+        event_type="report_case.cancelled",
+        payload={
+            "report_case_id": report_case.id,
+            "workflow_instance_id": instance.id,
+            "reason": reason[:1000],
+        },
+    )
+    await db.flush()
+    return report_case
+
+
 async def complete_step(
     db: AsyncSession,
     case_id: int,

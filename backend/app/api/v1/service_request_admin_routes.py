@@ -20,6 +20,7 @@ from app.domains.service_requests.schemas import (
 from app.domains.audit.service import record_audit
 from app.domains.service_requests.service import get_service_request, list_staff_service_requests
 from app.api.v1.service_request_api_support import _serialize_public
+from app.application.report_cases import cancel_report_case_for_service_request
 
 admin_router = APIRouter()
 @admin_router.get("", response_model=StaffServiceRequestListResponse)
@@ -110,6 +111,10 @@ async def reject_request(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     if service_request.status not in {"submitted", "accepted", "needs_info", "failed"}:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Request cannot be rejected")
+    if service_request.service_type == "report":
+        await cancel_report_case_for_service_request(
+            db, service_request.id, reason="admin_rejected_request"
+        )
     service_request.status = "rejected"
     service_request.rejection_reason = data.reason
     service_request.rejected_at = datetime.utcnow()

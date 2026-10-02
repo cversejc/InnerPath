@@ -6,11 +6,11 @@
         <div>
           <p class="section-kicker">SERVICE REQUESTS / REVIEW ROOM</p>
           <h1>咨询申请工作台</h1>
-          <p>接收用户申请，参考 AI 初稿完成结构化审校，再将可交付的结果发回用户。</p>
+          <p>处理已分配的咨询师报告 Case 与日历申请。</p>
         </div>
         <div class="heading-actions">
           <router-link class="secondary-button compact-button" to="/skills">Skill Studio</router-link>
-          <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask }"></i>{{ pollingTask ? 'AI 初稿处理中' : loading ? '正在同步' : '已同步' }}</span>
+          <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading }"></i>{{ pollingTask ? 'AI 初稿处理中' : reportCaseLoading ? '正在读取 Case' : loading ? '正在同步' : '已同步' }}</span>
           <VanButton class="secondary-button" type="default" plain native-type="button" :disabled="loading" @click="loadRequests">刷新申请</VanButton>
         </div>
       </header>
@@ -60,7 +60,112 @@
               <small>管理员可改派；改派不会覆盖已有版本。</small>
             </div>
 
-            <div class="workspace-actions">
+            <section v-if="workspace.request.service_type === 'report'" class="report-case-workspace" aria-label="报告 Case 工作区">
+              <div v-if="reportCaseLoading" class="empty-cell" role="status">正在读取 Case 内容…</div>
+              <template v-else-if="reportCase">
+                <div class="report-case-heading">
+                  <div><p class="eyebrow">REPORT CASE / #{{ reportCase.id }}</p><h3>咨询师审核</h3><p>工作流版本 v{{ reportCase.workflow_instance?.workflow_version_id }} · {{ reportCase.status }}</p></div>
+                  <div v-if="currentReportStep" class="report-step-controls">
+                    <span class="step-current">当前步骤 {{ currentReportStep.step_key }} · {{ currentReportStep.status }}</span>
+                    <VanButton v-if="currentReportStep.status === 'READY'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving" :loading="reportStepSaving" @click="startReportStep">开始审核</VanButton>
+                    <template v-else-if="currentReportStep.status === 'IN_REVIEW'">
+                      <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportStepSaving" @click="reportStepReturn.visible = !reportStepReturn.visible">退回上一步</VanButton>
+                      <VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving" :loading="reportStepSaving" @click="completeReportStep">完成步骤</VanButton>
+                    </template>
+                  </div>
+                  <p v-else class="case-complete-state">工作流步骤已完成，等待后续质量审核与交付阶段。</p>
+                </div>
+
+                <div v-if="reportStepReturn.visible" class="report-return-form">
+                  <label>退回步骤<select v-model="reportStepReturn.targetStepKey"><option value="">选择已完成的上游步骤</option><option v-for="step in reportReturnTargets" :key="step.step_key" :value="step.step_key">{{ step.step_key }} · 第 {{ step.sequence_no }} 步</option></select></label>
+                  <label>退回原因<textarea v-model.trim="reportStepReturn.reason" rows="2" maxlength="1000"></textarea></label>
+                  <VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving || !reportStepReturn.targetStepKey || !reportStepReturn.reason" :loading="reportStepSaving" @click="submitReportStepReturn">确认退回</VanButton>
+                </div>
+
+                <ol class="report-step-list" aria-label="报告工作流步骤">
+                  <li v-for="step in reportCase.workflow_instance?.steps || []" :key="step.id" :class="`step-${step.status.toLowerCase()}`">
+                    <span><strong>{{ step.step_key }}</strong><small>第 {{ step.sequence_no }} 步 · {{ step.required_capability || '无额外能力要求' }}</small></span>
+                    <span class="step-state">{{ step.status }}</span>
+                    <VanButton v-if="step.status === 'COMPLETED'" class="text-button" type="default" plain native-type="button" :disabled="reportStepSaving" @click="reopenReportStep(step)">重开</VanButton>
+                  </li>
+                </ol>
+
+                <div class="report-case-grid">
+                  <section class="report-data-panel">
+                    <div class="panel-heading"><div><p class="eyebrow">APPLICATION SNAPSHOT</p><h3>本次情境</h3></div><span>档案 v{{ reportCase.application_snapshot?.profile_version || '—' }}</span></div>
+                    <dl class="context-values"><div v-for="(value, key) in reportCase.application_snapshot?.context || {}" :key="key"><dt>{{ key }}</dt><dd>{{ Array.isArray(value) ? value.join('、') || '—' : value || '—' }}</dd></div></dl>
+                    <details class="snapshot-details"><summary>查看完整资料快照</summary><pre>{{ pretty(reportCase.application_snapshot) }}</pre></details>
+                  </section>
+                  <section class="report-data-panel">
+                    <div class="panel-heading"><div><p class="eyebrow">EVIDENCE</p><h3>Evidence 来源</h3></div><span>{{ reportCaseContent.evidence.length }} 条</span></div>
+                    <div v-if="!reportCaseContent.evidence.length" class="empty-cell">当前没有 Evidence。</div>
+                    <article v-for="evidence in reportCaseContent.evidence" :key="evidence.id" class="case-evidence-item">
+                      <div><strong>{{ evidence.evidence_key }}</strong><span>{{ evidence.source_type }} · {{ evidence.status }}</span></div>
+                      <small>{{ evidence.source_ref }}</small><pre>{{ pretty(evidence.value_json) }}</pre>
+                    </article>
+                  </section>
+                </div>
+
+                <section class="report-data-panel report-asset-panel">
+                  <div class="panel-heading"><div><p class="eyebrow">FINDINGS</p><h3>专业判断审核</h3></div><span>{{ reportCaseContent.findings.length }} 条 · 只有确认项会进入已确认语义</span></div>
+                  <article v-for="finding in reportCaseContent.findings" :key="finding.id" class="finding-item">
+                    <template v-if="editingFindingKey === finding.finding_key && reportFindingDraft">
+                      <div class="finding-editor">
+                        <label>判断内容<textarea v-model.trim="reportFindingDraft.claim" rows="3" maxlength="5000"></textarea></label>
+                        <div class="form-grid two"><label>语义角色<input v-model.trim="reportFindingDraft.semantic_role" maxlength="48"></label><label>置信度<select v-model="reportFindingDraft.confidence"><option>LOW</option><option>MEDIUM</option><option>HIGH</option></select></label></div>
+                        <div class="form-grid two"><label>重要度<select v-model="reportFindingDraft.importance"><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></label><label>可报告性<select v-model="reportFindingDraft.reportability"><option>INTERNAL_ONLY</option><option>OPTIONAL</option><option>RECOMMENDED</option><option>MUST_INCLUDE</option></select></label></div>
+                        <label>Evidence 引用 <small>每行一个 evidence key</small><textarea v-model="reportFindingDraft.evidence_refs" rows="2"></textarea></label>
+                        <label>审核状态<select v-model="reportFindingDraft.status"><option value="PROPOSED">待审核</option><option value="CONFIRMED">已接受</option><option value="REJECTED">已拒绝</option></select></label>
+                        <div class="asset-actions"><VanButton class="secondary-button compact-button" type="default" plain native-type="button" @click="editingFindingKey = null">取消</VanButton><VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportFindingSaving" :loading="reportFindingSaving" @click="saveReportFinding">保存新版本</VanButton></div>
+                      </div>
+                    </template>
+                    <template v-else>
+                      <div class="asset-item-heading"><div><strong>{{ finding.finding_key }}</strong><span class="asset-status">{{ finding.status }} · {{ finding.semantic_role }} · v{{ finding.revision_no }}</span></div><small>{{ finding.confidence }} / {{ finding.importance }} / {{ finding.reportability }}</small></div>
+                      <p>{{ finding.claim }}</p>
+                      <small class="asset-source">Evidence：{{ finding.evidence_refs.join('、') || '无' }}</small>
+                      <div v-if="currentReportStep?.status === 'IN_REVIEW'" class="asset-actions">
+                        <VanButton class="secondary-button compact-button" type="default" plain native-type="button" @click="editReportFinding(finding)">修改</VanButton>
+                        <VanButton v-if="finding.status !== 'CONFIRMED'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportFindingSaving" @click="setReportFindingStatus(finding, 'CONFIRMED')">接受</VanButton>
+                        <VanButton v-if="finding.status !== 'REJECTED'" class="text-button danger-text" type="danger" plain native-type="button" :disabled="reportFindingSaving" @click="setReportFindingStatus(finding, 'REJECTED')">拒绝</VanButton>
+                      </div>
+                    </template>
+                  </article>
+                  <p v-if="!reportCaseContent.findings.length" class="empty-cell">暂无 Finding，可在当前审核步骤新增。</p>
+                  <form v-if="currentReportStep?.status === 'IN_REVIEW'" class="new-asset-form" @submit.prevent="addReportFinding">
+                    <h4>新增 Finding</h4>
+                    <div class="form-grid two"><label>稳定标识<input v-model.trim="newReportFinding.finding_key" maxlength="200" placeholder="例如 psychology.core_pattern"></label><label>语义角色<input v-model.trim="newReportFinding.semantic_role" maxlength="48" placeholder="例如 CONFLICT"></label></div>
+                    <label>判断内容<textarea v-model.trim="newReportFinding.claim" rows="3" maxlength="5000"></textarea></label>
+                    <label>Evidence 引用 <small>每行一个 evidence key</small><textarea v-model="newReportFinding.evidence_refs" rows="2"></textarea></label>
+                    <VanButton class="primary-button compact-button" type="primary" native-type="submit" :disabled="reportFindingSaving || !newReportFinding.finding_key.trim() || !newReportFinding.claim.trim()" :loading="reportFindingSaving">新增为待审核</VanButton>
+                  </form>
+                </section>
+
+                <section class="report-data-panel report-asset-panel">
+                  <div class="panel-heading"><div><p class="eyebrow">FRAGMENTS</p><h3>内容片段</h3></div><span>{{ reportCaseContent.fragments.length }} 条</span></div>
+                  <article v-for="fragment in reportCaseContent.fragments" :key="fragment.id" class="fragment-item">
+                    <div class="asset-item-heading"><div><strong>{{ fragment.fragment_key }}</strong><span class="asset-status">{{ fragment.status }} · v{{ fragment.revision_no }}</span></div><small>{{ fragment.edit_kind }} 修改</small></div>
+                    <label>标题<input v-model.trim="reportFragmentDrafts[fragment.fragment_key].title" :disabled="currentReportStep?.status !== 'IN_REVIEW'"></label>
+                    <label>正文<textarea v-model="reportFragmentDrafts[fragment.fragment_key].content" rows="5" :disabled="currentReportStep?.status !== 'IN_REVIEW'"></textarea></label>
+                    <div class="form-grid two"><label>修改类型<select v-model="reportFragmentDrafts[fragment.fragment_key].edit_kind" :disabled="currentReportStep?.status !== 'IN_REVIEW'"><option value="STYLE">纯文风修改</option><option value="SEMANTIC">语义修改</option></select></label><label>状态<select v-model="reportFragmentDrafts[fragment.fragment_key].status" :disabled="currentReportStep?.status !== 'IN_REVIEW'"><option value="PROPOSED">待确认</option><option value="CONFIRMED">已确认</option></select></label></div>
+                    <details class="snapshot-details"><summary>查看来源映射</summary><pre>{{ pretty(fragment.source_snapshot) }}</pre></details>
+                    <div v-if="fragment.stale_reason" class="stale-note">STALE：{{ fragment.stale_reason }}</div>
+                    <div v-if="currentReportStep?.status === 'IN_REVIEW'" class="asset-actions"><VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportFragmentSaving" :loading="reportFragmentSaving" @click="saveReportFragment(fragment)">保存新版本</VanButton></div>
+                  </article>
+                  <p v-if="!reportCaseContent.fragments.length" class="empty-cell">暂无内容片段，可在当前步骤新增。</p>
+                  <form v-if="currentReportStep?.status === 'IN_REVIEW'" class="new-asset-form" @submit.prevent="addReportFragment">
+                    <h4>新增内容片段</h4>
+                    <div class="form-grid two"><label>稳定标识<input v-model.trim="newReportFragment.fragment_key" maxlength="200" placeholder="例如 analysis.core"></label><label>标题<input v-model.trim="newReportFragment.title" maxlength="240"></label></div>
+                    <label>正文<textarea v-model.trim="newReportFragment.content" rows="5" maxlength="30000"></textarea></label>
+                    <label>Finding 来源 <small>每行一个 finding key</small><textarea v-model="newReportFragment.finding_refs" rows="2"></textarea></label>
+                    <label>Evidence 来源 <small>每行一个 evidence key</small><textarea v-model="newReportFragment.evidence_refs" rows="2"></textarea></label>
+                    <VanButton class="primary-button compact-button" type="primary" native-type="submit" :disabled="reportFragmentSaving || !newReportFragment.fragment_key.trim() || !newReportFragment.content.trim()" :loading="reportFragmentSaving">新增待确认片段</VanButton>
+                  </form>
+                </section>
+              </template>
+              <div v-else class="empty-cell">未找到关联的 ReportCase。请刷新申请列表并检查服务端关联状态。</div>
+            </section>
+
+            <div v-if="workspace.request.service_type === 'calendar'" class="workspace-actions">
               <VanButton v-if="workspace.request.status === 'submitted' && !workspace.request.assigned_consultant_id" class="primary-button" type="primary" native-type="button" :disabled="accepting" :aria-busy="accepting" @click="acceptRequest">{{ accepting ? '接收中…' : '接受并处理' }}</VanButton>
               <VanButton v-if="workspace.request.status === 'accepted' || workspace.request.status === 'failed'" class="primary-button" type="primary" native-type="button" :disabled="aiStarting" :aria-busy="aiStarting" @click="startAI">{{ aiStarting ? '启动中…' : workspace.request.status === 'failed' ? '重试 AI 初稿' : '生成 AI 初稿' }}</VanButton>
               <VanButton v-if="workspace.request.status === 'ai_ready' || workspace.request.status === 'reviewing'" class="secondary-button" type="default" plain native-type="button" :disabled="aiStarting" @click="regenerateAI">重新生成 AI 初稿</VanButton>
@@ -70,12 +175,12 @@
               <VanButton v-if="admin && ['submitted', 'accepted', 'needs_info', 'failed'].includes(workspace.request.status)" class="text-button danger-text" type="danger" plain native-type="button" @click="rejectRequest">关闭申请</VanButton>
             </div>
 
-            <div v-if="showInfoPanel" class="info-panel">
+            <div v-if="workspace.request.service_type === 'calendar' && showInfoPanel" class="info-panel">
               <label>请补充的资料或原因<textarea v-model.trim="infoReason" rows="3" maxlength="1000" placeholder="说明用户需要补充什么，以及为什么这会影响分析。"></textarea></label>
               <div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" @click="showInfoPanel = false">取消</VanButton><VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="infoSaving || !infoReason" :aria-busy="infoSaving" @click="requestInfo">{{ infoSaving ? '发送中…' : '标记待补充' }}</VanButton></div>
             </div>
 
-            <div class="workspace-grid">
+            <div v-if="workspace.request.service_type === 'calendar'" class="workspace-grid">
               <section class="facts-panel">
                 <div class="panel-heading"><div><p class="eyebrow">SOURCE / USER INPUT</p><h3>资料与需求</h3></div><span>申请快照</span></div>
                 <dl class="detail-list source-list"><div><dt>姓名</dt><dd>{{ workspace.user.name || workspace.request.request_payload?.profile?.name || '—' }}</dd></div><div><dt>性别</dt><dd>{{ genderLabel(workspace.user.gender || workspace.request.request_payload?.profile?.gender) }}</dd></div><div><dt>出生资料</dt><dd>{{ birthSummary }}</dd></div><div><dt>出生地</dt><dd>{{ workspace.user.birth_place || workspace.request.request_payload?.profile?.birth_place || '—' }}</dd></div><div><dt>关注议题</dt><dd>{{ workspace.request.service_type === 'report' ? topicLabel(workspace.request.request_payload?.selected_topics) : workspace.request.request_payload?.calendar_goal || '—' }}</dd></div><div><dt>补充说明</dt><dd>{{ workspace.request.request_payload?.additional_info || '—' }}</dd></div></dl>
@@ -89,7 +194,7 @@
               <section v-else class="ai-panel ai-empty"><div class="panel-heading"><div><p class="eyebrow">AI SOURCE / PRIVATE</p><h3>等待生成初稿</h3></div></div><p>确认资料后，点击“生成 AI 初稿”。</p></section>
             </div>
 
-            <section v-if="workspace.draft" class="editor-panel">
+            <section v-if="workspace.draft && workspace.request.service_type === 'calendar'" class="editor-panel">
               <div class="panel-heading editor-heading"><div><p class="eyebrow">CONSULTANT EDITOR</p><h3>结构化编辑</h3></div><span>当前版本 v{{ workspace.draft.content_version }}</span></div>
               <div v-if="workspace.request.service_type === 'report'" class="report-editor">
                 <label class="wide-field">报告标题<input v-model.trim="reportEditor.title" maxlength="100"></label>
@@ -127,7 +232,7 @@
                 </div>
               </div>
             </section>
-            <p v-if="workspace.task && workspace.task.status === 'failed'" class="task-error" role="alert">AI 初稿生成失败：{{ workspace.task.error || workspace.request.last_error || '请重试' }}</p>
+            <p v-if="workspace.request.service_type === 'calendar' && workspace.task && workspace.task.status === 'failed'" class="task-error" role="alert">AI 初稿生成失败：{{ workspace.task.error || workspace.request.last_error || '请重试' }}</p>
           </div>
 
           <div v-else class="empty-state"><IconMark class="empty-icon" name="compass" /><p>从左侧选择一份申请开始处理。</p><small>待接单申请只展示必要摘要；接单后才会打开完整资料。</small></div>

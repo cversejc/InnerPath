@@ -9,6 +9,7 @@ export const CUSTOMER_SERVICE_REQUEST_STATUS_LABELS = {
   needs_info: '需要补充资料',
   failed: '分析暂时失败',
   delivered: '已完成',
+  workflow_complete: '内容审核完成',
   withdrawn: '已撤回',
   rejected: '暂未受理'
 }

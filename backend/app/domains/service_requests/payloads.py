@@ -1,7 +1,7 @@
 """Normalize submitted report and calendar request payloads."""
 
 from copy import deepcopy
-from datetime import date
+from datetime import date, timedelta
 from typing import Any, Optional
 
 from .models import SERVICE_REQUEST_TYPES, ServiceRequest
@@ -52,6 +52,9 @@ def _normalize_payload(
     additional_info: Optional[str],
     calendar_goal: Optional[str],
     start_date: Optional[date | str],
+    *,
+    profile_version: Optional[int] = None,
+    context: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     ensure_service_type(service_type)
     profile_model = ServiceProfileSnapshot.model_validate(profile)
@@ -75,7 +78,7 @@ def _normalize_payload(
         end = None
         calendar_goal = None
 
-    return {
+    payload = {
         "profile": profile_payload,
         "selected_topics": list(selected_topics or []),
         "additional_info": additional_info or None,
@@ -83,11 +86,23 @@ def _normalize_payload(
         "start_date": start.isoformat() if start else None,
         "end_date": end.isoformat() if end else None,
     }
+    if service_type == "report":
+        if profile_version is not None:
+            payload["profile_version"] = profile_version
+        if context is not None:
+            payload["context"] = deepcopy(context)
+    return payload
 
 
 def payload_from_create(
     data: ServiceRequestCreate, user: User
 ) -> tuple[dict[str, Any], Optional[str]]:
+    if (
+        data.service_type == "report"
+        and data.profile_version is not None
+        and data.profile_version != int(user.profile_version or 1)
+    ):
+        raise ValueError("profile_version_conflict")
     profile = data.profile.model_dump()
     if not profile.get("name"):
         profile["name"] = user.name
@@ -99,6 +114,8 @@ def payload_from_create(
             data.additional_info,
             data.calendar_goal,
             data.start_date,
+            profile_version=data.profile_version,
+            context=data.context,
         ),
         data.idempotency_key,
     )
