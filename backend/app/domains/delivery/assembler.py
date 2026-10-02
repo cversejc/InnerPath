@@ -19,7 +19,12 @@ SECTION_ORDER = (("identity", "你是谁"), ("challenge", "卡在哪"), ("direct
 
 
 async def assemble_report_version(
-    db: AsyncSession, report_case: ReportCase, *, actor_id: int
+    db: AsyncSession,
+    report_case: ReportCase,
+    *,
+    actor_id: int,
+    quality_snapshot: dict | None = None,
+    skill_run_snapshot: list[dict] | None = None,
 ) -> ReportVersion:
     if report_case.status != "READY_TO_DELIVER":
         raise ValueError("workflow_not_ready_to_deliver")
@@ -38,6 +43,10 @@ async def assemble_report_version(
         or not (final_gate.result_json or {}).get("final_gate_approved")
     ):
         raise ValueError("final_gate_approval_required")
+    if not quality_snapshot or quality_snapshot.get("can_approve") is not True:
+        raise ValueError("final_qa_issues_open_or_stale")
+    if skill_run_snapshot is None:
+        raise ValueError("skill_provenance_snapshot_required")
     workflow_version = await db.get(WorkflowVersion, instance.workflow_version_id)
     if workflow_version is None:
         raise ValueError("workflow_version_not_found")
@@ -156,6 +165,8 @@ async def assemble_report_version(
                 "version": workflow_version.version,
                 "definition": workflow_version.definition_json,
             },
+            "skill_runs": skill_run_snapshot,
+            "quality": quality_snapshot,
             "final_gate": {
                 "step_task_id": final_gate.id,
                 "activation_no": final_gate.activation_no,

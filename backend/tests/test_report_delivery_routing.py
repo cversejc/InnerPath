@@ -54,7 +54,7 @@ async def test_report_with_case_is_delivered_through_case_gate(monkeypatch):
     request = SimpleNamespace(
         id=24,
         service_type="report",
-        status="reviewing",
+        status="accepted",
         user_id=42,
         request_payload={},
     )

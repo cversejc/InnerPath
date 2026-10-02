@@ -25,7 +25,7 @@ from app.domains.service_requests.repository import (
 )
 from app.domains.service_requests.staff import staff_can_access
 from app.application.report_delivery import deliver_report_case
-from app.domains.workflow.models import ReportCase
+from app.application.report_cases import get_report_case_for_service_request
 
 
 async def _create_final_report(
@@ -137,21 +137,11 @@ async def deliver_service_request(
 ) -> ServiceRequest:
     if not staff_can_access(service_request, actor):
         raise ValueError("service_request_not_assigned")
-    if service_request.status == "delivered":
-        return service_request
-    if service_request.status not in {"ai_ready", "reviewing"}:
-        raise ValueError("service_request_delivery_not_allowed")
     locked = await _get_request_for_update(db, service_request.id)
     if locked is None:
         raise ValueError("service_request_not_found")
-    if locked.status == "delivered":
-        return locked
     if locked.service_type == "report":
-        report_case = await db.scalar(
-            select(ReportCase)
-            .where(ReportCase.service_request_id == locked.id)
-            .with_for_update()
-        )
+        report_case = await get_report_case_for_service_request(db, locked.id)
         if report_case is not None:
             await deliver_report_case(
                 db,
@@ -161,6 +151,10 @@ async def deliver_service_request(
             )
             await db.refresh(locked)
             return locked
+    if locked.status == "delivered":
+        return locked
+    if locked.status not in {"ai_ready", "reviewing"}:
+        raise ValueError("service_request_delivery_not_allowed")
     draft = await _get_draft(db, locked.id)
     if draft is None:
         raise ValueError("service_request_draft_not_found")

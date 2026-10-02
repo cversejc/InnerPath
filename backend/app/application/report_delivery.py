@@ -1,10 +1,11 @@
+from copy import deepcopy
 from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.report_quality import case_can_be_delivered
+from app.application.report_quality import delivery_quality_snapshot
 from app.application.workflow_commands import complete_case_step
 from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
@@ -13,10 +14,61 @@ from app.domains.delivery.assembler import assemble_report_version
 from app.domains.delivery.models import ReportVersion
 from app.domains.quality.service import latest_validator_run
 from app.domains.reports.models import Report
+from app.domains.skills.models import AISkillVersion, SkillRun
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.domains.workflow.models import ReportCase, StepTask, WorkflowInstance
 from app.models.user import User
+
+
+async def snapshot_case_skill_runs(
+    db: AsyncSession, report_case_id: int
+) -> list[dict]:
+    runs = await db.scalars(
+        select(SkillRun)
+        .where(SkillRun.report_case_id == report_case_id)
+        .order_by(SkillRun.id)
+    )
+    snapshots = []
+    for run in runs:
+        skill_version = await db.get(AISkillVersion, run.skill_version_id)
+        snapshots.append(
+            {
+                "id": run.id,
+                "skill_version": (
+                    {
+                        "id": skill_version.id,
+                        "skill_key": skill_version.skill_key,
+                        "name": skill_version.name,
+                        "category": skill_version.category,
+                        "version": skill_version.version,
+                        "specification_json": deepcopy(skill_version.specification_json),
+                    }
+                    if skill_version
+                    else {"id": run.skill_version_id}
+                ),
+                "workflow_instance_id": run.workflow_instance_id,
+                "step_task_id": run.step_task_id,
+                "target_type": run.target_type,
+                "target_key": run.target_key,
+                "run_type": run.run_type,
+                "status": run.status,
+                "runtime_instruction": run.runtime_instruction,
+                "input_snapshot": deepcopy(run.input_snapshot or {}),
+                "context_snapshot": deepcopy(run.context_snapshot or {}),
+                "output_raw": run.output_raw,
+                "output_parsed": deepcopy(run.output_parsed),
+                "selected_examples": deepcopy(run.selected_examples or []),
+                "selected_knowledge": deepcopy(run.selected_knowledge or []),
+                "model_trace": deepcopy(run.model_trace or {}),
+                "error": run.error,
+                "retry_count": run.retry_count,
+                "created_at": run.created_at.isoformat() if run.created_at else None,
+                "started_at": run.started_at.isoformat() if run.started_at else None,
+                "completed_at": run.completed_at.isoformat() if run.completed_at else None,
+            }
+        )
+    return snapshots
 
 
 async def approve_case_final_gate(
@@ -105,8 +157,7 @@ async def deliver_report_case(
         or not (gate.result_json or {}).get("final_gate_approved")
     ):
         raise ValueError("final_gate_approval_required")
-    if not await case_can_be_delivered(db, locked_case):
-        raise ValueError("final_qa_issues_open_or_stale")
+    quality_snapshot = await delivery_quality_snapshot(db, locked_case)
 
     request = None
     if locked_case.service_request_id is not None:
@@ -115,7 +166,14 @@ async def deliver_report_case(
             .where(ServiceRequest.id == locked_case.service_request_id)
             .with_for_update()
         )
-    version = await assemble_report_version(db, locked_case, actor_id=actor.id)
+    skill_run_snapshot = await snapshot_case_skill_runs(db, locked_case.id)
+    version = await assemble_report_version(
+        db,
+        locked_case,
+        actor_id=actor.id,
+        quality_snapshot=quality_snapshot,
+        skill_run_snapshot=skill_run_snapshot,
+    )
     await db.flush()
     snapshot = locked_case.application_snapshot or {}
     profile = snapshot.get("profile") or {}

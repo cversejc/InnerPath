@@ -494,7 +494,7 @@ async def deliver_report_case_endpoint(
 @router.get("/{case_id}/versions", response_model=list[ReportVersionResponse])
 async def list_report_case_versions(
     case_id: int,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_roles("admin", "consultant")),
     db: AsyncSession = Depends(get_db),
 ):
     await _case_for_read_or_action(db, case_id, current_user)

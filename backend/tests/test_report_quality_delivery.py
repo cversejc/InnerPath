@@ -8,6 +8,8 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from app.api.v1.report_cases import _workflow_error
+from app.api.v1.report_cases import router as report_case_router
+from app.application import report_delivery
 from app.db.base import Base
 from app.domains.content.models import (
     CaseEvidenceItem,
@@ -15,6 +17,11 @@ from app.domains.content.models import (
     FindingRevision,
     NarrativePlan,
 )
+from app.domains.content.evidence import create_evidence_item
+from app.domains.content.findings import create_finding_revision
+from app.domains.content.fragments import create_content_fragment_revision
+from app.domains.content.narrative import semantic_source_snapshot
+from app.domains.content.queries import load_case_semantic_model
 from app.domains.delivery import assembler
 from app.domains.delivery.assembler import assemble_report_version
 from app.domains.delivery.models import ReportVersion
@@ -26,6 +33,7 @@ from app.domains.workflow.models import (
     StepTask,
     WorkflowInstance,
     WorkflowVersion,
+    WorkflowOutbox,
 )
 
 
@@ -77,6 +85,7 @@ def quality_db():
         WorkflowVersion.__table__,
         WorkflowInstance.__table__,
         StepTask.__table__,
+        WorkflowOutbox.__table__,
         AISkillVersion.__table__,
         SkillRun.__table__,
         CaseEvidenceItem.__table__,
@@ -134,6 +143,267 @@ async def test_programmatic_qa_persists_blocking_findings_for_incomplete_case(
 
 
 @pytest.mark.asyncio
+async def test_block_rework_and_qa_rerun_reaches_pass_with_stub_gateway(
+    quality_db, monkeypatch
+):
+    from app.application.report_quality import (
+        case_can_be_delivered,
+        queue_case_quality_run,
+        quality_state,
+    )
+    from app.application import skill_runtime
+    from app.domains.skills.service import create_skill_run
+
+    now = datetime.utcnow()
+    report_case = ReportCase(
+        user_id=45,
+        status="ACTIVE",
+        application_snapshot={
+            "profile": {
+                "name": "林女士",
+                "birth_year": 1992,
+                "birth_month": 2,
+                "birth_day": 29,
+                "calendar_type": "solar",
+                "birth_place": "杭州",
+            },
+            "context": {"current_challenge": "考虑转变职业方向。"},
+        },
+        application_submitted_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    quality_db.add(report_case)
+    await quality_db.flush()
+    authoring_skill = AISkillVersion(
+        skill_key="report.narrative_plan",
+        name="Narrative",
+        category="AUTHORING",
+        version=1,
+        status="PUBLISHED",
+        specification_json={"identity": {"skill_key": "report.narrative_plan"}},
+        created_at=now,
+    )
+    quality_db.add(authoring_skill)
+    await quality_db.flush()
+    candidate_run, _ = await create_skill_run(
+        quality_db,
+        skill_version_id=authoring_skill.id,
+        idempotency_key="qa-cycle-candidate-run",
+        input_snapshot={},
+        context_snapshot={},
+        run_type="INITIAL",
+        target_type="NARRATIVE_CANDIDATES",
+        target_key="S5",
+        report_case_id=report_case.id,
+    )
+    evidence = await create_evidence_item(
+        quality_db,
+        report_case_id=report_case.id,
+        evidence_key="input.context.current_challenge",
+        source_type="USER_PROVIDED",
+        source_ref="application_snapshot.context.current_challenge",
+        value="考虑转变职业方向。",
+    )
+    finding = await create_finding_revision(
+        quality_db,
+        report_case_id=report_case.id,
+        finding_key="finding.core",
+        claim="用户正在权衡稳定与自主。",
+        semantic_role="CONFLICT",
+        confidence="MEDIUM",
+        importance="MEDIUM",
+        reportability="RECOMMENDED",
+        status="CONFIRMED",
+        evidence_refs=[evidence.evidence_key],
+        source_skill_run_id=candidate_run.id,
+    )
+    semantic_model = await load_case_semantic_model(quality_db, report_case.id)
+    plan = NarrativePlan(
+        report_case_id=report_case.id,
+        version_no=1,
+        is_current=True,
+        status="CONFIRMED",
+        selected_skill_run_id=candidate_run.id,
+        selected_candidate_key="candidate_a",
+        plan_json={"core_theme": "先理解取舍，再选择方向"},
+        source_snapshot=semantic_source_snapshot(semantic_model),
+        created_at=now,
+        confirmed_at=now,
+    )
+    quality_db.add(plan)
+    await quality_db.flush()
+    identity = await create_content_fragment_revision(
+        quality_db,
+        report_case_id=report_case.id,
+        fragment_key="report.identity",
+        fragment_type="REPORT",
+        title="你是谁",
+        content="你注定发财，也重视自主空间。",
+        status="CONFIRMED",
+        finding_refs=[finding.finding_key],
+        evidence_refs=[evidence.evidence_key],
+        source_skill_run_id=candidate_run.id,
+        source_narrative_plan_id=plan.id,
+    )
+    for key, title, content in (
+        ("report.challenge", "卡在哪", "稳定与自主之间需要更多信息来权衡。"),
+        ("report.direction", "往哪去", "可以先用小步尝试验证新的方向。"),
+    ):
+        await create_content_fragment_revision(
+            quality_db,
+            report_case_id=report_case.id,
+            fragment_key=key,
+            fragment_type="REPORT",
+            title=title,
+            content=content,
+            status="CONFIRMED",
+            finding_refs=[finding.finding_key],
+            evidence_refs=[evidence.evidence_key],
+            source_skill_run_id=candidate_run.id,
+            source_narrative_plan_id=plan.id,
+        )
+
+    blocked = await queue_case_quality_run(
+        quality_db,
+        report_case=report_case,
+        actor_id=8,
+        idempotency_key="qa-cycle-blocked",
+    )
+    assert blocked["status"] == "PROGRAMMATIC_BLOCKED"
+    assert any(issue.severity == "BLOCK" for issue in blocked["issues"])
+    assert await case_can_be_delivered(quality_db, report_case) is False
+
+    await create_content_fragment_revision(
+        quality_db,
+        report_case_id=report_case.id,
+        fragment_key=identity.fragment_key,
+        fragment_type="REPORT",
+        title="你是谁",
+        content="你重视自主空间，也会认真衡量稳定带来的支持。",
+        status="CONFIRMED",
+        finding_refs=[finding.finding_key],
+        evidence_refs=[evidence.evidence_key],
+        source_skill_run_id=candidate_run.id,
+        source_narrative_plan_id=plan.id,
+        edit_kind="SEMANTIC",
+    )
+    rerun = await queue_case_quality_run(
+        quality_db,
+        report_case=report_case,
+        actor_id=8,
+        idempotency_key="qa-cycle-pass",
+    )
+    assert rerun["status"] == "PENDING"
+    gateway = StubGateway('{"issues":[]}')
+    monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
+    completed = await skill_runtime.execute_skill_run_record(
+        quality_db, rerun["validator_run"].id
+    )
+    state = await quality_state(quality_db, report_case)
+
+    assert completed.status == "COMPLETED"
+    assert gateway.calls == 1
+    assert state.quality_status == "COMPLETED"
+    assert state.open_count == 0
+    assert state.can_approve is True
+    assert await case_can_be_delivered(quality_db, report_case) is True
+
+    workflow_version = WorkflowVersion(
+        workflow_key="report.production",
+        name="Consultant workflow",
+        version=2,
+        status="PUBLISHED",
+        definition_json={"steps": []},
+        created_at=now,
+        published_at=now,
+    )
+    quality_db.add(workflow_version)
+    await quality_db.flush()
+    instance = WorkflowInstance(
+        report_case_id=report_case.id,
+        workflow_version_id=workflow_version.id,
+        status="COMPLETED",
+        created_at=now,
+        updated_at=now,
+        started_at=now,
+        completed_at=now,
+    )
+    quality_db.add(instance)
+    await quality_db.flush()
+    report_case.workflow_instance_id = instance.id
+    report_case.status = "READY_TO_DELIVER"
+    gate_result = {
+        "final_gate_approved": True,
+        "validator_run_id": completed.id,
+        "qa_fingerprint": state.qa_fingerprint_current,
+        "attested_by": 8,
+        "attested_at": now.isoformat(),
+    }
+    quality_db.add(
+        StepTask(
+            workflow_instance_id=instance.id,
+            step_key="S6",
+            sequence_no=6,
+            executor="HUMAN",
+            status="COMPLETED",
+            activation_no=1,
+            config_snapshot={},
+            result_json=gate_result,
+            completed_at=now,
+            created_at=now,
+            updated_at=now,
+        )
+    )
+    await quality_db.flush()
+
+    class ReportStub:
+        def __init__(self, **values):
+            self.values = values
+            self.id = 701
+
+    added_reports = []
+    add_to_session = quality_db.add
+
+    def add_delivery_record(value):
+        if isinstance(value, ReportStub):
+            added_reports.append(value)
+        else:
+            add_to_session(value)
+
+    monkeypatch.setattr(quality_db, "add", add_delivery_record)
+    monkeypatch.setattr(report_delivery, "Report", ReportStub)
+    monkeypatch.setattr(report_delivery, "record_audit", AsyncMock())
+    delivered_version = await report_delivery.deliver_report_case(
+        quality_db,
+        report_case=report_case,
+        actor=SimpleNamespace(id=8, role="admin"),
+    )
+
+    assert report_case.status == "DELIVERED"
+    assert len(added_reports) == 1
+    assert added_reports[0].values["birth_place"] == "杭州"
+    assert delivered_version.semantic_snapshot["quality"]["open_count"] == 0
+    assert any(
+        issue["severity"] == "BLOCK"
+        and issue["status"] == "RESOLVED"
+        and issue["resolution"]
+        for issue in delivered_version.semantic_snapshot["quality"]["issues"]
+    )
+    assert any(
+        item["id"] == candidate_run.id
+        and item["target_type"] == "NARRATIVE_CANDIDATES"
+        for item in delivered_version.semantic_snapshot["skill_runs"]
+    )
+    assert any(
+        item["id"] == completed.id
+        and item["target_type"] == "REPORT_QA"
+        and item["model_trace"]["model"] == "stub"
+        for item in delivered_version.semantic_snapshot["skill_runs"]
+    )
+
+
+@pytest.mark.asyncio
 async def test_final_report_assembler_requires_approved_s6_gate():
     now = datetime.utcnow()
     case = SimpleNamespace(
@@ -171,6 +441,8 @@ async def test_final_report_assembler_requires_approved_s6_gate():
 async def test_assembled_report_version_captures_s6_attestation(
     quality_db, monkeypatch
 ):
+    from app.domains.skills.service import create_skill_run
+
     now = datetime.utcnow()
     workflow_version = WorkflowVersion(
         workflow_key="report.production",
@@ -203,9 +475,67 @@ async def test_assembled_report_version_captures_s6_attestation(
     quality_db.add(instance)
     await quality_db.flush()
     case.workflow_instance_id = instance.id
+    skill_version = AISkillVersion(
+        skill_key="report.narrative_plan",
+        name="Narrative planner",
+        category="AUTHORING",
+        version=1,
+        status="PUBLISHED",
+        specification_json={"prompt": "frozen prompt"},
+        created_at=now,
+    )
+    quality_db.add(skill_version)
+    await quality_db.flush()
+    candidate_run, _ = await create_skill_run(
+        quality_db,
+        skill_version_id=skill_version.id,
+        idempotency_key="delivery-candidate-run",
+        input_snapshot={"context": {"goal": "understand"}},
+        context_snapshot={"semantic_source_snapshot": {}},
+        run_type="INITIAL",
+        target_type="NARRATIVE_CANDIDATES",
+        target_key="S5",
+        report_case_id=case.id,
+    )
+    writer_run, _ = await create_skill_run(
+        quality_db,
+        skill_version_id=skill_version.id,
+        idempotency_key="delivery-writer-run",
+        input_snapshot={"context": {"fragment": "identity"}},
+        context_snapshot={"source_narrative_plan_id": 1},
+        run_type="INITIAL",
+        target_type="REPORT_FRAGMENT",
+        target_key="report.identity",
+        report_case_id=case.id,
+    )
+    writer_run.status = "COMPLETED"
+    writer_run.output_raw = "source output"
+    writer_run.output_parsed = {"status": "READY_FOR_REVIEW"}
+    writer_run.selected_examples = [
+        {
+            "example_id": 51,
+            "version_no": 4,
+            "example_snapshot": {"teaching_points": ["保持边界表达"]},
+        }
+    ]
+    writer_run.model_trace = {"provider": "test", "model": "stub-v1"}
+    validator_run, _ = await create_skill_run(
+        quality_db,
+        skill_version_id=skill_version.id,
+        idempotency_key="delivery-validator-run",
+        input_snapshot={"context": {"qa": "passed"}},
+        context_snapshot={"qa_fingerprint": "qa-fingerprint-31"},
+        run_type="VALIDATE",
+        target_type="REPORT_QA",
+        target_key="report.final",
+        report_case_id=case.id,
+    )
+    validator_run.status = "COMPLETED"
+    validator_run.model_trace = {"provider": "test", "model": "validator-v1"}
+    await quality_db.flush()
     gate_result = {
         "final_gate_approved": True,
-        "validator_run_id": 31,
+        "validator_run_id": validator_run.id,
         "qa_fingerprint": "qa-fingerprint-31",
         "attested_by": 8,
         "attested_at": now.isoformat(),
@@ -230,7 +560,7 @@ async def test_assembled_report_version_captures_s6_attestation(
         version_no=1,
         is_current=True,
         status="CONFIRMED",
-        selected_skill_run_id=1,
+        selected_skill_run_id=candidate_run.id,
         selected_candidate_key="candidate-1",
         plan_json={"core_theme": "先稳住节奏"},
         source_snapshot={},
@@ -253,6 +583,7 @@ async def test_assembled_report_version_captures_s6_attestation(
             source_snapshot={},
             edit_kind="STYLE",
             is_current=True,
+            source_skill_run_id=writer_run.id,
             source_narrative_plan_id=plan.id,
             created_at=now,
         )
@@ -263,10 +594,80 @@ async def test_assembled_report_version_captures_s6_attestation(
         AsyncMock(return_value={"findings": [], "analysis_fragments": [], "evidence": []}),
     )
 
-    version = await assemble_report_version(quality_db, case, actor_id=8)
+    with pytest.raises(ValueError, match="final_qa_issues_open_or_stale"):
+        await assemble_report_version(quality_db, case, actor_id=8)
+
+    version = await assemble_report_version(
+        quality_db,
+        case,
+        actor_id=8,
+        quality_snapshot={
+            "can_approve": True,
+            "quality_status": "COMPLETED",
+            "qa_fingerprint": "qa-fingerprint-31",
+            "blocking_count": 0,
+            "open_count": 0,
+            "validator_run_id": validator_run.id,
+            "issues": [
+                {
+                    "id": 19,
+                    "severity": "BLOCK",
+                    "status": "RESOLVED",
+                    "resolution": "已修订对应报告片段。",
+                }
+            ],
+        },
+        skill_run_snapshot=await report_delivery.snapshot_case_skill_runs(
+            quality_db, case.id
+        ),
+    )
 
     assert version.semantic_snapshot["final_gate"]["result_json"] == gate_result
     assert version.semantic_snapshot["final_gate"]["activation_no"] == 2
+    assert version.semantic_snapshot["quality"]["issues"][0]["status"] == "RESOLVED"
+    writer_snapshot = next(
+        row
+        for row in version.semantic_snapshot["skill_runs"]
+        if row["id"] == writer_run.id
+    )
+    assert writer_snapshot["skill_version"]["version"] == 1
+    assert writer_snapshot["skill_version"]["specification_json"] == {
+        "prompt": "frozen prompt"
+    }
+    assert writer_snapshot["selected_examples"][0]["version_no"] == 4
+    assert writer_snapshot["model_trace"]["model"] == "stub-v1"
+    assert version.semantic_snapshot["workflow"]["version"] == 1
+    assert version.semantic_snapshot["workflow"]["definition"] == {"steps": []}
+
+    quality_db.add(
+        AISkillVersion(
+            skill_key=skill_version.skill_key,
+            name=skill_version.name,
+            category=skill_version.category,
+            version=2,
+            status="PUBLISHED",
+            specification_json={"prompt": "released later"},
+            created_at=datetime.utcnow(),
+        )
+    )
+    quality_db.add(
+        WorkflowVersion(
+            workflow_key=workflow_version.workflow_key,
+            name=workflow_version.name,
+            version=2,
+            status="PUBLISHED",
+            definition_json={"steps": [{"step_key": "S7"}]},
+            created_at=datetime.utcnow(),
+            published_at=datetime.utcnow(),
+        )
+    )
+    await quality_db.flush()
+    assert writer_snapshot["skill_version"]["version"] == 1
+    assert version.semantic_snapshot["workflow"]["version"] == 1
+
+    writer_run.model_trace = {"provider": "test", "model": "changed-after-delivery"}
+    await quality_db.flush()
+    assert writer_snapshot["model_trace"]["model"] == "stub-v1"
 
 
 @pytest.mark.asyncio
@@ -382,3 +783,22 @@ def test_validator_in_progress_is_a_conflict():
     with pytest.raises(HTTPException) as raised:
         _workflow_error(ValueError("validator_run_in_progress"))
     assert raised.value.status_code == 409
+
+
+@pytest.mark.asyncio
+async def test_report_version_history_is_staff_only():
+    route = next(
+        route
+        for route in report_case_router.routes
+        if getattr(route, "path", None) == "/{case_id}/versions"
+    )
+    role_check = route.dependant.dependencies[0].call
+
+    with pytest.raises(HTTPException) as denied:
+        await role_check(current_user=SimpleNamespace(role="user", is_active=True))
+    assert denied.value.status_code == 403
+    assert (
+        await role_check(
+            current_user=SimpleNamespace(role="consultant", is_active=True)
+        )
+    ).role == "consultant"

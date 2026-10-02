@@ -183,6 +183,23 @@ async def case_can_be_delivered(db: AsyncSession, report_case: ReportCase) -> bo
     return state.can_approve
 
 
+async def delivery_quality_snapshot(
+    db: AsyncSession, report_case: ReportCase
+) -> dict:
+    state = await quality_state(db, report_case)
+    if not state.can_approve:
+        raise ValueError("final_qa_issues_open_or_stale")
+    return {
+        "can_approve": True,
+        "quality_status": state.quality_status,
+        "qa_fingerprint": state.qa_fingerprint_current,
+        "blocking_count": state.blocking_count,
+        "open_count": state.open_count,
+        "issues": [issue.model_dump(mode="json") for issue in state.issues],
+        "validator_run_id": (state.latest_validator_run or {}).get("id"),
+    }
+
+
 async def close_case_qa_issue(
     db: AsyncSession,
     *,

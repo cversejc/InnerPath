@@ -14,6 +14,7 @@ from app.domains.content.models import (
     FindingRevision,
     NarrativePlan,
 )
+from app.domains.content.fragments import create_content_fragment_revision
 from app.domains.content.narrative import (
     confirm_narrative_plan,
     semantic_source_snapshot,
@@ -296,6 +297,54 @@ async def test_confirmed_plan_is_versioned_and_semantic_change_stales_report_fra
     assert plan.status == "STALE"
     assert fragment.status == "STALE"
     assert fragment.stale_reason == "SOURCE_CHANGED:finding:finding.core"
+
+
+@pytest.mark.asyncio
+async def test_narrative_plan_revision_stales_report_fragments_without_changing_findings(
+    narrative_db,
+):
+    db, case_id, run_id, finding_id = narrative_db
+    original_finding = await db.get(FindingRevision, finding_id)
+    plan_v1 = await confirm_narrative_plan(
+        db,
+        report_case_id=case_id,
+        skill_run_id=run_id,
+        candidate_key="candidate_a",
+        overrides={},
+        actor_id=12,
+    )
+    fragment = await create_content_fragment_revision(
+        db,
+        report_case_id=case_id,
+        fragment_key="report.identity.core",
+        fragment_type="REPORT",
+        title="核心模式",
+        content="基于已确认判断写成的报告内容。",
+        status="CONFIRMED",
+        finding_refs=["finding.core"],
+        source_narrative_plan_id=plan_v1.id,
+    )
+
+    plan_v2 = await confirm_narrative_plan(
+        db,
+        report_case_id=case_id,
+        skill_run_id=run_id,
+        candidate_key="candidate_b",
+        overrides={"core_theme": "另一种叙事主线"},
+        actor_id=12,
+    )
+
+    await db.refresh(plan_v1)
+    await db.refresh(fragment)
+    await db.refresh(original_finding)
+    assert plan_v1.version_no == 1
+    assert plan_v1.status == "SUPERSEDED"
+    assert plan_v2.version_no == 2
+    assert plan_v2.status == "CONFIRMED"
+    assert fragment.status == "STALE"
+    assert fragment.stale_reason == "NARRATIVE_CHANGED"
+    assert original_finding.claim == "A confirmed, bounded observation."
+    assert original_finding.semantic_revision == 1
 
 
 @pytest.mark.asyncio

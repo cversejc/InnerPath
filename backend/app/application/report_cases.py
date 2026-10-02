@@ -56,6 +56,21 @@ async def ensure_default_workflow_version(db: AsyncSession) -> WorkflowVersion:
         raise
 
 
+async def get_report_case_for_service_request(
+    db: AsyncSession, service_request_id: int
+) -> Optional[ReportCase]:
+    return await db.scalar(
+        select(ReportCase).where(ReportCase.service_request_id == service_request_id)
+    )
+
+
+async def ensure_legacy_report_request(db: AsyncSession, request: ServiceRequest) -> None:
+    if request.service_type != "report":
+        return
+    if await get_report_case_for_service_request(db, request.id):
+        raise ValueError("report_case_workflow_required")
+
+
 async def create_user_service_request(
     db: AsyncSession,
     user: User,
@@ -72,9 +87,7 @@ async def create_user_service_request(
     request = await create_service_request(
         db, user, data, audit_context=audit_context, commit=False
     )
-    report_case = await db.scalar(
-        select(ReportCase).where(ReportCase.service_request_id == request.id)
-    )
+    report_case = await get_report_case_for_service_request(db, request.id)
     if report_case is None and request.status not in {"withdrawn", "rejected"}:
         await ensure_default_workflow_version(db)
         report_case = await create_report_case(

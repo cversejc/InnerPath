@@ -44,6 +44,8 @@ def _detail_for_error(error: ValueError) -> tuple[int, str]:
         return status.HTTP_409_CONFLICT, "Profile has changed; refresh before submitting"
     if code in {"service_request_locked", "service_request_already_taken"}:
         return status.HTTP_409_CONFLICT, code
+    if code == "report_case_workflow_required":
+        return status.HTTP_409_CONFLICT, "该报告申请已进入 Case 工作流，请在报告工作区继续处理。"
     if code in {"service_request_cannot_withdraw", "service_request_not_waiting_for_info"}:
         return status.HTTP_409_CONFLICT, code
     return status.HTTP_400_BAD_REQUEST, code
