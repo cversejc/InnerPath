@@ -13,16 +13,26 @@ from app.domains.skills.definitions import (
     default_skill_specification,
     validate_skill_specification,
 )
-from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.skills.models import AISkillVersion, SkillExample, SkillRun
 from app.domains.content.models import CaseEvidenceItem
 from app.domains.skills.runtime import ModelCompletion, execute_skill
 from app.domains.skills.service import (
     create_skill_run,
     create_skill_draft,
     ensure_default_skill_version,
+    ensure_default_validator_skill_version,
     publish_skill_version,
     update_skill_draft,
 )
+from app.domains.skills.examples import (
+    create_example_candidate,
+    create_example_revision,
+    publish_skill_example,
+    retrieve_skill_examples,
+    retire_skill_example,
+    update_example_redaction,
+)
+from app.domains.skills.evaluation import evaluate_regression_output
 from app.domains.reports.models import ReportTask
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.workflow.definitions import (
@@ -117,6 +127,7 @@ def skill_db():
     tables = [
         AISkillVersion.__table__,
         SkillRun.__table__,
+        SkillExample.__table__,
         WorkflowVersion.__table__,
         ReportCase.__table__,
         WorkflowInstance.__table__,
@@ -498,3 +509,342 @@ async def test_skill_management_routes_reject_consultants():
         with pytest.raises(HTTPException) as error:
             await role_guard(current_user=SimpleNamespace(role="consultant"))
         assert error.value.status_code == 403
+
+
+def _completed_example_source(version, *, run_id=901, case_id=81):
+    return SkillRun(
+        id=run_id,
+        skill_version_id=version.id,
+        report_case_id=case_id,
+        target_type="REPORT_CASE_STEP",
+        target_key="S1",
+        run_type="INITIAL",
+        status="COMPLETED",
+        idempotency_key=f"example-source-{run_id}",
+        input_snapshot={
+            "profile": _profile(),
+            "context": {"focus_topics": ["career"]},
+        },
+        context_snapshot={"profile": _profile(), "context": {}},
+        selected_examples=[],
+        selected_knowledge=[],
+        model_trace={},
+        retry_count=0,
+        created_at=datetime.utcnow(),
+    )
+
+
+@pytest.mark.asyncio
+async def test_skill_examples_require_redaction_and_publish_as_immutable_versions(skill_db):
+    version = await ensure_default_skill_version(skill_db)
+    source_run = _completed_example_source(version)
+    skill_db.add(source_run)
+    await skill_db.flush()
+    candidate = await create_example_candidate(
+        skill_db,
+        report_case_id=81,
+        skill_run=source_run,
+        example_type="POSITIVE",
+        scenario_tags=["career", "职业发展"],
+        teaching_points=["林女士先用小步尝试收集信息。"],
+        expected_output={"summary": "林女士 13812345678，1992-06-18"},
+        created_by=7,
+    )
+
+    assert candidate.status == "CANDIDATE"
+    assert candidate.input_context["profile"].get("name") is None
+    assert "林女士" not in candidate.expected_output["summary"]
+    assert "13812345678" not in candidate.expected_output["summary"]
+    assert "1992-06-18" not in candidate.expected_output["summary"]
+    assert await retrieve_skill_examples(
+        skill_db,
+        skill_key=version.skill_key,
+        target_key=None,
+        context={"focus_topics": ["career"]},
+    ) == []
+
+    with pytest.raises(ValueError, match="skill_example_deidentification_required"):
+        await publish_skill_example(skill_db, candidate.id, reviewed_by=1)
+
+    reviewed = await update_example_redaction(
+        skill_db,
+        example_id=candidate.id,
+        target_fragment_key=None,
+        scenario_tags=["career", "职业发展"],
+        applicability_json={"focus_topics": ["career"]},
+        input_context={"context": {"focus_topics": ["career"]}},
+        expected_output={"summary": "使用小步尝试而非立即做出决定。"},
+        teaching_points=["把建议写成可执行的小行动。"],
+        anti_patterns=["保证某个确定结果"],
+        quality_score=0.92,
+        confirmed_deidentified=True,
+    )
+    published = await publish_skill_example(
+        skill_db, reviewed.id, reviewed_by=1
+    )
+    assert published.status == "PUBLISHED"
+    selected = await retrieve_skill_examples(
+        skill_db,
+        skill_key=version.skill_key,
+        target_key=None,
+        context={"focus_topics": ["career"]},
+    )
+    assert selected[0]["example_id"] == published.id
+    assert selected[0]["version_no"] == 1
+    assert selected[0]["retrieval_policy"]
+    assert "scenario_tag_match" in selected[0]["selection_reasons"]
+    await skill_db.commit()
+    assert await retrieve_skill_examples(
+        skill_db,
+        skill_key=version.skill_key,
+        target_key=None,
+        context={"focus_topics": ["health"]},
+    ) == []
+
+    with pytest.raises(ValueError, match="skill_example_immutable"):
+        published.teaching_points = ["attempt to edit published content"]
+        await skill_db.flush()
+    await skill_db.rollback()
+
+    revision = await create_example_revision(
+        skill_db, published.id, created_by=1
+    )
+    assert revision.version_no == 2
+    assert revision.status == "CANDIDATE"
+    assert revision.deidentified is False
+    revised = await update_example_redaction(
+        skill_db,
+        example_id=revision.id,
+        target_fragment_key=None,
+        scenario_tags=["career"],
+        applicability_json={},
+        input_context={"context": {"focus_topics": ["career"]}},
+        expected_output={"summary": "先试验，再整理信息。"},
+        teaching_points=["先确定一个可观察的小行动。"],
+        anti_patterns=[],
+        quality_score=0.95,
+        confirmed_deidentified=True,
+    )
+    await publish_skill_example(skill_db, revised.id, reviewed_by=1)
+    assert published.status == "RETIRED"
+    assert (await retrieve_skill_examples(
+        skill_db,
+        skill_key=version.skill_key,
+        target_key=None,
+        context={"focus_topics": ["career"]},
+    ))[0]["version_no"] == 2
+
+
+@pytest.mark.asyncio
+async def test_skill_example_applicability_rejects_unsupported_or_invalid_conditions(skill_db):
+    version = await ensure_default_skill_version(skill_db)
+    source_run = _completed_example_source(version)
+    skill_db.add(source_run)
+    await skill_db.flush()
+    candidate = await create_example_candidate(
+        skill_db,
+        report_case_id=81,
+        skill_run=source_run,
+        example_type="POSITIVE",
+        scenario_tags=[],
+        teaching_points=["Use a specific, practical suggestion."],
+        expected_output={"summary": "A deidentified example."},
+        created_by=7,
+    )
+
+    invalid_applicability = [
+        ({"region": "north"}, "skill_example_applicability_key_unsupported"),
+        ({"focus_topics": ["career", 3]}, "skill_example_applicability_value_invalid"),
+        ({"decision_status": {"value": "yes"}}, "skill_example_applicability_value_invalid"),
+        ({"usage_scenario": "  "}, "skill_example_applicability_value_invalid"),
+    ]
+    for applicability, error_code in invalid_applicability:
+        with pytest.raises(ValueError, match=error_code):
+            await update_example_redaction(
+                skill_db,
+                example_id=candidate.id,
+                target_fragment_key=None,
+                scenario_tags=[],
+                applicability_json=applicability,
+                input_context={"context": {}},
+                expected_output={"summary": "A deidentified example."},
+                teaching_points=["Use a specific, practical suggestion."],
+                anti_patterns=[],
+                quality_score=0.9,
+                confirmed_deidentified=True,
+            )
+    assert candidate.applicability_json == {}
+
+
+@pytest.mark.asyncio
+async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guidance(
+    skill_db, monkeypatch
+):
+    from app.application import skill_runtime
+
+    published = await ensure_default_skill_version(skill_db)
+    source_run = _completed_example_source(published)
+    skill_db.add(source_run)
+    await skill_db.flush()
+    candidate = await create_example_candidate(
+        skill_db,
+        report_case_id=81,
+        skill_run=source_run,
+        example_type="POSITIVE",
+        scenario_tags=["career"],
+        teaching_points=["用审慎语气描述建议。"],
+        expected_output={"summary": "一个脱敏后的写作示例。"},
+        created_by=7,
+    )
+    await update_example_redaction(
+        skill_db,
+        example_id=candidate.id,
+        target_fragment_key=None,
+        scenario_tags=["career"],
+        applicability_json={},
+        input_context={"context": {"focus_topics": ["career"]}},
+        expected_output={"summary": "一个脱敏后的写作示例。"},
+        teaching_points=["用审慎语气描述建议。"],
+        anti_patterns=[],
+        quality_score=0.9,
+        confirmed_deidentified=True,
+    )
+    await publish_skill_example(skill_db, candidate.id, reviewed_by=1)
+
+    specification = default_skill_specification()
+    specification["example_policy"] = {"enabled": True, "max_examples": 2}
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category="AUTHORING",
+        specification=specification,
+        created_by=1,
+    )
+    run, _created = await skill_runtime.queue_debug_skill_run(
+        skill_db,
+        version_id=draft.id,
+        idempotency_key="debug-run-with-example",
+        input_data={
+            "profile": _profile(),
+            "context": {"focus_topics": ["career"]},
+        },
+        runtime_instruction=None,
+    )
+    assert run.selected_examples[0]["example_id"] == candidate.id
+    assert run.selected_examples[0]["version_no"] == 1
+    assert run.input_snapshot["few_shot_examples"][0]["teaching_points"] == [
+        "用审慎语气描述建议。"
+    ]
+
+    gateway = StubGateway(_report_text())
+    monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
+    completed = await skill_runtime.execute_skill_run_record(skill_db, run.id)
+    assert completed.status == "COMPLETED"
+    assert "已审核的脱敏示例" in gateway.last_request[0]
+    assert "不得复制示例中的人物事实" in gateway.last_request[0]
+    assert completed.model_trace["selected_examples"][0]["example_id"] == candidate.id
+
+
+@pytest.mark.asyncio
+async def test_regression_batches_persist_checks_and_gate_skill_publish(skill_db):
+    from app.application.skill_evaluation import (
+        ensure_evaluation_passed_before_publish,
+        get_evaluation_batch,
+        start_evaluation_batch,
+    )
+
+    version = await ensure_default_validator_skill_version(skill_db)
+    with pytest.raises(ValueError, match="skill_evaluation_required"):
+        await ensure_evaluation_passed_before_publish(skill_db, version.id)
+
+    batch = await start_evaluation_batch(skill_db, version_id=version.id)
+    assert batch["total"] == 1
+    assert batch["completed"] == 0
+    run = await skill_db.get(SkillRun, batch["runs"][0]["run_id"])
+    assert run.target_type == "REGRESSION"
+    assert run.context_snapshot["evaluation"]["dataset_version"]
+    assert run.context_snapshot["evaluation"]["specification_sha256"]
+    with pytest.raises(ValueError, match="skill_evaluation_incomplete"):
+        await ensure_evaluation_passed_before_publish(skill_db, version.id)
+
+    run.status = "COMPLETED"
+    run.output_parsed = {"issues": []}
+    run.context_snapshot = {
+        **run.context_snapshot,
+        "evaluation": {
+            **run.context_snapshot["evaluation"],
+            "result": {"score": 0.0, "passed": False, "checks": []},
+        },
+    }
+    await skill_db.flush()
+    failed_batch = await get_evaluation_batch(skill_db, batch["batch_id"])
+    assert failed_batch["failed"] == 0
+    assert failed_batch["passed"] == 0
+    assert failed_batch["pass_rate"] == 0.0
+    with pytest.raises(ValueError, match="skill_evaluation_failed"):
+        await ensure_evaluation_passed_before_publish(skill_db, version.id)
+
+    run.context_snapshot = {
+        **run.context_snapshot,
+        "evaluation": {
+            **run.context_snapshot["evaluation"],
+            "result": {"score": 1.0, "passed": True, "checks": []},
+        },
+    }
+    await skill_db.flush()
+    await ensure_evaluation_passed_before_publish(skill_db, version.id)
+
+
+@pytest.mark.asyncio
+async def test_regression_batch_executes_through_skill_runtime_and_persists_result(skill_db):
+    from app.application import skill_runtime
+    from app.application.skill_evaluation import get_evaluation_batch, start_evaluation_batch
+
+    version = await ensure_default_validator_skill_version(skill_db)
+    batch = await start_evaluation_batch(skill_db, version_id=version.id)
+    run_id = batch["runs"][0]["run_id"]
+    gateway = StubGateway(
+        '{"issues":[{"issue_type":"PREDICTIVE_CERTAINTY","severity":"BLOCK",'
+        '"message":"需要移除确定性预测。","evidence":"你一定会在今年获得晋升。",'
+        '"suggestion":"改为说明当前证据及不确定性。",'
+        '"target_fragment_key":"report.direction"}]}'
+    )
+
+    completed = await skill_runtime.execute_skill_run_record(
+        skill_db, run_id, gateway=gateway
+    )
+    result = completed.context_snapshot["evaluation"]["result"]
+    refreshed_batch = await get_evaluation_batch(skill_db, batch["batch_id"])
+
+    assert gateway.calls == 1
+    assert completed.status == "COMPLETED"
+    assert result["passed"] is True
+    assert all(check["passed"] for check in result["checks"])
+    assert refreshed_batch["pass_rate"] == 1.0
+    assert refreshed_batch["runs"][0]["selected_examples"] == []
+
+
+def test_regression_expectations_score_schema_paths_and_finding_boundaries():
+    passing = evaluate_regression_output(
+        {
+            "status": "READY_FOR_REVIEW",
+            "used_findings": ["finding.small-step"],
+        },
+        {
+            "required_fields": ["status", "used_findings"],
+            "allowed_finding_refs": ["finding.small-step"],
+            "minimum_score": 1.0,
+        },
+    )
+    failing = evaluate_regression_output(
+        {"status": "READY_FOR_REVIEW", "used_findings": ["finding.new"]},
+        {
+            "required_fields": ["status", "content"],
+            "allowed_finding_refs": ["finding.small-step"],
+            "minimum_score": 1.0,
+        },
+    )
+    assert passing["passed"] is True
+    assert failing["passed"] is False
+    assert any(not check["passed"] for check in failing["checks"])

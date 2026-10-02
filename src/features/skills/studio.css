@@ -191,6 +191,37 @@
 .studio-message { margin: 0 0 14px; padding: 10px 12px; border-left: 3px solid var(--jade); background: var(--surface); }
 .studio-message.error { border-color: var(--cinnabar); }
 
+.studio-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 0 0 18px;
+  padding: 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.studio-tabs button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.studio-tabs button.selected {
+  border-bottom-color: var(--cinnabar);
+  color: var(--ink);
+  font-weight: var(--weight-semibold);
+}
+
+.published-example-section {
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
 .runs-section { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); }
 
 .runs-layout {
@@ -230,4 +261,6 @@
   .consultant-case-lookup form { grid-template-columns: 1fr; }
   .consultant-case-lookup form .van-button { width: 100%; }
   .panel-heading { align-items: flex-start; }
+  .studio-tabs { overflow-x: auto; }
+  .studio-tabs button { flex: 0 0 auto; }
 }

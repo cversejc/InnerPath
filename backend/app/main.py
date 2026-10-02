@@ -21,6 +21,8 @@ from app.api.v1 import (
     reports,
     report_cases,
     skills,
+    skill_examples,
+    skill_evaluations,
     service_requests,
     staff,
     users,
@@ -155,6 +157,9 @@ app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(report_cases.router, prefix="/api/v1/report-cases", tags=["Report Cases"])
 app.include_router(skills.admin_router, prefix="/api/v1/admin", tags=["Skill Studio"])
 app.include_router(skills.staff_router, prefix="/api/v1/staff", tags=["Skill Runs"])
+app.include_router(skill_examples.admin_router, prefix="/api/v1/admin", tags=["Skill Examples"])
+app.include_router(skill_examples.staff_router, prefix="/api/v1/staff", tags=["Skill Examples"])
+app.include_router(skill_evaluations.router, prefix="/api/v1/admin", tags=["Skill Evaluation"])
 app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["Calendar"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 app.include_router(staff.router, prefix="/api/v1/staff", tags=["Staff"])

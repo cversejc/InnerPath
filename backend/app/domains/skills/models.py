@@ -1,7 +1,9 @@
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     Column,
     DateTime,
+    Float,
     ForeignKey,
     Index,
     Integer,
@@ -9,6 +11,9 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    event,
+    inspect,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -100,3 +105,98 @@ class SkillRun(Base):
     created_at = Column(DateTime, nullable=False)
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
+
+
+class SkillExample(Base):
+    __tablename__ = "skill_examples"
+    __table_args__ = (
+        UniqueConstraint(
+            "example_key", "version_no", name="uq_skill_example_key_version"
+        ),
+        CheckConstraint("version_no > 0", name="ck_skill_example_version_positive"),
+        CheckConstraint(
+            "status IN ('CANDIDATE', 'PUBLISHED', 'RETIRED')",
+            name="ck_skill_example_status",
+        ),
+        CheckConstraint(
+            "example_type IN ('POSITIVE', 'CONTRASTIVE', 'MISSED_INSIGHT')",
+            name="ck_skill_example_type",
+        ),
+        CheckConstraint(
+            "quality_score IS NULL OR (quality_score >= 0 AND quality_score <= 1)",
+            name="ck_skill_example_quality_score",
+        ),
+        Index(
+            "uq_skill_example_published_key",
+            "example_key",
+            unique=True,
+            postgresql_where=text("status = 'PUBLISHED'"),
+            sqlite_where=text("status = 'PUBLISHED'"),
+        ),
+        Index(
+            "ix_skill_examples_retrieval",
+            "skill_key",
+            "status",
+            "target_fragment_key",
+        ),
+    )
+
+    id = Column(Integer, primary_key=True)
+    skill_key = Column(String(100), nullable=False, index=True)
+    target_fragment_key = Column(String(200), nullable=True)
+    example_key = Column(String(64), nullable=False)
+    version_no = Column(Integer, nullable=False)
+    status = Column(String(16), nullable=False, default="CANDIDATE", index=True)
+    example_type = Column(String(24), nullable=False)
+    scenario_tags = Column(JsonDocument, nullable=False, default=list)
+    applicability_json = Column(JsonDocument, nullable=False, default=dict)
+    input_context = Column(JsonDocument, nullable=False, default=dict)
+    expected_output = Column(JsonDocument, nullable=False, default=dict)
+    teaching_points = Column(JsonDocument, nullable=False, default=list)
+    anti_patterns = Column(JsonDocument, nullable=False, default=list)
+    quality_score = Column(Float, nullable=True)
+    source_case_id = Column(
+        Integer, ForeignKey("report_cases.id", ondelete="SET NULL"), nullable=True
+    )
+    source_skill_run_id = Column(
+        Integer, ForeignKey("skill_runs.id", ondelete="SET NULL"), nullable=True
+    )
+    deidentified = Column(Boolean, nullable=False, default=False)
+    created_by = Column(
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    reviewed_by = Column(
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_at = Column(DateTime, nullable=False)
+    published_at = Column(DateTime, nullable=True)
+
+
+@event.listens_for(SkillExample, "before_update")
+def _prevent_published_skill_example_mutation(_mapper, _connection, target) -> None:
+    state = inspect(target)
+    changed = {attribute.key for attribute in state.attrs if attribute.history.has_changes()}
+    status_history = state.attrs.status.history
+    if (
+        changed == {"status"}
+        and status_history.deleted == ["PUBLISHED"]
+        and status_history.added == ["RETIRED"]
+    ):
+        return
+    if status_history.deleted == ["PUBLISHED"]:
+        raise ValueError("skill_example_immutable")
+    if target.status == "PUBLISHED":
+        allowed_publish_fields = {"status", "reviewed_by", "published_at"}
+        if (
+            status_history.deleted == ["CANDIDATE"]
+            and status_history.added == ["PUBLISHED"]
+            and changed.issubset(allowed_publish_fields)
+        ):
+            return
+        raise ValueError("skill_example_immutable")
+
+
+@event.listens_for(SkillExample, "before_delete")
+def _prevent_published_skill_example_delete(_mapper, _connection, target) -> None:
+    if target.status == "PUBLISHED":
+        raise ValueError("skill_example_immutable")

@@ -24,6 +24,8 @@ from app.domains.skills.definitions import (
     default_skill_specification,
 )
 from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.skills.examples import retrieve_skill_examples
+from app.domains.skills.evaluation import evaluate_regression_output
 from app.domains.skills.runtime import (
     DeepSeekGateway,
     ModelGateway,
@@ -120,6 +122,12 @@ async def _authorize_case(db: AsyncSession, case_id: int, actor: User) -> Report
     return report_case
 
 
+async def authorize_report_case(
+    db: AsyncSession, case_id: int, actor: User
+) -> ReportCase:
+    return await _authorize_case(db, case_id, actor)
+
+
 async def _queue_run(
     db: AsyncSession,
     *,
@@ -131,14 +139,37 @@ async def _queue_run(
     target_key: str | None,
     report_case: ReportCase | None = None,
     step: StepTask | None = None,
+    context_metadata: dict[str, Any] | None = None,
 ) -> tuple[SkillRun, bool]:
     skill_version = await db.get(AISkillVersion, version_id)
     if skill_version is None:
         raise ValueError("skill_version_not_found")
+    specification = skill_version.specification_json
+    base_input = build_context_envelope(input_data, specification)
+    example_policy = specification.get("example_policy") or {}
+    selected_examples = []
+    if example_policy.get("enabled"):
+        max_examples = example_policy.get("max_examples", 0)
+        if not isinstance(max_examples, int) or isinstance(max_examples, bool):
+            max_examples = 0
+        selected_examples = await retrieve_skill_examples(
+            db,
+            skill_key=skill_version.skill_key,
+            target_key=target_key if target_type == "REPORT_FRAGMENT" else None,
+            context=base_input.get("context") or {},
+            max_examples=max_examples,
+        )
     input_snapshot = build_context_envelope(
-        input_data, skill_version.specification_json
+        {
+            **input_data,
+            "few_shot_examples": [
+                item["example_snapshot"] for item in selected_examples
+            ],
+        },
+        specification,
     )
     context_snapshot = deepcopy(input_snapshot)
+    context_snapshot.update(context_metadata or {})
     semantic_sources = input_data.get("semantic_source_snapshot")
     if isinstance(semantic_sources, dict):
         context_snapshot["semantic_source_snapshot"] = semantic_sources
@@ -179,6 +210,7 @@ async def _queue_run(
         workflow_instance_id=report_case.workflow_instance_id if report_case else None,
         step_task_id=step.id if step else None,
         runtime_instruction=runtime_instruction,
+        selected_examples=selected_examples,
     )
     if created:
         event = WorkflowOutbox(
@@ -229,6 +261,27 @@ async def queue_debug_skill_run(
         runtime_instruction=runtime_instruction,
         target_type="DEBUG",
         target_key=f"skill-version:{version_id}",
+    )
+
+
+async def queue_regression_skill_run(
+    db: AsyncSession,
+    *,
+    version_id: int,
+    idempotency_key: str,
+    input_data: dict[str, Any],
+    context_metadata: dict[str, Any],
+    case_key: str,
+) -> tuple[SkillRun, bool]:
+    return await _queue_run(
+        db,
+        version_id=version_id,
+        idempotency_key=idempotency_key,
+        input_data=input_data,
+        runtime_instruction=None,
+        target_type="REGRESSION",
+        target_key=case_key,
+        context_metadata=context_metadata,
     )
 
 
@@ -421,6 +474,7 @@ async def execute_skill_run_record(
                 "semantic_source_snapshot",
                 "source_narrative_plan_id",
                 "qa_fingerprint",
+                "evaluation",
             )
             if key in prior_context
         }
@@ -464,6 +518,29 @@ async def execute_skill_run_record(
         flag_modified(run, "context_snapshot")
         run.status = "COMPLETED"
         run.error = None
+        if run.target_type == "REGRESSION":
+            evaluation = deepcopy(run_metadata.get("evaluation") or {})
+            evaluation["result"] = evaluate_regression_output(
+                run.output_parsed or {}, evaluation.get("expectation") or {}
+            )
+            run_metadata["evaluation"] = evaluation
+            run.context_snapshot = {
+                **run.context_snapshot,
+                "evaluation": evaluation,
+            }
+        run.model_trace = {
+            **result.model_trace,
+            "selected_examples": [
+                {
+                    "example_id": item.get("example_id"),
+                    "version_no": item.get("version_no"),
+                    "retrieval_score": item.get("retrieval_score"),
+                    "retrieval_policy": item.get("retrieval_policy"),
+                    "selection_reasons": item.get("selection_reasons"),
+                }
+                for item in (run.selected_examples or [])
+            ],
+        }
     except SkillExecutionError as error:
         run.status = "FAILED"
         run.error = str(error)
@@ -473,6 +550,18 @@ async def execute_skill_run_record(
         run.error = (
             str(error) if isinstance(error, ValueError) else type(error).__name__
         )
+    if run.target_type == "REGRESSION" and run.status == "FAILED":
+        evaluation = deepcopy((run.context_snapshot or {}).get("evaluation") or {})
+        evaluation["result"] = {
+            "score": 0.0,
+            "minimum_score": (evaluation.get("expectation") or {}).get(
+                "minimum_score", 1.0
+            ),
+            "passed": False,
+            "checks": [{"name": "skill_execution", "passed": False, "actual": run.error}],
+        }
+        run.context_snapshot = {**(run.context_snapshot or {}), "evaluation": evaluation}
+        flag_modified(run, "context_snapshot")
     run.completed_at = datetime.utcnow()
     await db.commit()
     await db.refresh(run)

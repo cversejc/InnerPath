@@ -51,6 +51,79 @@
   margin-top: 8px;
 }
 
+.run-detail .selected-examples {
+  display: grid;
+  gap: 10px;
+}
+
+.run-detail .selected-example {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface-strong);
+}
+
+.run-detail .selected-example > strong,
+.run-detail .selected-example > span,
+.run-detail .selected-example > small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.run-detail .selected-example > strong {
+  font-size: var(--text-body-sm);
+}
+
+.run-detail .selected-example > span,
+.run-detail .selected-example > small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.run-detail .example-recommend-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface);
+}
+
+.run-detail .example-recommend-form h4 {
+  margin: 0 0 3px;
+}
+
+.run-detail .example-recommend-form label {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+}
+
+.run-detail .example-recommend-form input,
+.run-detail .example-recommend-form select,
+.run-detail .example-recommend-form textarea {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--ink);
+  background: #fffdf8;
+  font: 14px/1.45 var(--font-ui);
+}
+
+.run-detail .example-recommend-form textarea {
+  resize: vertical;
+}
+
+.run-detail .recommendation-notice {
+  color: var(--jade-deep);
+  font-size: 12px;
+}
+
 .run-detail .empty-reference {
   color: var(--muted);
   font-size: var(--text-body-sm);

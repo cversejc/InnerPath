@@ -250,6 +250,7 @@ async def create_skill_run(
     workflow_instance_id: int | None = None,
     step_task_id: int | None = None,
     runtime_instruction: str | None = None,
+    selected_examples: list[dict[str, Any]] | None = None,
 ) -> tuple[SkillRun, bool]:
     existing = await db.scalar(
         select(SkillRun).where(SkillRun.idempotency_key == idempotency_key)
@@ -284,7 +285,7 @@ async def create_skill_run(
         runtime_instruction=runtime_instruction,
         input_snapshot=input_snapshot,
         context_snapshot=context_snapshot,
-        selected_examples=[],
+        selected_examples=selected_examples or [],
         selected_knowledge=[],
         model_trace={},
         retry_count=0,

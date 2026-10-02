@@ -23,7 +23,7 @@ from app.domains.workflow.models import (
     WorkflowOutbox,
     WorkflowVersion,
 )
-from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.skills.models import AISkillVersion, SkillExample, SkillRun
 from app.domains.content.models import (
     CaseEvidenceItem,
     ContentFragmentRevision,

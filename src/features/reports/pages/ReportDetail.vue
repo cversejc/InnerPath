@@ -90,7 +90,13 @@ export default {
       this.$router.go(-1)
     },
     goToCalendar() {
-      this.$router.push('/pages/calendar/calendar')
+      const reportId = Number(this.$route.query.id)
+      this.$router.push({
+        path: '/pages/calendar/calendar',
+        query: Number.isSafeInteger(reportId) && reportId > 0
+          ? { source_report_id: String(reportId) }
+          : {}
+      })
     }
   }
 }

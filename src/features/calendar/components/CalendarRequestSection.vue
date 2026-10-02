@@ -63,6 +63,10 @@ function requestStatusLabel(status) {
           <VanButton type="default" plain native-type="button" class="request-close" @click="$emit('close')">收起</VanButton>
         </div>
 
+        <p v-if="draft.source_report_id" class="calendar-source-report">
+          来源报告 #{{ draft.source_report_id }}
+        </p>
+
         <ProfileSummary
           v-if="profile"
           :profile="profile"

@@ -1,0 +1,231 @@
+.examples-panel {
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.examples-toolbar,
+.examples-filters,
+.example-editor-heading,
+.example-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.examples-toolbar {
+  margin-bottom: 16px;
+}
+
+.examples-toolbar h2,
+.example-editor-heading h3 {
+  margin-top: 3px;
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semibold);
+}
+
+.examples-filters {
+  justify-content: flex-end;
+}
+
+.examples-filters label,
+.example-editor label {
+  color: var(--ink-soft);
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.examples-filters select,
+.example-editor input:not([type="checkbox"]),
+.example-editor textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--ink);
+  background: #fffdf8;
+  font: 14px/1.5 var(--font-ui);
+}
+
+.examples-filters select {
+  width: auto;
+  min-width: 110px;
+  height: 40px;
+  padding: 6px 9px;
+}
+
+.examples-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, .75fr) minmax(0, 1.25fr);
+  gap: 18px;
+}
+
+.examples-list {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+.example-row {
+  display: flex;
+  min-width: 0;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 11px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--ink);
+  background: var(--surface-strong);
+  text-align: left;
+  cursor: pointer;
+}
+
+.example-row.selected {
+  border-color: var(--cinnabar);
+  box-shadow: inset 3px 0 var(--cinnabar);
+}
+
+.example-row-main {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.example-row strong,
+.example-row small {
+  overflow-wrap: anywhere;
+}
+
+.example-row strong {
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.example-row small,
+.examples-empty,
+.example-editor-empty,
+.examples-notice,
+.examples-error {
+  color: var(--muted);
+  font-size: var(--text-body-sm);
+}
+
+.example-editor {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface-strong);
+}
+
+.example-editor-heading {
+  margin-bottom: 4px;
+}
+
+.example-source {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.example-source dt {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.example-source dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+  font: 12px/1.4 var(--font-mono);
+}
+
+.example-editor textarea {
+  padding: 9px;
+  resize: vertical;
+  font: 12px/1.5 var(--font-mono);
+}
+
+.example-editor input:not([type="checkbox"]) {
+  min-height: 42px;
+  padding: 8px 10px;
+}
+
+.example-review-fields {
+  display: grid;
+  grid-template-columns: minmax(100px, .4fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 12px;
+  margin: 8px 0;
+}
+
+.deidentification-check {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deidentification-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--jade);
+}
+
+.example-actions {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: 7px;
+}
+
+.example-readonly-block {
+  min-width: 0;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: var(--text-body-sm);
+}
+
+.example-readonly-block ul {
+  margin: 8px 0 0;
+  padding-left: 19px;
+}
+
+.example-readonly-block pre {
+  max-height: 260px;
+  overflow: auto;
+  margin: 8px 0 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fffdf8;
+  font: 12px/1.5 var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.examples-error { color: var(--cinnabar-deep); }
+.examples-notice { margin: 0 0 12px; color: var(--jade-deep); }
+.example-editor-empty { min-height: 180px; padding: 18px; }
+
+@media (max-width: 850px) {
+  .examples-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .examples-toolbar,
+  .examples-filters { align-items: flex-start; flex-direction: column; }
+  .examples-filters { width: 100%; }
+  .examples-filters select { width: 100%; }
+  .example-editor { padding: 12px; }
+  .example-source { grid-template-columns: 1fr; }
+  .example-review-fields { grid-template-columns: minmax(88px, .35fr) minmax(0, 1fr); }
+  .example-actions > * { max-width: 100%; }
+}

@@ -50,6 +50,14 @@
   gap: 18px;
 }
 
+.calendar-page .calendar-source-report {
+  margin: 10px 0 14px;
+  padding-left: 10px;
+  border-left: 2px solid var(--jade);
+  color: var(--muted);
+  font-size: var(--text-body-sm);
+}
+
 .calendar-page .request-close,
 .calendar-page .btn-secondary {
   display: inline-flex;

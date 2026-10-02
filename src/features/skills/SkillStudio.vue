@@ -17,6 +17,13 @@
       <p v-if="message" class="studio-message" :class="{ error: messageKind === 'error' }" role="status" aria-live="polite">{{ message }}</p>
 
       <template v-if="isAdmin">
+        <nav class="studio-tabs" aria-label="Skill Studio">
+          <button type="button" role="tab" :aria-selected="activeAdminTab === 'skills'" :class="{ selected: activeAdminTab === 'skills' }" @click="activeAdminTab = 'skills'">Skills</button>
+          <button type="button" role="tab" :aria-selected="activeAdminTab === 'examples'" :class="{ selected: activeAdminTab === 'examples' }" @click="activeAdminTab = 'examples'">Examples</button>
+          <button type="button" role="tab" :aria-selected="activeAdminTab === 'evaluation'" :class="{ selected: activeAdminTab === 'evaluation' }" @click="activeAdminTab = 'evaluation'">Evaluation</button>
+        </nav>
+
+        <template v-if="activeAdminTab === 'skills'">
         <section class="studio-toolbar" aria-label="技能版本">
           <div class="version-heading"><div><p class="eyebrow">VERSIONS</p><h2>Skill 版本</h2></div><VanButton class="primary-button compact-button" type="primary" :disabled="saving || !selectedVersion" :loading="saving" @click="createDraft">从当前版本创建草稿</VanButton></div>
           <div class="version-list" role="list">
@@ -65,6 +72,14 @@
             <div v-else class="run-detail-empty">暂无选中的运行记录。</div>
           </div>
         </section>
+        </template>
+
+        <ExamplesPanel v-else-if="activeAdminTab === 'examples'" :admin="true" :skill-key="selectedVersion?.skill_key || ''" />
+        <EvaluationPanel
+          v-else
+          :version="selectedVersion"
+          :start-evaluation="startEvaluation"
+        />
       </template>
 
       <template v-else>
@@ -85,9 +100,12 @@
               </button>
               <p v-if="!runs.length" class="empty-line">该 Case 暂无 Skill 运行记录。</p>
             </div>
-            <RunDetail v-if="selectedRun" :run="selectedRun" :admin="false" />
+            <RunDetail v-if="selectedRun" :run="selectedRun" :admin="false" :case-id="caseId" />
             <div v-else class="run-detail-empty">暂无选中的运行记录。</div>
           </div>
+        </section>
+        <section class="published-example-section">
+          <ExamplesPanel :admin="false" />
         </section>
       </template>
     </main>
@@ -100,18 +118,21 @@ import BrandNav from '../../components/BrandNav.vue'
 import { hasRole } from '../../stores/auth.js'
 import api from './api.js'
 import RunDetail from './components/RunDetail.vue'
+import ExamplesPanel from './components/ExamplesPanel.vue'
+import EvaluationPanel from './components/EvaluationPanel.vue'
 import { parseSpecification, RUN_STATUS_LABELS, sampleInput, VERSION_STATUS_LABELS } from './studio.js'
 
 const POLL_INTERVAL = 2500
 
 export default {
   name: 'SkillStudio',
-  components: { BrandNav, RunDetail, VanButton },
+  components: { BrandNav, RunDetail, ExamplesPanel, EvaluationPanel, VanButton },
   data() {
     return {
       isAdmin: hasRole('admin'),
       versions: [],
       selectedVersion: null,
+      activeAdminTab: 'skills',
       specificationText: '',
       inputText: JSON.stringify(sampleInput(), null, 2),
       runtimeInstruction: '',
@@ -255,6 +276,11 @@ export default {
       } finally {
         this.running = false
       }
+    },
+    async startEvaluation(caseKeys) {
+      if (!this.selectedVersion) throw new Error('请先选择 Skill 版本。')
+      if (this.editable) await this.saveDraft({ rethrow: true })
+      return api.startSkillEvaluation(this.selectedVersion.id, { case_keys: caseKeys })
     },
     async loadRuns() {
       if (!this.selectedVersion) return

@@ -209,7 +209,24 @@ def build_context_envelope(
         fields = [field for field in fields if field in envelope]
     forbidden = set(policy.get("forbidden") or [])
     projected = {field: envelope[field] for field in fields if field in envelope}
-    return _without_forbidden(projected, forbidden)
+    projected = _without_forbidden(projected, forbidden)
+    example_policy = specification.get("example_policy") or {}
+    examples = source.get("few_shot_examples")
+    if example_policy.get("enabled") and isinstance(examples, list):
+        projected["few_shot_examples"] = deepcopy(examples[:3])
+    return projected
+
+
+def _example_guidance(examples: list[dict[str, Any]]) -> str:
+    if not examples:
+        return ""
+    example_data = json.dumps(examples, ensure_ascii=False, indent=2, default=str)
+    return (
+        "\n\n【已审核的脱敏示例】\n"
+        "示例只用于参考结构、风格和专业表达。不得复制示例中的人物事实、结论或情境，"
+        "不得把示例当作当前用户的证据。\n"
+        f"{example_data}"
+    )
 
 
 def _report_prompts(
@@ -240,6 +257,7 @@ def _report_prompts(
     system_prompt = (
         f"{GLOBAL_POLICY}\n\n【产品生成规范】\n{SYSTEM_PROMPT}\n\n"
         f"【Skill Instructions】\n{instructions}{runtime_note}"
+        f"{_example_guidance(context.get('few_shot_examples') or [])}"
     )
     return system_prompt, build_prompt(report_input), foundation
 
@@ -267,6 +285,7 @@ def _authoring_prompts(
     system_prompt = (
         f"{GLOBAL_POLICY}\n\n【任务】\n{objective}\n\n"
         f"【Skill Instructions】\n{instructions}{runtime_note}"
+        f"{_example_guidance(context.get('few_shot_examples') or [])}"
     )
     user_prompt = json.dumps(context, ensure_ascii=False, indent=2, default=str)
     return system_prompt, user_prompt

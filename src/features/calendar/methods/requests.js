@@ -1,6 +1,7 @@
 import { authState } from '../../../stores/auth'
 import { getCurrentUser } from '../../users/service.js'
 import { createCalendarRequest, getCalendarRequests } from '../api.js'
+import { buildCalendarRequestPayload } from '../calendar-request-payload.js'
 
 export default {
   async loadCalendarRequestData() {
@@ -64,11 +65,17 @@ export default {
       }
       this.submittingCalendarRequest = true
       try {
-        const created = await createCalendarRequest({ ...this.calendarRequestDraft, profile_version: this.profile?.profile_version || 1 })
+        const created = await createCalendarRequest(
+          buildCalendarRequestPayload(
+            this.calendarRequestDraft,
+            this.profile?.profile_version || 1
+          )
+        )
         this.calendarRequests = [created, ...this.calendarRequests]
         this.calendarRequestFeedback = '申请已提交，后台会按你的档案版本审核。'
         this.calendarRequestDraft = {
           profile_version: this.profile?.profile_version || 1,
+          source_report_id: this.calendarRequestDraft.source_report_id,
           start_date: '',
           end_date: '',
           focus_topics: [],

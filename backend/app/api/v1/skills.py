@@ -7,6 +7,7 @@ from app.application.skill_runtime import (
     queue_case_step_skill_run,
     queue_debug_skill_run,
 )
+from app.application.skill_evaluation import ensure_evaluation_passed_before_publish
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.skills.models import AISkillVersion, SkillRun
@@ -48,6 +49,10 @@ def _skill_error(error: ValueError) -> None:
         "step_assigned_to_another_consultant",
         "step_skill_not_configured",
         "step_skill_version_unavailable",
+        "skill_evaluation_required",
+        "skill_evaluation_full_dataset_required",
+        "skill_evaluation_incomplete",
+        "skill_evaluation_failed",
     }:
         raise HTTPException(status_code=409, detail=code)
     if code == "report_case_forbidden":
@@ -125,6 +130,7 @@ async def publish_skill(
     actor: User = Depends(require_roles("admin")),
 ):
     try:
+        await ensure_evaluation_passed_before_publish(db, version_id)
         version = await publish_skill_version(db, version_id, published_by=actor.id)
         await db.commit()
         await db.refresh(version)

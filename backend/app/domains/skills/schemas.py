@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -82,6 +82,7 @@ class ConsultantSkillRunResponse(BaseModel):
     run_type: str
     status: str
     context_snapshot: dict[str, Any]
+    selected_examples: list[Any]
     selected_knowledge: list[Any]
     output_parsed: Optional[dict[str, Any]] = None
     model_trace: dict[str, Any]
@@ -89,3 +90,91 @@ class ConsultantSkillRunResponse(BaseModel):
     created_at: datetime
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
+
+
+class SkillExampleRecommendation(BaseModel):
+    skill_run_id: int = Field(..., ge=1)
+    example_type: Literal["POSITIVE", "CONTRASTIVE", "MISSED_INSIGHT"]
+    scenario_tags: list[str] = Field(default_factory=list, max_length=12)
+    teaching_points: list[str] = Field(default_factory=list, max_length=12)
+    expected_output: Optional[dict[str, Any]] = None
+
+
+class SkillExampleRedaction(BaseModel):
+    target_fragment_key: Optional[str] = Field(None, max_length=200)
+    scenario_tags: list[str] = Field(default_factory=list, max_length=12)
+    applicability_json: dict[str, Any] = Field(default_factory=dict)
+    input_context: dict[str, Any]
+    expected_output: dict[str, Any]
+    teaching_points: list[str] = Field(default_factory=list, max_length=12)
+    anti_patterns: list[str] = Field(default_factory=list, max_length=12)
+    quality_score: float = Field(..., ge=0, le=1)
+    confirmed_deidentified: bool
+
+
+class SkillExampleAdminResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    skill_key: str
+    target_fragment_key: Optional[str] = None
+    example_key: str
+    version_no: int
+    status: str
+    example_type: str
+    scenario_tags: list[str]
+    applicability_json: dict[str, Any]
+    input_context: dict[str, Any]
+    expected_output: dict[str, Any]
+    teaching_points: list[str]
+    anti_patterns: list[str]
+    quality_score: Optional[float] = None
+    source_case_id: Optional[int] = None
+    source_skill_run_id: Optional[int] = None
+    deidentified: bool
+    created_by: Optional[int] = None
+    reviewed_by: Optional[int] = None
+    created_at: datetime
+    published_at: Optional[datetime] = None
+
+
+class SkillExamplePublicResponse(BaseModel):
+    id: int
+    skill_key: str
+    target_fragment_key: Optional[str] = None
+    example_key: str
+    version_no: int
+    status: str
+    example_type: str
+    scenario_tags: list[str]
+    applicability_json: dict[str, Any]
+    input_context: dict[str, Any]
+    expected_output: dict[str, Any]
+    teaching_points: list[str]
+    anti_patterns: list[str]
+    quality_score: float
+
+
+class RegressionCaseResponse(BaseModel):
+    case_key: str
+    title: str
+    description: str
+
+
+class SkillEvaluationCreate(BaseModel):
+    case_keys: list[str] = Field(default_factory=list, max_length=50)
+
+
+class SkillEvaluationBatchResponse(BaseModel):
+    batch_id: str
+    dataset_version: str
+    total: int
+    completed: int
+    failed: int
+    passed: int
+    pass_rate: Optional[float] = None
+    runs: list[dict[str, Any]]
+
+
+class SkillEvaluationCaseResponse(RegressionCaseResponse):
+    skill_key: str

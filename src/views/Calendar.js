@@ -7,6 +7,7 @@ import calendarDataMethods from '../features/calendar/methods/calendarData.js'
 import selectionMethods from '../features/calendar/methods/selection.js'
 import recordsMethods, { createRecordDraft } from '../features/calendar/methods/records.js'
 import { confirmAction } from '../utils/confirmAction.js'
+import { buildCalendarRequestPayload } from '../features/calendar/calendar-request-payload.js'
 
 const mobileDetailMediaQuery = typeof window === 'undefined' ? null : window.matchMedia('(max-width: 900px)')
 
@@ -14,6 +15,8 @@ export default {
   name: 'Calendar',
   components: { CalendarPlanningSection, CalendarRequestSection },
   data() {
+    const sourceReportId = Number(this.$route.query.source_report_id)
+    const hasSourceReport = Number.isSafeInteger(sourceReportId) && sourceReportId > 0
     return {
       loading: true,
       calendar: null,
@@ -40,12 +43,13 @@ export default {
       savingRecord: false,
       profile: null,
       calendarRequests: [],
-      showCalendarRequestForm: false,
+      showCalendarRequestForm: hasSourceReport,
       submittingCalendarRequest: false,
       calendarRequestError: '',
       calendarRequestFeedback: '',
       calendarRequestDraft: {
         profile_version: null,
+        source_report_id: hasSourceReport ? sourceReportId : null,
         start_date: '',
         end_date: '',
         focus_topics: [],
