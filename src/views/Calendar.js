@@ -6,6 +6,7 @@ import requestsMethods from '../features/calendar/methods/requests.js'
 import calendarDataMethods from '../features/calendar/methods/calendarData.js'
 import selectionMethods from '../features/calendar/methods/selection.js'
 import recordsMethods, { createRecordDraft } from '../features/calendar/methods/records.js'
+import { confirmAction } from '../utils/confirmAction.js'
 
 const mobileDetailMediaQuery = typeof window === 'undefined' ? null : window.matchMedia('(max-width: 900px)')
 
@@ -181,6 +182,7 @@ export default {
     document.body.classList.remove('dialog-open')
   },
   methods: {
+    confirmAction,
     ...requestsMethods,
     ...calendarDataMethods,
     ...selectionMethods,

@@ -1,4 +1,4 @@
-import { authState } from '../../../stores/auth'
+import { authState } from '../../../stores/auth.js'
 import { createDecisionLog, deleteDecisionLog, getMyDecisionLogs } from '../api.js'
 
 const DECISION_LOG_STORAGE_KEY = 'innerseek:decision-logs'
@@ -133,7 +133,12 @@ export default {
       await this.loadRecordAndGiveFeedback({ kind: 'action', status: 'done', content: item, note: '' }, '已把这条建议记为今天做过的事。')
     },
   async removeDecisionLog(record) {
-      if (!window.confirm('确定删除这条记录吗？')) return
+      const confirmed = await this.confirmAction({
+        title: '删除行动记录',
+        message: '确定删除这条记录吗？删除后不可恢复。',
+        confirmButtonText: '删除记录'
+      })
+      if (!confirmed) return
       this.recordError = ''
       try {
         if (typeof record.id === 'number') {

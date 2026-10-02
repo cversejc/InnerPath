@@ -3,7 +3,7 @@ import {
   clearAccessToken,
   getAccessToken,
   refreshAccessToken
-} from '../utils/apiClient'
+} from '../utils/apiClient.js'
 import { getCurrentUser } from '../features/users/service.js'
 import {
   getStoredUser,
