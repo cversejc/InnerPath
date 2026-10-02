@@ -11,6 +11,25 @@ from app.domains.reports.generation.mingli_foundation import (
     calculate_bazi_from_user_data,
     calculate_mingli_foundation,
 )
+from app.domains.reports.generation.ziwei_chart import compute_ziwei_chart
+
+
+def test_ziwei_chart_calculation_does_not_require_a_rendering_runtime():
+    chart = compute_ziwei_chart(
+        year=2002,
+        month=2,
+        day=4,
+        hour=0,
+        minute=0,
+        timezone=8.0,
+        latitude=39.9,
+        longitude=116.4,
+        gender="男",
+    )
+
+    assert chart.year == 2002
+    assert chart.gender == "男"
+    assert len(chart.palaces) == 12
 
 
 class TestBaziCalculator:

@@ -5,19 +5,8 @@
 from typing import Dict, Any, Optional
 from lunar_python import Lunar, Solar
 from datetime import datetime
-import sys
 
-# Mock streamlit for ziwei calculation
-class MockStreamlit:
-    @staticmethod
-    def cache_data(*args, **kwargs):
-        def decorator(func):
-            return func
-        return decorator
-
-sys.modules['streamlit'] = MockStreamlit()
-
-from tools.ziwei.ziwei import compute_ziwei_chart
+from .ziwei_chart import compute_ziwei_chart
 
 
 class BaziCalculator:
