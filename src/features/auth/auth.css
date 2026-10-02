@@ -94,7 +94,7 @@
   color: var(--cinnabar-deep, #9e3f35);
   font-family: var(--font-display);
   font-size: 22px;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   line-height: 1;
 }
 
@@ -122,10 +122,10 @@
 .auth-card h1 {
   margin: 0 0 10px;
   color: var(--ink, #2f241b);
-  font-family: var(--font-ui);
-  font-size: 40px;
-  font-weight: 800;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: var(--text-display-md);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
 }
 
 .auth-subtitle {
@@ -157,7 +157,7 @@
   background: transparent;
   color: var(--ink, #2f241b);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
 }
 
 .auth-field:focus-within {
@@ -185,7 +185,7 @@
   margin: 0;
   color: var(--ink, #2f241b);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   line-height: 1.5;
 }
 
@@ -199,7 +199,7 @@
   padding: 8px 0 0;
   color: var(--ink, #2f241b);
   font-size: 17px;
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: 1.5;
 }
 
@@ -223,7 +223,7 @@
 .auth-field :deep(.van-field__error-message) {
   padding-top: 4px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
 .auth-code-button {
@@ -240,7 +240,7 @@
   background: rgba(255, 255, 255, 0.46);
   color: var(--cinnabar-deep, #9e3f35);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   transition: background var(--motion-fast, 150ms) ease, border-color var(--motion-fast, 150ms) ease;
 }
 
@@ -266,7 +266,7 @@
   min-height: 54px;
   border-radius: var(--button-radius, 13px);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
 }
 
 .auth-actions {
@@ -296,7 +296,7 @@
   background: transparent;
   color: var(--cinnabar-deep, #9e3f35);
   font-size: inherit;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
 }
 
 .auth-action-links {
@@ -364,7 +364,7 @@
   background: transparent;
   color: var(--cinnabar-deep, #9e3f35);
   font: inherit;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   vertical-align: middle;
 }
 

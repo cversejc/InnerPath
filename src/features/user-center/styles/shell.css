@@ -42,7 +42,7 @@
   background: rgba(255, 250, 240, .64);
   color: var(--cinnabar-deep, #9e3f35);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
   text-decoration: none;
   transition: background var(--motion-standard, 220ms) var(--ease-out, ease), border-color var(--motion-standard, 220ms) var(--ease-out, ease), transform var(--motion-fast, 150ms) var(--ease-out, ease);
 }
@@ -76,12 +76,12 @@
   align-items: center;
   justify-content: center;
   font-size: 32px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 .user-details h2 {
   font-size: 28px;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   color: var(--ink, #2f241b);
   margin-bottom: 8px;
 }
@@ -152,7 +152,7 @@
   background: rgba(255, 240, 223, .78);
   color: var(--cinnabar-deep, #9e3f35);
   border-left-color: var(--cinnabar, #b85c50);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 .nav-icon {
@@ -215,9 +215,9 @@
   right: 7%;
   bottom: -40px;
   color: rgba(184, 92, 80, 0.08);
-  font-family: var(--font-display, serif);
+  font-family: var(--font-display);
   font-size: 150px;
-  font-weight: 900;
+  font-weight: var(--weight-semibold);
   line-height: 1;
   pointer-events: none;
 }
@@ -240,11 +240,11 @@
   background: rgba(255, 252, 245, 0.76);
   box-shadow: inset 0 0 0 5px rgba(217, 186, 98, 0.15);
   color: var(--cinnabar-deep, #9e3f35);
-  font-family: var(--font-display, serif);
+  font-family: var(--font-display);
 }
 
 .user-details h2 {
-  font-family: var(--font-display, serif);
+  font-family: var(--font-display);
   letter-spacing: 0.02em;
 }
 

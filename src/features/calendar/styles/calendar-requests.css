@@ -63,7 +63,7 @@
   background: transparent;
   color: var(--calendar-muted);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
 }
 
 .calendar-page .request-close:hover,
@@ -92,7 +92,7 @@
   background: transparent;
   color: var(--cinnabar-deep);
   font: inherit;
-  font-weight: 900;
+  font-weight: var(--weight-semibold);
   text-decoration: underline;
   vertical-align: baseline;
 }
@@ -119,7 +119,7 @@
 .calendar-page .request-form-field legend {
   color: var(--calendar-ink);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
 }
 
 .calendar-page .request-form-field legend {
@@ -130,7 +130,7 @@
 .calendar-page .request-form-field legend small {
   color: var(--calendar-muted);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: var(--weight-medium);
 }
 
 .calendar-page .request-form-field input,
@@ -176,7 +176,7 @@
   background: rgba(255, 250, 240, .64);
   color: var(--calendar-muted);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
 }
 
 .calendar-page .request-option.selected {
@@ -217,7 +217,7 @@
   color: var(--cinnabar-deep);
   cursor: pointer;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
 }
 
 .calendar-page .field-wide {
@@ -268,7 +268,7 @@
 
 .calendar-page .request-history-item strong { color: var(--calendar-ink); font-size: 13px; }
 .calendar-page .request-history-item div span { overflow: hidden; color: var(--calendar-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-.calendar-page .request-status { display: inline-flex; min-height: 28px; align-items: center; flex: 0 0 auto; border-radius: 999px; padding: 0 10px; background: rgba(139, 90, 20, .1); color: var(--calendar-muted); font-size: 11px; font-weight: 800; }
+.calendar-page .request-status { display: inline-flex; min-height: 28px; align-items: center; flex: 0 0 auto; border-radius: 999px; padding: 0 10px; background: rgba(139, 90, 20, .1); color: var(--calendar-muted); font-size: 11px; font-weight: var(--weight-semibold); }
 .calendar-page .status-fulfilled { background: rgba(111, 159, 147, .14); color: #4c7569; }
 .calendar-page .status-rejected, .calendar-page .status-cancelled { background: rgba(184, 92, 80, .1); color: var(--cinnabar-deep); }
 

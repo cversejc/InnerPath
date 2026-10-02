@@ -36,13 +36,13 @@
   margin: 0 0 3px;
   color: var(--cinnabar-deep, #9e3f35);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
 }
 
 .legal-dialog-header h2 {
   margin: 0;
   color: var(--ink, #2f241b);
-  font-family: var(--font-display, serif);
+  font-family: var(--font-display);
   font-size: 24px;
   line-height: 1.35;
 }
@@ -87,7 +87,7 @@
   margin: 0 0 8px;
   color: var(--cinnabar-deep, #9e3f35);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
   line-height: 1.55;
 }
 

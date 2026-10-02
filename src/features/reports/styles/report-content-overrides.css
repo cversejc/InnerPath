@@ -7,7 +7,8 @@
 .content-card h2,
 .section-title {
   color: var(--ink, #2f241b);
-  font-family: var(--font-display, serif);
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium, 500);
 }
 
 .ai-badge,
@@ -27,6 +28,13 @@
 .action-timeline,
 .summary-text {
   color: var(--ink-soft, rgba(47, 36, 27, 0.68));
+}
+
+.markdown-content {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--leading-prose);
+  letter-spacing: normal;
 }
 
 .markdown-content h2,
@@ -80,7 +88,7 @@
   }
 
   .markdown-content {
-    line-height: 1.8;
+    line-height: var(--leading-prose);
   }
 
   .markdown-content h2 {

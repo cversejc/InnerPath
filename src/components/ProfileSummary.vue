@@ -107,7 +107,7 @@ export default {
   border-radius: var(--button-radius);
   padding: 0 14px;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
   white-space: nowrap;
 }
 

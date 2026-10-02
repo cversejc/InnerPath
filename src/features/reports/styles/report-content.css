@@ -9,7 +9,7 @@
   padding: 10px 24px;
   border-radius: 25px;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 .traits {
@@ -23,8 +23,8 @@
 }
 
 .description {
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: var(--text-body);
+  line-height: var(--leading-prose);
   color: var(--muted, #7d6653);
 }
 
@@ -38,9 +38,9 @@
 .path-list li,
 .suggestion-list li,
 .trait-list li {
-  font-size: 15px;
+  font-size: var(--text-body);
   color: var(--muted, #7d6653);
-  line-height: 2;
+  line-height: var(--leading-prose);
   padding-left: 25px;
   position: relative;
 }
@@ -52,7 +52,7 @@
   position: absolute;
   left: 0;
   color: var(--cinnabar, #b85c50);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 /* 两列布局 */
@@ -92,7 +92,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   font-size: 16px;
 }
 
@@ -103,9 +103,9 @@
 
 .action-detail,
 .action-timeline {
-  font-size: 14px;
+  font-size: var(--text-body);
   color: var(--muted, #7d6653);
-  line-height: 1.8;
+  line-height: var(--leading-prose);
   margin-bottom: 8px;
 }
 
@@ -116,8 +116,8 @@
 }
 
 .summary-text {
-  font-size: 16px;
-  line-height: 2;
+  font-size: var(--text-body);
+  line-height: var(--leading-prose);
   color: var(--muted, #7d6653);
   text-align: justify;
 }

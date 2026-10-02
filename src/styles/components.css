@@ -20,8 +20,8 @@
   background: rgba(184, 92, 80, 0.08);
   color: var(--cinnabar-deep);
   font-family: var(--font-ui);
-  font-size: 12px;
-  font-weight: 800;
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
   letter-spacing: 0.08em;
 }
 
@@ -36,10 +36,10 @@
   border-radius: var(--button-radius);
   padding: 0 18px;
   font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: normal;
+  line-height: var(--leading-ui);
   text-align: center;
   transition: box-shadow var(--motion-standard) var(--ease-out), background var(--motion-standard) var(--ease-out), border-color var(--motion-standard) var(--ease-out), color var(--motion-standard) var(--ease-out), transform var(--motion-fast) var(--ease-out);
   touch-action: manipulation;
@@ -150,6 +150,6 @@
   margin-top: 8px;
   color: var(--muted);
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: var(--text-caption);
   letter-spacing: 0.08em;
 }

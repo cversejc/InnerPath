@@ -42,7 +42,7 @@
   bottom: -38px;
   color: rgba(184, 92, 80, 0.08);
   font-size: 170px;
-  font-weight: 900;
+  font-weight: var(--weight-semibold);
   line-height: 1;
 }
 
@@ -52,7 +52,7 @@
   margin-bottom: 20px;
   color: var(--cinnabar-deep);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
   letter-spacing: 0.12em;
 }
 
@@ -70,7 +70,7 @@
 .calendar-page .overview-story .overview-emphasis {
   margin-top: 22px;
   color: var(--cinnabar-deep);
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
 }
 
 .calendar-page .overview-side { display: grid; gap: 14px; }
@@ -90,9 +90,9 @@
 
 .calendar-page .focus-card li span {
   color: var(--cinnabar);
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: var(--weight-semibold);
   letter-spacing: 0.06em;
 }
 
@@ -117,7 +117,7 @@
 
 .calendar-page .calendar-heading-side { display: grid; justify-items: end; gap: 12px; }
 .calendar-page .calendar-trace-summary { display: flex; align-items: baseline; gap: 9px; color: var(--calendar-muted); font-size: 12px; }
-.calendar-page .calendar-trace-summary strong { color: var(--cinnabar-deep); font-family: 'Manrope', 'PingFang SC', sans-serif; font-size: 12px; letter-spacing: 0.04em; }
+.calendar-page .calendar-trace-summary strong { color: var(--cinnabar-deep); font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.04em; }
 .calendar-page .legend { display: flex; flex-wrap: wrap; justify-content: end; gap: 13px; color: var(--calendar-muted); font-size: 12px; }
 .calendar-page .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .calendar-page .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--calendar-muted); }

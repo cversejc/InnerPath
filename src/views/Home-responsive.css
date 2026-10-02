@@ -16,15 +16,15 @@
   }
 
   .hero h1 {
-    font-size: 56px;
-    line-height: 1.08;
+    font-size: var(--text-display-xl);
+    line-height: var(--leading-display);
     overflow-wrap: anywhere;
   }
 
   .hero-intro {
     margin-top: 12px;
-    font-size: 16px;
-    line-height: 1.7;
+    font-size: var(--text-body);
+    line-height: var(--leading-prose);
   }
 
   .hero-actions {

@@ -11,7 +11,7 @@
   gap: 8px;
   padding: 14px 28px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: var(--muted, #7d6653);
   background: #fff;
   border: 2px solid rgba(139, 90, 20, .16);

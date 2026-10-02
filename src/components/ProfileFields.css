@@ -15,7 +15,7 @@
   background: rgba(255, 240, 223, .42);
   color: var(--cinnabar-deep);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
   text-align: left;
   transition: border-color .2s ease, background .2s ease, transform .2s ease;
 }
@@ -38,7 +38,7 @@
 .optional-toggle-meta {
   color: var(--muted);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 @media (max-width: 640px) {

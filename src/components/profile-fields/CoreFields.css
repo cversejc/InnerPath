@@ -52,7 +52,7 @@
   margin-left: 5px;
   color: var(--ink-soft);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
   line-height: 1.2;
   white-space: nowrap;
 }

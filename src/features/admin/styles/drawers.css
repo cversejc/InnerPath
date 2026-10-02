@@ -8,7 +8,7 @@
 .admin-shell .drawer-close { color: var(--muted, #7d6653); font-size: 27px; cursor: pointer; }
 .admin-shell .drawer-tabs { display: flex; gap: 2px; overflow-x: auto; padding: 10px 20px 0; border-bottom: 1px solid rgba(80, 54, 32, .12); }
 .admin-shell .drawer-tabs button { flex: 0 0 auto; border-bottom: 2px solid transparent; padding: 10px 8px; color: var(--muted, #7d6653); font-size: 11px; cursor: pointer; }
-.admin-shell .drawer-tabs button.active { border-bottom-color: #b85c50; color: #8f352f; font-weight: 800; }
+.admin-shell .drawer-tabs button.active { border-bottom-color: #b85c50; color: #8f352f; font-weight: var(--weight-semibold); }
 .admin-shell .drawer-body { padding: 24px 28px 50px; }
 .admin-shell .drawer-loading { padding: 60px 28px; color: var(--muted, #7d6653); text-align: center; }
 .admin-shell .drawer-section { display: grid; gap: 18px; }
@@ -16,7 +16,7 @@
 .admin-shell .profile-summary div { border-radius: 9px; padding: 10px; background: rgba(234, 217, 191, .42); }
 .admin-shell .profile-summary span, .admin-shell .profile-summary strong { display: block; }
 .admin-shell .profile-summary span { color: var(--muted, #7d6653); font-size: 10px; }
-.admin-shell .profile-summary strong { margin-top: 4px; color: #3b2d24; font-family: Manrope, sans-serif; font-size: 18px; }
+.admin-shell .profile-summary strong { margin-top: 4px; color: #3b2d24; font-family: var(--font-ui); font-size: 18px; }
 .admin-shell .detail-facts { border-top: 1px solid rgba(80, 54, 32, .1); padding-top: 16px; }
 .admin-shell .section-caption { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .admin-shell .section-caption h3 { margin: 0; color: #3b2d24; font-size: 18px; }

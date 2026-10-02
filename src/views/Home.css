@@ -18,9 +18,10 @@
   width: 100%;
   max-width: 100%;
   color: var(--ink);
-  font-size: 96px;
-  font-weight: 900;
-  line-height: 1.06;
+  font-family: var(--font-display);
+  font-size: var(--text-display-xl);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
   letter-spacing: 0.02em;
 }
 
@@ -29,8 +30,8 @@
   max-width: 720px;
   margin-top: 18px;
   color: var(--ink-soft);
-  font-size: 18px;
-  line-height: 1.8;
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-prose);
 }
 
 .home .section-kicker {
@@ -127,8 +128,8 @@
 .prose-card {
   padding: clamp(24px, 4vw, 38px);
   color: var(--ink-soft);
-  font-size: 17px;
-  line-height: 1.9;
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-prose);
 }
 
 .prose-card p + p {
@@ -137,7 +138,7 @@
 
 .prose-card .emphasis {
   color: var(--cinnabar-deep);
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
 }
 
 .section-heading {
@@ -166,9 +167,9 @@
 
 .method-card span {
   color: rgba(184, 92, 80, 0.34);
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font-ui);
   font-size: 38px;
-  font-weight: 900;
+  font-weight: var(--weight-semibold);
 }
 
 .method-card h3,

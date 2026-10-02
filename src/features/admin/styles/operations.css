@@ -24,7 +24,7 @@
 .admin-shell .admin-table-wrap { overflow-x: auto; }
 .admin-shell .admin-table { width: 100%; min-width: 920px; border-collapse: collapse; }
 .admin-shell .admin-table th, .admin-shell .admin-table td { padding: 13px 15px; border-top: 1px solid rgba(80, 54, 32, .09); text-align: left; vertical-align: middle; }
-.admin-shell .admin-table th { color: var(--gold-deep, #8b5a14); font-family: Manrope, "PingFang SC", sans-serif; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.admin-shell .admin-table th { color: var(--gold-deep, #8b5a14); font-family: var(--font-ui); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
 .admin-shell .admin-table td { color: #4d3e33; font-size: 12px; }
 .admin-shell .admin-table td small, .admin-shell .person-cell small, .admin-shell .drawer-list-item small, .admin-shell .team-row small { display: block; margin-top: 4px; color: var(--muted, #7d6653); font-size: 10px; }
 .admin-shell .admin-table tbody tr { transition: background .15s ease; }
@@ -32,11 +32,11 @@
 .admin-shell .person-cell { display: inline-flex; align-items: center; gap: 10px; }
 .admin-shell .person-cell > span:last-child { min-width: 0; }
 .admin-shell .person-cell strong { color: #30241b; }
-.admin-shell .avatar-mark { display: inline-flex; flex: 0 0 auto; width: 31px; height: 31px; align-items: center; justify-content: center; border: 1px solid rgba(184, 92, 80, .3); border-radius: 50%; background: #fff0df; color: #9e3f35; font-weight: 900; }
+.admin-shell .avatar-mark { display: inline-flex; flex: 0 0 auto; width: 31px; height: 31px; align-items: center; justify-content: center; border: 1px solid rgba(184, 92, 80, .3); border-radius: 50%; background: #fff0df; color: #9e3f35; font-weight: var(--weight-semibold); }
 .admin-shell .avatar-mark.small { width: 27px; height: 27px; font-size: 12px; }
 .admin-shell .avatar-mark.large { width: 46px; height: 46px; font-size: 19px; }
 .admin-shell .admin-table select { max-width: 110px; border: 1px solid rgba(80, 54, 32, .14); border-radius: 7px; padding: 7px; background: #fffaf0; color: #4d3e33; }
-.admin-shell .mini-stats { display: flex; gap: 6px; color: var(--muted, #7d6653); font-family: Manrope, "PingFang SC", sans-serif; font-size: 10px; }
+.admin-shell .mini-stats { display: flex; gap: 6px; color: var(--muted, #7d6653); font-family: var(--font-ui); font-size: 10px; }
 .admin-shell .status-badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; background: #eee4d5; color: var(--muted, #7d6653); font-size: 10px; white-space: nowrap; }
 .admin-shell .status-badge.success, .admin-shell .status-badge.calendar-published, .admin-shell .status-badge.report-completed, .admin-shell .status-badge.task-completed, .admin-shell .status-badge.decision-done { background: #e1f0dc; color: #39724e; }
 .admin-shell .status-badge.muted, .admin-shell .status-badge.calendar-archived, .admin-shell .status-badge.report-failed, .admin-shell .status-badge.task-failed, .admin-shell .status-badge.decision-skipped { background: #f2dddd; color: #8f352f; }
@@ -44,23 +44,23 @@
 .admin-shell .status-badge.report-processing, .admin-shell .status-badge.task-processing { background: #dcebe8; color: #39776b; }
 .admin-shell .muted-text { color: var(--muted, #7d6653) !important; }
 .admin-shell .row-actions { display: flex; flex-wrap: wrap; gap: 9px; }
-.admin-shell .row-actions button, .admin-shell .row-open, .admin-shell .detail-link { border: 0; background: transparent; color: #9e3f35; cursor: pointer; font-size: 11px; font-weight: 800; }
+.admin-shell .row-actions button, .admin-shell .row-open, .admin-shell .detail-link { border: 0; background: transparent; color: #9e3f35; cursor: pointer; font-size: 11px; font-weight: var(--weight-semibold); }
 .admin-shell .row-actions button:hover, .admin-shell .row-open:hover, .admin-shell .detail-link:hover { text-decoration: underline; }
 .admin-shell .danger-action { color: #b85c50 !important; }
 .admin-shell .empty-cell { padding: 42px 16px !important; color: var(--muted, #7d6653) !important; text-align: center !important; }
 .admin-shell .pagination > div { display: flex; gap: 8px; }
 .admin-shell .pagination .secondary-button:disabled { cursor: not-allowed; opacity: .42; }
-.admin-shell .progress-cell { display: grid; grid-template-columns: 38px minmax(70px, 100px); align-items: center; gap: 7px; color: #4f8875; font-family: Manrope, sans-serif; font-size: 10px; }
+.admin-shell .progress-cell { display: grid; grid-template-columns: 38px minmax(70px, 100px); align-items: center; gap: 7px; color: #4f8875; font-family: var(--font-ui); font-size: 10px; }
 .admin-shell .progress-cell i { display: block; height: 5px; border-radius: 999px; background: #e4ddd1; overflow: hidden; }
 .admin-shell .progress-cell b { display: block; height: 100%; border-radius: inherit; background: #6f9f93; }
 .admin-shell .error-cell { max-width: 200px; color: #9e3f35 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.admin-shell .action-code { color: #9e3f35; font-size: 11px; font-weight: 800; }
+.admin-shell .action-code { color: #9e3f35; font-size: 11px; font-weight: var(--weight-semibold); }
 .admin-shell .audit-table td { max-width: 220px; }
 .admin-shell .content-cell { max-width: 300px; white-space: normal; }
 .admin-shell .import-panel { display: grid; grid-template-columns: minmax(180px, .7fr) minmax(0, 1.5fr) auto; align-items: center; gap: 14px; border: 1px dashed rgba(184, 92, 80, .35); border-radius: 14px; padding: 14px; background: rgba(255, 240, 223, .5); }
 .admin-shell .import-panel strong { color: #8f352f; }
 .admin-shell .import-panel p { margin-top: 4px; color: var(--muted, #7d6653); font-size: 11px; line-height: 1.5; }
-.admin-shell .import-panel textarea { width: 100%; resize: vertical; font-family: Consolas, monospace; font-size: 11px; }
+.admin-shell .import-panel textarea { width: 100%; resize: vertical; font-family: var(--font-mono); font-size: 11px; }
 .admin-shell .calendar-admin-grid { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 18px; align-items: start; }
 .admin-shell .panel-surface { border-radius: 17px; padding: 20px; }
 .admin-shell .user-directory { min-height: 620px; }
@@ -84,22 +84,22 @@
 .admin-shell .calendar-card-preview span { border-radius: 999px; padding: 4px 7px; background: rgba(234, 217, 191, .55); color: var(--muted, #7d6653); font-size: 9px; }
 .admin-shell .calendar-card .row-actions { justify-content: end; }
 .admin-shell .calendar-editor-form { margin-top: 18px; border-top: 1px solid rgba(80, 54, 32, .11); padding-top: 18px; }
-.admin-shell .editor-banner { margin-bottom: 14px; color: #8f352f; font-size: 12px; font-weight: 900; }
-.admin-shell .editor-banner span:last-child { color: var(--muted, #7d6653); font-size: 10px; font-weight: 400; }
+.admin-shell .editor-banner { margin-bottom: 14px; color: #8f352f; font-size: 12px; font-weight: var(--weight-semibold); }
+.admin-shell .editor-banner span:last-child { color: var(--muted, #7d6653); font-size: 10px; font-weight: var(--weight-regular); }
 .admin-shell .form-grid { display: grid; gap: 10px; }
 .admin-shell .form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .admin-shell .form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.admin-shell .form-grid label, .admin-shell .stack-form label, .admin-shell .calendar-editor-form > label { display: grid; gap: 5px; color: var(--muted, #7d6653); font-size: 11px; font-weight: 700; }
+.admin-shell .form-grid label, .admin-shell .stack-form label, .admin-shell .calendar-editor-form > label { display: grid; gap: 5px; color: var(--muted, #7d6653); font-size: 11px; font-weight: var(--weight-semibold); }
 .admin-shell .form-grid input, .admin-shell .form-grid select { width: 100%; }
 .admin-shell .span-two { grid-column: span 2; }
 .admin-shell .entry-toolbar { margin: 22px 0 11px; }
 .admin-shell .entry-toolbar strong, .admin-shell .entry-toolbar small { display: block; }
 .admin-shell .entry-toolbar strong { color: #3b2d24; font-size: 14px; }
-.admin-shell .entry-toolbar small { margin-top: 3px; color: var(--muted, #7d6653); font-size: 10px; font-weight: 400; }
+.admin-shell .entry-toolbar small { margin-top: 3px; color: var(--muted, #7d6653); font-size: 10px; font-weight: var(--weight-regular); }
 .admin-shell .entry-list { display: grid; gap: 10px; }
 .admin-shell .entry-editor { display: grid; gap: 9px; border: 1px solid rgba(80, 54, 32, .12); border-radius: 12px; padding: 12px; background: rgba(255, 250, 240, .54); }
 .admin-shell .entry-editor-head { display: grid; grid-template-columns: 58px 1fr auto; align-items: end; gap: 9px; }
-.admin-shell .entry-editor-head > span { align-self: center; color: #b85c50; font-family: Manrope, sans-serif; font-size: 10px; font-weight: 900; }
+.admin-shell .entry-editor-head > span { align-self: center; color: #b85c50; font-family: var(--font-ui); font-size: 10px; font-weight: var(--weight-semibold); }
 .admin-shell .entry-editor-head label { display: grid; gap: 4px; color: var(--muted, #7d6653); font-size: 10px; }
 .admin-shell .entry-editor-head button { align-self: center; color: #b85c50; font-size: 22px; cursor: pointer; }
 .admin-shell .calendar-editor-form textarea { resize: vertical; line-height: 1.5; }
@@ -117,7 +117,7 @@
 .admin-shell .invite-result { display: grid; gap: 8px; margin-top: 22px; border: 1px dashed rgba(184, 92, 80, .45); border-radius: 10px; padding: 14px; background: #fff4e9; }
 .admin-shell .invite-result span { color: var(--muted, #7d6653); font-size: 10px; }
 .admin-shell .invite-result code { color: #8f352f; overflow-wrap: anywhere; }
-.admin-shell .invite-result a { color: #8f352f; font-size: 12px; font-weight: 800; }
+.admin-shell .invite-result a { color: #8f352f; font-size: 12px; font-weight: var(--weight-semibold); }
 .admin-shell .team-list { display: grid; gap: 8px; margin-top: 18px; }
 .admin-shell .team-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; border-bottom: 1px solid rgba(80, 54, 32, .08); padding: 9px 0; }
 .admin-shell .team-row strong { color: #3b2d24; font-size: 13px; }
@@ -133,10 +133,10 @@
 .admin-shell .report-block { margin-top: 20px; border-top: 1px solid rgba(80, 54, 32, .1); padding-top: 16px; }
 .admin-shell .report-block h3 { margin-bottom: 9px; color: #3b2d24; font-size: 14px; }
 .admin-shell .report-block p { color: var(--muted, #7d6653); font-size: 13px; line-height: 1.8; }
-.admin-shell .report-block pre, .admin-shell .json-view pre { max-height: 300px; overflow: auto; border-radius: 9px; padding: 12px; background: #342921; color: #f4e8d6; font-family: Consolas, monospace; font-size: 11px; line-height: 1.65; white-space: pre-wrap; }
+.admin-shell .report-block pre, .admin-shell .json-view pre { max-height: 300px; overflow: auto; border-radius: 9px; padding: 12px; background: #342921; color: #f4e8d6; font-family: var(--font-mono); font-size: 11px; line-height: 1.65; white-space: pre-wrap; }
 .admin-shell .detail-facts { display: grid; gap: 10px; margin: 5px 0 17px; }
 .admin-shell .detail-facts p { display: grid; grid-template-columns: 76px 1fr; gap: 10px; margin: 0; }
-.admin-shell .detail-facts strong { color: #3b2d24; font-size: 12px; font-weight: 700; word-break: break-word; }
-.admin-shell .detail-facts strong small { display: block; margin-top: 3px; color: var(--muted, #7d6653); font-size: 10px; font-weight: 400; }
+.admin-shell .detail-facts strong { color: #3b2d24; font-size: 12px; font-weight: var(--weight-semibold); word-break: break-word; }
+.admin-shell .detail-facts strong small { display: block; margin-top: 3px; color: var(--muted, #7d6653); font-size: 10px; font-weight: var(--weight-regular); }
 .admin-shell .json-view { margin-top: 20px; }
 .admin-shell .json-view > span { display: block; margin-bottom: 8px; color: var(--muted, #7d6653); font-size: 10px; }

@@ -1,6 +1,6 @@
 :deep(.section-title) {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: var(--weight-medium);
   color: var(--ink, #2f241b);
   margin-bottom: 30px;
   padding-bottom: 15px;
@@ -28,7 +28,7 @@
 :deep(.btn-action) {
   padding: 12px 32px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: #fff;
   background: var(--cinnabar, #b85c50);
   border-radius: 50px;
@@ -44,7 +44,7 @@
 :deep(.btn-download) {
   padding: 10px 20px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   border-radius: 8px;
   transition: background var(--motion-standard, 220ms) var(--ease-out, ease), color var(--motion-standard, 220ms) var(--ease-out, ease), border-color var(--motion-standard, 220ms) var(--ease-out, ease);
 }
@@ -72,7 +72,7 @@
 :deep(.btn-save) {
   padding: 14px 40px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: #fff;
   background: var(--cinnabar, #b85c50);
   border-radius: 50px;
@@ -93,7 +93,7 @@
 }
 
 :deep(.section-title) {
-  font-family: var(--font-display, serif);
+  font-family: var(--font-display);
   letter-spacing: 0.02em;
 }
 
@@ -177,9 +177,9 @@
   padding: 0 16px;
   background: linear-gradient(145deg, var(--cinnabar, #b5574c), var(--cinnabar-deep, #9e3f35));
   color: #fffaf0;
-  font-family: var(--font-ui, sans-serif);
+  font-family: var(--font-ui);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: var(--weight-medium);
   line-height: 1.2;
   transition: background var(--motion-standard, 220ms) var(--ease-out, ease), border-color var(--motion-standard, 220ms) var(--ease-out, ease), box-shadow var(--motion-standard, 220ms) var(--ease-out, ease), transform var(--motion-fast, 150ms) var(--ease-out, ease);
 }

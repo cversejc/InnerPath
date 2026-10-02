@@ -18,14 +18,14 @@
   border-radius: 50%;
   color: var(--cinnabar-deep);
   font-size: 28px;
-  font-weight: 900;
+  font-weight: var(--weight-semibold);
 }
 
 .calendar-access-kicker {
   color: var(--gold-deep);
-  font-family: "Manrope", "PingFang SC", sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
   letter-spacing: 0.18em;
 }
 
