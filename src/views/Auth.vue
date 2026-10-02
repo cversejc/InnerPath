@@ -3,15 +3,21 @@
     <Transition name="auth-intro">
       <section v-if="showIntro" class="auth-intro" aria-label="辰鉴入场动画">
         <div class="auth-intro-lockup" aria-hidden="true">
-          <img class="auth-intro-logo" src="/brand-logo.png" alt="" />
+          <picture>
+            <source srcset="/brand-logo.webp" type="image/webp">
+            <img class="auth-intro-logo" src="/brand-logo.png" alt="" width="640" height="640" fetchpriority="high" decoding="async">
+          </picture>
         </div>
       </section>
     </Transition>
 
-    <div class="auth-shell" :aria-hidden="showIntro ? 'true' : undefined" :inert="showIntro">
+    <div class="auth-shell" :aria-hidden="showIntro || legalDocument ? 'true' : undefined" :inert="showIntro || !!legalDocument">
       <header class="auth-topbar">
         <router-link class="auth-logo" to="/" aria-label="辰鉴首页">
-          <img class="auth-logo-mark" src="/brand-emblem.png" alt="" />
+          <picture>
+            <source srcset="/brand-emblem.webp" type="image/webp">
+            <img class="auth-logo-mark" src="/brand-emblem.png" alt="" width="214" height="256" decoding="async">
+          </picture>
           <span>辰鉴</span>
         </router-link>
       </header>
@@ -155,9 +161,22 @@
               </template>
             </div>
           </nav>
+
+          <p v-if="mode === 'login' || mode === 'register' || mode === 'invite'" class="auth-legal">
+            {{ mode === 'login' ? '登录即代表您已阅读并同意' : '继续即代表您已阅读并同意' }}
+            <VanButton ref="termsLink" class="auth-legal-link" type="default" plain native-type="button" @click="openLegalDocument('terms')">《用户协议》</VanButton>
+            <span>与</span>
+            <VanButton ref="privacyLink" class="auth-legal-link" type="default" plain native-type="button" @click="openLegalDocument('privacy')">《隐私条款》</VanButton>
+          </p>
         </div>
       </main>
     </div>
+
+    <LegalDocumentDialog
+      v-if="legalDocument"
+      :type="legalDocument"
+      @close="closeLegalDocument"
+    />
   </div>
 </template>
 

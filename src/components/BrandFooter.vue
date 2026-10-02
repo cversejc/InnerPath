@@ -2,7 +2,10 @@
   <footer class="footer">
     <div class="container">
       <p class="footer-brand">
-        <img class="brand-emblem" src="/brand-emblem.png" alt="" />
+        <picture>
+          <source srcset="/brand-emblem.webp" type="image/webp">
+          <img class="brand-emblem" src="/brand-emblem.png" alt="" width="214" height="256" loading="lazy" decoding="async">
+        </picture>
         <span>辰鉴 · 2026 · 星辰引路，镜子照见</span>
       </p>
       <p class="version">见自己 · 知其序 · 行其路</p>

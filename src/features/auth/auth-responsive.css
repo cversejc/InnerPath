@@ -59,6 +59,11 @@
     font-size: 15px;
   }
 
+  .auth-legal {
+    max-width: 100%;
+    font-size: 12px;
+  }
+
   .auth-fields {
     gap: 18px;
   }

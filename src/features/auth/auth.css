@@ -37,6 +37,12 @@
   place-items: center;
 }
 
+.auth-intro-lockup picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .auth-intro-logo {
   display: block;
   width: 100%;
@@ -90,6 +96,11 @@
   font-size: 22px;
   font-weight: 700;
   line-height: 1;
+}
+
+.auth-logo picture {
+  display: inline-flex;
+  flex: 0 0 auto;
 }
 
 .auth-logo-mark {
@@ -334,4 +345,40 @@
 .auth-message.success {
   background: rgba(95, 143, 130, 0.13);
   color: #39724e;
+}
+
+.auth-legal {
+  max-width: 440px;
+  margin: 10px auto 0;
+  color: #777f87;
+  font-size: 13px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.auth-legal-link.van-button {
+  min-height: 36px;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 2px;
+  background: transparent;
+  color: var(--cinnabar-deep, #9e3f35);
+  font: inherit;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.auth-legal-link.van-button :deep(.van-button__text) {
+  font: inherit;
+}
+
+.auth-legal-link.van-button:hover,
+.auth-legal-link.van-button:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-legal-link.van-button:focus-visible {
+  outline: 2px solid var(--cinnabar, #b5574c);
+  outline-offset: 2px;
 }

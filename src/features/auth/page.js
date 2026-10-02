@@ -1,4 +1,5 @@
 import { Button as VanButton, Field as VanField, Form as VanForm } from 'vant'
+import LegalDocumentDialog from './components/LegalDocumentDialog.vue'
 import authModeMethods from './methods/mode.js'
 import authSessionMethods from './methods/session.js'
 import authVerificationMethods from './methods/verification.js'
@@ -10,7 +11,7 @@ import {
 
 export default {
   name: 'Auth',
-  components: { VanButton, VanField, VanForm },
+  components: { VanButton, VanField, VanForm, LegalDocumentDialog },
   data() {
     const isLoginRoute = this.$route.path === '/auth/login' && (!this.$route.query.mode || this.$route.query.mode === 'login')
     const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -31,6 +32,7 @@ export default {
       codeTimer: null,
       errorMessage: '',
       successMessage: '',
+      legalDocument: '',
       showIntro: isLoginRoute && !reducedMotion,
       introTimer: null
     }
@@ -105,6 +107,17 @@ export default {
   methods: {
     ...authModeMethods,
     ...authVerificationMethods,
-    ...authSessionMethods
+    ...authSessionMethods,
+    openLegalDocument(type) {
+      this.legalDocument = type
+    },
+    closeLegalDocument() {
+      const type = this.legalDocument
+      this.legalDocument = ''
+      this.$nextTick(() => {
+        const trigger = this.$refs[`${type}Link`]
+        ;(trigger?.$el || trigger)?.focus({ preventScroll: true })
+      })
+    }
   }
 }
