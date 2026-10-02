@@ -32,7 +32,12 @@ export default {
   editPath: serviceRequestEditPath,
   async withdraw(item) {
     if (!this.canWithdraw(item.status) || this.withdrawnId) return
-    if (!window.confirm('确定撤回这份申请吗？撤回后需要重新提交才能继续。')) return
+    const confirmed = await this.confirmAction({
+      title: '确认撤回申请',
+      message: '确定撤回这份申请吗？撤回后需要重新提交才能继续。',
+      confirmButtonText: '确认撤回'
+    })
+    if (!confirmed) return
     this.withdrawnId = item.id
     try {
       const updated = await withdrawServiceRequest(item.id)

@@ -1,5 +1,6 @@
 import { Button as VanButton } from 'vant'
 import customerRequestMethods from './methods/customer-requests.js'
+import { confirmAction } from '../../utils/confirmAction.js'
 
 export default {
   name: 'ServiceRequests',
@@ -33,6 +34,7 @@ export default {
     }
   },
   methods: {
+    confirmAction,
     ...customerRequestMethods
   }
 }
