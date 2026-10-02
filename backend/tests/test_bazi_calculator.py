@@ -235,7 +235,9 @@ class TestMingliFoundation:
             "ten_god": "劫财",
         }
         assert result["bazi"]["day_master"] == "癸"
-        assert result["ziwei"]["life_palace"]["main_stars"]
+        assert result["ziwei"]["lunar_date"] == "2001年腊月23日"
+        assert result["ziwei"]["life_palace"]["main_stars"] == ["太陽", "太陰"]
+        assert sum(len(palace["main_stars"]) for palace in result["ziwei"]["palaces"]) == 14
 
     def test_foundation_without_hour_omits_ziwei(self):
         user_data = {

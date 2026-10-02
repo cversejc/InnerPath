@@ -248,14 +248,11 @@ class BaziCalculator:
             wu_xing_map = {2: '水二局', 3: '木三局', 4: '金四局', 5: '土五局', 6: '火六局'}
             palace_names = ['命宫', '兄弟宫', '夫妻宫', '子女宫', '财帛宫', '疾厄宫',
                            '迁移宫', '交友宫', '官禄宫', '田宅宫', '福德宫', '父母宫']
-            main_stars = ['紫微', '天机', '太阳', '武曲', '天同', '廉贞',
-                         '天府', '太阴', '贪狼', '巨门', '天相', '天梁', '七杀', '破军']
-
             # 提取关键宫位的主星
             def get_palace_main_stars(palace_index):
                 if palace_index < len(chart.palaces):
                     palace = chart.palaces[palace_index]
-                    return [s for s in palace.stars[:8] if s in main_stars]
+                    return list(palace.stars[:8])
                 return []
 
             result = {
@@ -293,7 +290,7 @@ class BaziCalculator:
 
             # 添加所有宫位信息
             for i, palace in enumerate(chart.palaces):
-                palace_stars = [s for s in palace.stars[:8] if s in main_stars]
+                palace_stars = list(palace.stars[:8])
                 result["palaces"].append({
                     "name": palace_names[i],
                     "branch": branches[palace.branch],

@@ -369,7 +369,7 @@ def _solar_to_lunar(jd: float) -> Tuple[int, int, int, bool]:
         lunar_month: 1-12（閏月與正常月同編號，is_leap_month=True 區分）
     """
     # 將 JD 轉換為公曆日期
-    gd = swe.revjul(jd)  # (year, month, day, hour)
+    gd = swe.revjul(jd + _CST_OFFSET)  # Convert UTC JD to the Chinese calendar day.
     year = int(gd[0])
     month = int(gd[1])
     day = int(gd[2])
