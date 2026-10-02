@@ -1,5 +1,6 @@
 <script setup>
 import { Button as VanButton } from 'vant'
+import AdminIconButton from './AdminIconButton.vue'
 import { calendarStatusText, formatDate } from '../formatters.js'
 
 defineProps({
@@ -45,7 +46,7 @@ defineEmits([
     <div class="calendar-admin-grid">
       <aside class="user-directory panel-surface">
         <div class="panel-heading"><div><p class="eyebrow">SELECT USER</p><h3>选择用户</h3></div><span>{{ calendarUsers.length }}</span></div>
-        <div class="directory-search"><input :value="calendarUserSearch" aria-label="搜索用户" placeholder="搜索用户" @input="$emit('update:calendar-user-search', $event.target.value)" @keyup.enter="$emit('load-users')"><VanButton type="default" plain native-type="button" aria-label="搜索用户" @click="$emit('load-users')"><template #icon><IconMark name="search" /></template></VanButton></div>
+        <div class="directory-search"><input :value="calendarUserSearch" aria-label="搜索用户" placeholder="搜索用户" @input="$emit('update:calendar-user-search', $event.target.value)" @keyup.enter="$emit('load-users')"><AdminIconButton icon="search" label="搜索用户" @click="$emit('load-users')" /></div>
         <div class="directory-list">
           <button v-for="user in calendarUsers" :key="user.id" type="button" :class="{ selected: selectedCalendarUser?.id === user.id }" :aria-pressed="selectedCalendarUser?.id === user.id" @click="$emit('select-user', user)"><span class="avatar-mark small">{{ user.name?.slice(0, 1) || '人' }}</span><span><strong>{{ user.name }}</strong><small>#{{ user.id }} · {{ user.phone }}</small></span><IconMark name="arrow" /></button>
           <p v-if="!calendarUsers.length" class="empty-cell">请搜索或暂无用户。</p>

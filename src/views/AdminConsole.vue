@@ -37,7 +37,7 @@
 
       <div v-if="message" class="console-message" role="status" aria-live="polite">
         <span>{{ message }}</span>
-        <button type="button" aria-label="关闭提示" @click="message = ''">×</button>
+        <AdminIconButton icon="close" label="关闭提示" @click="message = ''" />
       </div>
 
       <AdminDashboardSection

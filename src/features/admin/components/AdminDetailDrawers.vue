@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Button as VanButton } from 'vant'
+import AdminIconButton from './AdminIconButton.vue'
 import {
   actionLabel,
   calendarStatusText,
@@ -79,7 +80,7 @@ defineExpose({ getDrawer })
 <template>
   <div v-if="detailUser" class="drawer-layer" @click.self="$emit('close-user')">
     <aside ref="userDrawer" class="drawer user-drawer" role="dialog" aria-modal="true" aria-labelledby="user-detail-title" tabindex="-1" @keydown="handleDrawerKeydown">
-      <div class="drawer-header"><div class="person-cell"><span class="avatar-mark large">{{ detailUser.name?.slice(0, 1) || '人' }}</span><span><p class="eyebrow">USER #{{ detailUser.id }}</p><h2 id="user-detail-title">{{ detailUser.name }}</h2><small>{{ detailUser.phone }}</small></span></div><button type="button" class="drawer-close" aria-label="关闭用户详情" @click="$emit('close-user')">×</button></div>
+      <div class="drawer-header"><div class="person-cell"><span class="avatar-mark large">{{ detailUser.name?.slice(0, 1) || '人' }}</span><span><p class="eyebrow">USER #{{ detailUser.id }}</p><h2 id="user-detail-title">{{ detailUser.name }}</h2><small>{{ detailUser.phone }}</small></span></div><AdminIconButton class="drawer-close" icon="close" label="关闭用户详情" @click="$emit('close-user')" /></div>
       <div class="drawer-tabs"><button v-for="tab in userPanelTabs" :key="tab.id" type="button" :class="{ active: userPanelTab === tab.id }" @click="$emit('set-user-panel-tab', tab.id)">{{ tab.label }}</button></div>
       <div v-if="userPanelLoading" class="drawer-loading" role="status" aria-live="polite">正在整理用户资料…</div>
       <div v-else class="drawer-body">
@@ -98,14 +99,14 @@ defineExpose({ getDrawer })
 
   <div v-if="reportDetail" class="drawer-layer" @click.self="$emit('close-report')">
     <aside ref="reportDrawer" class="drawer report-drawer" role="dialog" aria-modal="true" aria-labelledby="report-detail-title" tabindex="-1" @keydown="handleDrawerKeydown">
-      <div class="drawer-header"><div><p class="eyebrow">REPORT #{{ reportDetail.id }}</p><h2 id="report-detail-title">{{ reportDetail.title }}</h2><small>{{ reportDetail.user_name }} · {{ reportDetail.user_phone }}</small></div><button type="button" class="drawer-close" aria-label="关闭报告详情" @click="$emit('close-report')">×</button></div>
+      <div class="drawer-header"><div><p class="eyebrow">REPORT #{{ reportDetail.id }}</p><h2 id="report-detail-title">{{ reportDetail.title }}</h2><small>{{ reportDetail.user_name }} · {{ reportDetail.user_phone }}</small></div><AdminIconButton class="drawer-close" icon="close" label="关闭报告详情" @click="$emit('close-report')" /></div>
       <div class="drawer-body report-body"><div class="report-meta-grid"><div><span>状态</span><strong>{{ reportStatusText(reportDetail.status) }}</strong></div><div><span>模型</span><strong>{{ reportDetail.ai_model || '—' }}</strong></div><div><span>耗时</span><strong>{{ reportDetail.generation_time_ms ? `${reportDetail.generation_time_ms} ms` : '—' }}</strong></div><div><span>生成于</span><strong>{{ formatDateTime(reportDetail.created_at) }}</strong></div><div><span>生成来源</span><strong>{{ reportDetail.basic_info?.generated_by || '—' }}</strong></div></div><article class="report-block"><h3>摘要</h3><p>{{ reportDetail.summary || '暂无摘要。' }}</p></article><article class="report-block"><h3>能量画像</h3><pre>{{ prettyJson(reportDetail.energy_profile) }}</pre></article><article class="report-block"><h3>行动建议</h3><pre>{{ prettyJson(reportDetail.career_guidance) }}</pre></article><article class="report-block"><h3>关系模式</h3><pre>{{ prettyJson(reportDetail.relationship_pattern) }}</pre></article><article class="report-block"><h3>个人成长</h3><pre>{{ prettyJson(reportDetail.personal_growth) }}</pre></article></div>
     </aside>
   </div>
 
   <div v-if="logDetail" class="drawer-layer" @click.self="$emit('close-log')">
     <aside ref="logDrawer" class="drawer log-drawer" role="dialog" aria-modal="true" aria-labelledby="log-detail-title" tabindex="-1" @keydown="handleDrawerKeydown">
-      <div class="drawer-header"><div><p class="eyebrow">AUDIT #{{ logDetail.id }}</p><h2 id="log-detail-title">{{ actionLabel(logDetail.action) }}</h2><small>{{ formatDateTime(logDetail.created_at) }}</small></div><button type="button" class="drawer-close" aria-label="关闭审计详情" @click="$emit('close-log')">×</button></div>
+      <div class="drawer-header"><div><p class="eyebrow">AUDIT #{{ logDetail.id }}</p><h2 id="log-detail-title">{{ actionLabel(logDetail.action) }}</h2><small>{{ formatDateTime(logDetail.created_at) }}</small></div><AdminIconButton class="drawer-close" icon="close" label="关闭审计详情" @click="$emit('close-log')" /></div>
       <div class="drawer-body"><div class="detail-facts"><p><span>操作编码</span><strong class="mono-text">{{ logDetail.action }}</strong></p><p><span>资源</span><strong>{{ resourceLabel(logDetail.resource_type) }} {{ logDetail.resource_id ? `#${logDetail.resource_id}` : '' }}</strong></p><p><span>操作者</span><strong>{{ logDetail.actor_name || logDetail.actor_user_id || '系统' }}</strong></p><p><span>目标用户</span><strong>{{ logDetail.target_user_name || logDetail.target_user_id || '—' }}</strong></p><p><span>请求 ID</span><strong class="mono-text">{{ logDetail.request_id || '—' }}</strong></p><p><span>IP / UA</span><strong>{{ logDetail.ip_address || '—' }}<small>{{ logDetail.user_agent || '' }}</small></strong></p></div><div class="json-view"><span>结构化详情</span><pre>{{ prettyJson(logDetail.details_json || logDetail.details || {}) }}</pre></div></div>
     </aside>
   </div>

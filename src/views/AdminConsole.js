@@ -10,6 +10,7 @@ import AdminActivitySection from '../features/admin/components/AdminActivitySect
 import AdminCalendarSection from '../features/admin/components/AdminCalendarSection.vue'
 import AdminStaffSection from '../features/admin/components/AdminStaffSection.vue'
 import AdminDetailDrawers from '../features/admin/components/AdminDetailDrawers.vue'
+import AdminIconButton from '../features/admin/components/AdminIconButton.vue'
 import dashboardMethods from '../features/admin/methods/dashboard.js'
 import usersMethods from '../features/admin/methods/users.js'
 import calendarMethods from '../features/admin/methods/calendar.js'
@@ -24,7 +25,7 @@ const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminCalendarRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, VanButton, VanDialog, VanField },
+  components: { AdminDashboardSection, AdminUsersSection, AdminCalendarRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
