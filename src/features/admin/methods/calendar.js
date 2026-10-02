@@ -1,4 +1,5 @@
-import { getAllAdminUsers } from '../api'
+import { confirmAction } from '../../../utils/confirmAction.js'
+import { getAllAdminUsers } from '../api.js'
 import {
   archiveAdminCalendar,
   createAdminCalendar,
@@ -9,7 +10,7 @@ import {
   publishAdminCalendar,
   updateAdminCalendar,
   updateAdminCalendarRequest
-} from '../../calendar/api'
+} from '../../calendar/api.js'
 
 function todayKey() {
   const now = new Date()
@@ -119,8 +120,36 @@ export default {
       this.calendarSaving = true
       try { if (this.calendarForm.id) await updateAdminCalendar(this.calendarForm.id, payload); else await createAdminCalendar(this.selectedCalendarUser.id, payload); this.message = '日历草稿已保存'; this.cancelCalendarEdit(); await this.loadCalendars() } catch (error) { this.message = this.errorText(error) } finally { this.calendarSaving = false }
     },
-  async publishCalendar(calendar) { if (!window.confirm(`确认发布“${calendar.title}” v${calendar.version_number}？发布后用户端将看到这版内容。`)) return; try { await publishAdminCalendar(calendar.id); this.message = '日历已发布'; await this.loadCalendars() } catch (error) { this.message = this.errorText(error) } },
-  async archiveCalendar(calendar) { if (!window.confirm(`确认归档“${calendar.title}” v${calendar.version_number}？`)) return; try { await archiveAdminCalendar(calendar.id); this.message = '日历已归档'; await this.loadCalendars() } catch (error) { this.message = this.errorText(error) } },
+  async publishCalendar(calendar) {
+      const confirmed = await confirmAction({
+        title: '确认发布日历',
+        message: `确认发布“${calendar.title}” v${calendar.version_number}？发布后用户端将看到这版内容。`,
+        confirmButtonText: '确认发布'
+      })
+      if (!confirmed) return
+      try {
+        await publishAdminCalendar(calendar.id)
+        this.message = '日历已发布'
+        await this.loadCalendars()
+      } catch (error) {
+        this.message = this.errorText(error)
+      }
+    },
+  async archiveCalendar(calendar) {
+      const confirmed = await confirmAction({
+        title: '确认归档日历',
+        message: `确认归档“${calendar.title}” v${calendar.version_number}？`,
+        confirmButtonText: '确认归档'
+      })
+      if (!confirmed) return
+      try {
+        await archiveAdminCalendar(calendar.id)
+        this.message = '日历已归档'
+        await this.loadCalendars()
+      } catch (error) {
+        this.message = this.errorText(error)
+      }
+    },
   toggleImportPanel() { this.showCalendarImport = !this.showCalendarImport },
   async importCalendarJson() {
       try { const parsed = JSON.parse(this.calendarImportJson); const entries = Array.isArray(parsed) ? parsed : parsed.entries; if (!this.selectedCalendarUser) throw new Error('请先选择用户'); if (!Array.isArray(entries) || !entries.length) throw new Error('导入内容中没有有效条目'); const startDate = Array.isArray(parsed) ? null : (parsed.start_date || null); const endDate = Array.isArray(parsed) ? null : (parsed.end_date || null); this.validateCalendarEntries(entries, startDate, endDate); await importAdminCalendar({ user_id: this.selectedCalendarUser.id, title: Array.isArray(parsed) ? `${this.selectedCalendarUser.name} 的导入日历` : (parsed.title || `${this.selectedCalendarUser.name} 的导入日历`), start_date: startDate, end_date: endDate, entries }); this.calendarImportJson = ''; this.showCalendarImport = false; this.message = 'JSON 日历已导入为草稿'; await this.loadCalendars() } catch (error) { this.message = error instanceof SyntaxError ? 'JSON 格式不正确' : (error.message || this.errorText(error)) }

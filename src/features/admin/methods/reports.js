@@ -3,7 +3,8 @@ import {
   getAdminReportTasks,
   getAdminReports,
   retryAdminReportTask
-} from '../../reports/api'
+} from '../../reports/api.js'
+import { confirmAction } from '../../../utils/confirmAction.js'
 
 export default {
   async setReportSection(section) {
@@ -18,7 +19,21 @@ export default {
   async searchReportTasks() { this.taskPage = 1; await this.loadReportTasks() },
   async changeTaskPage(offset) { const next = this.taskPage + offset; if (next < 1 || next > this.pageCount(this.reportTasks.total, this.taskPageSize)) return; this.taskPage = next; await this.loadReportTasks() },
   canRetryTask(task) { return task.status === 'failed' && task.has_input_snapshot && !task.has_retry && task.retry_count < this.reportRetryLimit },
-  async retryTask(task) { if (!window.confirm('确认重新生成这份报告？这会再次调用 AI 服务。')) return; try { await retryAdminReportTask(task.task_id); this.message = '重试任务已排队'; await this.loadReportTasks() } catch (error) { this.message = this.errorText(error) } },
+  async retryTask(task) {
+      const confirmed = await confirmAction({
+        title: '确认重新生成报告',
+        message: '确认重新生成这份报告？这会再次调用 AI 服务。',
+        confirmButtonText: '确认重试'
+      })
+      if (!confirmed) return
+      try {
+        await retryAdminReportTask(task.task_id)
+        this.message = '重试任务已排队'
+        await this.loadReportTasks()
+      } catch (error) {
+        this.message = this.errorText(error)
+      }
+    },
   async openReport(report) { this.drawerTrigger = document.activeElement; try { this.reportDetail = await getAdminReport(report.id); this.focusDrawer('reportDrawer') } catch (error) { this.message = this.errorText(error); this.drawerTrigger = null } },
   closeReportDetail() { this.reportDetail = null; this.restoreDrawerFocus() }
 }
