@@ -1,4 +1,5 @@
 <script setup>
+import { Button as VanButton } from 'vant'
 import {
   actionLabel,
   distributionTotal,
@@ -100,7 +101,7 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
         </article>
 
         <article class="dashboard-panel activity-panel">
-          <div class="panel-heading"><div><p class="eyebrow">TRACE / LATEST 8</p><h3>最近活动</h3></div><button type="button" class="panel-link" @click="$emit('switch-tab', 'logs')"><span>查看日志</span><IconMark name="arrow" /></button></div>
+          <div class="panel-heading"><div><p class="eyebrow">TRACE / LATEST 8</p><h3>最近活动</h3></div><VanButton class="panel-link" type="default" plain native-type="button" @click="$emit('switch-tab', 'logs')"><span>查看日志</span><IconMark name="arrow" /></VanButton></div>
           <div v-if="dashboard.recent_activity.length" class="activity-list">
             <div v-for="activity in dashboard.recent_activity" :key="activity.id" class="activity-item"><span class="activity-dot"></span><div><strong>{{ actionLabel(activity.action) }}</strong><p>{{ activity.target_user_name || activity.actor_name || '系统' }} · {{ resourceLabel(activity.resource_type) }}</p></div><time>{{ formatDateTime(activity.created_at) }}</time></div>
           </div>
