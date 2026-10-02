@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.service_requests.schemas import ServiceRequestCreate
 from app.domains.service_requests.users import create_service_request
+from app.domains.content.service import sync_application_evidence
 from app.domains.workflow.definitions import (
     DEFAULT_WORKFLOW_KEY,
     default_workflow_definition,
@@ -82,6 +83,12 @@ async def create_user_service_request(
             service_request_id=request.id,
             source_report_task_id=None,
             application_snapshot=request.request_payload,
+        )
+    if report_case is not None:
+        await sync_application_evidence(
+            db,
+            report_case_id=report_case.id,
+            application_snapshot=report_case.application_snapshot or {},
         )
     try:
         await db.commit()

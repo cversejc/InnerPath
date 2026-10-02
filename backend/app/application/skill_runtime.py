@@ -6,6 +6,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.service_requests.models import ServiceRequest
+from app.domains.content.service import create_evidence_item
+from app.domains.content.models import CaseEvidenceItem
 from app.domains.skills.definitions import (
     DEFAULT_SKILL_KEY,
     default_skill_specification,
@@ -117,12 +119,34 @@ async def _queue_run(
     report_case: ReportCase | None = None,
     step: StepTask | None = None,
 ) -> tuple[SkillRun, bool]:
+    context_snapshot = _safe_input_snapshot(input_data)
+    if report_case is not None:
+        evidence_rows = await db.scalars(
+            select(CaseEvidenceItem)
+            .where(
+                CaseEvidenceItem.report_case_id == report_case.id,
+                CaseEvidenceItem.status == "ACTIVE",
+            )
+            .order_by(CaseEvidenceItem.evidence_key)
+        )
+        context_snapshot["source_references"] = {
+            "evidence": [
+                {
+                    "evidence_id": item.id,
+                    "evidence_key": item.evidence_key,
+                    "source_type": item.source_type,
+                    "source_ref": item.source_ref,
+                    "source_skill_run_id": item.source_skill_run_id,
+                }
+                for item in evidence_rows
+            ]
+        }
     run, created = await create_skill_run(
         db,
         skill_version_id=version_id,
         idempotency_key=idempotency_key,
         input_snapshot=_safe_input_snapshot(input_data),
-        context_snapshot=_safe_input_snapshot(input_data),
+        context_snapshot=context_snapshot,
         run_type="EVALUATION" if report_case is None else "INITIAL",
         target_type=target_type,
         target_key=target_key,
@@ -274,8 +298,37 @@ async def execute_skill_run_record(
         )
         run.output_raw = result.output_raw
         run.output_parsed = result.output_parsed
-        run.context_snapshot = result.context_snapshot
         run.model_trace = result.model_trace
+        foundation = result.context_snapshot.get("foundation_data")
+        if run.report_case_id is not None and foundation is not None:
+            evidence = await create_evidence_item(
+                db,
+                report_case_id=run.report_case_id,
+                evidence_key=f"calculated.foundation.skill_run.{run.id}",
+                source_type="SYSTEM_CALCULATED",
+                source_ref=f"skill_run:{run.id}:foundation_data",
+                value=foundation,
+                source_skill_run_id=run.id,
+            )
+            references = (run.context_snapshot or {}).get("source_references") or {}
+            evidence_refs = list(references.get("evidence") or [])
+            if not any(item.get("evidence_key") == evidence.evidence_key for item in evidence_refs):
+                evidence_refs.append(
+                    {
+                        "evidence_id": evidence.id,
+                        "evidence_key": evidence.evidence_key,
+                        "source_type": evidence.source_type,
+                        "source_ref": evidence.source_ref,
+                        "source_skill_run_id": evidence.source_skill_run_id,
+                    }
+                )
+            references["evidence"] = evidence_refs
+            run.context_snapshot = {
+                **result.context_snapshot,
+                "source_references": references,
+            }
+        else:
+            run.context_snapshot = result.context_snapshot
         run.status = "COMPLETED"
         run.error = None
     except SkillExecutionError as error:

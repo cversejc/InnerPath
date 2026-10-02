@@ -24,6 +24,11 @@ from app.domains.workflow.models import (
     WorkflowVersion,
 )
 from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.content.models import (
+    CaseEvidenceItem,
+    ContentFragmentRevision,
+    FindingRevision,
+)
 
 # this is the Alembic Config object
 config = context.config

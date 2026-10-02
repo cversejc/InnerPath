@@ -14,6 +14,7 @@ from app.domains.skills.definitions import (
     validate_skill_specification,
 )
 from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.content.models import CaseEvidenceItem
 from app.domains.skills.runtime import ModelCompletion, execute_skill
 from app.domains.skills.service import (
     create_skill_run,
@@ -121,6 +122,7 @@ def skill_db():
         WorkflowInstance.__table__,
         StepTask.__table__,
         WorkflowOutbox.__table__,
+        CaseEvidenceItem.__table__,
     ]
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine, tables=tables)
@@ -297,6 +299,66 @@ async def test_skill_run_is_idempotent_and_completion_is_reused(skill_db, monkey
     assert completed.output_parsed["basic_info"]["name"] == "林女士"
     assert repeated.status == "COMPLETED"
     assert gateway.calls == 1
+
+
+@pytest.mark.asyncio
+async def test_case_skill_run_records_calculated_foundation_as_evidence(
+    skill_db, monkeypatch
+):
+    from app.application import skill_runtime
+    from app.domains.content.service import create_evidence_item
+
+    version = await ensure_default_skill_version(skill_db)
+    report_case = ReportCase(
+        user_id=19,
+        status="ACTIVE",
+        application_snapshot={"profile": _profile(), "context": {}},
+        application_submitted_at=datetime.utcnow(),
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+    )
+    skill_db.add(report_case)
+    await skill_db.flush()
+    user_evidence = await create_evidence_item(
+        skill_db,
+        report_case_id=report_case.id,
+        evidence_key="input.profile.gender",
+        source_type="USER_PROVIDED",
+        source_ref="application_snapshot.profile.gender",
+        value="female",
+    )
+    run, _created = await skill_runtime._queue_run(
+        skill_db,
+        version_id=version.id,
+        idempotency_key="case-foundation-run-1",
+        input_data={"profile": _profile(), "context": {}},
+        runtime_instruction=None,
+        target_type="REPORT_CASE_STEP",
+        target_key="S5",
+        report_case=report_case,
+    )
+    gateway = StubGateway(_report_text())
+    monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
+
+    completed = await skill_runtime.execute_skill_run_record(skill_db, run.id)
+    evidence = await skill_db.scalar(
+        select(CaseEvidenceItem).where(
+            CaseEvidenceItem.report_case_id == report_case.id,
+            CaseEvidenceItem.evidence_key
+            == f"calculated.foundation.skill_run.{run.id}",
+        )
+    )
+
+    assert completed.status == "COMPLETED"
+    assert evidence.source_type == "SYSTEM_CALCULATED"
+    assert evidence.source_skill_run_id == run.id
+    assert evidence.source_ref == f"skill_run:{run.id}:foundation_data"
+    assert evidence.value_json == completed.context_snapshot["foundation_data"]
+    evidence_refs = completed.context_snapshot["source_references"]["evidence"]
+    assert {row["evidence_key"] for row in evidence_refs} == {
+        user_evidence.evidence_key,
+        evidence.evidence_key,
+    }
 
 
 @pytest.mark.asyncio

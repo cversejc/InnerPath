@@ -36,9 +36,23 @@
   margin-top: 12px;
 }
 
-.run-detail .raw-output summary {
+.run-detail .raw-output summary,
+.run-detail .context-reference summary {
   margin-bottom: 8px;
   cursor: pointer;
+  font-size: var(--text-body-sm);
+}
+
+.run-detail .context-reference {
+  margin: 12px 0;
+}
+
+.run-detail .context-reference .output-block {
+  margin-top: 8px;
+}
+
+.run-detail .empty-reference {
+  color: var(--muted);
   font-size: var(--text-body-sm);
 }
 

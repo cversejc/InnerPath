@@ -81,6 +81,8 @@ class ConsultantSkillRunResponse(BaseModel):
     target_key: Optional[str] = None
     run_type: str
     status: str
+    context_snapshot: dict[str, Any]
+    selected_knowledge: list[Any]
     output_parsed: Optional[dict[str, Any]] = None
     model_trace: dict[str, Any]
     error: Optional[str] = None
