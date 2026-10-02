@@ -44,6 +44,7 @@ class Settings(BaseSettings):
 
     # SMS Service
     SMS_SPUG_TOKEN: str = ""
+    SMS_DEV_CODE_LOGGING: bool = False
 
     # CORS
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3003,http://192.168.2.47:3003,https://chenvis.com"

@@ -61,7 +61,7 @@ async def enforce_sms_rate_limit(phone: str, ip_address: str | None = None) -> N
 
 async def _deliver_sms(phone: str, code: str) -> None:
     if not settings.SMS_SPUG_TOKEN:
-        if settings.ENVIRONMENT == "development":
+        if settings.ENVIRONMENT == "development" and settings.SMS_DEV_CODE_LOGGING:
             print(f"[DEV] SMS Code for {phone[:3]}****{phone[-4:]}: {code}")
             return
         raise SmsProviderNotConfigured

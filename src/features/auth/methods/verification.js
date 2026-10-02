@@ -45,7 +45,7 @@ export default {
       'Registration temporarily limited': '注册请求过于频繁，请稍后再试',
       'Too many code requests': '验证码请求过于频繁，请稍后再试',
       'Please wait before requesting another code': '请稍后再重新获取验证码',
-      'SMS service is not configured': '验证码发送失败，请稍后重试',
+      'SMS service is not configured': '短信服务尚未配置，请联系管理员',
       'Failed to send verification code': '验证码发送失败，请稍后重试',
       'Invalid phone or verification code': '手机号或验证码错误，请检查后重试',
       'Invalid or expired verification code': '验证码错误或已过期，请重新获取'
