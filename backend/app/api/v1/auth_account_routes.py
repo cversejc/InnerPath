@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.audit_context import audit_context_from_request
 from app.core.logging_config import get_logger
 from app.core.sms import (
     SmsCooldownError,
@@ -104,7 +105,7 @@ async def register(
         "user",
         str(user.id),
         target_user_id=user.id,
-        request=http_request,
+        audit_context=audit_context_from_request(http_request),
     )
     await db.commit()
     return token_response
@@ -132,7 +133,7 @@ async def reset_password(
         "user",
         str(user.id),
         target_user_id=user.id,
-        request=http_request,
+        audit_context=audit_context_from_request(http_request),
     )
     await db.commit()
     return {"success": True, "message": "Password reset successfully"}
@@ -165,7 +166,7 @@ async def accept_invite(
         "user",
         str(user.id),
         target_user_id=user.id,
-        request=http_request,
+        audit_context=audit_context_from_request(http_request),
     )
     await db.commit()
     return token_response

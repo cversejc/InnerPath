@@ -102,7 +102,7 @@ async def change_password(
         "user",
         str(current_user.id),
         target_user_id=current_user.id,
-        request=http_request,
+        audit_context=audit_context_from_request(http_request),
     )
     await db.commit()
     return {"success": True, "message": "Password changed successfully"}

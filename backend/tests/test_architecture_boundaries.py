@@ -77,3 +77,19 @@ def test_domain_and_application_modules_do_not_import_adapters():
                         )
 
     assert not violations, "\n".join(violations)
+
+
+def test_audit_callers_use_context_instead_of_fastapi_requests():
+    violations = []
+
+    for path in sorted(APP_ROOT.rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            if not isinstance(node.func, ast.Name) or node.func.id != "record_audit":
+                continue
+            if any(keyword.arg == "request" for keyword in node.keywords):
+                violations.append(str(path.relative_to(BACKEND_ROOT)))
+
+    assert not violations, "record_audit callers still pass removed request= arguments: " + ", ".join(violations)

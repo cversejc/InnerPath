@@ -31,7 +31,7 @@ async def login(
             "auth.login.failure",
             "auth",
             details={"reason": "invalid_credentials"},
-            request=http_request,
+            audit_context=audit_context_from_request(http_request),
         )
         await db.commit()
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid phone or password")
@@ -43,7 +43,7 @@ async def login(
             "auth",
             target_user_id=user.id,
             details={"reason": "password_setup_required"},
-            request=http_request,
+            audit_context=audit_context_from_request(http_request),
         )
         await db.commit()
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Password setup required")
@@ -55,7 +55,7 @@ async def login(
             "auth",
             target_user_id=user.id,
             details={"reason": "inactive_user"},
-            request=http_request,
+            audit_context=audit_context_from_request(http_request),
         )
         await db.commit()
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is inactive")
@@ -67,7 +67,7 @@ async def login(
         "user",
         str(user.id),
         target_user_id=user.id,
-        request=http_request,
+        audit_context=audit_context_from_request(http_request),
     )
     await db.commit()
     return token_response
