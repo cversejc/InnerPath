@@ -11,11 +11,14 @@
         <div class="hero-actions">
           <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
           <router-link class="secondary-button compact-button" to="/staff">申请工作台</router-link>
-          <button class="secondary-button compact-button" type="button" :disabled="activeLoading" @click="refreshActive"><IconMark name="refresh" /> <span>刷新</span></button>
-          <button class="admin-account-button" type="button" :disabled="loggingOut" :aria-busy="loggingOut" @click="handleLogout">
-            <IconMark name="logout" />
-            <span>{{ loggingOut ? '退出中…' : '退出登录' }}</span>
-          </button>
+          <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="activeLoading" :loading="activeLoading" loading-text="刷新中…" :aria-busy="activeLoading" @click="refreshActive">
+            <template #icon><IconMark name="refresh" /></template>
+            刷新
+          </VanButton>
+          <VanButton class="admin-account-button" type="default" plain native-type="button" :disabled="loggingOut" :loading="loggingOut" loading-text="退出中…" :aria-busy="loggingOut" @click="handleLogout">
+            <template #icon><IconMark name="logout" /></template>
+            退出登录
+          </VanButton>
         </div>
       </header>
 
