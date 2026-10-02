@@ -7,6 +7,8 @@ from app.core.cache import init_redis, close_redis
 from app.core.logging_config import setup_logging, get_logger
 from app.db.session import AsyncSessionLocal
 from app.application.report_cases import ensure_default_workflow_version
+from app.application.skill_runtime import ensure_skill_workflow_version
+from app.domains.skills.service import ensure_default_skill_version
 from app.api.v1 import (
     admin,
     auth,
@@ -14,6 +16,7 @@ from app.api.v1 import (
     report_task_routes,
     reports,
     report_cases,
+    skills,
     service_requests,
     staff,
     users,
@@ -40,6 +43,8 @@ async def lifespan(app: FastAPI):
     logger.info("Redis 连接已建立")
     async with AsyncSessionLocal() as db:
         await ensure_default_workflow_version(db)
+        await ensure_default_skill_version(db)
+        await ensure_skill_workflow_version(db)
         await db.commit()
     logger.info(f"应用启动完成 | 环境: {settings.ENVIRONMENT} | 调试模式: {settings.DEBUG}")
     yield
@@ -142,6 +147,8 @@ app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(report_task_routes.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(report_cases.router, prefix="/api/v1/report-cases", tags=["Report Cases"])
+app.include_router(skills.admin_router, prefix="/api/v1/admin", tags=["Skill Studio"])
+app.include_router(skills.staff_router, prefix="/api/v1/staff", tags=["Skill Runs"])
 app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["Calendar"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 app.include_router(staff.router, prefix="/api/v1/staff", tags=["Staff"])
@@ -164,6 +171,7 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
         "app.main:app",
         host=settings.HOST,

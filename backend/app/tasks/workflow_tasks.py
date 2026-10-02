@@ -60,6 +60,19 @@ async def _consume_outbox_event(event_id: int) -> dict:
             # event after checking its activation number and current state.
             return {"event_id": event_id, "status": "ready", "step_key": step.step_key}
 
+        if event.event_type == "skill.run.requested":
+            from app.application.skill_runtime import execute_skill_run_record
+
+            run_id = (event.payload_json or {}).get("skill_run_id")
+            if not isinstance(run_id, int):
+                return {"event_id": event_id, "status": "invalid_payload"}
+            run = await execute_skill_run_record(db, run_id)
+            return {
+                "event_id": event_id,
+                "status": run.status.lower(),
+                "skill_run_id": run.id,
+            }
+
         return {
             "event_id": event_id,
             "status": "observed",

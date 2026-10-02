@@ -23,6 +23,7 @@ from app.domains.workflow.models import (
     WorkflowOutbox,
     WorkflowVersion,
 )
+from app.domains.skills.models import AISkillVersion, SkillRun
 
 # this is the Alembic Config object
 config = context.config

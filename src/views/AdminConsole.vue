@@ -11,6 +11,7 @@
         <div class="hero-actions">
           <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
           <router-link class="secondary-button compact-button" to="/staff">申请工作台</router-link>
+          <router-link class="secondary-button compact-button" to="/skills">Skill Studio</router-link>
           <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="activeLoading" :loading="activeLoading" loading-text="刷新中…" :aria-busy="activeLoading" @click="refreshActive">
             <template #icon><IconMark name="refresh" /></template>
             刷新

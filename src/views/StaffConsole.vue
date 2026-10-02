@@ -9,6 +9,7 @@
           <p>接收用户申请，参考 AI 初稿完成结构化审校，再将可交付的结果发回用户。</p>
         </div>
         <div class="heading-actions">
+          <router-link class="secondary-button compact-button" to="/skills">Skill Studio</router-link>
           <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask }"></i>{{ pollingTask ? 'AI 初稿处理中' : loading ? '正在同步' : '已同步' }}</span>
           <VanButton class="secondary-button" type="default" plain native-type="button" :disabled="loading" @click="loadRequests">刷新申请</VanButton>
         </div>
