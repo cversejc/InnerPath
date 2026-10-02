@@ -274,7 +274,7 @@ export default {
   padding: 0 14px;
   background: rgba(184, 92, 80, 0.08);
   color: var(--cinnabar-deep);
-  font-family: var(--font-accent);
+  font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;

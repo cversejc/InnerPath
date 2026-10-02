@@ -3,7 +3,10 @@
     <Transition name="auth-intro">
       <section v-if="showIntro" class="auth-intro" aria-label="辰鉴入场动画">
         <div class="auth-intro-lockup" aria-hidden="true">
-          <img class="auth-intro-logo" src="/brand-logo.png" alt="" />
+          <picture>
+            <source srcset="/brand-logo.webp" type="image/webp">
+            <img class="auth-intro-logo" src="/brand-logo.png" alt="" width="640" height="640" fetchpriority="high" decoding="async">
+          </picture>
         </div>
       </section>
     </Transition>
@@ -11,7 +14,10 @@
     <div class="auth-shell" :aria-hidden="showIntro ? 'true' : undefined" :inert="showIntro">
       <header class="auth-topbar">
         <router-link class="auth-logo" to="/" aria-label="辰鉴首页">
-          <img class="auth-logo-mark" src="/brand-emblem.png" alt="" />
+          <picture>
+            <source srcset="/brand-emblem.webp" type="image/webp">
+            <img class="auth-logo-mark" src="/brand-emblem.png" alt="" width="214" height="256" decoding="async">
+          </picture>
           <span>辰鉴</span>
         </router-link>
       </header>
