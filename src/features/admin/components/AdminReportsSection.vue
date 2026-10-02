@@ -1,4 +1,5 @@
 <script setup>
+import { Button as VanButton } from 'vant'
 import { formatDateTime, pageCount, reportStatusText } from '../formatters.js'
 
 const props = defineProps({
@@ -34,7 +35,7 @@ function canRetryTask(task) {
 
 <template>
   <section class="content-view">
-    <div class="view-heading"><div><p class="eyebrow">AI / REPORT PIPELINE</p><h2>报告与任务</h2><p>查看全局生成状态，失败任务可受控重试。</p></div><button class="secondary-button" type="button" @click="emit('export', 'reports')"><IconMark name="download" /> <span>导出报告 CSV</span></button></div>
+    <div class="view-heading"><div><p class="eyebrow">AI / REPORT PIPELINE</p><h2>报告与任务</h2><p>查看全局生成状态，失败任务可受控重试。</p></div><VanButton class="secondary-button" type="default" plain native-type="button" @click="emit('export', 'reports')"><IconMark name="download" /> <span>导出报告 CSV</span></VanButton></div>
     <div class="section-switch">
       <button type="button" :class="{ active: reportSection === 'reports' }" @click="emit('select-section', 'reports')">报告列表</button>
       <button type="button" :class="{ active: reportSection === 'tasks' }" @click="emit('select-section', 'tasks')">生成任务</button>
@@ -47,7 +48,7 @@ function canRetryTask(task) {
         <input v-model.trim="reportFilters.ai_model" aria-label="按 AI 模型筛选" placeholder="AI 模型，例如 deepseek-chat" @keyup.enter="emit('search-reports')">
         <label class="date-filter"><span>创建自</span><input v-model="reportFilters.date_from" type="date"></label>
         <label class="date-filter"><span>至</span><input v-model="reportFilters.date_to" type="date"></label>
-        <button class="primary-button compact-button" type="button" @click="emit('search-reports')">查询</button>
+        <VanButton class="primary-button compact-button" type="primary" native-type="button" @click="emit('search-reports')">查询</VanButton>
       </div>
       <div v-if="reportsLoading" class="list-loading" aria-label="正在加载报告"><i v-for="index in 4" :key="index"></i></div>
       <div v-else class="table-panel">
@@ -68,7 +69,7 @@ function canRetryTask(task) {
             </tbody>
           </table>
         </div>
-        <div class="pagination"><span>第 {{ reportPage }} / {{ pageCount(reports.total, pageSize) }} 页</span><div><button class="secondary-button compact-button" type="button" :disabled="reportPage <= 1" @click="emit('change-report-page', -1)">上一页</button><button class="secondary-button compact-button" type="button" :disabled="reportPage >= pageCount(reports.total, pageSize)" @click="emit('change-report-page', 1)">下一页</button></div></div>
+        <div class="pagination"><span>第 {{ reportPage }} / {{ pageCount(reports.total, pageSize) }} 页</span><div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportPage <= 1" @click="emit('change-report-page', -1)">上一页</VanButton><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportPage >= pageCount(reports.total, pageSize)" @click="emit('change-report-page', 1)">下一页</VanButton></div></div>
       </div>
     </template>
 
@@ -76,7 +77,7 @@ function canRetryTask(task) {
       <div class="filter-bar">
         <input v-model.trim="taskFilters.search" aria-label="搜索用户或任务 ID" placeholder="搜索用户或任务 ID" @keyup.enter="emit('search-tasks')">
         <select v-model="taskFilters.status" aria-label="按任务状态筛选"><option value="">全部状态</option><option value="processing">生成中</option><option value="completed">已完成</option><option value="failed">失败</option></select>
-        <button class="primary-button compact-button" type="button" @click="emit('search-tasks')">查询</button>
+        <VanButton class="primary-button compact-button" type="primary" native-type="button" @click="emit('search-tasks')">查询</VanButton>
       </div>
       <div v-if="tasksLoading" class="list-loading" aria-label="正在加载报告任务"><i v-for="index in 4" :key="index"></i></div>
       <div v-else class="table-panel">
@@ -97,7 +98,7 @@ function canRetryTask(task) {
             </tbody>
           </table>
         </div>
-        <div class="pagination"><span>第 {{ taskPage }} / {{ pageCount(reportTasks.total, taskPageSize) }} 页</span><div><button class="secondary-button compact-button" type="button" :disabled="taskPage <= 1" @click="emit('change-task-page', -1)">上一页</button><button class="secondary-button compact-button" type="button" :disabled="taskPage >= pageCount(reportTasks.total, taskPageSize)" @click="emit('change-task-page', 1)">下一页</button></div></div>
+        <div class="pagination"><span>第 {{ taskPage }} / {{ pageCount(reportTasks.total, taskPageSize) }} 页</span><div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="taskPage <= 1" @click="emit('change-task-page', -1)">上一页</VanButton><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="taskPage >= pageCount(reportTasks.total, taskPageSize)" @click="emit('change-task-page', 1)">下一页</VanButton></div></div>
       </div>
     </template>
   </section>

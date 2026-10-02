@@ -1,4 +1,5 @@
 <script setup>
+import { Button as VanButton } from 'vant'
 import {
   actionLabel,
   decisionStatusText,
@@ -45,7 +46,7 @@ defineEmits([
 
 <template>
   <section class="content-view">
-    <div class="view-heading"><div><p class="eyebrow">TRACE / AUDIT &amp; BEHAVIOR</p><h2>日志中心</h2><p>关键变更、用户行动与任务状态都留下可追溯的痕迹。</p></div><button v-if="logSection !== 'tasks'" class="secondary-button" type="button" @click="$emit('export', logSection === 'audit' ? 'audit-logs' : 'decision-logs')"><IconMark name="download" /> <span>导出当前 CSV</span></button></div>
+    <div class="view-heading"><div><p class="eyebrow">TRACE / AUDIT &amp; BEHAVIOR</p><h2>日志中心</h2><p>关键变更、用户行动与任务状态都留下可追溯的痕迹。</p></div><VanButton v-if="logSection !== 'tasks'" class="secondary-button" type="default" plain native-type="button" @click="$emit('export', logSection === 'audit' ? 'audit-logs' : 'decision-logs')"><IconMark name="download" /> <span>导出当前 CSV</span></VanButton></div>
     <div class="section-switch" role="group" aria-label="日志类型">
       <button type="button" :class="{ active: logSection === 'audit' }" :aria-pressed="logSection === 'audit'" @click="$emit('select-section', 'audit')">审计日志</button>
       <button type="button" :class="{ active: logSection === 'behavior' }" :aria-pressed="logSection === 'behavior'" @click="$emit('select-section', 'behavior')">用户行动记录</button>
@@ -61,8 +62,8 @@ defineEmits([
         <input v-model.trim="logFilters.target_user_id" type="number" min="1" aria-label="按目标用户 ID 筛选" placeholder="目标用户 ID">
         <label class="date-filter"><span>自</span><input v-model="logFilters.date_from" type="date"></label>
         <label class="date-filter"><span>至</span><input v-model="logFilters.date_to" type="date"></label>
-        <button class="primary-button compact-button" type="button" @click="$emit('load-audit-logs')">查询</button>
-        <button class="filter-reset" type="button" @click="$emit('reset-log-filters')">清空</button>
+        <VanButton class="primary-button compact-button" type="primary" native-type="button" @click="$emit('load-audit-logs')">查询</VanButton>
+        <VanButton class="filter-reset" type="default" plain native-type="button" @click="$emit('reset-log-filters')">清空</VanButton>
       </div>
       <div v-if="auditLoading" class="list-loading" aria-label="正在加载审计日志"><i v-for="index in 4" :key="index"></i></div>
       <div v-else class="table-panel">
@@ -84,7 +85,7 @@ defineEmits([
             </tbody>
           </table>
         </div>
-        <div class="pagination"><span>第 {{ logPage }} / {{ pageCount(auditLogs.total, logPageSize) }} 页</span><div><button class="secondary-button compact-button" type="button" :disabled="logPage <= 1" @click="$emit('change-log-page', -1)">上一页</button><button class="secondary-button compact-button" type="button" :disabled="logPage >= pageCount(auditLogs.total, logPageSize)" @click="$emit('change-log-page', 1)">下一页</button></div></div>
+        <div class="pagination"><span>第 {{ logPage }} / {{ pageCount(auditLogs.total, logPageSize) }} 页</span><div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="logPage <= 1" @click="$emit('change-log-page', -1)">上一页</VanButton><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="logPage >= pageCount(auditLogs.total, logPageSize)" @click="$emit('change-log-page', 1)">下一页</VanButton></div></div>
       </div>
     </template>
 
@@ -95,7 +96,7 @@ defineEmits([
         <select v-model="behaviorFilters.status" aria-label="按记录状态筛选"><option value="">全部状态</option><option value="done">已完成</option><option value="doing">进行中</option><option value="skipped">已跳过</option></select>
         <label class="date-filter"><span>自</span><input v-model="behaviorFilters.date_from" type="date"></label>
         <label class="date-filter"><span>至</span><input v-model="behaviorFilters.date_to" type="date"></label>
-        <button class="primary-button compact-button" type="button" @click="$emit('search-decision-logs')">查询</button>
+        <VanButton class="primary-button compact-button" type="primary" native-type="button" @click="$emit('search-decision-logs')">查询</VanButton>
       </div>
       <div v-if="decisionLoading" class="list-loading" aria-label="正在加载用户行动记录"><i v-for="index in 4" :key="index"></i></div>
       <div v-else class="table-panel">
@@ -112,7 +113,7 @@ defineEmits([
             </tbody>
           </table>
         </div>
-        <div class="pagination"><span>第 {{ decisionPage }} / {{ pageCount(decisionLogs.total, decisionPageSize) }} 页</span><div><button class="secondary-button compact-button" type="button" :disabled="decisionPage <= 1" @click="$emit('change-decision-page', -1)">上一页</button><button class="secondary-button compact-button" type="button" :disabled="decisionPage >= pageCount(decisionLogs.total, decisionPageSize)" @click="$emit('change-decision-page', 1)">下一页</button></div></div>
+        <div class="pagination"><span>第 {{ decisionPage }} / {{ pageCount(decisionLogs.total, decisionPageSize) }} 页</span><div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="decisionPage <= 1" @click="$emit('change-decision-page', -1)">上一页</VanButton><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="decisionPage >= pageCount(decisionLogs.total, decisionPageSize)" @click="$emit('change-decision-page', 1)">下一页</VanButton></div></div>
       </div>
     </template>
 
@@ -120,7 +121,7 @@ defineEmits([
       <div class="filter-bar">
         <input v-model.trim="taskFilters.search" aria-label="搜索用户或任务 ID" placeholder="搜索用户或任务 ID" @keyup.enter="$emit('search-tasks')">
         <select v-model="taskFilters.status" aria-label="按任务状态筛选"><option value="">全部状态</option><option value="processing">生成中</option><option value="completed">已完成</option><option value="failed">失败</option></select>
-        <button class="primary-button compact-button" type="button" @click="$emit('search-tasks')">查询</button>
+        <VanButton class="primary-button compact-button" type="primary" native-type="button" @click="$emit('search-tasks')">查询</VanButton>
       </div>
       <div v-if="tasksLoading" class="list-loading" aria-label="正在加载报告任务日志"><i v-for="index in 4" :key="index"></i></div>
       <div v-else class="table-panel">
@@ -138,7 +139,7 @@ defineEmits([
             </tbody>
           </table>
         </div>
-        <div class="pagination"><span>第 {{ taskPage }} / {{ pageCount(reportTasks.total, taskPageSize) }} 页</span><div><button class="secondary-button compact-button" type="button" :disabled="taskPage <= 1" @click="$emit('change-task-page', -1)">上一页</button><button class="secondary-button compact-button" type="button" :disabled="taskPage >= pageCount(reportTasks.total, taskPageSize)" @click="$emit('change-task-page', 1)">下一页</button></div></div>
+        <div class="pagination"><span>第 {{ taskPage }} / {{ pageCount(reportTasks.total, taskPageSize) }} 页</span><div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="taskPage <= 1" @click="$emit('change-task-page', -1)">上一页</VanButton><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="taskPage >= pageCount(reportTasks.total, taskPageSize)" @click="$emit('change-task-page', 1)">下一页</VanButton></div></div>
       </div>
     </template>
   </section>
