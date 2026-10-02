@@ -59,7 +59,8 @@ export default {
     birthDateLabel() {
       const { birth_year: year, birth_month: month, birth_day: day } = this.profile
       if (!year || !month || !day) return '未完成'
-      return `${year}年${month}月${day}日 · ${this.profile.calendar_type === 'lunar' ? '农历' : '公历'}`
+      const monthLabel = this.profile.birth_is_leap_month ? `闰${month}月` : `${month}月`
+      return `${year}年${monthLabel}${day}日 · ${this.profile.calendar_type === 'lunar' ? '农历' : '公历'}`
     },
     timeLabel() {
       const labels = { unknown: '时辰未知', approximate: '大概时间', exact: '精确时间' }

@@ -6,6 +6,7 @@ from typing import Any, Optional
 
 from .models import SERVICE_REQUEST_TYPES, ServiceRequest
 from app.models.user import User
+from app.domains.users.lunar_calendar import solar_date_for_birth
 from .schemas import (
     ServiceProfileSnapshot,
     ServiceRequestCreate,
@@ -33,15 +34,15 @@ def ensure_service_type(service_type: str) -> None:
 
 def _validate_birth_date(profile: dict[str, Any]) -> None:
     try:
-        birth_date = date(
+        solar_date_for_birth(
             int(profile["birth_year"]),
             int(profile["birth_month"]),
             int(profile["birth_day"]),
+            calendar_type=profile.get("calendar_type", "solar"),
+            is_leap_month=bool(profile.get("birth_is_leap_month", False)),
         )
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError("invalid_birth_date") from error
-    if profile.get("calendar_type") == "lunar" and birth_date.day > 30:
-        raise ValueError("invalid_lunar_birth_date")
 
 
 def _normalize_payload(

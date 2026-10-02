@@ -16,6 +16,7 @@ function validForm(overrides = {}) {
     birth_year: 2000,
     birth_month: 2,
     birth_day: 29,
+    birth_is_leap_month: false,
     start_date: '2026-12-31',
     calendar_goal: '安排职业转型',
     ...overrides
@@ -60,6 +61,7 @@ test('calendar form payload normalizes numeric profile values and unknown birth 
     birth_year: 2000,
     birth_month: 2,
     birth_day: 29,
+    birth_is_leap_month: false,
     birth_hour: null,
     birth_minute: null,
     birth_place: null,
@@ -69,4 +71,17 @@ test('calendar form payload normalizes numeric profile values and unknown birth 
   assert.equal(payload.calendar_goal, '安排职业转型')
   assert.equal(payload.additional_info, null)
   assert.deepEqual(payload.selected_topics, [])
+})
+
+test('calendar form payload retains a selected lunar leap month', () => {
+  const payload = buildCalendarRequestPayload(validForm({
+    calendar_type: 'lunar',
+    birth_year: 2023,
+    birth_month: 2,
+    birth_day: 1,
+    birth_is_leap_month: true
+  }))
+
+  assert.equal(payload.profile.calendar_type, 'lunar')
+  assert.equal(payload.profile.birth_is_leap_month, true)
 })

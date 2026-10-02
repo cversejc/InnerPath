@@ -55,6 +55,7 @@ export function validateAssessmentProfile(profile, currentYear = new Date().getF
   if (!year || year < 1900 || year > currentYear) errors.birth_date = '请填写有效的出生日期。'
   else if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期。'
   else if (profile.calendar_type === 'solar') {
+    if (profile.birth_is_leap_month) errors.birth_date = '公历日期不能选择闰月。'
     const date = new Date(year, month - 1, day)
     if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期。'
   } else if (day > 30) errors.birth_date = '农历日期的日期不能超过 30。'

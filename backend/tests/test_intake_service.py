@@ -21,6 +21,7 @@ def make_user(**overrides):
         "birth_year": 1990,
         "birth_month": 5,
         "birth_day": 15,
+        "birth_is_leap_month": False,
         "birth_hour": 8,
         "birth_minute": 30,
         "birth_place": "广东省广州市",

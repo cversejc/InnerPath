@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from app.config import settings
 from app.domains.reports.models import Report
+from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -20,16 +21,29 @@ async def create_report(
     logger.info(f"创建报告 | 用户ID: {user_id} | 生成耗时: {generation_time_ms}ms")
 
     # Extract birth date and time
+    birth_profile = (input_data or {}).get("profile") or (input_data or {})
     birth_date_str = report_data["basic_info"]["birth_date"]
-    birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d").date()
+    if all(
+        birth_profile.get(field) is not None
+        for field in ("birth_year", "birth_month", "birth_day")
+    ):
+        birth_date = solar_date_for_birth(
+            int(birth_profile["birth_year"]),
+            int(birth_profile["birth_month"]),
+            int(birth_profile["birth_day"]),
+            calendar_type=birth_profile.get("calendar_type", "solar"),
+            is_leap_month=bool(birth_profile.get("birth_is_leap_month", False)),
+        )
+    else:
+        birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d").date()
 
     logger.debug(f"出生日期: {birth_date}")
 
     birth_time = None
-    if input_data and input_data.get("birth_hour") is not None:
+    if birth_profile.get("birth_hour") is not None:
         birth_time = dt_time(
-            int(input_data["birth_hour"]),
-            int(input_data.get("birth_minute") or 0),
+            int(birth_profile["birth_hour"]),
+            int(birth_profile.get("birth_minute") or 0),
         )
 
     report = Report(
@@ -37,8 +51,8 @@ async def create_report(
         title="辰鉴·人生说明书",
         birth_date=birth_date,
         birth_time=birth_time,
-        birth_calendar_type=(input_data or {}).get("calendar_type", "solar"),
-        birth_place=(input_data or {}).get("birth_place"),
+        birth_calendar_type=birth_profile.get("calendar_type", "solar"),
+        birth_place=birth_profile.get("birth_place"),
         input_snapshot=input_data,
         energy_profile=report_data["energy_profile"],
         career_guidance=report_data["career_guidance"],
@@ -130,12 +144,27 @@ def format_report_response(report: Report) -> Dict[str, Any]:
         # workspace, never through the public report response.
         content_payload.pop("ai_generated_content", None)
     snapshot = report.input_snapshot or {}
+    birth_profile = snapshot.get("profile") or snapshot
+    birth_year = birth_profile.get("birth_year")
+    birth_month = birth_profile.get("birth_month")
+    birth_day = birth_profile.get("birth_day")
+    has_original_birth_date = all(
+        value is not None for value in (birth_year, birth_month, birth_day)
+    )
+    displayed_birth_date = (
+        f"{int(birth_year):04d}-{int(birth_month):02d}-{int(birth_day):02d}"
+        if has_original_birth_date
+        else report.birth_date.isoformat()
+    )
     return {
         "id": report.id,
         "title": report.title,
         "basic_info": {
             "name": snapshot.get("name") or (snapshot.get("profile") or {}).get("name") or "用户",
-            "birth_date": report.birth_date.isoformat(),
+            "birth_date": displayed_birth_date,
+            "solar_birth_date": report.birth_date.isoformat(),
+            "calendar_type": birth_profile.get("calendar_type", report.birth_calendar_type),
+            "birth_is_leap_month": bool(birth_profile.get("birth_is_leap_month", False)),
             "report_date": report.created_at.date().isoformat(),
             "generated_by": "咨询师审校 + AI 初稿" if report.reviewed_at else ("DeepSeek AI" if report.ai_raw_content else "Basic Algorithm")
         },

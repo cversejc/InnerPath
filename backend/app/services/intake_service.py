@@ -12,6 +12,7 @@ from datetime import date
 from typing import Any, Mapping, Optional
 
 from app.models.user import User
+from app.domains.users.lunar_calendar import solar_date_for_birth
 
 
 PROFILE_SNAPSHOT_FIELDS = (
@@ -20,6 +21,7 @@ PROFILE_SNAPSHOT_FIELDS = (
     "birth_year",
     "birth_month",
     "birth_day",
+    "birth_is_leap_month",
     "birth_hour",
     "birth_minute",
     "birth_place",
@@ -111,12 +113,21 @@ def calculate_age(
     birth_month: Optional[int],
     birth_day: Optional[int],
     today: Optional[date] = None,
+    calendar_type: str = "solar",
+    birth_is_leap_month: bool = False,
 ) -> Optional[int]:
     if not all(value is not None for value in (birth_year, birth_month, birth_day)):
         return None
     try:
         current = today or date.today()
-        birthday = date(int(birth_year), int(birth_month), int(birth_day))
+        birthday = solar_date_for_birth(
+            int(birth_year),
+            int(birth_month),
+            int(birth_day),
+            calendar_type=calendar_type,
+            is_leap_month=birth_is_leap_month,
+            today=current,
+        )
         return max(
             0,
             current.year
@@ -151,7 +162,11 @@ def build_intake_snapshot(
         "context": normalized_context,
         "derived": {
             "age_at_request": calculate_age(
-                user.birth_year, user.birth_month, user.birth_day
+                user.birth_year,
+                user.birth_month,
+                user.birth_day,
+                calendar_type=getattr(user, "calendar_type", "solar"),
+                birth_is_leap_month=getattr(user, "birth_is_leap_month", False),
             ),
         },
     }

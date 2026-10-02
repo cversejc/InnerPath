@@ -17,6 +17,8 @@ export default {
     this.form.birth_year = user.birth_year || this.form.birth_year
     this.form.birth_month = user.birth_month || this.form.birth_month
     this.form.birth_day = user.birth_day || this.form.birth_day
+    this.form.birth_is_leap_month = Boolean(user.birth_is_leap_month)
+    this.form.calendar_type = user.calendar_type || this.form.calendar_type
     this.form.birth_hour = user.birth_hour ?? this.form.birth_hour
     this.form.birth_minute = user.birth_minute ?? this.form.birth_minute
     this.form.birth_place = user.birth_place || this.form.birth_place
@@ -39,6 +41,19 @@ export default {
       this.form.birth_hour = null
       this.form.birth_minute = null
     }
+  },
+  selectCalendarType(value) {
+    this.form.calendar_type = value
+    if (value === 'solar') this.form.birth_is_leap_month = false
+  },
+  setBirthDate({ year, month, day, birth_is_leap_month = false }) {
+    Object.assign(this.form, {
+      birth_year: year,
+      birth_month: month,
+      birth_day: day,
+      birth_is_leap_month
+    })
+    delete this.errors.birth
   },
   validate() {
     const errors = validateCalendarRequestForm(this.form)

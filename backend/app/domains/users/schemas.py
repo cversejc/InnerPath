@@ -10,6 +10,7 @@ class UserBase(BaseModel):
     birth_year: Optional[int] = Field(None, ge=1900, le=2026)
     birth_month: Optional[int] = Field(None, ge=1, le=12)
     birth_day: Optional[int] = Field(None, ge=1, le=31)
+    birth_is_leap_month: bool = False
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
@@ -39,6 +40,7 @@ class UserUpdate(BaseModel):
     birth_year: Optional[int] = Field(None, ge=1900, le=2026)
     birth_month: Optional[int] = Field(None, ge=1, le=12)
     birth_day: Optional[int] = Field(None, ge=1, le=31)
+    birth_is_leap_month: Optional[bool] = None
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
@@ -67,6 +69,7 @@ class UserResponse(BaseModel):
     birth_year: Optional[int]
     birth_month: Optional[int]
     birth_day: Optional[int]
+    birth_is_leap_month: bool
     birth_hour: Optional[int]
     birth_minute: Optional[int]
     birth_place: Optional[str]
@@ -105,3 +108,21 @@ class UserResponse(BaseModel):
         if self.phone and len(self.phone) >= 11:
             return f"{self.phone[:3]}****{self.phone[-4:]}"
         return self.phone
+
+
+class LunarMonthOption(BaseModel):
+    value: int
+    label: str
+    day_count: int
+    max_day: int
+
+
+class LunarCalendarOptionYear(BaseModel):
+    value: int
+    label: str
+    months: list[LunarMonthOption]
+
+
+class LunarCalendarOptionsResponse(BaseModel):
+    max_year: int
+    years: list[LunarCalendarOptionYear]

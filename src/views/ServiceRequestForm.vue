@@ -32,16 +32,17 @@
             </fieldset>
           </div>
 
-          <div class="form-grid three">
-            <label class="field"><span>出生年 <b>*</b></span><input v-model.number="form.birth_year" type="number" min="1900" max="2026" inputmode="numeric" required><small v-if="errors.birth" class="field-error">{{ errors.birth }}</small></label>
-            <label class="field"><span>出生月 <b>*</b></span><input v-model.number="form.birth_month" type="number" min="1" max="12" inputmode="numeric" required></label>
-            <label class="field"><span>出生日 <b>*</b></span><input v-model.number="form.birth_day" type="number" min="1" max="31" inputmode="numeric" required></label>
-          </div>
+          <BirthDateField
+            :profile="form"
+            :errors="{ birth_date: errors.birth }"
+            id-prefix="calendar-request"
+            @set-birth-date="setBirthDate"
+          />
 
           <div class="form-grid two">
             <fieldset class="field choice-fieldset">
               <legend>历法类型 <b>*</b></legend>
-              <div class="choice-row"><VanButton type="default" native-type="button" :class="{ selected: form.calendar_type === 'solar' }" :aria-pressed="form.calendar_type === 'solar'" @click="form.calendar_type = 'solar'">公历</VanButton><VanButton type="default" native-type="button" :class="{ selected: form.calendar_type === 'lunar' }" :aria-pressed="form.calendar_type === 'lunar'" @click="form.calendar_type = 'lunar'">农历</VanButton></div>
+              <div class="choice-row"><VanButton type="default" native-type="button" :class="{ selected: form.calendar_type === 'solar' }" :aria-pressed="form.calendar_type === 'solar'" @click="selectCalendarType('solar')">公历</VanButton><VanButton type="default" native-type="button" :class="{ selected: form.calendar_type === 'lunar' }" :aria-pressed="form.calendar_type === 'lunar'" @click="selectCalendarType('lunar')">农历</VanButton></div>
             </fieldset>
             <label class="field"><span>出生地 <em>选填</em></span><input v-model.trim="form.birth_place" type="text" maxlength="100" placeholder="如：北京、上海"></label>
           </div>

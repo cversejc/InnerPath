@@ -1,10 +1,11 @@
-from datetime import date, datetime
+from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.users.schemas import UserUpdate
+from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.models.user import User
 
 
@@ -20,6 +21,7 @@ PROFILE_VERSION_FIELDS = {
     "birth_year",
     "birth_month",
     "birth_day",
+    "birth_is_leap_month",
     "birth_hour",
     "birth_minute",
     "birth_place",
@@ -58,14 +60,31 @@ def apply_user_profile_update(user: User, update_data: dict) -> list[str]:
         field: update_data.get(field, getattr(user, field, None))
         for field in ("birth_year", "birth_month", "birth_day")
     }
+    next_calendar_type = update_data.get(
+        "calendar_type", getattr(user, "calendar_type", "solar")
+    )
+    next_is_leap_month = update_data.get(
+        "birth_is_leap_month", getattr(user, "birth_is_leap_month", False)
+    )
+    if next_calendar_type == "solar" and update_data.get("birth_is_leap_month") is True:
+        raise ValueError("birth_date_invalid")
+    if next_calendar_type == "solar" and next_is_leap_month:
+        if update_data.get("calendar_type") == "solar":
+            update_data["birth_is_leap_month"] = False
+            next_is_leap_month = False
+        else:
+            raise ValueError("birth_date_invalid")
     if all(value is not None for value in next_birth.values()):
-        calendar_type = update_data.get("calendar_type", getattr(user, "calendar_type", "solar"))
-        if calendar_type == "lunar" and int(next_birth["birth_day"]) > 30:
-            raise ValueError("birth_date_invalid")
         try:
-            date(int(next_birth["birth_year"]), int(next_birth["birth_month"]), int(next_birth["birth_day"]))
-        except (TypeError, ValueError):
-            raise ValueError("birth_date_invalid")
+            solar_date_for_birth(
+                int(next_birth["birth_year"]),
+                int(next_birth["birth_month"]),
+                int(next_birth["birth_day"]),
+                calendar_type=next_calendar_type,
+                is_leap_month=bool(next_is_leap_month),
+            )
+        except (TypeError, ValueError) as error:
+            raise ValueError("birth_date_invalid") from error
     if "birth_time_precision" in update_data:
         precision = update_data["birth_time_precision"] or "unknown"
         update_data["birth_time_precision"] = precision

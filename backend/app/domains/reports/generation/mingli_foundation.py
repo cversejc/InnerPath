@@ -39,7 +39,8 @@ def calculate_bazi_from_user_data(user_data: Dict[str, Any]) -> Dict[str, Any]:
         day=day,
         hour=hour,
         minute=minute,
-        is_solar=is_solar
+        is_solar=is_solar,
+        is_leap_month=bool(user_data.get("birth_is_leap_month", False)),
     )
 
     # 计算紫微斗数 (如果有时辰)
@@ -56,7 +57,8 @@ def calculate_bazi_from_user_data(user_data: Dict[str, Any]) -> Dict[str, Any]:
                 location=location,
                 latitude=latitude,
                 longitude=longitude,
-                is_solar=is_solar
+                is_solar=is_solar,
+                is_leap_month=bool(user_data.get("birth_is_leap_month", False)),
             )
         except Exception as e:
             # 紫微斗数计算失败不影响八字结果

@@ -10,6 +10,11 @@ export async function updateUserProfileRequest(userData) {
   return response.data
 }
 
+export async function getLunarCalendarOptions() {
+  const response = await apiClient.get('/users/lunar-calendar')
+  return response.data
+}
+
 export async function changePassword(currentPassword, newPassword) {
   const response = await apiClient.post('/users/me/change-password', {
     current_password: currentPassword,

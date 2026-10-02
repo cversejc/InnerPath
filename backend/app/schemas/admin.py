@@ -26,6 +26,7 @@ class AdminUserUpdate(BaseModel):
     birth_year: Optional[int] = Field(None, ge=1900, le=2026)
     birth_month: Optional[int] = Field(None, ge=1, le=12)
     birth_day: Optional[int] = Field(None, ge=1, le=31)
+    birth_is_leap_month: Optional[bool] = None
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)

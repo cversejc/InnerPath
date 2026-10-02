@@ -13,6 +13,7 @@ from app.domains.calendar.models import CalendarEntry, UserCalendar
 from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft
 from app.models.user import User
+from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.domains.calendar.schemas import CalendarEntryInput
 from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
@@ -34,10 +35,12 @@ async def _create_final_report(
     payload = validate_draft("report", draft.editable_payload)
     request_payload = service_request.request_payload or {}
     profile = request_payload.get("profile") or {}
-    birth_date = date(
+    birth_date = solar_date_for_birth(
         int(profile["birth_year"]),
         int(profile["birth_month"]),
         int(profile["birth_day"]),
+        calendar_type=profile.get("calendar_type", "solar"),
+        is_leap_month=bool(profile.get("birth_is_leap_month", False)),
     )
     birth_time = None
     if profile.get("birth_hour") is not None:

@@ -46,18 +46,23 @@ export default {
       this.$emit('update:modelValue', nextProfile)
     },
     setField(field, value) {
-      this.emitProfile({ ...this.profile, [field]: value })
+      const nextProfile = { ...this.profile, [field]: value }
+      if (field === 'calendar_type' && value === 'solar') {
+        nextProfile.birth_is_leap_month = false
+      }
+      this.emitProfile(nextProfile)
     },
     setNumberField(field, value, maxLength) {
       const digits = String(value || '').replace(/\D/g, '').slice(0, maxLength)
       this.setField(field, digits === '' ? null : Number(digits))
     },
-    setBirthDate({ year, month, day }) {
+    setBirthDate({ year, month, day, birth_is_leap_month = false }) {
       this.emitProfile({
         ...this.profile,
         birth_year: year,
         birth_month: month,
-        birth_day: day
+        birth_day: day,
+        birth_is_leap_month
       })
     },
     selectTimePrecision(value) {

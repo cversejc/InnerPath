@@ -28,6 +28,9 @@ export function buildReportRequest(userData) {
     birth_year: Number(userData.birthYear),
     birth_month: Number(userData.birthMonth),
     birth_day: Number(userData.birthDay),
+    birth_is_leap_month: Boolean(
+      userData.birthIsLeapMonth || userData.birth_is_leap_month
+    ),
     birth_hour: userData.birthHour === '' ? null : Number(userData.birthHour),
     birth_minute: userData.birthMinute === '' ? null : Number(userData.birthMinute),
     birth_place: userData.birthPlace || null,

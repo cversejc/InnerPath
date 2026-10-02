@@ -33,6 +33,7 @@ def build_prompt(user_data: Dict[str, Any]) -> str:
     birth_year = user_data.get("birth_year", "")
     birth_month = user_data.get("birth_month", "")
     birth_day = user_data.get("birth_day", "")
+    birth_is_leap_month = bool(user_data.get("birth_is_leap_month", False))
     birth_hour = user_data.get("birth_hour")
     birth_minute = user_data.get("birth_minute")
     calendar_type = user_data.get("calendar_type", "solar")
@@ -55,6 +56,11 @@ def build_prompt(user_data: Dict[str, Any]) -> str:
         else "时辰未知"
     )
     calendar_text = "农历" if calendar_type == "lunar" else "公历"
+    birth_month_text = (
+        f"闰{birth_month}"
+        if calendar_type == "lunar" and birth_is_leap_month
+        else str(birth_month)
+    )
     precision_text = {
         "unknown": "未知",
         "approximate": "大概时间",
@@ -95,7 +101,7 @@ def build_prompt(user_data: Dict[str, Any]) -> str:
 【基本信息】
 姓名：{name}
 性别：{gender_text}
-出生日期：{birth_year}年{birth_month}月{birth_day}日（{calendar_text}）{birth_time}
+出生日期：{birth_year}年{birth_month_text}月{birth_day}日（{calendar_text}）{birth_time}
 出生时间准确度：{precision_text}
 
 【可复用个人背景】

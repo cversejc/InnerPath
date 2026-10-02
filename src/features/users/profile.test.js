@@ -24,6 +24,7 @@ test('profile mapping applies defaults and copies list fields', () => {
   const profile = mapUserToProfile(source)
 
   assert.equal(profile.calendar_type, 'solar')
+  assert.equal(profile.birth_is_leap_month, false)
   assert.equal(profile.birth_time_precision, 'unknown')
   assert.deepEqual(profile.personality_keywords, ['专注'])
   assert.notEqual(profile.personality_keywords, source.personality_keywords)
@@ -60,4 +61,13 @@ test('profile payload excludes contact and normalizes values for the API', () =>
   assert.equal(payload.birth_place, '杭州')
   assert.equal(payload.strengths, null)
   assert.deepEqual(payload.default_usage_scenarios, [])
+})
+
+test('profile payload preserves lunar leap-month selection', () => {
+  const payload = buildProfilePayload(validProfile({
+    calendar_type: 'lunar',
+    birth_is_leap_month: true
+  }))
+
+  assert.equal(payload.birth_is_leap_month, true)
 })

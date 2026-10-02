@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
+
+from app.domains.users.lunar_calendar import solar_date_for_birth
 
 
 class ReportContext(BaseModel):
@@ -25,6 +27,7 @@ class ReportCreate(BaseModel):
     birth_year: Optional[int] = Field(None, ge=1900, le=2026)
     birth_month: Optional[int] = Field(None, ge=1, le=12)
     birth_day: Optional[int] = Field(None, ge=1, le=31)
+    birth_is_leap_month: bool = False
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
@@ -33,6 +36,21 @@ class ReportCreate(BaseModel):
     additional_info: Optional[str] = Field(None, max_length=2000)
     profile_version: Optional[int] = Field(None, ge=1)
     context: Optional[ReportContext] = None
+
+    @model_validator(mode="after")
+    def validate_birth_date(self):
+        birth_values = (self.birth_year, self.birth_month, self.birth_day)
+        if all(value is not None for value in birth_values):
+            solar_date_for_birth(
+                self.birth_year,
+                self.birth_month,
+                self.birth_day,
+                calendar_type=self.calendar_type,
+                is_leap_month=self.birth_is_leap_month,
+            )
+        elif self.birth_is_leap_month and self.calendar_type != "lunar":
+            raise ValueError("birth_date_invalid")
+        return self
 
 
 class ReportTaskResponse(BaseModel):

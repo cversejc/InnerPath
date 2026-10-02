@@ -25,6 +25,7 @@ test('assessment profile validation accepts complete solar dates', () => {
 
 test('assessment profile validation checks calendar dates and precision', () => {
   assert.equal(validateAssessmentProfile(validProfile({ birth_day: 30 }), 2026).birth_date, '公历出生日期不存在，请检查日期。')
+  assert.equal(validateAssessmentProfile(validProfile({ birth_is_leap_month: true }), 2026).birth_date, '公历日期不能选择闰月。')
   assert.equal(validateAssessmentProfile(validProfile({ calendar_type: '' }), 2026).calendar_type, '请选择历法类型。')
   assert.equal(validateAssessmentProfile(validProfile({ birth_time_precision: 'approximate' }), 2026).birth_time, '请选择完整的出生小时和分钟。')
 })

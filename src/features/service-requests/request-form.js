@@ -1,4 +1,5 @@
 import { Button as VanButton } from 'vant'
+import BirthDateField from '../../components/profile-fields/BirthDateField.vue'
 import {
   addCalendarDays,
   CALENDAR_TIME_OPTIONS,
@@ -8,7 +9,7 @@ import requestFormMethods from './methods/request-form.js'
 
 export default {
   name: 'ServiceRequestForm',
-  components: { VanButton },
+  components: { VanButton, BirthDateField },
   data() {
     return {
       ready: false,

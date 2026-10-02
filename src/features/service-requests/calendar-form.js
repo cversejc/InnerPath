@@ -22,6 +22,7 @@ export function createCalendarRequestForm() {
     birth_year: null,
     birth_month: null,
     birth_day: null,
+    birth_is_leap_month: false,
     birth_hour: null,
     birth_minute: null,
     birth_place: '',
@@ -45,6 +46,7 @@ export function validateCalendarRequestForm(form, currentYear = 2026) {
   } else if (year < 1900 || year > currentYear || month < 1 || month > 12 || day < 1 || day > 31) {
     errors.birth = '出生日期格式不正确'
   } else if (form.calendar_type === 'solar') {
+    if (form.birth_is_leap_month) errors.birth = '公历日期不能选择闰月'
     const value = new Date(year, month - 1, day)
     if (value.getFullYear() !== year || value.getMonth() !== month - 1 || value.getDate() !== day) {
       errors.birth = '出生日期不存在'
@@ -65,6 +67,7 @@ export function buildCalendarRequestPayload(form) {
       birth_year: Number(form.birth_year),
       birth_month: Number(form.birth_month),
       birth_day: Number(form.birth_day),
+      birth_is_leap_month: Boolean(form.calendar_type === 'lunar' && form.birth_is_leap_month),
       birth_hour: form.time_accuracy === 'unknown' ? null : Number(form.birth_hour),
       birth_minute: form.time_accuracy === 'unknown' ? null : Number(form.birth_minute || 0),
       birth_place: form.birth_place || null,

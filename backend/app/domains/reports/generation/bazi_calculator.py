@@ -6,6 +6,7 @@ from typing import Dict, Any, Optional
 from lunar_python import Lunar, Solar
 from datetime import datetime
 
+from app.domains.users.lunar_calendar import lunar_month_label
 from .ziwei_chart import compute_ziwei_chart
 
 
@@ -46,7 +47,8 @@ class BaziCalculator:
         day: int,
         hour: Optional[int] = None,
         minute: Optional[int] = None,
-        is_solar: bool = True
+        is_solar: bool = True,
+        is_leap_month: bool = False,
     ) -> Dict[str, Any]:
         """
         计算八字四柱
@@ -72,7 +74,7 @@ class BaziCalculator:
                 lunar = solar.getLunar()
             else:
                 # 农历转换
-                lunar = Lunar.fromYmd(year, month, day)
+                lunar = Lunar.fromYmd(year, -month if is_leap_month else month, day)
                 solar = lunar.getSolar()
 
             # 获取四柱
@@ -118,7 +120,10 @@ class BaziCalculator:
                 "day_master": day_master,
                 "zodiac": zodiac,
                 "nayin": nayin,
-                "lunar_date": f"{lunar.getYear()}年{lunar.getMonth()}月{lunar.getDay()}日",
+                "lunar_date": (
+                    f"{lunar.getYear()}年{lunar_month_label(lunar.getMonth())}"
+                    f"{lunar.getDay()}日"
+                ),
                 "solar_date": f"{solar.getYear()}年{solar.getMonth()}月{solar.getDay()}日"
             }
 
@@ -189,7 +194,8 @@ class BaziCalculator:
         location: Optional[str] = None,
         latitude: float = 39.9,
         longitude: float = 116.4,
-        is_solar: bool = True
+        is_solar: bool = True,
+        is_leap_month: bool = False,
     ) -> Dict[str, Any]:
         """
         计算紫微斗数命盘
@@ -215,7 +221,7 @@ class BaziCalculator:
 
             # 如果是农历，先转换为公历
             if not is_solar:
-                lunar = Lunar.fromYmd(year, month, day)
+                lunar = Lunar.fromYmd(year, -month if is_leap_month else month, day)
                 solar = lunar.getSolar()
                 year = solar.getYear()
                 month = solar.getMonth()
@@ -260,7 +266,11 @@ class BaziCalculator:
                 "shen_gong_branch": branches[chart.shen_gong_branch],
                 "ziwei_branch": branches[chart.ziwei_branch],
                 "yin_yang": chart.yin_yang,
-                "lunar_date": f"{chart.lunar_year}年{chart.lunar_month}月{chart.lunar_day}日",
+                "lunar_date": (
+                    f"{chart.lunar_year}年"
+                    f"{lunar_month_label(-chart.lunar_month if chart.is_leap_month else chart.lunar_month)}"
+                    f"{chart.lunar_day}日"
+                ),
                 "lunar_year_stem_branch": f"{stems[chart.lunar_year_stem]}{branches[chart.lunar_year_branch]}",
                 "life_palace": {
                     "branch": branches[chart.ming_gong_branch],

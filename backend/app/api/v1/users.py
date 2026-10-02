@@ -8,11 +8,30 @@ from app.dependencies import get_current_active_user
 from app.models.user import User
 from app.domains.auth.schemas import ChangePasswordRequest
 from app.domains.auth.service import change_user_password
-from app.domains.users.schemas import UserResponse, UserUpdate
+from app.domains.users.schemas import (
+    LunarCalendarOptionsResponse,
+    UserResponse,
+    UserUpdate,
+)
+from app.domains.users.lunar_calendar import lunar_calendar_options
 from app.domains.users.service import update_user_profile
 from app.domains.audit.service import record_audit
 
 router = APIRouter()
+
+
+@router.get("/lunar-calendar", response_model=LunarCalendarOptionsResponse)
+async def get_lunar_calendar_options(
+    current_user: User = Depends(get_current_active_user),
+):
+    """Return valid lunar dates for the authenticated profile picker."""
+    try:
+        return lunar_calendar_options()
+    except ValueError as error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="出生日期无效，请检查年月日",
+        ) from error
 
 
 @router.get("/me", response_model=UserResponse)

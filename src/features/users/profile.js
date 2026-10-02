@@ -7,6 +7,7 @@ export function createEmptyProfile() {
     birth_year: null,
     birth_month: null,
     birth_day: null,
+    birth_is_leap_month: false,
     birth_hour: null,
     birth_minute: null,
     birth_place: '',
@@ -35,6 +36,7 @@ export function mapUserToProfile(user) {
     birth_year: user.birth_year || null,
     birth_month: user.birth_month || null,
     birth_day: user.birth_day || null,
+    birth_is_leap_month: Boolean(user.birth_is_leap_month),
     birth_hour: user.birth_hour ?? null,
     birth_minute: user.birth_minute ?? null,
     birth_place: user.birth_place || '',
@@ -65,6 +67,7 @@ export function validateProfile(profile, currentYear = new Date().getFullYear())
   if (!year || year < 1900 || year > currentYear) errors.birth_date = '请填写有效的出生年份。'
   if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期。'
   if (profile.calendar_type === 'solar' && year && month && day) {
+    if (profile.birth_is_leap_month) errors.birth_date = '公历日期不能选择闰月。'
     const date = new Date(year, month - 1, day)
     if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
       errors.birth_date = '公历出生日期不存在，请检查日期。'
@@ -105,6 +108,9 @@ export function buildProfilePayload(settings) {
   profile.birth_year = profile.birth_year ? Number(profile.birth_year) : null
   profile.birth_month = profile.birth_month ? Number(profile.birth_month) : null
   profile.birth_day = profile.birth_day ? Number(profile.birth_day) : null
+  profile.birth_is_leap_month = Boolean(
+    profile.calendar_type === 'lunar' && profile.birth_is_leap_month
+  )
   profile.birth_hour = profile.birth_time_precision === 'unknown' || profile.birth_hour === '' ? null : Number(profile.birth_hour)
   profile.birth_minute = profile.birth_time_precision === 'unknown' || profile.birth_minute === '' ? null : Number(profile.birth_minute)
   return profile

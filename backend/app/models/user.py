@@ -14,6 +14,7 @@ class User(Base, TimestampMixin):
     birth_year = Column(Integer, nullable=True)
     birth_month = Column(Integer, nullable=True)
     birth_day = Column(Integer, nullable=True)
+    birth_is_leap_month = Column(Boolean, nullable=False, default=False)
     birth_hour = Column(Integer, nullable=True)
     birth_minute = Column(Integer, nullable=True)
     birth_place = Column(String(100), nullable=True)

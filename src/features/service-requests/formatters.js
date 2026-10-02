@@ -22,7 +22,8 @@ export function birthSummary(workspace) {
   const birthTime = profile.birth_hour !== null && profile.birth_hour !== undefined
     ? ` · ${profile.birth_hour}:${String(profile.birth_minute || 0).padStart(2, '0')}`
     : ''
-  return `${year} 年 ${month} 月 ${day} 日 · ${calendarType}${birthTime}`
+  const monthLabel = profile.birth_is_leap_month ? `闰${month}月` : `${month}月`
+  return `${year} 年 ${monthLabel} ${day} 日 · ${calendarType}${birthTime}`
 }
 
 export function genderLabel(gender) {

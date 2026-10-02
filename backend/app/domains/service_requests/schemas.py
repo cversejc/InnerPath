@@ -1,7 +1,9 @@
 from datetime import date, datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
+
+from app.domains.users.lunar_calendar import solar_date_for_birth
 
 
 ServiceType = Literal["report", "calendar"]
@@ -13,11 +15,23 @@ class ServiceProfileSnapshot(BaseModel):
     birth_year: int = Field(..., ge=1900, le=2026)
     birth_month: int = Field(..., ge=1, le=12)
     birth_day: int = Field(..., ge=1, le=31)
+    birth_is_leap_month: bool = False
     birth_hour: Optional[int] = Field(None, ge=0, le=23)
     birth_minute: Optional[int] = Field(None, ge=0, le=59)
     birth_place: Optional[str] = Field(None, max_length=100)
     calendar_type: str = Field("solar", pattern="^(solar|lunar)$")
     time_accuracy: str = Field("unknown", pattern="^(unknown|approximate|exact)$")
+
+    @model_validator(mode="after")
+    def validate_birth_date(self):
+        solar_date_for_birth(
+            self.birth_year,
+            self.birth_month,
+            self.birth_day,
+            calendar_type=self.calendar_type,
+            is_leap_month=self.birth_is_leap_month,
+        )
+        return self
 
 
 class ServiceRequestCreate(BaseModel):
