@@ -115,6 +115,45 @@
         </section>
       </section>
     </main>
+
+    <VanDialog
+      v-model:show="rejectDialog.visible"
+      class="mobile-form-dialog"
+      title="关闭申请"
+      :close-on-click-overlay="false"
+      :keyboard-enabled="!rejectSaving"
+      :show-confirm-button="false"
+    >
+      <p class="mobile-form-dialog__copy">关闭后用户会在申请中心看到原因，当前处理结果不会继续流转。</p>
+      <VanField
+        v-model.trim="rejectDialog.reason"
+        class="mobile-form-dialog__field"
+        label="关闭原因"
+        type="textarea"
+        rows="3"
+        autosize
+        maxlength="1000"
+        :disabled="rejectSaving"
+        :error-message="rejectDialog.error"
+        @update:model-value="rejectDialog.error = ''"
+      />
+      <template #footer>
+        <div class="mobile-form-dialog__footer">
+          <VanButton block plain native-type="button" :disabled="rejectSaving" @click="rejectDialog.visible = false">取消</VanButton>
+          <VanButton
+            block
+            type="danger"
+            native-type="button"
+            :disabled="rejectSaving || !rejectDialog.reason.trim()"
+            :loading="rejectSaving"
+            loading-text="关闭中…"
+            @click="submitReject"
+          >
+            确认关闭
+          </VanButton>
+        </div>
+      </template>
+    </VanDialog>
   </div>
 </template>
 

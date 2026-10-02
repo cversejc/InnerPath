@@ -1,4 +1,5 @@
 import { hasRole } from '../stores/auth'
+import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'vant'
 import {
   SERVICE_REQUEST_STATUS_LABELS,
   birthSummary as formatBirthSummary,
@@ -19,6 +20,7 @@ import workflowMethods from '../features/service-requests/methods/workflow.js'
 
 export default {
   name: 'StaffConsole',
+  components: { VanButton, VanDialog, VanField },
   data() {
     const admin = hasRole('admin')
     return {
@@ -45,6 +47,8 @@ export default {
       message: '',
       showInfoPanel: false,
       infoReason: '',
+      rejectDialog: { visible: false, reason: '', error: '' },
+      rejectSaving: false,
       reportEditor: reportEditorFromPayload(),
       calendarEditor: calendarEditorFromPayload(),
       consultants: [],

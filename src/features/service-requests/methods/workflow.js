@@ -136,17 +136,33 @@ export default {
       this.delivering = false
     }
   },
-  async rejectRequest() {
-    if (!this.admin || !this.workspace) return
-    const reason = window.prompt('请输入关闭原因', '当前申请暂不具备处理条件')
-    if (!reason?.trim()) return
+  rejectRequest() {
+    if (!this.admin || !this.workspace || this.rejectSaving) return
+    this.rejectDialog = {
+      visible: true,
+      reason: '当前申请暂不具备处理条件',
+      error: ''
+    }
+  },
+  async submitReject() {
+    if (!this.admin || !this.workspace || this.rejectSaving) return
+    const reason = this.rejectDialog.reason.trim()
+    if (!reason) {
+      this.rejectDialog.error = '请输入关闭原因'
+      return
+    }
+    this.rejectSaving = true
     try {
-      const updated = await rejectAdminServiceRequest(this.workspace.request.id, reason.trim())
+      const updated = await rejectAdminServiceRequest(this.workspace.request.id, reason)
       this.workspace.request = { ...this.workspace.request, ...updated }
       this.message = '申请已关闭，用户会在申请中心看到状态。'
+      this.rejectDialog.visible = false
       await this.loadRequests()
     } catch (error) {
-      this.message = this.errorText(error)
+      this.rejectDialog.error = this.errorText(error)
+      this.message = this.rejectDialog.error
+    } finally {
+      this.rejectSaving = false
     }
   }
 }
