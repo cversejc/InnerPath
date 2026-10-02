@@ -26,48 +26,115 @@
         <p v-if="successMessage" id="auth-success" class="auth-message success" role="status" aria-live="polite">{{ successMessage }}</p>
 
         <div id="auth-panel" ref="authPanel" class="auth-panel" role="region" :aria-label="title" tabindex="-1">
-          <form class="auth-form" :aria-describedby="errorMessage ? 'auth-error' : undefined" @submit.prevent="submit">
+          <VanForm
+            ref="authForm"
+            class="auth-form"
+            :aria-describedby="errorMessage ? 'auth-error' : undefined"
+            show-error
+            scroll-to-error
+            @submit="submit"
+          >
             <div class="auth-fields">
-              <label v-if="mode === 'register' || mode === 'invite'" class="auth-field">
-                <span>姓名</span>
-                <input v-model.trim="form.name" type="text" autocomplete="name" required placeholder="你的称呼">
-              </label>
+              <VanField
+                v-if="mode === 'register' || mode === 'invite'"
+                id="auth-name"
+                v-model.trim="form.name"
+                class="auth-field"
+                name="name"
+                label="姓名"
+                label-align="top"
+                autocomplete="name"
+                placeholder="你的称呼"
+                :rules="nameRules"
+                :border="false"
+              />
 
-              <label class="auth-field">
-                <span>手机号</span>
-                <input v-model.trim="form.phone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="11" pattern="[0-9]{11}" required placeholder="请输入手机号">
-              </label>
+              <VanField
+                id="auth-phone"
+                v-model.trim="form.phone"
+                class="auth-field"
+                name="phone"
+                type="tel"
+                inputmode="numeric"
+                label="手机号"
+                label-align="top"
+                autocomplete="tel"
+                maxlength="11"
+                placeholder="请输入手机号"
+                :rules="phoneRules"
+                :border="false"
+              />
 
-              <label v-if="mode === 'invite'" class="auth-field">
-                <span>邀请令牌</span>
-                <input v-model.trim="form.token" type="text" autocomplete="one-time-code" required placeholder="粘贴邀请令牌">
-              </label>
+              <VanField
+                v-if="mode === 'invite'"
+                id="auth-token"
+                v-model.trim="form.token"
+                class="auth-field"
+                name="token"
+                label="邀请令牌"
+                label-align="top"
+                autocomplete="one-time-code"
+                placeholder="粘贴邀请令牌"
+                :rules="tokenRules"
+                :border="false"
+              />
 
-              <div v-if="requiresCode" class="auth-field">
-                <label for="auth-verification-code">短信验证码</label>
-                <div class="auth-code-row">
-                  <input id="auth-verification-code" v-model.trim="form.code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required placeholder="输入 6 位验证码">
-                  <VanButton type="default" plain native-type="button" class="auth-code-button" :disabled="sendingCode || codeCooldown > 0" @click="sendCode">
-                    {{ codeButtonLabel }}
-                  </VanButton>
-                </div>
+              <div v-if="requiresCode" class="auth-code-field">
+                <VanField
+                  id="auth-verification-code"
+                  v-model.trim="form.code"
+                  class="auth-field auth-code-input"
+                  name="code"
+                  label="短信验证码"
+                  label-align="top"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                  maxlength="6"
+                  placeholder="输入 6 位验证码"
+                  :rules="codeRules"
+                  :border="false"
+                />
+                <VanButton type="default" plain native-type="button" class="auth-code-button" :disabled="sendingCode || codeCooldown > 0" @click="sendCode">
+                  {{ codeButtonLabel }}
+                </VanButton>
               </div>
 
-              <label class="auth-field">
-                <span>{{ mode === 'reset' ? '新密码' : mode === 'login' ? '密码' : '设置密码' }}</span>
-                <input v-model="form.password" type="password" :autocomplete="mode === 'login' ? 'current-password' : 'new-password'" minlength="8" maxlength="128" required :placeholder="mode === 'login' ? '请输入密码' : '至少 8 位密码'">
-              </label>
+              <VanField
+                id="auth-password"
+                v-model="form.password"
+                class="auth-field"
+                name="password"
+                type="password"
+                :label="mode === 'reset' ? '新密码' : mode === 'login' ? '密码' : '设置密码'"
+                label-align="top"
+                :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
+                maxlength="128"
+                :placeholder="mode === 'login' ? '请输入密码' : '至少 8 位密码'"
+                :rules="passwordRules"
+                :border="false"
+              />
 
-              <label v-if="mode === 'reset'" class="auth-field">
-                <span>确认新密码</span>
-                <input v-model="form.passwordConfirmation" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="再次输入新密码">
-              </label>
+              <VanField
+                v-if="mode === 'reset'"
+                id="auth-password-confirmation"
+                v-model="form.passwordConfirmation"
+                class="auth-field"
+                name="passwordConfirmation"
+                type="password"
+                label="确认新密码"
+                label-align="top"
+                autocomplete="new-password"
+                maxlength="128"
+                placeholder="再次输入新密码"
+                :rules="passwordConfirmationRules"
+                :border="false"
+              />
             </div>
 
             <VanButton type="primary" native-type="submit" class="primary-button full-width auth-submit" :disabled="submitting" :aria-busy="submitting">
               {{ submitting ? '请稍候…' : submitLabel }}
             </VanButton>
-          </form>
+          </VanForm>
 
           <nav class="auth-actions" aria-label="账号操作">
             <p v-if="mode === 'login'" class="auth-switch">

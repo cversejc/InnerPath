@@ -1,4 +1,4 @@
-import { Button as VanButton } from 'vant'
+import { Button as VanButton, Field as VanField, Form as VanForm } from 'vant'
 import authModeMethods from './methods/mode.js'
 import authSessionMethods from './methods/session.js'
 import authVerificationMethods from './methods/verification.js'
@@ -10,7 +10,7 @@ import {
 
 export default {
   name: 'Auth',
-  components: { VanButton },
+  components: { VanButton, VanField, VanForm },
   data() {
     const isLoginRoute = this.$route.path === '/auth/login' && (!this.$route.query.mode || this.$route.query.mode === 'login')
     const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -36,6 +36,37 @@ export default {
     }
   },
   computed: {
+    nameRules() {
+      return [{ required: true, message: '请输入你的称呼' }]
+    },
+    phoneRules() {
+      return [
+        { required: true, message: '请输入手机号' },
+        { pattern: /^[0-9]{11}$/, message: '请输入 11 位手机号' }
+      ]
+    },
+    tokenRules() {
+      return [{ required: true, message: '请输入邀请令牌' }]
+    },
+    codeRules() {
+      return [
+        { required: true, message: '请输入短信验证码' },
+        { pattern: /^[0-9]{6}$/, message: '请输入 6 位验证码' }
+      ]
+    },
+    passwordRules() {
+      return [
+        { required: true, message: '请输入密码' },
+        { validator: value => String(value).length >= 8, message: '密码至少为 8 位' }
+      ]
+    },
+    passwordConfirmationRules() {
+      return [
+        { required: true, message: '请再次输入新密码' },
+        { validator: value => String(value).length >= 8, message: '密码至少为 8 位' },
+        { validator: value => value === this.form.password, message: '两次输入的新密码不一致' }
+      ]
+    },
     title() {
       return authTitle(this.mode)
     },
@@ -56,6 +87,7 @@ export default {
   watch: {
     '$route.fullPath'() {
       this.syncRouteMode()
+      this.$nextTick(() => this.$refs.authForm?.resetValidation())
     }
   },
   mounted() {
