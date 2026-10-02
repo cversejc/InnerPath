@@ -1,4 +1,5 @@
 <script setup>
+import { Button as VanButton } from 'vant'
 import { formatDateTime, pageCount } from '../formatters.js'
 
 defineProps({
@@ -28,15 +29,15 @@ function exportUsers() {
 
 <template>
   <section class="content-view">
-    <div class="view-heading"><div><p class="eyebrow">PEOPLE / DIRECTORY</p><h2>用户运营</h2><p>从账户状态到成长轨迹，统一查看和维护。</p></div><button class="secondary-button" type="button" @click="exportUsers"><IconMark name="download" /> <span>导出用户 CSV</span></button></div>
+    <div class="view-heading"><div><p class="eyebrow">PEOPLE / DIRECTORY</p><h2>用户运营</h2><p>从账户状态到成长轨迹，统一查看和维护。</p></div><VanButton class="secondary-button" type="default" plain native-type="button" @click="exportUsers"><IconMark name="download" /> <span>导出用户 CSV</span></VanButton></div>
     <div class="filter-bar">
       <input v-model.trim="filters.search" aria-label="搜索姓名或手机号" placeholder="搜索姓名或手机号" @keyup.enter="$emit('search')">
       <select v-model="filters.role" aria-label="按角色筛选"><option value="">全部角色</option><option value="user">用户</option><option value="consultant">咨询师</option><option value="admin">管理员</option></select>
       <select v-model="filters.is_active" aria-label="按状态筛选"><option value="">全部状态</option><option :value="true">正常</option><option :value="false">已停用</option></select>
       <label class="date-filter"><span>注册自</span><input v-model="filters.created_from" type="date"></label>
       <label class="date-filter"><span>至</span><input v-model="filters.created_to" type="date"></label>
-      <button class="primary-button compact-button" type="button" @click="$emit('search')">查询</button>
-      <button class="filter-reset" type="button" @click="$emit('reset-filters')">清空</button>
+      <VanButton class="primary-button compact-button" type="primary" native-type="button" @click="$emit('search')">查询</VanButton>
+      <VanButton class="filter-reset" type="default" plain native-type="button" @click="$emit('reset-filters')">清空</VanButton>
     </div>
 
     <div v-if="loading" class="list-loading" aria-label="正在加载用户"><i v-for="index in 4" :key="index"></i></div>
@@ -58,7 +59,7 @@ function exportUsers() {
           </tbody>
         </table>
       </div>
-      <div class="pagination"><span>第 {{ page }} / {{ pageCount(users.total, pageSize) }} 页</span><div><button class="secondary-button compact-button" type="button" :disabled="page <= 1" @click="$emit('change-page', -1)">上一页</button><button class="secondary-button compact-button" type="button" :disabled="page >= pageCount(users.total, pageSize)" @click="$emit('change-page', 1)">下一页</button></div></div>
+      <div class="pagination"><span>第 {{ page }} / {{ pageCount(users.total, pageSize) }} 页</span><div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="page <= 1" @click="$emit('change-page', -1)">上一页</VanButton><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="page >= pageCount(users.total, pageSize)" @click="$emit('change-page', 1)">下一页</VanButton></div></div>
     </div>
   </section>
 </template>
