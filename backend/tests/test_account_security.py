@@ -4,11 +4,13 @@ from types import SimpleNamespace
 import pytest
 from fastapi import HTTPException
 from pydantic import ValidationError
+from starlette.requests import Request
 
+from app.api.v1 import auth_account_routes
 from app.core.security import get_password_hash, verify_password
 from app.dependencies import require_roles
 from app.main import app
-from app.domains.auth.schemas import LoginRequest, RegisterRequest
+from app.domains.auth.schemas import LoginRequest, RegisterRequest, ResetPasswordRequest
 from app.domains.calendar.schemas import CalendarEntryInput
 from app.domains.calendar.service import _validate_entries
 
@@ -52,6 +54,70 @@ def test_auth_route_aggregator_preserves_public_paths():
     }
 
     assert expected_routes.issubset(actual_routes)
+
+
+@pytest.mark.asyncio
+async def test_password_reset_route_records_audit_with_request_context(monkeypatch):
+    user = SimpleNamespace(id=42, phone="13800138000")
+
+    class FakeResult:
+        def scalar_one_or_none(self):
+            return user
+
+    class FakeSession:
+        def __init__(self):
+            self.events = []
+            self.commit_count = 0
+
+        async def execute(self, _query):
+            return FakeResult()
+
+        def add(self, event):
+            self.events.append(event)
+
+        async def commit(self):
+            self.commit_count += 1
+
+    request = Request(
+        {
+            "type": "http",
+            "method": "POST",
+            "path": "/api/v1/auth/password/reset",
+            "headers": [(b"user-agent", b"pytest")],
+            "client": ("127.0.0.1", 1234),
+            "query_string": b"",
+        }
+    )
+    request.state.request_id = "reset-test-request"
+    session = FakeSession()
+
+    async def verify_code(*_args, **_kwargs):
+        return True
+
+    async def reset_password_with_code(*_args, **_kwargs):
+        return user
+
+    monkeypatch.setattr(auth_account_routes, "verify_code", verify_code)
+    monkeypatch.setattr(auth_account_routes, "reset_password_with_code", reset_password_with_code)
+
+    response = await auth_account_routes.reset_password(
+        ResetPasswordRequest(
+            phone=user.phone,
+            code="123456",
+            new_password="new-password-123",
+        ),
+        request,
+        session,
+    )
+
+    assert response == {"success": True, "message": "Password reset successfully"}
+    assert session.commit_count == 1
+    assert len(session.events) == 1
+    event = session.events[0]
+    assert event.action == "auth.password.reset"
+    assert event.request_id == "reset-test-request"
+    assert event.ip_address == "127.0.0.1"
+    assert event.user_agent == "pytest"
 
 
 @pytest.mark.asyncio
