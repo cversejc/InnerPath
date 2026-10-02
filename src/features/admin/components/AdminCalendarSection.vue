@@ -1,4 +1,5 @@
 <script setup>
+import { Button as VanButton } from 'vant'
 import { calendarStatusText, formatDate } from '../formatters.js'
 
 defineProps({
@@ -34,17 +35,17 @@ defineEmits([
 
 <template>
   <section class="content-view calendar-view">
-    <div class="view-heading"><div><p class="eyebrow">PERSONAL TIMEZONE / EDITOR</p><h2>用户日历</h2><p>结构化维护每日节奏，已发布内容通过新版本上线。</p></div><button class="secondary-button" type="button" @click="$emit('toggle-import')">{{ showCalendarImport ? '收起 JSON 导入' : '批量 JSON 导入' }}</button></div>
+    <div class="view-heading"><div><p class="eyebrow">PERSONAL TIMEZONE / EDITOR</p><h2>用户日历</h2><p>结构化维护每日节奏，已发布内容通过新版本上线。</p></div><VanButton class="secondary-button" type="default" plain native-type="button" @click="$emit('toggle-import')">{{ showCalendarImport ? '收起 JSON 导入' : '批量 JSON 导入' }}</VanButton></div>
     <div v-if="showCalendarImport" class="import-panel">
       <div><strong>批量导入日历</strong><p>格式支持 `{ title, entries }` 或直接传入条目数组；导入后默认为草稿。</p></div>
       <textarea :value="calendarImportJson" rows="4" placeholder='{"title":"2026 秋季行动日历","entries":[{"entry_date":"2026-09-07","tone":"yellow","keyword":"观察","summary":"先理清信息","suitable":["整理计划"],"unsuitable":["仓促拍板"]}]}' @input="$emit('update:calendar-import-json', $event.target.value)"></textarea>
-      <div class="action-row"><button class="primary-button compact-button" type="button" :disabled="calendarSaving" @click="$emit('import-json')">导入为草稿</button></div>
+      <div class="action-row"><VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="calendarSaving" :aria-busy="calendarSaving" @click="$emit('import-json')">导入为草稿</VanButton></div>
     </div>
 
     <div class="calendar-admin-grid">
       <aside class="user-directory panel-surface">
         <div class="panel-heading"><div><p class="eyebrow">SELECT USER</p><h3>选择用户</h3></div><span>{{ calendarUsers.length }}</span></div>
-        <div class="directory-search"><input :value="calendarUserSearch" aria-label="搜索用户" placeholder="搜索用户" @input="$emit('update:calendar-user-search', $event.target.value)" @keyup.enter="$emit('load-users')"><button type="button" aria-label="搜索用户" @click="$emit('load-users')"><IconMark name="search" /></button></div>
+        <div class="directory-search"><input :value="calendarUserSearch" aria-label="搜索用户" placeholder="搜索用户" @input="$emit('update:calendar-user-search', $event.target.value)" @keyup.enter="$emit('load-users')"><VanButton type="default" plain native-type="button" aria-label="搜索用户" @click="$emit('load-users')"><template #icon><IconMark name="search" /></template></VanButton></div>
         <div class="directory-list">
           <button v-for="user in calendarUsers" :key="user.id" type="button" :class="{ selected: selectedCalendarUser?.id === user.id }" :aria-pressed="selectedCalendarUser?.id === user.id" @click="$emit('select-user', user)"><span class="avatar-mark small">{{ user.name?.slice(0, 1) || '人' }}</span><span><strong>{{ user.name }}</strong><small>#{{ user.id }} · {{ user.phone }}</small></span><IconMark name="arrow" /></button>
           <p v-if="!calendarUsers.length" class="empty-cell">请搜索或暂无用户。</p>
@@ -52,7 +53,7 @@ defineEmits([
       </aside>
 
       <div class="calendar-editor panel-surface">
-        <div class="panel-heading"><div><p class="eyebrow">CALENDAR VERSIONS</p><h3>{{ selectedCalendarUser ? `${selectedCalendarUser.name} 的日历` : '先选择一个用户' }}</h3></div><button v-if="selectedCalendarUser" class="primary-button compact-button" type="button" @click="$emit('new-calendar')"><IconMark name="plus" /> <span>新建草稿</span></button></div>
+        <div class="panel-heading"><div><p class="eyebrow">CALENDAR VERSIONS</p><h3>{{ selectedCalendarUser ? `${selectedCalendarUser.name} 的日历` : '先选择一个用户' }}</h3></div><VanButton v-if="selectedCalendarUser" class="primary-button compact-button" type="primary" native-type="button" @click="$emit('new-calendar')"><IconMark name="plus" /> <span>新建草稿</span></VanButton></div>
         <div v-if="calendarLoading" class="list-loading" aria-label="正在加载日历"><i v-for="index in 4" :key="index"></i></div>
         <div v-else-if="selectedCalendarUser" class="calendar-list">
           <article v-for="calendar in calendars" :key="calendar.id" class="calendar-card" :class="{ selected: calendarForm.id === calendar.id }">
@@ -66,7 +67,7 @@ defineEmits([
         <form v-if="calendarForm.visible" class="calendar-editor-form" @submit.prevent="$emit('save-calendar')">
           <div class="editor-banner"><span>{{ calendarForm.id ? `编辑 v${calendarForm.version_number}` : '新建草稿' }}</span><span v-if="calendarForm.status">{{ calendarStatusText(calendarForm.status) }}</span></div>
           <div class="form-grid two"><label>日历标题<input v-model.trim="calendarForm.title" required maxlength="150"></label><label>开始日期<input v-model="calendarForm.start_date" type="date"></label><label>结束日期<input v-model="calendarForm.end_date" type="date"></label></div>
-          <div class="entry-toolbar"><div><strong>每日条目</strong><small>{{ calendarForm.entries.length }} 个日期 · 日期不可重复</small></div><button class="secondary-button compact-button" type="button" @click="$emit('add-entry')">＋ 添加日期</button></div>
+          <div class="entry-toolbar"><div><strong>每日条目</strong><small>{{ calendarForm.entries.length }} 个日期 · 日期不可重复</small></div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" @click="$emit('add-entry')"><IconMark name="plus" /> <span>添加日期</span></VanButton></div>
           <div class="entry-list">
             <article v-for="(entry, index) in calendarForm.entries" :key="entry._key" class="entry-editor">
               <div class="entry-editor-head"><span>DAY {{ String(index + 1).padStart(2, '0') }}</span><label>日期<input v-model="entry.entry_date" type="date" required></label><button type="button" aria-label="删除条目" @click="$emit('remove-entry', index)">×</button></div>
@@ -79,7 +80,7 @@ defineEmits([
             <p v-if="!calendarForm.entries.length" class="empty-cell entry-empty">草稿可以先不填条目；发布前至少需要一条。</p>
           </div>
           <div class="preview-strip"><div><span class="eyebrow">USER PREVIEW</span><strong>{{ calendarForm.title || '未命名日历' }}</strong></div><span>{{ calendarForm.start_date || '起始日期待定' }} — {{ calendarForm.end_date || '结束日期待定' }}</span><span>{{ calendarForm.entries.length }} 天 · 管理员备注不会展示给用户</span></div>
-          <div class="action-row editor-actions"><button class="primary-button" type="submit" :disabled="calendarSaving">{{ calendarSaving ? '保存中…' : '保存草稿' }}</button><button class="secondary-button" type="button" @click="$emit('cancel-edit')">取消</button></div>
+          <div class="action-row editor-actions"><VanButton class="primary-button" type="primary" native-type="submit" :disabled="calendarSaving" :aria-busy="calendarSaving">{{ calendarSaving ? '保存中…' : '保存草稿' }}</VanButton><VanButton class="secondary-button" type="default" plain native-type="button" @click="$emit('cancel-edit')">取消</VanButton></div>
         </form>
         <div v-else-if="selectedCalendarUser" class="editor-empty"><IconMark name="calendar" /><p>选择一个版本开始编辑，或创建一张新的草稿日历。</p></div>
         <div v-else class="editor-empty"><IconMark name="compass" /><p>从左侧选择用户后，这里会显示其全部日历版本。</p></div>
