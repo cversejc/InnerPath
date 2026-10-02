@@ -1,12 +1,14 @@
 # Mobile Frontend Redesign Implementation Plan
 
-> **For AI agents:** Execute this plan inline. Keep changes focused, run `npm run build`, then verify the mobile viewport visually.
+> **Status: archived and superseded.** This checklist records a completed redesign stage and is kept for history; do not execute it as the current architecture plan. Current module boundaries and frontend conventions are in [一期模块边界与开发约定](../../architecture/一期模块边界与开发约定.md), and current visual tokens are in [MASTER.md](../../../design-system/innerseek/MASTER.md).
+>
+> The instruction to avoid an external UI library reflects the implementation at that time. Vant 4 is now the shared mobile interaction library. The Booking and Course pages referenced below were later removed from the Phase 1 product scope.
 
 **Goal:** Redesign the frontend with a mobile-first visual language inspired by the provided Compass AI reference site.
 
 **Architecture:** Add a shared visual system in global CSS, then replace duplicated page-level visual structure on the primary user journey pages. Preserve existing Vue methods and route paths.
 
-**Tech Stack:** Vue 3, Vue Router, Vite, scoped SFC styles, plain CSS.
+**Historical tech stack:** Vue 3, Vue Router, Vite, scoped SFC styles and plain CSS.
 
 ---
 
@@ -19,7 +21,7 @@
 - [x] Set mobile-safe viewport and theme color in `index.html`.
 - [x] Add CSS variables for paper background, cinnabar, gold, ink, muted text, surfaces, borders, and shadows.
 - [x] Add reusable classes for mobile shell, navigation, hero art, cards, buttons, form controls, service lists, and footer.
-- [x] Keep base styles accessible and avoid external UI libraries.
+- [x] Keep base styles accessible; no component library was introduced during this historical redesign stage.
 
 Verification: `npm run build` must complete after all tasks.
 
