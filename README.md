@@ -87,7 +87,7 @@ python -m app.cli create-admin --phone 13800138000 --name 系统管理员
 #    /opt/innerpath/ssl/privkey.pem
 
 # 2. 配置服务器和域名
-export REMOTE_HOST=8.135.25.206
+export REMOTE_HOST=47.82.81.147
 export REMOTE_USER=root
 export REMOTE_DIR=/opt/innerpath
 export DOMAIN=chenvis.com
@@ -96,7 +96,7 @@ export SSL_DIR=/opt/innerpath/ssl
 # 3. 首次部署
 ./scripts/deploy.sh remote init
 # 如果服务器还没有 .env，脚本会先创建并停止；编辑下面的文件后重新运行
-ssh root@8.135.25.206
+ssh root@47.82.81.147
 vim /opt/innerpath/current/.env
 # 至少确认：
 # SESSION_COOKIE_SECURE=true
@@ -116,7 +116,7 @@ docker exec innerpath-frontend nginx -s reload
 ### 快速更新代码
 
 ```bash
-export REMOTE_HOST=8.135.25.206
+export REMOTE_HOST=47.82.81.147
 export DOMAIN=chenvis.com
 ./scripts/deploy.sh remote update
 ```
@@ -264,13 +264,13 @@ docker-compose up -d --build
 
 ```bash
 # 查看日志
-ssh root@8.135.25.206 "cd /opt/innerpath/current && docker compose logs -f"
+ssh root@47.82.81.147 "cd /opt/innerpath/current && docker compose logs -f"
 
 # 查看服务状态
-ssh root@8.135.25.206 "cd /opt/innerpath/current && docker compose ps"
+ssh root@47.82.81.147 "cd /opt/innerpath/current && docker compose ps"
 
 # 仅重载证书和 Nginx 配置
-ssh root@8.135.25.206 "docker exec innerpath-frontend nginx -s reload"
+ssh root@47.82.81.147 "docker exec innerpath-frontend nginx -s reload"
 ```
 
 ---

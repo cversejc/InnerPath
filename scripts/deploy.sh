@@ -11,7 +11,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # 默认配置
-REMOTE_HOST="${REMOTE_HOST:-8.135.25.206}"
+REMOTE_HOST="${REMOTE_HOST:-47.82.81.147}"
 REMOTE_USER="${REMOTE_USER:-root}"
 REMOTE_DIR="${REMOTE_DIR:-/opt/innerpath}"
 REMOTE_PORT="${REMOTE_PORT:-22}"
@@ -28,7 +28,7 @@ show_usage() {
     echo "  $0 remote update      # 远程快速更新"
     echo ""
     echo "环境变量:"
-    echo "  REMOTE_HOST          # 远程服务器地址（默认: 8.135.25.206）"
+    echo "  REMOTE_HOST          # 远程服务器地址（默认: 47.82.81.147）"
     echo "  REMOTE_USER          # SSH 用户名（默认: root）"
     echo "  REMOTE_DIR           # 部署目录（默认: /opt/innerpath）"
     echo "  REMOTE_PORT          # SSH 端口（默认: 22）"
