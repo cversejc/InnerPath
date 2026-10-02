@@ -11,7 +11,7 @@
       </section>
     </Transition>
 
-    <div class="auth-shell" :aria-hidden="showIntro ? 'true' : undefined" :inert="showIntro">
+    <div class="auth-shell" :aria-hidden="showIntro || legalDocument ? 'true' : undefined" :inert="showIntro || !!legalDocument">
       <header class="auth-topbar">
         <router-link class="auth-logo" to="/" aria-label="辰鉴首页">
           <picture>
@@ -94,13 +94,27 @@
               </template>
             </div>
           </nav>
+
+          <p v-if="mode === 'login' || mode === 'register' || mode === 'invite'" class="auth-legal">
+            {{ mode === 'login' ? '登录即代表您已阅读并同意' : '继续即代表您已阅读并同意' }}
+            <button ref="termsLink" class="auth-legal-link" type="button" @click="openLegalDocument('terms')">《用户协议》</button>
+            <span>与</span>
+            <button ref="privacyLink" class="auth-legal-link" type="button" @click="openLegalDocument('privacy')">《隐私条款》</button>
+          </p>
         </div>
       </main>
     </div>
+
+    <LegalDocumentDialog
+      v-if="legalDocument"
+      :type="legalDocument"
+      @close="closeLegalDocument"
+    />
   </div>
 </template>
 
 <script>
+import LegalDocumentDialog from '../components/LegalDocumentDialog.vue'
 import {
   acceptStaffInvite,
   login,
@@ -112,6 +126,7 @@ import { setAuthenticatedUser } from '../stores/auth'
 
 export default {
   name: 'Auth',
+  components: { LegalDocumentDialog },
   data() {
     const isLoginRoute = this.$route.path === '/auth/login' && (!this.$route.query.mode || this.$route.query.mode === 'login')
     const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -132,6 +147,7 @@ export default {
       codeTimer: null,
       errorMessage: '',
       successMessage: '',
+      legalDocument: '',
       showIntro: isLoginRoute && !reducedMotion,
       introTimer: null
     }
@@ -205,6 +221,14 @@ export default {
         this.introTimer = null
       }
       this.showIntro = false
+    },
+    openLegalDocument(type) {
+      this.legalDocument = type
+    },
+    closeLegalDocument() {
+      const type = this.legalDocument
+      this.legalDocument = ''
+      this.$nextTick(() => this.$refs[`${type}Link`]?.focus({ preventScroll: true }))
     },
     setMode(mode) {
       this.mode = mode
@@ -622,6 +646,39 @@ export default {
   color: var(--cinnabar-deep, #9e3f35);
 }
 
+.auth-legal {
+  max-width: 440px;
+  margin: 10px auto 0;
+  color: #858b8e;
+  font-size: 13px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.auth-legal-link {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  border-radius: 4px;
+  padding: 0 2px;
+  color: var(--cinnabar-deep, #9e3f35);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.auth-legal-link:hover,
+.auth-legal-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-legal-link:focus-visible {
+  outline: 2px solid var(--cinnabar, #b5574c);
+  outline-offset: 2px;
+}
+
 .auth-message {
   margin: 0 0 20px;
   border-radius: 8px;
@@ -778,6 +835,11 @@ export default {
 
   .auth-switch {
     font-size: 14px;
+  }
+
+  .auth-legal {
+    max-width: 100%;
+    font-size: 12px;
   }
 
   .auth-help {
