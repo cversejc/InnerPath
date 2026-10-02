@@ -84,3 +84,41 @@ async def load_confirmed_case_semantics(
             for row in active_evidence
         ],
     }
+
+
+async def load_case_semantic_model(
+    db: AsyncSession, report_case_id: int
+) -> dict[str, Any]:
+    """Build the writer's input from current, confirmed analysis assets only."""
+    semantics = await load_confirmed_case_semantics(db, report_case_id)
+    findings = [
+        item
+        for item in semantics["findings"]
+        if item["reportability"] != "INTERNAL_ONLY"
+    ]
+    analysis_fragments = [
+        item
+        for item in semantics["fragments"]
+        if item["fragment_type"] == "ANALYSIS"
+    ]
+    evidence_refs = {
+        key
+        for item in findings
+        for key in item.get("evidence_refs", [])
+    }
+    for item in analysis_fragments:
+        evidence_refs.update(
+            row.get("evidence_key")
+            for row in (item.get("source_snapshot") or {}).get("evidence", [])
+            if isinstance(row, dict) and row.get("evidence_key")
+        )
+    evidence = [
+        item for item in semantics["evidence"] if item["evidence_key"] in evidence_refs
+    ]
+    if not findings:
+        raise ValueError("narrative_confirmed_findings_required")
+    return {
+        "findings": findings,
+        "analysis_fragments": analysis_fragments,
+        "evidence": evidence,
+    }

@@ -10,6 +10,11 @@ export async function getReportCaseContent(caseId) {
   return response.data
 }
 
+export async function getReportCaseNarrative(caseId) {
+  const response = await apiClient.get(`/report-cases/${caseId}/narrative`)
+  return response.data
+}
+
 export async function startReportCaseStep(caseId, stepKey) {
   const response = await apiClient.post(`/report-cases/${caseId}/steps/${stepKey}/start`)
   return response.data
@@ -46,6 +51,27 @@ export async function saveReportCaseFinding(caseId, stepKey, findingKey, payload
 export async function saveReportCaseFragment(caseId, stepKey, fragmentKey, payload) {
   const response = await apiClient.put(
     `/report-cases/${caseId}/steps/${stepKey}/fragments/${encodeURIComponent(fragmentKey)}`,
+    payload
+  )
+  return response.data
+}
+
+export async function generateReportNarrativeCandidates(caseId, stepKey, payload) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/steps/${stepKey}/narrative-candidates`,
+    payload
+  )
+  return response.data
+}
+
+export async function confirmReportCaseNarrativePlan(caseId, payload) {
+  const response = await apiClient.post(`/report-cases/${caseId}/narrative-plans/confirm`, payload)
+  return response.data
+}
+
+export async function generateReportCaseFragment(caseId, stepKey, payload) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/steps/${stepKey}/fragments/generate`,
     payload
   )
   return response.data

@@ -39,7 +39,12 @@ export default {
       workspace: null,
       reportCase: null,
       reportCaseContent: { evidence: [], findings: [], fragments: [] },
+      reportNarrative: { current_plan: null, candidate_runs: [], fragment_runs: [] },
       reportCaseLoading: false,
+      reportNarrativeSaving: false,
+      reportNarrativePollTimer: null,
+      narrativeCandidateDrafts: {},
+      newReportWritingFragment: { fragment_key: '', title: '' },
       reportStepSaving: false,
       reportStepReturn: { visible: false, targetStepKey: '', reason: '' },
       editingFindingKey: null,
@@ -97,6 +102,7 @@ export default {
   },
   beforeUnmount() {
     this.stopPolling()
+    if (this.reportNarrativePollTimer) clearTimeout(this.reportNarrativePollTimer)
   },
   methods: {
     confirmAction,

@@ -9,6 +9,7 @@ from app.domains.content.models import (
     CaseEvidenceItem,
     ContentFragmentRevision,
     FindingRevision,
+    NarrativePlan,
 )
 from app.domains.content.service import (
     create_content_fragment_revision,
@@ -52,6 +53,7 @@ def content_db():
         CaseEvidenceItem.__table__,
         FindingRevision.__table__,
         ContentFragmentRevision.__table__,
+        NarrativePlan.__table__,
     ]
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine, tables=tables)

@@ -244,6 +244,118 @@ def _report_prompts(
     return system_prompt, build_prompt(report_input), foundation
 
 
+def _authoring_prompts(
+    context: dict[str, Any],
+    specification: dict[str, Any],
+    runtime_instruction: str | None,
+) -> tuple[str, str]:
+    processor = specification["processor_policy"]["processor"]
+    objective = (
+        "为咨询师生成 2 到 3 个叙事候选。候选中的 Finding 引用必须来自输入。"
+        if processor == "reports.narrative_candidates"
+        else "为指定章节生成一个有明确来源映射的报告片段。"
+    )
+    instructions = json.dumps(
+        specification["instructions"], ensure_ascii=False, indent=2
+    )
+    runtime_note = (
+        f"\n\n【本次运行补充要求】\n{runtime_instruction}"
+        if runtime_instruction
+        else ""
+    )
+    system_prompt = (
+        f"{GLOBAL_POLICY}\n\n【任务】\n{objective}\n\n"
+        f"【Skill Instructions】\n{instructions}{runtime_note}"
+    )
+    user_prompt = json.dumps(context, ensure_ascii=False, indent=2, default=str)
+    return system_prompt, user_prompt
+
+
+def _parse_json_output(raw: str) -> dict[str, Any]:
+    candidate = raw.strip()
+    if candidate.startswith("```"):
+        lines = candidate.splitlines()
+        if len(lines) < 3 or not lines[-1].strip().startswith("```"):
+            raise ValueError("skill_output_json_invalid")
+        candidate = "\n".join(lines[1:-1]).strip()
+    try:
+        parsed = json.loads(candidate)
+    except (TypeError, json.JSONDecodeError) as error:
+        raise ValueError("skill_output_json_invalid") from error
+    if not isinstance(parsed, dict):
+        raise ValueError("skill_output_contract_invalid")
+    return parsed
+
+
+def _validate_authoring_output(
+    output: dict[str, Any], context: dict[str, Any], processor: str
+) -> None:
+    context_data = context.get("context") or {}
+    semantic_model = context_data.get("semantic_model") or {}
+    finding_keys = {
+        item.get("finding_key")
+        for item in semantic_model.get("findings", [])
+        if isinstance(item, dict) and item.get("finding_key")
+    }
+    if processor == "reports.narrative_candidates":
+        candidates = output.get("candidates")
+        if not isinstance(candidates, list) or not 2 <= len(candidates) <= 3:
+            raise ValueError("narrative_candidate_count_invalid")
+        seen = set()
+        for candidate in candidates:
+            if not isinstance(candidate, dict):
+                raise ValueError("narrative_candidate_invalid")
+            candidate_key = candidate.get("candidate_key")
+            if not isinstance(candidate_key, str) or not candidate_key.strip() or candidate_key in seen:
+                raise ValueError("narrative_candidate_key_invalid")
+            seen.add(candidate_key)
+            for field in ("theme", "rationale"):
+                if not isinstance(candidate.get(field), str) or not candidate[field].strip():
+                    raise ValueError("narrative_candidate_invalid")
+            for field in ("supporting_findings", "deemphasized_findings", "priority_blocks", "narrative_arc"):
+                if not isinstance(candidate.get(field), list):
+                    raise ValueError("narrative_candidate_invalid")
+            references = set(candidate["supporting_findings"] + candidate["deemphasized_findings"])
+            for block in candidate["priority_blocks"]:
+                if isinstance(block, dict):
+                    references.update(block.get("finding_refs") or [])
+            if any(not isinstance(key, str) or key not in finding_keys for key in references):
+                raise ValueError("narrative_candidate_unsupported_finding")
+        return
+
+    if output.get("status") not in {"READY_FOR_REVIEW", "MISSING_SEMANTIC_SUPPORT"}:
+        raise ValueError("report_fragment_status_invalid")
+    if output["status"] == "MISSING_SEMANTIC_SUPPORT":
+        return
+    for field in ("title", "content", "transition_hint"):
+        if not isinstance(output.get(field), str):
+            raise ValueError("report_fragment_output_invalid")
+    if not output["title"].strip() or not output["content"].strip() or len(output["content"]) > 30000:
+        raise ValueError("report_fragment_output_invalid")
+    used_findings = output.get("used_findings")
+    if (
+        not isinstance(used_findings, list)
+        or not used_findings
+        or any(not isinstance(key, str) or key not in finding_keys for key in used_findings)
+    ):
+        raise ValueError("report_fragment_unsupported_finding")
+    analysis_keys = {
+        item.get("fragment_key")
+        for item in semantic_model.get("analysis_fragments", [])
+        if isinstance(item, dict) and item.get("fragment_key")
+    }
+    used_fragments = output.get("used_analysis_fragments")
+    if (
+        not isinstance(used_fragments, list)
+        or any(not isinstance(key, str) or key not in analysis_keys for key in used_fragments)
+    ):
+        raise ValueError("report_fragment_unsupported_fragment")
+    if not isinstance(output.get("used_actions"), list) or not isinstance(
+        output.get("presentation_meta"), dict
+    ):
+        raise ValueError("report_fragment_output_invalid")
+
+
 def _validate_output(
     output: dict[str, Any], raw: str, specification: dict[str, Any]
 ) -> None:
@@ -287,12 +399,11 @@ async def execute_skill(
     context = build_context_envelope(input_data, specification)
     if specification["identity"]["skill_key"] != skill_version.skill_key:
         raise ValueError("skill_identity_mismatch")
-    if specification["processor_policy"]["processor"] != "reports.single_step":
-        raise ValueError("skill_processor_unsupported")
-    if "reports.calculate_mingli_foundation" not in specification["tool_policy"].get(
-        "allowed", []
-    ):
+    processor = specification["processor_policy"]["processor"]
+    if processor == "reports.single_step" and "reports.calculate_mingli_foundation" not in specification["tool_policy"].get("allowed", []):
         raise ValueError("skill_required_tool_not_allowed")
+    if processor not in {"reports.single_step", "reports.narrative_candidates", "reports.fragment_authoring"}:
+        raise ValueError("skill_processor_unsupported")
     profile = context.get("profile") or {}
     context_data = context.get("context") or {}
     missing_context = [
@@ -309,9 +420,15 @@ async def execute_skill(
     ]
     if missing_input:
         raise ValueError("skill_input_contract_missing_fields")
-    system_prompt, user_prompt, foundation = _report_prompts(
-        context, specification, runtime_instruction
-    )
+    foundation = context.get("foundation_data")
+    if processor == "reports.single_step":
+        system_prompt, user_prompt, foundation = _report_prompts(
+            context, specification, runtime_instruction
+        )
+    else:
+        system_prompt, user_prompt = _authoring_prompts(
+            context, specification, runtime_instruction
+        )
     prompt_hash = hashlib.sha256(
         f"{system_prompt}\0{user_prompt}".encode("utf-8")
     ).hexdigest()
@@ -345,10 +462,16 @@ async def execute_skill(
         "output_validation": "passed",
     }
     try:
-        output = parse_ai_response(
-            completion.content, {**profile, "foundation_data": foundation}
+        output = (
+            parse_ai_response(
+                completion.content, {**profile, "foundation_data": foundation}
+            )
+            if processor == "reports.single_step"
+            else _parse_json_output(completion.content)
         )
         _validate_output(output, completion.content, specification)
+        if processor != "reports.single_step":
+            _validate_authoring_output(output, context, processor)
     except Exception as error:
         trace["output_validation"] = "failed"
         trace["error_type"] = type(error).__name__

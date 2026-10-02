@@ -1,7 +1,11 @@
 import {
   completeReportCaseStep,
+  confirmReportCaseNarrativePlan,
+  generateReportCaseFragment,
+  generateReportNarrativeCandidates,
   getReportCase,
   getReportCaseContent,
+  getReportCaseNarrative,
   reopenReportCaseStep,
   returnReportCaseStep,
   saveReportCaseFinding,
@@ -19,15 +23,22 @@ function splitReferences(value) {
 export default {
   async loadReportCaseData(caseId) {
     this.reportCaseLoading = true
+    if (this.reportNarrativePollTimer) {
+      clearTimeout(this.reportNarrativePollTimer)
+      this.reportNarrativePollTimer = null
+    }
     try {
-      const [reportCase, content] = await Promise.all([
+      const [reportCase, content, narrative] = await Promise.all([
         getReportCase(caseId),
-        getReportCaseContent(caseId)
+        getReportCaseContent(caseId),
+        getReportCaseNarrative(caseId)
       ])
       this.reportCase = reportCase
       this.reportCaseContent = content
+      this.reportNarrative = narrative
       this.reportFragmentDrafts = Object.fromEntries(
         content.fragments.map(fragment => [fragment.fragment_key, {
+          revision_no: fragment.revision_no,
           title: fragment.title || '',
           content: fragment.content,
           status: fragment.status === 'STALE' ? 'PROPOSED' : fragment.status,
@@ -41,11 +52,143 @@ export default {
       const steps = reportCase.workflow_instance?.steps || []
       const active = steps.find(step => ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status))
       this.reportStepReturn.targetStepKey = steps.find(step => step.sequence_no < (active?.sequence_no || Infinity) && step.status === 'COMPLETED')?.step_key || ''
+      for (const run of narrative.candidate_runs || []) {
+        for (const candidate of run.output_parsed?.candidates || []) {
+          const draftKey = this.narrativeDraftKey(run, candidate)
+          if (!this.narrativeCandidateDrafts[draftKey]) {
+            this.narrativeCandidateDrafts[draftKey] = {
+              core_theme: candidate.theme || '',
+              must_include_findings: [...(candidate.supporting_findings || [])],
+              self_direction: ''
+            }
+          }
+        }
+      }
+      this.scheduleNarrativePoll(caseId)
     } catch (error) {
       this.message = this.errorText(error)
       throw error
     } finally {
       this.reportCaseLoading = false
+    }
+  },
+  narrativeDraftKey(run, candidate) {
+    return `${run.id}:${candidate.candidate_key}`
+  },
+  scheduleNarrativePoll(caseId) {
+    const runs = [
+      ...(this.reportNarrative.candidate_runs || []),
+      ...(this.reportNarrative.fragment_runs || [])
+    ]
+    if (!runs.some(run => ['PENDING', 'RUNNING'].includes(run.status))) return
+    this.reportNarrativePollTimer = setTimeout(async () => {
+      if (this.reportCase?.id !== caseId) return
+      try {
+        const [content, narrative] = await Promise.all([
+          getReportCaseContent(caseId),
+          getReportCaseNarrative(caseId)
+        ])
+        this.reportCaseContent = content
+        this.reportNarrative = narrative
+        const refreshedDrafts = Object.fromEntries(
+          content.fragments.map(fragment => [fragment.fragment_key, {
+            revision_no: fragment.revision_no,
+            title: fragment.title || '',
+            content: fragment.content,
+            status: fragment.status === 'STALE' ? 'PROPOSED' : fragment.status,
+            fragment_type: fragment.fragment_type,
+            edit_kind: fragment.status === 'STALE' ? 'SEMANTIC' : 'STYLE',
+            finding_refs: (fragment.source_snapshot?.findings || []).map(item => item.finding_key).join('\n'),
+            fragment_refs: (fragment.source_snapshot?.fragments || []).map(item => item.fragment_key).join('\n'),
+            evidence_refs: (fragment.source_snapshot?.evidence || []).map(item => item.evidence_key).join('\n')
+          }])
+        )
+        for (const fragment of content.fragments) {
+          const current = this.reportFragmentDrafts[fragment.fragment_key]
+          if (!current || current.revision_no !== fragment.revision_no) {
+            this.reportFragmentDrafts[fragment.fragment_key] = refreshedDrafts[fragment.fragment_key]
+          }
+        }
+        for (const run of narrative.candidate_runs || []) {
+          for (const candidate of run.output_parsed?.candidates || []) {
+            const draftKey = this.narrativeDraftKey(run, candidate)
+            if (!this.narrativeCandidateDrafts[draftKey]) {
+              this.narrativeCandidateDrafts[draftKey] = {
+                core_theme: candidate.theme || '',
+                must_include_findings: [...(candidate.supporting_findings || [])],
+                self_direction: ''
+              }
+            }
+          }
+        }
+        this.scheduleNarrativePoll(caseId)
+      } catch (error) {
+        this.message = this.errorText(error)
+      }
+    }, 1800)
+  },
+  async generateNarrativeCandidates() {
+    const step = this.currentReportStep
+    if (!this.reportCase || !step || step.status !== 'IN_REVIEW' || this.reportNarrativeSaving) return
+    this.reportNarrativeSaving = true
+    try {
+      await generateReportNarrativeCandidates(this.reportCase.id, step.step_key, {
+        idempotency_key: `case-${this.reportCase.id}-narrative-${Date.now()}`
+      })
+      await this.loadReportCaseData(this.reportCase.id)
+      this.message = '叙事候选已加入运行队列。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportNarrativeSaving = false
+    }
+  },
+  async confirmNarrativeCandidate(run, candidate) {
+    const draft = this.narrativeCandidateDrafts[this.narrativeDraftKey(run, candidate)] || {}
+    if (!this.reportCase || this.reportNarrativeSaving) return
+    const confirmed = await this.confirmAction({
+      title: '确认叙事方案',
+      message: `将“${draft.core_theme || candidate.theme}”确认为第 ${Number(this.reportNarrative.current_plan?.version_no || 0) + 1} 版 NarrativePlan？`,
+      confirmButtonText: '确认方案'
+    })
+    if (!confirmed) return
+    this.reportNarrativeSaving = true
+    try {
+      await confirmReportCaseNarrativePlan(this.reportCase.id, {
+        skill_run_id: run.id,
+        candidate_key: candidate.candidate_key,
+        overrides: {
+          core_theme: draft.core_theme || candidate.theme,
+          must_include_findings: draft.must_include_findings || candidate.supporting_findings || [],
+          self_direction: draft.self_direction || null
+        }
+      })
+      await this.loadReportCaseData(this.reportCase.id)
+      this.message = 'NarrativePlan 已确认并保存为新版本。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportNarrativeSaving = false
+    }
+  },
+  async generateReportFragment() {
+    const step = this.currentReportStep
+    const draft = this.newReportWritingFragment
+    if (!this.reportCase || !step || step.status !== 'IN_REVIEW' || !draft.fragment_key.trim() || this.reportNarrativeSaving) return
+    this.reportNarrativeSaving = true
+    try {
+      await generateReportCaseFragment(this.reportCase.id, step.step_key, {
+        idempotency_key: `case-${this.reportCase.id}-fragment-${Date.now()}`,
+        fragment_key: draft.fragment_key.trim(),
+        title: draft.title.trim() || null
+      })
+      this.newReportWritingFragment = { fragment_key: '', title: '' }
+      await this.loadReportCaseData(this.reportCase.id)
+      this.message = '报告片段已加入写作队列。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportNarrativeSaving = false
     }
   },
   async startReportStep() {

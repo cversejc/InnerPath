@@ -6,9 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domains.skills.models import SkillRun
 
 from .common import now, require_case, require_key, validate_owner_refs
-from .dependencies import mark_dependents_stale
+from .dependencies import invalidate_narrative_for_source, mark_dependents_stale
 from .evidence import normalize_evidence_refs
-from .models import CaseEvidenceItem, ContentFragmentRevision, FindingRevision
+from .models import (
+    CaseEvidenceItem,
+    ContentFragmentRevision,
+    FindingRevision,
+    NarrativePlan,
+)
 
 
 async def _normalize_string_refs(
@@ -159,6 +164,7 @@ async def create_content_fragment_revision(
     edit_kind: str = "SEMANTIC",
     owner_step_task_id: Optional[int] = None,
     source_skill_run_id: Optional[int] = None,
+    source_narrative_plan_id: Optional[int] = None,
     created_by: Optional[int] = None,
 ) -> ContentFragmentRevision:
     report_case = await require_case(db, report_case_id)
@@ -259,6 +265,25 @@ async def create_content_fragment_revision(
         owner_step_task_id=owner_step,
         source_skill_run_id=source_skill_run_id,
     )
+    effective_narrative_plan_id = source_narrative_plan_id
+    if effective_narrative_plan_id is None and current and fragment_type == "REPORT":
+        effective_narrative_plan_id = current.source_narrative_plan_id
+    narrative_plan = (
+        await db.get(NarrativePlan, effective_narrative_plan_id)
+        if effective_narrative_plan_id is not None
+        else None
+    )
+    if fragment_type == "REPORT" and edit_kind != "STYLE":
+        if (
+            narrative_plan is None
+            or narrative_plan.report_case_id != report_case_id
+            or narrative_plan.status != "CONFIRMED"
+        ):
+            raise ValueError("fragment_narrative_plan_invalid")
+    elif narrative_plan is not None and (
+        narrative_plan.report_case_id != report_case_id or fragment_type != "REPORT"
+    ):
+        raise ValueError("fragment_narrative_plan_invalid")
     if current and edit_kind == "STYLE":
         source_snapshot = current.source_snapshot or {}
     else:
@@ -273,6 +298,12 @@ async def create_content_fragment_revision(
             fragment_type=fragment_type,
             require_confirmed=require_confirmed,
         )
+        if narrative_plan is not None:
+            source_snapshot["narrative_plan"] = {
+                "id": narrative_plan.id,
+                "version_no": narrative_plan.version_no,
+                "selected_candidate_key": narrative_plan.selected_candidate_key,
+            }
         await _ensure_acyclic_fragment_refs(
             db,
             report_case_id=report_case_id,
@@ -311,6 +342,11 @@ async def create_content_fragment_revision(
         is_current=True,
         owner_step_task_id=owner_step,
         source_skill_run_id=source_skill_run_id,
+        source_narrative_plan_id=(
+            effective_narrative_plan_id
+            if effective_narrative_plan_id is not None
+            else (current.source_narrative_plan_id if current else None)
+        ),
         stale_reason=(
             current.stale_reason
             if current and current.status == "STALE" and edit_kind == "STYLE"
@@ -328,6 +364,19 @@ async def create_content_fragment_revision(
             origin_kind="fragment",
             origin_key=key,
             reason=f"semantic_dependency_changed:fragment:{key}",
+        )
+    if (
+        fragment_type == "ANALYSIS"
+        and next_status == "CONFIRMED"
+        and edit_kind == "SEMANTIC"
+    ):
+        await invalidate_narrative_for_source(
+            db,
+            report_case_id=report_case_id,
+            source_kind="fragment",
+            source_key=key,
+            reason=f"SOURCE_CHANGED:fragment:{key}",
+            force=current is None or current.status != "CONFIRMED",
         )
     return revision
 

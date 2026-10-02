@@ -11,7 +11,11 @@ interpretations as clinical facts, predict certain future outcomes, invent user
 experiences, or expose hidden reasoning. Treat examples as style guidance only;
 never transfer facts from an example to the current user."""
 
-ALLOWED_PROCESSORS = {"reports.single_step"}
+ALLOWED_PROCESSORS = {
+    "reports.single_step",
+    "reports.narrative_candidates",
+    "reports.fragment_authoring",
+}
 ALLOWED_TOOLS = {"reports.calculate_mingli_foundation"}
 
 DEFAULT_SKILL_SPECIFICATION: dict[str, Any] = {
@@ -223,3 +227,89 @@ def validate_skill_specification(specification: dict[str, Any]) -> dict[str, Any
 
 def default_skill_specification() -> dict[str, Any]:
     return validate_skill_specification(DEFAULT_SKILL_SPECIFICATION)
+
+
+def default_narrative_skill_specifications() -> list[dict[str, Any]]:
+    base = deepcopy(DEFAULT_SKILL_SPECIFICATION)
+    candidates = deepcopy(base)
+    candidates["identity"] = {
+        "skill_key": "report.narrative_plan",
+        "name": "报告叙事方案候选",
+        "description": "只基于已确认语义资产生成供咨询师选择的叙事候选。",
+    }
+    candidates["input_contract"] = {"required": [], "type": "object"}
+    candidates["context_policy"]["required"] = ["semantic_model"]
+    candidates["context_policy"]["context_fields"] = list(
+        dict.fromkeys(candidates["context_policy"]["context_fields"] + ["semantic_model"])
+    )
+    candidates["instructions"] = {
+        "objective": "提出 2 到 3 个彼此有差异、由确认 Finding 支持的报告叙事候选。",
+        "methodology": [
+            "只选择 semantic_model.findings 中的 finding_key，不重新分析用户。",
+            "不得创建事实、Finding、置信度或覆盖人工确认。",
+            "明确列出支持和弱化的 Finding，缺少依据时降低表达强度。",
+            "输出严格 JSON，不附加 Markdown 或解释文字。",
+        ],
+    }
+    candidates["tool_policy"] = {"allowed": []}
+    candidates["processor_policy"] = {"processor": "reports.narrative_candidates"}
+    candidates["output_contract"] = {
+        "type": "object",
+        "required": ["candidates"],
+        "properties": {"candidates": {"type": "array"}},
+    }
+
+    authoring = deepcopy(base)
+    authoring["identity"] = {
+        "skill_key": "report.fragment_authoring",
+        "name": "报告片段写作",
+        "description": "根据已确认语义与咨询师确认的 NarrativePlan 撰写单个报告片段。",
+    }
+    authoring["input_contract"] = {"required": [], "type": "object"}
+    authoring["context_policy"]["required"] = [
+        "semantic_model",
+        "narrative_plan",
+        "fragment_request",
+    ]
+    authoring["context_policy"]["context_fields"] = list(
+        dict.fromkeys(
+            authoring["context_policy"]["context_fields"]
+            + ["semantic_model", "narrative_plan", "fragment_request"]
+        )
+    )
+    authoring["instructions"] = {
+        "objective": "仅根据确认语义与已确认 NarrativePlan 写作一个完整、可审校的报告小节。",
+        "methodology": [
+            "只允许选择、组织、转译和表达输入中的已确认内容。",
+            "不得创建事实、Finding、心理结论、行动建议或改变专业判断。",
+            "若缺少语义支撑，返回 MISSING_SEMANTIC_SUPPORT 且不补写结论。",
+            "列出 used_findings 与 used_analysis_fragments 的稳定标识。",
+            "输出严格 JSON，不附加 Markdown 或解释文字。",
+        ],
+    }
+    authoring["tool_policy"] = {"allowed": []}
+    authoring["processor_policy"] = {"processor": "reports.fragment_authoring"}
+    authoring["output_contract"] = {
+        "type": "object",
+        "required": [
+            "status",
+            "title",
+            "content",
+            "used_findings",
+            "used_analysis_fragments",
+            "used_actions",
+            "transition_hint",
+            "presentation_meta",
+        ],
+        "properties": {
+            "status": {"type": "string"},
+            "title": {"type": "string"},
+            "content": {"type": "string"},
+            "used_findings": {"type": "array"},
+            "used_analysis_fragments": {"type": "array"},
+            "used_actions": {"type": "array"},
+            "transition_hint": {"type": "string"},
+            "presentation_meta": {"type": "object"},
+        },
+    }
+    return [validate_skill_specification(candidates), validate_skill_specification(authoring)]

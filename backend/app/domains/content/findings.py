@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .common import now, require_case, require_key, same_json, validate_owner_refs
-from .dependencies import mark_dependents_stale
+from .dependencies import invalidate_narrative_for_source, mark_dependents_stale
 from .evidence import normalize_evidence_refs
 from .models import FindingRevision
 
@@ -200,6 +200,15 @@ async def create_finding_revision(
             origin_kind="finding",
             origin_key=key,
             reason=f"semantic_dependency_changed:finding:{key}",
+        )
+    if values["status"] == "CONFIRMED" and edit_kind == "SEMANTIC":
+        await invalidate_narrative_for_source(
+            db,
+            report_case_id=report_case_id,
+            source_kind="finding",
+            source_key=key,
+            reason=f"SOURCE_CHANGED:finding:{key}",
+            force=current is None or current.status != "CONFIRMED",
         )
     return revision
 

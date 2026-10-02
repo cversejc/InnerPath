@@ -132,6 +132,50 @@ class FindingRevision(Base):
     created_at = Column(DateTime, nullable=False)
 
 
+class NarrativePlan(Base):
+    __tablename__ = "narrative_plans"
+    __table_args__ = (
+        UniqueConstraint(
+            "report_case_id", "version_no", name="uq_narrative_plan_case_version"
+        ),
+        CheckConstraint("version_no > 0", name="ck_narrative_plan_version_positive"),
+        CheckConstraint(
+            "status IN ('PROPOSED', 'CONFIRMED', 'STALE', 'SUPERSEDED')",
+            name="ck_narrative_plan_status",
+        ),
+        Index(
+            "uq_narrative_plan_current",
+            "report_case_id",
+            unique=True,
+            postgresql_where=text("is_current = true"),
+            sqlite_where=text("is_current = 1"),
+        ),
+        Index("ix_narrative_plan_case_status", "report_case_id", "status"),
+    )
+
+    id = Column(Integer, primary_key=True)
+    report_case_id = Column(
+        Integer, ForeignKey("report_cases.id", ondelete="RESTRICT"), nullable=False
+    )
+    version_no = Column(Integer, nullable=False)
+    is_current = Column(Boolean, nullable=False, default=True, index=True)
+    status = Column(String(16), nullable=False, default="PROPOSED", index=True)
+    selected_skill_run_id = Column(
+        Integer, ForeignKey("skill_runs.id", ondelete="RESTRICT"), nullable=False
+    )
+    selected_candidate_key = Column(String(100), nullable=False)
+    plan_json = Column(JsonDocument, nullable=False)
+    source_snapshot = Column(JsonDocument, nullable=False)
+    created_by = Column(
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    confirmed_by = Column(
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    created_at = Column(DateTime, nullable=False)
+    confirmed_at = Column(DateTime, nullable=True)
+
+
 class ContentFragmentRevision(Base):
     __tablename__ = "content_fragment_revisions"
     __table_args__ = (
@@ -170,6 +214,7 @@ class ContentFragmentRevision(Base):
             "report_case_id",
             "status",
         ),
+        Index("ix_content_fragment_narrative_plan", "source_narrative_plan_id"),
     )
 
     id = Column(Integer, primary_key=True)
@@ -192,6 +237,9 @@ class ContentFragmentRevision(Base):
     )
     source_skill_run_id = Column(
         Integer, ForeignKey("skill_runs.id", ondelete="SET NULL"), nullable=True
+    )
+    source_narrative_plan_id = Column(
+        Integer, ForeignKey("narrative_plans.id", ondelete="RESTRICT"), nullable=True
     )
     stale_reason = Column(Text, nullable=True)
     created_by = Column(

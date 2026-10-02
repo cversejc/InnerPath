@@ -28,6 +28,7 @@ from app.domains.content.models import (
     CaseEvidenceItem,
     ContentFragmentRevision,
     FindingRevision,
+    NarrativePlan,
 )
 
 # this is the Alembic Config object

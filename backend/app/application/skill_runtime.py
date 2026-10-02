@@ -1,13 +1,24 @@
 from datetime import datetime
+from copy import deepcopy
 from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.attributes import flag_modified
 
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.content.service import create_evidence_item
-from app.domains.content.models import CaseEvidenceItem
+from app.domains.content.fragments import create_content_fragment_revision
+from app.domains.content.models import (
+    CaseEvidenceItem,
+    NarrativePlan,
+)
+from app.domains.content.narrative import (
+    get_current_narrative_plan,
+    semantic_source_snapshot,
+)
+from app.domains.content.queries import load_case_semantic_model
 from app.domains.skills.definitions import (
     DEFAULT_SKILL_KEY,
     default_skill_specification,
@@ -17,6 +28,7 @@ from app.domains.skills.runtime import (
     DeepSeekGateway,
     ModelGateway,
     SkillExecutionError,
+    build_context_envelope,
     execute_skill,
 )
 from app.domains.skills.service import create_skill_run, ensure_default_skill_version
@@ -119,7 +131,19 @@ async def _queue_run(
     report_case: ReportCase | None = None,
     step: StepTask | None = None,
 ) -> tuple[SkillRun, bool]:
-    context_snapshot = _safe_input_snapshot(input_data)
+    skill_version = await db.get(AISkillVersion, version_id)
+    if skill_version is None:
+        raise ValueError("skill_version_not_found")
+    input_snapshot = build_context_envelope(
+        input_data, skill_version.specification_json
+    )
+    context_snapshot = deepcopy(input_snapshot)
+    semantic_sources = input_data.get("semantic_source_snapshot")
+    if isinstance(semantic_sources, dict):
+        context_snapshot["semantic_source_snapshot"] = semantic_sources
+    narrative_plan_id = input_data.get("source_narrative_plan_id")
+    if isinstance(narrative_plan_id, int):
+        context_snapshot["source_narrative_plan_id"] = narrative_plan_id
     if report_case is not None:
         evidence_rows = await db.scalars(
             select(CaseEvidenceItem)
@@ -145,7 +169,7 @@ async def _queue_run(
         db,
         skill_version_id=version_id,
         idempotency_key=idempotency_key,
-        input_snapshot=_safe_input_snapshot(input_data),
+        input_snapshot=input_snapshot,
         context_snapshot=context_snapshot,
         run_type="EVALUATION" if report_case is None else "INITIAL",
         target_type=target_type,
@@ -250,6 +274,95 @@ async def queue_case_step_skill_run(
     )
 
 
+async def queue_case_authoring_skill_run(
+    db: AsyncSession,
+    *,
+    case_id: int,
+    step_key: str,
+    actor: User,
+    skill_key: str,
+    idempotency_key: str,
+    runtime_instruction: str | None = None,
+    fragment_key: str | None = None,
+    fragment_title: str | None = None,
+) -> tuple[SkillRun, bool]:
+    report_case = await _authorize_case(db, case_id, actor)
+    if report_case.workflow_instance_id is None:
+        raise ValueError("workflow_instance_not_found")
+    step = await db.scalar(
+        select(StepTask)
+        .where(
+            StepTask.workflow_instance_id == report_case.workflow_instance_id,
+            StepTask.step_key == step_key,
+        )
+        .with_for_update()
+    )
+    if step is None:
+        raise ValueError("step_task_not_found")
+    if step_key != "S5" or step.status != "IN_REVIEW":
+        raise ValueError("narrative_step_not_in_review")
+    if actor.role == "consultant" and step.assignee_id not in (None, actor.id):
+        raise ValueError("step_assigned_to_another_consultant")
+    if skill_key not in {"report.narrative_plan", "report.fragment_authoring"}:
+        raise ValueError("narrative_skill_unavailable")
+
+    skill_version = await db.scalar(
+        select(AISkillVersion)
+        .where(
+            AISkillVersion.skill_key == skill_key,
+            AISkillVersion.status == "PUBLISHED",
+        )
+        .order_by(AISkillVersion.version.desc())
+        .limit(1)
+    )
+    if skill_version is None:
+        raise ValueError("narrative_skill_unavailable")
+
+    semantic_model = await load_case_semantic_model(db, case_id)
+    source_snapshot = semantic_source_snapshot(semantic_model)
+    application_snapshot = _safe_input_snapshot(report_case.application_snapshot or {})
+    context = dict(application_snapshot.get("context") or {})
+    context["semantic_model"] = semantic_model
+    input_data: dict[str, Any] = {
+        **application_snapshot,
+        "context": context,
+        "semantic_source_snapshot": source_snapshot,
+    }
+    if skill_key == "report.narrative_plan":
+        target_type = "NARRATIVE_CANDIDATES"
+        target_key = step_key
+    else:
+        plan = await get_current_narrative_plan(db, case_id)
+        if plan is None or plan.status != "CONFIRMED":
+            raise ValueError("narrative_plan_confirmation_required")
+        if plan.source_snapshot != source_snapshot:
+            plan.status = "STALE"
+            raise ValueError("narrative_semantics_changed")
+        if not fragment_key or not fragment_key.strip():
+            raise ValueError("report_fragment_key_invalid")
+        context["narrative_plan"] = plan.plan_json
+        context["narrative_plan_id"] = plan.id
+        context["fragment_request"] = {
+            "fragment_key": fragment_key.strip(),
+            "title": (fragment_title or "").strip(),
+        }
+        input_data["source_narrative_plan_id"] = plan.id
+        target_type = "REPORT_FRAGMENT"
+        target_key = fragment_key.strip()
+
+    return await _queue_run(
+        db,
+        version_id=skill_version.id,
+        idempotency_key=idempotency_key,
+        input_data=input_data,
+        runtime_instruction=runtime_instruction,
+        target_type=target_type,
+        target_key=target_key,
+        report_case=report_case,
+        step=step,
+    )
+
+
 async def list_case_skill_runs(
     db: AsyncSession, *, case_id: int, actor: User
 ) -> list[SkillRun]:
@@ -299,6 +412,20 @@ async def execute_skill_run_record(
         run.output_raw = result.output_raw
         run.output_parsed = result.output_parsed
         run.model_trace = result.model_trace
+        prior_context = run.context_snapshot or {}
+        source_references = deepcopy(prior_context.get("source_references") or {})
+        run_metadata = {
+            key: prior_context[key]
+            for key in ("semantic_source_snapshot", "source_narrative_plan_id")
+            if key in prior_context
+        }
+        run.context_snapshot = {
+            **result.context_snapshot,
+            "source_references": source_references,
+            **run_metadata,
+        }
+        if run.target_type == "REPORT_FRAGMENT":
+            await _save_authored_report_fragment(db, run)
         foundation = result.context_snapshot.get("foundation_data")
         if run.report_case_id is not None and foundation is not None:
             evidence = await create_evidence_item(
@@ -310,8 +437,7 @@ async def execute_skill_run_record(
                 value=foundation,
                 source_skill_run_id=run.id,
             )
-            references = (run.context_snapshot or {}).get("source_references") or {}
-            evidence_refs = list(references.get("evidence") or [])
+            evidence_refs = list(source_references.get("evidence") or [])
             if not any(item.get("evidence_key") == evidence.evidence_key for item in evidence_refs):
                 evidence_refs.append(
                     {
@@ -322,13 +448,13 @@ async def execute_skill_run_record(
                         "source_skill_run_id": evidence.source_skill_run_id,
                     }
                 )
-            references["evidence"] = evidence_refs
-            run.context_snapshot = {
-                **result.context_snapshot,
-                "source_references": references,
-            }
-        else:
-            run.context_snapshot = result.context_snapshot
+            source_references["evidence"] = evidence_refs
+        run.context_snapshot = {
+            **result.context_snapshot,
+            "source_references": source_references,
+            **run_metadata,
+        }
+        flag_modified(run, "context_snapshot")
         run.status = "COMPLETED"
         run.error = None
     except SkillExecutionError as error:
@@ -344,3 +470,63 @@ async def execute_skill_run_record(
     await db.commit()
     await db.refresh(run)
     return run
+
+
+async def _save_authored_report_fragment(db: AsyncSession, run: SkillRun) -> None:
+    output = run.output_parsed or {}
+    if output.get("status") == "MISSING_SEMANTIC_SUPPORT":
+        return
+    if output.get("status") != "READY_FOR_REVIEW":
+        raise ValueError("report_fragment_status_invalid")
+    context = (run.context_snapshot or {}).get("context") or {}
+    request = context.get("fragment_request") or {}
+    plan_id = (run.context_snapshot or {}).get("source_narrative_plan_id")
+    plan = await db.get(NarrativePlan, plan_id) if plan_id else None
+    if plan is None or plan.status != "CONFIRMED":
+        raise ValueError("narrative_plan_confirmation_required")
+    semantic_model = context.get("semantic_model") or {}
+    semantic_now = await load_case_semantic_model(db, run.report_case_id)
+    if semantic_source_snapshot(semantic_now) != (run.context_snapshot or {}).get(
+        "semantic_source_snapshot"
+    ):
+        raise ValueError("narrative_semantics_changed")
+    if plan.source_snapshot != (run.context_snapshot or {}).get(
+        "semantic_source_snapshot"
+    ):
+        raise ValueError("narrative_semantics_changed")
+
+    used_findings = output.get("used_findings") or []
+    used_fragments = output.get("used_analysis_fragments") or []
+    evidence_refs = {
+        key
+        for item in semantic_model.get("findings", [])
+        if item.get("finding_key") in used_findings
+        for key in item.get("evidence_refs", [])
+    }
+    for item in semantic_model.get("analysis_fragments", []):
+        if item.get("fragment_key") in used_fragments:
+            evidence_refs.update(
+                row.get("evidence_key")
+                for row in (item.get("source_snapshot") or {}).get("evidence", [])
+                if isinstance(row, dict) and row.get("evidence_key")
+            )
+
+    async with db.begin_nested():
+        await create_content_fragment_revision(
+            db,
+            report_case_id=run.report_case_id,
+            fragment_key=request.get("fragment_key") or run.target_key or "",
+            fragment_type="REPORT",
+            title=output.get("title") or request.get("title") or None,
+            content=output.get("content") or "",
+            status="PROPOSED",
+            finding_refs=used_findings,
+            fragment_refs=used_fragments,
+            evidence_refs=sorted(evidence_refs),
+            edit_kind="SEMANTIC",
+            owner_step_task_id=run.step_task_id,
+            source_skill_run_id=run.id,
+            source_narrative_plan_id=plan.id,
+            created_by=None,
+        )
+        await db.flush()

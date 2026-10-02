@@ -14,6 +14,7 @@ from app.application.workflow_commands import (
     return_case_step,
     start_case_step,
 )
+from app.application.skill_runtime import queue_case_authoring_skill_run
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.domains.content.models import (
@@ -27,6 +28,11 @@ from app.domains.content.schemas import (
     FindingRevisionCreate,
     FindingRevisionResponse,
     EvidenceResponse,
+    NarrativeCandidatesCreate,
+    NarrativePlanConfirm,
+    NarrativePlanResponse,
+    NarrativeStateResponse,
+    ReportFragmentGenerate,
     ReportCaseContentResponse,
 )
 from app.domains.content.service import (
@@ -34,6 +40,7 @@ from app.domains.content.service import (
     create_finding_revision,
 )
 from app.domains.content.findings import current_finding
+from app.domains.content.narrative import confirm_narrative_plan, get_current_narrative_plan
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.workflow.models import (
     ReportCase,
@@ -41,6 +48,8 @@ from app.domains.workflow.models import (
     WorkflowInstance,
     WorkflowVersion,
 )
+from app.domains.skills.models import SkillRun
+from app.domains.skills.schemas import SkillRunResponse
 from app.domains.workflow.schemas import (
     ReportCaseListResponse,
     ReportCaseResponse,
@@ -84,9 +93,18 @@ def _workflow_error(error: ValueError) -> None:
         "finding_revision_conflict",
         "fragment_revision_conflict",
         "step_not_current",
+        "narrative_candidate_run_not_completed",
+        "narrative_semantics_changed",
+        "narrative_plan_confirmation_required",
+        "narrative_step_not_in_review",
+        "narrative_skill_unavailable",
     }:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=code)
-    if code.startswith("workflow_") or code.startswith("step_"):
+    if code == "report_case_forbidden":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
+    if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
+    if code.startswith(("workflow_", "step_", "narrative_", "report_fragment_", "fragment_narrative_")):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
         )
@@ -328,6 +346,141 @@ async def get_report_case_content(
 ):
     await _case_for_read_or_action(db, case_id, current_user, action=True)
     return await _serialize_case_content(db, case_id)
+
+
+@router.get("/{case_id}/narrative", response_model=NarrativeStateResponse)
+async def get_report_case_narrative(
+    case_id: int,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _case_for_read_or_action(db, case_id, current_user, action=True)
+    current = await get_current_narrative_plan(db, case_id)
+    runs = await db.scalars(
+        select(SkillRun)
+        .where(
+            SkillRun.report_case_id == case_id,
+            SkillRun.target_type.in_({"NARRATIVE_CANDIDATES", "REPORT_FRAGMENT"}),
+        )
+        .order_by(SkillRun.created_at.desc(), SkillRun.id.desc())
+        .limit(40)
+    )
+    run_responses = [
+        SkillRunResponse.model_validate(row).model_dump(mode="json") for row in runs
+    ]
+    return NarrativeStateResponse(
+        current_plan=(
+            NarrativePlanResponse.model_validate(current) if current is not None else None
+        ),
+        candidate_runs=[row for row in run_responses if row["target_type"] == "NARRATIVE_CANDIDATES"],
+        fragment_runs=[row for row in run_responses if row["target_type"] == "REPORT_FRAGMENT"],
+    )
+
+
+@router.post(
+    "/{case_id}/steps/{step_key}/narrative-candidates",
+    response_model=SkillRunResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def create_narrative_candidates(
+    case_id: int,
+    step_key: str,
+    data: NarrativeCandidatesCreate,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _authorize_step_action(db, case_id, step_key, current_user, require_current_review=True)
+    try:
+        run, _created = await queue_case_authoring_skill_run(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+            skill_key="report.narrative_plan",
+            idempotency_key=data.idempotency_key,
+            runtime_instruction=data.runtime_instruction,
+        )
+        return run
+    except ValueError as error:
+        await db.rollback()
+        if str(error) == "report_case_forbidden":
+            raise HTTPException(status_code=403, detail=str(error))
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/narrative-plans/confirm",
+    response_model=NarrativePlanResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def confirm_report_case_narrative_plan(
+    case_id: int,
+    data: NarrativePlanConfirm,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    report_case = await _case_for_read_or_action(db, case_id, current_user, action=True)
+    if report_case.workflow_instance_id is None:
+        raise HTTPException(status_code=409, detail="workflow_instance_not_found")
+    active_step = await db.scalar(
+        select(StepTask).where(
+            StepTask.workflow_instance_id == report_case.workflow_instance_id,
+            StepTask.step_key == "S5",
+        )
+    )
+    if active_step is None:
+        raise HTTPException(status_code=404, detail="step_task_not_found")
+    await _authorize_step_action(
+        db, case_id, "S5", current_user, require_current_review=True
+    )
+    try:
+        plan = await confirm_narrative_plan(
+            db,
+            report_case_id=case_id,
+            skill_run_id=data.skill_run_id,
+            candidate_key=data.candidate_key,
+            overrides=data.overrides,
+            actor_id=current_user.id,
+        )
+        await db.commit()
+        await db.refresh(plan)
+        return plan
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/steps/{step_key}/fragments/generate",
+    response_model=SkillRunResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def generate_report_case_fragment(
+    case_id: int,
+    step_key: str,
+    data: ReportFragmentGenerate,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _authorize_step_action(db, case_id, step_key, current_user, require_current_review=True)
+    try:
+        run, _created = await queue_case_authoring_skill_run(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+            skill_key="report.fragment_authoring",
+            idempotency_key=data.idempotency_key,
+            runtime_instruction=data.runtime_instruction,
+            fragment_key=data.fragment_key,
+            fragment_title=data.title,
+        )
+        return run
+    except ValueError as error:
+        await db.rollback()
+        if str(error) == "report_case_forbidden":
+            raise HTTPException(status_code=403, detail=str(error))
+        _workflow_error(error)
 
 
 @router.put(

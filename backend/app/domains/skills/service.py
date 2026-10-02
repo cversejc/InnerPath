@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .definitions import (
     DEFAULT_SKILL_KEY,
+    default_narrative_skill_specifications,
     default_skill_specification,
     validate_skill_specification,
 )
@@ -141,6 +142,54 @@ async def ensure_default_skill_version(db: AsyncSession) -> AISkillVersion:
         if existing and existing.status == "PUBLISHED":
             return existing
         raise
+
+
+async def ensure_default_narrative_skill_versions(
+    db: AsyncSession,
+) -> list[AISkillVersion]:
+    ensured = []
+    for spec in default_narrative_skill_specifications():
+        skill_key = spec["identity"]["skill_key"]
+        existing = await db.scalar(
+            select(AISkillVersion).where(
+                AISkillVersion.skill_key == skill_key,
+                AISkillVersion.version == 1,
+            )
+        )
+        if existing:
+            if existing.status != "PUBLISHED":
+                raise ValueError("default_narrative_skill_not_published")
+            ensured.append(existing)
+            continue
+        now = _now()
+        version = AISkillVersion(
+            skill_key=skill_key,
+            name=spec["identity"]["name"],
+            category="AUTHORING",
+            version=1,
+            status="PUBLISHED",
+            specification_json=spec,
+            created_by=None,
+            published_by=None,
+            created_at=now,
+            published_at=now,
+        )
+        try:
+            async with db.begin_nested():
+                db.add(version)
+                await db.flush()
+            ensured.append(version)
+        except IntegrityError:
+            existing = await db.scalar(
+                select(AISkillVersion).where(
+                    AISkillVersion.skill_key == skill_key,
+                    AISkillVersion.version == 1,
+                )
+            )
+            if existing is None or existing.status != "PUBLISHED":
+                raise
+            ensured.append(existing)
+    return ensured
 
 
 async def create_skill_run(

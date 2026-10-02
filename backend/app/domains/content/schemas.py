@@ -90,6 +90,7 @@ class ContentFragmentRevisionCreate(BaseModel):
     edit_kind: EditKind = "SEMANTIC"
     owner_step_task_id: Optional[int] = Field(None, gt=0)
     source_skill_run_id: Optional[int] = Field(None, gt=0)
+    source_narrative_plan_id: Optional[int] = Field(None, gt=0)
 
 
 class ContentFragmentRevisionResponse(BaseModel):
@@ -110,6 +111,7 @@ class ContentFragmentRevisionResponse(BaseModel):
     is_current: bool
     owner_step_task_id: Optional[int] = None
     source_skill_run_id: Optional[int] = None
+    source_narrative_plan_id: Optional[int] = None
     stale_reason: Optional[str] = None
     created_by: Optional[int] = None
     created_at: datetime
@@ -119,3 +121,45 @@ class ReportCaseContentResponse(BaseModel):
     evidence: list[EvidenceResponse]
     findings: list[FindingRevisionResponse]
     fragments: list[ContentFragmentRevisionResponse]
+
+
+class NarrativePlanResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    report_case_id: int
+    version_no: int
+    is_current: bool
+    status: str
+    selected_skill_run_id: int
+    selected_candidate_key: str
+    plan_json: dict[str, Any]
+    source_snapshot: dict[str, Any]
+    created_by: Optional[int] = None
+    confirmed_by: Optional[int] = None
+    created_at: datetime
+    confirmed_at: Optional[datetime] = None
+
+
+class NarrativeStateResponse(BaseModel):
+    current_plan: Optional[NarrativePlanResponse] = None
+    candidate_runs: list[dict[str, Any]] = Field(default_factory=list)
+    fragment_runs: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class NarrativeCandidatesCreate(BaseModel):
+    idempotency_key: str = Field(..., min_length=1, max_length=200)
+    runtime_instruction: Optional[str] = Field(None, max_length=4000)
+
+
+class NarrativePlanConfirm(BaseModel):
+    skill_run_id: int
+    candidate_key: str = Field(..., min_length=1, max_length=100)
+    overrides: dict[str, Any] = Field(default_factory=dict)
+
+
+class ReportFragmentGenerate(BaseModel):
+    idempotency_key: str = Field(..., min_length=1, max_length=200)
+    fragment_key: str = Field(..., min_length=1, max_length=200)
+    title: Optional[str] = Field(None, max_length=240)
+    runtime_instruction: Optional[str] = Field(None, max_length=4000)

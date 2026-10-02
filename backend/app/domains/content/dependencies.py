@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .models import ContentFragmentRevision
+from .models import ContentFragmentRevision, NarrativePlan
 
 
 def references(snapshot: dict, kind: str, key: str) -> bool:
@@ -59,4 +59,79 @@ async def mark_dependents_stale(
                 )
             )
     await db.flush()
+    should_invalidate_plan = origin_kind in {"finding", "evidence"} or (
+        origin_kind == "fragment"
+        and any(
+            row.fragment_key == origin_key and row.fragment_type == "ANALYSIS"
+            for row in current_fragments
+        )
+    )
+    if should_invalidate_plan:
+        await invalidate_narrative_for_source(
+            db,
+            report_case_id=report_case_id,
+            source_kind=origin_kind,
+            source_key=origin_key,
+            reason=f"SOURCE_CHANGED:{origin_kind}:{origin_key}",
+        )
     return len(stale_ids)
+
+
+async def invalidate_narrative_for_source(
+    db,
+    *,
+    report_case_id: int,
+    source_kind: str,
+    source_key: str,
+    reason: str,
+    force: bool = False,
+) -> bool:
+    plan = await db.scalar(
+        select(NarrativePlan)
+        .where(
+            NarrativePlan.report_case_id == report_case_id,
+            NarrativePlan.is_current.is_(True),
+            NarrativePlan.status == "CONFIRMED",
+        )
+        .with_for_update()
+    )
+    if plan is None:
+        return False
+    collection, key_field = {
+        "finding": ("findings", "finding_key"),
+        "fragment": ("analysis_fragments", "fragment_key"),
+        "evidence": ("evidence", "evidence_key"),
+    }[source_kind]
+    is_source = any(
+        isinstance(item, dict) and item.get(key_field) == source_key
+        for item in (plan.source_snapshot or {}).get(collection, [])
+    )
+    if not is_source and not force:
+        return False
+    plan.status = "STALE"
+    await mark_report_fragments_stale_for_plan(
+        db, plan.id, reason=f"SOURCE_CHANGED:{source_kind}:{source_key}"
+    )
+    return True
+
+
+async def mark_report_fragments_stale_for_plan(
+    db, narrative_plan_id: int, *, reason: str
+) -> int:
+    rows = await db.scalars(
+        select(ContentFragmentRevision)
+        .where(
+            ContentFragmentRevision.source_narrative_plan_id == narrative_plan_id,
+            ContentFragmentRevision.fragment_type == "REPORT",
+            ContentFragmentRevision.is_current.is_(True),
+        )
+        .with_for_update()
+    )
+    count = 0
+    for row in rows:
+        if row.status != "STALE":
+            row.status = "STALE"
+            count += 1
+        row.stale_reason = reason
+    await db.flush()
+    return count
