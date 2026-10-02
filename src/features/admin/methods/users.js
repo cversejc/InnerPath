@@ -8,9 +8,9 @@ import {
   updateAdminUserProfile,
   updateAdminUserRole,
   updateAdminUserStatus
-} from '../api'
-import { getAdminCalendars, getAdminUserDecisionLogs } from '../../calendar/api'
-import { getAdminReports } from '../../reports/api'
+} from '../api.js'
+import { getAdminCalendars, getAdminUserDecisionLogs } from '../../calendar/api.js'
+import { getAdminReports } from '../../reports/api.js'
 
 export default {
   async loadUsers() {
@@ -78,9 +78,40 @@ export default {
     },
   async resetUserPassword(user) {
       if (!user.is_active) { await this.toggleUser(user); return }
-      const nextPassword = window.prompt(`为 ${user.name} 设置新密码（至少 8 位）`)
-      if (nextPassword === null) return
-      if (nextPassword.length < 8) { this.message = '新密码至少需要 8 位'; return }
-      try { await resetAdminUserPassword(user.id, nextPassword); this.message = '密码已重置，原会话已失效' } catch (error) { this.message = this.errorText(error) }
+      this.passwordDialog = {
+        visible: true,
+        user,
+        password: '',
+        showPassword: false,
+        error: '',
+        submitting: false
+      }
+    },
+  async submitPasswordReset() {
+      const { user, password } = this.passwordDialog
+      if (!user || this.passwordDialog.submitting) return
+      if (password.length < 8) {
+        this.passwordDialog.error = '新密码至少需要 8 位'
+        return
+      }
+      this.passwordDialog.submitting = true
+      try {
+        await resetAdminUserPassword(user.id, password)
+        this.message = '密码已重置，原会话已失效'
+        this.passwordDialog.visible = false
+      } catch (error) {
+        this.passwordDialog.error = this.errorText(error)
+        this.message = this.passwordDialog.error
+      } finally {
+        this.passwordDialog.submitting = false
+        if (!this.passwordDialog.visible) this.clearPasswordDialog(false)
+      }
+    },
+  clearPasswordDialog(visible) {
+      if (visible || this.passwordDialog.submitting) return
+      this.passwordDialog.user = null
+      this.passwordDialog.password = ''
+      this.passwordDialog.showPassword = false
+      this.passwordDialog.error = ''
     }
 }

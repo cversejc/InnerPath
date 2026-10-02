@@ -100,8 +100,11 @@
 }
 
 .mobile-form-dialog__field .van-field__control {
-  min-height: 72px;
   font-size: 16px;
+}
+
+.mobile-form-dialog__field--textarea .van-field__control {
+  min-height: 72px;
 }
 
 .mobile-form-dialog__footer {

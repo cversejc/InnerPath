@@ -17,12 +17,13 @@ import reportsMethods from '../features/admin/methods/reports.js'
 import activityMethods from '../features/admin/methods/activity.js'
 import staffMethods from '../features/admin/methods/staff.js'
 import exportsMethods from '../features/admin/methods/exports.js'
+import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'vant'
 
 const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminCalendarRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers },
+  components: { AdminDashboardSection, AdminUsersSection, AdminCalendarRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
@@ -99,12 +100,13 @@ export default {
       inviteSaving: false,
       staffLoading: false,
       loggingOut: false,
+      passwordDialog: { visible: false, user: null, password: '', showPassword: false, error: '', submitting: false },
       message: ''
     }
   },
   computed: {
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.calendarRequestsLoading || this.staffLoading || this.profileSaving || this.inviteSaving
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.calendarRequestsLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.passwordDialog.submitting
     },
     dashboardViewModel() {
       return createDashboardViewModel(this.dashboard)
@@ -122,7 +124,8 @@ export default {
   watch: {
     detailUser: 'syncDrawerBodyLock',
     reportDetail: 'syncDrawerBodyLock',
-    logDetail: 'syncDrawerBodyLock'
+    logDetail: 'syncDrawerBodyLock',
+    'passwordDialog.visible': 'clearPasswordDialog'
   },
   async mounted() {
     document.addEventListener('visibilitychange', this.handleVisibilityChange)

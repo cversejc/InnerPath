@@ -1,4 +1,4 @@
-import apiClient from '../../utils/apiClient'
+import apiClient from '../../utils/apiClient.js'
 
 export async function getAdminUsers(params = {}) {
   const response = await apiClient.get('/admin/users', { params })

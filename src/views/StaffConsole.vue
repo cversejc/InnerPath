@@ -127,7 +127,7 @@
       <p class="mobile-form-dialog__copy">关闭后用户会在申请中心看到原因，当前处理结果不会继续流转。</p>
       <VanField
         v-model.trim="rejectDialog.reason"
-        class="mobile-form-dialog__field"
+        class="mobile-form-dialog__field mobile-form-dialog__field--textarea"
         label="关闭原因"
         type="textarea"
         rows="3"

@@ -198,6 +198,49 @@
         @set-user-panel-tab="setUserPanelTab"
       />
     </main>
+
+    <VanDialog
+      v-model:show="passwordDialog.visible"
+      class="mobile-form-dialog"
+      title="重置用户密码"
+      :close-on-click-overlay="false"
+      :keyboard-enabled="!passwordDialog.submitting"
+      :show-confirm-button="false"
+    >
+      <p class="mobile-form-dialog__copy">
+        为 <strong>{{ passwordDialog.user?.name }}</strong> 设置新密码，提交后该用户的原会话会立即失效。
+      </p>
+      <VanField
+        v-model="passwordDialog.password"
+        class="mobile-form-dialog__field"
+        label="新密码"
+        :type="passwordDialog.showPassword ? 'text' : 'password'"
+        :right-icon="passwordDialog.showPassword ? 'closed-eye' : 'eye-o'"
+        :maxlength="64"
+        autocomplete="new-password"
+        placeholder="至少 8 位"
+        :disabled="passwordDialog.submitting"
+        :error-message="passwordDialog.error"
+        @update:model-value="passwordDialog.error = ''"
+        @click-right-icon="passwordDialog.showPassword = !passwordDialog.showPassword"
+      />
+      <template #footer>
+        <div class="mobile-form-dialog__footer">
+          <VanButton block plain native-type="button" :disabled="passwordDialog.submitting" @click="passwordDialog.visible = false">取消</VanButton>
+          <VanButton
+            block
+            type="primary"
+            native-type="button"
+            :disabled="passwordDialog.submitting || passwordDialog.password.length < 8"
+            :loading="passwordDialog.submitting"
+            loading-text="重置中…"
+            @click="submitPasswordReset"
+          >
+            确认重置
+          </VanButton>
+        </div>
+      </template>
+    </VanDialog>
   </div>
 </template>
 
