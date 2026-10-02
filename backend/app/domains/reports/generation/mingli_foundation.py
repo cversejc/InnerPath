@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from app.services.bazi_calculator import bazi_calculator
+from .bazi_calculator import bazi_calculator
 
 def calculate_bazi_from_user_data(user_data: Dict[str, Any]) -> Dict[str, Any]:
     """

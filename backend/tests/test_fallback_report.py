@@ -1,4 +1,4 @@
-from app.services.fallback_report import generate_basic_report
+from app.domains.reports.generation.fallback_report import generate_basic_report
 
 
 def test_basic_report_is_deterministic_and_includes_selected_topics():

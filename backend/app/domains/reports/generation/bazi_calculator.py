@@ -6,7 +6,6 @@ from typing import Dict, Any, Optional
 from lunar_python import Lunar, Solar
 from datetime import datetime
 import sys
-import os
 
 # Mock streamlit for ziwei calculation
 class MockStreamlit:
@@ -18,8 +17,6 @@ class MockStreamlit:
 
 sys.modules['streamlit'] = MockStreamlit()
 
-# Import ziwei calculator
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from tools.ziwei.ziwei import compute_ziwei_chart
 
 

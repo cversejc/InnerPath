@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict
 
-from app.services.intake_prompt_context import (
+from .intake_prompt_context import (
     context_for_prompt,
     profile_context_for_prompt,
 )

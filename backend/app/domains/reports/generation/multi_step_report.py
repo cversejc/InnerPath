@@ -4,13 +4,13 @@ from typing import Any, Dict
 
 from app.config import settings
 from app.core.logging_config import get_logger
-from app.services.mingli_foundation import calculate_mingli_foundation
-from app.services.multi_step_report_parser import MultiStepReportParser
-from app.services.multi_step_report_prompts import MultiStepReportPrompts
-from app.services.multi_step_report_sections import MultiStepReportSections
-from app.services.report_response_parser import extract_chat_content
+from .mingli_foundation import calculate_mingli_foundation
+from .multi_step_report_parser import MultiStepReportParser
+from .multi_step_report_prompts import MultiStepReportPrompts
+from .multi_step_report_sections import MultiStepReportSections
+from .report_response_parser import extract_chat_content
 
-logger = get_logger("app.services.ai_service")
+logger = get_logger(__name__)
 
 class MultiStepReportGenerator(
     MultiStepReportPrompts,

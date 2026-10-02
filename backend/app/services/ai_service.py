@@ -3,8 +3,8 @@ from typing import Any, Dict
 
 from app.core.logging_config import get_logger, log_external_api
 from app.services.intake_service import flatten_snapshot_for_ai
-from app.services.multi_step_report import MultiStepReportGenerator
-from app.services.single_step_report import generate_report_single_step
+from app.domains.reports.generation.multi_step_report import MultiStepReportGenerator
+from app.domains.reports.generation.single_step_report import generate_report_single_step
 
 logger = get_logger(__name__)
 

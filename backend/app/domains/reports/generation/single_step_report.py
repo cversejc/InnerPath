@@ -4,12 +4,12 @@ import httpx
 
 from app.config import settings
 from app.core.logging_config import get_logger
-from app.services.fallback_report import generate_basic_report
-from app.services.mingli_foundation import calculate_mingli_foundation
-from app.services.report_prompt import SYSTEM_PROMPT, build_prompt
-from app.services.report_response_parser import extract_chat_content, parse_ai_response
+from .fallback_report import generate_basic_report
+from .mingli_foundation import calculate_mingli_foundation
+from .report_prompt import SYSTEM_PROMPT, build_prompt
+from .report_response_parser import extract_chat_content, parse_ai_response
 
-logger = get_logger("app.services.ai_service")
+logger = get_logger(__name__)
 
 
 async def generate_report_single_step(user_data: Dict[str, Any]) -> Dict[str, Any]:

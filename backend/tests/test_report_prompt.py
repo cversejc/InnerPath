@@ -8,7 +8,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from app.services.report_prompt import build_prompt
+from app.domains.reports.generation.report_prompt import build_prompt
 
 
 def test_build_prompt_requires_deterministic_foundation():

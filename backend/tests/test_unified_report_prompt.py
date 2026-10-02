@@ -1,4 +1,4 @@
-from app.services.report_prompt import build_prompt
+from app.domains.reports.generation.report_prompt import build_prompt
 
 
 def test_prompt_uses_current_context_and_never_includes_phone():

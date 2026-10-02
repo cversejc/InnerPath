@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 from app.core.logging_config import get_logger
 
-logger = get_logger("app.services.ai_service")
+logger = get_logger(__name__)
 
 
 def parse_topic_sections(content: str) -> List[Dict[str, Any]]:

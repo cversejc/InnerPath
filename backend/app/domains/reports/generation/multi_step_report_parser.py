@@ -2,9 +2,9 @@ import re
 from typing import Any, Dict
 
 from app.core.logging_config import get_logger
-from app.services.multi_step_report_topic_parser import parse_topic_sections
+from .multi_step_report_topic_parser import parse_topic_sections
 
-logger = get_logger("app.services.ai_service")
+logger = get_logger(__name__)
 
 
 class MultiStepReportParser:

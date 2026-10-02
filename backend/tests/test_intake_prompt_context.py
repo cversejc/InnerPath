@@ -1,4 +1,4 @@
-from app.services.intake_prompt_context import (
+from app.domains.reports.generation.intake_prompt_context import (
     context_for_prompt,
     profile_context_for_prompt,
 )

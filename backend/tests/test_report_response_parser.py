@@ -1,6 +1,6 @@
 import pytest
 
-from app.services.report_response_parser import (
+from app.domains.reports.generation.report_response_parser import (
     extract_chat_content,
     parse_ai_response,
 )

@@ -1,4 +1,4 @@
-from app.services.multi_step_report_parser import MultiStepReportParser
+from app.domains.reports.generation.multi_step_report_parser import MultiStepReportParser
 
 
 def test_structured_parser_extracts_topic_sections_actions_and_summary():

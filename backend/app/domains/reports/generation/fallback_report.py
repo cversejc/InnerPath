@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from app.core.logging_config import get_logger
 
-logger = get_logger("app.services.ai_service")
+logger = get_logger(__name__)
 
 
 def generate_basic_report(user_data: Dict[str, Any]) -> Dict[str, Any]:
