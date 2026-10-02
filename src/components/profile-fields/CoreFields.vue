@@ -1,6 +1,13 @@
 <script setup>
 import { toRefs } from 'vue'
-import { Button as VanButton } from 'vant'
+import {
+  Cell as VanCell,
+  CellGroup as VanCellGroup,
+  Field as VanField,
+  Radio as VanRadio,
+  RadioGroup as VanRadioGroup
+} from 'vant'
+import BirthDateField from './BirthDateField.vue'
 
 const props = defineProps({
   profile: { type: Object, required: true },
@@ -11,7 +18,7 @@ const props = defineProps({
   timeOptions: { type: Array, default: () => [] }
 })
 const { profile, errors, idPrefix, genderOptions, calendarOptions, timeOptions } = toRefs(props)
-const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precision'])
+const emit = defineEmits(['set-field', 'set-number-field', 'set-birth-date', 'select-time-precision'])
 </script>
 
 <template>
@@ -27,165 +34,146 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
     <div class="profile-field-stack">
       <div class="profile-field">
         <label class="profile-label" :for="idPrefix + '-name'">称呼 <span class="required">*</span></label>
-        <input
+        <VanField
           :id="idPrefix + '-name'"
-          class="profile-input"
-          :value="profile.name || ''"
+          class="profile-van-field"
+          :model-value="profile.name || ''"
+          name="name"
           type="text"
           maxlength="50"
           autocomplete="name"
           placeholder="希望我们如何称呼你"
-          :aria-invalid="Boolean(errors.name)"
-          :aria-describedby="errors.name ? idPrefix + '-name-error' : undefined"
-          @input="emit('set-field', 'name', $event.target.value)"
-        >
+          :border="false"
+          :error="Boolean(errors.name)"
+          @update:model-value="emit('set-field', 'name', $event)"
+        />
         <p v-if="errors.name" :id="idPrefix + '-name-error'" class="profile-error" role="alert">{{ errors.name }}</p>
       </div>
 
       <fieldset class="profile-field profile-choice-fieldset" :aria-describedby="errors.gender ? idPrefix + '-gender-error' : undefined">
         <legend class="profile-label">性别 <span class="required">*</span></legend>
-        <div class="profile-choice-grid two">
-          <VanButton
-            v-for="option in genderOptions"
-            :key="option.value"
-            native-type="button"
-            plain
-            class="profile-choice-card"
-            :class="{ selected: profile.gender === option.value }"
-            :aria-pressed="profile.gender === option.value"
-            :aria-describedby="errors.gender ? idPrefix + '-gender-error' : undefined"
-            @click="emit('set-field', 'gender', option.value)"
-          >
-            <span class="profile-choice-mark">{{ option.mark }}</span>
-            <strong>{{ option.label }}</strong>
-          </VanButton>
-        </div>
+        <VanRadioGroup
+          :model-value="profile.gender"
+          class="profile-option-group"
+          aria-label="性别"
+          icon-size="18px"
+          :aria-describedby="errors.gender ? idPrefix + '-gender-error' : undefined"
+          @update:model-value="emit('set-field', 'gender', $event)"
+        >
+          <VanCellGroup inset class="profile-option-cells">
+            <VanCell
+              v-for="option in genderOptions"
+              :key="option.value"
+              :class="{ selected: profile.gender === option.value }"
+              :title="option.label"
+              clickable
+              @click="emit('set-field', 'gender', option.value)"
+            >
+              <template #icon>
+                <span class="profile-cell-mark">{{ option.mark }}</span>
+              </template>
+              <template #right-icon>
+                <VanRadio :name="option.value" shape="dot" @click.stop />
+              </template>
+            </VanCell>
+          </VanCellGroup>
+        </VanRadioGroup>
         <p v-if="errors.gender" :id="idPrefix + '-gender-error'" class="profile-error" role="alert">{{ errors.gender }}</p>
       </fieldset>
 
       <fieldset class="profile-field profile-choice-fieldset" :aria-describedby="errors.calendar_type ? idPrefix + '-calendar-type-error' : undefined">
         <legend class="profile-label">历法类型 <span class="required">*</span></legend>
-        <div class="profile-choice-grid two">
-          <VanButton
-            v-for="option in calendarOptions"
-            :key="option.value"
-            native-type="button"
-            plain
-            class="profile-choice-card horizontal"
-            :class="{ selected: profile.calendar_type === option.value }"
-            :aria-pressed="profile.calendar_type === option.value"
-            @click="emit('set-field', 'calendar_type', option.value)"
-          >
-            <span class="profile-choice-mark">{{ option.mark }}</span>
-            <span>
-              <strong>{{ option.label }}</strong>
-              <small>{{ option.hint }}</small>
-            </span>
-          </VanButton>
-        </div>
+        <VanRadioGroup
+          :model-value="profile.calendar_type"
+          class="profile-option-group"
+          aria-label="历法类型"
+          icon-size="18px"
+          :aria-describedby="errors.calendar_type ? idPrefix + '-calendar-type-error' : undefined"
+          @update:model-value="emit('set-field', 'calendar_type', $event)"
+        >
+          <VanCellGroup inset class="profile-option-cells">
+            <VanCell
+              v-for="option in calendarOptions"
+              :key="option.value"
+              :class="{ selected: profile.calendar_type === option.value }"
+              :title="option.label"
+              :label="option.hint"
+              clickable
+              @click="emit('set-field', 'calendar_type', option.value)"
+            >
+              <template #icon>
+                <span class="profile-cell-mark">{{ option.mark }}</span>
+              </template>
+              <template #right-icon>
+                <VanRadio :name="option.value" shape="dot" @click.stop />
+              </template>
+            </VanCell>
+          </VanCellGroup>
+        </VanRadioGroup>
         <p v-if="errors.calendar_type" :id="idPrefix + '-calendar-type-error'" class="profile-error" role="alert">{{ errors.calendar_type }}</p>
       </fieldset>
 
-      <div class="profile-field">
-        <span class="profile-label">出生日期 <span class="required">*</span></span>
-        <div class="profile-date-grid">
-          <label :for="idPrefix + '-birth-year'">
-            <input
-              :id="idPrefix + '-birth-year'"
-              class="profile-input"
-              :value="profile.birth_year || ''"
-              type="tel"
-              inputmode="numeric"
-              maxlength="4"
-              placeholder="1990"
-              :aria-invalid="Boolean(errors.birth_date)"
-              :aria-describedby="errors.birth_date ? idPrefix + '-birth-date-error' : undefined"
-              @input="emit('set-number-field', 'birth_year', $event.target.value, 4)"
-            >
-            <span>年</span>
-          </label>
-          <label :for="idPrefix + '-birth-month'">
-            <input
-              :id="idPrefix + '-birth-month'"
-              class="profile-input"
-              :value="profile.birth_month || ''"
-              type="tel"
-              inputmode="numeric"
-              maxlength="2"
-              placeholder="01"
-              :aria-invalid="Boolean(errors.birth_date)"
-              :aria-describedby="errors.birth_date ? idPrefix + '-birth-date-error' : undefined"
-              @input="emit('set-number-field', 'birth_month', $event.target.value, 2)"
-            >
-            <span>月</span>
-          </label>
-          <label :for="idPrefix + '-birth-day'">
-            <input
-              :id="idPrefix + '-birth-day'"
-              class="profile-input"
-              :value="profile.birth_day || ''"
-              type="tel"
-              inputmode="numeric"
-              maxlength="2"
-              placeholder="01"
-              :aria-invalid="Boolean(errors.birth_date)"
-              :aria-describedby="errors.birth_date ? idPrefix + '-birth-date-error' : undefined"
-              @input="emit('set-number-field', 'birth_day', $event.target.value, 2)"
-            >
-            <span>日</span>
-          </label>
-        </div>
-        <p class="profile-hint">按上方选择的历法填写，年龄会由出生日期自动计算</p>
-        <p v-if="errors.birth_date" :id="idPrefix + '-birth-date-error'" class="profile-error" role="alert">{{ errors.birth_date }}</p>
-      </div>
+      <BirthDateField
+        :profile="profile"
+        :errors="errors"
+        :id-prefix="idPrefix"
+        @set-birth-date="emit('set-birth-date', $event)"
+      />
 
       <fieldset class="profile-field profile-choice-fieldset" :aria-describedby="errors.birth_time_precision || errors.birth_time ? idPrefix + '-birth-time-error' : undefined">
         <legend class="profile-label">出生时间准确度 <span class="required">*</span></legend>
-          <p class="profile-hint">不知道也可以跳过；有省 / 市级出生地时，分析更容易做真太阳时校正</p>
-        <div class="profile-choice-grid three">
-          <VanButton
+        <p class="profile-hint">不知道也可以跳过；有省 / 市级出生地时，分析更容易做真太阳时校正</p>
+        <VanRadioGroup
+          :model-value="profile.birth_time_precision"
+          class="profile-segmented"
+          aria-label="出生时间准确度"
+          direction="horizontal"
+          icon-size="18px"
+          :aria-describedby="errors.birth_time_precision || errors.birth_time ? idPrefix + '-birth-time-error' : undefined"
+          @update:model-value="emit('select-time-precision', $event)"
+        >
+          <VanRadio
             v-for="option in timeOptions"
             :key="option.value"
-            native-type="button"
-            plain
-            class="profile-choice-card compact"
+            :name="option.value"
             :class="{ selected: profile.birth_time_precision === option.value }"
-            :aria-pressed="profile.birth_time_precision === option.value"
+            shape="dot"
             :aria-describedby="errors.birth_time_precision || errors.birth_time ? idPrefix + '-birth-time-error' : undefined"
-            @click="emit('select-time-precision', option.value)"
-          >{{ option.label }}</VanButton>
-        </div>
+          >{{ option.label }}</VanRadio>
+        </VanRadioGroup>
         <div v-if="profile.birth_time_precision !== 'unknown'" class="profile-time-grid">
           <label :for="idPrefix + '-birth-hour'">
             <span>小时</span>
-            <input
+            <VanField
               :id="idPrefix + '-birth-hour'"
-              class="profile-input"
-              :value="profile.birth_hour ?? ''"
-              type="tel"
+              class="profile-van-field"
+              :model-value="profile.birth_hour ?? ''"
+              name="birth_hour"
+              type="digit"
               inputmode="numeric"
               maxlength="2"
               placeholder="08"
-              :aria-invalid="Boolean(errors.birth_time)"
-              :aria-describedby="errors.birth_time ? idPrefix + '-birth-time-error' : undefined"
-              @input="emit('set-number-field', 'birth_hour', $event.target.value, 2)"
-            >
+              :border="false"
+              :error="Boolean(errors.birth_time)"
+              @update:model-value="emit('set-number-field', 'birth_hour', $event, 2)"
+            />
           </label>
           <span class="time-separator">:</span>
           <label :for="idPrefix + '-birth-minute'">
             <span>分钟</span>
-            <input
+            <VanField
               :id="idPrefix + '-birth-minute'"
-              class="profile-input"
-              :value="profile.birth_minute ?? ''"
-              type="tel"
+              class="profile-van-field"
+              :model-value="profile.birth_minute ?? ''"
+              name="birth_minute"
+              type="digit"
               inputmode="numeric"
               maxlength="2"
               placeholder="30"
-              :aria-invalid="Boolean(errors.birth_time)"
-              :aria-describedby="errors.birth_time ? idPrefix + '-birth-time-error' : undefined"
-              @input="emit('set-number-field', 'birth_minute', $event.target.value, 2)"
-            >
+              :border="false"
+              :error="Boolean(errors.birth_time)"
+              @update:model-value="emit('set-number-field', 'birth_minute', $event, 2)"
+            />
           </label>
         </div>
         <p v-if="errors.birth_time_precision || errors.birth_time" :id="idPrefix + '-birth-time-error'" class="profile-error" role="alert">{{ errors.birth_time_precision || errors.birth_time }}</p>
@@ -193,16 +181,18 @@ const emit = defineEmits(['set-field', 'set-number-field', 'select-time-precisio
 
       <div class="profile-field">
         <label class="profile-label" :for="idPrefix + '-birth-place'">出生地 <span class="recommended">建议填写</span></label>
-        <input
+        <VanField
           :id="idPrefix + '-birth-place'"
-          class="profile-input"
-          :value="profile.birth_place || ''"
+          class="profile-van-field"
+          :model-value="profile.birth_place || ''"
+          name="birth_place"
           type="text"
           maxlength="100"
           autocomplete="address-level2"
           placeholder="如：广东省广州市"
-          @input="emit('set-field', 'birth_place', $event.target.value)"
-        >
+          :border="false"
+          @update:model-value="emit('set-field', 'birth_place', $event)"
+        />
         <p class="profile-hint">建议填写到省 / 市；无法提供时仍可继续，但分析精度可能受影响</p>
       </div>
     </div>

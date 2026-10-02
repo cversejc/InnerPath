@@ -9,6 +9,7 @@
       :time-options="timeOptions"
       @set-field="setField"
       @set-number-field="setNumberField"
+      @set-birth-date="setBirthDate"
       @select-time-precision="selectTimePrecision"
     />
 

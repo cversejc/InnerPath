@@ -52,6 +52,14 @@ export default {
       const digits = String(value || '').replace(/\D/g, '').slice(0, maxLength)
       this.setField(field, digits === '' ? null : Number(digits))
     },
+    setBirthDate({ year, month, day }) {
+      this.emitProfile({
+        ...this.profile,
+        birth_year: year,
+        birth_month: month,
+        birth_day: day
+      })
+    },
     selectTimePrecision(value) {
       const nextProfile = { ...this.profile, birth_time_precision: value }
       if (value === 'unknown') {

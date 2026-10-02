@@ -1,22 +1,11 @@
-.profile-date-grid {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 10px;
-}
-
-.profile-date-grid label,
 .profile-time-grid label {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   align-items: center;
-  gap: 7px;
+  gap: 4px;
   min-width: 0;
   color: var(--muted);
   font-size: 13px;
-}
-
-.profile-date-grid .profile-input {
-  min-width: 0;
 }
 
 .profile-time-grid {
@@ -27,29 +16,60 @@
   gap: 8px;
 }
 
-.profile-time-grid label {
-  grid-template-columns: 1fr;
-  gap: 4px;
-}
-
 .time-separator {
   padding-bottom: 12px;
   color: var(--muted);
   font-size: 20px;
 }
 
+.profile-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(139, 90, 20, .14);
+  border-radius: 12px;
+  background: rgba(139, 90, 20, .055);
+  --van-radio-checked-icon-color: var(--cinnabar);
+}
+
+.profile-segmented :deep(.van-radio) {
+  min-width: 0;
+  min-height: 40px;
+  justify-content: center;
+  gap: 0;
+  margin: 0;
+  border-radius: 9px;
+  padding: 0 5px;
+  transition: background-color .2s ease, box-shadow .2s ease, color .2s ease;
+}
+
+.profile-segmented :deep(.van-radio__icon) {
+  margin-right: 0;
+}
+
+.profile-segmented :deep(.van-radio__label) {
+  margin-left: 5px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.profile-segmented :deep(.van-radio.selected) {
+  background: rgba(255, 252, 245, .96);
+  color: var(--cinnabar-deep);
+  box-shadow: 0 4px 12px -10px rgba(84, 48, 25, .72), inset 0 0 0 1px rgba(184, 92, 80, .18);
+}
+
+.profile-segmented :deep(.van-radio.selected .van-radio__label) {
+  color: var(--cinnabar-deep);
+}
+
 @media (max-width: 640px) {
-  .profile-date-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .profile-date-grid label {
-    grid-template-columns: 1fr;
-    justify-items: stretch;
-    gap: 4px;
-  }
-
-  .profile-date-grid label > span {
-    text-align: center;
+  .profile-segmented :deep(.van-radio__label) {
+    margin-left: 4px;
+    font-size: 11.5px;
   }
 }
