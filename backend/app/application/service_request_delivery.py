@@ -24,6 +24,8 @@ from app.domains.service_requests.repository import (
     _get_request_for_update,
 )
 from app.domains.service_requests.staff import staff_can_access
+from app.application.report_delivery import deliver_report_case
+from app.domains.workflow.models import ReportCase
 
 
 async def _create_final_report(
@@ -144,6 +146,21 @@ async def deliver_service_request(
         raise ValueError("service_request_not_found")
     if locked.status == "delivered":
         return locked
+    if locked.service_type == "report":
+        report_case = await db.scalar(
+            select(ReportCase)
+            .where(ReportCase.service_request_id == locked.id)
+            .with_for_update()
+        )
+        if report_case is not None:
+            await deliver_report_case(
+                db,
+                report_case=report_case,
+                actor=actor,
+                audit_context=audit_context,
+            )
+            await db.refresh(locked)
+            return locked
     draft = await _get_draft(db, locked.id)
     if draft is None:
         raise ValueError("service_request_draft_not_found")

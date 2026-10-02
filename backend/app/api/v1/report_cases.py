@@ -15,6 +15,15 @@ from app.application.workflow_commands import (
     start_case_step,
 )
 from app.application.skill_runtime import queue_case_authoring_skill_run
+from app.application.report_quality import (
+    close_case_qa_issue,
+    queue_case_quality_run,
+    quality_state,
+)
+from app.application.report_delivery import (
+    approve_case_final_gate,
+    deliver_report_case,
+)
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.domains.content.models import (
@@ -41,6 +50,15 @@ from app.domains.content.service import (
 )
 from app.domains.content.findings import current_finding
 from app.domains.content.narrative import confirm_narrative_plan, get_current_narrative_plan
+from app.domains.delivery.models import ReportVersion
+from app.domains.delivery.schemas import ReportVersionResponse
+from app.domains.quality.schemas import (
+    FinalGateApproval,
+    QAIssueResolution,
+    QAIssueResponse,
+    QualityRunRequest,
+    ReportQualityResponse,
+)
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.workflow.models import (
     ReportCase,
@@ -77,6 +95,7 @@ def _workflow_error(error: ValueError) -> None:
         "case_evidence_not_found",
         "finding_not_found",
         "fragment_not_found",
+        "qa_issue_not_found",
     }:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
     if code in {
@@ -98,13 +117,23 @@ def _workflow_error(error: ValueError) -> None:
         "narrative_plan_confirmation_required",
         "narrative_step_not_in_review",
         "narrative_skill_unavailable",
+        "final_gate_approval_required",
+        "final_qa_not_complete",
+        "final_qa_issues_open_or_stale",
+        "workflow_not_ready_to_deliver",
+        "workflow_not_complete",
+        "report_fragments_required",
+        "report_profile_snapshot_invalid",
+        "qa_block_cannot_be_accepted",
+        "qa_issue_already_closed",
+        "validator_run_in_progress",
     }:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=code)
     if code == "report_case_forbidden":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
-    if code.startswith(("workflow_", "step_", "narrative_", "report_fragment_", "fragment_narrative_")):
+    if code.startswith(("workflow_", "step_", "narrative_", "report_fragment_", "fragment_narrative_", "final_qa_", "qa_")):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
         )
@@ -346,6 +375,136 @@ async def get_report_case_content(
 ):
     await _case_for_read_or_action(db, case_id, current_user, action=True)
     return await _serialize_case_content(db, case_id)
+
+
+@router.get("/{case_id}/quality", response_model=ReportQualityResponse)
+async def get_report_case_quality(
+    case_id: int,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    report_case = await _case_for_read_or_action(db, case_id, current_user, action=True)
+    return await quality_state(db, report_case)
+
+
+@router.post(
+    "/{case_id}/quality/run",
+    response_model=ReportQualityResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def run_report_case_quality(
+    case_id: int,
+    data: QualityRunRequest,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _authorize_step_action(
+        db, case_id, "S6", current_user, require_current_review=True
+    )
+    report_case = await _case_for_read_or_action(db, case_id, current_user, action=True)
+    try:
+        await queue_case_quality_run(
+            db,
+            report_case=report_case,
+            actor_id=current_user.id,
+            idempotency_key=data.idempotency_key,
+        )
+        await db.commit()
+        return await quality_state(db, report_case)
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/quality/issues/{issue_id}/resolve",
+    response_model=QAIssueResponse,
+)
+async def resolve_report_case_quality_issue(
+    case_id: int,
+    issue_id: int,
+    data: QAIssueResolution,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _authorize_step_action(
+        db, case_id, "S6", current_user, require_current_review=True
+    )
+    try:
+        issue = await close_case_qa_issue(
+            db,
+            report_case_id=case_id,
+            issue_id=issue_id,
+            status=data.status,
+            resolution=data.resolution,
+            actor_id=current_user.id,
+        )
+        await db.commit()
+        await db.refresh(issue)
+        return issue
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post("/{case_id}/final-gate/approve", response_model=StepTaskResponse)
+async def approve_report_case_final_gate(
+    case_id: int,
+    data: FinalGateApproval,
+    request: Request,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    if not data.attested:
+        raise HTTPException(status_code=422, detail="final_gate_attestation_required")
+    report_case, _step = await _authorize_step_action(
+        db, case_id, "S6", current_user, require_current_review=True
+    )
+    try:
+        return await approve_case_final_gate(
+            db,
+            report_case=report_case,
+            actor=current_user,
+            note=data.note,
+            audit_context=audit_context_from_request(request),
+        )
+    except ValueError as error:
+        _workflow_error(error)
+
+
+@router.post("/{case_id}/deliver", response_model=ReportVersionResponse)
+async def deliver_report_case_endpoint(
+    case_id: int,
+    request: Request,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    report_case = await _case_for_read_or_action(db, case_id, current_user, action=True)
+    try:
+        return await deliver_report_case(
+            db,
+            report_case=report_case,
+            actor=current_user,
+            audit_context=audit_context_from_request(request),
+        )
+    except ValueError as error:
+        _workflow_error(error)
+
+
+@router.get("/{case_id}/versions", response_model=list[ReportVersionResponse])
+async def list_report_case_versions(
+    case_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await _case_for_read_or_action(db, case_id, current_user)
+    return list(
+        await db.scalars(
+            select(ReportVersion)
+            .where(ReportVersion.report_case_id == case_id)
+            .order_by(ReportVersion.version_no.desc())
+        )
+    )
 
 
 @router.get("/{case_id}/narrative", response_model=NarrativeStateResponse)

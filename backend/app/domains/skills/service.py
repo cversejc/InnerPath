@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .definitions import (
     DEFAULT_SKILL_KEY,
+    default_validator_skill_specification,
     default_narrative_skill_specifications,
     default_skill_specification,
     validate_skill_specification,
@@ -190,6 +191,49 @@ async def ensure_default_narrative_skill_versions(
                 raise
             ensured.append(existing)
     return ensured
+
+
+async def ensure_default_validator_skill_version(db: AsyncSession) -> AISkillVersion:
+    skill_key = "report.final_validator"
+    existing = await db.scalar(
+        select(AISkillVersion).where(
+            AISkillVersion.skill_key == skill_key,
+            AISkillVersion.version == 1,
+        )
+    )
+    if existing:
+        if existing.status != "PUBLISHED":
+            raise ValueError("default_validator_skill_not_published")
+        return existing
+    spec = default_validator_skill_specification()
+    now = _now()
+    version = AISkillVersion(
+        skill_key=skill_key,
+        name=spec["identity"]["name"],
+        category="VALIDATOR",
+        version=1,
+        status="PUBLISHED",
+        specification_json=spec,
+        created_by=None,
+        published_by=None,
+        created_at=now,
+        published_at=now,
+    )
+    try:
+        async with db.begin_nested():
+            db.add(version)
+            await db.flush()
+        return version
+    except IntegrityError:
+        existing = await db.scalar(
+            select(AISkillVersion).where(
+                AISkillVersion.skill_key == skill_key,
+                AISkillVersion.version == 1,
+            )
+        )
+        if existing is None or existing.status != "PUBLISHED":
+            raise
+        return existing
 
 
 async def create_skill_run(

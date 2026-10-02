@@ -30,6 +30,8 @@ from app.domains.content.models import (
     FindingRevision,
     NarrativePlan,
 )
+from app.domains.quality.models import QAIssue
+from app.domains.delivery.models import ReportVersion
 
 # this is the Alembic Config object
 config = context.config

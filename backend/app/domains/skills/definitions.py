@@ -15,6 +15,7 @@ ALLOWED_PROCESSORS = {
     "reports.single_step",
     "reports.narrative_candidates",
     "reports.fragment_authoring",
+    "reports.validator",
 }
 ALLOWED_TOOLS = {"reports.calculate_mingli_foundation"}
 
@@ -313,3 +314,45 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         },
     }
     return [validate_skill_specification(candidates), validate_skill_specification(authoring)]
+
+
+def default_validator_skill_specification() -> dict[str, Any]:
+    spec = deepcopy(DEFAULT_SKILL_SPECIFICATION)
+    spec["identity"] = {
+        "skill_key": "report.final_validator",
+        "name": "报告语义质量审核",
+        "description": "检查已组装报告的事实忠实度、安全、语义一致性、叙事和行动质量，并给出可定位的问题。",
+    }
+    spec["input_contract"] = {"required": [], "type": "object"}
+    spec["context_policy"] = {
+        "required": ["qa_input"],
+        "optional": [],
+        "forbidden": ["internal_chain_of_thought", "other_users"],
+        "projection": "SELECT_FIELDS",
+        "fields": ["profile", "context"],
+        "profile_fields": ["name"],
+        "context_fields": ["qa_input"],
+    }
+    spec["instructions"] = {
+        "objective": "检查报告内容是否忠实于已确认的 Finding 和用户提供情境，并评估安全、跨章节一致性、叙事质量、行动质量和个性化。",
+        "methodology": [
+            "只报告有明确片段和证据的可修复问题，不重写报告。",
+            "不得根据命理或心理内容作诊断或确定性预测。",
+            "问题必须包含 issue_type、severity、message、evidence 和 suggestion；片段无法定位时 target_fragment_key 返回 null。",
+            "severity 只能为 BLOCK、MAJOR 或 MINOR。无问题时返回空 issues。",
+            "只输出严格 JSON。",
+        ],
+    }
+    spec["tool_policy"] = {"allowed": []}
+    spec["processor_policy"] = {"processor": "reports.validator"}
+    spec["output_contract"] = {
+        "type": "object",
+        "required": ["issues"],
+        "properties": {"issues": {"type": "array"}},
+    }
+    spec["guardrails"]["blocked_phrases"] = []
+    spec["evaluation_profile"] = {
+        "metrics": ["fact_fidelity", "semantic_consistency", "safety", "narrative", "action", "personalization"],
+        "minimum_score": 0.8,
+    }
+    return validate_skill_specification(spec)

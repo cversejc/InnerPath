@@ -94,6 +94,20 @@
 .danger-text { color: var(--cinnabar-deep, #9e3f35); }
 .task-error { margin-top: 16px; border-radius: 9px; padding: 12px 14px; background: rgba(158, 63, 53, .09); color: var(--cinnabar-deep, #9e3f35) !important; }
 .report-case-workspace { display: grid; gap: 14px; margin: 14px 0 20px; border-top: 1px solid rgba(80, 54, 32, .12); padding-top: 18px; }
+.quality-panel { display: grid; gap: 12px; }
+.quality-status-row, .final-gate-controls { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+.quality-status-row > span, .quality-issue small { color: var(--muted, #7d6653); font-size: 12px; }
+.quality-issue { border-top: 1px solid rgba(80, 54, 32, .1); padding: 14px 0; }
+.quality-issue-open { border-left: 3px solid var(--cinnabar, #b85c50); padding-left: 12px; }
+.quality-issue > p { margin: 8px 0; line-height: 1.65; }
+.quality-resolution-form { display: grid; gap: 10px; max-width: 720px; margin-top: 12px; }
+.quality-resolution-form label { display: grid; gap: 6px; color: var(--ink-soft, #51463d); font-size: 13px; font-weight: var(--weight-semibold); }
+.quality-resolution-form select, .quality-resolution-form textarea { width: 100%; border: 1px solid rgba(80, 54, 32, .16); border-radius: 8px; background: #fffaf0; padding: 9px 10px; color: var(--ink, #3b2d24); font: inherit; }
+.quality-resolution-form textarea { resize: vertical; }
+.final-gate-controls { border-top: 1px solid rgba(80, 54, 32, .1); padding-top: 14px; }
+.final-gate-controls label { display: flex; align-items: flex-start; gap: 8px; max-width: 720px; color: var(--ink-soft, #51463d); line-height: 1.55; }
+.final-gate-controls input { margin-top: 4px; accent-color: var(--jade-deep, #356b59); }
+.quality-clear-state { margin: 4px 0; color: var(--jade-deep, #356b59); line-height: 1.6; }
 .report-case-heading { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 .report-case-heading h3 { margin: 0; color: var(--ink, #3b2d24); font-size: 21px; }
 .report-case-heading p:not(.eyebrow) { margin: 5px 0 0; color: var(--muted, #7d6653); font-size: 12px; }

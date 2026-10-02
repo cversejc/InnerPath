@@ -250,11 +250,12 @@ def _authoring_prompts(
     runtime_instruction: str | None,
 ) -> tuple[str, str]:
     processor = specification["processor_policy"]["processor"]
-    objective = (
-        "为咨询师生成 2 到 3 个叙事候选。候选中的 Finding 引用必须来自输入。"
-        if processor == "reports.narrative_candidates"
-        else "为指定章节生成一个有明确来源映射的报告片段。"
-    )
+    objectives = {
+        "reports.narrative_candidates": "为咨询师生成 2 到 3 个叙事候选。候选中的 Finding 引用必须来自输入。",
+        "reports.fragment_authoring": "为指定章节生成一个有明确来源映射的报告片段。",
+        "reports.validator": "审核最终报告中的事实忠实度、语义一致性、安全、叙事、行动和个性化，只输出可以定位和修复的问题。",
+    }
+    objective = objectives[processor]
     instructions = json.dumps(
         specification["instructions"], ensure_ascii=False, indent=2
     )
@@ -321,6 +322,24 @@ def _validate_authoring_output(
                     references.update(block.get("finding_refs") or [])
             if any(not isinstance(key, str) or key not in finding_keys for key in references):
                 raise ValueError("narrative_candidate_unsupported_finding")
+        return
+
+    if processor == "reports.validator":
+        issues = output.get("issues")
+        if not isinstance(issues, list) or len(issues) > 100:
+            raise ValueError("validator_issues_invalid")
+        for issue in issues:
+            if not isinstance(issue, dict):
+                raise ValueError("validator_issue_invalid")
+            if issue.get("severity") not in {"BLOCK", "MAJOR", "MINOR", "WARN", "SUGGESTION"}:
+                raise ValueError("validator_issue_severity_invalid")
+            for field in ("issue_type", "message", "evidence", "suggestion"):
+                value = issue.get(field)
+                if not isinstance(value, str) or not value.strip() or len(value) > 5000:
+                    raise ValueError("validator_issue_invalid")
+            target = issue.get("target_fragment_key")
+            if target is not None and (not isinstance(target, str) or len(target) > 200):
+                raise ValueError("validator_issue_target_invalid")
         return
 
     if output.get("status") not in {"READY_FOR_REVIEW", "MISSING_SEMANTIC_SUPPORT"}:
@@ -402,7 +421,7 @@ async def execute_skill(
     processor = specification["processor_policy"]["processor"]
     if processor == "reports.single_step" and "reports.calculate_mingli_foundation" not in specification["tool_policy"].get("allowed", []):
         raise ValueError("skill_required_tool_not_allowed")
-    if processor not in {"reports.single_step", "reports.narrative_candidates", "reports.fragment_authoring"}:
+    if processor not in {"reports.single_step", "reports.narrative_candidates", "reports.fragment_authoring", "reports.validator"}:
         raise ValueError("skill_processor_unsupported")
     profile = context.get("profile") or {}
     context_data = context.get("context") or {}

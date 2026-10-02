@@ -70,7 +70,7 @@
                     <VanButton v-if="currentReportStep.status === 'READY'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving" :loading="reportStepSaving" @click="startReportStep">开始审核</VanButton>
                     <template v-else-if="currentReportStep.status === 'IN_REVIEW'">
                       <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportStepSaving" @click="reportStepReturn.visible = !reportStepReturn.visible">退回上一步</VanButton>
-                      <VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving" :loading="reportStepSaving" @click="completeReportStep">完成步骤</VanButton>
+                      <VanButton v-if="currentReportStep.step_key !== 'S6'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving" :loading="reportStepSaving" @click="completeReportStep">完成步骤</VanButton>
                     </template>
                   </div>
                   <p v-else class="case-complete-state">工作流步骤已完成，等待后续质量审核与交付阶段。</p>
@@ -130,6 +130,43 @@
                     <p v-if="run.status === 'FAILED'" class="task-error">片段写作失败：{{ run.error || '请重试' }}</p>
                     <p v-else-if="run.output_parsed?.status === 'MISSING_SEMANTIC_SUPPORT'" class="stale-note">缺少语义支撑，AI 未补写结论。请回到 Finding / Analysis Fragment 审核。</p>
                   </div>
+                </section>
+
+                <section class="report-data-panel quality-panel" aria-label="最终质量审核">
+                  <div class="panel-heading">
+                    <div><p class="eyebrow">FINAL QA / DELIVERY</p><h3>最终质量审核</h3></div>
+                    <span>{{ reportQuality.open_count }} 项待处理 · {{ reportQuality.blocking_count }} 项阻断</span>
+                  </div>
+                  <div class="quality-status-row">
+                    <strong>审核状态：{{ reportQuality.quality_status }}</strong>
+                    <span v-if="reportQuality.latest_validator_run">Validator #{{ reportQuality.latest_validator_run.id }} · {{ reportQuality.latest_validator_run.status }}</span>
+                    <VanButton v-if="currentReportStep?.step_key === 'S6' && currentReportStep.status === 'IN_REVIEW'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportQualitySaving" :loading="reportQualitySaving" @click="runReportQuality">运行最终 QA</VanButton>
+                  </div>
+                  <p v-if="reportQuality.latest_validator_run?.status === 'FAILED'" class="task-error">语义审核运行失败：{{ reportQuality.latest_validator_run.error || '请检查 Skill Runtime 后重试。' }}</p>
+                  <p v-if="reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'" class="stale-note">程序检查发现阻断项；修订内容后重新运行 QA。</p>
+                  <article v-for="issue in reportQuality.issues" :key="issue.id" class="quality-issue" :class="{ 'quality-issue-open': issue.status === 'OPEN' }">
+                    <div class="asset-item-heading"><div><strong>{{ issue.issue_type }}</strong><span class="asset-status">{{ issue.severity }} · {{ issue.status }}</span></div><small>{{ issue.source_type }}<template v-if="issue.source_ref_id"> · Run #{{ issue.source_ref_id }}</template></small></div>
+                    <p>{{ issue.message }}</p>
+                    <p v-if="issue.target_fragment_key" class="asset-source">目标片段：{{ issue.target_fragment_key }}</p>
+                    <p v-if="issue.suggestion" class="asset-source">建议：{{ issue.suggestion }}</p>
+                    <details v-if="Object.keys(issue.evidence_json || {}).length" class="snapshot-details"><summary>查看审核证据</summary><pre>{{ pretty(issue.evidence_json) }}</pre></details>
+                    <div v-if="issue.status === 'OPEN' && currentReportStep?.step_key === 'S6' && currentReportStep.status === 'IN_REVIEW'" class="quality-resolution-form">
+                      <label>处理方式<select v-model="reportQualityIssueDrafts[issue.id].status"><option value="RESOLVED">已修复并关闭</option><option v-if="issue.severity !== 'BLOCK'" value="ACCEPTED">接受该提示</option><option v-if="issue.severity !== 'BLOCK'" value="DISMISSED">判断为不适用</option></select></label>
+                      <label>处理说明<textarea v-model.trim="reportQualityIssueDrafts[issue.id].resolution" rows="2" maxlength="2000" placeholder="记录修订内容或接受理由"></textarea></label>
+                      <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportQualitySaving || !reportQualityIssueDrafts[issue.id].resolution.trim()" :loading="reportQualitySaving" @click="resolveReportQualityIssue(issue)">保存处理记录</VanButton>
+                    </div>
+                    <small v-else-if="issue.resolution" class="asset-source">处理记录：{{ issue.resolution }}</small>
+                  </article>
+                  <p v-if="!reportQuality.issues.length && reportQuality.latest_validator_run?.status === 'COMPLETED'" class="quality-clear-state">当前 QA 没有待处理问题。</p>
+                  <div v-if="currentReportStep?.step_key === 'S6' && currentReportStep.status === 'IN_REVIEW'" class="final-gate-controls">
+                    <label><input v-model="finalGateAttested" type="checkbox" :disabled="!reportQuality.can_approve"> 我已复核核心叙事、用户贴合度和全部 QA 处理记录，并承担最终交付责任。</label>
+                    <VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="!reportQuality.can_approve || !finalGateAttested || reportStepSaving" :loading="reportStepSaving" @click="approveReportFinalGate">确认最终门禁</VanButton>
+                  </div>
+                  <div v-if="reportCase.status === 'READY_TO_DELIVER'" class="final-gate-controls">
+                    <strong>最终门禁已通过</strong>
+                    <VanButton class="primary-button compact-button deliver-button" type="primary" native-type="button" :disabled="!reportQuality.can_approve || reportCaseDelivering" :loading="reportCaseDelivering" @click="deliverReportCaseVersion">{{ reportCaseDelivering ? '交付中…' : '生成并交付版本' }}</VanButton>
+                  </div>
+                  <p v-else-if="reportCase.status === 'DELIVERED'" class="quality-clear-state">报告已交付，版本快照不可覆盖。</p>
                 </section>
 
                 <div class="report-case-grid">

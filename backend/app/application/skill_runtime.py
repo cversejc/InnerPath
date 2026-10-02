@@ -43,6 +43,7 @@ from app.domains.workflow.models import (
     WorkflowVersion,
 )
 from app.domains.workflow.service import create_workflow_draft, publish_workflow_version
+from app.domains.quality.service import replace_validator_issues
 from app.models.user import User
 
 
@@ -416,7 +417,11 @@ async def execute_skill_run_record(
         source_references = deepcopy(prior_context.get("source_references") or {})
         run_metadata = {
             key: prior_context[key]
-            for key in ("semantic_source_snapshot", "source_narrative_plan_id")
+            for key in (
+                "semantic_source_snapshot",
+                "source_narrative_plan_id",
+                "qa_fingerprint",
+            )
             if key in prior_context
         }
         run.context_snapshot = {
@@ -426,6 +431,8 @@ async def execute_skill_run_record(
         }
         if run.target_type == "REPORT_FRAGMENT":
             await _save_authored_report_fragment(db, run)
+        elif run.target_type == "REPORT_QA":
+            await replace_validator_issues(db, run)
         foundation = result.context_snapshot.get("foundation_data")
         if run.report_case_id is not None and foundation is not None:
             evidence = await create_evidence_item(

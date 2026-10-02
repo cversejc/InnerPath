@@ -10,6 +10,39 @@ export async function getReportCaseContent(caseId) {
   return response.data
 }
 
+export async function getReportCaseQuality(caseId) {
+  const response = await apiClient.get(`/report-cases/${caseId}/quality`)
+  return response.data
+}
+
+export async function runReportCaseQuality(caseId, payload) {
+  const response = await apiClient.post(`/report-cases/${caseId}/quality/run`, payload)
+  return response.data
+}
+
+export async function resolveReportCaseQualityIssue(caseId, issueId, payload) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/quality/issues/${issueId}/resolve`,
+    payload
+  )
+  return response.data
+}
+
+export async function approveReportCaseFinalGate(caseId, payload) {
+  const response = await apiClient.post(`/report-cases/${caseId}/final-gate/approve`, payload)
+  return response.data
+}
+
+export async function deliverReportCase(caseId) {
+  const response = await apiClient.post(`/report-cases/${caseId}/deliver`)
+  return response.data
+}
+
+export async function getReportCaseVersions(caseId) {
+  const response = await apiClient.get(`/report-cases/${caseId}/versions`)
+  return response.data
+}
+
 export async function getReportCaseNarrative(caseId) {
   const response = await apiClient.get(`/report-cases/${caseId}/narrative`)
   return response.data

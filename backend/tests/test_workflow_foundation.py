@@ -183,7 +183,13 @@ async def test_report_case_creation_is_idempotent_for_its_source_request(workflo
 
 async def _complete_step(db: AsyncSession, case_id: int, step_key: str):
     await start_step(db, case_id, step_key)
-    await complete_step(db, case_id, step_key, result_json={"reviewed": True})
+    await complete_step(
+        db,
+        case_id,
+        step_key,
+        result_json={"reviewed": True},
+        final_gate_verified=step_key == "S6",
+    )
 
 
 @pytest.mark.asyncio
@@ -222,6 +228,25 @@ async def test_manual_workflow_advances_sequentially_and_reaches_delivery_gate(
     assert report_case.status == "READY_TO_DELIVER"
     assert instance.status == "COMPLETED"
     assert all(task.status == "COMPLETED" for task in tasks)
+
+
+@pytest.mark.asyncio
+async def test_final_gate_step_cannot_complete_through_generic_workflow_command(workflow_db):
+    report_case = await _create_case(workflow_db)
+    for step_key in ("S1", "S2", "S3", "S4", "S5"):
+        await _complete_step(workflow_db, report_case.id, step_key)
+    await start_step(workflow_db, report_case.id, "S6")
+
+    with pytest.raises(ValueError, match="final_gate_approval_required"):
+        await complete_step(workflow_db, report_case.id, "S6")
+
+    await complete_step(
+        workflow_db,
+        report_case.id,
+        "S6",
+        result_json={"final_gate_approved": True},
+        final_gate_verified=True,
+    )
 
 
 @pytest.mark.asyncio

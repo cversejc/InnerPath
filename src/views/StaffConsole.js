@@ -40,6 +40,18 @@ export default {
       reportCase: null,
       reportCaseContent: { evidence: [], findings: [], fragments: [] },
       reportNarrative: { current_plan: null, candidate_runs: [], fragment_runs: [] },
+      reportQuality: {
+        quality_status: 'NOT_RUN',
+        latest_validator_run: null,
+        issues: [],
+        can_approve: false,
+        blocking_count: 0,
+        open_count: 0
+      },
+      reportQualityIssueDrafts: {},
+      reportQualitySaving: false,
+      reportCaseDelivering: false,
+      finalGateAttested: false,
       reportCaseLoading: false,
       reportNarrativeSaving: false,
       reportNarrativePollTimer: null,

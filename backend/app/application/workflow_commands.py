@@ -55,8 +55,16 @@ async def complete_case_step(
     step_key: str,
     result_json: Optional[dict[str, Any]],
     audit_context: Optional[AuditContext] = None,
+    *,
+    final_gate_verified: bool = False,
 ):
-    task = await complete_step(db, case_id, step_key, result_json=result_json)
+    task = await complete_step(
+        db,
+        case_id,
+        step_key,
+        result_json=result_json,
+        final_gate_verified=final_gate_verified,
+    )
     await _audit_step_action(db, actor_id, case_id, "complete", step_key, audit_context)
     await db.commit()
     return task

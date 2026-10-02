@@ -1,13 +1,18 @@
 import {
   completeReportCaseStep,
   confirmReportCaseNarrativePlan,
+  approveReportCaseFinalGate,
+  deliverReportCase,
   generateReportCaseFragment,
   generateReportNarrativeCandidates,
   getReportCase,
   getReportCaseContent,
   getReportCaseNarrative,
+  getReportCaseQuality,
   reopenReportCaseStep,
+  resolveReportCaseQualityIssue,
   returnReportCaseStep,
+  runReportCaseQuality,
   saveReportCaseFinding,
   saveReportCaseFragment,
   startReportCaseStep
@@ -28,14 +33,24 @@ export default {
       this.reportNarrativePollTimer = null
     }
     try {
-      const [reportCase, content, narrative] = await Promise.all([
+      const [reportCase, content, narrative, quality] = await Promise.all([
         getReportCase(caseId),
         getReportCaseContent(caseId),
-        getReportCaseNarrative(caseId)
+        getReportCaseNarrative(caseId),
+        getReportCaseQuality(caseId)
       ])
       this.reportCase = reportCase
       this.reportCaseContent = content
       this.reportNarrative = narrative
+      this.reportQuality = quality
+      this.reportQualityIssueDrafts = Object.fromEntries(
+        quality.issues
+          .filter(issue => issue.status === 'OPEN')
+          .map(issue => [issue.id, {
+            status: issue.severity === 'BLOCK' ? 'RESOLVED' : 'ACCEPTED',
+            resolution: ''
+          }])
+      )
       this.reportFragmentDrafts = Object.fromEntries(
         content.fragments.map(fragment => [fragment.fragment_key, {
           revision_no: fragment.revision_no,
@@ -78,18 +93,29 @@ export default {
   scheduleNarrativePoll(caseId) {
     const runs = [
       ...(this.reportNarrative.candidate_runs || []),
-      ...(this.reportNarrative.fragment_runs || [])
+      ...(this.reportNarrative.fragment_runs || []),
+      ...(this.reportQuality.latest_validator_run ? [this.reportQuality.latest_validator_run] : [])
     ]
     if (!runs.some(run => ['PENDING', 'RUNNING'].includes(run.status))) return
     this.reportNarrativePollTimer = setTimeout(async () => {
       if (this.reportCase?.id !== caseId) return
       try {
-        const [content, narrative] = await Promise.all([
+        const [content, narrative, quality] = await Promise.all([
           getReportCaseContent(caseId),
-          getReportCaseNarrative(caseId)
+          getReportCaseNarrative(caseId),
+          getReportCaseQuality(caseId)
         ])
         this.reportCaseContent = content
         this.reportNarrative = narrative
+        this.reportQuality = quality
+        this.reportQualityIssueDrafts = Object.fromEntries(
+          quality.issues
+            .filter(issue => issue.status === 'OPEN')
+            .map(issue => [issue.id, {
+              status: issue.severity === 'BLOCK' ? 'RESOLVED' : 'ACCEPTED',
+              resolution: ''
+            }])
+        )
         const refreshedDrafts = Object.fromEntries(
           content.fragments.map(fragment => [fragment.fragment_key, {
             revision_no: fragment.revision_no,
@@ -126,6 +152,82 @@ export default {
         this.message = this.errorText(error)
       }
     }, 1800)
+  },
+  async runReportQuality() {
+    if (!this.reportCase || this.reportQualitySaving) return
+    this.reportQualitySaving = true
+    try {
+      this.reportQuality = await runReportCaseQuality(this.reportCase.id, {
+        idempotency_key: `case-${this.reportCase.id}-qa-${Date.now()}`
+      })
+      this.scheduleNarrativePoll(this.reportCase.id)
+      this.message = this.reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'
+        ? '程序检查发现阻断问题，请先修订报告片段。'
+        : '最终质量审核已加入运行队列。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportQualitySaving = false
+    }
+  },
+  async resolveReportQualityIssue(issue) {
+    const draft = this.reportQualityIssueDrafts[issue.id]
+    if (!this.reportCase || !draft?.resolution?.trim() || this.reportQualitySaving) return
+    this.reportQualitySaving = true
+    try {
+      await resolveReportCaseQualityIssue(this.reportCase.id, issue.id, {
+        status: draft.status,
+        resolution: draft.resolution.trim()
+      })
+      await this.loadReportCaseData(this.reportCase.id)
+      this.message = 'QA 问题处理记录已保存。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportQualitySaving = false
+    }
+  },
+  async approveReportFinalGate() {
+    if (!this.reportCase || !this.finalGateAttested || this.reportStepSaving) return
+    const confirmed = await this.confirmAction({
+      title: '确认最终人工门禁',
+      message: '确认已复核报告的核心叙事、用户贴合度与所有 QA 问题，并承担最终交付责任？',
+      confirmButtonText: '确认并完成 S6'
+    })
+    if (!confirmed) return
+    this.reportStepSaving = true
+    try {
+      await approveReportCaseFinalGate(this.reportCase.id, {
+        attested: true,
+        note: null
+      })
+      this.finalGateAttested = false
+      await this.loadReportCaseData(this.reportCase.id)
+      this.message = '最终人工门禁已通过，可以生成交付版本。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportStepSaving = false
+    }
+  },
+  async deliverReportCaseVersion() {
+    if (!this.reportCase || this.reportCaseDelivering) return
+    const confirmed = await this.confirmAction({
+      title: '交付报告版本',
+      message: '将当前已通过最终门禁的报告快照交付给用户？交付后版本不可覆盖。',
+      confirmButtonText: '生成并交付'
+    })
+    if (!confirmed) return
+    this.reportCaseDelivering = true
+    try {
+      const version = await deliverReportCase(this.reportCase.id)
+      await this.loadWorkspace(this.workspace.request.id)
+      this.message = `报告 v${version.version_no} 已交付，用户现在可以查看。`
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportCaseDelivering = false
+    }
   },
   async generateNarrativeCandidates() {
     const step = this.currentReportStep

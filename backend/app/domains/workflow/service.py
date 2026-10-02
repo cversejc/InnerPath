@@ -313,12 +313,17 @@ async def complete_step(
     step_key: str,
     *,
     result_json: Optional[dict[str, Any]] = None,
+    final_gate_verified: bool = False,
 ) -> StepTask:
     report_case, instance, tasks = await _lock_case_and_tasks(db, case_id)
     task = _find_step(tasks, step_key)
     if instance.status != "RUNNING" or report_case.status in {"CANCELLED", "DELIVERED"}:
         raise ValueError("workflow_not_active")
     CompletionGate.validate(task, tasks)
+    if (
+        task.step_key == "S6" or (task.config_snapshot or {}).get("final_gate") is True
+    ) and not final_gate_verified:
+        raise ValueError("final_gate_approval_required")
 
     now = _now()
     task.status = "COMPLETED"
