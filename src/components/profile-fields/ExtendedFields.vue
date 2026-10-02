@@ -1,5 +1,15 @@
 <script setup>
 import { computed, toRefs } from 'vue'
+import {
+  Cell as VanCell,
+  CellGroup as VanCellGroup,
+  Checkbox as VanCheckbox,
+  CheckboxGroup as VanCheckboxGroup,
+  Field as VanField,
+  Radio as VanRadio,
+  RadioGroup as VanRadioGroup
+} from 'vant'
+import OptionPickerField from './OptionPickerField.vue'
 
 const props = defineProps({
   profile: { type: Object, required: true },
@@ -36,118 +46,214 @@ function listIncludes(field, value) {
     <div class="profile-optional-grid">
       <div class="profile-field">
         <label class="profile-label" :for="idPrefix + '-residence'">目前居住地 <span class="optional">选填</span></label>
-        <input
+        <VanField
           :id="idPrefix + '-residence'"
-          class="profile-input"
-          :value="profile.current_residence || ''"
+          class="profile-van-field"
+          :model-value="profile.current_residence || ''"
+          name="current_residence"
           type="text"
           maxlength="100"
           placeholder="如：上海市"
-          @input="emit('set-field', 'current_residence', $event.target.value)"
-        >
+          :border="false"
+          @update:model-value="emit('set-field', 'current_residence', $event)"
+        />
       </div>
 
-      <div class="profile-field">
-        <label class="profile-label" :for="idPrefix + '-marital-status'">婚姻状态 <span class="optional">选填</span></label>
-        <select :id="idPrefix + '-marital-status'" class="profile-input" :value="profile.marital_status || ''" @change="emit('set-field', 'marital_status', $event.target.value || null)">
-          <option value="">暂不填写</option>
-          <option v-for="option in maritalOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-        </select>
-      </div>
+      <OptionPickerField
+        :id="idPrefix + '-marital-status'"
+        label="婚姻状态"
+        :model-value="profile.marital_status || ''"
+        :options="maritalOptions"
+        @update:model-value="emit('set-field', 'marital_status', $event)"
+      />
 
-      <div class="profile-field">
-        <label class="profile-label" :for="idPrefix + '-occupation-status'">目前的职业状态 <span class="optional">选填</span></label>
-        <select :id="idPrefix + '-occupation-status'" class="profile-input" :value="profile.occupation_status || ''" @change="emit('set-field', 'occupation_status', $event.target.value || null)">
-          <option value="">暂不填写</option>
-          <option v-for="option in occupationOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-        </select>
-      </div>
+      <OptionPickerField
+        :id="idPrefix + '-occupation-status'"
+        label="目前的职业状态"
+        :model-value="profile.occupation_status || ''"
+        :options="occupationOptions"
+        @update:model-value="emit('set-field', 'occupation_status', $event)"
+      />
 
-      <div class="profile-field">
-        <label class="profile-label" :for="idPrefix + '-education'">最高学历 <span class="optional">选填</span></label>
-        <select :id="idPrefix + '-education'" class="profile-input" :value="profile.highest_education || ''" @change="emit('set-field', 'highest_education', $event.target.value || null)">
-          <option value="">暂不填写</option>
-          <option v-for="option in educationOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-        </select>
-      </div>
+      <OptionPickerField
+        :id="idPrefix + '-education'"
+        label="最高学历"
+        :model-value="profile.highest_education || ''"
+        :options="educationOptions"
+        @update:model-value="emit('set-field', 'highest_education', $event)"
+      />
 
       <div class="profile-field">
         <label class="profile-label" :for="idPrefix + '-mbti'">MBTI <span class="optional">选填</span></label>
-        <input
+        <VanField
           :id="idPrefix + '-mbti'"
-          class="profile-input profile-input-uppercase"
-          :value="profile.mbti || ''"
+          class="profile-van-field profile-van-field-uppercase"
+          :model-value="profile.mbti || ''"
+          name="mbti"
           type="text"
           maxlength="4"
           placeholder="如：INTJ"
-          @input="emit('set-field', 'mbti', $event.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4))"
-        >
+          :border="false"
+          @update:model-value="emit('set-field', 'mbti', String($event).toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4))"
+        />
       </div>
 
       <div class="profile-field">
         <label class="profile-label" :for="idPrefix + '-keywords'">性格关键词 <span class="optional">选填</span></label>
-        <input
+        <VanField
           :id="idPrefix + '-keywords'"
-          class="profile-input"
-          :value="keywordsText"
+          class="profile-van-field"
+          :model-value="keywordsText"
+          name="personality_keywords"
           type="text"
           maxlength="120"
           placeholder="用逗号分隔，如：独立、敏感、好奇"
-          @input="emit('set-keywords', $event.target.value)"
-        >
+          :border="false"
+          @update:model-value="emit('set-keywords', $event)"
+        />
         <p class="profile-hint">建议填写 3—5 个关键词</p>
       </div>
 
       <div class="profile-field profile-field-wide">
         <label class="profile-label" :for="idPrefix + '-strengths'">当前最大的优势 <span class="optional">选填</span></label>
-        <textarea :id="idPrefix + '-strengths'" class="profile-input profile-textarea" rows="3" maxlength="500" placeholder="你觉得自己最可靠的能力是什么？" :value="profile.strengths || ''" @input="emit('set-field', 'strengths', $event.target.value)"></textarea>
+        <VanField
+          :id="idPrefix + '-strengths'"
+          class="profile-van-field"
+          :model-value="profile.strengths || ''"
+          name="strengths"
+          type="textarea"
+          rows="3"
+          maxlength="500"
+          autosize
+          placeholder="你觉得自己最可靠的能力是什么？"
+          :border="false"
+          @update:model-value="emit('set-field', 'strengths', $event)"
+        />
       </div>
 
       <div class="profile-field profile-field-wide">
         <label class="profile-label" :for="idPrefix + '-limitations'">当前最大的短板或限制 <span class="optional">选填</span></label>
-        <textarea :id="idPrefix + '-limitations'" class="profile-input profile-textarea" rows="3" maxlength="500" placeholder="哪些事情容易消耗你或限制你的行动？" :value="profile.limitations || ''" @input="emit('set-field', 'limitations', $event.target.value)"></textarea>
+        <VanField
+          :id="idPrefix + '-limitations'"
+          class="profile-van-field"
+          :model-value="profile.limitations || ''"
+          name="limitations"
+          type="textarea"
+          rows="3"
+          maxlength="500"
+          autosize
+          placeholder="哪些事情容易消耗你或限制你的行动？"
+          :border="false"
+          @update:model-value="emit('set-field', 'limitations', $event)"
+        />
       </div>
 
       <fieldset class="profile-field profile-field-wide profile-choice-fieldset">
         <legend class="profile-label">命理 / 玄学体验 <span class="optional">选填</span></legend>
         <p class="profile-hint">最多选择 3 项</p>
-        <div class="profile-check-grid">
-          <label v-for="option in experienceOptions" :key="option.value" class="profile-check-card">
-            <input type="checkbox" :checked="listIncludes('mingli_experience', option.value)" @change="emit('toggle-list', 'mingli_experience', option.value, 3)">
-            <span>{{ option.label }}</span>
-          </label>
-        </div>
+        <VanCheckboxGroup
+          :model-value="profile.mingli_experience || []"
+          class="profile-option-group"
+          aria-label="命理 / 玄学体验"
+          :max="3"
+          icon-size="18px"
+          @update:model-value="emit('set-field', 'mingli_experience', $event)"
+        >
+          <VanCellGroup inset class="profile-option-cells">
+            <VanCell
+              v-for="option in experienceOptions"
+              :key="option.value"
+              :class="{ selected: listIncludes('mingli_experience', option.value) }"
+              :title="option.label"
+              clickable
+              @click="emit('toggle-list', 'mingli_experience', option.value, 3)"
+            >
+              <template #right-icon>
+                <VanCheckbox :name="option.value" @click.stop />
+              </template>
+            </VanCell>
+          </VanCellGroup>
+        </VanCheckboxGroup>
       </fieldset>
 
       <fieldset class="profile-field profile-choice-fieldset">
         <legend class="profile-label">对命理 / 玄学的态度 <span class="optional">选填</span></legend>
-        <div class="profile-radio-stack">
-          <label v-for="option in attitudeOptions" :key="option.value" class="profile-radio-card">
-            <input type="radio" :name="idPrefix + '-attitude'" :value="option.value" :checked="profile.mingli_attitude === option.value" @change="emit('set-field', 'mingli_attitude', option.value)">
-            <span>{{ option.label }}</span>
-          </label>
-        </div>
+        <VanRadioGroup
+          :model-value="profile.mingli_attitude || ''"
+          class="profile-option-group"
+          aria-label="对命理 / 玄学的态度"
+          icon-size="18px"
+          @update:model-value="emit('set-field', 'mingli_attitude', $event)"
+        >
+          <VanCellGroup inset class="profile-option-cells">
+            <VanCell
+              v-for="option in attitudeOptions"
+              :key="option.value"
+              :class="{ selected: profile.mingli_attitude === option.value }"
+              :title="option.label"
+              clickable
+              @click="emit('set-field', 'mingli_attitude', option.value)"
+            >
+              <template #right-icon>
+                <VanRadio :name="option.value" shape="dot" @click.stop />
+              </template>
+            </VanCell>
+          </VanCellGroup>
+        </VanRadioGroup>
       </fieldset>
 
       <fieldset class="profile-field profile-choice-fieldset">
         <legend class="profile-label">内容深度偏好 <span class="optional">选填</span></legend>
-        <div class="profile-radio-stack">
-          <label v-for="option in depthOptions" :key="option.value" class="profile-radio-card">
-            <input type="radio" :name="idPrefix + '-depth'" :value="option.value" :checked="profile.preferred_content_depth === option.value" @change="emit('set-field', 'preferred_content_depth', option.value)">
-            <span>{{ option.label }}</span>
-          </label>
-        </div>
+        <VanRadioGroup
+          :model-value="profile.preferred_content_depth || ''"
+          class="profile-option-group"
+          aria-label="内容深度偏好"
+          icon-size="18px"
+          @update:model-value="emit('set-field', 'preferred_content_depth', $event)"
+        >
+          <VanCellGroup inset class="profile-option-cells">
+            <VanCell
+              v-for="option in depthOptions"
+              :key="option.value"
+              :class="{ selected: profile.preferred_content_depth === option.value }"
+              :title="option.label"
+              clickable
+              @click="emit('set-field', 'preferred_content_depth', option.value)"
+            >
+              <template #right-icon>
+                <VanRadio :name="option.value" shape="dot" @click.stop />
+              </template>
+            </VanCell>
+          </VanCellGroup>
+        </VanRadioGroup>
       </fieldset>
 
       <fieldset class="profile-field profile-field-wide profile-choice-fieldset">
         <legend class="profile-label">希望使用说明书 / 日历的场景 <span class="optional">选填</span></legend>
         <p class="profile-hint">最多选择 6 项</p>
-        <div class="profile-check-grid">
-          <label v-for="option in usageOptions" :key="option.value" class="profile-check-card">
-            <input type="checkbox" :checked="listIncludes('default_usage_scenarios', option.value)" @change="emit('toggle-list', 'default_usage_scenarios', option.value, 6)">
-            <span>{{ option.label }}</span>
-          </label>
-        </div>
+        <VanCheckboxGroup
+          :model-value="profile.default_usage_scenarios || []"
+          class="profile-option-group"
+          aria-label="希望使用说明书 / 日历的场景"
+          :max="6"
+          icon-size="18px"
+          @update:model-value="emit('set-field', 'default_usage_scenarios', $event)"
+        >
+          <VanCellGroup inset class="profile-option-cells">
+            <VanCell
+              v-for="option in usageOptions"
+              :key="option.value"
+              :class="{ selected: listIncludes('default_usage_scenarios', option.value) }"
+              :title="option.label"
+              clickable
+              @click="emit('toggle-list', 'default_usage_scenarios', option.value, 6)"
+            >
+              <template #right-icon>
+                <VanCheckbox :name="option.value" @click.stop />
+              </template>
+            </VanCell>
+          </VanCellGroup>
+        </VanCheckboxGroup>
       </fieldset>
     </div>
   </section>

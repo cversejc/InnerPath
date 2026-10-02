@@ -68,19 +68,6 @@
   color: var(--gold-deep);
 }
 
-.profile-input {
-  width: 100%;
-  min-height: 48px;
-  border: 1px solid rgba(139, 90, 20, .2);
-  border-radius: 12px;
-  padding: 11px 13px;
-  background: rgba(255, 255, 255, .78);
-  color: var(--ink);
-  font-size: 16px;
-  line-height: 1.5;
-  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
-}
-
 .profile-van-field {
   width: 100%;
   min-height: 48px;
@@ -117,20 +104,19 @@
   border-color: rgba(158, 63, 53, .58);
 }
 
-.profile-input:focus {
-  border-color: var(--cinnabar);
-  outline: 0;
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(184, 92, 80, .12);
+.profile-date-trigger,
+.profile-picker-trigger {
+  cursor: pointer;
 }
 
-.profile-input-uppercase {
-  letter-spacing: .14em;
+.profile-date-trigger :deep(.van-field__control),
+.profile-picker-trigger :deep(.van-field__control) {
+  cursor: pointer;
 }
 
-.profile-textarea {
-  min-height: 96px;
-  resize: vertical;
+.profile-date-trigger :deep(.van-field__right-icon),
+.profile-picker-trigger :deep(.van-field__right-icon) {
+  color: var(--cinnabar-deep);
 }
 
 .profile-hint,

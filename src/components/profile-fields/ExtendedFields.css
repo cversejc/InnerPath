@@ -8,43 +8,8 @@
   gap: 22px;
 }
 
-.profile-check-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.profile-check-card,
-.profile-radio-card {
-  display: flex;
-  min-height: 44px;
-  align-items: center;
-  gap: 9px;
-  border: 1px solid rgba(139, 90, 20, .14);
-  border-radius: 11px;
-  padding: 8px 10px;
-  background: rgba(255, 255, 255, .52);
-  color: var(--ink-soft);
-  font-size: 13px;
-  line-height: 1.35;
-}
-
-.profile-check-card input,
-.profile-radio-card input {
-  width: 17px;
-  height: 17px;
-  flex: 0 0 auto;
-  accent-color: var(--cinnabar);
-}
-
-.profile-radio-stack {
-  display: grid;
-  gap: 8px;
-}
-
 @media (max-width: 640px) {
-  .profile-optional-grid,
-  .profile-check-grid {
+  .profile-optional-grid {
     grid-template-columns: 1fr;
   }
 }
