@@ -17,6 +17,7 @@ import {
 import assignmentMethods from '../features/service-requests/methods/assignment.js'
 import queueMethods from '../features/service-requests/methods/queue.js'
 import workflowMethods from '../features/service-requests/methods/workflow.js'
+import { confirmAction } from '../utils/confirmAction.js'
 
 export default {
   name: 'StaffConsole',
@@ -74,6 +75,7 @@ export default {
     this.stopPolling()
   },
   methods: {
+    confirmAction,
     ...queueMethods,
     ...workflowMethods,
     ...assignmentMethods,

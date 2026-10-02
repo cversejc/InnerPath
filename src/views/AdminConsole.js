@@ -18,6 +18,7 @@ import activityMethods from '../features/admin/methods/activity.js'
 import staffMethods from '../features/admin/methods/staff.js'
 import exportsMethods from '../features/admin/methods/exports.js'
 import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'vant'
+import { confirmAction } from '../utils/confirmAction.js'
 
 const EMPTY_PAGE = { total: 0, items: [] }
 
@@ -138,6 +139,7 @@ export default {
     document.body.classList.remove('dialog-open')
   },
   methods: {
+    confirmAction,
     ...navigationMethods,
     ...adminFormatters,
     ...dashboardMethods,

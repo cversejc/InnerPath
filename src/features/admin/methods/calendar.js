@@ -1,4 +1,3 @@
-import { confirmAction } from '../../../utils/confirmAction.js'
 import { getAllAdminUsers } from '../api.js'
 import {
   archiveAdminCalendar,
@@ -121,7 +120,7 @@ export default {
       try { if (this.calendarForm.id) await updateAdminCalendar(this.calendarForm.id, payload); else await createAdminCalendar(this.selectedCalendarUser.id, payload); this.message = '日历草稿已保存'; this.cancelCalendarEdit(); await this.loadCalendars() } catch (error) { this.message = this.errorText(error) } finally { this.calendarSaving = false }
     },
   async publishCalendar(calendar) {
-      const confirmed = await confirmAction({
+      const confirmed = await this.confirmAction({
         title: '确认发布日历',
         message: `确认发布“${calendar.title}” v${calendar.version_number}？发布后用户端将看到这版内容。`,
         confirmButtonText: '确认发布'
@@ -136,7 +135,7 @@ export default {
       }
     },
   async archiveCalendar(calendar) {
-      const confirmed = await confirmAction({
+      const confirmed = await this.confirmAction({
         title: '确认归档日历',
         message: `确认归档“${calendar.title}” v${calendar.version_number}？`,
         confirmButtonText: '确认归档'

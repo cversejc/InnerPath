@@ -32,7 +32,12 @@ export default {
   },
   async regenerateAI() {
     if (!this.workspace || this.aiStarting) return
-    if (!window.confirm('重新生成前会保存当前咨询师修改的版本快照，确定继续吗？')) return
+    const confirmed = await this.confirmAction({
+      title: '确认重新生成 AI 初稿',
+      message: '重新生成前会保存当前咨询师修改的版本快照。确定继续吗？',
+      confirmButtonText: '保存并重新生成'
+    })
+    if (!confirmed) return
     this.aiStarting = true
     try {
       const task = await retryStaffAIDraft(this.workspace.request.id, true)
@@ -123,7 +128,12 @@ export default {
   },
   async deliver() {
     if (!this.workspace || this.delivering) return
-    if (!window.confirm('确认已完成人工审校并交付给用户吗？交付后申请和结果将进入只读状态。')) return
+    const confirmed = await this.confirmAction({
+      title: '确认交付给用户',
+      message: '确认已完成人工审校并交付给用户吗？交付后申请和结果将进入只读状态。',
+      confirmButtonText: '确认交付'
+    })
+    if (!confirmed) return
     this.delivering = true
     try {
       const updated = await deliverStaffServiceRequest(this.workspace.request.id)
