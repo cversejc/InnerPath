@@ -62,30 +62,28 @@
         <div class="section-heading">
           <p class="section-kicker">YOUR PATH</p>
           <h2 class="section-title">从看见自己，到做出更适合的选择</h2>
-          <p class="section-desc">一份个人报告书，帮你理解自己的特质与处境；一张决策日历，帮你把重要选择放在适合的时机</p>
+          <p class="section-desc">一本人生说明书，帮你理解自己的特质与处境；一张决策日历，帮你把重要选择放在适合的时机</p>
         </div>
         <div class="services-grid launch-tools-grid">
           <article class="paper-card service-card">
             <span class="seal-badge">01 / PERSONAL REPORT</span>
-            <h3>个人报告书</h3>
-            <p class="tool-lead">先把“我是谁、我卡在哪”写清楚</p>
+            <h3>人生说明书</h3>
+            <p class="tool-lead">先清楚我是谁，我卡在哪，往哪走</p>
             <ul class="service-features">
               <li>个人属性、天赋与能量通路</li>
               <li>核心矛盾与人生重复模式</li>
               <li>当前阶段的环境坐标</li>
             </ul>
-            <VanButton class="secondary-button" native-type="button" @click="goToAssessment"><IconMark name="reports" />申请我的说明书</VanButton>
           </article>
           <article class="paper-card service-card featured launch-calendar-card">
             <span class="seal-badge">02 / DECISION CALENDAR</span>
             <h3>决策日历</h3>
-            <p class="tool-lead">把“知道自己”变成每天可使用的节奏</p>
+            <p class="tool-lead">把“了解自己”变成每天可使用的节奏</p>
             <ul class="service-features">
-              <li>查看当下阶段的行动气候</li>
-              <li>按日期获得适合与暂缓事项</li>
+              <li>行动建议</li>
+              <li>适宜行动和需缓事项</li>
               <li>留下真实行动记录，持续复盘</li>
             </ul>
-            <VanButton class="primary-button" type="primary" native-type="button" @click="goToCalendar"><IconMark name="calendar" />打开我的日历</VanButton>
           </article>
         </div>
       </div>
@@ -94,7 +92,7 @@
     <section class="section-band final-cta">
       <div class="container final-cta-inner">
         <p class="section-kicker">NEXT STEP</p>
-        <h2>先写一页属于你的说明书</h2>
+        <h2>先写一本属于你的说明书</h2>
         <p>不算命，不评判，不替你预言未来，先从“我是谁”开始</p>
         <VanButton class="primary-button" type="primary" native-type="button" @click="goToAssessment"><IconMark name="compass" />开始探索</VanButton>
       </div>
@@ -113,9 +111,6 @@ export default {
   methods: {
     goToAssessment() {
       this.$router.push('/pages/assessment/assessment')
-    },
-    goToCalendar() {
-      this.$router.push('/pages/calendar/calendar')
     }
   }
 }

@@ -69,11 +69,7 @@
 
   .service-features {
     gap: 8px;
-    margin-bottom: 18px;
-  }
-
-  .service-card button {
-    min-height: 46px;
+    margin-bottom: 0;
   }
 
   .final-cta-inner {
@@ -92,12 +88,6 @@
   .final-cta .primary-button {
     width: 100%;
   }
-}
-
-/* 按钮专项：主次关系明确，按钮与纸张卡片使用同一组圆角和间距。 */
-.service-card > button {
-  min-height: var(--button-height, 46px);
-  border-radius: var(--button-radius, 13px);
 }
 
 .final-cta .primary-button {

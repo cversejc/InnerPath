@@ -172,12 +172,6 @@
   line-height: 1.75;
 }
 
-.service-card {
-  display: flex;
-  min-height: 420px;
-  flex-direction: column;
-}
-
 .service-card.featured {
   border-color: rgba(184, 92, 80, 0.32);
   background:
@@ -187,7 +181,7 @@
 .service-features {
   display: grid;
   gap: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 0;
   color: var(--ink-soft);
   line-height: 1.6;
 }
@@ -206,11 +200,6 @@
   height: 7px;
   border-radius: 50%;
   background: var(--gold);
-}
-
-.service-card button {
-  width: 100%;
-  margin-top: auto;
 }
 
 .final-cta {
