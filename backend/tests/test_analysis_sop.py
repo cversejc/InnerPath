@@ -5,6 +5,8 @@ from app.domains.skills.analysis_sop import stage_contract
 from app.application.report_analysis import build_analysis_completion_gate
 from app.domains.skills.definitions import default_analysis_skill_specifications
 from app.domains.skills.runtime import build_context_envelope
+from app.domains.skills.runtime import validate_growth_experiments
+import pytest
 
 
 def test_pillars_follow_jieqi_not_lunar_new_year():
@@ -60,3 +62,17 @@ def test_s3_covers_four_quadrants_timeline_and_philosophy():
     contract = stage_contract("S3")
     assert len(contract["topics"]) == 6
     assert any("每个后续大运" in t["task"] for t in contract["topics"])
+
+
+def test_s4_experiments_must_be_observable_and_reversible():
+    block = {"finding_key": "block.boundary", "semantic_role": "BLOCK"}
+    data = {"block_refs": ["block.boundary"], "method": "行为实验", "steps": ["先延迟回答"], "frequency": "weekly", "duration_minutes": 5, "observation": "实际回应", "stop_rule": "不适时暂停"}
+    actions = [{"finding_key": f"action.{n}", "semantic_role": "ACTION", "structured_data": dict(data)} for n in range(3)]
+    validate_growth_experiments([block, *actions])
+    actions[0]["structured_data"]["block_refs"] = ["invented"]
+    with pytest.raises(ValueError, match="experiment_invalid"):
+        validate_growth_experiments([block, *actions])
+    actions[0]["structured_data"] = {**data, "stop_rule": ""}
+    with pytest.raises(ValueError, match="experiment_invalid"):
+        validate_growth_experiments([block, *actions])
+    assert len(stage_contract("S4")["topics"]) == 10

@@ -554,6 +554,8 @@ def _validate_analysis_draft_output(
     required_topics = (analysis_context.get("sop_contract") or {}).get("topics") or []
     if any(topic["fragment_key"] not in fragment_keys for topic in required_topics):
         raise ValueError("report_analysis_sop_coverage_required")
+    if required_topics and analysis_context.get("step_key") == "S4":
+        validate_growth_experiments(findings, confirmed_finding_keys)
 
     for flag in risk_flags:
         if (
@@ -569,6 +571,22 @@ def _validate_analysis_draft_output(
             for ref in references
         ):
             raise ValueError("report_analysis_risk_flag_invalid")
+
+
+def validate_growth_experiments(findings, upstream_keys=()):
+    known = {item["finding_key"] for item in findings} | set(upstream_keys)
+    actions = [item for item in findings if item.get("semantic_role", "").upper() == "ACTION"]
+    if actions and not 3 <= len(actions) <= 5:
+        raise ValueError("report_analysis_experiment_count_invalid")
+    for action in actions:
+        data = action.get("structured_data") or {}
+        refs, steps, duration = data.get("block_refs"), data.get("steps"), data.get("duration_minutes")
+        if (not isinstance(refs, list) or not refs or any(ref not in known for ref in refs)
+                or not isinstance(steps, list) or not steps or any(not isinstance(s, str) or not s.strip() for s in steps)
+                or data.get("frequency") not in {"daily", "weekly", "monthly", "quarterly"}
+                or not isinstance(duration, int) or isinstance(duration, bool) or not 1 <= duration <= 60
+                or any(not isinstance(data.get(key), str) or not data[key].strip() for key in ("method", "observation", "stop_rule"))):
+            raise ValueError("report_analysis_experiment_invalid")
 
 
 def _sanitize_analysis_draft_references(

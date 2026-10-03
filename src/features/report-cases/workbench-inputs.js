@@ -37,6 +37,9 @@ const PROFILE_LABELS = {
   birth_hour: '出生时', birth_minute: '出生分',
   birth_place: '出生地点', calendar_type: '日期历法', time_accuracy: '出生时间准确度',
   birth_is_leap_month: '是否闰月'
+  , mbti: '自报 MBTI', highest_education: '最高学历', occupation_status: '职业状态', marital_status: '婚姻状况',
+  current_residence: '现居地', strengths: '自述优势', limitations: '自述限制', personality_keywords: '性格关键词',
+  birth_time_precision: '出生时间精度', preferred_content_depth: '期待内容深度', demo_assumptions: '演示假设'
 }
 
 const EVIDENCE_KEY_LABELS = {
@@ -211,7 +214,8 @@ function profileItems(profile = {}) {
     ['birth_time', birthTime || '未提供'],
     ['birth_place', profile.birth_place],
     ['calendar_type', profile.calendar_type],
-    ['time_accuracy', profile.time_accuracy]
+    ['time_accuracy', profile.time_accuracy || profile.birth_time_precision],
+    ...['current_residence', 'occupation_status', 'highest_education', 'marital_status', 'mbti', 'strengths', 'limitations', 'personality_keywords', 'preferred_content_depth', 'demo_assumptions'].map(key => [key, profile[key]])
   ]
   return entries
     .filter(([, value]) => value !== null && value !== undefined && value !== '')
