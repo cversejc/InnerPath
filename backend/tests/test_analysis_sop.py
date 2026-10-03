@@ -52,3 +52,11 @@ def test_s2_knowledge_is_versioned_and_projected_for_runtime():
     assert len(knowledge["ten_gods"]) == 10
     assert len(knowledge["stars"]) == 14
     assert len(stage_contract("S2")["topics"]) == 8
+
+
+def test_s3_covers_four_quadrants_timeline_and_philosophy():
+    spec = default_analysis_skill_specifications()[2]
+    assert len(spec["knowledge_policy"]["snapshot"][0]["quadrants"]) == 4
+    contract = stage_contract("S3")
+    assert len(contract["topics"]) == 6
+    assert any("每个后续大运" in t["task"] for t in contract["topics"])

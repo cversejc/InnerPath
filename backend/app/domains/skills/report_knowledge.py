@@ -30,6 +30,13 @@ STARS = {
 
 
 def knowledge_for_stage(step_key):
+    if step_key == "S3":
+        return [{"key": "individuation-map-v1", "source": "docs/产品分析框架.md §3.1–3.5", "quadrants": [
+            {"name": "战神与征服者", "symbols": "官杀旺/比劫强/食伤制杀", "risk": "过度行动和征服", "task": "收剑入鞘，允许休息"},
+            {"name": "孤独普罗米修斯", "symbols": "印/食伤旺，财弱", "risk": "洞见变成隔离", "task": "以身入局，持续实践"},
+            {"name": "退回内在的探索者", "symbols": "印枭旺/食伤受制", "risk": "思虑替代行动", "task": "开始小步行动"},
+            {"name": "角色中的承担者", "symbols": "财官旺/比劫弱", "risk": "外部评价压过主体", "task": "建立原则和主权"}],
+            "phase_limits": "面具期/阴影遭遇期/对立整合期/完整体验期是成长隐喻，可往返；不能仅用顺逆大运判定心理阶段。", "philosophy": {"金花的秘密": "种子与节律的比喻", "道德经": "自知和反向整合", "了凡四训": "自主实践", "周易": "知时进退", "中庸/大学": "性与潜能资源"}}]
     if step_key == "S2":
         return [{"key": "symbolic-psychology-v1", "source": "docs/产品分析框架.md §2.1–2.4", "status": "CURATED_REFERENCE", "limits": "原型语言只用于探索；十神/星曜不能证明心理疾病、童年经历或单一人格。用用户现实反馈校正。", "ten_god_fields": ["机制", "荣格原型", "意识表现", "阴影假设", "正向资源"], "ten_gods": TEN_GODS, "star_fields": ["面具", "阴影假设", "触发信念"], "stars": STARS}]
     return []
