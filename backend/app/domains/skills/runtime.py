@@ -211,6 +211,9 @@ def build_context_envelope(
     forbidden = set(policy.get("forbidden") or [])
     projected = {field: envelope[field] for field in fields if field in envelope}
     projected = _without_forbidden(projected, forbidden)
+    knowledge = specification.get("knowledge_policy", {}).get("snapshot") or []
+    if knowledge:
+        projected["skill_knowledge"] = deepcopy(knowledge)
     example_policy = specification.get("example_policy") or {}
     examples = source.get("few_shot_examples")
     if example_policy.get("enabled") and isinstance(examples, list):

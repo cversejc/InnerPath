@@ -8,6 +8,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import AISkillVersion, SkillExample, SkillRun
+from .builtin_examples import EXAMPLES
 
 
 RETRIEVAL_POLICY = "tag-scenario-quality-v2"
@@ -233,10 +234,12 @@ async def publish_skill_example(
     if not row.expected_output or not row.teaching_points:
         raise ValueError("skill_example_content_required")
     _normalize_applicability(row.applicability_json or {})
-    if row.source_case_id is None or row.source_skill_run_id is None:
+    bundled = EXAMPLES.get(row.skill_key)
+    is_synthetic_builtin = bundled is not None and bundled[0] == row.example_key
+    if not is_synthetic_builtin and (row.source_case_id is None or row.source_skill_run_id is None):
         raise ValueError("skill_example_source_required")
-    source_run = await db.get(SkillRun, row.source_skill_run_id)
-    if (
+    source_run = await db.get(SkillRun, row.source_skill_run_id) if row.source_skill_run_id else None
+    if not is_synthetic_builtin and (
         source_run is None
         or source_run.status != "COMPLETED"
         or source_run.report_case_id != row.source_case_id

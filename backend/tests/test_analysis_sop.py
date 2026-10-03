@@ -3,6 +3,8 @@ from app.domains.reports.generation.mingli_foundation import calculate_mingli_fo
 from app.domains.reports.generation.bazi_calculator import bazi_calculator
 from app.domains.skills.analysis_sop import stage_contract
 from app.application.report_analysis import build_analysis_completion_gate
+from app.domains.skills.definitions import default_analysis_skill_specifications
+from app.domains.skills.runtime import build_context_envelope
 
 
 def test_pillars_follow_jieqi_not_lunar_new_year():
@@ -41,3 +43,12 @@ def test_full_sop_coverage_is_required_for_completion():
     assert not gate["can_complete"]
     assert len(gate["missing_topics"]) == 13
     assert build_analysis_completion_gate(finding_statuses=[], fragment_statuses=["CONFIRMED"] * len(topics), required_topics=topics, confirmed_fragment_keys=[t["fragment_key"] for t in topics])["can_complete"]
+
+
+def test_s2_knowledge_is_versioned_and_projected_for_runtime():
+    spec = default_analysis_skill_specifications()[1]
+    context = build_context_envelope({"profile": {}, "analysis_context": {"step_key": "S2"}}, spec)
+    knowledge = context["skill_knowledge"][0]
+    assert len(knowledge["ten_gods"]) == 10
+    assert len(knowledge["stars"]) == 14
+    assert len(stage_contract("S2")["topics"]) == 8

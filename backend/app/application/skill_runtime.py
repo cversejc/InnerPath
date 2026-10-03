@@ -277,6 +277,7 @@ async def _queue_run(
         selected_examples=selected_examples,
     )
     if created:
+        run.selected_knowledge = deepcopy(specification.get("knowledge_policy", {}).get("snapshot") or [])
         event = WorkflowOutbox(
             aggregate_type="skill_run",
             aggregate_id=run.id,

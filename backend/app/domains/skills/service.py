@@ -14,6 +14,7 @@ from .definitions import (
     validate_skill_specification,
 )
 from .models import AISkillVersion, SkillRun
+from .builtin_examples import ensure_builtin_examples
 
 
 def _now() -> datetime:
@@ -27,6 +28,7 @@ async def _ensure_published_builtin_version(
     category: str,
     specification: dict[str, Any],
 ) -> AISkillVersion:
+    await ensure_builtin_examples(db, skill_key)
     latest_published = await db.scalar(
         select(AISkillVersion)
         .where(
@@ -38,7 +40,9 @@ async def _ensure_published_builtin_version(
     )
     if (
         latest_published is not None
-        and latest_published.specification_json == specification
+        and (latest_published.specification_json == specification
+             or latest_published.created_by is not None
+             or latest_published.published_by is not None)
     ):
         return latest_published
 

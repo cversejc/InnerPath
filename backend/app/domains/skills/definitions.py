@@ -1,6 +1,7 @@
 from copy import deepcopy
 from typing import Any
 from .analysis_sop import sop_methodology, stage_contract
+from .report_knowledge import knowledge_for_stage
 
 
 DEFAULT_SKILL_KEY = "report.generate"
@@ -433,6 +434,7 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "sop_contract": stage_contract(step_key),
         }
         spec["example_policy"] = {"enabled": True, "max_examples": 3}
+        spec["knowledge_policy"] = {"snapshot": knowledge_for_stage(step_key), "retrieval": "VERSION_SNAPSHOT"}
         spec["processor_policy"] = {"processor": "reports.analysis_draft"}
         spec["tool_policy"] = {"allowed": []}
         spec["model_policy"].update(temperature=0.35, max_tokens=12000)
