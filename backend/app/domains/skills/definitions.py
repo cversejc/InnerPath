@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Any
 from .analysis_sop import sop_methodology, stage_contract
 from .report_knowledge import knowledge_for_stage
+from app.domains.quality.scorecard import RUBRIC
 
 
 DEFAULT_SKILL_KEY = "report.generate"
@@ -576,12 +577,19 @@ def default_validator_skill_specification() -> dict[str, Any]:
             "只输出严格 JSON。",
         ],
     }
+    spec["instructions"]["methodology"].extend([
+        "最终校准核对：与审核命盘和核心机制有无冲突、编造经历、单一信号强人格结论、诊断、确定未来、科学化命理、内部矛盾、卡点重复给解法、第三章是否回应共性模式。",
+        "检查同一核心观点换句话重复3次以上，标出应删除的 fragment_key；金句只能用已核验库。",
+        "当 qa_input.scorecard_required=true 时必须额外返回 scorecard.dimensions，维度如下，每维度有 score、reason、fragment_keys（本次报告片段ID数组）。程序计算总分；不要用笼统通过代替逐维评分。",
+    ])
+    spec["instructions"]["scoring_rubric"] = RUBRIC
+    spec["knowledge_policy"] = {"snapshot": knowledge_for_stage("S5"), "retrieval": "VERSION_SNAPSHOT"}
     spec["tool_policy"] = {"allowed": []}
     spec["processor_policy"] = {"processor": "reports.validator"}
     spec["output_contract"] = {
         "type": "object",
         "required": ["issues"],
-        "properties": {"issues": {"type": "array"}},
+        "properties": {"issues": {"type": "array"}, "scorecard": {"type": "object"}},
     }
     spec["guardrails"]["blocked_phrases"] = []
     spec["evaluation_profile"] = {

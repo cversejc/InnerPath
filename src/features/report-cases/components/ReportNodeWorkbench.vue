@@ -133,6 +133,17 @@
         </details>
       </section>
 
+      <section v-if="stage.stepKey === 'S6' && quality.latest_validator_run?.scorecard" class="node-sop" aria-label="报告七维质量评分">
+        <h4>质量评分 · {{ quality.latest_validator_run.scorecard.total }} / 100</h4>
+        <p>AI 评分供你复核。总分须达到 80，事实至少 16、安全至少 8；所有问题处理后仍需你最终确认。</p>
+        <dl class="node-sop-roles">
+          <div v-for="(dimension, key) in quality.latest_validator_run.scorecard.dimensions" :key="key">
+            <dt>{{ dimension.label }} · {{ dimension.score }} / {{ dimension.max_score }}</dt>
+            <dd>{{ dimension.reason }}</dd>
+          </div>
+        </dl>
+      </section>
+
       <div class="node-workspace-columns">
         <section class="node-inputs" aria-label="当前节点分析依据">
           <div class="node-section-heading">

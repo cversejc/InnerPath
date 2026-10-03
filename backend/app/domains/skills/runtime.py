@@ -9,6 +9,7 @@ from typing import Any, Protocol
 import httpx
 
 from app.config import settings
+from app.domains.quality.scorecard import validate_scorecard
 from app.domains.reports.generation.mingli_foundation import calculate_mingli_foundation
 from app.domains.reports.generation.report_prompt import SYSTEM_PROMPT, build_prompt
 from app.domains.reports.generation.report_response_parser import (
@@ -404,6 +405,12 @@ def _validate_authoring_output(
         return
 
     if processor == "reports.validator":
+        qa_input = (context.get("context") or {}).get("qa_input") or {}
+        if qa_input.get("scorecard_required"):
+            keys = {item["fragment_key"] for item in qa_input.get("report_fragments", [])}
+            scorecard = validate_scorecard(output.get("scorecard"), keys)
+            if not scorecard["passes_threshold"]:
+                output.setdefault("issues", []).append({"issue_type": "quality_score_below_threshold", "severity": "BLOCK", "target_fragment_key": None, "message": "报告未达到总分80、事实16及安全8分的交付门槛。", "evidence": f'七维总分：{scorecard["total"]}/100', "suggestion": "修正低分维度并重新运行全文校准。"})
         issues = output.get("issues")
         if not isinstance(issues, list) or len(issues) > 100:
             raise ValueError("validator_issues_invalid")

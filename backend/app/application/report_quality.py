@@ -14,6 +14,7 @@ from app.domains.quality.service import (
     run_programmatic_qa,
 )
 from app.domains.quality.models import QAIssue
+from app.domains.quality.scorecard import RUBRIC
 from app.domains.skills.models import SkillRun
 from app.domains.skills.service import create_skill_run, ensure_default_validator_skill_version
 from app.domains.workflow.models import ReportCase, WorkflowOutbox
@@ -92,6 +93,8 @@ async def queue_case_quality_run(
         plan_json["generation"] = generation
         narrative_plan_snapshot["plan_json"] = plan_json
     qa_input = {
+        "scorecard_required": True,
+        "scoring_rubric": RUBRIC,
         "application_context": {
             "context": request_snapshot.get("context") or {},
             "selected_topics": request_snapshot.get("selected_topics") or [],
@@ -187,6 +190,8 @@ async def quality_state(
         )
     ]
     open_issues = [issue for issue in issues if issue.status == "OPEN"]
+    scorecard_required = bool(run and ((run.context_snapshot or {}).get("context") or {}).get("qa_input", {}).get("scorecard_required"))
+    scorecard_ready = not scorecard_required or bool(run and (run.output_parsed or {}).get("scorecard", {}).get("passes_threshold"))
     return ReportQualityResponse(
         report_case_id=report_case.id,
         quality_status=(
@@ -206,12 +211,13 @@ async def quality_state(
                 "error": run.error,
                 "model_trace": run.model_trace,
                 "completed_at": run.completed_at,
+                "scorecard": (run.output_parsed or {}).get("scorecard") if fingerprint_matches else None,
             }
             if run
             else None
         ),
         issues=issues,
-        can_approve=fingerprint_matches and not open_issues,
+        can_approve=fingerprint_matches and not open_issues and scorecard_ready,
         blocking_count=sum(issue.severity == "BLOCK" for issue in open_issues),
         open_count=len(open_issues),
         qa_fingerprint_current=current_fingerprint,

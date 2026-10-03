@@ -95,6 +95,7 @@ const ROLE_LABELS = {
 }
 
 const QUALITY_ISSUE_LABELS = {
+  quality_score_below_threshold: '报告质量评分未达交付门槛',
   FINDING_OVER_REPEATED: '同一专业判断被多段引用',
   source_fidelity: '用户经历需要核对',
   repetition: '段落内容需要精简',
@@ -105,6 +106,7 @@ const QUALITY_ISSUE_LABELS = {
 }
 
 const QUALITY_ISSUE_GUIDANCE = {
+  quality_score_below_threshold: '检查七维评分中的低分项，修订对应章节后重新校准。总分须达到80分，事实至少16分、安全至少8分。',
   FINDING_OVER_REPEATED: '核对各段是否各自承担不同作用；如果只是重复说明，可减少不必要的引用。',
   source_fidelity: '对照用户申请资料检查该段内容，只保留资料能够支持的经历与事实。',
   repetition: '比较相关段落的职责，保留一次完整说明，其余部分改为承接或补充新的角度。',

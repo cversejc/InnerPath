@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -27,7 +28,8 @@ from app.domains.delivery.assembler import assemble_report_version
 from app.domains.delivery.models import ReportVersion
 from app.domains.quality.models import QAIssue
 from app.domains.quality.service import resolve_qa_issue
-from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.skills.models import AISkillVersion, SkillRun, SkillExample
+from app.domains.quality.scorecard import RUBRIC
 from app.domains.workflow.models import (
     ReportCase,
     StepTask,
@@ -88,6 +90,7 @@ def quality_db():
         WorkflowOutbox.__table__,
         AISkillVersion.__table__,
         SkillRun.__table__,
+        SkillExample.__table__,
         CaseEvidenceItem.__table__,
         FindingRevision.__table__,
         ContentFragmentRevision.__table__,
@@ -163,11 +166,17 @@ async def test_current_report_coherence_context_omits_stale_chapter_checks(quali
     )
     quality_db.add(report_case)
     await quality_db.flush()
+    from app.domains.skills.service import ensure_default_narrative_skill_versions, create_skill_run
+    candidate_skill = (await ensure_default_narrative_skill_versions(quality_db))[0]
+    selected_run, _ = await create_skill_run(quality_db, skill_version_id=candidate_skill.id, idempotency_key="coherence-plan-source", input_snapshot={}, context_snapshot={}, report_case_id=report_case.id)
+    selected_run.status = "COMPLETED"
     plan = NarrativePlan(
         report_case_id=report_case.id,
         version_no=1,
         is_current=True,
         status="CONFIRMED",
+        selected_skill_run_id=selected_run.id,
+        selected_candidate_key="coherence-test",
         plan_json={
             "content_plan": {
                 "fragments": [
@@ -214,7 +223,7 @@ async def test_current_report_coherence_context_omits_stale_chapter_checks(quali
                 "challenge": {"status": "BLOCKED", "fingerprint": "old-version"},
             },
             "issues": [
-                {"scope": "CHAPTER", "chapter_key": "identity"},
+                {"scope": "CHAPTER", "chapter_key": "identity", "message": "current chapter issue"},
                 {"scope": "CHAPTER", "chapter_key": "challenge"},
                 {"scope": "REPORT", "message": "current report issue"},
             ],
@@ -225,6 +234,7 @@ async def test_current_report_coherence_context_omits_stale_chapter_checks(quali
     assert set(current["chapter_checks"]) == {"identity"}
     assert current["coherence"]["status"] == "PASSED"
     assert [issue.get("message") for issue in current["issues"]] == [
+        "current chapter issue",
         "current report issue"
     ]
 
@@ -267,7 +277,7 @@ async def test_quality_state_hides_validator_issues_for_a_stale_report_fingerpri
     validator = AISkillVersion(
         skill_key="report.final_validator",
         name="Final Validator",
-        category="VALIDATION",
+        category="VALIDATOR",
         version=1,
         status="PUBLISHED",
         specification_json={"identity": {"skill_key": "report.final_validator"}},
@@ -460,7 +470,7 @@ async def test_block_rework_and_qa_rerun_reaches_pass_with_stub_gateway(
         idempotency_key="qa-cycle-pass",
     )
     assert rerun["status"] == "PENDING"
-    gateway = StubGateway('{"issues":[]}')
+    gateway = StubGateway(json.dumps({"issues": [], "scorecard": {"dimensions": {key: {"score": maximum, "reason": "核对测试报告片段", "fragment_keys": ["report.identity"]} for key, maximum in RUBRIC.items()}}}))
     monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
     completed = await skill_runtime.execute_skill_run_record(
         quality_db, rerun["validator_run"].id
