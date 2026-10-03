@@ -9,7 +9,7 @@
           <p v-if="!isAdmin && caseId">Case #{{ caseId }}</p>
         </div>
         <div class="studio-heading-actions">
-          <router-link class="secondary-button compact-button" :to="isAdmin ? '/admin' : '/staff'">返回工作台</router-link>
+          <router-link class="secondary-button compact-button" :to="studioReturnLocation">返回工作台</router-link>
           <VanButton v-if="isAdmin" class="secondary-button compact-button" type="default" plain :disabled="loading" @click="loadVersions">刷新</VanButton>
         </div>
       </header>
@@ -153,6 +153,13 @@ export default {
     }
   },
   computed: {
+    studioReturnLocation() {
+      const fallback = this.isAdmin ? '/admin' : '/staff'
+      const target = typeof this.$route.query.return_to === 'string' ? this.$route.query.return_to : ''
+      if (target === '/staff' || target.startsWith('/staff?')) return target
+      if (this.isAdmin && (target === '/admin' || target.startsWith('/admin?'))) return target
+      return fallback
+    },
     editable() {
       return this.isAdmin && this.selectedVersion?.status === 'DRAFT'
     },

@@ -21,6 +21,7 @@ import {
   startReportCaseStep
 } from '../../report-cases/api.js'
 import { getCaseSkillRuns } from '../../skills/api.js'
+import { reportFragmentTitle } from '../../report-cases/stages.js'
 
 function splitReferences(value) {
   return String(value || '')
@@ -67,7 +68,7 @@ export default {
       this.reportFragmentDrafts = Object.fromEntries(
         content.fragments.map(fragment => [fragment.fragment_key, {
           revision_no: fragment.revision_no,
-          title: fragment.title || '',
+          title: reportFragmentTitle(fragment.fragment_key, fragment.title || ''),
           content: fragment.content,
           status: fragment.status === 'STALE' ? 'PROPOSED' : fragment.status,
           fragment_type: fragment.fragment_type,
@@ -149,7 +150,7 @@ export default {
         const refreshedDrafts = Object.fromEntries(
           content.fragments.map(fragment => [fragment.fragment_key, {
             revision_no: fragment.revision_no,
-            title: fragment.title || '',
+            title: reportFragmentTitle(fragment.fragment_key, fragment.title || ''),
             content: fragment.content,
             status: fragment.status === 'STALE' ? 'PROPOSED' : fragment.status,
             fragment_type: fragment.fragment_type,

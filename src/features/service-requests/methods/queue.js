@@ -24,6 +24,7 @@ export default {
           this.reportCase = null
           this.reportCaseCompletionGate = null
           this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
+          this.syncWorkspaceRoute(null)
           this.stopPolling()
         }
       }
@@ -35,6 +36,7 @@ export default {
   },
   async changeScope(scope) {
     this.scope = scope
+    this.syncWorkspaceRoute(null)
     this.selectedRequest = null
     this.workspace = null
     this.reportCase = null
@@ -43,10 +45,11 @@ export default {
     this.stopPolling()
     await this.loadRequests()
   },
-  async selectRequest(item) {
+  async selectRequest(item, { updateRoute = true } = {}) {
     this.stopPolling()
     this.selectedRequest = item
     this.workspaceSection = 'overview'
+    if (updateRoute) this.syncWorkspaceRoute(item.id, 'overview', { history: 'push' })
     this.workspace = null
     this.reportCase = null
     this.reportCaseCompletionGate = null
@@ -86,12 +89,17 @@ export default {
   },
   async acceptRequest() {
     if (!this.selectedRequest || this.accepting) return
+    const requestId = this.selectedRequest.id
     this.accepting = true
     try {
-      await acceptStaffServiceRequest(this.selectedRequest.id)
+      await acceptStaffServiceRequest(requestId)
+      if (this.scope === 'available') {
+        this.scope = this.admin ? 'all' : 'mine'
+        this.syncWorkspaceRoute(requestId, this.workspaceSection)
+      }
       this.message = '申请已接收，完整资料已开放。'
       await this.loadRequests()
-      await this.loadWorkspace(this.selectedRequest.id)
+      await this.loadWorkspace(requestId)
     } catch (error) {
       this.message = this.errorText(error)
       await this.loadRequests()
