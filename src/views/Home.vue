@@ -32,9 +32,9 @@
       <div class="container">
         <div class="section-heading">
           <p class="section-kicker">HOW IT HELPS</p>
-          <h2 class="section-title">一张说明书，两个方向</h2>
+          <h2 class="section-title">一本说明书，多种视角</h2>
           <p class="section-desc">
-            先读懂你的特质与处境，再把洞察变成每天可以使用的行动提示，八字、紫微、星盘等传统工具提供观察角度，心理学和哲学帮助你把看见的内容用回生活
+            八字、紫微、星盘等传统工具提供观察角度，读懂你的特质与处境；心理学和哲学帮助你把看见的内容变成生活中每天可以使用的行动提示。
           </p>
         </div>
         <div class="method-grid">
