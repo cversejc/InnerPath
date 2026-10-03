@@ -85,7 +85,7 @@ export default {
           const draftKey = this.narrativeDraftKey(run, candidate)
           if (!this.narrativeCandidateDrafts[draftKey]) {
             this.narrativeCandidateDrafts[draftKey] = {
-              core_theme: candidate.theme || '',
+              core_theme: this.consultantText(candidate.theme, ''),
               must_include_findings: [...(candidate.supporting_findings || [])],
               self_direction: ''
             }
@@ -170,7 +170,7 @@ export default {
             const draftKey = this.narrativeDraftKey(run, candidate)
             if (!this.narrativeCandidateDrafts[draftKey]) {
               this.narrativeCandidateDrafts[draftKey] = {
-                core_theme: candidate.theme || '',
+                core_theme: this.consultantText(candidate.theme, ''),
                 must_include_findings: [...(candidate.supporting_findings || [])],
                 self_direction: ''
               }
@@ -192,8 +192,8 @@ export default {
       })
       this.scheduleNarrativePoll(this.reportCase.id)
       this.message = this.reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'
-        ? '程序检查发现阻断问题，请先修订报告片段。'
-        : '最终质量审核已加入运行队列。'
+        ? '交付前检查发现必须处理的问题，请先修订报告内容。'
+        : '交付前检查已开始。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -210,7 +210,7 @@ export default {
         resolution: draft.resolution.trim()
       })
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = 'QA 问题处理记录已保存。'
+      this.message = '交付前问题处理记录已保存。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -220,9 +220,9 @@ export default {
   async approveReportFinalGate() {
     if (!this.reportCase || !this.finalGateAttested || this.reportStepSaving) return
     const confirmed = await this.confirmAction({
-      title: '确认最终人工门禁',
-      message: '确认已复核报告的核心叙事、用户贴合度与所有 QA 问题，并承担最终交付责任？',
-      confirmButtonText: '确认并完成 S6'
+      title: '确认最终复核',
+      message: '确认已复核报告主线、用户贴合度与所有检查问题，并承担最终交付责任？',
+      confirmButtonText: '确认并完成'
     })
     if (!confirmed) return
     this.reportStepSaving = true
@@ -233,7 +233,7 @@ export default {
       })
       this.finalGateAttested = false
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '最终人工门禁已通过，可以生成交付版本。'
+      this.message = '最终复核已通过，可以生成交付版本。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -268,7 +268,7 @@ export default {
         idempotency_key: `case-${this.reportCase.id}-narrative-${Date.now()}`
       })
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '叙事候选已加入运行队列。'
+      this.message = '报告主线建议已开始生成。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -278,9 +278,14 @@ export default {
   async confirmNarrativeCandidate(run, candidate) {
     const draft = this.narrativeCandidateDrafts[this.narrativeDraftKey(run, candidate)] || {}
     if (!this.reportCase || this.reportNarrativeSaving) return
+    const coreTheme = String(draft.core_theme || '').trim()
+    if (!coreTheme || !this.consultantText(coreTheme, '')) {
+      this.message = '请使用中文补充报告主线，再确认此方案。'
+      return
+    }
     const confirmed = await this.confirmAction({
       title: '确认叙事方案',
-      message: `将“${draft.core_theme || candidate.theme}”确认为第 ${Number(this.reportNarrative.current_plan?.version_no || 0) + 1} 版 NarrativePlan？`,
+      message: `将“${coreTheme}”确认为当前报告主线？`,
       confirmButtonText: '确认方案'
     })
     if (!confirmed) return
@@ -290,13 +295,13 @@ export default {
         skill_run_id: run.id,
         candidate_key: candidate.candidate_key,
         overrides: {
-          core_theme: draft.core_theme || candidate.theme,
+          core_theme: coreTheme,
           must_include_findings: draft.must_include_findings || candidate.supporting_findings || [],
           self_direction: draft.self_direction || null
         }
       })
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = 'NarrativePlan 已确认并保存为新版本。'
+      this.message = '报告主线已确认并保存。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -311,7 +316,7 @@ export default {
         idempotency_key: `case-${this.reportCase.id}-generation-${Date.now()}`
       })
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '完整报告已进入顺序写作队列。'
+      this.message = '报告内容已开始按顺序生成。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -327,8 +332,8 @@ export default {
       })
       await this.loadReportCaseData(this.reportCase.id)
       this.message = run.target_type === 'REPORT_CHAPTER_COHERENCE'
-        ? '当前章节的连贯性检查已加入队列。'
-        : '整本报告的连贯性检查已加入队列。'
+        ? '当前章节的连贯性检查已开始。'
+        : '整篇报告的连贯性检查已开始。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -348,7 +353,7 @@ export default {
       })
       this.newReportWritingFragment = { fragment_key: '', title: '' }
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '报告片段已加入写作队列。'
+      this.message = '报告内容已开始生成。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -362,7 +367,7 @@ export default {
     try {
       await startReportCaseStep(this.reportCase.id, step.step_key)
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '当前步骤已开始，可以审核 Case 内容。'
+      this.message = `已开始${this.reportStepLabel(step.step_key)}，可以查看并处理相关内容。`
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -415,7 +420,7 @@ export default {
     try {
       await reopenReportCaseStep(this.reportCase.id, step.step_key)
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = `${step.step_key} 已重新打开。`
+      this.message = `${this.reportStepLabel(step.step_key)}已重新打开。`
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -456,10 +461,10 @@ export default {
       await saveReportCaseFinding(this.reportCase.id, step.step_key, key, payload)
       this.editingFindingKey = null
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = 'Finding 新版本已保存。'
+      this.message = '专业判断的新版本已保存。'
     } catch (error) {
       this.message = error.response?.status === 409
-        ? 'Finding 已被其他人更新，内容已刷新，请确认后再编辑。'
+        ? '专业判断已被其他人更新，内容已刷新，请确认后再编辑。'
         : this.errorText(error)
       if (error.response?.status === 409) await this.loadReportCaseData(this.reportCase.id)
     } finally {
@@ -469,10 +474,11 @@ export default {
   async addReportFinding() {
     const draft = this.newReportFinding
     const step = this.currentReportStep
-    if (!this.reportCase || !step || !draft.finding_key.trim() || !draft.claim.trim() || this.reportFindingSaving) return
+    if (!this.reportCase || !step || !draft.claim.trim() || this.reportFindingSaving) return
     this.reportFindingSaving = true
     try {
-      await saveReportCaseFinding(this.reportCase.id, step.step_key, draft.finding_key.trim(), {
+      const findingKey = draft.finding_key.trim() || `consultant.added_${Date.now()}`
+      await saveReportCaseFinding(this.reportCase.id, step.step_key, findingKey, {
         expected_revision_no: null,
         claim: draft.claim.trim(),
         kind: 'FINDING',
@@ -486,12 +492,12 @@ export default {
         structured_data: {},
         edit_kind: 'SEMANTIC'
       })
-      this.newReportFinding = { finding_key: '', claim: '', semantic_role: '', evidence_refs: '' }
+      this.newReportFinding = { finding_key: '', claim: '', semantic_role: 'OBSERVATION', evidence_refs: '' }
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '新 Finding 已加入待审核列表。'
+      this.message = '新增的专业判断已加入待审核列表。'
     } catch (error) {
       this.message = error.response?.status === 409
-        ? '该 Finding 标识已存在，列表已刷新。'
+        ? '这条专业判断已存在，列表已刷新。'
         : this.errorText(error)
       if (error.response?.status === 409) await this.loadReportCaseData(this.reportCase.id)
     } finally {
@@ -516,10 +522,10 @@ export default {
         edit_kind: fragment.status === draft.status ? draft.edit_kind : 'SEMANTIC'
       })
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = 'Fragment 新版本已保存。'
+      this.message = '报告内容的新版本已保存。'
     } catch (error) {
       this.message = error.response?.status === 409
-        ? 'Fragment 已被其他人更新，内容已刷新，请确认后再编辑。'
+        ? '报告内容已被其他人更新，内容已刷新，请确认后再编辑。'
         : this.errorText(error)
       if (error.response?.status === 409) await this.loadReportCaseData(this.reportCase.id)
     } finally {
@@ -529,10 +535,11 @@ export default {
   async addReportFragment() {
     const draft = this.newReportFragment
     const step = this.currentReportStep
-    if (!this.reportCase || !step || !draft.fragment_key.trim() || !draft.content.trim() || this.reportFragmentSaving) return
+    if (!this.reportCase || !step || !draft.content.trim() || this.reportFragmentSaving) return
     this.reportFragmentSaving = true
     try {
-      await saveReportCaseFragment(this.reportCase.id, step.step_key, draft.fragment_key.trim(), {
+      const fragmentKey = draft.fragment_key.trim() || `consultant.content_${Date.now()}`
+      await saveReportCaseFragment(this.reportCase.id, step.step_key, fragmentKey, {
         expected_revision_no: null,
         fragment_type: 'ANALYSIS',
         title: draft.title.trim() || null,
@@ -545,10 +552,10 @@ export default {
       })
       this.newReportFragment = { fragment_key: '', title: '', content: '', finding_refs: '', evidence_refs: '' }
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '新 Fragment 已加入。'
+      this.message = '新增的报告内容已加入待确认列表。'
     } catch (error) {
       this.message = error.response?.status === 409
-        ? '该 Fragment 标识已存在，列表已刷新。'
+        ? '这段报告内容已存在，列表已刷新。'
         : this.errorText(error)
       if (error.response?.status === 409) await this.loadReportCaseData(this.reportCase.id)
     } finally {

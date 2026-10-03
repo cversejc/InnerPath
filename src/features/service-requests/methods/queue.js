@@ -27,17 +27,6 @@ export default {
           this.stopPolling()
         }
       }
-      if (!this.selectedRequest && !this.admin && this.scope === 'mine') {
-        const reportRequests = this.requests.items
-          .filter(item => item.service_type === 'report' && item.current_step_key)
-          .sort((left, right) => {
-            const leftStep = Number(String(left.current_step_key).replace('S', '')) || Infinity
-            const rightStep = Number(String(right.current_step_key).replace('S', '')) || Infinity
-            return leftStep - rightStep || left.id - right.id
-          })
-        const nextRequest = reportRequests[0]
-        if (nextRequest) await this.selectRequest(nextRequest)
-      }
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -57,12 +46,16 @@ export default {
   async selectRequest(item) {
     this.stopPolling()
     this.selectedRequest = item
+    this.workspaceSection = 'overview'
     this.workspace = null
     this.reportCase = null
     this.reportCaseCompletionGate = null
     this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
     this.reportAnalysisRuns = []
     this.message = ''
+    this.$nextTick(() => {
+      if (this.selectedRequest?.id === item.id) this.$el?.scrollTo?.(0, 0)
+    })
     if (item.assigned_consultant_id || this.admin) await this.loadWorkspace(item.id)
   },
   async loadWorkspace(requestId) {

@@ -15,7 +15,7 @@ export default {
         idempotency_key: `case-${this.reportCase.id}-${step.step_key}-activation-${activation}-${Date.now()}`
       })
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = `${step.step_key} 分析草稿已进入运行队列。`
+      this.message = `${this.reportStepLabel(step.step_key)}的分析建议已开始生成。`
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -28,8 +28,8 @@ export default {
     if (existing?.source_skill_run_id === run.id) return
     if (existing?.status === 'CONFIRMED') {
       const confirmed = await this.confirmAction({
-        title: '建立 Finding 新版本',
-        message: '该判断已有已确认版本。应用此候选会建立新的待审核版本，并可能使依赖它的下游内容进入 STALE。',
+        title: '更新已确认的专业判断',
+        message: '这条判断已有确认版本。采用新建议会建立待审核版本，相关报告内容之后需要重新检查。',
         confirmButtonText: '建立新版本'
       })
       if (!confirmed) return
@@ -44,10 +44,10 @@ export default {
         { expected_revision_no: expectedRevisionNo }
       )
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '候选判断已加入待审核 Finding，确认后才会进入正式语义。'
+      this.message = '建议判断已加入待审核列表，确认后才会用于后续报告。'
     } catch (error) {
       this.message = error.response?.status === 409
-        ? 'Finding 已变化，内容已刷新，请核对后再应用。'
+        ? '专业判断已有更新，内容已刷新，请核对后再应用。'
         : this.errorText(error)
       if (error.response?.status === 409) await this.loadReportCaseData(this.reportCase.id)
     } finally {
@@ -60,8 +60,8 @@ export default {
     if (existing?.source_skill_run_id === run.id) return
     if (existing?.status === 'CONFIRMED') {
       const confirmed = await this.confirmAction({
-        title: '建立分析片段新版本',
-        message: '该分析片段已有已确认版本。应用此候选会建立新的待审核版本，并使依赖旧语义的下游内容进入 STALE。',
+        title: '更新已确认的分析内容',
+        message: '这段内容已有确认版本。采用新建议会建立待审核版本，相关报告内容之后需要重新检查。',
         confirmButtonText: '建立新版本'
       })
       if (!confirmed) return
@@ -76,10 +76,10 @@ export default {
         { expected_revision_no: expectedRevisionNo }
       )
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '候选片段已加入待审核内容。'
+      this.message = '建议内容已加入待审核列表。'
     } catch (error) {
       this.message = error.response?.status === 409
-        ? '分析片段已变化，内容已刷新，请核对后再应用。'
+        ? '分析内容已有更新，内容已刷新，请核对后再应用。'
         : this.errorText(error)
       if (error.response?.status === 409) await this.loadReportCaseData(this.reportCase.id)
     } finally {

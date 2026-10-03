@@ -35,11 +35,12 @@ export default {
       scopeOptions: admin
         ? [{ id: 'all', label: '全部申请' }, { id: 'available', label: '待接单' }, { id: 'mine', label: '我的处理中' }]
         : [{ id: 'mine', label: '我的处理中' }, { id: 'available', label: '待接单' }],
-      serviceType: '',
+      serviceType: 'report',
       statusFilter: '',
       statusOptions: ['submitted', 'accepted', 'ai_processing', 'ai_ready', 'reviewing', 'needs_info', 'failed', 'delivered'],
       requests: { total: 0, items: [] },
       selectedRequest: null,
+      workspaceSection: 'overview',
       workspace: null,
       reportCase: null,
       reportCaseContent: { evidence: [], findings: [], fragments: [] },
@@ -70,7 +71,7 @@ export default {
       reportStepReturn: { visible: false, targetStepKey: '', reason: '' },
       editingFindingKey: null,
       reportFindingDraft: null,
-      newReportFinding: { finding_key: '', claim: '', semantic_role: '', evidence_refs: '' },
+      newReportFinding: { finding_key: '', claim: '', semantic_role: 'OBSERVATION', evidence_refs: '' },
       reportFindingSaving: false,
       reportFragmentDrafts: {},
       newReportFragment: { fragment_key: '', title: '', content: '', finding_refs: '', evidence_refs: '' },
@@ -140,6 +141,76 @@ export default {
         chapterKey,
         status: checks[chapterKey]?.status || '待检查'
       }))
+    },
+    reportWorkspaceSections() {
+      const countBy = (items, predicate) => items.filter(predicate).length
+      return [
+        { id: 'overview', label: '处理总览' },
+        { id: 'context', label: '用户情境' },
+        { id: 'evidence', label: '资料依据', count: this.reportCaseContent.evidence.length },
+        {
+          id: 'findings',
+          label: '判断审核',
+          count: countBy(this.reportCaseContent.findings, item => item.status === 'PROPOSED')
+        },
+        {
+          id: 'fragments',
+          label: '报告内容',
+          count: countBy(this.reportCaseContent.fragments, item => ['PROPOSED', 'STALE'].includes(item.status))
+        },
+        { id: 'writing', label: '叙事写作' },
+        { id: 'quality', label: '交付前检查', count: this.reportQuality.open_count }
+      ]
+    },
+    semanticRoleOptions() {
+      return [
+        { value: 'OBSERVATION', label: '综合观察' },
+        { value: 'STRENGTH', label: '优势' },
+        { value: 'CHALLENGE', label: '需要留意' },
+        { value: 'CONFLICT', label: '内在张力' },
+        { value: 'PATTERN', label: '行为模式' },
+        { value: 'SIGNAL', label: '待验证线索' },
+        { value: 'THEME', label: '核心主题' },
+        { value: 'ACTION', label: '行动方向' }
+      ]
+    },
+    narrativePlanStatusLabel() {
+      return this.assetStatusLabel(this.reportNarrative.current_plan?.status) || '尚未确定'
+    },
+    reportGenerationStatusLabel() {
+      return {
+        NOT_STARTED: '报告内容尚未生成',
+        IN_PROGRESS: '正在生成报告内容',
+        CHAPTER_COHERENCE_CHECK: '正在检查章节内容',
+        COHERENCE_CHECK: '正在检查全文连贯性',
+        READY_FOR_REVIEW: '内容已生成，等待逐段审阅',
+        BLOCKED: '当前不能开始写作，请先补充已确认的判断',
+        NEEDS_INPUT: '需要补充内容后才能继续',
+        FAILED: '内容生成暂时失败，可稍后继续',
+        PAUSED: '内容生成已暂停，可继续未完成部分',
+        CHAPTER_COHERENCE_BLOCKED: '章节检查发现需要处理的问题',
+        CHAPTER_COHERENCE_FAILED: '章节检查暂时失败',
+        CHAPTER_COHERENCE_STALE: '章节内容已有更新，需要重新检查',
+        COHERENCE_BLOCKED: '全文检查发现需要处理的问题',
+        COHERENCE_FAILED: '全文检查暂时失败',
+        COHERENCE_STALE: '报告内容已有更新，需要重新检查'
+      }[this.reportGeneration.status] || '等待生成报告内容'
+    },
+    workbenchStatusLabel() {
+      const caseStatus = this.reportCase?.status
+      if (caseStatus === 'DELIVERED') return '已交付'
+      if (caseStatus === 'READY_TO_DELIVER') return '待生成交付版本'
+      if (caseStatus === 'BLOCKED') return '需要处理'
+      if (caseStatus === 'CANCELLED') return '已关闭'
+      if (this.currentReportStep) {
+        return `${this.reportStepLabel(this.currentReportStep.step_key)} · ${this.reportStepStatusLabel(this.currentReportStep.status)}`
+      }
+      return this.statusLabel(this.workspace?.request?.status || this.selectedRequest?.status)
+    },
+    workbenchStatusClass() {
+      if (this.reportCase?.status === 'DELIVERED') return 'staff-status-delivered'
+      if (this.reportCase?.status === 'BLOCKED') return 'staff-status-needs_info'
+      return ''
     }
   },
   mounted() {
@@ -158,7 +229,8 @@ export default {
     ...reportAnalysisMethods,
     ...assignmentMethods,
     reportFragmentStatus(fragmentKey) {
-      return this.reportCaseContent.fragments.find(item => item.fragment_key === fragmentKey)?.status || '待写作'
+      const status = this.reportCaseContent.fragments.find(item => item.fragment_key === fragmentKey)?.status
+      return this.assetStatusLabel(status) || '待撰写'
     },
     addEntry() {
       this.calendarEditor.entries.push({
@@ -178,22 +250,215 @@ export default {
       this.calendarEditor.entries.splice(index, 1)
     },
     statusLabel(status) {
-      return SERVICE_REQUEST_STATUS_LABELS[status] || status
+      return SERVICE_REQUEST_STATUS_LABELS[status] || '处理中'
     },
     reportStepLabel(stepKey) {
-      return reportStage(stepKey)?.shortName || stepKey
+      return reportStage(stepKey)?.shortName || '处理步骤'
     },
     reportStepStatusLabel(status) {
-      return REPORT_STEP_STATUS_LABELS[status] || status
+      return REPORT_STEP_STATUS_LABELS[status] || '处理中'
     },
-    scrollToReportSection(sectionId) {
-      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setReportWorkspaceSection(sectionId) {
+      const sectionMap = {
+        'case-context': 'context',
+        'case-evidence': 'evidence',
+        'case-findings': 'findings',
+        'case-fragments': 'fragments',
+        'case-narrative': 'writing',
+        'case-quality': 'quality'
+      }
+      const section = sectionMap[sectionId] || sectionId
+      if (this.reportWorkspaceSections.some(item => item.id === section)) this.workspaceSection = section
+    },
+    closeReportWorkspace() {
+      this.stopPolling()
+      this.selectedRequest = null
+      this.workspace = null
+      this.reportCase = null
+      this.reportCaseCompletionGate = null
+      this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
+      this.reportAnalysisRuns = []
+      this.workspaceSection = 'overview'
+      this.$nextTick(() => window.scrollTo(0, 0))
+    },
+    contextLabel(key) {
+      return {
+        focus_topics: '关注主题', selected_topics: '关注主题', current_challenge: '当前挑战',
+        expected_outcomes: '期待结果', issue_duration: '持续时间', impact_level: '影响程度',
+        decision_status: '决策进度', decision_description: '决策情况', decision_style: '决策方式',
+        additional_info: '补充说明', usage_scenario: '使用场景', calendar_goal: '当前目标',
+        goal: '当前目标', profile_version: '档案版本', gender: '性别', birth_date: '出生日期',
+        birth_time: '出生时间', birth_place: '出生地点'
+      }[key] || '其他补充信息'
+    },
+    contextValue(value) {
+      const labels = {
+        male: '男', female: '女', solar: '公历', lunar: '农历',
+        career: '职业发展', relationship: '亲密关系', family: '家庭议题',
+        self: '自我价值', growth: '个人成长', stress: '压力焦虑',
+        low: '较低', medium: '一般', high: '较高', critical: '非常高',
+        not_started: '尚未开始', considering: '正在考虑', decided: '已经决定',
+        undecided: '尚未决定', unsure: '尚未确定', yes: '是', no: '否'
+      }
+      const renderValue = item => {
+        if (Array.isArray(item)) return item.map(renderValue).filter(Boolean).join('、')
+        if (item && typeof item === 'object') return Object.values(item).map(renderValue).filter(Boolean).join('、')
+        if (item === true) return '是'
+        if (item === false) return '否'
+        if (item === null || item === undefined || item === '') return ''
+        const text = String(item)
+        return labels[text.toLowerCase().replace(/[ -]+/g, '_')] || this.consultantText(text, '已填写')
+      }
+      return renderValue(value) || '—'
+    },
+    evidenceLabel(evidence, index = 0) {
+      const prefix = evidence?.source_type === 'SYSTEM_CALCULATED'
+        ? '系统测算依据'
+        : evidence?.source_type === 'USER_CONTEXT' || evidence?.source_type === 'APPLICATION_CONTEXT'
+          ? '申请补充资料'
+          : '用户资料'
+      return `${prefix} ${index + 1}`
+    },
+    evidenceSourceLabel(sourceType) {
+      return {
+        SYSTEM_CALCULATED: '系统测算', USER_CONTEXT: '申请补充',
+        APPLICATION_CONTEXT: '申请补充', USER_PROFILE: '用户档案',
+        REPORT: '已交付报告', CONSULTANT: '咨询师补充'
+      }[sourceType] || '用户资料'
+    },
+    evidenceSummary(value) {
+      if (value === null || value === undefined || value === '') return '没有补充说明。'
+      if (Array.isArray(value)) return value.map(item => this.contextValue(item)).join('、')
+      if (typeof value !== 'object') return String(value)
+      return Object.entries(value)
+        .map(([key, item]) => `${this.contextLabel(key)}：${this.contextValue(item)}`)
+        .join('；')
+    },
+    humanizeReference(value) {
+      const labels = {
+        birth_profile: '出生资料', birth_date: '出生日期', birth_time: '出生时间',
+        four_pillars: '四柱测算', ziwei: '紫微测算', profile: '个人档案', context: '申请情境'
+      }
+      const parts = String(value || '').split(/[./:_-]+/).filter(Boolean)
+      const known = parts.map(part => labels[part]).filter(Boolean)
+      return known.join(' · ') || '其他资料来源'
+    },
+    evidenceTitles(keys) {
+      const refs = Array.isArray(keys) ? keys : String(keys || '').split(/[\n,，]/).map(item => item.trim()).filter(Boolean)
+      return [...new Set(refs.map(key => {
+        const index = this.reportCaseContent.evidence.findIndex(item => item.evidence_key === key)
+        return index >= 0 ? this.evidenceLabel(this.reportCaseContent.evidence[index], index) : ''
+      }).filter(Boolean))].join('、')
+    },
+    findingTitle(key) {
+      const finding = this.reportCaseContent.findings.find(item => item.finding_key === key)
+      return finding?.claim || '已确认的专业判断'
+    },
+    findingTitles(keys) {
+      const refs = Array.isArray(keys) ? keys : String(keys || '').split(/[\n,，]/).map(item => item.trim()).filter(Boolean)
+      return refs.map(key => this.findingTitle(key)).filter(Boolean).join('；')
+    },
+    fragmentTitle(key, planFragment = null) {
+      const fragment = this.reportCaseContent.fragments.find(item => item.fragment_key === key)
+      if (fragment?.title) return fragment.title
+      if (planFragment?.chapter) return this.chapterLabel(planFragment.chapter)
+      const planned = this.reportContentPlan?.fragments?.find(item => item.fragment_key === key)
+      return planned?.chapter ? this.chapterLabel(planned.chapter) : '报告内容'
+    },
+    fragmentTitles(keys) {
+      const refs = Array.isArray(keys) ? keys : String(keys || '').split(/[\n,，]/).map(item => item.trim()).filter(Boolean)
+      return refs.map(key => this.fragmentTitle(key)).join('、')
+    },
+    chapterLabel(key) {
+      const chapter = String(key || '')
+      const numbered = chapter.match(/(?:chapter|第)[_ -]?(\d+)/i)
+      if (numbered) return `第 ${numbered[1]} 章`
+      return ({
+        INTRO: '开篇', OVERVIEW: '整体概览', BACKGROUND: '背景', SUMMARY: '总结',
+        CONCLUSION: '结语', ACTION_PLAN: '行动建议', CORE_PATTERN: '核心模式'
+      })[chapter.toUpperCase()] || '报告章节'
+    },
+    semanticRoleLabel(role) {
+      const option = this.semanticRoleOptions.find(item => item.value === role)
+      return option?.label || '综合观察'
+    },
+    confidenceLabel(value) {
+      return { LOW: '较低', MEDIUM: '一般', HIGH: '较高' }[value] || '一般'
+    },
+    importanceLabel(value) {
+      return { LOW: '普通', MEDIUM: '关注', HIGH: '重要', CRITICAL: '优先' }[value] || '普通'
+    },
+    editKindLabel(value) {
+      return { STYLE: '表达调整', SEMANTIC: '内容调整' }[value] || '内容调整'
+    },
+    assetStatusLabel(status) {
+      return {
+        ACTIVE: '可用', CONFIRMED: '已确认', PROPOSED: '待审核', REJECTED: '已拒绝',
+        STALE: '需要重新审核', OPEN: '待处理', RESOLVED: '已处理', ACCEPTED: '已接受',
+        DISMISSED: '已忽略', PENDING: '待开始', RUNNING: '正在处理', COMPLETED: '已完成', FAILED: '暂时失败',
+        READY: '待开始', BLOCKED: '需要处理', NOT_RUN: '尚未检查', PASSED: '检查通过',
+        PROGRAMMATIC_BLOCKED: '发现必须处理的问题', IN_PROGRESS: '正在生成', NEEDS_REVISION: '需要修改',
+        READY_FOR_REVIEW: '待审核', CREATED: '待开始', DELIVERED: '已交付', CANCELLED: '已关闭'
+      }[status] || ''
+    },
+    qualityStatusLabel(status) {
+      return {
+        NOT_RUN: '尚未检查', PASSED: '检查通过', PROGRAMMATIC_BLOCKED: '发现必须处理的问题',
+        BLOCKED: '暂不能交付', READY: '可以进行最终复核'
+      }[status] || '尚未检查'
+    },
+    qualityIssueLabel(type) {
+      const labels = {
+        MISSING_REPORT_CONTENT: '报告内容不完整', MISSING_SEMANTIC_SUPPORT: '内容缺少判断依据',
+        SOURCE_COVERAGE_GAP: '部分内容缺少来源说明', DUPLICATE_CONTENT: '内容存在重复',
+        UNSUPPORTED_CLAIM: '发现缺少依据的表述', INCONSISTENT_NARRATIVE: '前后表达不一致',
+        SAFETY_LANGUAGE: '需要检查建议表达', USER_CONTEXT_MISMATCH: '内容与用户情况不匹配'
+      }
+      return labels[type] || '报告内容需要检查'
+    },
+    issueLabel(type) {
+      return this.qualityIssueLabel(type)
+    },
+    issueSeverityLabel(severity) {
+      return { BLOCK: '必须处理', WARN: '建议处理', INFO: '提示' }[severity] || '提示'
+    },
+    consultantText(value, fallback = '请查看相关说明，并按建议处理。') {
+      const text = String(value || '').trim()
+      if (!text) return fallback
+      if (/[A-Za-z]{2,}/.test(text)) return fallback
+      return text
+    },
+    hasReference(value, key) {
+      const refs = Array.isArray(value) ? value : String(value || '').split(/[\n,，]/)
+      return refs.map(item => String(item).trim()).includes(key)
+    },
+    toggleReference(target, field, key, event) {
+      const refs = String(target[field] || '').split(/[\n,，]/).map(item => item.trim()).filter(Boolean)
+      const next = new Set(refs)
+      if (event.target.checked) next.add(key)
+      else next.delete(key)
+      target[field] = [...next].join('\n')
+    },
+    staffErrorText(error) {
+      const text = errorText(error)
+      if (/^[a-z][a-z0-9_]+$/.test(String(text)) || /[A-Za-z]{3,}/.test(String(text))) {
+        const messages = {
+          report_analysis_finding_reference_invalid: '分析建议引用的资料已变化。请刷新页面后重新生成建议。',
+          report_case_not_found: '未找到这份报告申请，请返回列表刷新后重试。',
+          report_case_step_not_active: '当前步骤已变化，请刷新后继续处理。',
+          report_analysis_output_required: '请先确认专业判断或分析内容，再完成本步骤。'
+        }
+        return messages[text] || '操作暂时无法完成，请刷新页面后重试。'
+      }
+      return text
+    },
+    errorText(error) {
+      return this.staffErrorText(error)
     },
     genderLabel,
     topicLabel,
     requestGoal,
     formatDate,
-    pretty: prettyJson,
-    errorText
+    pretty: prettyJson
   }
 }
