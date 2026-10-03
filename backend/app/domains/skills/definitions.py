@@ -271,17 +271,28 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         "semantic_model",
         "narrative_plan",
         "fragment_request",
+        "fragment_allocation",
+        "continuity",
     ]
     authoring["context_policy"]["context_fields"] = list(
         dict.fromkeys(
             authoring["context_policy"]["context_fields"]
-            + ["semantic_model", "narrative_plan", "fragment_request"]
+            + [
+                "semantic_model",
+                "narrative_plan",
+                "fragment_request",
+                "fragment_allocation",
+                "continuity",
+            ]
         )
     )
     authoring["instructions"] = {
         "objective": "仅根据确认语义与已确认 NarrativePlan 写作一个完整、可审校的报告小节。",
         "methodology": [
             "只允许选择、组织、转译和表达输入中的已确认内容。",
+            "严格遵循 fragment_allocation 中的 finding_refs、analysis_refs、action_refs、must_cover 和 new_information_role。",
+            "不得读取或推测分配范围外的 Case 内容；must_not_repeat 是硬性约束。",
+            "只将 continuity 视为写作衔接提示，不把它当成新的语义来源。",
             "不得创建事实、Finding、心理结论、行动建议或改变专业判断。",
             "若缺少语义支撑，返回 MISSING_SEMANTIC_SUPPORT 且不补写结论。",
             "列出 used_findings 与 used_analysis_fragments 的稳定标识。",
@@ -336,7 +347,10 @@ def default_validator_skill_specification() -> dict[str, Any]:
     spec["instructions"] = {
         "objective": "检查报告内容是否忠实于已确认的 Finding 和用户提供情境，并评估安全、跨章节一致性、叙事质量、行动质量和个性化。",
         "methodology": [
+            "严格只执行 qa_input.validation_scope 明确列出的检查；chapter_key 存在时只检查该章已提供的片段。",
             "只报告有明确片段和证据的可修复问题，不重写报告。",
+            "章节检查关注本章的阅读顺序、段落衔接、重复、章节职责和来源覆盖。全文检查关注核心暗线、跨章一致性、Finding 覆盖、卡点到行动关系及开头结尾呼应。",
+            "将问题定位到具体 fragment_key；不要把全篇问题自动改写成正文。",
             "不得根据命理或心理内容作诊断或确定性预测。",
             "问题必须包含 issue_type、severity、message、evidence 和 suggestion；片段无法定位时 target_fragment_key 返回 null。",
             "severity 只能为 BLOCK、MAJOR 或 MINOR。无问题时返回空 issues。",

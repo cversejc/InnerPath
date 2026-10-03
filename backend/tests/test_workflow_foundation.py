@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 
 import pytest
@@ -384,3 +385,33 @@ async def test_outbox_publish_and_consume_are_idempotent(workflow_db, monkeypatc
     assert first_delivery["status"] == "ready"
     assert task.status == "READY"
     assert task.activation_no == 1
+
+
+@pytest.mark.asyncio
+async def test_outbox_task_disposes_database_engine_on_the_task_loop(monkeypatch):
+    from app.tasks import workflow_tasks
+
+    events = []
+
+    class EngineStub:
+        async def dispose(self):
+            events.append(("dispose", asyncio.get_running_loop()))
+
+    monkeypatch.setattr(workflow_tasks, "engine", EngineStub())
+
+    async def succeed():
+        events.append(("run", asyncio.get_running_loop()))
+        return "done"
+
+    assert await workflow_tasks._run_with_engine_disposal(succeed()) == "done"
+    assert events[0][1] is events[1][1]
+
+    events.clear()
+
+    async def fail():
+        events.append(("run", asyncio.get_running_loop()))
+        raise RuntimeError("task failed")
+
+    with pytest.raises(RuntimeError, match="task failed"):
+        await workflow_tasks._run_with_engine_disposal(fail())
+    assert events[0][1] is events[1][1]

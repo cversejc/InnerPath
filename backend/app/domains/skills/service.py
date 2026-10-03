@@ -19,6 +19,70 @@ def _now() -> datetime:
     return datetime.utcnow()
 
 
+async def _ensure_published_builtin_version(
+    db: AsyncSession,
+    *,
+    skill_key: str,
+    category: str,
+    specification: dict[str, Any],
+) -> AISkillVersion:
+    latest_published = await db.scalar(
+        select(AISkillVersion)
+        .where(
+            AISkillVersion.skill_key == skill_key,
+            AISkillVersion.status == "PUBLISHED",
+        )
+        .order_by(AISkillVersion.version.desc())
+        .limit(1)
+    )
+    if (
+        latest_published is not None
+        and latest_published.specification_json == specification
+    ):
+        return latest_published
+
+    latest_version = await db.scalar(
+        select(func.max(AISkillVersion.version)).where(
+            AISkillVersion.skill_key == skill_key
+        )
+    )
+
+    now = _now()
+    version = AISkillVersion(
+        skill_key=skill_key,
+        name=specification["identity"]["name"],
+        category=category,
+        version=(latest_version or 0) + 1,
+        status="PUBLISHED",
+        specification_json=specification,
+        created_by=None,
+        published_by=None,
+        created_at=now,
+        published_at=now,
+    )
+    try:
+        async with db.begin_nested():
+            db.add(version)
+            await db.flush()
+        return version
+    except IntegrityError:
+        existing = await db.scalar(
+            select(AISkillVersion)
+            .where(
+                AISkillVersion.skill_key == skill_key,
+                AISkillVersion.status == "PUBLISHED",
+            )
+            .order_by(AISkillVersion.version.desc())
+            .limit(1)
+        )
+        if (
+            existing is None
+            or existing.specification_json != specification
+        ):
+            raise
+        return existing
+
+
 async def create_skill_draft(
     db: AsyncSession,
     *,
@@ -148,92 +212,25 @@ async def ensure_default_skill_version(db: AsyncSession) -> AISkillVersion:
 async def ensure_default_narrative_skill_versions(
     db: AsyncSession,
 ) -> list[AISkillVersion]:
-    ensured = []
-    for spec in default_narrative_skill_specifications():
-        skill_key = spec["identity"]["skill_key"]
-        existing = await db.scalar(
-            select(AISkillVersion).where(
-                AISkillVersion.skill_key == skill_key,
-                AISkillVersion.version == 1,
-            )
-        )
-        if existing:
-            if existing.status != "PUBLISHED":
-                raise ValueError("default_narrative_skill_not_published")
-            ensured.append(existing)
-            continue
-        now = _now()
-        version = AISkillVersion(
-            skill_key=skill_key,
-            name=spec["identity"]["name"],
+    return [
+        await _ensure_published_builtin_version(
+            db,
+            skill_key=spec["identity"]["skill_key"],
             category="AUTHORING",
-            version=1,
-            status="PUBLISHED",
-            specification_json=spec,
-            created_by=None,
-            published_by=None,
-            created_at=now,
-            published_at=now,
+            specification=spec,
         )
-        try:
-            async with db.begin_nested():
-                db.add(version)
-                await db.flush()
-            ensured.append(version)
-        except IntegrityError:
-            existing = await db.scalar(
-                select(AISkillVersion).where(
-                    AISkillVersion.skill_key == skill_key,
-                    AISkillVersion.version == 1,
-                )
-            )
-            if existing is None or existing.status != "PUBLISHED":
-                raise
-            ensured.append(existing)
-    return ensured
+        for spec in default_narrative_skill_specifications()
+    ]
 
 
 async def ensure_default_validator_skill_version(db: AsyncSession) -> AISkillVersion:
-    skill_key = "report.final_validator"
-    existing = await db.scalar(
-        select(AISkillVersion).where(
-            AISkillVersion.skill_key == skill_key,
-            AISkillVersion.version == 1,
-        )
-    )
-    if existing:
-        if existing.status != "PUBLISHED":
-            raise ValueError("default_validator_skill_not_published")
-        return existing
     spec = default_validator_skill_specification()
-    now = _now()
-    version = AISkillVersion(
-        skill_key=skill_key,
-        name=spec["identity"]["name"],
+    return await _ensure_published_builtin_version(
+        db,
+        skill_key="report.final_validator",
         category="VALIDATOR",
-        version=1,
-        status="PUBLISHED",
-        specification_json=spec,
-        created_by=None,
-        published_by=None,
-        created_at=now,
-        published_at=now,
+        specification=spec,
     )
-    try:
-        async with db.begin_nested():
-            db.add(version)
-            await db.flush()
-        return version
-    except IntegrityError:
-        existing = await db.scalar(
-            select(AISkillVersion).where(
-                AISkillVersion.skill_key == skill_key,
-                AISkillVersion.version == 1,
-            )
-        )
-        if existing is None or existing.status != "PUBLISHED":
-            raise
-        return existing
 
 
 async def create_skill_run(

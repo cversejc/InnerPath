@@ -106,6 +106,22 @@ export default {
     },
     birthSummary() {
       return formatBirthSummary(this.workspace)
+    },
+    reportContentPlan() {
+      return this.reportNarrative.current_plan?.plan_json?.content_plan || null
+    },
+    reportGeneration() {
+      return this.reportNarrative.current_plan?.plan_json?.generation || {}
+    },
+    reportChapterChecks() {
+      const chapters = [...new Set(
+        (this.reportContentPlan?.fragments || []).map(item => item.chapter).filter(Boolean)
+      )]
+      const checks = this.reportGeneration.chapter_checks || {}
+      return chapters.map(chapterKey => ({
+        chapterKey,
+        status: checks[chapterKey]?.status || '待检查'
+      }))
     }
   },
   mounted() {
@@ -122,6 +138,9 @@ export default {
     ...workflowMethods,
     ...reportCaseMethods,
     ...assignmentMethods,
+    reportFragmentStatus(fragmentKey) {
+      return this.reportCaseContent.fragments.find(item => item.fragment_key === fragmentKey)?.status || '待写作'
+    },
     addEntry() {
       this.calendarEditor.entries.push({
         _key: `new-${Date.now()}-${Math.random()}`,

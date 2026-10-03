@@ -12,9 +12,11 @@ import {
   reopenReportCaseStep,
   resolveReportCaseQualityIssue,
   returnReportCaseStep,
+  runReportCaseCoherenceCheck,
   runReportCaseQuality,
   saveReportCaseFinding,
   saveReportCaseFragment,
+  startReportCaseGeneration,
   startReportCaseStep
 } from '../../report-cases/api.js'
 
@@ -96,7 +98,14 @@ export default {
       ...(this.reportNarrative.fragment_runs || []),
       ...(this.reportQuality.latest_validator_run ? [this.reportQuality.latest_validator_run] : [])
     ]
-    if (!runs.some(run => ['PENDING', 'RUNNING'].includes(run.status))) return
+    const generationRunning = [
+      'IN_PROGRESS',
+      'CHAPTER_COHERENCE_CHECK',
+      'COHERENCE_CHECK'
+    ].includes(
+      this.reportNarrative.current_plan?.plan_json?.generation?.status
+    )
+    if (!generationRunning && !runs.some(run => ['PENDING', 'RUNNING'].includes(run.status))) return
     this.reportNarrativePollTimer = setTimeout(async () => {
       if (this.reportCase?.id !== caseId) return
       try {
@@ -267,6 +276,38 @@ export default {
       })
       await this.loadReportCaseData(this.reportCase.id)
       this.message = 'NarrativePlan 已确认并保存为新版本。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportNarrativeSaving = false
+    }
+  },
+  async generateCompleteReport() {
+    if (!this.reportCase || this.reportNarrativeSaving) return
+    this.reportNarrativeSaving = true
+    try {
+      await startReportCaseGeneration(this.reportCase.id, {
+        idempotency_key: `case-${this.reportCase.id}-generation-${Date.now()}`
+      })
+      await this.loadReportCaseData(this.reportCase.id)
+      this.message = '完整报告已进入顺序写作队列。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportNarrativeSaving = false
+    }
+  },
+  async runReportCoherenceCheck() {
+    if (!this.reportCase || this.reportNarrativeSaving) return
+    this.reportNarrativeSaving = true
+    try {
+      const run = await runReportCaseCoherenceCheck(this.reportCase.id, {
+        idempotency_key: `case-${this.reportCase.id}-coherence-${Date.now()}`
+      })
+      await this.loadReportCaseData(this.reportCase.id)
+      this.message = run.target_type === 'REPORT_CHAPTER_COHERENCE'
+        ? '当前章节的连贯性检查已加入队列。'
+        : '整本报告的连贯性检查已加入队列。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {

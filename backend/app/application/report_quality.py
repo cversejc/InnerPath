@@ -85,6 +85,19 @@ async def queue_case_quality_run(
         },
         "confirmed_semantics": snapshot["semantic_model"],
         "narrative_plan": snapshot["narrative_plan"],
+        "content_plan": (
+            (snapshot["narrative_plan"].get("plan_json") or {}).get("content_plan")
+            if snapshot["narrative_plan"]
+            else None
+        ),
+        "validation_scope": [
+            "source_fidelity",
+            "chapter_coherence",
+            "report_coherence",
+            "repetition",
+            "block_to_action_link",
+            "safety",
+        ],
         "report_fragments": [
             {
                 "fragment_key": row["fragment_key"],

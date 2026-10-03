@@ -14,12 +14,13 @@ from app.domains.content.models import (
 )
 from app.domains.content.narrative import semantic_source_snapshot
 from app.domains.content.queries import load_case_semantic_model
+from app.domains.content.report_content_plan import validate_report_content_plan
 from app.domains.workflow.models import ReportCase, WorkflowInstance, WorkflowVersion
 
 
 REQUIRED_SECTIONS = {
     "identity": ("report.identity", "你是谁"),
-    "challenge": ("report.challenge", "卡在哪"),
+    "challenge": (("report.challenge", "report.blocks"), "卡在哪"),
     "direction": ("report.direction", "往哪去"),
 }
 BLOCKED_PHRASES = (
@@ -142,9 +143,191 @@ async def collect_programmatic_issues(
                 )
             )
 
+    content_plan = (
+        (current_plan.plan_json or {}).get("content_plan")
+        if current_plan is not None
+        else None
+    )
+    if isinstance(content_plan, dict) and semantic_model and current_plan is not None:
+        allocation_issues = validate_report_content_plan(
+            content_plan, semantic_model, current_plan.plan_json or {}
+        )
+        generation = (current_plan.plan_json or {}).get("generation") or {}
+        if content_plan.get("status") != "READY" or allocation_issues:
+            issues.append(
+                _issue(
+                    "CONTENT_PLAN_BLOCKED",
+                    "BLOCK",
+                    "报告内容分配未通过开始写作前的门禁。",
+                    evidence={
+                        "issues": allocation_issues
+                        or content_plan.get("validation_issues")
+                        or []
+                    },
+                    suggestion="补齐来源或修正内容分配后，重新确认 NarrativePlan。",
+                )
+            )
+        if generation.get("status") != "READY_FOR_REVIEW":
+            issues.append(
+                _issue(
+                    "REPORT_GENERATION_INCOMPLETE",
+                    "BLOCK",
+                    "报告片段顺序生成尚未全部完成，或仍有失败与语义缺口。",
+                    evidence={
+                        "generation_status": generation.get("status"),
+                        "current_fragment_key": generation.get("current_fragment_key"),
+                        "issues": generation.get("issues") or [],
+                    },
+                    suggestion="完成顺序生成并处理语义缺口，再进入最终质量审核。",
+                )
+            )
+        for allocation in content_plan.get("fragments", []):
+            if not isinstance(allocation, dict) or not allocation.get("required"):
+                continue
+            fragment = next(
+                (
+                    row
+                    for row in current_fragments
+                    if row.fragment_key == allocation.get("fragment_key")
+                ),
+                None,
+            )
+            if fragment is None or fragment.status != "CONFIRMED":
+                issues.append(
+                    _issue(
+                        "PLANNED_FRAGMENT_UNCONFIRMED",
+                        "BLOCK",
+                        f"计划片段 {allocation.get('fragment_key')} 尚未完成人工确认。",
+                        fragment=fragment,
+                        evidence={"fragment_key": allocation.get("fragment_key")},
+                        suggestion="逐段检查并确认所有必需报告片段。",
+                    )
+                )
+        must_include = set(
+            (content_plan.get("semantic_priorities") or {}).get("must_include") or []
+        )
+        covered_must_include = {
+            ref.get("finding_key")
+            for fragment in current_fragments
+            if fragment.status == "CONFIRMED"
+            and fragment.source_narrative_plan_id == current_plan.id
+            for ref in (fragment.source_snapshot or {}).get("findings", [])
+            if isinstance(ref, dict)
+        }
+        uncovered = sorted(must_include - covered_must_include)
+        if uncovered:
+            issues.append(
+                _issue(
+                    "MUST_INCLUDE_UNCOVERED",
+                    "BLOCK",
+                    "NarrativePlan 要求纳入的 Finding 尚未被已确认片段覆盖。",
+                    evidence={"finding_keys": uncovered},
+                    suggestion="将每个必须纳入的 Finding 写入有来源映射的片段并确认。",
+                )
+            )
+        growth = next(
+            (
+                item
+                for item in content_plan.get("fragments", [])
+                if isinstance(item, dict)
+                and item.get("fragment_key") == "report.direction.growth_experiments"
+            ),
+            None,
+        )
+        if growth:
+            growth_fragment = next(
+                (
+                    row
+                    for row in current_fragments
+                    if row.fragment_key == growth.get("fragment_key")
+                    and row.status == "CONFIRMED"
+                    and row.source_narrative_plan_id == current_plan.id
+                ),
+                None,
+            )
+            actual_sources = {
+                ref.get("finding_key")
+                for ref in (
+                    (growth_fragment.source_snapshot or {}).get("findings", [])
+                    if growth_fragment
+                    else []
+                )
+                if isinstance(ref, dict)
+            }
+            action_refs = set(growth.get("action_refs") or [])
+            block_refs = {
+                ref
+                for allocation in content_plan.get("fragments", [])
+                if isinstance(allocation, dict)
+                and allocation.get("chapter") == "challenge"
+                for ref in allocation.get("finding_refs", [])
+            }
+            if (
+                growth_fragment is not None
+                and (
+                    not action_refs.intersection(actual_sources)
+                    or not block_refs.intersection(actual_sources)
+                )
+            ):
+                issues.append(
+                    _issue(
+                        "BLOCK_ACTION_LINK_MISSING",
+                        "BLOCK",
+                        "成长实验没有同时引用本计划中的卡点与 Action 来源。",
+                        fragment=growth_fragment,
+                        evidence={
+                            "action_refs": sorted(action_refs),
+                            "block_refs": sorted(block_refs),
+                        },
+                        suggestion="重新生成或修订该片段，使行动与已确认卡点建立来源联系。",
+                    )
+                )
+        introduction_count: Counter[str] = Counter()
+        allocations_by_key = {
+            item.get("fragment_key"): item
+            for item in content_plan.get("fragments", [])
+            if isinstance(item, dict)
+        }
+        for fragment in current_fragments:
+            if (
+                fragment.status != "CONFIRMED"
+                or fragment.source_narrative_plan_id != current_plan.id
+            ):
+                continue
+            used = {
+                ref.get("finding_key")
+                for ref in (fragment.source_snapshot or {}).get("findings", [])
+                if isinstance(ref, dict)
+            }
+            roles = (
+                allocations_by_key.get(fragment.fragment_key) or {}
+            ).get("finding_roles") or {}
+            for finding_key in used:
+                if roles.get(finding_key) == "INTRODUCE":
+                    introduction_count[finding_key] += 1
+        repeated = sorted(
+            key for key, count in introduction_count.items() if count > 1
+        )
+        if repeated:
+            issues.append(
+                _issue(
+                    "FINDING_MULTIPLE_FULL_INTRODUCTIONS",
+                    "BLOCK",
+                    "同一 Finding 在多个片段中被标记为完整引入。",
+                    evidence={"finding_keys": repeated},
+                    suggestion="保留一次完整解释，其余片段使用引用、呈现或回应方式承接。",
+                )
+            )
+
     for section, (prefix, label) in REQUIRED_SECTIONS.items():
+        prefixes = prefix if isinstance(prefix, tuple) else (prefix,)
         section_fragments = [
-            row for row in current_fragments if row.fragment_key == prefix or row.fragment_key.startswith(prefix + ".")
+            row
+            for row in current_fragments
+            if any(
+                row.fragment_key == item or row.fragment_key.startswith(item + ".")
+                for item in prefixes
+            )
         ]
         if not any(row.status == "CONFIRMED" and row.content.strip() for row in section_fragments):
             issues.append(
@@ -152,7 +335,7 @@ async def collect_programmatic_issues(
                     "MISSING_REQUIRED_SECTION",
                     "BLOCK",
                     f"报告缺少已确认的“{label}”章节片段。",
-                    evidence={"required_section": section, "fragment_prefix": prefix},
+                    evidence={"required_section": section, "fragment_prefixes": prefixes},
                     suggestion="补齐该章节的报告片段并确认。",
                 )
             )

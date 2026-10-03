@@ -797,6 +797,40 @@ async def test_regression_batches_persist_checks_and_gate_skill_publish(skill_db
 
 
 @pytest.mark.asyncio
+async def test_builtin_validator_update_keeps_unpublished_skill_studio_draft(skill_db):
+    from app.domains.skills.definitions import default_validator_skill_specification
+
+    published = await ensure_default_validator_skill_version(skill_db)
+    previous_specification = {
+        **published.specification_json,
+        "instructions": {
+            **published.specification_json["instructions"],
+            "objective": "Previous validator instructions.",
+        },
+    }
+    published.specification_json = previous_specification
+    await skill_db.flush()
+
+    draft_specification = default_validator_skill_specification()
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key="report.final_validator",
+        name=draft_specification["identity"]["name"],
+        category="VALIDATOR",
+        specification=draft_specification,
+        created_by=7,
+    )
+    assert draft.version == 2
+
+    updated = await ensure_default_validator_skill_version(skill_db)
+
+    assert updated.version == 3
+    assert updated.status == "PUBLISHED"
+    assert draft.status == "DRAFT"
+    assert draft.specification_json == draft_specification
+
+
+@pytest.mark.asyncio
 async def test_regression_batch_executes_through_skill_runtime_and_persists_result(skill_db):
     from app.application import skill_runtime
     from app.application.skill_evaluation import get_evaluation_batch, start_evaluation_batch

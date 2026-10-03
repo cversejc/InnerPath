@@ -73,6 +73,15 @@ async def assemble_report_version(
     )
     if not fragment_rows:
         raise ValueError("report_fragments_required")
+    planned_fragments = (plan.plan_json or {}).get("content_plan", {}).get("fragments", [])
+    fragment_order = {
+        item.get("fragment_key"): item.get("sequence_no")
+        for item in planned_fragments
+        if isinstance(item, dict) and isinstance(item.get("sequence_no"), int)
+    }
+    fragment_rows.sort(
+        key=lambda row: (fragment_order.get(row.fragment_key, 10_000), row.fragment_key)
+    )
     semantics = await load_case_semantic_model(db, report_case.id)
     fragment_snapshot = [
         {
@@ -96,6 +105,10 @@ async def assemble_report_version(
             for row in fragment_snapshot
             if row["fragment_key"] == f"report.{section_key}"
             or row["fragment_key"].startswith(f"report.{section_key}.")
+            or (
+                section_key == "challenge"
+                and row["fragment_key"].startswith("report.blocks.")
+            )
         ]
         for row in matching:
             structured_sections.append(
@@ -114,6 +127,10 @@ async def assemble_report_version(
         if not any(
             row["fragment_key"] == f"report.{section_key}"
             or row["fragment_key"].startswith(f"report.{section_key}.")
+            or (
+                section_key == "challenge"
+                and row["fragment_key"].startswith("report.blocks.")
+            )
             for section_key, _ in SECTION_ORDER
         )
     ]

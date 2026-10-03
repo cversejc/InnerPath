@@ -33,7 +33,11 @@ from app.domains.skills.runtime import (
     build_context_envelope,
     execute_skill,
 )
-from app.domains.skills.service import create_skill_run, ensure_default_skill_version
+from app.domains.skills.service import (
+    create_skill_run,
+    ensure_default_skill_version,
+    ensure_default_validator_skill_version,
+)
 from app.domains.workflow.definitions import (
     DEFAULT_WORKFLOW_KEY,
     default_workflow_definition,
@@ -140,6 +144,8 @@ async def _queue_run(
     report_case: ReportCase | None = None,
     step: StepTask | None = None,
     context_metadata: dict[str, Any] | None = None,
+    run_type: str | None = None,
+    commit: bool = True,
 ) -> tuple[SkillRun, bool]:
     skill_version = await db.get(AISkillVersion, version_id)
     if skill_version is None:
@@ -203,7 +209,7 @@ async def _queue_run(
         idempotency_key=idempotency_key,
         input_snapshot=input_snapshot,
         context_snapshot=context_snapshot,
-        run_type="EVALUATION" if report_case is None else "INITIAL",
+        run_type=run_type or ("EVALUATION" if report_case is None else "INITIAL"),
         target_type=target_type,
         target_key=target_key,
         report_case_id=report_case.id if report_case else None,
@@ -224,6 +230,8 @@ async def _queue_run(
         )
         db.add(event)
         await db.flush()
+    if not commit:
+        return run, created
     try:
         await db.commit()
     except Exception:
@@ -243,6 +251,120 @@ async def _queue_run(
         return existing, False
     await db.refresh(run)
     return run, created
+
+
+def _project_semantic_model(
+    semantic_model: dict[str, Any], allocation: dict[str, Any]
+) -> dict[str, list[dict[str, Any]]]:
+    finding_refs = set(allocation.get("finding_refs") or [])
+    analysis_refs = set(allocation.get("analysis_refs") or [])
+    evidence_refs = set(allocation.get("evidence_refs") or [])
+    findings = [
+        item
+        for item in semantic_model.get("findings", [])
+        if item.get("finding_key") in finding_refs
+    ]
+    analysis_fragments = [
+        item
+        for item in semantic_model.get("analysis_fragments", [])
+        if item.get("fragment_key") in analysis_refs
+    ]
+    evidence_refs.update(
+        evidence_key
+        for finding in findings
+        for evidence_key in finding.get("evidence_refs", [])
+    )
+    for fragment in analysis_fragments:
+        evidence_refs.update(
+            row.get("evidence_key")
+            for row in (fragment.get("source_snapshot") or {}).get("evidence", [])
+            if isinstance(row, dict) and row.get("evidence_key")
+        )
+    return {
+        "findings": findings,
+        "analysis_fragments": analysis_fragments,
+        "evidence": [
+            item
+            for item in semantic_model.get("evidence", [])
+            if item.get("evidence_key") in evidence_refs
+        ],
+    }
+
+
+async def queue_allocated_fragment_skill_run(
+    db: AsyncSession,
+    *,
+    report_case: ReportCase,
+    step: StepTask,
+    plan: NarrativePlan,
+    semantic_model: dict[str, Any],
+    allocation: dict[str, Any],
+    idempotency_key: str,
+    runtime_instruction: str | None = None,
+    continuity: dict[str, Any] | None = None,
+    generation_metadata: dict[str, Any] | None = None,
+    run_type: str = "INITIAL",
+    commit: bool = True,
+) -> tuple[SkillRun, bool]:
+    fragment_key = allocation.get("fragment_key")
+    if not isinstance(fragment_key, str) or not fragment_key:
+        raise ValueError("report_fragment_allocation_invalid")
+    skill_version = await db.scalar(
+        select(AISkillVersion)
+        .where(
+            AISkillVersion.skill_key == "report.fragment_authoring",
+            AISkillVersion.status == "PUBLISHED",
+        )
+        .order_by(AISkillVersion.version.desc())
+        .limit(1)
+    )
+    if skill_version is None:
+        raise ValueError("narrative_skill_unavailable")
+
+    application_snapshot = _safe_input_snapshot(report_case.application_snapshot or {})
+    context = dict(application_snapshot.get("context") or {})
+    context.update(
+        {
+            "semantic_model": _project_semantic_model(semantic_model, allocation),
+            "narrative_plan": {
+                key: value
+                for key, value in (plan.plan_json or {}).items()
+                if key not in {"content_plan", "generation"}
+            },
+            "narrative_plan_id": plan.id,
+            "fragment_request": {
+                "fragment_key": fragment_key,
+                "title": fragment_key.rsplit(".", 1)[-1].replace("_", " "),
+            },
+            "fragment_allocation": allocation,
+            "continuity": continuity or {},
+        }
+    )
+    input_data = {
+        **application_snapshot,
+        "context": context,
+        "semantic_source_snapshot": semantic_source_snapshot(semantic_model),
+        "source_narrative_plan_id": plan.id,
+    }
+    context_metadata = (
+        {"report_generation": generation_metadata}
+        if generation_metadata is not None
+        else None
+    )
+    return await _queue_run(
+        db,
+        version_id=skill_version.id,
+        idempotency_key=idempotency_key,
+        input_data=input_data,
+        runtime_instruction=runtime_instruction,
+        target_type="REPORT_FRAGMENT",
+        target_key=fragment_key,
+        report_case=report_case,
+        step=step,
+        context_metadata=context_metadata,
+        run_type=run_type,
+        commit=commit,
+    )
 
 
 async def queue_debug_skill_run(
@@ -394,6 +516,35 @@ async def queue_case_authoring_skill_run(
             raise ValueError("narrative_semantics_changed")
         if not fragment_key or not fragment_key.strip():
             raise ValueError("report_fragment_key_invalid")
+        content_plan = (plan.plan_json or {}).get("content_plan")
+        if isinstance(content_plan, dict):
+            if content_plan.get("status") != "READY":
+                raise ValueError("report_content_plan_blocked")
+            allocation = next(
+                (
+                    item
+                    for item in content_plan.get("fragments", [])
+                    if isinstance(item, dict)
+                    and item.get("fragment_key") == fragment_key.strip()
+                ),
+                None,
+            )
+            if allocation is None:
+                raise ValueError("report_fragment_not_in_content_plan")
+            if (plan.plan_json.get("generation") or {}).get("status") == "IN_PROGRESS":
+                raise ValueError("report_generation_in_progress")
+            return await queue_allocated_fragment_skill_run(
+                db,
+                report_case=report_case,
+                step=step,
+                plan=plan,
+                semantic_model=semantic_model,
+                allocation=allocation,
+                idempotency_key=idempotency_key,
+                runtime_instruction=runtime_instruction,
+                continuity=(plan.plan_json.get("generation") or {}).get("continuity"),
+                run_type="REGENERATE",
+            )
         context["narrative_plan"] = plan.plan_json
         context["narrative_plan_id"] = plan.id
         context["fragment_request"] = {
@@ -414,6 +565,76 @@ async def queue_case_authoring_skill_run(
         target_key=target_key,
         report_case=report_case,
         step=step,
+    )
+
+
+async def queue_case_report_coherence_skill_run(
+    db: AsyncSession,
+    *,
+    report_case: ReportCase,
+    step: StepTask,
+    plan: NarrativePlan,
+    semantic_model: dict[str, Any],
+    content_plan: dict[str, Any],
+    fragment_snapshot: list[dict[str, Any]],
+    coherence_fingerprint: str,
+    idempotency_key: str,
+    generation_metadata: dict[str, Any],
+    scope: str = "REPORT",
+    chapter_key: str | None = None,
+) -> tuple[SkillRun, bool]:
+    skill_version = await ensure_default_validator_skill_version(db)
+    application_snapshot = report_case.application_snapshot or {}
+    profile = application_snapshot.get("profile") or {}
+    qa_input = {
+        "application_context": {
+            "context": application_snapshot.get("context") or {},
+            "selected_topics": application_snapshot.get("selected_topics") or [],
+        },
+        "confirmed_semantics": semantic_model,
+        "narrative_plan": {
+            key: value
+            for key, value in (plan.plan_json or {}).items()
+            if key not in {"content_plan", "generation"}
+        },
+        "content_plan": content_plan,
+        "validation_scope": (
+            ["chapter_coherence"]
+            if scope == "CHAPTER"
+            else [
+                "report_coherence",
+                "repetition",
+                "block_to_action_link",
+                "source_fidelity",
+            ]
+        ),
+        "report_fragments": fragment_snapshot,
+    }
+    if chapter_key:
+        qa_input["chapter_key"] = chapter_key
+    return await _queue_run(
+        db,
+        version_id=skill_version.id,
+        idempotency_key=idempotency_key,
+        input_data={
+            "profile": {"name": profile.get("name")},
+            "context": {"qa_input": qa_input},
+            "semantic_source_snapshot": semantic_source_snapshot(semantic_model),
+            "source_narrative_plan_id": plan.id,
+        },
+        runtime_instruction=None,
+        target_type=(
+            "REPORT_CHAPTER_COHERENCE" if scope == "CHAPTER" else "REPORT_COHERENCE"
+        ),
+        target_key=(f"chapter:{chapter_key}" if scope == "CHAPTER" else "report.coherence"),
+        report_case=report_case,
+        step=step,
+        context_metadata={
+            "report_generation": generation_metadata,
+            "coherence_fingerprint": coherence_fingerprint,
+        },
+        run_type="VALIDATE",
+        commit=False,
     )
 
 
@@ -473,7 +694,9 @@ async def execute_skill_run_record(
             for key in (
                 "semantic_source_snapshot",
                 "source_narrative_plan_id",
+                "report_generation",
                 "qa_fingerprint",
+                "coherence_fingerprint",
                 "evaluation",
             )
             if key in prior_context
@@ -593,6 +816,22 @@ async def _save_authored_report_fragment(db: AsyncSession, run: SkillRun) -> Non
 
     used_findings = output.get("used_findings") or []
     used_fragments = output.get("used_analysis_fragments") or []
+    allocation = context.get("fragment_allocation")
+    if isinstance(allocation, dict):
+        if allocation.get("fragment_key") != (request.get("fragment_key") or run.target_key):
+            raise ValueError("report_fragment_allocation_invalid")
+        allocated_findings = set(allocation.get("finding_refs") or [])
+        allocated_analysis = set(allocation.get("analysis_refs") or [])
+        allocated_actions = set(allocation.get("action_refs") or [])
+        used_actions = output.get("used_actions") or []
+        if any(item not in allocated_findings for item in used_findings):
+            raise ValueError("report_fragment_unallocated_finding")
+        if any(item not in allocated_analysis for item in used_fragments):
+            raise ValueError("report_fragment_unallocated_analysis")
+        if any(item not in allocated_actions for item in used_actions):
+            raise ValueError("report_fragment_unallocated_action")
+        if allocated_actions and not (set(used_actions) & allocated_actions):
+            raise ValueError("report_fragment_action_support_missing")
     evidence_refs = {
         key
         for item in semantic_model.get("findings", [])

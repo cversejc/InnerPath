@@ -15,6 +15,12 @@ from app.application.workflow_commands import (
     start_case_step,
 )
 from app.application.skill_runtime import queue_case_authoring_skill_run
+from app.application.report_generation import (
+    start_case_report_coherence_check,
+    start_case_report_generation,
+    validate_report_authoring_completion,
+    validate_report_analysis_steps,
+)
 from app.application.report_quality import (
     close_case_qa_issue,
     queue_case_quality_run,
@@ -42,6 +48,7 @@ from app.domains.content.schemas import (
     NarrativePlanResponse,
     NarrativeStateResponse,
     ReportFragmentGenerate,
+    ReportGenerationCreate,
     ReportCaseContentResponse,
 )
 from app.domains.content.service import (
@@ -127,13 +134,21 @@ def _workflow_error(error: ValueError) -> None:
         "qa_block_cannot_be_accepted",
         "qa_issue_already_closed",
         "validator_run_in_progress",
+        "report_content_plan_required",
+        "report_content_plan_blocked",
+        "report_generation_semantic_gap",
+        "report_generation_in_progress",
+        "report_generation_state_invalid",
+        "report_authoring_not_ready",
+        "report_coherence_not_ready",
+        "report_coherence_state_invalid",
     }:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=code)
     if code == "report_case_forbidden":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
-    if code.startswith(("workflow_", "step_", "narrative_", "report_fragment_", "fragment_narrative_", "final_qa_", "qa_")):
+    if code.startswith(("workflow_", "step_", "narrative_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_authoring_", "report_coherence_", "fragment_narrative_", "final_qa_", "qa_")):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
         )
@@ -550,6 +565,7 @@ async def create_narrative_candidates(
 ):
     await _authorize_step_action(db, case_id, step_key, current_user, require_current_review=True)
     try:
+        await validate_report_analysis_steps(db, case_id)
         run, _created = await queue_case_authoring_skill_run(
             db,
             case_id=case_id,
@@ -593,6 +609,7 @@ async def confirm_report_case_narrative_plan(
         db, case_id, "S5", current_user, require_current_review=True
     )
     try:
+        await validate_report_analysis_steps(db, case_id)
         plan = await confirm_narrative_plan(
             db,
             report_case_id=case_id,
@@ -623,6 +640,7 @@ async def generate_report_case_fragment(
 ):
     await _authorize_step_action(db, case_id, step_key, current_user, require_current_review=True)
     try:
+        await validate_report_analysis_steps(db, case_id)
         run, _created = await queue_case_authoring_skill_run(
             db,
             case_id=case_id,
@@ -635,6 +653,56 @@ async def generate_report_case_fragment(
             fragment_title=data.title,
         )
         return run
+    except ValueError as error:
+        await db.rollback()
+        if str(error) == "report_case_forbidden":
+            raise HTTPException(status_code=403, detail=str(error))
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/narrative/generation",
+    response_model=NarrativePlanResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def start_report_case_generation(
+    case_id: int,
+    data: ReportGenerationCreate,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await start_case_report_generation(
+            db,
+            case_id=case_id,
+            actor=current_user,
+            idempotency_key=data.idempotency_key,
+        )
+    except ValueError as error:
+        await db.rollback()
+        if str(error) == "report_case_forbidden":
+            raise HTTPException(status_code=403, detail=str(error))
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/narrative/coherence-check",
+    response_model=SkillRunResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def run_report_case_coherence_check(
+    case_id: int,
+    data: ReportGenerationCreate,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await start_case_report_coherence_check(
+            db,
+            case_id=case_id,
+            actor=current_user,
+            idempotency_key=data.idempotency_key,
+        )
     except ValueError as error:
         await db.rollback()
         if str(error) == "report_case_forbidden":
@@ -778,6 +846,8 @@ async def complete_report_case_step(
 ):
     await _authorize_step_action(db, case_id, step_key, current_user)
     try:
+        if step_key == "S5":
+            await validate_report_authoring_completion(db, case_id)
         task = await complete_case_step(
             db,
             current_user.id,

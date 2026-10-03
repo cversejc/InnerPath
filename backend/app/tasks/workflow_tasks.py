@@ -12,6 +12,16 @@ from app.tasks.celery_app import celery_app
 logger = get_logger(__name__)
 
 
+async def _run_with_engine_disposal(operation):
+    try:
+        return await operation
+    finally:
+        try:
+            await engine.dispose()
+        except Exception:
+            logger.exception("Workflow task database connection disposal failed")
+
+
 async def _dispatch_pending_events(batch_size: int = 100) -> int:
     published = 0
     async with AsyncSessionLocal() as db:
@@ -67,6 +77,18 @@ async def _consume_outbox_event(event_id: int) -> dict:
             if not isinstance(run_id, int):
                 return {"event_id": event_id, "status": "invalid_payload"}
             run = await execute_skill_run_record(db, run_id)
+            if run.target_type in {
+                "REPORT_FRAGMENT",
+                "REPORT_CHAPTER_COHERENCE",
+                "REPORT_COHERENCE",
+            } and (
+                (run.context_snapshot or {}).get("report_generation")
+            ):
+                from app.application.report_generation import (
+                    advance_case_report_generation,
+                )
+
+                await advance_case_report_generation(db, run.id)
             return {
                 "event_id": event_id,
                 "status": run.status.lower(),
@@ -82,15 +104,11 @@ async def _consume_outbox_event(event_id: int) -> dict:
 
 @celery_app.task(name="dispatch_workflow_outbox")
 def dispatch_workflow_outbox():
-    try:
-        return asyncio.run(_dispatch_pending_events())
-    finally:
-        asyncio.run(engine.dispose())
+    return asyncio.run(_run_with_engine_disposal(_dispatch_pending_events()))
 
 
 @celery_app.task(name="consume_workflow_outbox_event")
 def consume_workflow_outbox_event(event_id: int):
-    try:
-        return asyncio.run(_consume_outbox_event(event_id))
-    finally:
-        asyncio.run(engine.dispose())
+    return asyncio.run(
+        _run_with_engine_disposal(_consume_outbox_event(event_id))
+    )

@@ -102,6 +102,19 @@ export async function confirmReportCaseNarrativePlan(caseId, payload) {
   return response.data
 }
 
+export async function startReportCaseGeneration(caseId, payload) {
+  const response = await apiClient.post(`/report-cases/${caseId}/narrative/generation`, payload)
+  return response.data
+}
+
+export async function runReportCaseCoherenceCheck(caseId, payload) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/narrative/coherence-check`,
+    payload
+  )
+  return response.data
+}
+
 export async function generateReportCaseFragment(caseId, stepKey, payload) {
   const response = await apiClient.post(
     `/report-cases/${caseId}/steps/${stepKey}/fragments/generate`,

@@ -10,6 +10,10 @@ from .common import require_case
 from .dependencies import mark_report_fragments_stale_for_plan
 from .models import NarrativePlan
 from .queries import load_case_semantic_model
+from .report_content_plan import (
+    build_report_content_plan,
+    validate_report_content_plan,
+)
 
 
 def semantic_source_snapshot(semantic_model: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
@@ -154,6 +158,34 @@ async def confirm_narrative_plan(
         plan_json["chapter_strategy"], dict
     ):
         raise ValueError("narrative_plan_structure_invalid")
+
+    application_snapshot = (await require_case(db, report_case_id)).application_snapshot or {}
+    content_plan = build_report_content_plan(
+        semantic_model,
+        plan_json,
+        user_context=application_snapshot.get("context") or {},
+    )
+    content_issues = validate_report_content_plan(
+        content_plan, semantic_model, plan_json
+    )
+    content_plan["status"] = "READY" if not content_issues else "BLOCKED"
+    content_plan["validation_issues"] = content_issues
+    plan_json["content_plan"] = content_plan
+    plan_json["generation"] = {
+        "status": "NOT_STARTED" if not content_issues else "BLOCKED",
+        "attempt": 0,
+        "request_key": None,
+        "current_sequence_no": None,
+        "active_run_id": None,
+        "completed_fragment_keys": [],
+        "continuity": {
+            "established_points": [],
+            "used_metaphors": [],
+            "unresolved_threads": [],
+        },
+        "runs": [],
+        "issues": content_issues,
+    }
 
     current = await get_current_narrative_plan(db, report_case_id)
     latest_version = await db.scalar(

@@ -120,11 +120,52 @@
                       </div>
                     </article>
                   </div>
-                  <form v-if="currentReportStep?.step_key === 'S5' && currentReportStep.status === 'IN_REVIEW' && reportNarrative.current_plan?.status === 'CONFIRMED'" class="narrative-writing-form" @submit.prevent="generateReportFragment">
-                    <div><strong>按片段写作</strong><small>每次生成一个可追溯来源的报告小节，结果进入待审核状态。</small></div>
-                    <div class="form-grid two"><label>稳定标识<input v-model.trim="newReportWritingFragment.fragment_key" maxlength="200" placeholder="例如 report.identity.world_view"></label><label>标题<input v-model.trim="newReportWritingFragment.title" maxlength="240" placeholder="例如：世界看到的你"></label></div>
-                    <VanButton class="primary-button compact-button" type="primary" native-type="submit" :disabled="reportNarrativeSaving || !newReportWritingFragment.fragment_key.trim()" :loading="reportNarrativeSaving">生成报告片段</VanButton>
-                  </form>
+                  <div v-if="reportNarrative.current_plan?.status === 'CONFIRMED' && !reportContentPlan" class="stale-note">当前 NarrativePlan 创建于内容分配上线前。请重新生成候选并确认新方案，以获得逐段来源计划。</div>
+                  <section v-if="reportContentPlan" class="narrative-allocation" aria-label="报告内容分配与顺序生成">
+                    <div class="narrative-allocation-heading">
+                      <strong>内容分配 · {{ reportContentPlan.fragments?.length || 0 }} 段</strong>
+                      <span class="asset-status">{{ reportContentPlan.status }}</span>
+                    </div>
+                    <p class="narrative-progress">
+                      生成状态：{{ reportGeneration.status || 'NOT_STARTED' }}
+                      <template v-if="reportGeneration.completed_fragment_keys?.length"> · 已生成 {{ reportGeneration.completed_fragment_keys.length }}/{{ reportContentPlan.fragments?.length || 0 }}</template>
+                      <template v-if="reportGeneration.current_fragment_key"> · 当前 {{ reportGeneration.current_fragment_key }}</template>
+                    </p>
+                    <p v-if="reportContentPlan.status === 'BLOCKED'" class="stale-note">内容分配有语义缺口，暂不能开始写作。请先回到上游步骤补充并确认相应 Finding。</p>
+                    <p v-for="issue in reportContentPlan.gaps || []" :key="`${issue.type}:${issue.target_fragment}`" class="stale-note">{{ issue.type }} · {{ issue.target_fragment }}：{{ issue.needed }}</p>
+                    <p v-for="(issue, issueIndex) in reportGeneration.issues || []" :key="`${issue.type}:${issue.target_fragment || ''}:${issue.skill_run_id || issueIndex}`" class="task-error">
+                      {{ issue.type }}<template v-if="issue.severity"> · {{ issue.severity }}</template> · {{ issue.target_fragment || '全文' }}：{{ issue.message }}
+                      <small v-if="issue.suggestion">建议：{{ issue.suggestion }}</small>
+                    </p>
+                    <div class="narrative-chapter-checks" aria-label="章节校验状态">
+                      <span v-for="chapter in reportChapterChecks" :key="chapter.chapterKey">
+                        {{ chapter.chapterKey }} · {{ chapter.status }}
+                      </span>
+                    </div>
+                    <ol class="narrative-allocation-list">
+                      <li v-for="fragment in reportContentPlan.fragments || []" :key="fragment.fragment_key">
+                        <div class="narrative-allocation-row">
+                          <strong>{{ String(fragment.sequence_no).padStart(2, '0') }} · {{ fragment.fragment_key }}</strong>
+                          <span class="asset-status">{{ reportFragmentStatus(fragment.fragment_key) }}</span>
+                        </div>
+                        <small>{{ fragment.chapter }} · {{ fragment.purpose }}</small>
+                        <small>Finding：{{ fragment.finding_refs?.join('、') || '无' }}</small>
+                        <small v-if="fragment.analysis_refs?.length">AnalysisFragment：{{ fragment.analysis_refs.join('、') }}</small>
+                        <small v-if="fragment.action_refs?.length">Action：{{ fragment.action_refs.join('、') }}</small>
+                        <small>必须覆盖：{{ fragment.must_cover?.join('、') || '无' }}</small>
+                      </li>
+                    </ol>
+                    <p v-if="reportGeneration.status === 'CHAPTER_COHERENCE_CHECK'" class="narrative-progress">正在检查“{{ reportGeneration.current_chapter_key }}”章节，阻断问题修复前不会继续写下一章。</p>
+                    <p v-if="reportGeneration.status === 'COHERENCE_CHECK'" class="narrative-progress">章节检查已完成，正在检查全篇主线、来源覆盖和章节间重复。</p>
+                    <p v-if="reportGeneration.coherence?.status === 'PASSED'" class="narrative-progress">全篇连贯性检查已通过。完成逐段人工审阅后，才能完成 S5。</p>
+                    <VanButton v-if="currentReportStep?.step_key === 'S5' && currentReportStep.status === 'IN_REVIEW' && reportContentPlan.status === 'READY' && !['IN_PROGRESS', 'CHAPTER_COHERENCE_CHECK', 'CHAPTER_COHERENCE_BLOCKED', 'CHAPTER_COHERENCE_FAILED', 'CHAPTER_COHERENCE_STALE', 'COHERENCE_CHECK', 'READY_FOR_REVIEW', 'COHERENCE_BLOCKED', 'COHERENCE_FAILED', 'COHERENCE_STALE', 'NEEDS_INPUT', 'BLOCKED'].includes(reportGeneration.status)" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportNarrativeSaving" :loading="reportNarrativeSaving" @click="generateCompleteReport">
+                      {{ reportGeneration.status === 'FAILED' || reportGeneration.status === 'PAUSED' ? '从当前片段恢复生成' : '按分配顺序生成完整报告' }}
+                    </VanButton>
+                    <VanButton v-if="currentReportStep?.step_key === 'S5' && currentReportStep.status === 'IN_REVIEW' && ['READY_FOR_REVIEW', 'CHAPTER_COHERENCE_BLOCKED', 'CHAPTER_COHERENCE_FAILED', 'CHAPTER_COHERENCE_STALE', 'COHERENCE_BLOCKED', 'COHERENCE_FAILED', 'COHERENCE_STALE'].includes(reportGeneration.status)" class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportNarrativeSaving" :loading="reportNarrativeSaving" @click="runReportCoherenceCheck">
+                      {{ reportGeneration.status.startsWith('CHAPTER_') ? `重新检查 ${reportGeneration.current_chapter_key} 章节` : '重新运行整本报告检查' }}
+                    </VanButton>
+                    <p v-if="reportGeneration.status === 'READY_FOR_REVIEW'" class="narrative-progress">顺序写作已完成。请在下方逐段审阅、修改并确认，再完成 S5。</p>
+                  </section>
                   <div v-for="run in reportNarrative.fragment_runs" :key="run.id" class="narrative-run">
                     <div class="asset-item-heading"><div><strong>{{ run.target_key || '报告片段' }} · 运行 #{{ run.id }}</strong><span class="asset-status">{{ run.status }}</span></div><small>{{ run.model_trace?.model || '' }}</small></div>
                     <p v-if="run.status === 'FAILED'" class="task-error">片段写作失败：{{ run.error || '请重试' }}</p>
