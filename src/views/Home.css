@@ -105,6 +105,8 @@
 }
 
 .prose-card {
+  max-width: 900px;
+  margin: 0 auto;
   padding: clamp(24px, 4vw, 38px);
   color: var(--ink-soft);
   font-size: var(--text-body-lg);
@@ -145,10 +147,12 @@
 }
 
 .method-card span {
-  color: rgba(184, 92, 80, 0.34);
+  color: var(--cinnabar-deep);
   font-family: var(--font-ui);
-  font-size: 38px;
+  font-size: var(--text-body-sm);
   font-weight: var(--weight-semibold);
+  line-height: var(--leading-ui);
+  letter-spacing: 0.04em;
 }
 
 .method-card h3,
@@ -207,12 +211,14 @@
 }
 
 .final-cta-inner {
+  max-width: 900px;
+  margin: 0 auto;
   border-top: 1px solid var(--line);
   padding-top: 44px;
 }
 
 .final-cta h2 {
-  margin-bottom: 24px;
+  margin-bottom: 14px;
   font-size: clamp(28px, 6vw, 46px);
   line-height: 1.2;
 }
