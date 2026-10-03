@@ -1,4 +1,10 @@
 from app.domains.content.report_content_plan import build_report_content_plan
+from app.domains.content.report_content_plan import _contains, _ACTION_ROLE_TOKENS
+
+
+def test_interaction_is_not_an_action_and_does_not_displace_an_experiment():
+    assert not _contains("INTERACTION_TENSION", _ACTION_ROLE_TOKENS)
+    assert _contains("ACTION_EXPERIMENT", _ACTION_ROLE_TOKENS)
 
 
 def test_sop_routes_timeline_and_actions_to_direction_instead_of_identity():

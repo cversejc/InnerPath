@@ -431,11 +431,7 @@ async def test_fragment_authoring_worker_saves_source_mapped_report_fragment(nar
             "finding_roles": {"finding.core": "INTRODUCE"},
             "new_information_role": "INTRODUCE",
         },
-        "continuity": {
-            "established_points": [],
-            "used_metaphors": [],
-            "unresolved_threads": [],
-        },
+        "continuity": {},  # First allocated fragment has no preceding prose.
     }
     writer_run = SkillRun(
         skill_version_id=authoring_skill.id,

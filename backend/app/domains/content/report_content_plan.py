@@ -1,4 +1,5 @@
 from collections import Counter
+import re
 from typing import Any
 from .report_sop_plan import enrich_sop_plan
 
@@ -58,7 +59,7 @@ def _role(finding: dict[str, Any]) -> str:
 
 
 def _contains(role: str, tokens: tuple[str, ...]) -> bool:
-    return any(token in role for token in tokens)
+    return any(re.search(rf"(?<![A-Z]){re.escape(token)}(?![A-Z])", role) if token.isascii() else token in role for token in tokens)
 
 
 def _rank(finding: dict[str, Any], focus_topics: set[str]) -> tuple[int, str]:
@@ -131,10 +132,13 @@ def _candidate_blocks(
     candidate: dict[str, Any], findings: list[dict[str, Any]], ranked: list[str]
 ) -> list[dict[str, Any]]:
     known = {item["finding_key"] for item in findings}
+    explicit_blocks = {item["finding_key"] for item in findings if _role(item) == "BLOCK"}
     blocks: list[dict[str, Any]] = []
     for index, block in enumerate(candidate.get("priority_blocks") or [], start=1):
         if isinstance(block, dict):
             refs = _unique_refs(block.get("finding_refs"), known)
+            if len(explicit_blocks) >= 3 and not explicit_blocks.intersection(refs):
+                continue
             key = block.get("block_key") or block.get("key") or f"block_{index:02d}"
             title = block.get("title") or block.get("name") or f"核心卡点 {index}"
         elif isinstance(block, str) and block in known:
@@ -276,7 +280,7 @@ def build_report_content_plan(
         "report.overview.psychic_structure",
         "identity",
         "用已确认材料概述整份说明书的主线，不展开单个判断。",
-        ranked[:3],
+        [key for key in ranked if not _contains(_role(by_key[key]), _ACTION_ROLE_TOKENS)][:3],
         role="SYNTHESIZE",
         must_cover=["整体结构", "核心主题"],
         required=False,
@@ -365,9 +369,7 @@ def build_report_content_plan(
             must_cover=["共同模式", "模式之间的关系"],
         )
     if block_finding_refs and action_refs:
-        breakthrough_refs = list(
-            dict.fromkeys(block_finding_refs[:2] + direction_refs[:1] + action_refs[:2])
-        )
+        breakthrough_refs = list(dict.fromkeys(block_finding_refs[:2] + direction_refs[:1]))
         add(
             "report.blocks.breakthrough",
             "challenge",
@@ -375,8 +377,7 @@ def build_report_content_plan(
             breakthrough_refs,
             role="RESPOND",
             role_overrides={ref: "MANIFEST" for ref in block_finding_refs[:2]},
-            must_cover=["需要发展的能力", "与行动的联系"],
-            action_source_refs=action_refs[:2],
+            must_cover=["需要发展的能力", "与行动的联系（只指向第三章，不写步骤）"],
         )
 
     stage_refs = role_refs(("CURRENT_STAGE", "TIMING", "STAGE_THEME"))
@@ -417,11 +418,10 @@ def build_report_content_plan(
         "report.ending",
         "direction",
         "回扣 NarrativePlan 主线，并收束到一个由来源支持的可行动方向。",
-        list(dict.fromkeys(must_include[:2] + direction_refs[:1] + action_refs[:1])),
+        list(dict.fromkeys(direction_refs[:1] or must_include[:1])),
         role="REFERENCE",
         must_cover=["主线回扣", "现实落点"],
         required=False,
-        action_source_refs=action_refs[:1],
     )
 
     enrich_sop_plan(specs, semantic_model, by_key, ranked)
@@ -436,8 +436,22 @@ def build_report_content_plan(
     for finding_key in dict.fromkeys(must_include + high_priority):
         if finding_key in allocated:
             continue
-        preferred = "direction" if _contains(_role(by_key[finding_key]), _ACTION_ROLE_TOKENS + _DIRECTION_ROLE_TOKENS) else "identity"
-        target = next((item for item in specs if item["chapter"] == preferred and (not _contains(_role(by_key[finding_key]), _ACTION_ROLE_TOKENS) or item["fragment_key"] == "report.direction.growth_experiments")), None)
+        role = _role(by_key[finding_key])
+        if _contains(role, _ACTION_ROLE_TOKENS):
+            target_key = "report.direction.growth_experiments"
+        elif "TIMELINE" in role or "TIMING" in role:
+            target_key = "report.direction.life_map"
+        elif "BREAKTHROUGH" in role:
+            target_key = "report.blocks.breakthrough"
+        elif "CYCLE" in role or "PATTERN" in role:
+            target_key = "report.blocks.common_pattern"
+        elif any(token in role for token in ("DEFENSE", "SHADOW", "COMPLEX")):
+            target_key = "report.identity.hidden_self"
+        elif _contains(role, _DIRECTION_ROLE_TOKENS):
+            target_key = "report.identity.self_direction"
+        else:
+            target_key = "report.identity.outer_self"
+        target = next((item for item in specs if item["fragment_key"] == target_key), None)
         if target:
             target["finding_refs"].append(finding_key)
             target["finding_roles"][finding_key] = "REFERENCE"

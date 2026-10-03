@@ -99,16 +99,17 @@ async def assemble_report_version(
         for row in fragment_rows
     ]
     structured_sections = []
+    planned_chapters = {item.get("fragment_key"): item.get("chapter") for item in planned_fragments if isinstance(item, dict)}
+    def belongs(row, section_key):
+        chapter = planned_chapters.get(row["fragment_key"])
+        if chapter in {key for key, _ in SECTION_ORDER}:
+            return chapter == section_key
+        return row["fragment_key"] == f"report.{section_key}" or row["fragment_key"].startswith(f"report.{section_key}.") or (section_key == "challenge" and row["fragment_key"].startswith("report.blocks."))
     for section_key, section_title in SECTION_ORDER:
         matching = [
             row
             for row in fragment_snapshot
-            if row["fragment_key"] == f"report.{section_key}"
-            or row["fragment_key"].startswith(f"report.{section_key}.")
-            or (
-                section_key == "challenge"
-                and row["fragment_key"].startswith("report.blocks.")
-            )
+            if belongs(row, section_key)
         ]
         for row in matching:
             structured_sections.append(
@@ -125,12 +126,7 @@ async def assemble_report_version(
         row
         for row in fragment_snapshot
         if not any(
-            row["fragment_key"] == f"report.{section_key}"
-            or row["fragment_key"].startswith(f"report.{section_key}.")
-            or (
-                section_key == "challenge"
-                and row["fragment_key"].startswith("report.blocks.")
-            )
+            belongs(row, section_key)
             for section_key, _ in SECTION_ORDER
         )
     ]

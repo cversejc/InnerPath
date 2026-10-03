@@ -1,0 +1,1746 @@
+{
+  "step": "S4",
+  "skill_key": "report.s4_mechanism_block_action",
+  "specification": {
+    "identity": {
+      "skill_key": "report.s4_mechanism_block_action",
+      "name": "S4 机制卡点与行动",
+      "description": "将已确认的上游语义组织为可核查的运作机制、关键卡点与低风险行动候选。"
+    },
+    "input_contract": {
+      "required": [],
+      "type": "object"
+    },
+    "context_policy": {
+      "required": [],
+      "optional": [],
+      "forbidden": [
+        "other_users",
+        "internal_chain_of_thought"
+      ],
+      "projection": "FULL"
+    },
+    "instructions": {
+      "objective": "将已确认的上游语义组织为可核查的运作机制、关键卡点与低风险行动候选。",
+      "methodology": [
+        "解释模式可能发挥的保护功能、触发条件和长期代价，不将其描述成缺陷或诊断。",
+        "优先提出可逆、具体、低成本且可复盘的行动，不替用户作重大决定。",
+        "每项机制、卡点或行动都必须引用已确认的 Finding 或 Evidence。",
+        "行动与专业判断分开表述；不得在本阶段创造缺少来源的新事实。",
+        "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+        "命理为表，心理为里，哲学为根；帮助用户看见模式并保留选择权。",
+        "必须为每个覆盖条目输出一个 analysis_fragments 对象，fragment_key 原样使用；资料不足也不可跳项。",
+        "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。",
+        "analysis.s4.defense｜4.1.1 防御机制：合理化/回避/讨好/理智化/完美主义/抽离/自我批评等候选的情境与保护功能；不用星曜诊断妄想或解离。",
+        "analysis.s4.energy｜4.1.2 能量管理：喜用/耗能信号与用户现实反馈对照，给出充电/耗电清单；五行活动是可试验建议，不承诺效果。",
+        "analysis.s4.shadow_practice｜4.1.3 阴影整合：选用日记（21天可调整）、写信、低风险角色扮演或艺术表达；写出接纳哪一面、何时暂停。",
+        "analysis.s4.complex_practice｜4.1.4 情结松动：命名→触发链记录→证据/反证→重写脚本→行为实验；CBT与荣格式工具适配真实问题。",
+        "analysis.s4.timing_self｜4.1.5–6 时序与自性：按顺势/调整/转换主题调整练习强度；整合意识、个人情结、集体原型、阴影与时序，问卷必须改变方向，不补逻辑空白，不写完美人格。",
+        "analysis.s4.blocks｜4.2 卡点理解：3–5个核心卡点（最终报告优先4–5，证据不足宁可暂缓）：场景、运作、曾保护什么、长期代价、整合邀请。这里不要给解决步骤。每个卡点生成 semantic_role=BLOCK 的 Finding。",
+        "analysis.s4.breakthrough｜4.2 共性与破局：共性路径与中式原型可学习资源；用神→本案调节功能→心理能力→现实缺口→工具→实验，不靠命盘替代现实；总结两端整合后的方向。",
+        "analysis.s4.functions｜4.3 八维路径：有MBTI/八维自报作为锚点，没自报不得推类型；MBTI不能伪造功能分数。画探索/价值/执行/反馈路径并标倾向假设。",
+        "analysis.s4.relationships｜4.4 关系循环：问卷+关系结构+加工倾向，描述请求/回应/感受/反馈循环；明确反例与要访谈的问题。",
+        "analysis.s4.experiments｜4.5 成长实验与日历：选择CBT/ACT/短焦/EFT情绪命名/依恋沟通中的3–5个日常练习（非治疗），生成 semantic_role=ACTION 的 Finding。structured_data 必含 block_refs（对应卡点ID数组）、method、steps（动作字符串数组）、frequency（daily/weekly/monthly/quarterly）、duration_minutes（1–60整数）、observation、stop_rule。分析片段包含每日能量/每周阴影/每月触发链/每季方向复盘；时间充裕度不足时减量。"
+      ],
+      "stage_key": "S4",
+      "sop_contract": {
+        "version": "product-analysis-2026-10-04-v1",
+        "responsibilities": {
+          "program": "校验卡点与行动引用、实验必填字段和日/周/月/季节奏；保持已审核来源版本。",
+          "ai": "解释防御的保护功能，提炼3–5个卡点与共性路径，匹配3–5个低成本成长实验和复盘节奏。",
+          "human": "核查场景是否来自问卷、行动是否适合时间与资源；选择或改写实验，确认退出条件与日历节奏。"
+        },
+        "topics": [
+          {
+            "fragment_key": "analysis.s4.defense",
+            "title": "4.1.1 防御机制",
+            "task": "合理化/回避/讨好/理智化/完美主义/抽离/自我批评等候选的情境与保护功能；不用星曜诊断妄想或解离。"
+          },
+          {
+            "fragment_key": "analysis.s4.energy",
+            "title": "4.1.2 能量管理",
+            "task": "喜用/耗能信号与用户现实反馈对照，给出充电/耗电清单；五行活动是可试验建议，不承诺效果。"
+          },
+          {
+            "fragment_key": "analysis.s4.shadow_practice",
+            "title": "4.1.3 阴影整合",
+            "task": "选用日记（21天可调整）、写信、低风险角色扮演或艺术表达；写出接纳哪一面、何时暂停。"
+          },
+          {
+            "fragment_key": "analysis.s4.complex_practice",
+            "title": "4.1.4 情结松动",
+            "task": "命名→触发链记录→证据/反证→重写脚本→行为实验；CBT与荣格式工具适配真实问题。"
+          },
+          {
+            "fragment_key": "analysis.s4.timing_self",
+            "title": "4.1.5–6 时序与自性",
+            "task": "按顺势/调整/转换主题调整练习强度；整合意识、个人情结、集体原型、阴影与时序，问卷必须改变方向，不补逻辑空白，不写完美人格。"
+          },
+          {
+            "fragment_key": "analysis.s4.blocks",
+            "title": "4.2 卡点理解",
+            "task": "3–5个核心卡点（最终报告优先4–5，证据不足宁可暂缓）：场景、运作、曾保护什么、长期代价、整合邀请。这里不要给解决步骤。每个卡点生成 semantic_role=BLOCK 的 Finding。"
+          },
+          {
+            "fragment_key": "analysis.s4.breakthrough",
+            "title": "4.2 共性与破局",
+            "task": "共性路径与中式原型可学习资源；用神→本案调节功能→心理能力→现实缺口→工具→实验，不靠命盘替代现实；总结两端整合后的方向。"
+          },
+          {
+            "fragment_key": "analysis.s4.functions",
+            "title": "4.3 八维路径",
+            "task": "有MBTI/八维自报作为锚点，没自报不得推类型；MBTI不能伪造功能分数。画探索/价值/执行/反馈路径并标倾向假设。"
+          },
+          {
+            "fragment_key": "analysis.s4.relationships",
+            "title": "4.4 关系循环",
+            "task": "问卷+关系结构+加工倾向，描述请求/回应/感受/反馈循环；明确反例与要访谈的问题。"
+          },
+          {
+            "fragment_key": "analysis.s4.experiments",
+            "title": "4.5 成长实验与日历",
+            "task": "选择CBT/ACT/短焦/EFT情绪命名/依恋沟通中的3–5个日常练习（非治疗），生成 semantic_role=ACTION 的 Finding。structured_data 必含 block_refs（对应卡点ID数组）、method、steps（动作字符串数组）、frequency（daily/weekly/monthly/quarterly）、duration_minutes（1–60整数）、observation、stop_rule。分析片段包含每日能量/每周阴影/每月触发链/每季方向复盘；时间充裕度不足时减量。"
+          }
+        ],
+        "missing_information_policy": "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。"
+      }
+    },
+    "knowledge_policy": {
+      "snapshot": [
+        {
+          "key": "everyday-growth-tools-v1",
+          "source": "docs/产品分析框架.md §4、§5.4",
+          "tools": {
+            "CBT": "记录事件/自动想法/感受/证据反证，做可逆的小实验",
+            "ACT": "把想法写成‘我正在有…的想法’，区分价值与讨好，选一个价值行动",
+            "短焦": "找例外、用0–10刻度观察小幅改变",
+            "EFT": "只用日常情绪命名和需求表达，不实施情绪唤起治疗",
+            "依恋沟通": "稳定而低负担的连接邀请，核查双方需要，不判断依恋类型"
+          },
+          "energy_options": {
+            "木": "自然/学习/规划",
+            "火": "表达/创造/适量社交",
+            "土": "规律/身体劳动",
+            "金": "整理/决断/边界",
+            "水": "写作/静观/独处"
+          },
+          "limits": "不得自动推荐临床治疗、断绝关系或辞职。每个练习必须可自主停止，效果以现实观察为准。"
+        }
+      ],
+      "retrieval": "VERSION_SNAPSHOT"
+    },
+    "example_policy": {
+      "enabled": true,
+      "max_examples": 3
+    },
+    "processor_policy": {
+      "processor": "reports.analysis_draft"
+    },
+    "tool_policy": {
+      "allowed": []
+    },
+    "model_policy": {
+      "provider": "deepseek",
+      "model": null,
+      "temperature": 0.35,
+      "max_tokens": 12000,
+      "timeout_seconds": 120.0
+    },
+    "output_contract": {
+      "type": "object",
+      "required": [
+        "summary",
+        "findings",
+        "analysis_fragments",
+        "risk_flags"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "finding_key",
+              "claim",
+              "kind",
+              "semantic_role",
+              "confidence",
+              "importance",
+              "reportability",
+              "evidence_refs",
+              "relation_refs",
+              "structured_data"
+            ],
+            "properties": {
+              "finding_key": {
+                "type": "string"
+              },
+              "claim": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "FINDING",
+                  "SIGNAL"
+                ]
+              },
+              "semantic_role": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH"
+                ]
+              },
+              "importance": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "CRITICAL"
+                ]
+              },
+              "reportability": {
+                "type": "string",
+                "enum": [
+                  "INTERNAL_ONLY",
+                  "OPTIONAL",
+                  "RECOMMENDED",
+                  "MUST_INCLUDE"
+                ]
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "relation_refs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "finding_key"
+                  ],
+                  "properties": {
+                    "finding_key": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "structured_data": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "analysis_fragments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "fragment_key",
+              "title",
+              "content",
+              "finding_refs",
+              "evidence_refs"
+            ],
+            "properties": {
+              "fragment_key": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "finding_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "risk_flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "message",
+              "references"
+            ],
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "references": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "guardrails": {
+      "global_policy_version": "global-policy-v1",
+      "blocked_phrases": [
+        "注定发财",
+        "必然离婚",
+        "保证治愈"
+      ]
+    },
+    "evaluation_profile": {
+      "metrics": [
+        "schema",
+        "source_fidelity",
+        "safety",
+        "stage_fit"
+      ],
+      "minimum_score": 0.8
+    }
+  },
+  "output": {
+    "summary": "S4 阶段将已确认的 S1–S3 语义组织为可核查的防御机制、能量管理、阴影与情结练习、时序与自性、3–5 个核心卡点、共性破局路径、八维探索路径、关系循环与 3–5 个低成本成长实验。所有命理映射均条件化（出生日期为演示假设），心理分析仅使用真实问卷内容；卡点与行动均引用已确认 Finding 或 Evidence，不新增事实、不作诊断、不替用户作重大决定。",
+    "findings": [
+      {
+        "finding_key": "s4.defense.rationalization_avoidance",
+        "claim": "防御候选（合理化/回避）：用户自述'有事才联系朋友，没事就放在那'（事实）可能对应以'不打扰'为理由回避低强度关系维护；保护功能是避免被拒绝或显得需要他人；长期代价是关系自然衰减。此为假设，须现实事件验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "DEFENSE",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.relationship_distance"
+          },
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          }
+        ],
+        "structured_data": {
+          "defense_candidate": [
+            "合理化",
+            "回避"
+          ],
+          "protection_function": "避免被拒绝或显得需要他人",
+          "long_term_cost": "关系自然衰减",
+          "note": "假设，须现实事件验证；不作诊断"
+        }
+      },
+      {
+        "finding_key": "s4.defense.people_pleasing",
+        "claim": "防御候选（讨好/迁就）：用户自述'不太会拒绝、习惯迁就'（事实）可能对应以先答应换取关系安全的讨好模式；保护功能是维持连接、避免冲突；长期代价是自我需求被压下、急迫感累积。此为假设，不作诊断。",
+        "kind": "SIGNAL",
+        "semantic_role": "DEFENSE",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          },
+          {
+            "finding_key": "s2.cycle.activation_path"
+          }
+        ],
+        "structured_data": {
+          "defense_candidate": [
+            "讨好",
+            "迁就"
+          ],
+          "protection_function": "维持连接、避免冲突",
+          "long_term_cost": "自我需求被压下、急迫感累积",
+          "note": "假设，须现实事件验证；不作诊断"
+        }
+      },
+      {
+        "finding_key": "s4.defense.intellectualization_self_criticism",
+        "claim": "防御候选（理智化/自我批评）：用户自报'权衡利弊'与'太着急'（事实）可能对应以分析替代感受、以自我批评推动行动的模式；保护功能是获得掌控感与避免失控；长期代价是难以停留于情绪、以急迫推进。此为假设，不作诊断。",
+        "kind": "SIGNAL",
+        "semantic_role": "DEFENSE",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.personality_keywords",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.persona.self_report_vs_interpretation"
+          }
+        ],
+        "structured_data": {
+          "defense_candidate": [
+            "理智化",
+            "自我批评"
+          ],
+          "protection_function": "获得掌控感、避免失控",
+          "long_term_cost": "难以停留于情绪、以急迫推进",
+          "note": "假设，须现实事件验证；不作诊断"
+        }
+      },
+      {
+        "finding_key": "s4.energy.charge_drain",
+        "claim": "能量管理候选：基于喜忌候选（水/木为资源方向，金/火/土为耗能方向）与用户现实自述（全职会计、'太着急'、'权衡利弊'）对照，可试验的充电方向为独处写作/静观（水）、自然/学习/规划（木）、同辈支持；耗电方向为规则压力（金）、过度输出（火）、务实消耗（土）。五行活动仅为可试验建议，不承诺效果；若格局判定反转则映射亦反转。",
+        "kind": "SIGNAL",
+        "semantic_role": "ENERGY",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          },
+          {
+            "finding_key": "s2.mapping.resource_drain"
+          }
+        ],
+        "structured_data": {
+          "charge_candidates": [
+            "水：写作/静观/独处",
+            "木：自然/学习/规划",
+            "同辈支持"
+          ],
+          "drain_candidates": [
+            "金：规则压力",
+            "火：过度输出",
+            "土：务实消耗"
+          ],
+          "caveat": "五行活动为可试验建议，不承诺效果；格局反转则映射反转"
+        }
+      },
+      {
+        "finding_key": "s4.blocks.boundary_pleasing",
+        "claim": "卡点1（以迁就换连接）：场景为他人请求或关系维护需求；运作为先答应、拒绝时语言生硬；曾保护的是关系安全与避免冲突；长期代价是自我需求被压下、关系反而疏远；整合邀请是让拒绝与联系都变得可协商、可修复。此处不给解决步骤。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s3.tension.core"
+          },
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          }
+        ],
+        "structured_data": {
+          "scene": "他人请求或关系维护需求",
+          "operation": "先答应、拒绝时语言生硬",
+          "protected": "关系安全、避免冲突",
+          "long_term_cost": "自我需求被压下、关系反而疏远",
+          "integration_invitation": "让拒绝与联系都变得可协商、可修复"
+        }
+      },
+      {
+        "finding_key": "s4.blocks.relationship_maintenance",
+        "claim": "卡点2（有事才联系）：场景为日常关系维护；运作为只在有事时联系、无事搁置；曾保护的是避免打扰与被拒绝；长期代价是关系逐渐疏远、失落累积；整合邀请是练习低强度、无目的的连接邀请。此处不给解决步骤。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.focus_topics"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.relationship_distance"
+          }
+        ],
+        "structured_data": {
+          "scene": "日常关系维护",
+          "operation": "只在有事时联系、无事搁置",
+          "protected": "避免打扰与被拒绝",
+          "long_term_cost": "关系逐渐疏远、失落累积",
+          "integration_invitation": "练习低强度、无目的的连接邀请"
+        }
+      },
+      {
+        "finding_key": "s4.blocks.urgency",
+        "claim": "卡点3（以急迫推进）：场景为需要等待、协商或不确定结果时；运作为以'太着急'推动自己与他人；曾保护的是避免停滞与失控感；长期代价是节奏失衡、关系张力与自我耗竭；整合邀请是把急迫转为节奏，允许季节而非催促。此处不给解决步骤。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s3.individuation.direction"
+          },
+          {
+            "finding_key": "s2.shadow.rest_and_play"
+          }
+        ],
+        "structured_data": {
+          "scene": "需要等待、协商或不确定结果时",
+          "operation": "以'太着急'推动自己与他人",
+          "protected": "避免停滞与失控感",
+          "long_term_cost": "节奏失衡、关系张力与自我耗竭",
+          "integration_invitation": "把急迫转为节奏，允许季节而非催促"
+        }
+      },
+      {
+        "finding_key": "s4.blocks.authority_expression",
+        "claim": "卡点4（权威期待与自我表达张力）：场景为需要表达真实需求或拒绝时；运作为在'应该迁就/不能生硬'的内在规则与自我表达之间拉扯；曾保护的是符合期待、维持形象；长期代价是主权感削弱、真实需求难被听见；整合邀请是分辨哪些规则是自己的、哪些是继承的。此处不给解决步骤。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.authority_expression"
+          },
+          {
+            "finding_key": "s2.authority.sovereignty_handover"
+          }
+        ],
+        "structured_data": {
+          "scene": "需要表达真实需求或拒绝时",
+          "operation": "在'应该迁就/不能生硬'的内在规则与自我表达之间拉扯",
+          "protected": "符合期待、维持形象",
+          "long_term_cost": "主权感削弱、真实需求难被听见",
+          "integration_invitation": "分辨哪些规则是自己的、哪些是继承的",
+          "note": "假设，须访谈验证；不指责家庭"
+        }
+      },
+      {
+        "finding_key": "s4.breakthrough.common_path",
+        "claim": "共性破局路径：用神候选（水/木）→本案调节功能（自我关怀、同辈支持）→心理能力（情绪命名、边界表达、低强度连接）→现实缺口（拒绝语言生硬、关系维护缺位）→工具（CBT/ACT/短焦/EFT情绪命名/依恋沟通）→实验（见 s4.experiments）。两端整合方向：连接与边界不是二选一，而是让拒绝与联系都变得可协商、可修复。命理不替代现实。",
+        "kind": "FINDING",
+        "semantic_role": "BREAKTHROUGH",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          },
+          {
+            "finding_key": "s3.tension.core"
+          },
+          {
+            "finding_key": "s3.individuation.direction"
+          }
+        ],
+        "structured_data": {
+          "useful_god_candidate": [
+            "水",
+            "木"
+          ],
+          "regulation_function": [
+            "自我关怀",
+            "同辈支持"
+          ],
+          "psychological_capacity": [
+            "情绪命名",
+            "边界表达",
+            "低强度连接"
+          ],
+          "reality_gap": [
+            "拒绝语言生硬",
+            "关系维护缺位"
+          ],
+          "tools": [
+            "CBT",
+            "ACT",
+            "短焦",
+            "EFT情绪命名",
+            "依恋沟通"
+          ],
+          "caveat": "喜忌为候选，反转则路径调整"
+        }
+      },
+      {
+        "finding_key": "s4.functions.exploration_path",
+        "claim": "八维探索路径（锚点为用户自报 ENFP，未测八维；不伪造功能分数）：探索路径倾向 Ne（可能性发散）——可对应'无知的乐观主义'与主动寻求建议；价值路径倾向 Fi（内在价值）——可对应'权衡利弊'与对自身性格建议的开放；执行路径倾向 Te（外部组织）——可对应全职会计角色与'急迫'；反馈路径倾向 Si（经验复盘）——可对应'每天晚上复盘'的使用场景。以上为倾向假设，须用户自评或八维测评验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "FUNCTION_PATH",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.mbti",
+          "input.profile.personality_keywords",
+          "input.profile.occupation_status",
+          "input.context.usage_scenario"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.persona.self_report_vs_interpretation"
+          }
+        ],
+        "structured_data": {
+          "anchor": "ENFP（自报，未测八维）",
+          "exploration": "Ne 倾向假设",
+          "value": "Fi 倾向假设",
+          "execution": "Te 倾向假设",
+          "feedback": "Si 倾向假设",
+          "note": "MBTI 不能伪造功能分数；须用户自评验证"
+        }
+      },
+      {
+        "finding_key": "s4.relationships.cycle",
+        "claim": "关系循环候选：请求（他人请求/关系维护需求，待补问）→回应（迁就为自述；先答应为假设，待核对）→感受（担心关系变差/内疚，假设）→反馈（关系维持但自我不适，假设）→长期（关系疏远，自述）。反例待访谈：是否也有温和拒绝且关系继续的经历？是否也有主动联系且关系维持的经历？须访谈的问题：触发情境具体是什么？对方实际反应如何？",
+        "kind": "SIGNAL",
+        "semantic_role": "RELATIONSHIP_CYCLE",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.context.focus_topics"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.cycle.activation_path"
+          },
+          {
+            "finding_key": "s2.complex.relationship_distance"
+          }
+        ],
+        "structured_data": {
+          "loop": [
+            "请求（待补问）",
+            "回应（自述：迁就；假设：先答应）",
+            "感受（假设：担心关系变差/内疚）",
+            "反馈（假设：关系维持但自我不适）",
+            "长期（自述：关系疏远）"
+          ],
+          "counter_examples": [
+            "是否也有温和拒绝且关系继续的经历？",
+            "是否也有主动联系且关系维持的经历？"
+          ],
+          "interview_questions": [
+            "触发情境具体是什么？",
+            "对方实际反应如何？"
+          ],
+          "note": "假设，须访谈验证；不作诊断"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.pause_before_commit",
+        "claim": "成长实验1（ACT价值澄清+行为实验）：针对卡点'以迁就换连接'，在低风险请求中练习先暂停再回应，观察对方实际反应与自身紧张程度。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.usage_scenario"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.boundary_pleasing"
+          ],
+          "method": "ACT价值澄清+行为实验",
+          "steps": [
+            "收到低风险请求先说：我看看安排，晚些回复你",
+            "稍后选择同意、部分帮忙或拒绝",
+            "记录对方实际反应与自己的紧张程度"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 5,
+          "observation": "记录对方实际反应与自己的紧张程度",
+          "stop_rule": "出现权力威胁或明显不适时暂停，先选择安全情境"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.low_stakes_contact",
+        "claim": "成长实验2（依恋沟通）：针对卡点'有事才联系'，每周一次低负担、无目的的联系邀请，观察关系反馈与自身感受。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.focus_topics"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.relationship_maintenance"
+          ],
+          "method": "依恋沟通（低负担连接邀请）",
+          "steps": [
+            "选一位安全对象，发一条无目的问候或分享",
+            "不要求对方立即回应，也不以此评判关系",
+            "记录发出前后的感受与对方回应"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 10,
+          "observation": "记录发出前后的感受与对方回应",
+          "stop_rule": "若连续两周出现明显焦虑或对方明确表示不便，暂停并先与咨询师讨论"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.emotion_naming",
+        "claim": "成长实验3（EFT情绪命名）：针对卡点'以急迫推进'，每天用1–10刻度命名当下情绪与需求，观察急迫感的变化。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.context.usage_scenario"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.urgency"
+          ],
+          "method": "EFT情绪命名（日常，不实施情绪唤起治疗）",
+          "steps": [
+            "每天晚间用1–10刻度命名当下情绪",
+            "写下一句需求表达：我现在需要……",
+            "观察急迫感刻度在命名前后的变化"
+          ],
+          "frequency": "daily",
+          "duration_minutes": 5,
+          "observation": "记录急迫感刻度在命名前后的变化",
+          "stop_rule": "若命名引发强烈不适或持续低落，暂停并寻求专业支持"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.thought_record",
+        "claim": "成长实验4（CBT想法记录）：针对卡点'权威期待与自我表达张力'，在拒绝或表达需求后记录自动想法、证据与反证，做可逆的小实验。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.authority_expression"
+          ],
+          "method": "CBT想法记录+行为实验",
+          "steps": [
+            "记录事件、自动想法、感受",
+            "写下支持与反对该想法的证据",
+            "设计一个可逆的小实验验证"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 15,
+          "observation": "记录想法强度与行为结果的变化",
+          "stop_rule": "若记录引发持续反刍或明显痛苦，暂停并先与咨询师讨论"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.scaling_review",
+        "claim": "成长实验5（短焦刻度复盘）：针对卡点'以迁就换连接'与'有事才联系'，每周用0–10刻度复盘边界与连接的小幅改变，找例外。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.usage_scenario",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.boundary_pleasing",
+            "s4.blocks.relationship_maintenance"
+          ],
+          "method": "短焦刻度复盘+找例外",
+          "steps": [
+            "每周用0–10刻度评估边界与连接状态",
+            "找出本周一个'比上周好一点'的例外",
+            "记录例外发生的条件"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 10,
+          "observation": "记录刻度变化与例外条件",
+          "stop_rule": "若刻度持续下降或出现明显困扰，暂停并寻求专业支持"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s4.defense",
+        "title": "4.1.1 防御机制",
+        "content": "【防御候选，须现实事件验证；不用星曜诊断妄想或解离】\n\n合理化/回避：用户自述'有事才联系朋友，没事就放在那'（事实）可能对应以'不打扰'为理由回避低强度关系维护；保护功能是避免被拒绝或显得需要他人；长期代价是关系自然衰减。\n\n讨好/迁就：用户自述'不太会拒绝、习惯迁就'（事实）可能对应以先答应换取关系安全；保护功能是维持连接、避免冲突；长期代价是自我需求被压下、急迫感累积。\n\n理智化/自我批评：用户自报'权衡利弊'与'太着急'（事实）可能对应以分析替代感受、以自我批评推动行动；保护功能是获得掌控感；长期代价是难以停留于情绪。\n\n抽离/完美主义：证据不足，暂缓；须访谈确认是否在特定场景（如职场）出现。\n\n注意：以上为假设，不作诊断；须回到真实重复情境验证。",
+        "finding_refs": [
+          "s4.defense.rationalization_avoidance",
+          "s4.defense.people_pleasing",
+          "s4.defense.intellectualization_self_criticism"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.energy",
+        "title": "4.1.2 能量管理",
+        "content": "【喜用/耗能信号与现实反馈对照；五行活动为可试验建议，不承诺效果】\n\n充电候选（水/木方向）：独处写作/静观（水）、自然/学习/规划（木）、同辈支持。与用户'每天晚上复盘'的使用场景一致，可试验。\n\n耗电候选（金/火/土方向）：规则压力（金，与全职会计角色相关）、过度输出（火）、务实消耗（土）。与用户自报'太着急''权衡利弊'方向一致（假设）。\n\n现实反馈对照：用户自述'有些影响'、'感觉一直存在'，提示耗电可能长期累积；须用户记录一周能量刻度验证。\n\n注意：喜忌为候选（身偏弱候选），若咨询师判定身强或从格，映射反转；五行活动不承诺效果。",
+        "finding_refs": [
+          "s4.energy.charge_drain"
+        ],
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.profile.limitations",
+          "input.profile.personality_keywords",
+          "input.context.impact_level"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.shadow_practice",
+        "title": "4.1.3 阴影整合",
+        "content": "【阴影整合练习，选用日记/写信/低风险角色扮演/艺术表达；写出接纳哪一面、何时暂停】\n\n接纳哪一面：边界需要与被压下的拒绝（s2.shadow.boundary_need 假设）；休息、欲望、游戏性（s2.shadow.rest_and_play 假设）。\n\n练习选项（可调整）：\n1）21天日记（可调整为14天）：每天写一句'今天我真实想要的是……'，不评判。\n2）写信（不寄出）：写给'总是先答应的自己'，表达理解与新的选择。\n3）低风险角色扮演：与信任对象练习一次温和拒绝，事后复盘。\n4）艺术表达：用颜色/线条画出'边界'与'连接'两端。\n\n何时暂停：若练习引发持续强烈不适、失眠或明显情绪低落，暂停并寻求专业支持；不实施情绪唤起治疗。\n\n注意：阴影不等同缺点；不作诊断。",
+        "finding_refs": [
+          "s4.defense.people_pleasing",
+          "s4.blocks.boundary_pleasing"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.complex_practice",
+        "title": "4.1.4 情结松动",
+        "content": "【情结松动：命名→触发链记录→证据/反证→重写脚本→行为实验；CBT与荣格式工具适配真实问题】\n\n命名：'表达需求可能破坏关系'（s2.complex.authority_expression 假设）。\n\n触发链记录：触发（他人请求/关系维护需求，待补问）→阴影浮现（边界需要，假设）→核心情绪（担心关系变差/内疚，假设）→防御（迁就为自述；先答应为假设，待核对）→短期结果（关系维持但自我不适，假设）→长期重复（关系疏远，自述）。\n\n证据/反证：证据为自述习惯迁就；反证待访谈——是否也有温和拒绝且关系继续的经历？\n\n重写脚本（候选）：'我可以温和而清晰地表达需求，关系可以承受协商。'\n\n行为实验：见 s4.experiments.pause_before_commit 与 s4.experiments.thought_record。\n\n注意：不虚构家庭成因；不作诊断。",
+        "finding_refs": [
+          "s4.blocks.authority_expression",
+          "s4.relationships.cycle"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.context.decision_style"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.timing_self",
+        "title": "4.1.5–6 时序与自性",
+        "content": "【按顺势/调整/转换主题调整练习强度；整合意识、个人情结、集体原型、阴影与时序；问卷必须改变方向，不补逻辑空白，不写完美人格】\n\n时序：当前大运戊辰（2017-2026，正财，土）末段，接近转换期（s3.timeline.current）；后续丁卯（2027-2036，食神，火/木）基调表达与滋养（s3.timeline.subsequent）。阶段为隐喻，不预测必然事件。\n\n顺势：在承担期练习边界与协商，练习强度宜低而稳定。\n调整：接近转换期，可逐步增加表达与连接的练习。\n转换：进入表达期后，可提高温和表达需求的练习频率。\n\n自性整合：意识（柔韧协调面具）↔个人情结（权威期待与自我表达张力）↔集体原型（谦：有原则的柔）↔阴影（边界需要、休息与游戏性）↔时序（承担→表达）。\n\n问卷改变方向：从'如何不迁就'转向'如何在连接中保有边界'；从'如何快速解决'转向'如何允许季节'。\n\n注意：不写完美人格；方向为探索假设，可由现实经验修正。",
+        "finding_refs": [
+          "s4.breakthrough.common_path",
+          "s4.energy.charge_drain"
+        ],
+        "evidence_refs": [
+          "input.context.analysis_date",
+          "input.context.expected_outcomes",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.blocks",
+        "title": "4.2 卡点理解",
+        "content": "【3–5个核心卡点：场景、运作、曾保护什么、长期代价、整合邀请；此处不给解决步骤】\n\n卡点1 以迁就换连接：场景为他人请求或关系维护需求；运作为先答应、拒绝时语言生硬；曾保护关系安全与避免冲突；长期代价是自我需求被压下、关系反而疏远；整合邀请是让拒绝与联系都变得可协商、可修复。\n\n卡点2 有事才联系：场景为日常关系维护；运作为只在有事时联系、无事搁置；曾保护避免打扰与被拒绝；长期代价是关系逐渐疏远、失落累积；整合邀请是练习低强度、无目的的连接邀请。\n\n卡点3 以急迫推进：场景为需要等待、协商或不确定结果时；运作为以'太着急'推动自己与他人；曾保护避免停滞与失控感；长期代价是节奏失衡、关系张力与自我耗竭；整合邀请是把急迫转为节奏。\n\n卡点4 权威期待与自我表达张力：场景为需要表达真实需求或拒绝时；运作为在'应该迁就/不能生硬'的内在规则与自我表达之间拉扯；曾保护符合期待、维持形象；长期代价是主权感削弱；整合邀请是分辨哪些规则是自己的、哪些是继承的。\n\n证据不足暂缓：'抽离/完美主义'卡点证据不足，暂缓；须访谈确认。\n\n注意：以上为假设，须现实事件验证；不作诊断。",
+        "finding_refs": [
+          "s4.blocks.boundary_pleasing",
+          "s4.blocks.relationship_maintenance",
+          "s4.blocks.urgency",
+          "s4.blocks.authority_expression"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations",
+          "input.context.decision_style"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.breakthrough",
+        "title": "4.2 共性与破局",
+        "content": "【共性路径与中式原型可学习资源；用神→调节功能→心理能力→现实缺口→工具→实验；不靠命盘替代现实】\n\n共性路径：四个卡点共享同一张力——连接与边界。用神候选（水/木）→本案调节功能（自我关怀、同辈支持）→心理能力（情绪命名、边界表达、低强度连接）→现实缺口（拒绝语言生硬、关系维护缺位）→工具（CBT/ACT/短焦/EFT情绪命名/依恋沟通）→实验（见 s4.experiments）。\n\n中式原型可学习资源（非史实诊断）：蔺相如式的以柔持正——柔韧而不失立场；张良式的谋定后动——把急迫转为节奏；'谦'卦（地山谦）——有原则的柔，但对方持续越界时不适用。\n\n两端整合方向：连接是资源，边界是主权；整合不是二选一，而是让拒绝与联系都变得可协商、可修复。\n\n注意：喜忌为候选，反转则路径调整；命理不替代现实。",
+        "finding_refs": [
+          "s4.breakthrough.common_path"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.expected_outcomes",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.functions",
+        "title": "4.3 八维路径",
+        "content": "【有MBTI/八维自报作为锚点，没自报不得推类型；MBTI不能伪造功能分数】\n\n锚点：用户自报 ENFP（未测八维）。\n\n探索路径：Ne 倾向假设——可对应'无知的乐观主义'与主动寻求建议。\n价值路径：Fi 倾向假设——可对应'权衡利弊'与对自身性格建议的开放。\n执行路径：Te 倾向假设——可对应全职会计角色与'急迫'。\n反馈路径：Si 倾向假设——可对应'每天晚上复盘'的使用场景。\n\n倾向假设标注：以上均为倾向假设，须用户自评或八维测评验证；不伪造功能分数。\n\n注意：MBTI 不能替代现实证据；不作诊断。",
+        "finding_refs": [
+          "s4.functions.exploration_path"
+        ],
+        "evidence_refs": [
+          "input.profile.mbti",
+          "input.profile.personality_keywords",
+          "input.profile.occupation_status",
+          "input.context.usage_scenario"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.relationships",
+        "title": "4.4 关系循环",
+        "content": "【问卷+关系结构+加工倾向，描述请求/回应/感受/反馈循环；明确反例与要访谈的问题】\n\n循环：请求（他人请求/关系维护需求，待补问）→回应（迁就为自述；先答应为假设，待核对）→感受（担心关系变差/内疚，假设）→反馈（关系维持但自我不适，假设）→长期（关系疏远，自述）。\n\n关系结构：用户自述'有事才联系朋友'，提示关系维护偏事件驱动；'每次困境会有女贵人出现'（用户自述）提示存在可用的支持资源。\n\n加工倾向：ENFP 自报提示可能偏好可能性发散与价值内省（假设）。\n\n反例：是否也有温和拒绝且关系继续的经历？是否也有主动联系且关系维持的经历？\n\n要访谈的问题：触发情境具体是什么？对方实际反应如何？'女贵人'出现的具体情境是什么？\n\n注意：假设，须访谈验证；不作诊断。",
+        "finding_refs": [
+          "s4.relationships.cycle"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.additional_info",
+          "input.context.focus_topics",
+          "input.profile.mbti"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.experiments",
+        "title": "4.5 成长实验与日历",
+        "content": "【3–5个日常练习（非治疗）；分析片段包含每日能量/每周阴影/每月触发链/每季方向复盘；时间充裕度不足时减量】\n\n实验1 暂停再回应（ACT价值澄清+行为实验）：针对卡点'以迁就换连接'；每周；5分钟；观察对方实际反应与自身紧张程度；出现权力威胁或明显不适时暂停。\n\n实验2 低负担联系（依恋沟通）：针对卡点'有事才联系'；每周；10分钟；记录发出前后的感受与对方回应；连续两周明显焦虑或对方明确不便时暂停。\n\n实验3 情绪命名（EFT情绪命名）：针对卡点'以急迫推进'；每日；5分钟；记录急迫感刻度变化；引发强烈不适或持续低落时暂停。\n\n实验4 想法记录（CBT）：针对卡点'权威期待与自我表达张力'；每周；15分钟；记录想法强度与行为结果变化；引发持续反刍时暂停。\n\n实验5 刻度复盘（短焦）：针对卡点1与2；每周；10分钟；记录刻度变化与例外条件；刻度持续下降时暂停。\n\n日历节奏：\n每日能量：晚间用1–10刻度记录能量与情绪（5分钟）。\n每周阴影：每周一次写'今天我真实想要的是……'（10分钟）。\n每月触发链：每月一次复盘触发链记录（20分钟）。\n每季方向复盘：每季一次用0–10刻度复盘边界与连接方向（30分钟）。\n\n时间充裕度不足时减量：优先保留实验1与实验3，其余可改为每月一次。\n\n注意：以上为非治疗性日常练习；效果以现实观察为准；可自主停止。",
+        "finding_refs": [
+          "s4.experiments.pause_before_commit",
+          "s4.experiments.low_stakes_contact",
+          "s4.experiments.emotion_naming",
+          "s4.experiments.thought_record",
+          "s4.experiments.scaling_review"
+        ],
+        "evidence_refs": [
+          "input.context.usage_scenario",
+          "input.context.expected_outcomes",
+          "input.profile.limitations"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "出生日期与出生城市为演示假设（2004-06-15、山东济南），命理解读（日主、格局、喜忌、大运、紫微）均条件化，须本人提供真实信息后重算并由咨询师确认；不得冒充用户真实命盘。",
+        "references": [
+          "input.profile.demo_assumptions",
+          "input.context.demo_assumptions",
+          "calculated.mingli_foundation.v2"
+        ]
+      },
+      {
+        "message": "喜忌与格局为候选（身偏弱候选），若咨询师判定身强或从格，喜忌与能量映射将反转；须人工确认后再定稿。",
+        "references": [
+          "s1.useful_gods.candidate",
+          "s1.structure.candidate_weak_officer",
+          "s4.energy.charge_drain"
+        ]
+      },
+      {
+        "message": "防御机制、阴影、情结、卡点与关系循环均为假设，须回到真实重复情境验证；不作心理诊断，不虚构家庭成因。",
+        "references": [
+          "s4.defense.people_pleasing",
+          "s4.blocks.boundary_pleasing",
+          "s4.relationships.cycle"
+        ]
+      },
+      {
+        "message": "成长实验为非治疗性日常练习，须用户自主选择与停止；若出现持续强烈不适、失眠或明显情绪低落，应暂停并寻求专业支持。",
+        "references": [
+          "s4.experiments.pause_before_commit",
+          "s4.experiments.emotion_naming",
+          "s4.experiments.thought_record"
+        ]
+      },
+      {
+        "message": "八维路径仅基于用户自报 ENFP（未测八维），为倾向假设；不得伪造功能分数或据此推断类型。",
+        "references": [
+          "input.profile.mbti",
+          "s4.functions.exploration_path"
+        ]
+      },
+      {
+        "message": "时支申金未校正真太阳时，时柱相关解读须咨询师核对；大运起止由库计算，须人工核对。",
+        "references": [
+          "s1.hour.shen_metal",
+          "s1.dayun.current_wuchen"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 34803,
+    "output_tokens": 9441,
+    "latency_ms": 33194,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "ad5fd892-df47-432e-b2ca-0b49b8d112ba",
+    "skill_version_id": 0,
+    "skill_key": "report.s4_mechanism_block_action",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "8ba4b0b7717f56b7b8bac3018e29f250747c7091895908a64cc330d0a5da2372",
+    "output_validation": "passed",
+    "reference_repairs": {
+      "invalid_finding_refs_removed": 7
+    }
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "开发者核查演示覆盖/来源/边界，非真实咨询师审核，不写入生产或对客户交付"
+  },
+  "original_model_output": {
+    "summary": "S4 阶段将已确认的 S1–S3 语义组织为可核查的防御机制、能量管理、阴影与情结练习、时序与自性、3–5 个核心卡点、共性破局路径、八维探索路径、关系循环与 3–5 个低成本成长实验。所有命理映射均条件化（出生日期为演示假设），心理分析仅使用真实问卷内容；卡点与行动均引用已确认 Finding 或 Evidence，不新增事实、不作诊断、不替用户作重大决定。",
+    "findings": [
+      {
+        "finding_key": "s4.defense.rationalization_avoidance",
+        "claim": "防御候选（合理化/回避）：用户自述'有事才联系朋友，没事就放在那'（事实）可能对应以'不打扰'为理由回避低强度关系维护；保护功能是避免被拒绝或显得需要他人；长期代价是关系自然衰减。此为假设，须现实事件验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "DEFENSE",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.relationship_distance"
+          },
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          }
+        ],
+        "structured_data": {
+          "defense_candidate": [
+            "合理化",
+            "回避"
+          ],
+          "protection_function": "避免被拒绝或显得需要他人",
+          "long_term_cost": "关系自然衰减",
+          "note": "假设，须现实事件验证；不作诊断"
+        }
+      },
+      {
+        "finding_key": "s4.defense.people_pleasing",
+        "claim": "防御候选（讨好/迁就）：用户自述'不太会拒绝、习惯迁就'（事实）可能对应以先答应换取关系安全的讨好模式；保护功能是维持连接、避免冲突；长期代价是自我需求被压下、急迫感累积。此为假设，不作诊断。",
+        "kind": "SIGNAL",
+        "semantic_role": "DEFENSE",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          },
+          {
+            "finding_key": "s2.cycle.activation_path"
+          }
+        ],
+        "structured_data": {
+          "defense_candidate": [
+            "讨好",
+            "迁就"
+          ],
+          "protection_function": "维持连接、避免冲突",
+          "long_term_cost": "自我需求被压下、急迫感累积",
+          "note": "假设，须现实事件验证；不作诊断"
+        }
+      },
+      {
+        "finding_key": "s4.defense.intellectualization_self_criticism",
+        "claim": "防御候选（理智化/自我批评）：用户自报'权衡利弊'与'太着急'（事实）可能对应以分析替代感受、以自我批评推动行动的模式；保护功能是获得掌控感与避免失控；长期代价是难以停留于情绪、以急迫推进。此为假设，不作诊断。",
+        "kind": "SIGNAL",
+        "semantic_role": "DEFENSE",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.personality_keywords",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.persona.self_report_vs_interpretation"
+          }
+        ],
+        "structured_data": {
+          "defense_candidate": [
+            "理智化",
+            "自我批评"
+          ],
+          "protection_function": "获得掌控感、避免失控",
+          "long_term_cost": "难以停留于情绪、以急迫推进",
+          "note": "假设，须现实事件验证；不作诊断"
+        }
+      },
+      {
+        "finding_key": "s4.energy.charge_drain",
+        "claim": "能量管理候选：基于喜忌候选（水/木为资源方向，金/火/土为耗能方向）与用户现实自述（全职会计、'太着急'、'权衡利弊'）对照，可试验的充电方向为独处写作/静观（水）、自然/学习/规划（木）、同辈支持；耗电方向为规则压力（金）、过度输出（火）、务实消耗（土）。五行活动仅为可试验建议，不承诺效果；若格局判定反转则映射亦反转。",
+        "kind": "SIGNAL",
+        "semantic_role": "ENERGY",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          },
+          {
+            "finding_key": "s2.mapping.resource_drain"
+          }
+        ],
+        "structured_data": {
+          "charge_candidates": [
+            "水：写作/静观/独处",
+            "木：自然/学习/规划",
+            "同辈支持"
+          ],
+          "drain_candidates": [
+            "金：规则压力",
+            "火：过度输出",
+            "土：务实消耗"
+          ],
+          "caveat": "五行活动为可试验建议，不承诺效果；格局反转则映射反转"
+        }
+      },
+      {
+        "finding_key": "s4.blocks.boundary_pleasing",
+        "claim": "卡点1（以迁就换连接）：场景为他人请求或关系维护需求；运作为先答应、拒绝时语言生硬；曾保护的是关系安全与避免冲突；长期代价是自我需求被压下、关系反而疏远；整合邀请是让拒绝与联系都变得可协商、可修复。此处不给解决步骤。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s3.tension.core"
+          },
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          }
+        ],
+        "structured_data": {
+          "scene": "他人请求或关系维护需求",
+          "operation": "先答应、拒绝时语言生硬",
+          "protected": "关系安全、避免冲突",
+          "long_term_cost": "自我需求被压下、关系反而疏远",
+          "integration_invitation": "让拒绝与联系都变得可协商、可修复"
+        }
+      },
+      {
+        "finding_key": "s4.blocks.relationship_maintenance",
+        "claim": "卡点2（有事才联系）：场景为日常关系维护；运作为只在有事时联系、无事搁置；曾保护的是避免打扰与被拒绝；长期代价是关系逐渐疏远、失落累积；整合邀请是练习低强度、无目的的连接邀请。此处不给解决步骤。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.focus_topics"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.relationship_distance"
+          }
+        ],
+        "structured_data": {
+          "scene": "日常关系维护",
+          "operation": "只在有事时联系、无事搁置",
+          "protected": "避免打扰与被拒绝",
+          "long_term_cost": "关系逐渐疏远、失落累积",
+          "integration_invitation": "练习低强度、无目的的连接邀请"
+        }
+      },
+      {
+        "finding_key": "s4.blocks.urgency",
+        "claim": "卡点3（以急迫推进）：场景为需要等待、协商或不确定结果时；运作为以'太着急'推动自己与他人；曾保护的是避免停滞与失控感；长期代价是节奏失衡、关系张力与自我耗竭；整合邀请是把急迫转为节奏，允许季节而非催促。此处不给解决步骤。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s3.individuation.direction"
+          },
+          {
+            "finding_key": "s2.shadow.rest_and_play"
+          }
+        ],
+        "structured_data": {
+          "scene": "需要等待、协商或不确定结果时",
+          "operation": "以'太着急'推动自己与他人",
+          "protected": "避免停滞与失控感",
+          "long_term_cost": "节奏失衡、关系张力与自我耗竭",
+          "integration_invitation": "把急迫转为节奏，允许季节而非催促"
+        }
+      },
+      {
+        "finding_key": "s4.blocks.authority_expression",
+        "claim": "卡点4（权威期待与自我表达张力）：场景为需要表达真实需求或拒绝时；运作为在'应该迁就/不能生硬'的内在规则与自我表达之间拉扯；曾保护的是符合期待、维持形象；长期代价是主权感削弱、真实需求难被听见；整合邀请是分辨哪些规则是自己的、哪些是继承的。此处不给解决步骤。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.authority_expression"
+          },
+          {
+            "finding_key": "s2.authority.sovereignty_handover"
+          }
+        ],
+        "structured_data": {
+          "scene": "需要表达真实需求或拒绝时",
+          "operation": "在'应该迁就/不能生硬'的内在规则与自我表达之间拉扯",
+          "protected": "符合期待、维持形象",
+          "long_term_cost": "主权感削弱、真实需求难被听见",
+          "integration_invitation": "分辨哪些规则是自己的、哪些是继承的",
+          "note": "假设，须访谈验证；不指责家庭"
+        }
+      },
+      {
+        "finding_key": "s4.breakthrough.common_path",
+        "claim": "共性破局路径：用神候选（水/木）→本案调节功能（自我关怀、同辈支持）→心理能力（情绪命名、边界表达、低强度连接）→现实缺口（拒绝语言生硬、关系维护缺位）→工具（CBT/ACT/短焦/EFT情绪命名/依恋沟通）→实验（见 s4.experiments）。两端整合方向：连接与边界不是二选一，而是让拒绝与联系都变得可协商、可修复。命理不替代现实。",
+        "kind": "FINDING",
+        "semantic_role": "BREAKTHROUGH",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          },
+          {
+            "finding_key": "s3.tension.core"
+          },
+          {
+            "finding_key": "s3.individuation.direction"
+          }
+        ],
+        "structured_data": {
+          "useful_god_candidate": [
+            "水",
+            "木"
+          ],
+          "regulation_function": [
+            "自我关怀",
+            "同辈支持"
+          ],
+          "psychological_capacity": [
+            "情绪命名",
+            "边界表达",
+            "低强度连接"
+          ],
+          "reality_gap": [
+            "拒绝语言生硬",
+            "关系维护缺位"
+          ],
+          "tools": [
+            "CBT",
+            "ACT",
+            "短焦",
+            "EFT情绪命名",
+            "依恋沟通"
+          ],
+          "caveat": "喜忌为候选，反转则路径调整"
+        }
+      },
+      {
+        "finding_key": "s4.functions.exploration_path",
+        "claim": "八维探索路径（锚点为用户自报 ENFP，未测八维；不伪造功能分数）：探索路径倾向 Ne（可能性发散）——可对应'无知的乐观主义'与主动寻求建议；价值路径倾向 Fi（内在价值）——可对应'权衡利弊'与对自身性格建议的开放；执行路径倾向 Te（外部组织）——可对应全职会计角色与'急迫'；反馈路径倾向 Si（经验复盘）——可对应'每天晚上复盘'的使用场景。以上为倾向假设，须用户自评或八维测评验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "FUNCTION_PATH",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.mbti",
+          "input.profile.personality_keywords",
+          "input.profile.occupation_status",
+          "input.context.usage_scenario"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.persona.self_report_vs_interpretation"
+          }
+        ],
+        "structured_data": {
+          "anchor": "ENFP（自报，未测八维）",
+          "exploration": "Ne 倾向假设",
+          "value": "Fi 倾向假设",
+          "execution": "Te 倾向假设",
+          "feedback": "Si 倾向假设",
+          "note": "MBTI 不能伪造功能分数；须用户自评验证"
+        }
+      },
+      {
+        "finding_key": "s4.relationships.cycle",
+        "claim": "关系循环候选：请求（他人请求/关系维护需求，待补问）→回应（先答应/迁就，自述）→感受（担心关系变差/内疚，假设）→反馈（关系维持但自我不适，假设）→长期（关系疏远，自述）。反例待访谈：是否也有温和拒绝且关系继续的经历？是否也有主动联系且关系维持的经历？须访谈的问题：触发情境具体是什么？对方实际反应如何？",
+        "kind": "SIGNAL",
+        "semantic_role": "RELATIONSHIP_CYCLE",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.context.focus_topics"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.cycle.activation_path"
+          },
+          {
+            "finding_key": "s2.complex.relationship_distance"
+          }
+        ],
+        "structured_data": {
+          "loop": [
+            "请求（待补问）",
+            "回应（自述：先答应/迁就）",
+            "感受（假设：担心关系变差/内疚）",
+            "反馈（假设：关系维持但自我不适）",
+            "长期（自述：关系疏远）"
+          ],
+          "counter_examples": [
+            "是否也有温和拒绝且关系继续的经历？",
+            "是否也有主动联系且关系维持的经历？"
+          ],
+          "interview_questions": [
+            "触发情境具体是什么？",
+            "对方实际反应如何？"
+          ],
+          "note": "假设，须访谈验证；不作诊断"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.pause_before_commit",
+        "claim": "成长实验1（ACT价值澄清+行为实验）：针对卡点'以迁就换连接'，在低风险请求中练习先暂停再回应，观察对方实际反应与自身紧张程度。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.usage_scenario"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.boundary_pleasing"
+          ],
+          "method": "ACT价值澄清+行为实验",
+          "steps": [
+            "收到低风险请求先说：我看看安排，晚些回复你",
+            "稍后选择同意、部分帮忙或拒绝",
+            "记录对方实际反应与自己的紧张程度"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 5,
+          "observation": "记录对方实际反应与自己的紧张程度",
+          "stop_rule": "出现权力威胁或明显不适时暂停，先选择安全情境"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.low_stakes_contact",
+        "claim": "成长实验2（依恋沟通）：针对卡点'有事才联系'，每周一次低负担、无目的的联系邀请，观察关系反馈与自身感受。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.focus_topics"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.relationship_maintenance"
+          ],
+          "method": "依恋沟通（低负担连接邀请）",
+          "steps": [
+            "选一位安全对象，发一条无目的问候或分享",
+            "不要求对方立即回应，也不以此评判关系",
+            "记录发出前后的感受与对方回应"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 10,
+          "observation": "记录发出前后的感受与对方回应",
+          "stop_rule": "若连续两周出现明显焦虑或对方明确表示不便，暂停并先与咨询师讨论"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.emotion_naming",
+        "claim": "成长实验3（EFT情绪命名）：针对卡点'以急迫推进'，每天用1–10刻度命名当下情绪与需求，观察急迫感的变化。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.context.usage_scenario"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.urgency"
+          ],
+          "method": "EFT情绪命名（日常，不实施情绪唤起治疗）",
+          "steps": [
+            "每天晚间用1–10刻度命名当下情绪",
+            "写下一句需求表达：我现在需要……",
+            "观察急迫感刻度在命名前后的变化"
+          ],
+          "frequency": "daily",
+          "duration_minutes": 5,
+          "observation": "记录急迫感刻度在命名前后的变化",
+          "stop_rule": "若命名引发强烈不适或持续低落，暂停并寻求专业支持"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.thought_record",
+        "claim": "成长实验4（CBT想法记录）：针对卡点'权威期待与自我表达张力'，在拒绝或表达需求后记录自动想法、证据与反证，做可逆的小实验。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.authority_expression"
+          ],
+          "method": "CBT想法记录+行为实验",
+          "steps": [
+            "记录事件、自动想法、感受",
+            "写下支持与反对该想法的证据",
+            "设计一个可逆的小实验验证"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 15,
+          "observation": "记录想法强度与行为结果的变化",
+          "stop_rule": "若记录引发持续反刍或明显痛苦，暂停并先与咨询师讨论"
+        }
+      },
+      {
+        "finding_key": "s4.experiments.scaling_review",
+        "claim": "成长实验5（短焦刻度复盘）：针对卡点'以迁就换连接'与'有事才联系'，每周用0–10刻度复盘边界与连接的小幅改变，找例外。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.usage_scenario",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "block_refs": [
+            "s4.blocks.boundary_pleasing",
+            "s4.blocks.relationship_maintenance"
+          ],
+          "method": "短焦刻度复盘+找例外",
+          "steps": [
+            "每周用0–10刻度评估边界与连接状态",
+            "找出本周一个'比上周好一点'的例外",
+            "记录例外发生的条件"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 10,
+          "observation": "记录刻度变化与例外条件",
+          "stop_rule": "若刻度持续下降或出现明显困扰，暂停并寻求专业支持"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s4.defense",
+        "title": "4.1.1 防御机制",
+        "content": "【防御候选，须现实事件验证；不用星曜诊断妄想或解离】\n\n合理化/回避：用户自述'有事才联系朋友，没事就放在那'（事实）可能对应以'不打扰'为理由回避低强度关系维护；保护功能是避免被拒绝或显得需要他人；长期代价是关系自然衰减。\n\n讨好/迁就：用户自述'不太会拒绝、习惯迁就'（事实）可能对应以先答应换取关系安全；保护功能是维持连接、避免冲突；长期代价是自我需求被压下、急迫感累积。\n\n理智化/自我批评：用户自报'权衡利弊'与'太着急'（事实）可能对应以分析替代感受、以自我批评推动行动；保护功能是获得掌控感；长期代价是难以停留于情绪。\n\n抽离/完美主义：证据不足，暂缓；须访谈确认是否在特定场景（如职场）出现。\n\n注意：以上为假设，不作诊断；须回到真实重复情境验证。",
+        "finding_refs": [
+          "s4.defense.rationalization_avoidance",
+          "s4.defense.people_pleasing",
+          "s4.defense.intellectualization_self_criticism"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.energy",
+        "title": "4.1.2 能量管理",
+        "content": "【喜用/耗能信号与现实反馈对照；五行活动为可试验建议，不承诺效果】\n\n充电候选（水/木方向）：独处写作/静观（水）、自然/学习/规划（木）、同辈支持。与用户'每天晚上复盘'的使用场景一致，可试验。\n\n耗电候选（金/火/土方向）：规则压力（金，与全职会计角色相关）、过度输出（火）、务实消耗（土）。与用户自报'太着急''权衡利弊'方向一致（假设）。\n\n现实反馈对照：用户自述'有些影响'、'感觉一直存在'，提示耗电可能长期累积；须用户记录一周能量刻度验证。\n\n注意：喜忌为候选（身偏弱候选），若咨询师判定身强或从格，映射反转；五行活动不承诺效果。",
+        "finding_refs": [
+          "s4.energy.charge_drain"
+        ],
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.profile.limitations",
+          "input.profile.personality_keywords",
+          "input.context.impact_level"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.shadow_practice",
+        "title": "4.1.3 阴影整合",
+        "content": "【阴影整合练习，选用日记/写信/低风险角色扮演/艺术表达；写出接纳哪一面、何时暂停】\n\n接纳哪一面：边界需要与被压下的拒绝（s2.shadow.boundary_need 假设）；休息、欲望、游戏性（s2.shadow.rest_and_play 假设）。\n\n练习选项（可调整）：\n1）21天日记（可调整为14天）：每天写一句'今天我真实想要的是……'，不评判。\n2）写信（不寄出）：写给'总是先答应的自己'，表达理解与新的选择。\n3）低风险角色扮演：与信任对象练习一次温和拒绝，事后复盘。\n4）艺术表达：用颜色/线条画出'边界'与'连接'两端。\n\n何时暂停：若练习引发持续强烈不适、失眠或明显情绪低落，暂停并寻求专业支持；不实施情绪唤起治疗。\n\n注意：阴影不等同缺点；不作诊断。",
+        "finding_refs": [
+          "s4.defense.people_pleasing",
+          "s4.blocks.boundary_pleasing"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.complex_practice",
+        "title": "4.1.4 情结松动",
+        "content": "【情结松动：命名→触发链记录→证据/反证→重写脚本→行为实验；CBT与荣格式工具适配真实问题】\n\n命名：'表达需求可能破坏关系'（s2.complex.authority_expression 假设）。\n\n触发链记录：触发（他人请求/关系维护需求，待补问）→阴影浮现（边界需要，假设）→核心情绪（担心关系变差/内疚，假设）→防御（先答应/迁就，自述）→短期结果（关系维持但自我不适，假设）→长期重复（关系疏远，自述）。\n\n证据/反证：证据为自述习惯迁就；反证待访谈——是否也有温和拒绝且关系继续的经历？\n\n重写脚本（候选）：'我可以温和而清晰地表达需求，关系可以承受协商。'\n\n行为实验：见 s4.experiments.pause_before_commit 与 s4.experiments.thought_record。\n\n注意：不虚构家庭成因；不作诊断。",
+        "finding_refs": [
+          "s4.blocks.authority_expression",
+          "s4.relationships.cycle"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.context.decision_style"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.timing_self",
+        "title": "4.1.5–6 时序与自性",
+        "content": "【按顺势/调整/转换主题调整练习强度；整合意识、个人情结、集体原型、阴影与时序；问卷必须改变方向，不补逻辑空白，不写完美人格】\n\n时序：当前大运戊辰（2017-2026，正财，土）末段，接近转换期（s3.timeline.current）；后续丁卯（2027-2036，食神，火/木）基调表达与滋养（s3.timeline.subsequent）。阶段为隐喻，不预测必然事件。\n\n顺势：在承担期练习边界与协商，练习强度宜低而稳定。\n调整：接近转换期，可逐步增加表达与连接的练习。\n转换：进入表达期后，可提高温和表达需求的练习频率。\n\n自性整合：意识（柔韧协调面具）↔个人情结（权威期待与自我表达张力）↔集体原型（谦：有原则的柔）↔阴影（边界需要、休息与游戏性）↔时序（承担→表达）。\n\n问卷改变方向：从'如何不迁就'转向'如何在连接中保有边界'；从'如何快速解决'转向'如何允许季节'。\n\n注意：不写完美人格；方向为探索假设，可由现实经验修正。",
+        "finding_refs": [
+          "s4.breakthrough.common_path",
+          "s4.energy.charge_drain"
+        ],
+        "evidence_refs": [
+          "input.context.analysis_date",
+          "input.context.expected_outcomes",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.blocks",
+        "title": "4.2 卡点理解",
+        "content": "【3–5个核心卡点：场景、运作、曾保护什么、长期代价、整合邀请；此处不给解决步骤】\n\n卡点1 以迁就换连接：场景为他人请求或关系维护需求；运作为先答应、拒绝时语言生硬；曾保护关系安全与避免冲突；长期代价是自我需求被压下、关系反而疏远；整合邀请是让拒绝与联系都变得可协商、可修复。\n\n卡点2 有事才联系：场景为日常关系维护；运作为只在有事时联系、无事搁置；曾保护避免打扰与被拒绝；长期代价是关系逐渐疏远、失落累积；整合邀请是练习低强度、无目的的连接邀请。\n\n卡点3 以急迫推进：场景为需要等待、协商或不确定结果时；运作为以'太着急'推动自己与他人；曾保护避免停滞与失控感；长期代价是节奏失衡、关系张力与自我耗竭；整合邀请是把急迫转为节奏。\n\n卡点4 权威期待与自我表达张力：场景为需要表达真实需求或拒绝时；运作为在'应该迁就/不能生硬'的内在规则与自我表达之间拉扯；曾保护符合期待、维持形象；长期代价是主权感削弱；整合邀请是分辨哪些规则是自己的、哪些是继承的。\n\n证据不足暂缓：'抽离/完美主义'卡点证据不足，暂缓；须访谈确认。\n\n注意：以上为假设，须现实事件验证；不作诊断。",
+        "finding_refs": [
+          "s4.blocks.boundary_pleasing",
+          "s4.blocks.relationship_maintenance",
+          "s4.blocks.urgency",
+          "s4.blocks.authority_expression"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations",
+          "input.context.decision_style"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.breakthrough",
+        "title": "4.2 共性与破局",
+        "content": "【共性路径与中式原型可学习资源；用神→调节功能→心理能力→现实缺口→工具→实验；不靠命盘替代现实】\n\n共性路径：四个卡点共享同一张力——连接与边界。用神候选（水/木）→本案调节功能（自我关怀、同辈支持）→心理能力（情绪命名、边界表达、低强度连接）→现实缺口（拒绝语言生硬、关系维护缺位）→工具（CBT/ACT/短焦/EFT情绪命名/依恋沟通）→实验（见 s4.experiments）。\n\n中式原型可学习资源（非史实诊断）：蔺相如式的以柔持正——柔韧而不失立场；张良式的谋定后动——把急迫转为节奏；'谦'卦（地山谦）——有原则的柔，但对方持续越界时不适用。\n\n两端整合方向：连接是资源，边界是主权；整合不是二选一，而是让拒绝与联系都变得可协商、可修复。\n\n注意：喜忌为候选，反转则路径调整；命理不替代现实。",
+        "finding_refs": [
+          "s4.breakthrough.common_path"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.expected_outcomes",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.functions",
+        "title": "4.3 八维路径",
+        "content": "【有MBTI/八维自报作为锚点，没自报不得推类型；MBTI不能伪造功能分数】\n\n锚点：用户自报 ENFP（未测八维）。\n\n探索路径：Ne 倾向假设——可对应'无知的乐观主义'与主动寻求建议。\n价值路径：Fi 倾向假设——可对应'权衡利弊'与对自身性格建议的开放。\n执行路径：Te 倾向假设——可对应全职会计角色与'急迫'。\n反馈路径：Si 倾向假设——可对应'每天晚上复盘'的使用场景。\n\n倾向假设标注：以上均为倾向假设，须用户自评或八维测评验证；不伪造功能分数。\n\n注意：MBTI 不能替代现实证据；不作诊断。",
+        "finding_refs": [
+          "s4.functions.exploration_path"
+        ],
+        "evidence_refs": [
+          "input.profile.mbti",
+          "input.profile.personality_keywords",
+          "input.profile.occupation_status",
+          "input.context.usage_scenario"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.relationships",
+        "title": "4.4 关系循环",
+        "content": "【问卷+关系结构+加工倾向，描述请求/回应/感受/反馈循环；明确反例与要访谈的问题】\n\n循环：请求（他人请求/关系维护需求，待补问）→回应（先答应/迁就，自述）→感受（担心关系变差/内疚，假设）→反馈（关系维持但自我不适，假设）→长期（关系疏远，自述）。\n\n关系结构：用户自述'有事才联系朋友'，提示关系维护偏事件驱动；'每次困境会有女贵人出现'（用户自述）提示存在可用的支持资源。\n\n加工倾向：ENFP 自报提示可能偏好可能性发散与价值内省（假设）。\n\n反例：是否也有温和拒绝且关系继续的经历？是否也有主动联系且关系维持的经历？\n\n要访谈的问题：触发情境具体是什么？对方实际反应如何？'女贵人'出现的具体情境是什么？\n\n注意：假设，须访谈验证；不作诊断。",
+        "finding_refs": [
+          "s4.relationships.cycle"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.additional_info",
+          "input.context.focus_topics",
+          "input.profile.mbti"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.experiments",
+        "title": "4.5 成长实验与日历",
+        "content": "【3–5个日常练习（非治疗）；分析片段包含每日能量/每周阴影/每月触发链/每季方向复盘；时间充裕度不足时减量】\n\n实验1 暂停再回应（ACT价值澄清+行为实验）：针对卡点'以迁就换连接'；每周；5分钟；观察对方实际反应与自身紧张程度；出现权力威胁或明显不适时暂停。\n\n实验2 低负担联系（依恋沟通）：针对卡点'有事才联系'；每周；10分钟；记录发出前后的感受与对方回应；连续两周明显焦虑或对方明确不便时暂停。\n\n实验3 情绪命名（EFT情绪命名）：针对卡点'以急迫推进'；每日；5分钟；记录急迫感刻度变化；引发强烈不适或持续低落时暂停。\n\n实验4 想法记录（CBT）：针对卡点'权威期待与自我表达张力'；每周；15分钟；记录想法强度与行为结果变化；引发持续反刍时暂停。\n\n实验5 刻度复盘（短焦）：针对卡点1与2；每周；10分钟；记录刻度变化与例外条件；刻度持续下降时暂停。\n\n日历节奏：\n每日能量：晚间用1–10刻度记录能量与情绪（5分钟）。\n每周阴影：每周一次写'今天我真实想要的是……'（10分钟）。\n每月触发链：每月一次复盘触发链记录（20分钟）。\n每季方向复盘：每季一次用0–10刻度复盘边界与连接方向（30分钟）。\n\n时间充裕度不足时减量：优先保留实验1与实验3，其余可改为每月一次。\n\n注意：以上为非治疗性日常练习；效果以现实观察为准；可自主停止。",
+        "finding_refs": [
+          "s4.experiments.pause_before_commit",
+          "s4.experiments.low_stakes_contact",
+          "s4.experiments.emotion_naming",
+          "s4.experiments.thought_record",
+          "s4.experiments.scaling_review"
+        ],
+        "evidence_refs": [
+          "input.context.usage_scenario",
+          "input.context.expected_outcomes",
+          "input.profile.limitations"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "出生日期与出生城市为演示假设（2004-06-15、山东济南），命理解读（日主、格局、喜忌、大运、紫微）均条件化，须本人提供真实信息后重算并由咨询师确认；不得冒充用户真实命盘。",
+        "references": [
+          "input.profile.demo_assumptions",
+          "input.context.demo_assumptions",
+          "calculated.mingli_foundation.v2"
+        ]
+      },
+      {
+        "message": "喜忌与格局为候选（身偏弱候选），若咨询师判定身强或从格，喜忌与能量映射将反转；须人工确认后再定稿。",
+        "references": [
+          "s1.useful_gods.candidate",
+          "s1.structure.candidate_weak_officer",
+          "s4.energy.charge_drain"
+        ]
+      },
+      {
+        "message": "防御机制、阴影、情结、卡点与关系循环均为假设，须回到真实重复情境验证；不作心理诊断，不虚构家庭成因。",
+        "references": [
+          "s4.defense.people_pleasing",
+          "s4.blocks.boundary_pleasing",
+          "s4.relationships.cycle"
+        ]
+      },
+      {
+        "message": "成长实验为非治疗性日常练习，须用户自主选择与停止；若出现持续强烈不适、失眠或明显情绪低落，应暂停并寻求专业支持。",
+        "references": [
+          "s4.experiments.pause_before_commit",
+          "s4.experiments.emotion_naming",
+          "s4.experiments.thought_record"
+        ]
+      },
+      {
+        "message": "八维路径仅基于用户自报 ENFP（未测八维），为倾向假设；不得伪造功能分数或据此推断类型。",
+        "references": [
+          "input.profile.mbti",
+          "s4.functions.exploration_path"
+        ]
+      },
+      {
+        "message": "时支申金未校正真太阳时，时柱相关解读须咨询师核对；大运起止由库计算，须人工核对。",
+        "references": [
+          "s1.hour.shen_metal",
+          "s1.dayun.current_wuchen"
+        ]
+      }
+    ]
+  },
+  "developer_review_notes": [
+    "迁就是问卷自述；先答应与短期不适是待核对假设，修正混合标记。"
+  ]
+}

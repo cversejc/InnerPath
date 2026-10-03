@@ -44,6 +44,8 @@ def enrich_sop_plan(specs, semantic_model, by_key, ranked):
     for analysis in analyses:
         key = analysis["fragment_key"]
         target = by_fragment.get(TOPIC_TARGETS.get(key))
+        if key == "analysis.s3.yijing" and target is None:
+            target = by_fragment.get("report.direction.life_map")
         if target is not None:
             target["analysis_refs"].append(key)
     first_by_chapter = {}
@@ -62,3 +64,7 @@ def enrich_sop_plan(specs, semantic_model, by_key, ranked):
             spec["must_cover"].extend(["3–5个已确认成长实验", "频率/耗时/观察/退出条件", "日/周/月/季复盘节奏"])
         if spec["fragment_key"] == "report.ending":
             spec["must_cover"].extend(["哲学收束与温暖寄语", "已核验金句或不署名原创句"])
+        if spec["fragment_key"] != "report.direction.growth_experiments":
+            spec["must_not_repeat"].append("不展开实验动作/频率/退出条件，具体实践统一在成长实验节")
+        if spec["fragment_key"] != "report.ending":
+            spec["must_not_repeat"].append("不引用收束金句，金句仅在寄语出现一次")

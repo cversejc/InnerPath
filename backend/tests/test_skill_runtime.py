@@ -1298,7 +1298,9 @@ async def test_regression_batch_executes_through_skill_runtime_and_persists_resu
     assert result["passed"] is True
     assert all(check["passed"] for check in result["checks"])
     assert refreshed_batch["pass_rate"] == 1.0
-    assert refreshed_batch["runs"][0]["selected_examples"] == []
+    selected = refreshed_batch["runs"][0]["selected_examples"]
+    assert [item["example_key"] for item in selected] == ["review-reader-copy-v1"]
+    assert selected[0]["example_snapshot"]["input_context"]["report_fragments"]
 
 
 def test_regression_expectations_score_schema_paths_and_finding_boundaries():

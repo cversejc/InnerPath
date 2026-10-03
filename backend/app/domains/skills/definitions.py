@@ -62,6 +62,7 @@ DEFAULT_SKILL_SPECIFICATION: dict[str, Any] = {
             "mingli_experience",
             "mingli_attitude",
             "preferred_content_depth",
+            "demo_assumptions",
         ],
         "context_fields": [
             "focus_topics",
@@ -72,6 +73,9 @@ DEFAULT_SKILL_SPECIFICATION: dict[str, Any] = {
             "decision_status",
             "decision_description",
             "decision_style",
+            "usage_scenario",
+            "analysis_date",
+            "demo_assumptions",
             "additional_info",
             "subject",
             "request",
@@ -251,6 +255,7 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         "objective": "提出 2 到 3 个彼此有差异、由确认 Finding 支持的报告叙事候选。",
         "methodology": [
             "只选择 semantic_model.findings 中的 finding_key，不重新分析用户。",
+            "supporting_findings、deemphasized_findings 和 priority_blocks[].finding_refs 都必须逐字复制当前输入的 finding_key，不引用样例、分析片段编号或自行缩写。",
             "不得创建事实、Finding、置信度或覆盖人工确认。",
             "明确列出支持和弱化的 Finding，缺少依据时降低表达强度。",
             "输出严格 JSON，不附加 Markdown 或解释文字。",
@@ -285,9 +290,9 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
                         "candidate_key": {"type": "string"},
                         "theme": {"type": "string"},
                         "rationale": {"type": "string"},
-                        "supporting_findings": {"type": "array"},
-                        "deemphasized_findings": {"type": "array"},
-                        "priority_blocks": {"type": "array"},
+                        "supporting_findings": {"type": "array", "items": {"type": "string"}},
+                        "deemphasized_findings": {"type": "array", "items": {"type": "string"}},
+                        "priority_blocks": {"type": "array", "items": {"type": "object", "required": ["title", "finding_refs"], "properties": {"title": {"type": "string"}, "finding_refs": {"type": "array", "items": {"type": "string"}}}}},
                         "narrative_arc": {"type": "array"},
                     },
                 },
@@ -345,6 +350,10 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         "参考用户自报MBTI与明确的深入/简洁偏好调整理论密度、篇幅和隐喻量，不推断八维分数，不改变事实。",
         "结尾简短回扣哲学方向和用户现实，不堆安慰；署名金句只能逐字来自 skill_knowledge.quote_library 中 VERIFIED 条目，否则用不署名原创寄语。",
         "每个分配的分析来源都须转译或明确指出资料边界，不暴露SOP编号、内部ID或审核过程。",
+        "按片段职责取用来源，不把来源中的整份总结、实验、金句都复制进每节。标题用读者语言，不能照抄purpose或‘语义线索’等内部说明。",
+        "只有 report.direction.growth_experiments 完整写行动步骤/频率/耗时/观察/退出条件；其他片段至多一句指向该节。只有 report.ending 使用金句，其他节不引用金句。",
+        "overview只概览主线，self_direction只点出方向，common_pattern只综合差异机制；三处均不重新展开卡点保护/代价。life_map只写时序、阶段和时义，不重复实验。ending简短收束，不重复卡点机制或动作。",
+        "未自述的情绪、自动想法、惯常场景和保护功能必须持续用可能/假如/待核对表达；尤其不把不适、内疚、先答应、女贵人出现的频率当作已证实事实。",
     ])
     authoring["processor_policy"] = {"processor": "reports.fragment_authoring"}
     authoring["output_contract"] = {
@@ -581,10 +590,17 @@ def default_validator_skill_specification() -> dict[str, Any]:
         "最终校准核对：与审核命盘和核心机制有无冲突、编造经历、单一信号强人格结论、诊断、确定未来、科学化命理、内部矛盾、卡点重复给解法、第三章是否回应共性模式。",
         "检查同一核心观点换句话重复3次以上，标出应删除的 fragment_key；金句只能用已核验库。",
         "当 qa_input.scorecard_required=true 时必须额外返回 scorecard.dimensions，维度如下，每维度有 score、reason、fragment_keys（本次报告片段ID数组）。程序计算总分；不要用笼统通过代替逐维评分。",
+        "最多返回15条确有证据的问题，每个message/evidence/suggestion控制在150字内，同类问题合并定位。转译允许合理意译，不要求每节重复全部来源信息；某项已在合适章节覆盖时不在其他节报缺失。",
+        "VERIFIED金句条目允许署名引用，不要求额外授权；引号外标点不构成事实问题。不假设未列出的许可要求，不报告‘如果…才可能…’的假想缺陷。",
+        "只审核读者实际看到的title/content，transition_hint等生产元数据不属于正文；章节顺序以content_plan.fragments[].sequence_no为准。实验可分别对应不同卡点，不要求每个实验回应所有卡点。",
+        "严格区分 report_fragments 正文和 confirmed_semantics 内部分析。仅在正文计重复；不得把内部分析语句说成当前报告的原文。每条evidence必须逐字摘录定位片段的正文，不能转述或拼接。",
+        "用户自述以application_context和Evidence为依据，不因缺少单独Finding否定问卷已明确提供的资料。‘没有家庭资料，早期印记暂缓’不是编造早期经历；明确提出可核对假设并保留反证，不因未经测评而报事实错误。",
     ])
     spec["instructions"]["scoring_rubric"] = RUBRIC
     spec["knowledge_policy"] = {"snapshot": knowledge_for_stage("S5"), "retrieval": "VERSION_SNAPSHOT"}
     spec["tool_policy"] = {"allowed": []}
+    spec["model_policy"]["temperature"] = 0.1
+    spec["example_policy"] = {"enabled": True, "max_examples": 2}
     spec["processor_policy"] = {"processor": "reports.validator"}
     spec["output_contract"] = {
         "type": "object",

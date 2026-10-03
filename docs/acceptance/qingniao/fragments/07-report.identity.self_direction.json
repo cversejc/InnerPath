@@ -1,0 +1,74 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "保留关心，也保留选择",
+    "content": "从前面的材料提出一个方向候选：让关心不必只用迁就表达，让联系不必只由事情启动。这不是要求你变强硬，也不是人格成熟度判断。\n\n你愿意接受反馈，是可用的资源；同时，别人的建议和自己的意愿都需要有位置。下一章会拆开四个不同的卡点，帮助你判断究竟哪一段最贴近实际。",
+    "used_findings": [
+      "s3.individuation.direction"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.self",
+      "analysis.s3.integration"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向已经有了轮廓，下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.self_direction",
+      "chapter": "identity",
+      "sequence_no": 7,
+      "new_information_role": "REFERENCE",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "contains_experiment_steps": false,
+      "contains_quote": false
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 12542,
+    "output_tokens": 469,
+    "latency_ms": 3346,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "09616182-4553-4b04-895b-1500627c5b62",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "747257aa04d7b62babd51df34f4996cc3411344abaafe2f61872de6ced7fd0fa",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "方向：让拒绝有温度，让联系有节奏",
+    "content": "如果说前面几节是在看清你现在的样子，这一节只做一件事：把方向摆出来。\n\n你自述的核心张力，是“维持关系连接”和“保有自我边界”之间的拉扯。这两端都不是错的——连接给你归属，边界给你主权。方向不是二选一，而是让拒绝和联系都变得可协商、可修复。\n\n你自述“愿意听别人对自身性格的建议”，这是可用的开放度资源；“太着急”更像是提示减速的信号，而不是需要被修掉的缺陷。结合你提到的“不太会拒绝、拒绝时语言生硬、习惯迁就、有事才联系朋友”，方向候选可以这样描述：练习温和而清晰的拒绝语言，也练习无事也能发生的低强度联系。\n\n这不是一次修好的任务，而是在反复情境里，每次多保留一点真实需求。具体怎么练、练多久、什么时候停，放在成长实验那一节，这里只留一个方向。\n\n需要说明的是：出生日期目前为演示假设，命理映射须你提供真实信息后重算；这个方向本身也是探索假设，可以由你的现实经验修正。",
+    "used_findings": [
+      "s3.individuation.direction"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.self",
+      "analysis.s3.integration"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向已经有了轮廓，下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.self_direction",
+      "chapter": "identity",
+      "sequence_no": 7,
+      "new_information_role": "REFERENCE",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "contains_experiment_steps": false,
+      "contains_quote": false
+    }
+  }
+}

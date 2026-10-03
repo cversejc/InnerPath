@@ -1,0 +1,78 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点二：联系需要一个足够正当的理由",
+    "content": "你说有事才联系朋友，无事就放在那，关系逐渐疏远。这一项有直接的现实依据。\n\n一个假想场景是：想起朋友，却没有具体事务，于是暂不发消息。原因可能是怕打扰、怕没有回应，也可能只是忙碌或尚未形成联系节奏；不能提前选定解释。\n\n若不主动确实帮助你避开了尴尬，它曾提供短期保护；代价可能是关系缺少日常积累，每次重启都更需要理由。也要核对双方是否都偏好低频联系，避免把联系次数当作亲密程度的唯一尺度。\n\n整合邀请是为“无事的连接”找到双方都舒服的位置，而非要求你变成高频社交者。\n\n具体做法见第三章的低负担联系实验。",
+    "used_findings": [
+      "s4.blocks.relationship_maintenance"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这是四个卡点中的第二个。下一节看第三类：当“太着急”成为推进事情的方式时，它替你解决了什么、又带来了什么。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_02",
+      "sequence_no": 9,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low",
+        "depth": "深入详细"
+      },
+      "data_boundaries": [
+        "生日2004-06-15/济南为演示假设，本段未使用命盘或大运内容",
+        "本段未列解决步骤，行动集中在成长实验节",
+        "未自述的感受均以可能/待核对表达"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4642,
+    "output_tokens": 554,
+    "latency_ms": 3332,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "e8cd2266-7659-4796-b0c7-cb243ccf0dcf",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "cbec877406a7ec433c854c620506d2d0a3f8c4e6290474bceb7a05dbd5a44641",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点二：有事才联系，无事就搁置",
+    "content": "上一节说的是“先答应”。这一节看另一条线：你提到自己常常有事才联系朋友，无事就搁置，关系于是慢慢疏远。\n\n场景很日常：想找人帮忙、想问一件事、想确认一个信息时，联系会自然发生；而当没有具体事由时，开口这件事本身就可能被搁置。这里可以核对的是——假如某天你只是想问候一个人，你心里会不会先冒出一句“这样会不会打扰对方”？这只是待核对的假设，不是你已确认的感受。\n\n这套运作有它的保护功能。把联系挂在“有事”上，等于给每次开口都配了一个正当理由：对方不容易觉得被占用，你也不必承担“我主动了、对方却没回应”的那种落空。它曾经帮你把关系维持在安全距离内，避免打扰，也避免被拒绝的可能。\n\n代价是缓慢发生的。关系靠事由维持，事由一停，连接就停；你在对方生活里的存在感逐渐变淡，疏远与失落累积起来，往往不是某一次冲突造成的，而是很多次“算了，不说了”叠出来的。\n\n整合的邀请不是要你立刻变成频繁联系的人，而是留意：是否可以练习一种低强度、无目的的连接——不为解决问题，只为让关系本身有呼吸的空间。具体怎么做，留到后面的成长实验一节。",
+    "used_findings": [
+      "s4.blocks.relationship_maintenance"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这是四个卡点中的第二个。下一节看第三类：当“太着急”成为推进事情的方式时，它替你解决了什么、又带来了什么。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_02",
+      "sequence_no": 9,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low",
+        "depth": "深入详细"
+      },
+      "data_boundaries": [
+        "生日2004-06-15/济南为演示假设，本段未使用命盘或大运内容",
+        "本段未列解决步骤，行动集中在成长实验节",
+        "未自述的感受均以可能/待核对表达"
+      ]
+    }
+  }
+}

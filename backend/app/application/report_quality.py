@@ -247,6 +247,7 @@ async def delivery_quality_snapshot(
             for issue in issue_history
         ],
         "validator_run_id": (state.latest_validator_run or {}).get("id"),
+        "scorecard": (state.latest_validator_run or {}).get("scorecard"),
     }
 
 

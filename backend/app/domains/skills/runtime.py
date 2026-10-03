@@ -767,6 +767,7 @@ async def execute_skill(
         field
         for field in specification["context_policy"].get("required", [])
         if context_data.get(field) in (None, "", [], {})
+        and not (field == "continuity" and isinstance(context_data.get(field), dict))
     ]
     if missing_context:
         raise ValueError("skill_context_contract_missing_fields")

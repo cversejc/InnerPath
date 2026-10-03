@@ -1,0 +1,1765 @@
+{
+  "step": "S2",
+  "skill_key": "report.s2_psychology_mapping",
+  "specification": {
+    "identity": {
+      "skill_key": "report.s2_psychology_mapping",
+      "name": "S2 心理映射分析",
+      "description": "基于用户 Evidence 与已确认的 S1 结构，提出可审阅的心理运作模式假设。"
+    },
+    "input_contract": {
+      "required": [],
+      "type": "object"
+    },
+    "context_policy": {
+      "required": [],
+      "optional": [],
+      "forbidden": [
+        "other_users",
+        "internal_chain_of_thought"
+      ],
+      "projection": "FULL"
+    },
+    "instructions": {
+      "objective": "基于用户 Evidence 与已确认的 S1 结构，提出可审阅的心理运作模式假设。",
+      "methodology": [
+        "心理结论必须作为可验证的运作模式假设，不得诊断心理或精神疾病。",
+        "区分用户直接表达、S1 命理解释与本阶段的心理映射。",
+        "优先说明触发情境、自动想法、情绪、应对方式及保护功能；输入不足时明确保留不确定性。",
+        "只能引用输入中的 Evidence 和已确认上游 Finding，不把未确认内容当作事实。",
+        "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+        "命理为表，心理为里，哲学为根；帮助用户看见模式并保留选择权。",
+        "必须为每个覆盖条目输出一个 analysis_fragments 对象，fragment_key 原样使用；资料不足也不可跳项。",
+        "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。",
+        "analysis.s2.mapping｜2.1 双层对应：日主/透干→面具；月令/日支→信念；藏干→阴影；交战刑冲→情结；飞忌→投射；喜忌→资源/耗能。每条同时说明意识层和潜意识层，均是假设。",
+        "analysis.s2.ten_gods｜2.2 十神映射：运用技能知识中的全部十神对应表；只分析案例相关十神的机制/原型/显性表现/阴影，不能把对应表当诊断量表。",
+        "analysis.s2.stars｜2.3 星曜原型：运用十四主星对应表，按已确认命/身/福德与四化信息对照面具、阴影及触发点；不强行统一八字与紫微的冲突。",
+        "analysis.s2.persona｜2.4.1 人格面具：自我核心/透干与命迁线索；用户在什么场景认同自己的角色？区分用户自报和解释。",
+        "analysis.s2.shadow｜2.4.2 阴影：缺失/受克/未透资源与福德张力，检验边界、攻击性、欲望、休息、脆弱、游戏性等被排斥面向；不把阴影等同缺点。",
+        "analysis.s2.complex｜2.4.3 情结：月令题型、十神交战、刑冲和飞忌的参考线索；必须回到真实重复情境，描述核心情绪及信念。",
+        "analysis.s2.cycle｜2.4.4 激活路径：触发→阴影浮现→核心情绪/情结→防御→短期结果→长期重复；每一环标事实/假设/待补问，并提供可能反证。",
+        "analysis.s2.authority｜2.4.5 权威与超我：官杀/印与人工选用的父母宫线索，‘应该/必须/不能’来源需访谈验证；说明主权交接而非指责家庭。"
+      ],
+      "stage_key": "S2",
+      "sop_contract": {
+        "version": "product-analysis-2026-10-04-v1",
+        "responsibilities": {
+          "program": "投影用户自述与前序已确认判断，校验引用和完整覆盖，不生成心理结论。",
+          "ai": "双层映射十神/星曜，提出面具、阴影、情结与防御假设，说明保护功能和反证。",
+          "human": "以真实事件验证假设；矛盾时记录冲突，补问‘每次遇到什么会怎样’，决定哪些可写入报告。"
+        },
+        "topics": [
+          {
+            "fragment_key": "analysis.s2.mapping",
+            "title": "2.1 双层对应",
+            "task": "日主/透干→面具；月令/日支→信念；藏干→阴影；交战刑冲→情结；飞忌→投射；喜忌→资源/耗能。每条同时说明意识层和潜意识层，均是假设。"
+          },
+          {
+            "fragment_key": "analysis.s2.ten_gods",
+            "title": "2.2 十神映射",
+            "task": "运用技能知识中的全部十神对应表；只分析案例相关十神的机制/原型/显性表现/阴影，不能把对应表当诊断量表。"
+          },
+          {
+            "fragment_key": "analysis.s2.stars",
+            "title": "2.3 星曜原型",
+            "task": "运用十四主星对应表，按已确认命/身/福德与四化信息对照面具、阴影及触发点；不强行统一八字与紫微的冲突。"
+          },
+          {
+            "fragment_key": "analysis.s2.persona",
+            "title": "2.4.1 人格面具",
+            "task": "自我核心/透干与命迁线索；用户在什么场景认同自己的角色？区分用户自报和解释。"
+          },
+          {
+            "fragment_key": "analysis.s2.shadow",
+            "title": "2.4.2 阴影",
+            "task": "缺失/受克/未透资源与福德张力，检验边界、攻击性、欲望、休息、脆弱、游戏性等被排斥面向；不把阴影等同缺点。"
+          },
+          {
+            "fragment_key": "analysis.s2.complex",
+            "title": "2.4.3 情结",
+            "task": "月令题型、十神交战、刑冲和飞忌的参考线索；必须回到真实重复情境，描述核心情绪及信念。"
+          },
+          {
+            "fragment_key": "analysis.s2.cycle",
+            "title": "2.4.4 激活路径",
+            "task": "触发→阴影浮现→核心情绪/情结→防御→短期结果→长期重复；每一环标事实/假设/待补问，并提供可能反证。"
+          },
+          {
+            "fragment_key": "analysis.s2.authority",
+            "title": "2.4.5 权威与超我",
+            "task": "官杀/印与人工选用的父母宫线索，‘应该/必须/不能’来源需访谈验证；说明主权交接而非指责家庭。"
+          }
+        ],
+        "missing_information_policy": "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。"
+      }
+    },
+    "knowledge_policy": {
+      "snapshot": [
+        {
+          "key": "symbolic-psychology-v1",
+          "source": "docs/产品分析框架.md §2.1–2.4",
+          "status": "CURATED_REFERENCE",
+          "limits": "原型语言只用于探索；十神/星曜不能证明心理疾病、童年经历或单一人格。用用户现实反馈校正。",
+          "ten_god_fields": [
+            "机制",
+            "荣格原型",
+            "意识表现",
+            "阴影假设",
+            "正向资源"
+          ],
+          "ten_gods": {
+            "正印": [
+              "安全与知识滋养",
+              "母性原型",
+              "好学稳重",
+              "可能用知道回避行动",
+              "自我关怀"
+            ],
+            "偏印": [
+              "独特视角维持距离",
+              "智者",
+              "独立创造",
+              "可能难信任或疏离",
+              "独立判断且保持连接"
+            ],
+            "正官": [
+              "规范内化",
+              "父性秩序",
+              "责任自律",
+              "可能怕错与压抑",
+              "自主选择原则"
+            ],
+            "七杀": [
+              "威胁应对",
+              "攻击性与勇气",
+              "果断抗压",
+              "可能过度防御",
+              "把勇气用在保护边界"
+            ],
+            "正财": [
+              "物质安全",
+              "世俗关系原型",
+              "务实守护",
+              "可能以掌控替代连接",
+              "稳定中保留感受"
+            ],
+            "偏财": [
+              "体验和机会",
+              "狄奥尼索斯",
+              "社交敏锐",
+              "可能用刺激补充匮乏",
+              "自由中的持续投入"
+            ],
+            "食神": [
+              "表达与滋养",
+              "心灵原型",
+              "温和创造",
+              "可能以享受回避责任",
+              "可分享的创造"
+            ],
+            "伤官": [
+              "反抗与真实表达",
+              "捣蛋鬼",
+              "创新批判",
+              "可能靠否定建立自我",
+              "表达需求而不伤害关系"
+            ],
+            "比肩": [
+              "自我边界",
+              "英雄竞争面",
+              "独立主见",
+              "可能固执难合作",
+              "尊重双方自主性"
+            ],
+            "劫财": [
+              "竞争与行动",
+              "生存驱动",
+              "勇于争取",
+              "可能冲动争夺",
+              "有边界地行动"
+            ]
+          },
+          "star_fields": [
+            "面具",
+            "阴影假设",
+            "触发信念"
+          ],
+          "stars": {
+            "紫微": [
+              "领导自尊",
+              "难接受批评",
+              "必须最优秀"
+            ],
+            "天机": [
+              "思考谋略",
+              "不确定中反复思虑",
+              "世界充满变数"
+            ],
+            "太阳": [
+              "热情付出",
+              "过度付出后耗竭",
+              "必须照亮别人"
+            ],
+            "武曲": [
+              "坚毅成果",
+              "忽略情感",
+              "只有成果有价值"
+            ],
+            "天同": [
+              "随和安逸",
+              "可能逃避冲突",
+              "不冲突才安全"
+            ],
+            "廉贞": [
+              "感情与原则",
+              "可能执着控制",
+              "爱需要完全占有"
+            ],
+            "天府": [
+              "稳重管理",
+              "可能怕改变",
+              "改变会失去"
+            ],
+            "太阴": [
+              "细腻情感",
+              "可能依赖评价",
+              "必须被需要"
+            ],
+            "贪狼": [
+              "体验交际",
+              "可能持续追求更多",
+              "永远不够"
+            ],
+            "巨门": [
+              "分析洞察",
+              "可能反复怀疑或尖锐表达",
+              "真相必须说出"
+            ],
+            "天相": [
+              "助人与形象",
+              "可能依赖外部评价",
+              "必须看起来好"
+            ],
+            "天梁": [
+              "使命助人",
+              "可能自我牺牲",
+              "必须拯救别人"
+            ],
+            "七杀": [
+              "果断开拓",
+              "可能持续战斗",
+              "只有战斗才能生存"
+            ],
+            "破军": [
+              "变革开创",
+              "可能难持续",
+              "旧的必须被摧毁"
+            ]
+          }
+        }
+      ],
+      "retrieval": "VERSION_SNAPSHOT"
+    },
+    "example_policy": {
+      "enabled": true,
+      "max_examples": 3
+    },
+    "processor_policy": {
+      "processor": "reports.analysis_draft"
+    },
+    "tool_policy": {
+      "allowed": []
+    },
+    "model_policy": {
+      "provider": "deepseek",
+      "model": null,
+      "temperature": 0.35,
+      "max_tokens": 12000,
+      "timeout_seconds": 120.0
+    },
+    "output_contract": {
+      "type": "object",
+      "required": [
+        "summary",
+        "findings",
+        "analysis_fragments",
+        "risk_flags"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "finding_key",
+              "claim",
+              "kind",
+              "semantic_role",
+              "confidence",
+              "importance",
+              "reportability",
+              "evidence_refs",
+              "relation_refs",
+              "structured_data"
+            ],
+            "properties": {
+              "finding_key": {
+                "type": "string"
+              },
+              "claim": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "FINDING",
+                  "SIGNAL"
+                ]
+              },
+              "semantic_role": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH"
+                ]
+              },
+              "importance": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "CRITICAL"
+                ]
+              },
+              "reportability": {
+                "type": "string",
+                "enum": [
+                  "INTERNAL_ONLY",
+                  "OPTIONAL",
+                  "RECOMMENDED",
+                  "MUST_INCLUDE"
+                ]
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "relation_refs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "finding_key"
+                  ],
+                  "properties": {
+                    "finding_key": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "structured_data": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "analysis_fragments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "fragment_key",
+              "title",
+              "content",
+              "finding_refs",
+              "evidence_refs"
+            ],
+            "properties": {
+              "fragment_key": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "finding_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "risk_flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "message",
+              "references"
+            ],
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "references": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "guardrails": {
+      "global_policy_version": "global-policy-v1",
+      "blocked_phrases": [
+        "注定发财",
+        "必然离婚",
+        "保证治愈"
+      ]
+    },
+    "evaluation_profile": {
+      "metrics": [
+        "schema",
+        "source_fidelity",
+        "safety",
+        "stage_fit"
+      ],
+      "minimum_score": 0.8
+    }
+  },
+  "output": {
+    "summary": "基于用户真实问卷（边界感困难、拒绝生硬、习惯迁就、有事才联系朋友导致关系疏远、自评'太着急'）与已确认的 S1 结构（乙木日主、身偏弱（格局归类待核查）候选、庚乙合兼克、午丑六害、天府命宫/天相身宫、福德廉贞贪狼化禄、命宫飞忌入福德等），提出可审阅的心理运作模式假设。所有心理结论均为待验证假设，不作诊断。命理部分基于演示假设出生日期（2004-06-15，山东济南），须本人提供真实信息后重算。",
+    "findings": [
+      {
+        "finding_key": "s2.mapping.persona_layer",
+        "claim": "双层对应假设（意识层）：乙木日主+天府命宫可对应'柔韧协调、稳重可靠'的自我认同面具；用户自报'愿意听别人对自身性格的建议'与'权衡利弊'可能与此面具一致。此为假设，非定论。",
+        "kind": "SIGNAL",
+        "semantic_role": "dual_layer_mapping_conscious",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.personality_keywords",
+          "input.profile.mbti"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.day_master.b_yi"
+          },
+          {
+            "finding_key": "s1.ziwei.life_palace"
+          }
+        ],
+        "structured_data": {
+          "layer": "conscious",
+          "note": "命理映射为假设，须用户现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s2.mapping.belief_layer",
+        "claim": "双层对应假设（潜意识层）：月令午火食神/偏财+日支丑土（偏财/偏印/七杀）可对应'表达与务实取财'的世界观线索；庚乙合兼克、午丑六害可对应'权威期待与自我表达之间的张力'。此为假设，须访谈验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "dual_layer_mapping_unconscious",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [],
+        "relation_refs": [
+          {
+            "finding_key": "s1.month.wu_fire"
+          },
+          {
+            "finding_key": "s1.day_branch.chou_earth"
+          },
+          {
+            "finding_key": "s1.interactions.relations"
+          }
+        ],
+        "structured_data": {
+          "layer": "unconscious",
+          "note": "命理映射为假设，须用户现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s2.mapping.resource_drain",
+        "claim": "喜忌候选映射假设：水（印）与木（比劫）可作为'资源'方向（自我关怀、同辈支持）；金（官杀）、火（食伤）、土（财）可作为'耗能'方向（规则压力、过度输出、务实消耗）。此为基于身偏弱（格局归类待核查）候选的解释性假设，若格局判定反转则映射亦反转。",
+        "kind": "SIGNAL",
+        "semantic_role": "resource_drain_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [],
+        "relation_refs": [
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          },
+          {
+            "finding_key": "s1.structure.candidate_weak_officer"
+          }
+        ],
+        "structured_data": {
+          "candidate_useful": [
+            "水",
+            "木"
+          ],
+          "candidate_avoid": [
+            "金",
+            "火",
+            "土"
+          ],
+          "caveat": "格局未最终确认，映射可反转"
+        }
+      },
+      {
+        "finding_key": "s2.ten_gods.zhengguan",
+        "claim": "正官映射假设：机制为规范内化；荣格原型为父性秩序；意识表现可能为责任自律、守规则；阴影假设可能为怕错与压抑自我需求；正向资源为自主选择原则。用户自述'拒绝时语言生硬'可能与此机制相关（假设）。",
+        "kind": "SIGNAL",
+        "semantic_role": "ten_god_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          }
+        ],
+        "structured_data": {
+          "ten_god": "正官",
+          "note": "对应表为探索工具，非诊断量表"
+        }
+      },
+      {
+        "finding_key": "s2.ten_gods.jiecai",
+        "claim": "劫财映射假设：机制为竞争与行动；荣格原型为生存驱动；意识表现可能为勇于争取；阴影假设可能为冲动争夺或边界模糊；正向资源为有边界地行动。年时双甲劫财透干，可对应'在关系中主动争取'与'边界模糊'并存的假设。",
+        "kind": "SIGNAL",
+        "semantic_role": "ten_god_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          }
+        ],
+        "structured_data": {
+          "ten_god": "劫财",
+          "note": "对应表为探索工具，非诊断量表"
+        }
+      },
+      {
+        "finding_key": "s2.ten_gods.shishen_piancai",
+        "claim": "食神/偏财映射假设：食神机制为表达与滋养，意识表现可能为温和创造；偏财机制为体验和机会，意识表现可能为社交敏锐。月令午火藏食神/偏财，可对应'表达欲与社交机会'的假设；阴影假设可能为以享受回避责任或用刺激补充匮乏。",
+        "kind": "SIGNAL",
+        "semantic_role": "ten_god_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.month.wu_fire"
+          }
+        ],
+        "structured_data": {
+          "ten_god": [
+            "食神",
+            "偏财"
+          ],
+          "note": "对应表为探索工具，非诊断量表"
+        }
+      },
+      {
+        "finding_key": "s2.ten_gods.absent_shangguan_bijian",
+        "claim": "缺失伤官与比肩：S1 已确认此仅表示该十神未显于本盘结构，不能证明人格缺陷。S2 不据此推断'缺乏反抗能力'或'缺乏自我边界'，仅作为待访谈的探索方向。",
+        "kind": "SIGNAL",
+        "semantic_role": "ten_god_absence_caution",
+        "confidence": "LOW",
+        "importance": "LOW",
+        "reportability": "INTERNAL_ONLY",
+        "evidence_refs": [],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          }
+        ],
+        "structured_data": {
+          "absent": [
+            "伤官",
+            "比肩"
+          ],
+          "note": "缺失不等于心理面向缺失"
+        }
+      },
+      {
+        "finding_key": "s2.stars.tianfu_mianju",
+        "claim": "星曜原型假设：命宫天府（旺）面具为'稳重管理'，阴影假设可能为'怕改变'，触发信念可能为'改变会失去'。用户自报'权衡利弊'可能与此面具一致（假设）。",
+        "kind": "SIGNAL",
+        "semantic_role": "star_archetype_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.life_palace"
+          }
+        ],
+        "structured_data": {
+          "star": "天府",
+          "palace": "命宫",
+          "note": "原型语言只用于探索"
+        }
+      },
+      {
+        "finding_key": "s2.stars.tianxiang_shengong",
+        "claim": "星曜原型假设：身宫落官禄宫天相（得）面具为'助人与形象'，阴影假设可能为'依赖外部评价'，触发信念可能为'必须看起来好'。用户自报'愿意听别人对自身性格的建议'可能与此面具相关（假设）。",
+        "kind": "SIGNAL",
+        "semantic_role": "star_archetype_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.strengths"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.body_palace"
+          }
+        ],
+        "structured_data": {
+          "star": "天相",
+          "palace": "身宫/官禄宫",
+          "note": "原型语言只用于探索"
+        }
+      },
+      {
+        "finding_key": "s2.stars.fude_lianzhen_tanlang",
+        "claim": "星曜原型假设：福德宫廉贞（旺）贪狼（庙）化禄，面具为'感情与原则/体验交际'，阴影假设可能为'执着控制/持续追求更多'，触发信念可能为'爱需要完全占有'或'永远不够'。命宫飞忌入福德（贪狼）可对应'内在欲望与自我认同之间的张力'假设。",
+        "kind": "SIGNAL",
+        "semantic_role": "star_archetype_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.wellbeing_palace"
+          },
+          {
+            "finding_key": "s1.ziwei.transformations"
+          }
+        ],
+        "structured_data": {
+          "star": [
+            "廉贞",
+            "贪狼"
+          ],
+          "palace": "福德宫",
+          "note": "原型语言只用于探索，不作诊断"
+        }
+      },
+      {
+        "finding_key": "s2.persona.self_report_vs_interpretation",
+        "claim": "人格面具假设：用户自报'愿意听别人对自身性格的建议'（事实）与'无知的乐观主义、权衡利弊、急迫'（事实）可能构成'开放但急切'的自我认同。命理映射（天府命宫/天相身宫）提示'稳重可靠'面具，与自报'急迫'存在张力（假设）。须区分用户自报与解释。",
+        "kind": "SIGNAL",
+        "semantic_role": "persona_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.personality_keywords",
+          "input.profile.limitations",
+          "input.profile.mbti"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.life_palace"
+          },
+          {
+            "finding_key": "s1.ziwei.body_palace"
+          }
+        ],
+        "structured_data": {
+          "user_reported": [
+            "愿意听建议",
+            "无知的乐观主义",
+            "权衡利弊",
+            "急迫",
+            "太着急"
+          ],
+          "interpretation": "天府/天相面具假设",
+          "note": "须访谈验证"
+        }
+      },
+      {
+        "finding_key": "s2.shadow.boundary_need",
+        "claim": "阴影假设：用户自述'不太会拒绝、习惯迁就'（事实）可能对应被压下的边界需要与攻击性面向。福德宫廉贞贪狼化禄提示'欲望与享乐'面向可能被面具（稳重/助人）排斥。不把阴影等同缺点。",
+        "kind": "SIGNAL",
+        "semantic_role": "shadow_hypothesis",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.signal.boundary_urgency"
+          },
+          {
+            "finding_key": "s1.ziwei.wellbeing_palace"
+          }
+        ],
+        "structured_data": {
+          "shadow_theme": "边界与攻击性",
+          "note": "假设，须现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s2.shadow.rest_and_play",
+        "claim": "阴影假设：福德宫廉贞贪狼化禄+命宫飞忌入福德，可对应'休息、欲望、游戏性'面向可能被'应该/必须'面具排斥的假设。用户自报'急迫/太着急'可能与此张力相关。此为假设，不作诊断。",
+        "kind": "SIGNAL",
+        "semantic_role": "shadow_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.wellbeing_palace"
+          },
+          {
+            "finding_key": "s1.ziwei.transformations"
+          }
+        ],
+        "structured_data": {
+          "shadow_theme": "休息与游戏性",
+          "note": "假设，须现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s2.complex.authority_expression",
+        "claim": "情结假设：庚乙天干五合兼相克（月-日）+午丑六害（月-日）可对应'权威期待与自我表达之间的核心张力'。用户自述'拒绝时语言生硬'可能对应此张力的现实表现（假设）。须回到真实重复情境验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "complex_hypothesis",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.interactions.relations"
+          },
+          {
+            "finding_key": "s1.signal.boundary_urgency"
+          }
+        ],
+        "structured_data": {
+          "core_emotion_hypothesis": "在关系中难以表达真实需求",
+          "core_belief_hypothesis": "表达需求可能破坏关系",
+          "note": "须访谈验证，不虚构家庭成因"
+        }
+      },
+      {
+        "finding_key": "s2.complex.relationship_distance",
+        "claim": "情结假设：用户自述'有事才联系朋友，没事就放在那，导致关系越来越远'（事实）可能对应'关系维护需要主动投入'与'害怕打扰'之间的张力。额外宫位尚未由咨询师选择，本轮不调用。",
+        "kind": "SIGNAL",
+        "semantic_role": "complex_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.focus_topics"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.transformations"
+          }
+        ],
+        "structured_data": {
+          "core_emotion_hypothesis": "关系疏远的失落",
+          "core_belief_hypothesis": "没事联系可能打扰对方",
+          "note": "须访谈验证"
+        }
+      },
+      {
+        "finding_key": "s2.cycle.activation_path",
+        "claim": "激活路径假设：触发（他人请求/关系维护需求，待补问）→阴影浮现（边界需要/被压下的拒绝，假设）→核心情绪（担心关系变差/内疚，假设）→防御（迁就为自述；先答应为假设，待核对）→短期结果（关系维持但自我不适，假设）→长期重复（关系疏远为自述，急迫感累积为假设）。每一环须现实事件验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "activation_cycle_hypothesis",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.signal.boundary_urgency"
+          }
+        ],
+        "structured_data": {
+          "steps": [
+            {
+              "stage": "触发",
+              "status": "待补问"
+            },
+            {
+              "stage": "阴影浮现",
+              "status": "假设"
+            },
+            {
+              "stage": "核心情绪",
+              "status": "假设"
+            },
+            {
+              "stage": "防御",
+              "status": "自述与假设分开，具体情境待核对"
+            },
+            {
+              "stage": "短期结果",
+              "status": "假设"
+            },
+            {
+              "stage": "长期重复",
+              "status": "自述与假设分开，具体情境待核对"
+            }
+          ],
+          "counter_evidence": "是否也有温和拒绝且关系继续的经历？",
+          "note": "须访谈验证"
+        }
+      },
+      {
+        "finding_key": "s2.authority.superego_source",
+        "claim": "权威与超我假设：正官透干（月庚）+印星藏干（壬/癸）可对应'应该/必须/不能'的内在规则来源。用户自述'拒绝时语言生硬'可能对应超我规则的现实表现（假设）。来源须访谈验证，不指责家庭。",
+        "kind": "SIGNAL",
+        "semantic_role": "superego_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          },
+          {
+            "finding_key": "s1.year.jia_shen"
+          }
+        ],
+        "structured_data": {
+          "possible_rules": [
+            "应该迁就对方",
+            "不能生硬拒绝",
+            "必须维持关系"
+          ],
+          "note": "须访谈验证，不指责家庭；说明主权交接"
+        }
+      },
+      {
+        "finding_key": "s2.authority.sovereignty_handover",
+        "claim": "主权交接假设：用户自报'凭直觉判断+咨询家人朋友'（事实）与'愿意听别人建议'（事实）可能对应'外部权威参考'与'自我主权'之间的张力。S2 建议探索'哪些规则是自己的、哪些是继承的'，而非指责家庭。",
+        "kind": "SIGNAL",
+        "semantic_role": "sovereignty_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.decision_style",
+          "input.profile.strengths"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          }
+        ],
+        "structured_data": {
+          "note": "须访谈验证，说明主权交接而非指责家庭"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s2.mapping",
+        "title": "2.1 双层对应",
+        "content": "【双层对应假设，须访谈验证】\n\n意识层（面具）：乙木日主+天府命宫可对应'柔韧协调、稳重可靠'的自我认同；用户自报'愿意听建议''权衡利弊'可能与此一致。\n\n潜意识层（信念）：月令午火食神/偏财+日支丑土（偏财/偏印/七杀）可对应'表达与务实取财'的世界观；庚乙合兼克、午丑六害可对应'权威期待与自我表达之间的张力'。\n\n藏干→阴影：丑中辛七杀、癸偏印可对应'压力应对与内省'面向；福德宫廉贞贪狼化禄提示'欲望与享乐'可能被面具排斥。\n\n交战刑冲→情结：庚乙合兼克+午丑六害可对应'在关系中难以表达真实需求'的核心张力假设。\n\n飞忌→投射：命宫飞忌入福德（贪狼）可对应'内在欲望与自我认同之间的张力'假设。\n\n喜忌→资源/耗能：水（印）与木（比劫）可作为资源方向（自我关怀、同辈支持）；金（官杀）、火（食伤）、土（财）可作为耗能方向（规则压力、过度输出、务实消耗）。此为基于身偏弱（格局归类待核查）候选的解释性假设，若格局判定反转则映射亦反转。\n\n注意：出生日期为演示假设（2004-06-15），命理映射须本人提供真实信息后重算。",
+        "finding_refs": [
+          "s2.mapping.persona_layer",
+          "s2.mapping.belief_layer",
+          "s2.mapping.resource_drain"
+        ],
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.personality_keywords",
+          "input.profile.mbti"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.ten_gods",
+        "title": "2.2 十神映射",
+        "content": "【十神映射假设，对应表为探索工具，非诊断量表】\n\n正官（透干月庚）：机制为规范内化；荣格原型为父性秩序；意识表现可能为责任自律、守规则；阴影假设可能为怕错与压抑自我需求；正向资源为自主选择原则。用户自述'拒绝时语言生硬'可能与此机制相关（假设）。\n\n劫财（年时双甲透干）：机制为竞争与行动；荣格原型为生存驱动；意识表现可能为勇于争取；阴影假设可能为冲动争夺或边界模糊；正向资源为有边界地行动。\n\n食神（月令午火藏丁）：机制为表达与滋养；荣格原型为心灵原型；意识表现可能为温和创造；阴影假设可能为以享受回避责任；正向资源为可分享的创造。\n\n偏财（月令午火藏己、日支丑藏己）：机制为体验和机会；荣格原型为狄奥尼索斯；意识表现可能为社交敏锐；阴影假设可能为用刺激补充匮乏；正向资源为自由中的持续投入。\n\n偏印（日支丑藏癸）：机制为独特视角维持距离；荣格原型为智者；意识表现可能为独立创造；阴影假设可能为难信任或疏离；正向资源为独立判断且保持连接。\n\n七杀（日支丑藏辛）：机制为威胁应对；荣格原型为攻击性与勇气；意识表现可能为果断抗压；阴影假设可能为过度防御；正向资源为把勇气用在保护边界。\n\n缺失伤官与比肩：S1 已确认此仅表示该十神未显于本盘结构，不能证明人格缺陷。S2 不据此推断'缺乏反抗能力'或'缺乏自我边界'，仅作为待访谈的探索方向。",
+        "finding_refs": [
+          "s2.ten_gods.zhengguan",
+          "s2.ten_gods.jiecai",
+          "s2.ten_gods.shishen_piancai",
+          "s2.ten_gods.absent_shangguan_bijian"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.personality_keywords"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.stars",
+        "title": "2.3 星曜原型",
+        "content": "【星曜原型假设，只用于探索，不作诊断】\n\n命宫天府（旺）：面具为'稳重管理'；阴影假设可能为'怕改变'；触发信念可能为'改变会失去'。用户自报'权衡利弊'可能与此面具一致（假设）。\n\n身宫/官禄宫天相（得）：面具为'助人与形象'；阴影假设可能为'依赖外部评价'；触发信念可能为'必须看起来好'。用户自报'愿意听别人对自身性格的建议'可能与此面具相关（假设）。\n\n福德宫廉贞（旺）贪狼（庙）化禄：面具为'感情与原则/体验交际'；阴影假设可能为'执着控制/持续追求更多'；触发信念可能为'爱需要完全占有'或'永远不够'。命宫飞忌入福德（贪狼）可对应'内在欲望与自我认同之间的张力'假设。\n\n迁移宫武曲（得）七杀（平）化科：面具为'坚毅成果/果断开拓'；阴影假设可能为'忽略情感/持续战斗'；触发信念可能为'只有成果有价值'或'只有战斗才能生存'。\n\n注意：不强行统一八字与紫微的冲突。命身不一致（命宫酉/身宫丑）本身即提示'自我认同'与'后天方向'可能存在张力，须访谈验证。",
+        "finding_refs": [
+          "s2.stars.tianfu_mianju",
+          "s2.stars.tianxiang_shengong",
+          "s2.stars.fude_lianzhen_tanlang"
+        ],
+        "evidence_refs": [
+          "input.profile.personality_keywords",
+          "input.profile.strengths"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.persona",
+        "title": "2.4.1 人格面具",
+        "content": "【人格面具假设，区分用户自报与解释】\n\n用户自报（事实）：'愿意听别人对自身性格的建议'、'无知的乐观主义、权衡利弊、急迫'、'太着急'、MBTI 自报 ENFP（未测八维）。\n\n解释（假设）：命宫天府（旺）+身宫天相（得）可对应'稳重可靠、助人形象'的面具；与自报'急迫'存在张力。用户在什么场景认同自己的角色？须访谈验证。\n\n场景假设：在职场（全职会计）可能更认同'稳重可靠'角色；在关系中可能更认同'愿意听建议'角色。此为假设，须用户现实事件验证。\n\n注意：命理映射为假设，非定论；出生日期为演示假设，须本人提供真实信息后重算。",
+        "finding_refs": [
+          "s2.persona.self_report_vs_interpretation"
+        ],
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.personality_keywords",
+          "input.profile.limitations",
+          "input.profile.mbti",
+          "input.profile.occupation_status"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.shadow",
+        "title": "2.4.2 阴影",
+        "content": "【阴影假设，不把阴影等同缺点】\n\n边界与攻击性：用户自述'不太会拒绝、习惯迁就'（事实）可能对应被压下的边界需要与攻击性面向。福德宫廉贞贪狼化禄提示'欲望与享乐'面向可能被面具（稳重/助人）排斥。\n\n休息与游戏性：福德宫廉贞贪狼化禄+命宫飞忌入福德，可对应'休息、欲望、游戏性'面向可能被'应该/必须'面具排斥的假设。用户自报'急迫/太着急'可能与此张力相关。\n\n脆弱：用户自述'有事才联系朋友'（事实）可能对应'不愿展示脆弱/害怕打扰'的假设。\n\n反证问题：是否也有温和拒绝且关系继续的经历？是否也有主动联系朋友且关系维持的经历？\n\n注意：此为假设，须现实事件验证；不作诊断。",
+        "finding_refs": [
+          "s2.shadow.boundary_need",
+          "s2.shadow.rest_and_play"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.complex",
+        "title": "2.4.3 情结",
+        "content": "【情结假设，须回到真实重复情境验证】\n\n核心张力假设：庚乙天干五合兼相克（月-日）+午丑六害（月-日）可对应'权威期待与自我表达之间的核心张力'。用户自述'拒绝时语言生硬'可能对应此张力的现实表现。\n\n核心情绪假设：在关系中难以表达真实需求。\n核心信念假设：表达需求可能破坏关系。\n\n关系疏远假设：用户自述'有事才联系朋友，没事就放在那，导致关系越来越远'（事实）可能对应'关系维护需要主动投入'与'害怕打扰'之间的张力。额外宫位尚未由咨询师选择，本轮不调用。\n\n须访谈验证：每次遇到什么情境会怎样？重复情境是什么？\n\n注意：不虚构家庭成因；不作诊断。",
+        "finding_refs": [
+          "s2.complex.authority_expression",
+          "s2.complex.relationship_distance"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.context.focus_topics"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.cycle",
+        "title": "2.4.4 激活路径",
+        "content": "【激活路径假设，每一环标事实/假设/待补问】\n\n触发（待补问）：他人请求/关系维护需求。\n→ 阴影浮现（假设）：边界需要/被压下的拒绝。\n→ 核心情绪（假设）：担心关系变差/内疚。\n→ 防御（自述）：先答应/迁就。\n→ 短期结果（假设）：关系维持但自我不适。\n→ 长期重复（关系疏远为自述，其余待访谈核查）：关系疏远/急迫感累积。\n\n可能反证：是否也有温和拒绝且关系继续的经历？是否也有主动联系朋友且关系维持的经历？\n\n注意：每一环须现实事件验证；不作诊断。",
+        "finding_refs": [
+          "s2.cycle.activation_path"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.authority",
+        "title": "2.4.5 权威与超我",
+        "content": "【权威与超我假设，须访谈验证，不指责家庭】\n\n可能的内在规则：正官透干（月庚）+印星藏干（壬/癸）可对应'应该/必须/不能'的内在规则来源。用户自述'拒绝时语言生硬'可能对应超我规则的现实表现。\n\n可能规则假设：'应该迁就对方'、'不能生硬拒绝'、'必须维持关系'。\n\n主权交接假设：用户自报'凭直觉判断+咨询家人朋友'（事实）与'愿意听别人建议'（事实）可能对应'外部权威参考'与'自我主权'之间的张力。S2 建议探索'哪些规则是自己的、哪些是继承的'，而非指责家庭。\n\n须访谈验证：这些'应该/必须/不能'来自哪里？哪些是自己的、哪些是继承的？\n\n注意：不指责家庭；说明主权交接。",
+        "finding_refs": [
+          "s2.authority.superego_source",
+          "s2.authority.sovereignty_handover"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.decision_style",
+          "input.profile.strengths"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "出生日期（2004-06-15）与出生城市（山东济南）为演示假设，非用户真实信息；所有命理映射须本人提供真实信息后重算，不得冒充用户真实命盘。",
+        "references": [
+          "input.profile.birth_year",
+          "input.profile.birth_month",
+          "input.profile.birth_day",
+          "input.profile.birth_place",
+          "input.profile.demo_assumptions",
+          "input.context.demo_assumptions"
+        ]
+      },
+      {
+        "message": "S2 心理结论均为待验证假设，不作心理或精神疾病诊断；须以真实事件验证，矛盾时记录冲突。",
+        "references": [
+          "s2.shadow.boundary_need",
+          "s2.complex.authority_expression",
+          "s2.cycle.activation_path"
+        ]
+      },
+      {
+        "message": "十神/星曜对应表为探索工具，非诊断量表；缺失十神（伤官、比肩）不能证明人格缺陷或心理面向缺失。",
+        "references": [
+          "s2.ten_gods.absent_shangguan_bijian",
+          "s1.ten_gods.visible_hidden"
+        ]
+      },
+      {
+        "message": "格局候选（身偏弱（格局归类待核查））未最终确认，喜忌映射可反转；须咨询师人工确认后方可用于心理映射。",
+        "references": [
+          "s2.mapping.resource_drain",
+          "s1.structure.candidate_weak_officer",
+          "s1.useful_gods.candidate"
+        ]
+      },
+      {
+        "message": "权威与超我分析须访谈验证来源，不指责家庭；说明主权交接而非归因。",
+        "references": [
+          "s2.authority.superego_source",
+          "s2.authority.sovereignty_handover"
+        ]
+      },
+      {
+        "message": "用户自报 MBTI 为 ENFP（未测八维），仅作参考，不作为人格定论。",
+        "references": [
+          "input.profile.mbti"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 21509,
+    "output_tokens": 8149,
+    "latency_ms": 28129,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "2791d05a-e66f-448b-9337-f0192f691192",
+    "skill_version_id": 0,
+    "skill_key": "report.s2_psychology_mapping",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "4c8522aed6ae2a7e0353add4239fe2ae04d55fffc960a36800a2902892703a63",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "开发者核查演示覆盖/来源/边界，非真实咨询师审核，不写入生产或对客户交付"
+  },
+  "original_model_output": {
+    "summary": "基于用户真实问卷（边界感困难、拒绝生硬、习惯迁就、有事才联系朋友导致关系疏远、自评'太着急'）与已确认的 S1 结构（乙木日主、身弱偏官格候选、庚乙合兼克、午丑六害、天府命宫/天相身宫、福德廉贞贪狼化禄、命宫飞忌入福德等），提出可审阅的心理运作模式假设。所有心理结论均为待验证假设，不作诊断。命理部分基于演示假设出生日期（2004-06-15，山东济南），须本人提供真实信息后重算。",
+    "findings": [
+      {
+        "finding_key": "s2.mapping.persona_layer",
+        "claim": "双层对应假设（意识层）：乙木日主+天府命宫可对应'柔韧协调、稳重可靠'的自我认同面具；用户自报'愿意听别人对自身性格的建议'与'权衡利弊'可能与此面具一致。此为假设，非定论。",
+        "kind": "SIGNAL",
+        "semantic_role": "dual_layer_mapping_conscious",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.personality_keywords",
+          "input.profile.mbti"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.day_master.b_yi"
+          },
+          {
+            "finding_key": "s1.ziwei.life_palace"
+          }
+        ],
+        "structured_data": {
+          "layer": "conscious",
+          "note": "命理映射为假设，须用户现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s2.mapping.belief_layer",
+        "claim": "双层对应假设（潜意识层）：月令午火食神/偏财+日支丑土（偏财/偏印/七杀）可对应'表达与务实取财'的世界观线索；庚乙合兼克、午丑六害可对应'权威期待与自我表达之间的张力'。此为假设，须访谈验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "dual_layer_mapping_unconscious",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [],
+        "relation_refs": [
+          {
+            "finding_key": "s1.month.wu_fire"
+          },
+          {
+            "finding_key": "s1.day_branch.chou_earth"
+          },
+          {
+            "finding_key": "s1.interactions.relations"
+          }
+        ],
+        "structured_data": {
+          "layer": "unconscious",
+          "note": "命理映射为假设，须用户现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s2.mapping.resource_drain",
+        "claim": "喜忌候选映射假设：水（印）与木（比劫）可作为'资源'方向（自我关怀、同辈支持）；金（官杀）、火（食伤）、土（财）可作为'耗能'方向（规则压力、过度输出、务实消耗）。此为基于身弱偏官格候选的解释性假设，若格局判定反转则映射亦反转。",
+        "kind": "SIGNAL",
+        "semantic_role": "resource_drain_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [],
+        "relation_refs": [
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          },
+          {
+            "finding_key": "s1.structure.candidate_weak_officer"
+          }
+        ],
+        "structured_data": {
+          "candidate_useful": [
+            "水",
+            "木"
+          ],
+          "candidate_avoid": [
+            "金",
+            "火",
+            "土"
+          ],
+          "caveat": "格局未最终确认，映射可反转"
+        }
+      },
+      {
+        "finding_key": "s2.ten_gods.zhengguan",
+        "claim": "正官映射假设：机制为规范内化；荣格原型为父性秩序；意识表现可能为责任自律、守规则；阴影假设可能为怕错与压抑自我需求；正向资源为自主选择原则。用户自述'拒绝时语言生硬'可能与此机制相关（假设）。",
+        "kind": "SIGNAL",
+        "semantic_role": "ten_god_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          }
+        ],
+        "structured_data": {
+          "ten_god": "正官",
+          "note": "对应表为探索工具，非诊断量表"
+        }
+      },
+      {
+        "finding_key": "s2.ten_gods.jiecai",
+        "claim": "劫财映射假设：机制为竞争与行动；荣格原型为生存驱动；意识表现可能为勇于争取；阴影假设可能为冲动争夺或边界模糊；正向资源为有边界地行动。年时双甲劫财透干，可对应'在关系中主动争取'与'边界模糊'并存的假设。",
+        "kind": "SIGNAL",
+        "semantic_role": "ten_god_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          }
+        ],
+        "structured_data": {
+          "ten_god": "劫财",
+          "note": "对应表为探索工具，非诊断量表"
+        }
+      },
+      {
+        "finding_key": "s2.ten_gods.shishen_piancai",
+        "claim": "食神/偏财映射假设：食神机制为表达与滋养，意识表现可能为温和创造；偏财机制为体验和机会，意识表现可能为社交敏锐。月令午火藏食神/偏财，可对应'表达欲与社交机会'的假设；阴影假设可能为以享受回避责任或用刺激补充匮乏。",
+        "kind": "SIGNAL",
+        "semantic_role": "ten_god_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.month.wu_fire"
+          }
+        ],
+        "structured_data": {
+          "ten_god": [
+            "食神",
+            "偏财"
+          ],
+          "note": "对应表为探索工具，非诊断量表"
+        }
+      },
+      {
+        "finding_key": "s2.ten_gods.absent_shangguan_bijian",
+        "claim": "缺失伤官与比肩：S1 已确认此仅表示该十神未显于本盘结构，不能证明人格缺陷。S2 不据此推断'缺乏反抗能力'或'缺乏自我边界'，仅作为待访谈的探索方向。",
+        "kind": "SIGNAL",
+        "semantic_role": "ten_god_absence_caution",
+        "confidence": "LOW",
+        "importance": "LOW",
+        "reportability": "INTERNAL_ONLY",
+        "evidence_refs": [],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          }
+        ],
+        "structured_data": {
+          "absent": [
+            "伤官",
+            "比肩"
+          ],
+          "note": "缺失不等于心理面向缺失"
+        }
+      },
+      {
+        "finding_key": "s2.stars.tianfu_mianju",
+        "claim": "星曜原型假设：命宫天府（旺）面具为'稳重管理'，阴影假设可能为'怕改变'，触发信念可能为'改变会失去'。用户自报'权衡利弊'可能与此面具一致（假设）。",
+        "kind": "SIGNAL",
+        "semantic_role": "star_archetype_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.life_palace"
+          }
+        ],
+        "structured_data": {
+          "star": "天府",
+          "palace": "命宫",
+          "note": "原型语言只用于探索"
+        }
+      },
+      {
+        "finding_key": "s2.stars.tianxiang_shengong",
+        "claim": "星曜原型假设：身宫落官禄宫天相（得）面具为'助人与形象'，阴影假设可能为'依赖外部评价'，触发信念可能为'必须看起来好'。用户自报'愿意听别人对自身性格的建议'可能与此面具相关（假设）。",
+        "kind": "SIGNAL",
+        "semantic_role": "star_archetype_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.strengths"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.body_palace"
+          }
+        ],
+        "structured_data": {
+          "star": "天相",
+          "palace": "身宫/官禄宫",
+          "note": "原型语言只用于探索"
+        }
+      },
+      {
+        "finding_key": "s2.stars.fude_lianzhen_tanlang",
+        "claim": "星曜原型假设：福德宫廉贞（旺）贪狼（庙）化禄，面具为'感情与原则/体验交际'，阴影假设可能为'执着控制/持续追求更多'，触发信念可能为'爱需要完全占有'或'永远不够'。命宫飞忌入福德（贪狼）可对应'内在欲望与自我认同之间的张力'假设。",
+        "kind": "SIGNAL",
+        "semantic_role": "star_archetype_mapping",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.wellbeing_palace"
+          },
+          {
+            "finding_key": "s1.ziwei.transformations"
+          }
+        ],
+        "structured_data": {
+          "star": [
+            "廉贞",
+            "贪狼"
+          ],
+          "palace": "福德宫",
+          "note": "原型语言只用于探索，不作诊断"
+        }
+      },
+      {
+        "finding_key": "s2.persona.self_report_vs_interpretation",
+        "claim": "人格面具假设：用户自报'愿意听别人对自身性格的建议'（事实）与'无知的乐观主义、权衡利弊、急迫'（事实）可能构成'开放但急切'的自我认同。命理映射（天府命宫/天相身宫）提示'稳重可靠'面具，与自报'急迫'存在张力（假设）。须区分用户自报与解释。",
+        "kind": "SIGNAL",
+        "semantic_role": "persona_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.personality_keywords",
+          "input.profile.limitations",
+          "input.profile.mbti"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.life_palace"
+          },
+          {
+            "finding_key": "s1.ziwei.body_palace"
+          }
+        ],
+        "structured_data": {
+          "user_reported": [
+            "愿意听建议",
+            "无知的乐观主义",
+            "权衡利弊",
+            "急迫",
+            "太着急"
+          ],
+          "interpretation": "天府/天相面具假设",
+          "note": "须访谈验证"
+        }
+      },
+      {
+        "finding_key": "s2.shadow.boundary_need",
+        "claim": "阴影假设：用户自述'不太会拒绝、习惯迁就'（事实）可能对应被压下的边界需要与攻击性面向。福德宫廉贞贪狼化禄提示'欲望与享乐'面向可能被面具（稳重/助人）排斥。不把阴影等同缺点。",
+        "kind": "SIGNAL",
+        "semantic_role": "shadow_hypothesis",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.signal.boundary_urgency"
+          },
+          {
+            "finding_key": "s1.ziwei.wellbeing_palace"
+          }
+        ],
+        "structured_data": {
+          "shadow_theme": "边界与攻击性",
+          "note": "假设，须现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s2.shadow.rest_and_play",
+        "claim": "阴影假设：福德宫廉贞贪狼化禄+命宫飞忌入福德，可对应'休息、欲望、游戏性'面向可能被'应该/必须'面具排斥的假设。用户自报'急迫/太着急'可能与此张力相关。此为假设，不作诊断。",
+        "kind": "SIGNAL",
+        "semantic_role": "shadow_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.wellbeing_palace"
+          },
+          {
+            "finding_key": "s1.ziwei.transformations"
+          }
+        ],
+        "structured_data": {
+          "shadow_theme": "休息与游戏性",
+          "note": "假设，须现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s2.complex.authority_expression",
+        "claim": "情结假设：庚乙天干五合兼相克（月-日）+午丑六害（月-日）可对应'权威期待与自我表达之间的核心张力'。用户自述'拒绝时语言生硬'可能对应此张力的现实表现（假设）。须回到真实重复情境验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "complex_hypothesis",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.interactions.relations"
+          },
+          {
+            "finding_key": "s1.signal.boundary_urgency"
+          }
+        ],
+        "structured_data": {
+          "core_emotion_hypothesis": "在关系中难以表达真实需求",
+          "core_belief_hypothesis": "表达需求可能破坏关系",
+          "note": "须访谈验证，不虚构家庭成因"
+        }
+      },
+      {
+        "finding_key": "s2.complex.relationship_distance",
+        "claim": "情结假设：用户自述'有事才联系朋友，没事就放在那，导致关系越来越远'（事实）可能对应'关系维护需要主动投入'与'害怕打扰'之间的张力。夫妻宫飞忌入交友宫（文昌）、子女宫飞忌入交友宫（天同）可对应'关系中的表达与连接'张力假设。",
+        "kind": "SIGNAL",
+        "semantic_role": "complex_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.focus_topics"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.transformations"
+          }
+        ],
+        "structured_data": {
+          "core_emotion_hypothesis": "关系疏远的失落",
+          "core_belief_hypothesis": "没事联系可能打扰对方",
+          "note": "须访谈验证"
+        }
+      },
+      {
+        "finding_key": "s2.cycle.activation_path",
+        "claim": "激活路径假设：触发（他人请求/关系维护需求，待补问）→阴影浮现（边界需要/被压下的拒绝，假设）→核心情绪（担心关系变差/内疚，假设）→防御（先答应/迁就，自述）→短期结果（关系维持但自我不适，自述）→长期重复（关系疏远/急迫感累积，自述）。每一环须现实事件验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "activation_cycle_hypothesis",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.signal.boundary_urgency"
+          }
+        ],
+        "structured_data": {
+          "steps": [
+            {
+              "stage": "触发",
+              "status": "待补问"
+            },
+            {
+              "stage": "阴影浮现",
+              "status": "假设"
+            },
+            {
+              "stage": "核心情绪",
+              "status": "假设"
+            },
+            {
+              "stage": "防御",
+              "status": "自述"
+            },
+            {
+              "stage": "短期结果",
+              "status": "自述"
+            },
+            {
+              "stage": "长期重复",
+              "status": "自述"
+            }
+          ],
+          "counter_evidence": "是否也有温和拒绝且关系继续的经历？",
+          "note": "须访谈验证"
+        }
+      },
+      {
+        "finding_key": "s2.authority.superego_source",
+        "claim": "权威与超我假设：正官透干（月庚）+印星藏干（壬/癸）可对应'应该/必须/不能'的内在规则来源。用户自述'拒绝时语言生硬'可能对应超我规则的现实表现（假设）。来源须访谈验证，不指责家庭。",
+        "kind": "SIGNAL",
+        "semantic_role": "superego_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          },
+          {
+            "finding_key": "s1.year.jia_shen"
+          }
+        ],
+        "structured_data": {
+          "possible_rules": [
+            "应该迁就对方",
+            "不能生硬拒绝",
+            "必须维持关系"
+          ],
+          "note": "须访谈验证，不指责家庭；说明主权交接"
+        }
+      },
+      {
+        "finding_key": "s2.authority.sovereignty_handover",
+        "claim": "主权交接假设：用户自报'凭直觉判断+咨询家人朋友'（事实）与'愿意听别人建议'（事实）可能对应'外部权威参考'与'自我主权'之间的张力。S2 建议探索'哪些规则是自己的、哪些是继承的'，而非指责家庭。",
+        "kind": "SIGNAL",
+        "semantic_role": "sovereignty_hypothesis",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.decision_style",
+          "input.profile.strengths"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          }
+        ],
+        "structured_data": {
+          "note": "须访谈验证，说明主权交接而非指责家庭"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s2.mapping",
+        "title": "2.1 双层对应",
+        "content": "【双层对应假设，须访谈验证】\n\n意识层（面具）：乙木日主+天府命宫可对应'柔韧协调、稳重可靠'的自我认同；用户自报'愿意听建议''权衡利弊'可能与此一致。\n\n潜意识层（信念）：月令午火食神/偏财+日支丑土（偏财/偏印/七杀）可对应'表达与务实取财'的世界观；庚乙合兼克、午丑六害可对应'权威期待与自我表达之间的张力'。\n\n藏干→阴影：丑中辛七杀、癸偏印可对应'压力应对与内省'面向；福德宫廉贞贪狼化禄提示'欲望与享乐'可能被面具排斥。\n\n交战刑冲→情结：庚乙合兼克+午丑六害可对应'在关系中难以表达真实需求'的核心张力假设。\n\n飞忌→投射：命宫飞忌入福德（贪狼）可对应'内在欲望与自我认同之间的张力'假设。\n\n喜忌→资源/耗能：水（印）与木（比劫）可作为资源方向（自我关怀、同辈支持）；金（官杀）、火（食伤）、土（财）可作为耗能方向（规则压力、过度输出、务实消耗）。此为基于身弱偏官格候选的解释性假设，若格局判定反转则映射亦反转。\n\n注意：出生日期为演示假设（2004-06-15），命理映射须本人提供真实信息后重算。",
+        "finding_refs": [
+          "s2.mapping.persona_layer",
+          "s2.mapping.belief_layer",
+          "s2.mapping.resource_drain"
+        ],
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.personality_keywords",
+          "input.profile.mbti"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.ten_gods",
+        "title": "2.2 十神映射",
+        "content": "【十神映射假设，对应表为探索工具，非诊断量表】\n\n正官（透干月庚）：机制为规范内化；荣格原型为父性秩序；意识表现可能为责任自律、守规则；阴影假设可能为怕错与压抑自我需求；正向资源为自主选择原则。用户自述'拒绝时语言生硬'可能与此机制相关（假设）。\n\n劫财（年时双甲透干）：机制为竞争与行动；荣格原型为生存驱动；意识表现可能为勇于争取；阴影假设可能为冲动争夺或边界模糊；正向资源为有边界地行动。\n\n食神（月令午火藏丁）：机制为表达与滋养；荣格原型为心灵原型；意识表现可能为温和创造；阴影假设可能为以享受回避责任；正向资源为可分享的创造。\n\n偏财（月令午火藏己、日支丑藏己）：机制为体验和机会；荣格原型为狄奥尼索斯；意识表现可能为社交敏锐；阴影假设可能为用刺激补充匮乏；正向资源为自由中的持续投入。\n\n偏印（日支丑藏癸）：机制为独特视角维持距离；荣格原型为智者；意识表现可能为独立创造；阴影假设可能为难信任或疏离；正向资源为独立判断且保持连接。\n\n七杀（日支丑藏辛）：机制为威胁应对；荣格原型为攻击性与勇气；意识表现可能为果断抗压；阴影假设可能为过度防御；正向资源为把勇气用在保护边界。\n\n缺失伤官与比肩：S1 已确认此仅表示该十神未显于本盘结构，不能证明人格缺陷。S2 不据此推断'缺乏反抗能力'或'缺乏自我边界'，仅作为待访谈的探索方向。",
+        "finding_refs": [
+          "s2.ten_gods.zhengguan",
+          "s2.ten_gods.jiecai",
+          "s2.ten_gods.shishen_piancai",
+          "s2.ten_gods.absent_shangguan_bijian"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.personality_keywords"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.stars",
+        "title": "2.3 星曜原型",
+        "content": "【星曜原型假设，只用于探索，不作诊断】\n\n命宫天府（旺）：面具为'稳重管理'；阴影假设可能为'怕改变'；触发信念可能为'改变会失去'。用户自报'权衡利弊'可能与此面具一致（假设）。\n\n身宫/官禄宫天相（得）：面具为'助人与形象'；阴影假设可能为'依赖外部评价'；触发信念可能为'必须看起来好'。用户自报'愿意听别人对自身性格的建议'可能与此面具相关（假设）。\n\n福德宫廉贞（旺）贪狼（庙）化禄：面具为'感情与原则/体验交际'；阴影假设可能为'执着控制/持续追求更多'；触发信念可能为'爱需要完全占有'或'永远不够'。命宫飞忌入福德（贪狼）可对应'内在欲望与自我认同之间的张力'假设。\n\n迁移宫武曲（得）七杀（平）化科：面具为'坚毅成果/果断开拓'；阴影假设可能为'忽略情感/持续战斗'；触发信念可能为'只有成果有价值'或'只有战斗才能生存'。\n\n注意：不强行统一八字与紫微的冲突。命身不一致（命宫酉/身宫丑）本身即提示'自我认同'与'后天方向'可能存在张力，须访谈验证。",
+        "finding_refs": [
+          "s2.stars.tianfu_mianju",
+          "s2.stars.tianxiang_shengong",
+          "s2.stars.fude_lianzhen_tanlang"
+        ],
+        "evidence_refs": [
+          "input.profile.personality_keywords",
+          "input.profile.strengths"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.persona",
+        "title": "2.4.1 人格面具",
+        "content": "【人格面具假设，区分用户自报与解释】\n\n用户自报（事实）：'愿意听别人对自身性格的建议'、'无知的乐观主义、权衡利弊、急迫'、'太着急'、MBTI 自报 ENFP（未测八维）。\n\n解释（假设）：命宫天府（旺）+身宫天相（得）可对应'稳重可靠、助人形象'的面具；与自报'急迫'存在张力。用户在什么场景认同自己的角色？须访谈验证。\n\n场景假设：在职场（全职会计）可能更认同'稳重可靠'角色；在关系中可能更认同'愿意听建议'角色。此为假设，须用户现实事件验证。\n\n注意：命理映射为假设，非定论；出生日期为演示假设，须本人提供真实信息后重算。",
+        "finding_refs": [
+          "s2.persona.self_report_vs_interpretation"
+        ],
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.personality_keywords",
+          "input.profile.limitations",
+          "input.profile.mbti",
+          "input.profile.occupation_status"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.shadow",
+        "title": "2.4.2 阴影",
+        "content": "【阴影假设，不把阴影等同缺点】\n\n边界与攻击性：用户自述'不太会拒绝、习惯迁就'（事实）可能对应被压下的边界需要与攻击性面向。福德宫廉贞贪狼化禄提示'欲望与享乐'面向可能被面具（稳重/助人）排斥。\n\n休息与游戏性：福德宫廉贞贪狼化禄+命宫飞忌入福德，可对应'休息、欲望、游戏性'面向可能被'应该/必须'面具排斥的假设。用户自报'急迫/太着急'可能与此张力相关。\n\n脆弱：用户自述'有事才联系朋友'（事实）可能对应'不愿展示脆弱/害怕打扰'的假设。\n\n反证问题：是否也有温和拒绝且关系继续的经历？是否也有主动联系朋友且关系维持的经历？\n\n注意：此为假设，须现实事件验证；不作诊断。",
+        "finding_refs": [
+          "s2.shadow.boundary_need",
+          "s2.shadow.rest_and_play"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.complex",
+        "title": "2.4.3 情结",
+        "content": "【情结假设，须回到真实重复情境验证】\n\n核心张力假设：庚乙天干五合兼相克（月-日）+午丑六害（月-日）可对应'权威期待与自我表达之间的核心张力'。用户自述'拒绝时语言生硬'可能对应此张力的现实表现。\n\n核心情绪假设：在关系中难以表达真实需求。\n核心信念假设：表达需求可能破坏关系。\n\n关系疏远假设：用户自述'有事才联系朋友，没事就放在那，导致关系越来越远'（事实）可能对应'关系维护需要主动投入'与'害怕打扰'之间的张力。夫妻宫飞忌入交友宫（文昌）、子女宫飞忌入交友宫（天同）可对应'关系中的表达与连接'张力假设。\n\n须访谈验证：每次遇到什么情境会怎样？重复情境是什么？\n\n注意：不虚构家庭成因；不作诊断。",
+        "finding_refs": [
+          "s2.complex.authority_expression",
+          "s2.complex.relationship_distance"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.context.focus_topics"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.cycle",
+        "title": "2.4.4 激活路径",
+        "content": "【激活路径假设，每一环标事实/假设/待补问】\n\n触发（待补问）：他人请求/关系维护需求。\n→ 阴影浮现（假设）：边界需要/被压下的拒绝。\n→ 核心情绪（假设）：担心关系变差/内疚。\n→ 防御（自述）：先答应/迁就。\n→ 短期结果（自述）：关系维持但自我不适。\n→ 长期重复（自述）：关系疏远/急迫感累积。\n\n可能反证：是否也有温和拒绝且关系继续的经历？是否也有主动联系朋友且关系维持的经历？\n\n注意：每一环须现实事件验证；不作诊断。",
+        "finding_refs": [
+          "s2.cycle.activation_path"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.authority",
+        "title": "2.4.5 权威与超我",
+        "content": "【权威与超我假设，须访谈验证，不指责家庭】\n\n可能的内在规则：正官透干（月庚）+印星藏干（壬/癸）可对应'应该/必须/不能'的内在规则来源。用户自述'拒绝时语言生硬'可能对应超我规则的现实表现。\n\n可能规则假设：'应该迁就对方'、'不能生硬拒绝'、'必须维持关系'。\n\n主权交接假设：用户自报'凭直觉判断+咨询家人朋友'（事实）与'愿意听别人建议'（事实）可能对应'外部权威参考'与'自我主权'之间的张力。S2 建议探索'哪些规则是自己的、哪些是继承的'，而非指责家庭。\n\n须访谈验证：这些'应该/必须/不能'来自哪里？哪些是自己的、哪些是继承的？\n\n注意：不指责家庭；说明主权交接。",
+        "finding_refs": [
+          "s2.authority.superego_source",
+          "s2.authority.sovereignty_handover"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.decision_style",
+          "input.profile.strengths"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "出生日期（2004-06-15）与出生城市（山东济南）为演示假设，非用户真实信息；所有命理映射须本人提供真实信息后重算，不得冒充用户真实命盘。",
+        "references": [
+          "input.profile.birth_year",
+          "input.profile.birth_month",
+          "input.profile.birth_day",
+          "input.profile.birth_place",
+          "input.profile.demo_assumptions",
+          "input.context.demo_assumptions"
+        ]
+      },
+      {
+        "message": "S2 心理结论均为待验证假设，不作心理或精神疾病诊断；须以真实事件验证，矛盾时记录冲突。",
+        "references": [
+          "s2.shadow.boundary_need",
+          "s2.complex.authority_expression",
+          "s2.cycle.activation_path"
+        ]
+      },
+      {
+        "message": "十神/星曜对应表为探索工具，非诊断量表；缺失十神（伤官、比肩）不能证明人格缺陷或心理面向缺失。",
+        "references": [
+          "s2.ten_gods.absent_shangguan_bijian",
+          "s1.ten_gods.visible_hidden"
+        ]
+      },
+      {
+        "message": "格局候选（身弱偏官格）未最终确认，喜忌映射可反转；须咨询师人工确认后方可用于心理映射。",
+        "references": [
+          "s2.mapping.resource_drain",
+          "s1.structure.candidate_weak_officer",
+          "s1.useful_gods.candidate"
+        ]
+      },
+      {
+        "message": "权威与超我分析须访谈验证来源，不指责家庭；说明主权交接而非归因。",
+        "references": [
+          "s2.authority.superego_source",
+          "s2.authority.sovereignty_handover"
+        ]
+      },
+      {
+        "message": "用户自报 MBTI 为 ENFP（未测八维），仅作参考，不作为人格定论。",
+        "references": [
+          "input.profile.mbti"
+        ]
+      }
+    ]
+  },
+  "developer_review_notes": [
+    "纠正未经本人表述的自我不适和短期维持关系：统一标为假设。",
+    "删除未经人工选用的夫妻/子女宫依据。",
+    "同步S1格局名称修正；原始AI输出保留。",
+    "迁就是问卷自述；先答应与短期不适是待核对假设，修正混合标记。"
+  ]
+}

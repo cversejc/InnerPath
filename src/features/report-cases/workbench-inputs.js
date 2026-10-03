@@ -24,6 +24,7 @@ const CONTEXT_LABELS = {
 const VALUE_LABELS = {
   male: '男', female: '女', solar: '公历', lunar: '农历',
   career: '职业发展', relationship: '亲密关系', family: '家庭议题',
+  relationships: '人际关系', personal_growth: '个人成长',
   self: '自我价值', growth: '个人成长', stress: '压力与焦虑', decision: '选择与决策',
   low: '较低', medium: '一般', high: '较高', critical: '很高',
   unknown: '不确定', approximate: '大约时间', exact: '准确时间',
@@ -36,8 +37,8 @@ const PROFILE_LABELS = {
   birth_day: '出生日', birth_date: '出生日期', birth_time: '出生时间',
   birth_hour: '出生时', birth_minute: '出生分',
   birth_place: '出生地点', calendar_type: '日期历法', time_accuracy: '出生时间准确度',
-  birth_is_leap_month: '是否闰月'
-  , mbti: '自报 MBTI', highest_education: '最高学历', occupation_status: '职业状态', marital_status: '婚姻状况',
+  birth_is_leap_month: '是否闰月',
+  mbti: '自报 MBTI', highest_education: '最高学历', occupation_status: '职业状态', marital_status: '婚姻状况',
   current_residence: '现居地', strengths: '自述优势', limitations: '自述限制', personality_keywords: '性格关键词',
   birth_time_precision: '出生时间精度', preferred_content_depth: '期待内容深度', demo_assumptions: '演示假设'
 }
