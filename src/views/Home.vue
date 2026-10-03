@@ -94,7 +94,10 @@
         <p class="section-kicker">NEXT STEP</p>
         <h2>先写一本属于你的说明书</h2>
         <p>不算命，不评判，不替你预言未来，先从“我是谁”开始</p>
-        <VanButton class="primary-button" type="primary" native-type="button" @click="goToAssessment"><IconMark name="compass" />开始探索</VanButton>
+        <VanButton class="primary-button" type="primary" native-type="button" @click="goToAssessment">
+          <template #icon><IconMark name="compass" /></template>
+          开始探索
+        </VanButton>
       </div>
     </section>
 
