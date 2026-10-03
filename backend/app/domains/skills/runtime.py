@@ -300,6 +300,9 @@ def _analysis_prompts(
     instructions = json.dumps(
         specification["instructions"], ensure_ascii=False, indent=2
     )
+    output_contract = json.dumps(
+        specification["output_contract"], ensure_ascii=False, indent=2
+    )
     runtime_note = (
         f"\n\n【本次运行补充要求】\n{runtime_instruction}"
         if runtime_instruction
@@ -309,6 +312,9 @@ def _analysis_prompts(
         f"{GLOBAL_POLICY}\n\n【任务类型】\n"
         "你正在生成咨询师内部审核用的分析候选，不是在写最终报告。"
         "只输出符合契约的严格 JSON；不能输出 Markdown、推理过程或输入之外的事实。\n\n"
+        "【机器可读输出契约】\n必须返回所有 required 字段；没有候选时对应字段使用空数组。"
+        "数组中每个对象的字段必须符合以下结构，不要改名或省略必填字段：\n"
+        f"{output_contract}\n\n"
         f"【Skill Instructions】\n{instructions}{runtime_note}"
         f"{_example_guidance(context.get('few_shot_examples') or [])}"
     )

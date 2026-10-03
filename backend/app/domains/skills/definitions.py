@@ -410,9 +410,70 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "required": ["summary", "findings", "analysis_fragments", "risk_flags"],
             "properties": {
                 "summary": {"type": "string"},
-                "findings": {"type": "array"},
-                "analysis_fragments": {"type": "array"},
-                "risk_flags": {"type": "array"},
+                "findings": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "finding_key",
+                            "claim",
+                            "kind",
+                            "semantic_role",
+                            "confidence",
+                            "importance",
+                            "reportability",
+                            "evidence_refs",
+                            "relation_refs",
+                            "structured_data",
+                        ],
+                        "properties": {
+                            "finding_key": {"type": "string"},
+                            "claim": {"type": "string"},
+                            "kind": {"type": "string", "enum": ["FINDING", "SIGNAL"]},
+                            "semantic_role": {"type": "string"},
+                            "confidence": {"type": "string", "enum": ["LOW", "MEDIUM", "HIGH"]},
+                            "importance": {"type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+                            "reportability": {
+                                "type": "string",
+                                "enum": ["INTERNAL_ONLY", "OPTIONAL", "RECOMMENDED", "MUST_INCLUDE"],
+                            },
+                            "evidence_refs": {"type": "array", "items": {"type": "string"}},
+                            "relation_refs": {"type": "array"},
+                            "structured_data": {"type": "object"},
+                        },
+                    },
+                },
+                "analysis_fragments": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "fragment_key",
+                            "title",
+                            "content",
+                            "finding_refs",
+                            "evidence_refs",
+                        ],
+                        "properties": {
+                            "fragment_key": {"type": "string"},
+                            "title": {"type": "string"},
+                            "content": {"type": "string"},
+                            "finding_refs": {"type": "array", "items": {"type": "string"}},
+                            "evidence_refs": {"type": "array", "items": {"type": "string"}},
+                        },
+                    },
+                },
+                "risk_flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": ["message", "references"],
+                        "properties": {
+                            "message": {"type": "string"},
+                            "references": {"type": "array", "items": {"type": "string"}},
+                        },
+                    },
+                },
             },
         }
         spec["guardrails"] = {

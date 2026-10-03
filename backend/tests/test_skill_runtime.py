@@ -256,14 +256,18 @@ async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
             ],
         },
     }
+    gateway = StubGateway(json.dumps(output, ensure_ascii=False))
     result = await execute_skill(
         skill_version=skill,
         input_data=context,
-        gateway=StubGateway(json.dumps(output, ensure_ascii=False)),
+        gateway=gateway,
     )
     assert result.output_parsed["findings"][0]["evidence_refs"] == [
         "input.context.current_challenge"
     ]
+    assert "【机器可读输出契约】" in gateway.last_request[0]
+    assert '"analysis_fragments"' in gateway.last_request[0]
+    assert '"relation_refs"' in gateway.last_request[0]
 
     context["analysis_context"]["step_key"] = "S3"
     with pytest.raises(ValueError, match="report_analysis_skill_stage_mismatch"):
