@@ -1,6 +1,19 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildCalendarRequestPayload } from './calendar-request-payload.js'
+import {
+  buildCalendarRequestPayload,
+  defaultThirtyDayRange,
+  isThirtyDayRange
+} from './calendar-request-payload.js'
+
+test('calendar range covers exactly thirty inclusive dates', () => {
+  assert.deepEqual(defaultThirtyDayRange(new Date(2026, 9, 3)), {
+    start_date: '2026-10-03',
+    end_date: '2026-11-01'
+  })
+  assert.equal(isThirtyDayRange('2026-10-03', '2026-11-01'), true)
+  assert.equal(isThirtyDayRange('2026-10-03', '2026-11-02'), false)
+})
 
 test('calendar request keeps the profile version and originating report reference', () => {
   const payload = buildCalendarRequestPayload({

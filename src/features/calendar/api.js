@@ -11,7 +11,7 @@ export async function getCalendarRequests() {
 }
 
 export async function createCalendarRequest(requestData) {
-  const response = await apiClient.post('/calendar/requests', requestData)
+  const response = await apiClient.post('/calendar/requests', requestData, { timeout: 150000 })
   return response.data
 }
 
@@ -47,11 +47,6 @@ export async function getAdminCalendars(userId) {
 
 export async function getAdminCalendarRequests(params = {}) {
   const response = await apiClient.get('/admin/calendar-requests', { params })
-  return response.data
-}
-
-export async function updateAdminCalendarRequest(requestId, data) {
-  const response = await apiClient.patch(`/admin/calendar-requests/${requestId}`, data)
   return response.data
 }
 

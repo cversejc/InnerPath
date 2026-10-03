@@ -5,7 +5,10 @@ import pytest
 
 from app.api.v1.report_cases import _authorize_step_action
 from app.api.v1.service_request_api_support import project_report_case_status
-from app.application.report_cases import ensure_legacy_report_request
+from app.application.report_cases import (
+    create_user_service_request,
+    ensure_legacy_report_request,
+)
 from app.domains.service_requests.payloads import payload_from_create
 from app.domains.service_requests.schemas import (
     ServiceProfileSnapshot,
@@ -177,3 +180,13 @@ async def test_calendar_request_keeps_legacy_service_request_workflow():
     )
 
     db.scalar.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_new_calendar_service_requests_must_start_from_a_delivered_report():
+    with pytest.raises(ValueError, match="calendar_requires_delivered_report"):
+        await create_user_service_request(
+            SimpleNamespace(),
+            SimpleNamespace(id=8),
+            SimpleNamespace(service_type="calendar"),
+        )

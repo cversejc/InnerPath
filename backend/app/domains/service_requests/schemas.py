@@ -98,6 +98,10 @@ class StaffServiceRequestListItem(BaseModel):
     assigned_consultant_name: Optional[str] = None
     needs_info_reason: Optional[str] = None
     last_error: Optional[str] = None
+    report_case_id: Optional[int] = None
+    report_case_status: Optional[str] = None
+    current_step_key: Optional[str] = None
+    current_step_status: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

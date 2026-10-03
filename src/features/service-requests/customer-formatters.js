@@ -35,7 +35,7 @@ export function canWithdrawServiceRequest(status) {
 export function serviceRequestEditPath(item) {
   return item.service_type === 'report'
     ? '/pages/assessment/assessment?requestId=' + item.id
-    : '/pages/requests/new?type=calendar&requestId=' + item.id
+    : '/pages/user/user?tab=reports'
 }
 
 export { topicLabel }

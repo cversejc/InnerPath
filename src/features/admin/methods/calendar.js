@@ -7,8 +7,7 @@ import {
   getAdminCalendars,
   importAdminCalendar,
   publishAdminCalendar,
-  updateAdminCalendar,
-  updateAdminCalendarRequest
+  updateAdminCalendar
 } from '../../calendar/api.js'
 
 function todayKey() {
@@ -43,12 +42,7 @@ export default {
       this.calendarRequestsLoading = true
       try {
         const response = await getAdminCalendarRequests({ status: this.calendarRequestStatusFilter || undefined })
-        this.calendarRequests = (response.items || []).map(item => ({
-          ...item,
-          _status: item.status,
-          _reviewNote: item.review_note || '',
-          _calendarId: item.calendar_id || null
-        }))
+        this.calendarRequests = response.items || []
       } catch (error) {
         this.message = this.errorText(error)
       } finally {
@@ -58,21 +52,6 @@ export default {
   async setCalendarRequestStatusFilter(status) {
       this.calendarRequestStatusFilter = status
       await this.loadCalendarRequests()
-    },
-  async reviewCalendarRequest(item) {
-      this.calendarRequestsLoading = true
-      try {
-        await updateAdminCalendarRequest(item.id, {
-          status: item._status,
-          review_note: item._reviewNote || null,
-          calendar_id: item._calendarId || null
-        })
-        this.message = `日历申请 #${item.id} 已更新`
-        await this.loadCalendarRequests()
-      } catch (error) {
-        this.message = this.errorText(error)
-        this.calendarRequestsLoading = false
-      }
     },
   async openCalendarForUser(user) { this.closeUserDetail({ restoreFocus: false }); this.activeTab = 'calendar'; this.selectedCalendarUser = user; this.calendarForm.visible = false; await this.loadCalendarUsers(); await this.loadCalendars(); this.syncAutoRefresh() },
   async selectCalendarUser(user) { this.selectedCalendarUser = user; this.cancelCalendarEdit(); await this.loadCalendars() },

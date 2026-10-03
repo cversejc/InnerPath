@@ -1,12 +1,15 @@
-"""AI generation for a private, consultant-reviewed decision calendar draft."""
+"""Generate and validate a decision calendar for direct user delivery."""
 
 import json
+from datetime import date, timedelta
 from typing import Any, Dict
 
 import httpx
+from pydantic import ValidationError
 
 from app.config import settings
 from app.core.logging_config import get_logger
+from app.domains.calendar.schemas import CalendarCreate, CalendarEntryInput
 
 
 logger = get_logger(__name__)
@@ -61,9 +64,13 @@ def build_calendar_prompt(user_data: Dict[str, Any]) -> str:
                 "start_date": user_data.get("start_date"),
                 "end_date": user_data.get("end_date"),
                 "selected_topics": user_data.get("selected_topics", []),
+                "usage_scenario": user_data.get("usage_scenario"),
                 "goal": user_data.get("calendar_goal"),
+                "decision_description": user_data.get("decision_description"),
+                "expected_outcomes": user_data.get("expected_outcomes", []),
                 "additional_info": user_data.get("additional_info"),
             },
+            "source_report": user_data.get("source_report"),
         },
         ensure_ascii=False,
         indent=2,
@@ -71,14 +78,15 @@ def build_calendar_prompt(user_data: Dict[str, Any]) -> str:
 
 
 async def generate_calendar_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]:
-    """Generate strict JSON that is validated again before it becomes a draft."""
+    """Generate strict JSON for a calendar that is validated before delivery."""
 
     prompt = build_calendar_prompt(user_data)
-    system_prompt = """你是辰鉴的决策日历初稿助手。
+    system_prompt = """你是辰鉴的决策日历生成助手。用户已经收到来源报告，并主动点击生成。
 
-你的工作是根据用户资料与指定的 30 天范围，生成一份供咨询师审校的日历初稿。
+你的工作是以来源报告中的已交付内容为依据，结合用户本次填写的目标与指定 30 天范围，
+生成可以直接交付给用户使用的决策日历。不要增加报告没有支持的人格判断或结论。
 这不是命运预测，也不是医疗、法律或财务建议。请使用温和、具体、保留主体性的表达，
-把每天的内容写成观察、行动、等待和复盘的参照，不使用绝对因果或恐吓表达。
+把每天的内容写成观察、行动、等待和复盘的参照，不使用绝对因果、恐吓或保证结果的表达。
 
 只返回合法 JSON，不要 Markdown 代码块，不要额外解释。JSON 结构必须为：
 {
@@ -135,4 +143,65 @@ async def generate_calendar_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]
         parsed["start_date"] = parsed.get("start_date") or user_data.get("start_date")
         parsed["end_date"] = parsed.get("end_date") or user_data.get("end_date")
         return parsed
+
+
+def validate_generated_calendar(
+    payload: dict[str, Any], user_data: Dict[str, Any]
+) -> CalendarCreate:
+    try:
+        start_date = date.fromisoformat(str(user_data["start_date"]))
+        end_date = date.fromisoformat(str(user_data["end_date"]))
+    except (KeyError, TypeError, ValueError) as error:
+        raise ValueError("calendar_request_requires_date_range") from error
+
+    if (end_date - start_date).days != 29:
+        raise ValueError("calendar_request_requires_30_days")
+    if not isinstance(payload, dict):
+        raise ValueError("calendar_ai_invalid_payload")
+
+    try:
+        output_start = date.fromisoformat(str(payload.get("start_date") or start_date))
+        output_end = date.fromisoformat(str(payload.get("end_date") or end_date))
+        if output_start != start_date or output_end != end_date:
+            raise ValueError("calendar_ai_range_mismatch")
+
+        raw_entries = payload.get("entries")
+        if not isinstance(raw_entries, list) or len(raw_entries) != 30:
+            raise ValueError("calendar_ai_incomplete_dates")
+        entries = [CalendarEntryInput.model_validate(item) for item in raw_entries]
+        actual_dates = [entry.entry_date for entry in entries]
+        expected_dates = [start_date + timedelta(days=index) for index in range(30)]
+        if len(set(actual_dates)) != 30 or sorted(actual_dates) != expected_dates:
+            raise ValueError("calendar_ai_incomplete_dates")
+        if any(
+            not (entry.status_label or "").strip()
+            or not (entry.keyword or "").strip()
+            or not (entry.summary or "").strip()
+            for entry in entries
+        ):
+            raise ValueError("calendar_ai_entry_content_missing")
+        if any(
+            entry.tone
+            and entry.tone not in {
+                "green",
+                "yellow",
+                "rest",
+                "red",
+                "green-yellow",
+                "yellow-green",
+                "red-yellow",
+            }
+            for entry in entries
+        ):
+            raise ValueError("calendar_ai_invalid_tone")
+
+        return CalendarCreate(
+            title=payload.get("title") or "辰鉴·决策日历",
+            start_date=start_date,
+            end_date=end_date,
+            meta_payload=payload.get("meta_payload") or {},
+            entries=entries,
+        )
+    except ValidationError as error:
+        raise ValueError("calendar_ai_invalid_payload") from error
 

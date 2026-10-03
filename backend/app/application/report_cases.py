@@ -78,6 +78,8 @@ async def create_user_service_request(
     *,
     audit_context=None,
 ) -> tuple[ServiceRequest, Optional[ReportCase]]:
+    if data.service_type == "calendar":
+        raise ValueError("calendar_requires_delivered_report")
     if data.service_type != "report":
         request = await create_service_request(
             db, user, data, audit_context=audit_context

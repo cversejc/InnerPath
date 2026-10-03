@@ -19,7 +19,7 @@ test('customer request formatters keep customer-facing status and type labels', 
 test('customer request formatters reuse topic labels and build edit routes', () => {
   assert.equal(topicLabel(['career', 'family']), '职业发展、家庭议题')
   assert.equal(serviceRequestEditPath({ service_type: 'report', id: 12 }), '/pages/assessment/assessment?requestId=12')
-  assert.equal(serviceRequestEditPath({ service_type: 'calendar', id: 18 }), '/pages/requests/new?type=calendar&requestId=18')
+  assert.equal(serviceRequestEditPath({ service_type: 'calendar', id: 18 }), '/pages/user/user?tab=reports')
 })
 
 test('only submitted and information-needed requests can be withdrawn', () => {

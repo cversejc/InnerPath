@@ -114,6 +114,7 @@ class CalendarRequestResponse(CalendarRequestCreate):
     reviewer_id: Optional[int] = None
     reviewed_at: Optional[datetime] = None
     review_note: Optional[str] = None
+    generation_error: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

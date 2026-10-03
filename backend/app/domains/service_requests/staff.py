@@ -23,6 +23,8 @@ async def accept_service_request(
     service_request = await _get_request_for_update(db, request_id)
     if service_request is None:
         raise ValueError("service_request_not_found")
+    if service_request.service_type == "calendar":
+        raise ValueError("calendar_requires_delivered_report")
     if service_request.status == "accepted" and service_request.assigned_consultant_id == consultant.id:
         return service_request
     if service_request.status != "submitted" or service_request.assigned_consultant_id is not None:
@@ -45,7 +47,9 @@ async def accept_service_request(
     return service_request
 
 def staff_can_access(service_request: ServiceRequest, user: User) -> bool:
-    return user.role == "admin" or service_request.assigned_consultant_id == user.id
+    return service_request.service_type != "calendar" and (
+        user.role == "admin" or service_request.assigned_consultant_id == user.id
+    )
 
 
 async def has_staff_assignment(db: AsyncSession, staff_id: int, user_id: int) -> bool:
@@ -69,6 +73,7 @@ async def list_staff_service_requests(
     scope: str = "mine",
 ) -> list[tuple[ServiceRequest, Optional[User]]]:
     query = select(ServiceRequest, User).join(User, User.id == ServiceRequest.user_id)
+    query = query.where(ServiceRequest.service_type == "report")
     if user.role != "admin":
         if scope == "available":
             query = query.where(

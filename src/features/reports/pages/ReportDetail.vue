@@ -36,7 +36,7 @@
         <div class="report-actions">
           <VanButton type="primary" native-type="button" class="btn-action primary" @click="goToCalendar">
             <template #icon><IconMark class="icon" name="calendar" /></template>
-            打开决策日历
+            基于这份报告生成决策日历
           </VanButton>
         </div>
       </div>

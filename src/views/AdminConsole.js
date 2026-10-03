@@ -32,7 +32,7 @@ export default {
       tabs: [
         { id: 'overview', index: '01', label: '总览' },
         { id: 'users', index: '02', label: '用户' },
-        { id: 'calendar-requests', index: '03', label: '日历申请' },
+        { id: 'calendar-requests', index: '03', label: '日历生成记录' },
         { id: 'calendar', index: '04', label: '日历' },
         { id: 'reports', index: '05', label: '报告' },
         { id: 'logs', index: '06', label: '日志' },

@@ -7,11 +7,11 @@
         <div>
           <p class="section-kicker">MY REQUESTS / SERVICE FLOW</p>
           <h1>我的申请</h1>
-          <p>申请提交后，会由咨询师接单、生成 AI 初稿并完成审校，最终结果只在交付后向你开放。</p>
+          <p>人生说明书申请由咨询师处理；收到交付报告后，你可以直接生成决策日历。</p>
         </div>
         <div class="hero-actions">
           <router-link class="secondary-button" to="/pages/assessment/assessment">申请人生说明书</router-link>
-          <router-link class="primary-button" to="/pages/requests/new?type=calendar">申请决策日历</router-link>
+          <router-link class="primary-button" to="/pages/user/user?tab=reports">从已交付报告生成日历</router-link>
         </div>
       </header>
 
@@ -37,11 +37,11 @@
         <div>
           <p class="eyebrow">A QUIET START</p>
           <h2>还没有申请记录</h2>
-          <p>从一份人生说明书，或一段 30 天的决策日历开始。</p>
+          <p>先申请人生说明书；交付后可从报告详情直接生成决策日历。</p>
         </div>
         <div class="empty-actions">
           <router-link class="primary-button" to="/pages/assessment/assessment">申请报告</router-link>
-          <router-link class="secondary-button" to="/pages/requests/new?type=calendar">申请日历</router-link>
+          <router-link class="secondary-button" to="/pages/user/user?tab=reports">查看我的报告</router-link>
         </div>
       </section>
 

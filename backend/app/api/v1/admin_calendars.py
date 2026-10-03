@@ -7,13 +7,11 @@ from app.api.audit_context import audit_context_from_request
 from app.api.v1.admin_support import _get_calendar_or_404
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.domains.calendar.models import CalendarRequest
 from app.models.user import User
 from app.domains.calendar.schemas import (
     CalendarCreate,
     CalendarImportRequest,
     CalendarListResponse,
-    CalendarRequestAdminUpdate,
     CalendarRequestListResponse,
     CalendarRequestResponse,
     CalendarResponse,
@@ -30,7 +28,6 @@ from app.domains.calendar.service import (
 from app.domains.calendar.query_service import get_user_calendars, serialize_calendar
 from app.domains.calendar.requests import (
     get_calendar_requests_for_admin,
-    update_calendar_request,
 )
 
 router = APIRouter()
@@ -56,27 +53,15 @@ async def list_calendar_requests(
     items = await get_calendar_requests_for_admin(db, status_filter=status_filter, user_id=user_id)
     return CalendarRequestListResponse(items=items)
 
-@router.patch("/calendar-requests/{request_id}", response_model=CalendarRequestResponse)
+@router.patch("/calendar-requests/{request_id}", status_code=status.HTTP_409_CONFLICT)
 async def review_calendar_request(
     request_id: int,
-    data: CalendarRequestAdminUpdate,
-    request: Request,
     current_user: User = Depends(require_roles("admin")),
-    db: AsyncSession = Depends(get_db),
 ):
-    calendar_request = await db.get(CalendarRequest, request_id)
-    if not calendar_request:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Calendar request not found")
-    try:
-        return await update_calendar_request(
-            db,
-            calendar_request,
-            current_user.id,
-            data,
-            audit_context=audit_context_from_request(request),
-        )
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
+    raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail="calendar_manual_review_disabled",
+    )
 
 @router.post("/users/{user_id}/calendars", response_model=CalendarResponse, status_code=status.HTTP_201_CREATED)
 async def create_user_calendar(

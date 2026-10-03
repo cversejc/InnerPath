@@ -9,9 +9,40 @@ _REPORTABILITY_SCORE = {
     "RECOMMENDED": 150,
     "MUST_INCLUDE": 500,
 }
-_BLOCK_ROLE_TOKENS = ("BLOCK", "CHALLENGE", "DEFENSE", "PATTERN", "CONFLICT")
-_ACTION_ROLE_TOKENS = ("ACTION", "EXPERIMENT", "PRACTICE")
-_DIRECTION_ROLE_TOKENS = ("DIRECTION", "STAGE", "TIMING", "INTEGRATION", "GROWTH")
+_BLOCK_ROLE_TOKENS = (
+    "BLOCK",
+    "CHALLENGE",
+    "DEFENSE",
+    "PATTERN",
+    "CONFLICT",
+    "卡点",
+    "挑战",
+    "防御",
+    "模式",
+    "冲突",
+    "张力",
+)
+_ACTION_ROLE_TOKENS = (
+    "ACTION",
+    "EXPERIMENT",
+    "PRACTICE",
+    "行动",
+    "实验",
+    "练习",
+    "实践",
+)
+_DIRECTION_ROLE_TOKENS = (
+    "DIRECTION",
+    "STAGE",
+    "TIMING",
+    "INTEGRATION",
+    "GROWTH",
+    "方向",
+    "阶段",
+    "时机",
+    "整合",
+    "成长",
+)
 
 
 def _role(finding: dict[str, Any]) -> str:

@@ -5,7 +5,10 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.report_quality import delivery_quality_snapshot
+from app.application.report_quality import (
+    case_can_be_delivered,
+    delivery_quality_snapshot,
+)
 from app.application.workflow_commands import complete_case_step
 from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit

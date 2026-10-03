@@ -29,6 +29,7 @@ from app.domains.skills.models import AISkillVersion, SkillRun
 from app.domains.skills.runtime import (
     ModelCompletion,
     SkillExecutionError,
+    _authoring_prompts,
     execute_skill,
 )
 from app.domains.reports.models import ReportTask
@@ -217,6 +218,30 @@ class FixedGateway:
         return ModelCompletion(
             content=json.dumps(self.response), trace={"provider": "test", "model": "stub"}
         )
+
+
+def test_narrative_prompt_includes_required_candidate_item_contract():
+    specification = default_narrative_skill_specifications()[0]
+    required = specification["output_contract"]["properties"]["candidates"]["items"]["required"]
+
+    assert "candidate_key" in required
+    assert "supporting_findings" in required
+    assert "priority_blocks" in required
+    system_prompt, _user_prompt = _authoring_prompts({}, specification, None)
+    assert '"candidate_key": {' in system_prompt
+
+
+def test_fragment_authoring_contract_lists_runtime_status_values():
+    specification = default_narrative_skill_specifications()[1]
+    status_schema = specification["output_contract"]["properties"]["status"]
+
+    assert status_schema["enum"] == [
+        "READY_FOR_REVIEW",
+        "MISSING_SEMANTIC_SUPPORT",
+    ]
+    system_prompt, _user_prompt = _authoring_prompts({}, specification, None)
+    assert "READY_FOR_REVIEW" in system_prompt
+    assert "MISSING_SEMANTIC_SUPPORT" in system_prompt
 
 
 @pytest.mark.asyncio
@@ -580,6 +605,102 @@ def test_report_content_plan_allocates_confirmed_semantics_and_reports_gaps():
     blocked = build_report_content_plan(missing_action, narrative_plan)
     assert blocked["status"] == "BLOCKED"
     assert any(item["type"] == "MISSING_SEMANTIC_SUPPORT" for item in blocked["gaps"])
+
+
+def test_report_content_plan_recognizes_chinese_semantic_roles():
+    semantic_model = {
+        "findings": [
+            {
+                "finding_key": "finding.identity",
+                "semantic_role": "IDENTITY",
+                "claim": "Identity source",
+                "importance": "HIGH",
+                "confidence": "HIGH",
+                "reportability": "MUST_INCLUDE",
+                "evidence_refs": ["evidence.identity"],
+                "structured_data": {},
+            },
+            {
+                "finding_key": "finding.hidden",
+                "semantic_role": "HIDDEN_TENSION",
+                "claim": "Hidden source",
+                "importance": "MEDIUM",
+                "confidence": "MEDIUM",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": [],
+                "structured_data": {},
+            },
+            {
+                "finding_key": "finding.block",
+                "semantic_role": "中心张力候选",
+                "claim": "Block source",
+                "importance": "HIGH",
+                "confidence": "HIGH",
+                "reportability": "MUST_INCLUDE",
+                "evidence_refs": [],
+                "structured_data": {},
+            },
+            {
+                "finding_key": "finding.action",
+                "semantic_role": "低风险行动候选",
+                "claim": "Action source",
+                "importance": "MEDIUM",
+                "confidence": "HIGH",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": [],
+                "structured_data": {},
+            },
+            {
+                "finding_key": "finding.direction",
+                "semantic_role": "自我方向候选",
+                "claim": "Direction source",
+                "importance": "MEDIUM",
+                "confidence": "HIGH",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": [],
+                "structured_data": {},
+            },
+        ],
+        "analysis_fragments": [
+            {
+                "fragment_key": "analysis.identity.context",
+                "source_snapshot": {
+                    "findings": [{"finding_key": "finding.identity"}],
+                    "fragments": [],
+                    "evidence": [],
+                },
+            }
+        ],
+        "evidence": [],
+    }
+    narrative_plan = {
+        "must_include_findings": ["finding.identity", "finding.block"],
+        "self_direction": "finding.direction",
+        "priority_blocks": [
+            {
+                "block_key": "block.main",
+                "title": "Main block",
+                "finding_refs": ["finding.block"],
+            }
+        ],
+    }
+
+    plan = build_report_content_plan(semantic_model, narrative_plan)
+    issues = validate_report_content_plan(plan, semantic_model, narrative_plan)
+    growth = next(
+        item
+        for item in plan["fragments"]
+        if item["fragment_key"] == "report.direction.growth_experiments"
+    )
+
+    assert plan["status"] == "READY"
+    assert not issues
+    assert growth["finding_refs"] == [
+        "finding.block",
+        "finding.direction",
+        "finding.action",
+    ]
+    assert growth["action_refs"] == ["finding.action"]
 
 
 @pytest.mark.asyncio

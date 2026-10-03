@@ -96,10 +96,20 @@ def test_calendar_window_is_always_taken_from_the_request_snapshot():
 
 
 def test_consultant_access_is_assignment_scoped_but_admin_can_intervene():
-    request = SimpleNamespace(assigned_consultant_id=12)
+    request = SimpleNamespace(service_type="report", assigned_consultant_id=12)
     assert staff_can_access(request, SimpleNamespace(role="consultant", id=12))
     assert not staff_can_access(request, SimpleNamespace(role="consultant", id=13))
     assert staff_can_access(request, SimpleNamespace(role="admin", id=99))
+
+    calendar_request = SimpleNamespace(
+        service_type="calendar", assigned_consultant_id=12
+    )
+    assert not staff_can_access(
+        calendar_request, SimpleNamespace(role="consultant", id=12)
+    )
+    assert not staff_can_access(
+        calendar_request, SimpleNamespace(role="admin", id=99)
+    )
 
 
 @pytest.mark.asyncio

@@ -10,10 +10,10 @@
       <div class="container paper-card">
         <span class="seal-badge">PERSONAL TIMEZONE</span>
         <h1>还没有已交付的决策日历</h1>
-        <p>{{ calendarError || '提交申请后，咨询师会基于你的起始日期和关注目标，完成一段 30 天的 AI 初稿与人工审校。' }}</p>
+        <p>{{ calendarError || '先申请并收到人生说明书，再从报告详情进入日历生成。AI 会以该报告为依据生成连续 30 天的安排，并自动交付。' }}</p>
         <div class="calendar-empty-actions">
-          <router-link class="primary-button" to="/pages/requests/new?type=calendar">申请决策日历</router-link>
-          <router-link class="secondary-button" to="/pages/requests/requests">查看我的申请</router-link>
+          <router-link class="primary-button" to="/pages/user/user?tab=reports">查看已交付报告</router-link>
+          <router-link class="secondary-button" to="/pages/assessment/assessment">申请人生说明书</router-link>
         </div>
       </div>
     </main>
@@ -189,6 +189,7 @@
       @open="openCalendarRequest"
       @close="closeCalendarRequest"
       @go-to-profile="goToProfile"
+      @go-to-reports="goToReports"
       @submit="submitCalendarRequest"
       @toggle-topic="toggleCalendarTopic"
       @toggle-outcome="toggleCalendarOutcome"

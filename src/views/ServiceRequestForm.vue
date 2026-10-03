@@ -5,7 +5,7 @@
       <header class="form-hero">
         <p class="section-kicker">TE / DECISION CALENDAR REQUEST</p>
         <h1>申请一段属于你的决策日历</h1>
-        <p>选择起始日期，告诉咨询师你希望照看的议题。日历不要求先完成报告，提交后会经过 AI 初步分析与人工审校。</p>
+        <p>决策日历以已交付的人生说明书为依据，请从报告详情进入生成。</p>
       </header>
 
       <form v-if="ready" class="request-form paper-card" novalidate @submit.prevent="submitRequest">
@@ -55,7 +55,7 @@
         </section>
 
         <section class="form-section" aria-labelledby="calendar-title">
-          <div class="section-heading"><p class="section-kicker">02 / REQUEST FOCUS</p><h2 id="calendar-title">告诉我们你想照看的节奏</h2><p>日历固定覆盖起始日期后的 30 天，咨询师会根据你的目标调整每日表达。</p></div>
+          <div class="section-heading"><p class="section-kicker">02 / REQUEST FOCUS</p><h2 id="calendar-title">告诉我们你想照看的节奏</h2><p>日历固定覆盖起始日期后的 30 天，将根据已交付报告和你的目标直接生成。</p></div>
           <div class="form-grid two">
             <label class="field"><span>起始日期 <b>*</b></span><input v-model="form.start_date" type="date" required><small class="field-hint">将生成 {{ dateRangeLabel }}</small><small v-if="errors.start_date" class="field-error">{{ errors.start_date }}</small></label>
             <label class="field"><span>关注目标 <b>*</b></span><input v-model.trim="form.calendar_goal" type="text" maxlength="500" placeholder="例如：安排转型、稳定作息、做重要决定" required><small v-if="errors.calendar_goal" class="field-error">{{ errors.calendar_goal }}</small></label>

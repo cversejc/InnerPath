@@ -6,7 +6,7 @@
         <div>
           <p class="section-kicker">SERVICE REQUESTS / REVIEW ROOM</p>
           <h1>咨询申请工作台</h1>
-          <p>处理已分配的咨询师报告 Case 与日历申请。</p>
+          <p>处理已分配的咨询师报告 Case。</p>
         </div>
         <div class="heading-actions">
           <router-link class="secondary-button compact-button" to="/skills">Skill Studio</router-link>
@@ -22,7 +22,7 @@
           <button v-for="item in scopeOptions" :key="item.id" type="button" role="tab" :aria-selected="scope === item.id" :class="{ active: scope === item.id }" @click="changeScope(item.id)">{{ item.label }}</button>
         </div>
         <div class="staff-filters">
-          <label><span>类型</span><select v-model="serviceType" @change="loadRequests"><option value="">全部</option><option value="report">报告</option><option value="calendar">日历</option></select></label>
+          <label><span>类型</span><select v-model="serviceType" @change="loadRequests"><option value="">全部</option><option value="report">报告</option></select></label>
           <label><span>状态</span><select v-model="statusFilter" @change="loadRequests"><option value="">全部状态</option><option v-for="status in statusOptions" :key="status" :value="status">{{ statusLabel(status) }}</option></select></label>
         </div>
       </section>

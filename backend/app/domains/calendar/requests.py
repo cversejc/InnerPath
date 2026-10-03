@@ -37,6 +37,8 @@ async def create_calendar_request(
         raise ValueError("calendar_request_requires_date_range")
     if data.start_date > data.end_date:
         raise ValueError("invalid_calendar_range")
+    if (data.end_date - data.start_date).days != 29:
+        raise ValueError("calendar_request_requires_30_days")
     if not data.focus_topics:
         raise ValueError("calendar_request_requires_focus_topics")
     if not data.usage_scenario:
@@ -45,16 +47,30 @@ async def create_calendar_request(
         raise ValueError("calendar_request_requires_goal")
     if not data.expected_outcomes:
         raise ValueError("calendar_request_requires_expected_outcomes")
-    if data.source_report_id is not None:
-        source_report = await db.scalar(
-            select(Report.id).where(
-                Report.id == data.source_report_id,
-                Report.user_id == user.id,
-                Report.is_deleted.is_(False),
-            )
+    if data.source_report_id is None:
+        raise ValueError("calendar_request_requires_source_report")
+    source_report = await db.scalar(
+        select(Report).where(
+            Report.id == data.source_report_id,
+            Report.user_id == user.id,
+            Report.status == "completed",
+            Report.is_deleted.is_(False),
         )
-        if source_report is None:
-            raise ValueError("calendar_request_source_report_mismatch")
+    )
+    if source_report is None:
+        raise ValueError("calendar_request_source_report_mismatch")
+
+    report_content = source_report.content_payload or {}
+    source_report_snapshot = {
+        "id": source_report.id,
+        "title": source_report.title,
+        "summary": report_content.get("summary") or source_report.summary,
+        "structured_sections": report_content.get("structured_sections") or [],
+        "energy_profile": report_content.get("energy_profile") or source_report.energy_profile,
+        "career_guidance": report_content.get("career_guidance") or source_report.career_guidance,
+        "relationship_pattern": report_content.get("relationship_pattern") or source_report.relationship_pattern,
+        "personal_growth": report_content.get("personal_growth") or source_report.personal_growth,
+    }
 
     snapshot = build_intake_snapshot(
         user,
@@ -70,6 +86,8 @@ async def create_calendar_request(
             }
         },
     )
+    snapshot["source_report"] = source_report_snapshot
+    snapshot["generation"] = {"status": "RUNNING"}
     calendar_request = CalendarRequest(
         user_id=user.id,
         source_report_id=data.source_report_id,
@@ -82,7 +100,7 @@ async def create_calendar_request(
         decision_description=(data.decision_description or "").strip() or None,
         expected_outcomes=data.expected_outcomes,
         additional_info=(data.additional_info or "").strip() or None,
-        status="pending",
+        status="generating",
         input_snapshot=snapshot,
     )
     db.add(calendar_request)
@@ -133,6 +151,7 @@ async def serialize_calendar_request(db: AsyncSession, calendar_request: Calenda
         "reviewer_id": calendar_request.reviewer_id,
         "reviewed_at": calendar_request.reviewed_at,
         "review_note": calendar_request.review_note,
+        "generation_error": (calendar_request.input_snapshot or {}).get("generation", {}).get("error_code"),
         "created_at": calendar_request.created_at,
         "updated_at": calendar_request.updated_at,
     }

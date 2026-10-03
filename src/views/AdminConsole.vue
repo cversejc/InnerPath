@@ -83,7 +83,6 @@
         :loading="calendarRequestsLoading"
         :status-filter="calendarRequestStatusFilter"
         @refresh="loadCalendarRequests"
-        @review="reviewCalendarRequest"
         @update-status-filter="setCalendarRequestStatusFilter"
       />
 

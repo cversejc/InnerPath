@@ -9,6 +9,7 @@ RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debia
 RUN apt-get update && apt-get install -y \
     gcc \
     postgresql-client \
+    fonts-noto-cjk \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
@@ -17,6 +18,9 @@ COPY requirements.txt .
 
 # Install Python dependencies using Aliyun PyPI mirror
 RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
+
+# Install the matching Chromium build and its Linux runtime dependencies.
+RUN python -m playwright install --with-deps chromium
 
 # Copy application code
 COPY . .
