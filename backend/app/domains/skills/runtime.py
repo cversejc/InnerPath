@@ -278,6 +278,9 @@ def _authoring_prompts(
     instructions = json.dumps(
         specification["instructions"], ensure_ascii=False, indent=2
     )
+    output_contract = json.dumps(
+        specification["output_contract"], ensure_ascii=False, indent=2
+    )
     runtime_note = (
         f"\n\n【本次运行补充要求】\n{runtime_instruction}"
         if runtime_instruction
@@ -285,6 +288,10 @@ def _authoring_prompts(
     )
     system_prompt = (
         f"{GLOBAL_POLICY}\n\n【任务】\n{objective}\n\n"
+        "只输出符合契约的严格 JSON，不附加 Markdown、推理过程或解释文字。\n\n"
+        "【机器可读输出契约】\n必须返回所有 required 字段，并按 properties 的类型输出；"
+        "不要改名或省略字段。\n"
+        f"{output_contract}\n\n"
         f"【Skill Instructions】\n{instructions}{runtime_note}"
         f"{_example_guidance(context.get('few_shot_examples') or [])}"
     )
@@ -308,6 +315,19 @@ def _analysis_prompts(
         if runtime_instruction
         else ""
     )
+    analysis_context = context.get("analysis_context") or {}
+    reference_catalog = {
+        "evidence_keys": [
+            item["evidence_key"]
+            for item in analysis_context.get("evidence", [])
+            if isinstance(item, dict) and isinstance(item.get("evidence_key"), str)
+        ],
+        "confirmed_finding_keys": [
+            item["finding_key"]
+            for item in analysis_context.get("upstream_confirmed_findings", [])
+            if isinstance(item, dict) and isinstance(item.get("finding_key"), str)
+        ],
+    }
     system_prompt = (
         f"{GLOBAL_POLICY}\n\n【任务类型】\n"
         "你正在生成咨询师内部审核用的分析候选，不是在写最终报告。"
@@ -315,6 +335,12 @@ def _analysis_prompts(
         "【机器可读输出契约】\n必须返回所有 required 字段；没有候选时对应字段使用空数组。"
         "数组中每个对象的字段必须符合以下结构，不要改名或省略必填字段：\n"
         f"{output_contract}\n\n"
+        "【允许使用的引用 ID】\n"
+        "evidence_refs 只能逐字复制 evidence_keys 中的 ID；"
+        "relation_refs 只能引用 confirmed_finding_keys 中的已确认上游 Finding，"
+        "格式为 {\"finding_key\": \"原样 ID\"}。不得根据描述、标签或记忆编造 ID。"
+        "analysis_fragments 和 risk_flags 也只能引用本列表、当前候选 Finding 的 ID。\n"
+        f"{json.dumps(reference_catalog, ensure_ascii=False)}\n\n"
         f"【Skill Instructions】\n{instructions}{runtime_note}"
         f"{_example_guidance(context.get('few_shot_examples') or [])}"
     )
@@ -538,6 +564,118 @@ def _validate_analysis_draft_output(
             raise ValueError("report_analysis_risk_flag_invalid")
 
 
+def _sanitize_analysis_draft_references(
+    output: dict[str, Any], context: dict[str, Any]
+) -> tuple[dict[str, Any], dict[str, int]]:
+    """Remove unsupported citations without retaining unsupported candidates."""
+    analysis_context = context.get("analysis_context") or {}
+    evidence_keys = {
+        item.get("evidence_key")
+        for item in analysis_context.get("evidence", [])
+        if isinstance(item, dict) and isinstance(item.get("evidence_key"), str)
+    }
+    confirmed_finding_keys = {
+        item.get("finding_key")
+        for item in analysis_context.get("upstream_confirmed_findings", [])
+        if isinstance(item, dict) and isinstance(item.get("finding_key"), str)
+    }
+    sanitized = deepcopy(output)
+    repairs = {
+        "invalid_evidence_refs_removed": 0,
+        "invalid_finding_refs_removed": 0,
+        "invalid_risk_refs_removed": 0,
+        "unsupported_findings_dropped": 0,
+        "unsupported_fragments_dropped": 0,
+        "unsupported_risk_flags_dropped": 0,
+    }
+
+    findings = sanitized.get("findings")
+    if not isinstance(findings, list):
+        return sanitized, repairs
+    retained_findings = []
+    for item in findings:
+        if not isinstance(item, dict):
+            retained_findings.append(item)
+            continue
+        evidence_refs = item.get("evidence_refs")
+        relation_refs = item.get("relation_refs")
+        if not isinstance(evidence_refs, list) or not isinstance(relation_refs, list):
+            retained_findings.append(item)
+            continue
+        valid_evidence_refs = [
+            ref for ref in evidence_refs if isinstance(ref, str) and ref in evidence_keys
+        ]
+        valid_relation_refs = []
+        for ref in relation_refs:
+            target = ref.get("finding_key") if isinstance(ref, dict) else ref
+            if isinstance(target, str) and target in confirmed_finding_keys:
+                valid_relation_refs.append(ref)
+        repairs["invalid_evidence_refs_removed"] += len(evidence_refs) - len(valid_evidence_refs)
+        repairs["invalid_finding_refs_removed"] += len(relation_refs) - len(valid_relation_refs)
+        item["evidence_refs"] = valid_evidence_refs
+        item["relation_refs"] = valid_relation_refs
+        if not valid_evidence_refs and not valid_relation_refs:
+            repairs["unsupported_findings_dropped"] += 1
+            continue
+        retained_findings.append(item)
+    sanitized["findings"] = retained_findings
+
+    valid_finding_keys = confirmed_finding_keys | {
+        item.get("finding_key")
+        for item in retained_findings
+        if isinstance(item, dict) and isinstance(item.get("finding_key"), str)
+    }
+    fragments = sanitized.get("analysis_fragments")
+    if isinstance(fragments, list):
+        retained_fragments = []
+        for item in fragments:
+            if not isinstance(item, dict):
+                retained_fragments.append(item)
+                continue
+            finding_refs = item.get("finding_refs")
+            evidence_refs = item.get("evidence_refs")
+            if not isinstance(finding_refs, list) or not isinstance(evidence_refs, list):
+                retained_fragments.append(item)
+                continue
+            valid_finding_refs = [
+                ref for ref in finding_refs if isinstance(ref, str) and ref in valid_finding_keys
+            ]
+            valid_evidence_refs = [
+                ref for ref in evidence_refs if isinstance(ref, str) and ref in evidence_keys
+            ]
+            repairs["invalid_finding_refs_removed"] += len(finding_refs) - len(valid_finding_refs)
+            repairs["invalid_evidence_refs_removed"] += len(evidence_refs) - len(valid_evidence_refs)
+            item["finding_refs"] = valid_finding_refs
+            item["evidence_refs"] = valid_evidence_refs
+            if not valid_finding_refs and not valid_evidence_refs:
+                repairs["unsupported_fragments_dropped"] += 1
+                continue
+            retained_fragments.append(item)
+        sanitized["analysis_fragments"] = retained_fragments
+
+    risk_flags = sanitized.get("risk_flags")
+    if isinstance(risk_flags, list):
+        retained_flags = []
+        valid_references = evidence_keys | valid_finding_keys
+        for item in risk_flags:
+            if not isinstance(item, dict) or not isinstance(item.get("references"), list):
+                retained_flags.append(item)
+                continue
+            references = item["references"]
+            filtered_references = [
+                ref for ref in references if isinstance(ref, str) and ref in valid_references
+            ]
+            repairs["invalid_risk_refs_removed"] += len(references) - len(filtered_references)
+            item["references"] = filtered_references
+            if references and not filtered_references:
+                repairs["unsupported_risk_flags_dropped"] += 1
+                continue
+            retained_flags.append(item)
+        sanitized["risk_flags"] = retained_flags
+
+    return sanitized, {key: count for key, count in repairs.items() if count}
+
+
 def _validate_output(
     output: dict[str, Any], raw: str, specification: dict[str, Any]
 ) -> None:
@@ -662,7 +800,12 @@ async def execute_skill(
         )
         _validate_output(output, completion.content, specification)
         if processor == "reports.analysis_draft":
+            output, reference_repairs = _sanitize_analysis_draft_references(
+                output, context
+            )
             _validate_analysis_draft_output(output, context)
+            if reference_repairs:
+                trace["reference_repairs"] = reference_repairs
         elif processor != "reports.single_step":
             _validate_authoring_output(output, context, processor)
     except Exception as error:

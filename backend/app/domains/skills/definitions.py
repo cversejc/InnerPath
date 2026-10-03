@@ -258,7 +258,32 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
     candidates["output_contract"] = {
         "type": "object",
         "required": ["candidates"],
-        "properties": {"candidates": {"type": "array"}},
+        "properties": {
+            "candidates": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "candidate_key",
+                        "theme",
+                        "rationale",
+                        "supporting_findings",
+                        "deemphasized_findings",
+                        "priority_blocks",
+                        "narrative_arc",
+                    ],
+                    "properties": {
+                        "candidate_key": {"type": "string"},
+                        "theme": {"type": "string"},
+                        "rationale": {"type": "string"},
+                        "supporting_findings": {"type": "array"},
+                        "deemphasized_findings": {"type": "array"},
+                        "priority_blocks": {"type": "array"},
+                        "narrative_arc": {"type": "array"},
+                    },
+                },
+            }
+        },
     }
 
     authoring = deepcopy(base)
@@ -315,7 +340,11 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
             "presentation_meta",
         ],
         "properties": {
-            "status": {"type": "string"},
+            "status": {
+                "type": "string",
+                "enum": ["READY_FOR_REVIEW", "MISSING_SEMANTIC_SUPPORT"],
+                "description": "内容可审阅时使用 READY_FOR_REVIEW；缺少来源支持时使用 MISSING_SEMANTIC_SUPPORT。",
+            },
             "title": {"type": "string"},
             "content": {"type": "string"},
             "used_findings": {"type": "array"},
@@ -438,7 +467,14 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
                                 "enum": ["INTERNAL_ONLY", "OPTIONAL", "RECOMMENDED", "MUST_INCLUDE"],
                             },
                             "evidence_refs": {"type": "array", "items": {"type": "string"}},
-                            "relation_refs": {"type": "array"},
+                            "relation_refs": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "required": ["finding_key"],
+                                    "properties": {"finding_key": {"type": "string"}},
+                                },
+                            },
                             "structured_data": {"type": "object"},
                         },
                     },

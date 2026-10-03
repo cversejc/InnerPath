@@ -268,6 +268,8 @@ async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
     assert "【机器可读输出契约】" in gateway.last_request[0]
     assert '"analysis_fragments"' in gateway.last_request[0]
     assert '"relation_refs"' in gateway.last_request[0]
+    assert '"evidence_keys": ["input.context.current_challenge"]' in gateway.last_request[0]
+    assert '"confirmed_finding_keys": ["foundation.balance"]' in gateway.last_request[0]
 
     context["analysis_context"]["step_key"] = "S3"
     with pytest.raises(ValueError, match="report_analysis_skill_stage_mismatch"):
@@ -279,7 +281,7 @@ async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
 
 
 @pytest.mark.asyncio
-async def test_analysis_skill_rejects_unsupported_evidence_reference():
+async def test_analysis_skill_drops_finding_with_only_unsupported_evidence():
     specification = default_analysis_skill_specifications()[0]
     skill = SimpleNamespace(
         id=72,
@@ -306,20 +308,111 @@ async def test_analysis_skill_rejects_unsupported_evidence_reference():
         "analysis_fragments": [],
         "risk_flags": [],
     }
-    with pytest.raises(SkillExecutionError, match="report_analysis_finding_reference_invalid"):
-        await execute_skill(
-            skill_version=skill,
-            input_data={
-                "profile": {},
-                "context": {},
-                "analysis_context": {
-                    "step_key": "S1",
-                    "evidence": [{"evidence_key": "evidence.valid"}],
-                    "upstream_confirmed_findings": [],
-                },
+    result = await execute_skill(
+        skill_version=skill,
+        input_data={
+            "profile": {},
+            "context": {},
+            "analysis_context": {
+                "step_key": "S1",
+                "evidence": [{"evidence_key": "evidence.valid"}],
+                "upstream_confirmed_findings": [],
             },
-            gateway=StubGateway(json.dumps(output, ensure_ascii=False)),
-        )
+        },
+        gateway=StubGateway(json.dumps(output, ensure_ascii=False)),
+    )
+
+    assert result.output_parsed["findings"] == []
+    assert result.model_trace["reference_repairs"] == {
+        "invalid_evidence_refs_removed": 1,
+        "unsupported_findings_dropped": 1,
+    }
+
+
+@pytest.mark.asyncio
+async def test_analysis_skill_keeps_valid_references_and_removes_unknown_ones():
+    specification = default_analysis_skill_specifications()[1]
+    skill = SimpleNamespace(
+        id=73,
+        skill_key=specification["identity"]["skill_key"],
+        version=1,
+        specification_json=specification,
+    )
+    output = {
+        "summary": "候选摘要。",
+        "findings": [
+            {
+                "finding_key": "s2.mapping.test",
+                "claim": "有依据的候选判断。",
+                "kind": "FINDING",
+                "semantic_role": "MOTIVATION_PATTERN",
+                "confidence": "LOW",
+                "importance": "MEDIUM",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": ["evidence.invalid", "evidence.valid"],
+                "relation_refs": [
+                    {"finding_key": "finding.invalid"},
+                    {"finding_key": "foundation.balance"},
+                ],
+                "structured_data": {},
+            }
+        ],
+        "analysis_fragments": [
+            {
+                "fragment_key": "s2.mapping.fragment",
+                "title": "模式候选",
+                "content": "基于已知信息形成的待审阅模式。",
+                "finding_refs": ["s2.mapping.test", "finding.invalid"],
+                "evidence_refs": ["evidence.invalid", "evidence.valid"],
+            },
+            {
+                "fragment_key": "s2.unsupported.fragment",
+                "title": "无依据片段",
+                "content": "没有可验证来源的片段。",
+                "finding_refs": ["finding.invalid"],
+                "evidence_refs": ["evidence.invalid"],
+            },
+        ],
+        "risk_flags": [
+            {"message": "需要咨询师核实。", "references": ["finding.invalid", "evidence.valid"]},
+            {"message": "无依据风险。", "references": ["finding.invalid"]},
+        ],
+    }
+    result = await execute_skill(
+        skill_version=skill,
+        input_data={
+            "profile": {},
+            "context": {},
+            "analysis_context": {
+                "step_key": "S2",
+                "evidence": [{"evidence_key": "evidence.valid"}],
+                "upstream_confirmed_findings": [
+                    {"finding_key": "foundation.balance"}
+                ],
+            },
+        },
+        gateway=StubGateway(json.dumps(output, ensure_ascii=False)),
+    )
+
+    finding = result.output_parsed["findings"][0]
+    assert finding["evidence_refs"] == ["evidence.valid"]
+    assert finding["relation_refs"] == [{"finding_key": "foundation.balance"}]
+    assert result.output_parsed["analysis_fragments"][0]["finding_refs"] == [
+        "s2.mapping.test"
+    ]
+    assert result.output_parsed["analysis_fragments"][0]["evidence_refs"] == [
+        "evidence.valid"
+    ]
+    assert result.output_parsed["risk_flags"][0]["references"] == ["evidence.valid"]
+    assert len(result.output_parsed["analysis_fragments"]) == 1
+    assert len(result.output_parsed["risk_flags"]) == 1
+    assert result.model_trace["reference_repairs"] == {
+        "invalid_evidence_refs_removed": 3,
+        "invalid_finding_refs_removed": 3,
+        "invalid_risk_refs_removed": 2,
+        "unsupported_fragments_dropped": 1,
+        "unsupported_risk_flags_dropped": 1,
+    }
 
 
 def test_skill_specification_rejects_unregistered_tools_and_processors():
