@@ -1,169 +1,198 @@
 <script setup>
+import { computed } from 'vue'
+import ReportContentBlock from './ReportContentBlock.vue'
+import { buildReportDocument, normalizeReportBlock } from '../report-document-model.js'
 import { formatReportMarkdown } from '../report-content.js'
 
-defineProps({
+const props = defineProps({
   report: { type: Object, required: true },
   foundationData: { type: Object, default: null },
   contentWithoutFoundation: { type: String, default: '' }
 })
+
+const displayName = computed(() => props.report.basicInfo?.name || '')
+const displayTitle = computed(() => (props.report.title || '人生说明书').replace(/^辰鉴[·・]\s*/, ''))
+const reportDate = computed(() => props.report.basicInfo?.reportDate || '')
+const reportIdentity = computed(() => displayName.value ? `人生说明书 · ${displayName.value}` : '人生说明书')
+const documentModel = computed(() => buildReportDocument(props.report, {
+  foundationData: props.foundationData,
+  markdown: props.contentWithoutFoundation || props.report.aiGeneratedContent || ''
+}))
+const chapterItems = computed(() => {
+  const chapters = documentModel.value.sections.map(section => ({
+    id: section.id,
+    title: section.title
+  }))
+  if (documentModel.value.summary?.content || documentModel.value.summary?.blocks.length) {
+    chapters.push({ id: 'summary', title: '总结与寄语' })
+  }
+  return chapters
+})
+const foundationData = computed(() => documentModel.value.sections.find(section => section.kind === 'foundation')?.foundationData || {})
+const baziPillars = computed(() => {
+  const bazi = foundationData.value?.bazi
+  if (!bazi) return []
+  return [
+    ['年柱', bazi.year],
+    ['月柱', bazi.month],
+    ['日柱', bazi.day],
+    ['时柱', bazi.hour]
+  ].filter(([, pillar]) => pillar)
+})
+const ziweiPalaces = computed(() => {
+  const ziwei = foundationData.value?.ziwei
+  if (!ziwei) return []
+  return [
+    ['命宫', ziwei.life_palace],
+    ['事业宫', ziwei.career_palace],
+    ['财帛宫', ziwei.wealth_palace],
+    ['夫妻宫', ziwei.relationship_palace]
+  ].filter(([, palace]) => palace)
+})
+const additionalFoundation = computed(() => {
+  const data = foundationData.value || {}
+  const extras = Object.fromEntries(Object.entries(data).filter(([key]) => !['bazi', 'ziwei'].includes(key)))
+  return normalizeReportBlock(extras, '', 'foundation-extra')
+})
+const hasDocumentContent = computed(() => documentModel.value.sections.length > 0 || chapterItems.value.length > 0)
+
+function chapterNumber(index) {
+  return String(index + 1).padStart(2, '0')
+}
+
+function pillarText(pillar) {
+  if (typeof pillar === 'string') return pillar
+  return `${pillar?.stem || ''}${pillar?.branch || ''}`
+}
+
+function joinStars(palace) {
+  return [...(palace?.main_stars || []), ...(palace?.aux_stars || [])].filter(Boolean).join(' · ')
+}
 </script>
 
 <template>
-  <div v-if="report.aiGeneratedContent" class="ai-content">
-    <div class="content-card">
-      <div class="ai-badge">
-        <IconMark class="badge-icon" name="spark" />
-        <span>辰鉴结构化解读</span>
+  <article class="report-document" data-render-ready="true">
+    <section class="report-page report-page--cover" aria-label="报告封面">
+      <div class="report-cover__frame">
+        <div class="report-cover__mark" aria-hidden="true"><span></span></div>
+        <p class="report-cover__eyebrow">辰鉴 · PERSONAL MAP</p>
+        <h1 class="report-cover__title">{{ displayTitle }}</h1>
+        <div class="report-cover__rule" aria-hidden="true"></div>
+        <p v-if="displayName" class="report-cover__name">{{ displayName }}</p>
+        <p class="report-cover__intro">这不是一份命理决断，也不是一份心理诊断<br>这是一张属于你的地图</p>
+        <p class="report-cover__footer">星辰引路 · 镜子照见<br>（辰鉴出品）</p>
       </div>
+    </section>
 
-      <div v-if="foundationData" class="foundation-section">
-        <h2 class="section-title">
-          <IconMark class="title-icon" name="compass" />
-          先天坐标
-        </h2>
-
-        <div v-if="foundationData.bazi" class="bazi-container">
-          <h3 class="subsection-title">八字坐标</h3>
-          <div class="pillar-grid">
-            <div v-if="foundationData.bazi.year" class="pillar-card">
-              <div class="pillar-label">年柱</div>
-              <div class="pillar-value">{{ foundationData.bazi.year.stem }}{{ foundationData.bazi.year.branch }}</div>
-              <div v-if="foundationData.bazi.year.ten_god" class="pillar-god">{{ foundationData.bazi.year.ten_god }}</div>
-            </div>
-            <div v-if="foundationData.bazi.month" class="pillar-card">
-              <div class="pillar-label">月柱</div>
-              <div class="pillar-value">{{ foundationData.bazi.month.stem }}{{ foundationData.bazi.month.branch }}</div>
-              <div v-if="foundationData.bazi.month.ten_god" class="pillar-god">{{ foundationData.bazi.month.ten_god }}</div>
-            </div>
-            <div v-if="foundationData.bazi.day" class="pillar-card day-pillar">
-              <div class="pillar-label">日柱（日主）</div>
-              <div class="pillar-value">{{ foundationData.bazi.day.stem }}{{ foundationData.bazi.day.branch }}</div>
-            </div>
-            <div v-if="foundationData.bazi.hour" class="pillar-card">
-              <div class="pillar-label">时柱</div>
-              <div class="pillar-value">{{ foundationData.bazi.hour.stem }}{{ foundationData.bazi.hour.branch }}</div>
-              <div v-if="foundationData.bazi.hour.ten_god" class="pillar-god">{{ foundationData.bazi.hour.ten_god }}</div>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="foundationData.ziwei" class="ziwei-container">
-          <h3 class="subsection-title">紫微坐标</h3>
-          <div class="palace-grid">
-            <div v-if="foundationData.ziwei.life_palace" class="palace-card">
-              <div class="palace-label">命宫</div>
-              <div class="palace-stars">
-                <span v-for="(star, idx) in foundationData.ziwei.life_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
-                <span v-for="(star, idx) in foundationData.ziwei.life_palace.aux_stars" :key="'aux-' + idx" class="star-tag aux">{{ star }}</span>
-              </div>
-            </div>
-            <div v-if="foundationData.ziwei.career_palace" class="palace-card">
-              <div class="palace-label">事业宫</div>
-              <div class="palace-stars">
-                <span v-for="(star, idx) in foundationData.ziwei.career_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
-              </div>
-            </div>
-            <div v-if="foundationData.ziwei.wealth_palace" class="palace-card">
-              <div class="palace-label">财帛宫</div>
-              <div class="palace-stars">
-                <span v-for="(star, idx) in foundationData.ziwei.wealth_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
-              </div>
-            </div>
-            <div v-if="foundationData.ziwei.relationship_palace" class="palace-card">
-              <div class="palace-label">夫妻宫</div>
-              <div class="palace-stars">
-                <span v-for="(star, idx) in foundationData.ziwei.relationship_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
-              </div>
-            </div>
-          </div>
-          <div v-if="foundationData.ziwei.patterns && foundationData.ziwei.patterns.length > 0" class="patterns-section">
-            <div class="pattern-label">关键格局：</div>
-            <div class="pattern-tags">
-              <span v-for="(pattern, idx) in foundationData.ziwei.patterns" :key="idx" class="pattern-tag">{{ pattern }}</span>
-            </div>
-          </div>
+    <section class="report-page report-page--intro" aria-labelledby="report-intro-title">
+      <div class="report-page__running"><span>序言</span><span>{{ reportIdentity }}</span></div>
+      <div class="report-page__body report-intro">
+        <p class="report-page__eyebrow">{{ reportIdentity }}</p>
+        <h2 id="report-intro-title">从这里开始，读一读自己</h2>
+        <div class="report-rule" aria-hidden="true"></div>
+        <div class="report-prose">
+          <p>这份报告把不同的观察放在同一张地图上，帮助你看见自己的特质、正在经历的议题，以及可能的下一步。</p>
+          <p>它是一份供你参考的阅读材料，不替你下定义。对你有帮助的部分，可以带回生活慢慢验证。</p>
         </div>
       </div>
+      <div v-if="reportDate" class="report-page__footer"><span>报告日期 · {{ reportDate }}</span></div>
+    </section>
 
-      <div class="markdown-content" v-html="formatReportMarkdown(contentWithoutFoundation)"></div>
-    </div>
-  </div>
-
-  <div v-else class="structured-content">
-    <div class="content-card">
-      <h2>一、我是谁 · 性格密码</h2>
-      <div class="energy-type">
-        <span class="type-badge">{{ report.energyProfile?.type || '综合型' }}</span>
+    <section v-if="chapterItems.length" class="report-page report-page--toc" aria-labelledby="report-toc-title">
+      <div class="report-page__running"><span>目录</span><span>{{ reportIdentity }}</span></div>
+      <div class="report-page__body">
+        <div class="report-heading report-heading--large">
+          <span class="report-heading__prefix">目 录</span>
+          <h2 id="report-toc-title">阅读路径</h2>
+        </div>
+        <ol class="report-toc">
+          <li v-for="(chapter, index) in chapterItems" :key="chapter.id">
+            <span class="report-toc__index">{{ chapterNumber(index) }}</span>
+            <span class="report-toc__copy"><strong>{{ chapter.title }}</strong></span>
+            <span class="report-toc__leader" aria-hidden="true"></span>
+          </li>
+        </ol>
       </div>
-      <div class="traits">
-        <strong>核心特质：</strong>{{ report.energyProfile?.coreTraits || '独特的个人特质' }}
-      </div>
-      <p class="description">{{ report.energyProfile?.description || '' }}</p>
-    </div>
+      <div class="report-page__footer"><span>辰鉴 · 个人报告</span></div>
+    </section>
 
-    <div class="content-card">
-      <h2>二、我往哪去 · 环境与方向</h2>
-      <div class="section-content">
-        <h3>可以尝试的方向</h3>
-        <ul class="path-list">
-          <li v-for="(path, index) in report.careerGuidance.suitablePaths" :key="index">{{ path }}</li>
+    <section
+      v-for="(section, index) in documentModel.sections"
+      :key="section.id"
+      class="report-page report-page--content"
+      :class="{ 'report-page--foundation': section.kind === 'foundation', 'report-page--markdown': section.kind === 'markdown' }"
+      :aria-labelledby="`report-section-title-${index}`"
+    >
+      <div class="report-page__running"><span>{{ chapterNumber(index) }} · {{ section.title }}</span><span>{{ reportIdentity }}</span></div>
+      <div class="report-page__body">
+        <div class="report-heading">
+          <span class="report-heading__prefix">{{ chapterNumber(index) }}</span>
+          <h2 :id="`report-section-title-${index}`">{{ section.title }}</h2>
+        </div>
+
+        <p v-if="section.subtitle" class="report-lead">{{ section.subtitle }}</p>
+        <div v-if="section.kind === 'markdown' && section.content" class="report-markdown-content" v-html="formatReportMarkdown(section.content)"></div>
+        <div v-else-if="section.content" class="report-section-intro report-markdown-content" v-html="formatReportMarkdown(section.content)"></div>
+
+        <div v-if="section.kind === 'foundation'" class="report-foundation-content">
+          <div v-if="baziPillars.length" class="report-grid report-grid--four">
+            <div v-for="([label, pillar]) in baziPillars" :key="label" class="report-card report-card--center">
+              <span class="report-card__label">{{ label }}</span>
+              <strong class="report-card__value">{{ pillarText(pillar) }}</strong>
+              <small v-if="pillar.ten_god">{{ pillar.ten_god }}</small>
+            </div>
+          </div>
+          <div v-if="foundationData.bazi?.day_master" class="report-callout">
+            <span class="report-callout__label">日主</span>
+            <p>{{ foundationData.bazi.day_master }}</p>
+          </div>
+          <div v-if="foundationData.ziwei?.patterns?.length" class="report-callout">
+            <span class="report-callout__label">格局</span>
+            <p>{{ foundationData.ziwei.patterns.join(' · ') }}</p>
+          </div>
+          <div v-if="ziweiPalaces.length" class="report-card-stack">
+            <div v-for="([label, palace]) in ziweiPalaces" :key="label" class="report-card">
+              <span class="report-card__label">{{ label }}</span>
+              <p>{{ joinStars(palace) }}</p>
+            </div>
+          </div>
+          <ReportContentBlock v-if="additionalFoundation" :block="additionalFoundation" />
+        </div>
+
+        <ul v-if="section.items?.length" class="report-list report-list--spaced">
+          <li v-for="(item, itemIndex) in section.items" :key="`${section.id}-item-${itemIndex}`">{{ item }}</li>
         </ul>
-        <h3>工作风格</h3>
-        <p>{{ report.careerGuidance.workStyle }}</p>
-        <h3>顺势建议</h3>
-        <ul class="suggestion-list">
-          <li v-for="(suggestion, index) in report.careerGuidance.developmentSuggestions" :key="index">{{ suggestion }}</li>
-        </ul>
+        <ReportContentBlock
+          v-for="block in section.blocks"
+          :key="block.id"
+          :block="block"
+        />
       </div>
-    </div>
+      <div class="report-page__footer"><span>{{ chapterNumber(index) }} · {{ section.title }}</span></div>
+    </section>
 
-    <div class="content-card">
-      <h2>三、我如何与人相处 · 关系模式</h2>
-      <div class="section-content">
-        <h3>关系风格</h3>
-        <p>{{ report.relationshipPattern.style }}</p>
-        <div class="two-columns">
-          <div class="column">
-            <h3>优势</h3>
-            <ul class="trait-list">
-              <li v-for="(strength, index) in report.relationshipPattern.strengths" :key="index">{{ strength }}</li>
-            </ul>
-          </div>
-          <div class="column">
-            <h3>挑战</h3>
-            <ul class="trait-list">
-              <li v-for="(challenge, index) in report.relationshipPattern.challenges" :key="index">{{ challenge }}</li>
-            </ul>
-          </div>
-        </div>
-        <h3>成长方向</h3>
-        <p>{{ report.relationshipPattern.growthDirection }}</p>
+    <section v-if="documentModel.summary?.content || documentModel.summary?.blocks.length" class="report-page report-page--ending report-page--dark" aria-labelledby="report-summary-title">
+      <div class="report-ending">
+        <p class="report-divider__number">{{ chapterNumber(documentModel.sections.length) }}</p>
+        <h2 id="report-summary-title">总结与寄语</h2>
+        <div class="report-rule" aria-hidden="true"></div>
+        <blockquote v-if="documentModel.summary.content" class="report-markdown-content" v-html="formatReportMarkdown(documentModel.summary.content)"></blockquote>
+        <ReportContentBlock
+          v-for="block in documentModel.summary.blocks"
+          :key="block.id"
+          :block="block"
+          class="report-ending__block"
+        />
+        <p class="report-ending__signature">辰鉴 · 星辰引路，镜子照见</p>
       </div>
-    </div>
+    </section>
 
-    <div class="content-card">
-      <h2>四、我卡在哪 · 破局行动</h2>
-      <div class="action-plans">
-        <div v-for="(plan, index) in report.personalGrowth.actionPlan" :key="index" class="action-item">
-          <div class="action-header">
-            <span class="action-number">{{ index + 1 }}</span>
-            <h3>{{ plan.area }}</h3>
-          </div>
-          <p class="action-detail"><strong>具体行动：</strong>{{ plan.action }}</p>
-          <p class="action-timeline"><strong>时间建议：</strong>{{ plan.timeline }}</p>
-        </div>
+    <section v-if="!hasDocumentContent" class="report-page report-page--empty" aria-live="polite">
+      <div class="report-page__body">
+        <div class="report-heading"><h2>报告正文暂不可用</h2></div>
       </div>
-    </div>
-
-    <div class="content-card summary-card">
-      <h2>五、知其序 · 行其路</h2>
-      <p class="summary-text">{{ report.summary }}</p>
-    </div>
-  </div>
+    </section>
+  </article>
 </template>
 
-<style scoped src="../styles/report-content-base.css"></style>
-<style scoped src="../styles/report-foundation.css"></style>
-<style scoped src="../styles/report-content.css"></style>
-<style scoped src="../styles/report-content-layout.css"></style>
-<style scoped src="../styles/report-content-overrides.css"></style>
+<style src="../styles/report-document.css"></style>

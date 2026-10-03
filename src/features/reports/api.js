@@ -20,6 +20,14 @@ export async function getReportDetail(reportId) {
   return response.data
 }
 
+export async function downloadReportPdf(reportId) {
+  return apiClient.get(`/reports/${reportId}/pdf`, { responseType: 'blob' })
+}
+
+export async function downloadReportPreviewPdf(report) {
+  return apiClient.post('/reports/preview/pdf', { report }, { responseType: 'blob' })
+}
+
 export async function getLatestReportContext() {
   const response = await apiClient.get('/reports/latest/context')
   return response.data

@@ -2,14 +2,33 @@
   <div class="report-detail">
     <BrandNav />
 
-    <section v-if="report" class="report-header">
-      <div class="container">
-        <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
-        <h1>辰鉴·人生说明书</h1>
-        <div class="report-meta">
-          <span>生成日期：{{ report.basicInfo?.reportDate || '今天' }}</span>
-          <span class="divider">|</span>
-          <span>{{ report.basicInfo?.name || '用户' }}</span>
+    <section v-if="report" class="report-header report-header--document">
+      <div class="container report-header__inner">
+        <div class="report-header__copy">
+          <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
+          <p v-if="report.basicInfo?.reportDate" class="report-header__eyebrow">PERSONAL REPORT / {{ report.basicInfo.reportDate }}</p>
+          <h1>人生说明书</h1>
+          <div v-if="report.basicInfo?.reportDate || report.basicInfo?.name" class="report-meta">
+            <span v-if="report.basicInfo?.reportDate">生成日期：{{ report.basicInfo.reportDate }}</span>
+            <span v-if="report.basicInfo?.reportDate && report.basicInfo?.name" class="divider">|</span>
+            <span v-if="report.basicInfo?.name">{{ report.basicInfo.name }}</span>
+          </div>
+        </div>
+        <div class="report-toolbar" aria-label="报告操作">
+          <VanButton
+            type="default"
+            plain
+            native-type="button"
+            class="btn-print"
+            :loading="downloadingPdf"
+            :disabled="downloadingPdf"
+            :loading-text="'正在生成…'"
+            @click="downloadPdf"
+          >
+            <template v-if="!downloadingPdf" #icon><IconMark name="download" /></template>
+            导出 PDF
+          </VanButton>
+          <p v-if="pdfError" class="report-toolbar__error" role="alert">{{ pdfError }}</p>
         </div>
       </div>
     </section>
@@ -17,7 +36,7 @@
     <section v-else-if="loading" class="report-header">
       <div class="container"><h1>正在打开你的个人报告…</h1></div>
     </section>
-    <section v-else class="report-header">
+    <section v-else class="report-header report-header--document">
       <div class="container">
         <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
         <h1>{{ loadError || '报告不存在或无权访问' }}</h1>
@@ -48,9 +67,10 @@
 
 <script>
 import { Button as VanButton } from 'vant'
-import { getReportDetail } from '../api.js'
+import { downloadReportPdf, downloadReportPreviewPdf, getReportDetail } from '../api.js'
 import ReportContent from '../components/ReportContent.vue'
 import { normalizeReportData, parseLegacyReportContent } from '../report-content.js'
+import { createReportPreview } from '../preview.js'
 
 export default {
   name: 'ReportDetail',
@@ -61,7 +81,14 @@ export default {
       foundationData: null,
       contentWithoutFoundation: '',
       loading: true,
-      loadError: ''
+      loadError: '',
+      downloadingPdf: false,
+      pdfError: ''
+    }
+  },
+  computed: {
+    isPreviewReport() {
+      return import.meta.env.DEV && this.$route.query.preview === '1'
     }
   },
   async mounted() {
@@ -71,6 +98,11 @@ export default {
     async loadReport() {
       const reportId = this.$route.query.id
       try {
+        if (import.meta.env.DEV && this.$route.query.preview === '1') {
+          this.report = normalizeReportData(createReportPreview())
+          return
+        }
+
         const reportData = await getReportDetail(reportId)
         this.report = normalizeReportData(reportData)
         if (this.report.contentPayload?.foundation_data) {
@@ -91,6 +123,43 @@ export default {
     },
     goToCalendar() {
       this.$router.push('/pages/calendar/calendar')
+    },
+    async downloadPdf() {
+      if (!this.report || this.downloadingPdf) return
+
+      this.downloadingPdf = true
+      this.pdfError = ''
+      try {
+        const response = this.isPreviewReport
+          ? await downloadReportPreviewPdf(this.report)
+          : await downloadReportPdf(this.$route.query.id)
+        const filename = this.getPdfFilename(response.headers['content-disposition'])
+        const url = window.URL.createObjectURL(response.data)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = filename || `人生说明书-${this.report.basicInfo?.name || '用户'}.pdf`
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        window.setTimeout(() => window.URL.revokeObjectURL(url), 1000)
+      } catch (error) {
+        this.pdfError = error.response?.status === 404
+          ? 'PDF 导出接口尚未部署，请更新后端服务后重试'
+          : 'PDF 生成失败，请稍后重试'
+      } finally {
+        this.downloadingPdf = false
+      }
+    },
+    getPdfFilename(contentDisposition = '') {
+      const encodedName = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1]
+      if (encodedName) {
+        try {
+          return decodeURIComponent(encodedName)
+        } catch {
+          return ''
+        }
+      }
+      return contentDisposition.match(/filename="([^"]+)"/i)?.[1] || ''
     }
   }
 }
@@ -99,3 +168,4 @@ export default {
 <style scoped src="../styles/report-detail-base.css"></style>
 <style scoped src="../styles/report-layout.css"></style>
 <style scoped src="../styles/report-responsive-overrides.css"></style>
+<style scoped src="../styles/report-document-shell.css"></style>

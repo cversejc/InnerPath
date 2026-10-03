@@ -40,6 +40,10 @@ const router = createRouter({
 })
 
 router.beforeEach(async to => {
+  if (import.meta.env.DEV && to.path === '/pages/report/detail' && to.query.preview === '1') {
+    return true
+  }
+
   const user = await initializeAuth()
   if (to.meta.public) {
     if (user && to.path.startsWith('/auth/')) {

@@ -10,8 +10,8 @@ export function normalizeReportData(report) {
   return {
     basicInfo: {
       ...rawBasicInfo,
-      name: rawBasicInfo.name || '用户',
-      reportDate: rawBasicInfo.reportDate || rawBasicInfo.report_date || new Date().toISOString().split('T')[0]
+      name: rawBasicInfo.name || '',
+      reportDate: rawBasicInfo.reportDate || rawBasicInfo.report_date || ''
     },
     contentPayload,
     structuredSections: source.structuredSections || source.structured_sections || report.structuredSections || report.structured_sections || null,
@@ -118,20 +118,54 @@ export function parseLegacyReportContent(content) {
 export function formatReportMarkdown(content) {
   if (!content) return ''
 
-  let html = content
-    .replace(/^---$/gim, '<hr>')
-    .replace(/^##### (.*$)/gim, '<h5>$1</h5>')
-    .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^\- (.*$)/gim, '<li>$1</li>')
-    .replace(/^\* (.*$)/gim, '<li>$1</li>')
-    .replace(/\n\n+/g, '</p><p>')
-    .replace(/\n/g, '<br>')
+  const escapeHtml = value => value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+  const formatInline = value => escapeHtml(value).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  const blocks = []
+  let paragraph = []
+  let list = []
 
-  html = html.replace(/(<li>.*?<\/li>(<br>)?)+/g, match => `<ul>${match.replace(/<br>/g, '')}</ul>`)
-  if (!html.startsWith('<h') && !html.startsWith('<ul>')) html = `<p>${html}</p>`
-  return html
+  const flushParagraph = () => {
+    if (!paragraph.length) return
+    blocks.push(`<p>${paragraph.map(formatInline).join('<br>')}</p>`)
+    paragraph = []
+  }
+  const flushList = () => {
+    if (!list.length) return
+    blocks.push(`<ul>${list.map(item => `<li>${formatInline(item)}</li>`).join('')}</ul>`)
+    list = []
+  }
+
+  for (const line of content.replace(/\r\n?/g, '\n').split('\n')) {
+    const heading = line.match(/^(#{1,5})\s+(.+)$/)
+    const item = line.match(/^\s*[-*]\s+(.+)$/)
+
+    if (heading) {
+      flushParagraph()
+      flushList()
+      const level = Math.min(heading[1].length + 1, 6)
+      blocks.push(`<h${level}>${formatInline(heading[2])}</h${level}>`)
+    } else if (item) {
+      flushParagraph()
+      list.push(item[1])
+    } else if (/^\s*---\s*$/.test(line)) {
+      flushParagraph()
+      flushList()
+      blocks.push('<hr>')
+    } else if (!line.trim()) {
+      flushParagraph()
+      flushList()
+    } else {
+      flushList()
+      paragraph.push(line)
+    }
+  }
+
+  flushParagraph()
+  flushList()
+  return blocks.join('')
 }

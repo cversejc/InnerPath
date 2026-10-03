@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     host: '0.0.0.0',  // 允许外部访问
+    allowedHosts: ['host.docker.internal'],
     port: 3000,
     open: true,
     proxy: {
