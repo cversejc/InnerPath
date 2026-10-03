@@ -1,5 +1,5 @@
 <script setup>
-import { formatReportMarkdown } from '../report-content.js'
+import { formatReportMarkdown } from '../report-markdown.js'
 
 defineOptions({ name: 'ReportContentBlock' })
 

@@ -1,3 +1,5 @@
+import { parseLegacyReportContent } from './report-content.js'
+
 const REPORT_LABELS = {
   action: '具体行动',
   action_plan: '行动方案',
@@ -125,12 +127,14 @@ function sectionFromNode(key, value, index) {
 function foundationSection(data, index = 0) {
   if (!hasReportValue(data)) return null
   const foundationData = data && typeof data === 'object' ? data : { content: textValue(data) }
+  const extras = Object.fromEntries(Object.entries(foundationData).filter(([key]) => !['bazi', 'ziwei'].includes(key)))
   return {
     id: `foundation-${index}`,
     title: '命理基础',
     subtitle: '',
     kind: 'foundation',
     foundationData,
+    foundationExtras: normalizeReportBlock(extras, '', 'foundation-extra'),
     blocks: []
   }
 }
@@ -250,4 +254,26 @@ export function buildReportDocument(report, { foundationData = null, markdown = 
 
   summary = summaryFrom(report.summary)
   return { sections: sections.filter(Boolean), summary }
+}
+
+export function createReportDocument(report) {
+  const contentPayload = report.contentPayload || {}
+  let foundationData = contentPayload.foundation_data ?? contentPayload.foundationData ?? null
+  let markdown = textValue(report.aiGeneratedContent)
+
+  if (!hasReportValue(foundationData) && markdown) {
+    const legacyContent = parseLegacyReportContent(markdown)
+    foundationData = legacyContent.foundationData
+    markdown = legacyContent.contentWithoutFoundation
+  }
+
+  const model = buildReportDocument(report, { foundationData, markdown })
+  return {
+    id: report.id ?? null,
+    title: (textValue(report.title) || '人生说明书').replace(/^辰鉴[·・]\s*/, ''),
+    recipient: textValue(report.basicInfo?.name),
+    reportDate: textValue(report.basicInfo?.reportDate),
+    sections: model.sections,
+    summary: model.summary
+  }
 }

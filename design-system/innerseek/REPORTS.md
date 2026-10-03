@@ -47,6 +47,20 @@ report and its extracted fields from appearing twice. Empty arrays and blank str
 are omitted. Keep the original report wording; presentation code should not generate
 personal advice or infer missing values.
 
+## Rendering Boundary
+
+Report generation owns report wording and structured content. The presentation layer
+does not call generation tasks, prompts, or AI services. `normalizeReportData` and
+`createReportDocument` adapt API and legacy report payloads into a stable document
+shape containing `title`, `recipient`, `reportDate`, `sections`, and `summary`.
+`ReportContent` receives that document shape and only renders it with the report
+styles; it does not inspect API response aliases or parse legacy report source data.
+
+The report detail page owns loading, navigation, and the export action. The backend
+Playwright renderer opens that same page and exports its rendered document to PDF, so
+web and PDF output share the presentation component and styles. PDF rendering is a
+delivery step and must never regenerate report content.
+
 Legacy Markdown supports headings, bold text, unordered lists and horizontal rules.
 Escape raw HTML before formatting. Do not pass report text directly to `v-html` or
 inject untrusted markup.

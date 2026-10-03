@@ -45,12 +45,7 @@
 
     <section class="report-content">
       <div class="container">
-        <ReportContent
-          v-if="report"
-          :report="report"
-          :foundation-data="foundationData"
-          :content-without-foundation="contentWithoutFoundation"
-        />
+        <ReportContent v-if="reportDocument" :document="reportDocument" />
 
         <div class="report-actions">
           <VanButton type="primary" native-type="button" class="btn-action primary" @click="goToCalendar">
@@ -69,7 +64,8 @@
 import { Button as VanButton } from 'vant'
 import { downloadReportPdf, downloadReportPreviewPdf, getReportDetail } from '../api.js'
 import ReportContent from '../components/ReportContent.vue'
-import { normalizeReportData, parseLegacyReportContent } from '../report-content.js'
+import { normalizeReportData } from '../report-content.js'
+import { createReportDocument } from '../report-document-model.js'
 import { createReportPreview } from '../preview.js'
 
 export default {
@@ -78,8 +74,7 @@ export default {
   data() {
     return {
       report: null,
-      foundationData: null,
-      contentWithoutFoundation: '',
+      reportDocument: null,
       loading: true,
       loadError: '',
       downloadingPdf: false,
@@ -100,18 +95,13 @@ export default {
       try {
         if (import.meta.env.DEV && this.$route.query.preview === '1') {
           this.report = normalizeReportData(createReportPreview())
+          this.reportDocument = createReportDocument(this.report)
           return
         }
 
         const reportData = await getReportDetail(reportId)
         this.report = normalizeReportData(reportData)
-        if (this.report.contentPayload?.foundation_data) {
-          this.foundationData = this.report.contentPayload.foundation_data
-        } else if (this.report.aiGeneratedContent) {
-          const parsed = parseLegacyReportContent(this.report.aiGeneratedContent)
-          this.foundationData = parsed.foundationData
-          this.contentWithoutFoundation = parsed.contentWithoutFoundation
-        }
+        this.reportDocument = createReportDocument(this.report)
       } catch (error) {
         this.loadError = error.response?.status === 403 ? '你没有权限查看这份报告' : '报告不存在或加载失败'
       } finally {

@@ -1,23 +1,17 @@
 <script setup>
 import { computed } from 'vue'
 import ReportContentBlock from './ReportContentBlock.vue'
-import { buildReportDocument, normalizeReportBlock } from '../report-document-model.js'
-import { formatReportMarkdown } from '../report-content.js'
+import { formatReportMarkdown } from '../report-markdown.js'
 
 const props = defineProps({
-  report: { type: Object, required: true },
-  foundationData: { type: Object, default: null },
-  contentWithoutFoundation: { type: String, default: '' }
+  document: { type: Object, required: true }
 })
 
-const displayName = computed(() => props.report.basicInfo?.name || '')
-const displayTitle = computed(() => (props.report.title || '人生说明书').replace(/^辰鉴[·・]\s*/, ''))
-const reportDate = computed(() => props.report.basicInfo?.reportDate || '')
+const displayName = computed(() => props.document.recipient || '')
+const displayTitle = computed(() => props.document.title || '人生说明书')
+const reportDate = computed(() => props.document.reportDate || '')
 const reportIdentity = computed(() => displayName.value ? `人生说明书 · ${displayName.value}` : '人生说明书')
-const documentModel = computed(() => buildReportDocument(props.report, {
-  foundationData: props.foundationData,
-  markdown: props.contentWithoutFoundation || props.report.aiGeneratedContent || ''
-}))
+const documentModel = computed(() => props.document)
 const chapterItems = computed(() => {
   const chapters = documentModel.value.sections.map(section => ({
     id: section.id,
@@ -28,7 +22,8 @@ const chapterItems = computed(() => {
   }
   return chapters
 })
-const foundationData = computed(() => documentModel.value.sections.find(section => section.kind === 'foundation')?.foundationData || {})
+const foundationSection = computed(() => documentModel.value.sections.find(section => section.kind === 'foundation'))
+const foundationData = computed(() => foundationSection.value?.foundationData || {})
 const baziPillars = computed(() => {
   const bazi = foundationData.value?.bazi
   if (!bazi) return []
@@ -49,11 +44,7 @@ const ziweiPalaces = computed(() => {
     ['夫妻宫', ziwei.relationship_palace]
   ].filter(([, palace]) => palace)
 })
-const additionalFoundation = computed(() => {
-  const data = foundationData.value || {}
-  const extras = Object.fromEntries(Object.entries(data).filter(([key]) => !['bazi', 'ziwei'].includes(key)))
-  return normalizeReportBlock(extras, '', 'foundation-extra')
-})
+const additionalFoundation = computed(() => foundationSection.value?.foundationExtras || null)
 const hasDocumentContent = computed(() => documentModel.value.sections.length > 0 || chapterItems.value.length > 0)
 
 function chapterNumber(index) {
