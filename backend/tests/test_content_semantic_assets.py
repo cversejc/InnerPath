@@ -21,6 +21,7 @@ from app.domains.content.service import (
     sync_application_evidence,
 )
 from app.domains.workflow.models import ReportCase
+from app.models.user import User
 
 
 class SyncSessionAdapter:
@@ -50,6 +51,7 @@ class SyncSessionAdapter:
 def content_db():
     tables = [
         ReportCase.__table__,
+        User.__table__,
         CaseEvidenceItem.__table__,
         FindingRevision.__table__,
         ContentFragmentRevision.__table__,
@@ -262,6 +264,36 @@ async def test_fragment_style_edit_does_not_stale_dependents_but_semantic_edit_d
     assert semantic.content_revision == 3
     await db.refresh(child)
     assert child.status == "STALE"
+
+
+@pytest.mark.asyncio
+async def test_style_edit_can_confirm_a_proposed_fragment_without_semantic_change(content_db):
+    db, case_id = content_db
+    draft = await create_content_fragment_revision(
+        db,
+        report_case_id=case_id,
+        fragment_key="analysis.integration.direction",
+        fragment_type="ANALYSIS",
+        title="发展方向",
+        content="先列出希望保留的工作条件。",
+        status="PROPOSED",
+    )
+
+    confirmed = await create_content_fragment_revision(
+        db,
+        report_case_id=case_id,
+        fragment_key=draft.fragment_key,
+        fragment_type="ANALYSIS",
+        title="发展方向",
+        content="先列出希望保留的工作条件，再用一次短期尝试核对。",
+        status="CONFIRMED",
+        edit_kind="STYLE",
+    )
+
+    assert confirmed.status == "CONFIRMED"
+    assert confirmed.edit_kind == "STYLE"
+    assert confirmed.semantic_revision == draft.semantic_revision
+    assert confirmed.content_revision == draft.content_revision + 1
 
 
 @pytest.mark.asyncio

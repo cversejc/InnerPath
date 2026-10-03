@@ -800,15 +800,23 @@ async def revise_report_case_fragment(
             status_code=status.HTTP_409_CONFLICT,
             detail="fragment_revision_conflict",
         )
-    values = data.model_dump(exclude={"expected_revision_no"})
+    values = data.model_dump(
+        exclude={"expected_revision_no"},
+        exclude_unset=True,
+    )
     values.pop("owner_step_task_id", None)
+    owner_step_task_id = (
+        current.owner_step_task_id
+        if current is not None and values.get("edit_kind") == "STYLE"
+        else task.id
+    )
     try:
         revision = await create_content_fragment_revision(
             db,
             report_case_id=case_id,
             fragment_key=fragment_key,
             **values,
-            owner_step_task_id=task.id,
+            owner_step_task_id=owner_step_task_id,
             created_by=current_user.id,
         )
         await db.commit()

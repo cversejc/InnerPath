@@ -193,7 +193,9 @@ async def create_content_fragment_revision(
     if current and edit_kind == "STYLE":
         if fragment_type != current.fragment_type:
             raise ValueError("fragment_style_edit_changed_semantics")
-        if status is not None and status != current.status:
+        if status is not None and status != current.status and not (
+            current.status == "PROPOSED" and status == "CONFIRMED"
+        ):
             raise ValueError("fragment_style_edit_changed_semantics")
         if (
             owner_step_task_id is not None
