@@ -65,7 +65,9 @@
         }
       },
       "expectation": {
-        "minimum_array_length": { "path": ["candidates"], "value": 2 },
+        "minimum_array_length": [
+          { "path": ["candidates"], "value": 2 }
+        ],
         "allowed_finding_refs": ["finding.stability-autonomy"],
         "minimum_score": 1.0
       }
