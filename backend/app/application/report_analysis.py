@@ -16,6 +16,7 @@ from app.domains.reports.generation.mingli_foundation import (
     calculate_mingli_foundation,
 )
 from app.domains.skills.definitions import ANALYSIS_STEPS
+from app.domains.skills.analysis_sop import stage_contract
 from app.domains.skills.models import SkillRun
 from app.domains.skills.service import ensure_default_analysis_skill_versions
 from app.domains.workflow.models import StepTask
@@ -26,7 +27,8 @@ ACTIVE_STEP_STATUSES = {"READY", "IN_REVIEW", "EXECUTING", "WAITING_REVIEW"}
 
 
 def build_analysis_completion_gate(
-    *, finding_statuses: list[str], fragment_statuses: list[str]
+    *, finding_statuses: list[str], fragment_statuses: list[str],
+    required_topics: list[dict] | None = None, confirmed_fragment_keys: list[str] | None = None,
 ) -> dict[str, Any]:
     confirmed_finding_count = finding_statuses.count("CONFIRMED")
     confirmed_fragment_count = fragment_statuses.count("CONFIRMED")
@@ -42,6 +44,9 @@ def build_analysis_completion_gate(
         blockers.append("report_analysis_fragments_stale")
     if confirmed_finding_count + confirmed_fragment_count == 0:
         blockers.append("report_analysis_output_required")
+    missing_topics = [item for item in required_topics or [] if item["fragment_key"] not in (confirmed_fragment_keys or [])]
+    if missing_topics:
+        blockers.append("report_analysis_sop_coverage_required")
     return {
         "can_complete": not blockers,
         "confirmed_finding_count": confirmed_finding_count,
@@ -50,6 +55,7 @@ def build_analysis_completion_gate(
         "pending_fragment_count": pending_fragment_count,
         "stale_fragment_count": stale_fragment_count,
         "blockers": blockers,
+        "missing_topics": missing_topics,
     }
 
 
@@ -114,11 +120,16 @@ async def get_analysis_step_completion_gate(
             ContentFragmentRevision.is_current.is_(True),
         )
     )
+    finding_rows, fragment_rows = list(finding_rows), list(fragment_rows)
+    contract = stage_contract(step_key)
     return {
         "step_key": step_key,
+        "sop_contract": contract,
         **build_analysis_completion_gate(
             finding_statuses=[row.status for row in finding_rows],
             fragment_statuses=[row.status for row in fragment_rows],
+            required_topics=contract["topics"] if contract else [],
+            confirmed_fragment_keys=[row.fragment_key for row in fragment_rows if row.status == "CONFIRMED"],
         ),
     }
 
@@ -223,7 +234,7 @@ async def _analysis_context(
                 for item in evidence_rows
                 if item.source_type == "SYSTEM_CALCULATED"
                 and isinstance(item.value_json, dict)
-                and item.value_json.get("calculation_method") == "deterministic-mingli"
+                and item.value_json.get("calculation_version") == "mingli-v2"
             ),
             None,
         )
@@ -237,9 +248,9 @@ async def _analysis_context(
             foundation_evidence = await create_evidence_item(
                 db,
                 report_case_id=report_case.id,
-                evidence_key="calculated.mingli_foundation.v1",
+                evidence_key="calculated.mingli_foundation.v2",
                 source_type="SYSTEM_CALCULATED",
-                source_ref="tool:reports.calculate_mingli_foundation:v1",
+                source_ref="tool:reports.calculate_mingli_foundation:v2",
                 value=foundation,
             )
             evidence.append(
@@ -257,6 +268,7 @@ async def _analysis_context(
         "report_case_id": report_case.id,
         "step_key": step.step_key,
         "activation_no": step.activation_no,
+        "sop_contract": stage_contract(step.step_key),
         "application_snapshot": report_case.application_snapshot or {},
         "evidence": evidence,
         "upstream_confirmed_findings": [

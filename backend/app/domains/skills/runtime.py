@@ -548,6 +548,10 @@ def _validate_analysis_draft_output(
             raise ValueError("report_analysis_fragment_invalid")
         fragment_keys.add(key)
 
+    required_topics = (analysis_context.get("sop_contract") or {}).get("topics") or []
+    if any(topic["fragment_key"] not in fragment_keys for topic in required_topics):
+        raise ValueError("report_analysis_sop_coverage_required")
+
     for flag in risk_flags:
         if (
             not isinstance(flag, dict)

@@ -384,7 +384,7 @@ test('quality issues use clear Chinese action labels and severity levels', () =>
   })
 
   const issue = groups[2].items[0]
-  assert.equal(issue.title, '外在表现：已经走到选择面前 · 报告表达需要复核')
+  assert.equal(issue.title, '已经推进的选择与行动 · 报告表达需要复核')
   assert.match(issue.body, /统一叙述方式/)
   assert.match(issue.meta, /需要处理 · 待处理/)
   assert.doesNotMatch(JSON.stringify(issue), /report\.identity|report_coherence/)

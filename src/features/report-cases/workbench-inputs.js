@@ -146,11 +146,22 @@ function calculationSummary(value) {
     .filter(Boolean)
   if (pillars.length) parts.push(pillars.join('、'))
   if (bazi.day_master) parts.push(`日主：${bazi.day_master}`)
+  const facts = value.bazi_facts
+  if (facts) {
+    const master = facts.day_master
+    if (master) parts.push(`日主属性：${master.polarity}${master.element}`)
+    const hidden = Object.entries(facts.pillars || {}).map(([key, pillar]) => `${pillarLabels[key]}藏干：${(pillar.hidden_stems || []).map(item => `${item.stem}（${item.ten_god}）`).join('、')}`)
+    if (hidden.length) parts.push(hidden.join('；'))
+    if (facts.interactions?.length) parts.push(`干支关系：${facts.interactions.map(item => `${item.symbols}${item.type}`).join('、')}`)
+    if (facts.dayun?.length) parts.push(`大运：${facts.dayun.map(item => `${item.start_year}–${item.end_year} ${item.pillar}（${item.ten_god}）`).join('；')}`)
+  }
+  if (value.input_assumptions?.length) parts.push(`演示假设：${value.input_assumptions.join('；')}`)
+  if (value.limitations?.length) parts.push(`待核对：${value.limitations.join('；')}`)
   if (bazi.note || value.note) parts.push(`测算说明：${bazi.note || value.note}`)
 
   const ziwei = value.ziwei
   if (ziwei && typeof ziwei === 'object') {
-    const palaceLabels = { life_palace: '命宫', career_palace: '官禄宫' }
+    const palaceLabels = { life_palace: '命宫', body_palace: '身宫', wellbeing_palace: '福德宫', career_palace: '官禄宫' }
     for (const [key, label] of Object.entries(palaceLabels)) {
       const palace = ziwei[key]
       if (!palace || typeof palace !== 'object') continue

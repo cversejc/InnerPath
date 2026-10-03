@@ -518,7 +518,8 @@ export default {
           report_analysis_finding_reference_invalid: '分析建议引用的资料已变化。请刷新页面后重新生成建议。',
           report_case_not_found: '未找到这份报告申请，请返回列表刷新后重试。',
           report_case_step_not_active: '当前步骤已变化，请刷新后继续处理。',
-          report_analysis_output_required: '请先确认专业判断或分析内容，再完成本步骤。'
+          report_analysis_output_required: '请先确认专业判断或分析内容，再完成本步骤。',
+          report_analysis_sop_coverage_required: '请按本节点分析清单逐项审核。缺少资料的条目也需记录暂缓原因。'
         }
         return messages[text] || '操作暂时无法完成，请刷新页面后重试。'
       }

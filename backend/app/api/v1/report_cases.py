@@ -135,6 +135,7 @@ def _workflow_error(error: ValueError) -> None:
         "report_analysis_run_activation_changed",
         "report_analysis_candidate_owned_by_another_step",
         "report_analysis_output_required",
+        "report_analysis_sop_coverage_required",
         "report_analysis_findings_unreviewed",
         "report_analysis_fragments_unreviewed",
         "report_analysis_fragments_stale",

@@ -113,6 +113,26 @@
         </div>
       </section>
 
+      <section v-if="stepViewMode === 'CURRENT' && completionGate?.sop_contract" class="node-sop" aria-label="分析清单与职责分工">
+        <h4>本步骤怎么做</h4>
+        <dl class="node-sop-roles">
+          <div><dt>程序已完成</dt><dd>{{ completionGate.sop_contract.responsibilities.program }}</dd></div>
+          <div><dt>AI 提供候选</dt><dd>{{ completionGate.sop_contract.responsibilities.ai }}</dd></div>
+          <div><dt>你来确认</dt><dd>{{ completionGate.sop_contract.responsibilities.human }}</dd></div>
+        </dl>
+        <details>
+          <summary>逐项核对分析范围 · {{ completionGate.sop_contract.topics.length }} 项，{{ completionGate.missing_topics?.length || 0 }} 项待确认</summary>
+          <ul class="node-sop-topics">
+            <li v-for="topic in completionGate.sop_contract.topics" :key="topic.fragment_key">
+              <strong>{{ topic.title }}</strong>
+              <span>{{ completionGate.missing_topics?.some(item => item.fragment_key === topic.fragment_key) ? '待审核' : '已确认' }}</span>
+              <p>{{ topic.task }}</p>
+            </li>
+          </ul>
+          <p>{{ completionGate.sop_contract.missing_information_policy }}</p>
+        </details>
+      </section>
+
       <div class="node-workspace-columns">
         <section class="node-inputs" aria-label="当前节点分析依据">
           <div class="node-section-heading">
@@ -502,6 +522,7 @@ export default {
     gateBlockerLabel(code) {
       return {
         report_analysis_output_required: '至少需要确认一条专业判断或一段分析内容。',
+        report_analysis_sop_coverage_required: '分析清单仍有未确认条目；缺少资料时请记录暂缓原因并审核。',
         report_analysis_findings_unreviewed: '还有待审核的专业判断，请逐条确认、修改或拒绝。',
         report_analysis_fragments_unreviewed: '还有待审核的分析内容，请确认或修改。',
         report_analysis_fragments_stale: '有分析内容需要重新审核。'
