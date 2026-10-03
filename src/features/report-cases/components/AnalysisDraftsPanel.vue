@@ -110,6 +110,7 @@
 
 <script>
 import { Button as VanButton } from 'vant'
+import { reportEvidenceTitle } from '../workbench-inputs.js'
 import { formatDate } from '../../service-requests/formatters.js'
 
 export default {
@@ -153,7 +154,7 @@ export default {
     evidenceLabel(key) {
       const evidence = (this.content.evidence || []).find(item => item.evidence_key === key)
       if (!evidence) return '相关资料依据'
-      return evidence.source_type === 'SYSTEM_CALCULATED' ? '系统测算资料' : '用户提供的资料'
+      return reportEvidenceTitle(evidence)
     },
     referenceLabels(keys) {
       return [...new Set((keys || []).map(key => this.evidenceLabel(key)))].join('、')

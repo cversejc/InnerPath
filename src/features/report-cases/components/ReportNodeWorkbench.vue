@@ -13,14 +13,21 @@
         v-for="(step, index) in steps"
         :key="step.id"
         class="workflow-progress-step"
-        :class="[`progress-${String(step.status || '').toLowerCase()}`, { 'progress-current': step.id === currentStep?.id }]"
+        :class="[`progress-${String(step.status || '').toLowerCase()}`, { 'progress-current': step.id === currentStep?.id, 'progress-selected': step.id === viewStep?.id }]"
         :aria-current="step.id === currentStep?.id ? 'step' : undefined"
       >
-        <span class="progress-marker">{{ String(index + 1).padStart(2, '0') }}</span>
-        <span class="progress-copy">
-          <strong>{{ stageFor(step.step_key)?.shortName || '处理步骤' }}</strong>
-          <small>{{ statusLabel(step.status) }}</small>
-        </span>
+        <button
+          class="workflow-step-select"
+          type="button"
+          :aria-pressed="step.id === viewStep?.id"
+          @click="selectStep(step)"
+        >
+          <span class="progress-marker">{{ String(index + 1).padStart(2, '0') }}</span>
+          <span class="progress-copy">
+            <strong>{{ stageFor(step.step_key)?.shortName || '处理步骤' }}</strong>
+            <small>{{ statusLabel(step.status) }}</small>
+          </span>
+        </button>
         <VanButton
           v-if="step.status === 'COMPLETED' && canReopen"
           class="reopen-step-button"
@@ -44,75 +51,113 @@
       </div>
     </dl>
 
-    <aside v-if="compact && stage && currentStep" class="compact-step-guidance">
-      <span>当前步骤</span>
-      <strong>第 {{ currentStep.sequence_no }} 步 · {{ stage.name }}</strong>
-      <p>{{ nextAction }}</p>
+    <aside v-if="compact && currentStep && currentStage" class="compact-step-guidance" aria-label="当前节点任务">
+      <div class="compact-step-summary">
+        <span>当前待处理 · 第 {{ currentStep.sequence_no }} 步</span>
+        <strong>{{ currentStage.name }}</strong>
+        <p>{{ currentStage.task }}</p>
+        <small>可用输入：{{ compactInputSummary }}</small>
+      </div>
+      <div class="compact-step-actions">
+        <div class="compact-step-tools" aria-label="当前节点可用工具">
+          <VanButton
+            v-for="tool in currentStage.tools"
+            :key="tool.section"
+            class="compact-tool-link"
+            type="default"
+            plain
+            native-type="button"
+            @click="$emit('to-section', tool.section)"
+          >
+            {{ tool.label }}
+          </VanButton>
+        </div>
+        <VanButton
+          class="primary-button compact-button compact-return-button"
+          type="primary"
+          native-type="button"
+          aria-label="返回当前节点处理总览"
+          @click="$emit('to-section', 'overview')"
+        >
+          返回本阶段总览
+        </VanButton>
+      </div>
     </aside>
 
-    <div v-if="!compact && stage && currentStep" class="node-workspace">
+    <div v-if="!compact && stage && viewStep" class="node-workspace">
       <header class="node-heading">
         <div>
-          <p class="node-step-label">第 {{ currentStep.sequence_no }} 步 / 共 {{ workflowSteps.length }} 步</p>
+          <p class="node-step-label">第 {{ viewStep.sequence_no }} 步 / 共 {{ workflowSteps.length }} 步</p>
           <h3>{{ stage.name }}</h3>
           <p>{{ stage.purpose }}</p>
         </div>
-        <span class="node-status" :class="`node-status-${String(currentStep.status).toLowerCase()}`">
-          {{ statusLabel(currentStep.status) }}
+        <span class="node-status" :class="`node-status-${String(viewStep.status).toLowerCase()}`">
+          {{ statusLabel(viewStep.status) }}
         </span>
       </header>
 
+      <section class="node-task-banner" aria-label="本阶段任务与完成目标">
+        <div>
+          <p>本阶段任务</p>
+          <strong>{{ stage.task }}</strong>
+          <ol v-if="stage.actions?.length" class="node-task-steps">
+            <li v-for="(action, index) in stage.actions" :key="action">
+              <span>{{ index + 1 }}</span>
+              <strong>{{ action }}</strong>
+            </li>
+          </ol>
+        </div>
+        <div>
+          <p>完成后应得到</p>
+          <strong>{{ stage.deliverable }}</strong>
+        </div>
+      </section>
+
       <div class="node-workspace-columns">
-        <section class="node-inputs" aria-label="当前节点输入">
+        <section class="node-inputs" aria-label="当前节点分析依据">
           <div class="node-section-heading">
-            <h4>本步骤参考信息</h4>
-            <VanButton class="node-link-button" type="default" plain native-type="button" @click="$emit('to-section', 'case-context')">查看用户情境</VanButton>
+            <h4>本阶段可以依据这些信息</h4>
+            <VanButton class="node-link-button" type="default" plain native-type="button" @click="$emit('to-section', 'case-context')">查看完整申请资料</VanButton>
           </div>
-          <dl class="node-input-list">
-            <div>
-              <dt>本次申请</dt>
-              <dd>{{ contextCount }} 项用户情况</dd>
-            </div>
-            <div>
-              <dt>可参考资料</dt>
-              <dd>{{ activeEvidence.length }} 项<template v-if="systemEvidenceCount">，其中 {{ systemEvidenceCount }} 项来自系统测算</template></dd>
-            </div>
-            <div v-if="currentStep.sequence_no > 1 && currentStep.step_key !== 'S5' && currentStep.step_key !== 'S6'">
-              <dt>前序已确认内容</dt>
-              <dd>{{ upstreamFindings.length }} 条判断、{{ upstreamFragments.length }} 段分析</dd>
-            </div>
-            <div v-if="['S5', 'S6'].includes(currentStep.step_key)">
-              <dt>已确认的专业内容</dt>
-              <dd>{{ confirmedFindingCount }} 条判断、{{ confirmedAnalysisCount }} 段分析</dd>
-            </div>
-            <div v-if="currentStep.step_key === 'S5'">
-              <dt>报告主线</dt>
-              <dd>{{ narrativePlanLabel }}</dd>
-            </div>
-            <div v-if="currentStep.step_key === 'S6'">
-              <dt>交付前检查</dt>
-              <dd>{{ qualityStatusLabel }}</dd>
-            </div>
-          </dl>
-          <details class="node-context-details">
-            <summary>查看本次用户情境</summary>
-            <dl class="node-context-values">
-              <div v-for="item in contextItems" :key="item.key">
-                <dt>{{ item.label }}</dt>
-                <dd>{{ item.value }}</dd>
+          <p class="node-input-guidance">{{ stage.inputGuidance }}</p>
+          <div class="node-input-groups">
+            <article v-for="group in inputGroups" :key="group.key" class="node-input-group">
+              <h5>{{ group.title }}</h5>
+              <p v-if="group.reason" class="node-input-reason">{{ group.reason }}</p>
+              <div v-if="group.items.length" class="node-material-list">
+                <article v-for="item in group.items" :key="item.key || item.title" class="node-material-item">
+                  <div class="node-material-heading">
+                    <strong>{{ item.title }}</strong>
+                    <span v-if="item.meta">{{ item.meta }}</span>
+                  </div>
+                  <p>{{ item.body }}</p>
+                  <small v-if="item.source">{{ item.source }}</small>
+                </article>
               </div>
-              <p v-if="!contextItems.length">申请快照中没有额外情境字段。</p>
-            </dl>
-          </details>
+              <p v-else class="node-input-empty">{{ group.empty }}</p>
+            </article>
+          </div>
         </section>
 
         <section class="node-tools" aria-label="当前步骤的操作与核对事项">
-          <div class="node-section-heading"><h4>可以进行的操作</h4></div>
-          <ul class="node-tool-list">
-            <li v-for="tool in stage.tools" :key="tool">{{ tool }}</li>
-          </ul>
+          <div class="node-section-heading"><h4>可用工具</h4></div>
+          <div class="node-tool-list">
+            <template v-for="tool in stage.tools" :key="tool.section">
+              <VanButton
+                v-if="stepViewMode === 'CURRENT'"
+                class="node-link-button node-tool-button"
+                type="default"
+                plain
+                native-type="button"
+                @click="$emit('to-section', tool.section)"
+              >
+                {{ tool.label }}
+              </VanButton>
+              <span v-else class="node-tool-static">{{ tool.label }}</span>
+            </template>
+          </div>
           <div class="node-checklist">
-            <h5>建议按顺序核对</h5>
+            <h5>完成前逐项确认</h5>
             <ul>
               <li v-for="item in stage.checklist" :key="item">{{ item }}</li>
             </ul>
@@ -120,8 +165,40 @@
         </section>
       </div>
 
+      <section class="node-stage-results" aria-label="本阶段审核结果">
+        <div class="node-section-heading"><h4>本阶段建议与审核结果</h4></div>
+        <div v-if="stageOutputItems.length" class="node-material-list">
+          <article v-for="item in stageOutputItems" :key="item.key || item.title" class="node-material-item">
+            <div class="node-material-heading">
+              <strong>{{ item.title }}</strong>
+              <span v-if="item.meta">{{ item.meta }}</span>
+            </div>
+            <p>{{ item.body }}</p>
+            <small v-if="item.source">{{ item.source }}</small>
+          </article>
+        </div>
+        <p v-else class="node-input-empty">{{ stage.outputEmpty }}</p>
+      </section>
+
+      <div v-if="isHistoricalView || isUpcomingView" class="node-history-note" :class="{ 'node-upcoming-note': isUpcomingView }" role="status">
+        <strong>{{ isUpcomingView ? '后续步骤预览' : '历史记录（只读）' }}</strong>
+        <span v-if="isUpcomingView">目前还不能处理这一步；请先完成前面的节点。</span>
+        <span v-else-if="currentStep">当前待处理的是第 {{ currentStep.sequence_no }} 步 · {{ stageFor(currentStep.step_key)?.name }}。</span>
+        <span v-else>报告流程已结束；这里保留了本步骤当时的输入和审核结果。</span>
+        <VanButton
+          v-if="currentStep"
+          class="node-link-button node-return-current"
+          type="default"
+          plain
+          native-type="button"
+          @click="returnToCurrentStep"
+        >
+          回到当前待办
+        </VanButton>
+      </div>
+
       <div
-        v-if="completionGate && ['S1', 'S2', 'S3', 'S4'].includes(currentStep.step_key)"
+        v-if="stepViewMode === 'CURRENT' && completionGate && ['S1', 'S2', 'S3', 'S4'].includes(currentStep.step_key)"
         class="node-completion-gate"
         :class="{ 'gate-ready': completionGate.can_complete }"
         role="status"
@@ -138,7 +215,7 @@
 
       <footer class="node-actions">
         <VanButton
-          v-if="currentStep.status === 'READY'"
+          v-if="stepViewMode === 'CURRENT' && currentStep?.status === 'READY'"
           class="primary-button compact-button"
           type="primary"
           native-type="button"
@@ -148,7 +225,7 @@
         >
           开始本节点
         </VanButton>
-        <template v-else-if="currentStep.status === 'IN_REVIEW'">
+        <template v-else-if="stepViewMode === 'CURRENT' && currentStep?.status === 'IN_REVIEW'">
           <VanButton
             v-if="['S1', 'S2', 'S3', 'S4'].includes(currentStep.step_key)"
             class="primary-button compact-button"
@@ -194,12 +271,12 @@
             完成本节点
           </VanButton>
         </template>
-        <span v-else-if="currentStep.status === 'EXECUTING' || currentStep.status === 'WAITING_REVIEW'" class="node-running-state">
+        <span v-else-if="stepViewMode === 'CURRENT' && ['EXECUTING', 'WAITING_REVIEW'].includes(currentStep?.status)" class="node-running-state">
           {{ statusLabel(currentStep.status) }}，内容完成后可在对应页面继续处理。
         </span>
       </footer>
     </div>
-    <div v-else-if="!currentStep || !stage" class="workflow-finished-state" :class="`workflow-finished-${String(reportCase.status || '').toLowerCase()}`">
+    <div v-else-if="!viewStep || !stage" class="workflow-finished-state" :class="`workflow-finished-${String(reportCase.status || '').toLowerCase()}`">
       <strong>{{ finishedTitle }}</strong>
       <span>{{ finishedDescription }}</span>
       <VanButton
@@ -219,49 +296,19 @@
 <script>
 import { Button as VanButton } from 'vant'
 import { REPORT_STEP_STATUS_LABELS, reportStage } from '../stages.js'
-
-const CONTEXT_LABELS = {
-  focus_topics: '关注主题',
-  selected_topics: '关注主题',
-  current_challenge: '当前挑战',
-  expected_outcomes: '期待结果',
-  issue_duration: '持续时间',
-  impact_level: '影响程度',
-  decision_status: '决策状态',
-  decision_description: '决策描述',
-  decision_style: '决策方式',
-  additional_info: '补充说明',
-  usage_scenario: '使用场景',
-  calendar_goal: '当前目标',
-  goal: '当前目标',
-  gender: '性别',
-  birth_date: '出生日期',
-  birth_time: '出生时间',
-  birth_place: '出生地点'
-}
-
-const CONTEXT_VALUE_LABELS = {
-  male: '男', female: '女', solar: '公历', lunar: '农历',
-  career: '职业发展', relationship: '亲密关系', family: '家庭议题',
-  self: '自我价值', growth: '个人成长', stress: '压力焦虑',
-  low: '较低', medium: '一般', high: '较高', critical: '非常高',
-  not_started: '尚未开始', considering: '正在考虑', decided: '已经决定',
-  undecided: '尚未决定', unsure: '尚未确定', yes: '是', no: '否'
-}
-
-function contextDisplayValue(value) {
-  if (Array.isArray(value)) return value.map(contextDisplayValue).filter(Boolean).join('、') || '—'
-  if (value && typeof value === 'object') return Object.values(value).map(contextDisplayValue).filter(Boolean).join('、') || '—'
-  if (value === true) return '是'
-  if (value === false) return '否'
-  if (value === null || value === undefined || value === '') return '—'
-  const text = String(value)
-  return CONTEXT_VALUE_LABELS[text.toLowerCase().replace(/[ -]+/g, '_')] || (/[A-Za-z]{2,}/.test(text) ? '已填写' : text)
-}
+import {
+  buildWorkbenchInputGroups,
+  buildWorkbenchStageOutputs,
+  classifyWorkbenchStepView,
+  qualitySummaryLabel
+} from '../workbench-inputs.js'
 
 export default {
   name: 'ReportNodeWorkbench',
   components: { VanButton },
+  data() {
+    return { selectedStepKey: null }
+  },
   props: {
     reportCase: { type: Object, required: true },
     compact: { type: Boolean, default: false },
@@ -270,6 +317,9 @@ export default {
     qualityStatus: { type: String, default: '' },
     narrativePlanStatus: { type: String, default: '' },
     latestAnalysisRun: { type: Object, default: null },
+    analysisRuns: { type: Array, default: () => [] },
+    narrativePlan: { type: Object, default: null },
+    quality: { type: Object, default: () => ({}) },
     completionGate: { type: Object, default: null },
     qualityIssueCount: { type: Number, default: 0 },
     qualityBlockingCount: { type: Number, default: 0 },
@@ -278,8 +328,28 @@ export default {
     canReopen: { type: Boolean, default: false }
   },
   emits: ['start-step', 'complete-step', 'toggle-return', 'to-section', 'run-analysis', 'reopen'],
+  watch: {
+    'currentStep.step_key'(next, previous) {
+      if (next !== previous) this.selectedStepKey = null
+    }
+  },
   computed: {
+    viewStep() {
+      return this.workflowSteps.find(step => step.step_key === this.selectedStepKey) || this.currentStep
+    },
+    isHistoricalView() {
+      return this.stepViewMode === 'HISTORY'
+    },
+    isUpcomingView() {
+      return this.stepViewMode === 'UPCOMING'
+    },
+    stepViewMode() {
+      return classifyWorkbenchStepView(this.viewStep, this.currentStep)
+    },
     stage() {
+      return this.viewStep ? reportStage(this.viewStep.step_key) : null
+    },
+    currentStage() {
       return this.currentStep ? reportStage(this.currentStep.step_key) : null
     },
     workflowSteps() {
@@ -291,42 +361,42 @@ export default {
     activeEvidence() {
       return (this.content.evidence || []).filter(item => item.status === 'ACTIVE')
     },
-    systemEvidenceCount() {
-      return this.activeEvidence.filter(item => item.source_type === 'SYSTEM_CALCULATED').length
+    inputGroups() {
+      return buildWorkbenchInputGroups({
+        stage: this.stage,
+        reportCase: this.reportCase,
+        content: this.content,
+        narrativePlan: this.narrativePlan,
+        quality: this.quality
+      })
     },
-    contextCount() {
-      return Object.keys(this.reportCase.application_snapshot?.context || {}).length
+    currentInputGroups() {
+      return buildWorkbenchInputGroups({
+        stage: this.currentStage,
+        reportCase: this.reportCase,
+        content: this.content,
+        narrativePlan: this.narrativePlan,
+        quality: this.quality
+      })
     },
-    contextItems() {
-      return Object.entries(this.reportCase.application_snapshot?.context || {})
-        .filter(([, value]) => value !== null && value !== '' && !(Array.isArray(value) && value.length === 0))
-        .map(([key, value]) => ({
-          key,
-          label: CONTEXT_LABELS[key] || '其他补充信息',
-          value: contextDisplayValue(value)
-        }))
+    compactInputSummary() {
+      if (!this.currentInputGroups.length) return '当前节点暂无可用输入'
+      return this.currentInputGroups
+        .map(group => `${group.title}（${group.items.length ? `${group.items.length}项` : '暂无资料'}）`)
+        .join('、')
     },
-    upstreamStepIds() {
-      if (!this.currentStep) return new Set()
-      return new Set(this.workflowSteps
-        .filter(step => step.sequence_no < this.currentStep.sequence_no)
-        .map(step => step.id))
-    },
-    upstreamFindings() {
-      return (this.content.findings || []).filter(item =>
-        item.status === 'CONFIRMED' && this.upstreamStepIds.has(item.owner_step_task_id)
-      )
-    },
-    upstreamFragments() {
-      return (this.content.fragments || []).filter(item =>
-        item.fragment_type === 'ANALYSIS' && item.status === 'CONFIRMED' && this.upstreamStepIds.has(item.owner_step_task_id)
-      )
+    stageOutputItems() {
+      return buildWorkbenchStageOutputs({
+        stage: this.stage,
+        reportCase: this.reportCase,
+        content: this.content,
+        narrativePlan: this.narrativePlan,
+        quality: this.quality,
+        analysisRuns: this.analysisRuns
+      })
     },
     confirmedFindingCount() {
       return (this.content.findings || []).filter(item => item.status === 'CONFIRMED').length
-    },
-    confirmedAnalysisCount() {
-      return (this.content.fragments || []).filter(item => item.fragment_type === 'ANALYSIS' && item.status === 'CONFIRMED').length
     },
     pendingFindingCount() {
       return (this.content.findings || []).filter(item => ['PROPOSED', 'STALE'].includes(item.status)).length
@@ -340,9 +410,9 @@ export default {
     overviewStats() {
       return [
         {
-          label: '资料依据',
-          value: `${this.activeEvidence.length} 项`,
-          note: `${this.contextCount} 项用户情境信息`
+          label: '分析输入',
+          value: this.activeEvidence.length ? '资料已留存' : '等待系统测算',
+          note: '用户档案、申请情境与可追溯依据'
         },
         {
           label: '专业判断',
@@ -376,7 +446,10 @@ export default {
       }[this.reportCase.status] || '请查看报告处理概况并继续完成交付。'
     },
     progressTitle() {
-      if (this.currentStep) return `第 ${this.currentStep.sequence_no} 步 / 共 ${this.workflowSteps.length} 步 · ${this.stage?.shortName || ''}`
+      if (this.compact && this.currentStep) {
+        return `当前待处理：第 ${this.currentStep.sequence_no} 步 / 共 ${this.workflowSteps.length} 步 · ${this.currentStage?.shortName || ''}`
+      }
+      if (this.viewStep) return `第 ${this.viewStep.sequence_no} 步 / 共 ${this.workflowSteps.length} 步 · ${this.stage?.shortName || ''}`
       return this.reportCase.status === 'DELIVERED'
         ? '报告已交付'
         : this.reportCase.status === 'READY_TO_DELIVER'
@@ -384,12 +457,18 @@ export default {
           : '内容处理步骤已完成'
     },
     progressDescription() {
+      if (this.isUpcomingView) return `${this.stage?.name || '后续步骤'}尚未开放；请先完成当前待办。`
+      if (this.isHistoricalView) return `正在查看第 ${this.viewStep.sequence_no} 步的输入与审核结果；实际待办不会改变。`
+      if (!this.currentStep && this.viewStep) return `报告流程已结束，正在查看第 ${this.viewStep.sequence_no} 步的历史记录。`
       if (this.currentStep) return `${this.stage?.name || '当前步骤'}是目前需要处理的部分；完成后会进入下一步。`
       if (this.reportCase.status === 'DELIVERED') return '所有处理步骤和最终交付均已完成。'
       if (this.reportCase.status === 'READY_TO_DELIVER') return '报告已通过最终复核，请进入交付前检查生成交付版本。'
       return '当前没有待处理的工作步骤。'
     },
     nextAction() {
+      if (this.isUpcomingView) return '先完成当前待办，这个步骤之后会自动开放。'
+      if (this.isHistoricalView) return '查看该节点当时参考的资料和已保存结果。'
+      if (!this.currentStep && this.viewStep) return '报告流程已结束，可从上方选择其他节点查看历史输入和审核结果。'
       if (!this.currentStep) {
         if (this.reportCase.status === 'DELIVERED') return '报告已经交付。'
         if (this.reportCase.status === 'READY_TO_DELIVER') return '最终复核已通过，请生成并交付报告版本。'
@@ -401,30 +480,25 @@ export default {
       return {
         S1: '先核对用户出生资料和系统测算依据，再审核初步判断。',
         S2: '对照用户自述和已确认资料，审核可能的思考与应对模式。',
-        S3: '只整合前序已确认内容，核对彼此支持或冲突的地方。',
+        S3: '只整合前两步已确认的内容，核对彼此支持或冲突的地方。',
         S4: '结合具体情境理解应对方式，再整理可执行、可调整的行动。',
         S5: '先确认报告主线，再生成报告内容并逐段审阅。',
         S6: '先运行交付前检查，处理问题后再完成最终复核。'
       }[this.currentStep.step_key] || '查看本步骤建议和相关资料，完成审核后再继续。'
     },
-    narrativePlanLabel() {
-      return {
-        CONFIRMED: '已确认',
-        STALE: '需要重新确认',
-        PROPOSED: '待确认'
-      }[this.narrativePlanStatus] || '尚未确定'
-    },
     qualityStatusLabel() {
-      return {
-        NOT_RUN: '尚未检查',
-        PASSED: '检查通过',
-        PROGRAMMATIC_BLOCKED: '发现需处理的问题',
-        BLOCKED: '暂不能交付',
-        READY: '可以进行最终复核'
-      }[this.qualityStatus] || '尚未检查'
+      return qualitySummaryLabel(this.quality, this.qualityStatus)
     }
   },
   methods: {
+    selectStep(step) {
+      this.selectedStepKey = step.id === this.currentStep?.id || this.selectedStepKey === step.step_key
+        ? null
+        : step.step_key
+    },
+    returnToCurrentStep() {
+      this.selectedStepKey = null
+    },
     gateBlockerLabel(code) {
       return {
         report_analysis_output_required: '至少需要确认一条专业判断或一段分析内容。',

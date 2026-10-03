@@ -21,7 +21,14 @@ import reportCaseMethods from '../features/service-requests/methods/report-case.
 import reportAnalysisMethods from '../features/service-requests/methods/report-analysis.js'
 import ReportNodeWorkbench from '../features/report-cases/components/ReportNodeWorkbench.vue'
 import AnalysisDraftsPanel from '../features/report-cases/components/AnalysisDraftsPanel.vue'
-import { REPORT_STEP_STATUS_LABELS, reportStage } from '../features/report-cases/stages.js'
+import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
+import {
+  buildApplicationContextItems,
+  buildApplicationProfileItems,
+  formatConsultantEvidenceValue,
+  reportEvidenceTitle,
+  visibleConsultantEvidence
+} from '../features/report-cases/workbench-inputs.js'
 import { confirmAction } from '../utils/confirmAction.js'
 
 export default {
@@ -129,6 +136,15 @@ export default {
     reportContentPlan() {
       return this.reportNarrative.current_plan?.plan_json?.content_plan || null
     },
+    reportProfileItems() {
+      return buildApplicationProfileItems(this.reportCase?.application_snapshot)
+    },
+    reportContextItems() {
+      return buildApplicationContextItems(this.reportCase?.application_snapshot)
+    },
+    reportEvidenceItems() {
+      return visibleConsultantEvidence(this.reportCaseContent.evidence || [])
+    },
     reportGeneration() {
       return this.reportNarrative.current_plan?.plan_json?.generation || {}
     },
@@ -147,7 +163,7 @@ export default {
       return [
         { id: 'overview', label: '处理总览' },
         { id: 'context', label: '用户情境' },
-        { id: 'evidence', label: '资料依据', count: this.reportCaseContent.evidence.length },
+        { id: 'evidence', label: '资料依据', count: this.reportEvidenceItems.length },
         {
           id: 'findings',
           label: '判断审核',
@@ -211,10 +227,39 @@ export default {
       if (this.reportCase?.status === 'DELIVERED') return 'staff-status-delivered'
       if (this.reportCase?.status === 'BLOCKED') return 'staff-status-needs_info'
       return ''
+    },
+    skillStudioLocation() {
+      const query = { return_to: this.$route.fullPath }
+      if (this.reportCase?.id) query.case_id = String(this.reportCase.id)
+      return { path: '/skills', query }
+    }
+  },
+  watch: {
+    '$route.query.request_id'(value) {
+      const requestId = Number(value)
+      if (!Number.isSafeInteger(requestId) || requestId < 1) {
+        if (this.selectedRequest) this.clearReportWorkspaceState()
+        return
+      }
+      if (this.selectedRequest?.id === requestId) return
+      const request = this.requests.items.find(item => item.id === requestId)
+      if (request) this.selectRequest(request, { updateRoute: false })
+      else this.clearReportWorkspaceState()
+    },
+    '$route.query.section'(sectionId) {
+      if (!this.selectedRequest) return
+      const section = this.reportWorkspaceSections.some(item => item.id === sectionId)
+        ? sectionId
+        : 'overview'
+      if (section === this.workspaceSection) return
+      this.workspaceSection = section
+      this.scrollWorkspaceToTop()
     }
   },
   mounted() {
-    this.loadRequests()
+    const routeScope = String(this.$route.query.scope || '')
+    if (this.scopeOptions.some(option => option.id === routeScope)) this.scope = routeScope
+    this.loadRequests().then(() => this.restoreWorkspaceFromRoute())
     this.loadConsultants()
   },
   beforeUnmount() {
@@ -268,9 +313,54 @@ export default {
         'case-quality': 'quality'
       }
       const section = sectionMap[sectionId] || sectionId
+      if (!this.reportWorkspaceSections.some(item => item.id === section)) return
+      this.workspaceSection = section
+      if (this.selectedRequest) this.syncWorkspaceRoute(this.selectedRequest.id, section, { history: 'push' })
+      this.scrollWorkspaceToTop()
+    },
+    scrollWorkspaceToTop() {
+      this.$nextTick(() => {
+        this.$el?.scrollTo?.({ top: 0, behavior: 'smooth' })
+        window.scrollTo?.({ top: 0, behavior: 'smooth' })
+      })
+    },
+    syncWorkspaceRoute(requestId, section = 'overview', { history = 'replace' } = {}) {
+      const query = { ...this.$route.query }
+      query.scope = this.scope
+      if (requestId) {
+        query.request_id = String(requestId)
+        query.section = section
+      } else {
+        delete query.request_id
+        delete query.section
+      }
+      const currentRequestId = String(this.$route.query.request_id || '')
+      const currentSection = String(this.$route.query.section || 'overview')
+      const currentScope = String(this.$route.query.scope || '')
+      if (
+        currentRequestId === String(requestId || '')
+        && currentSection === (requestId ? section : 'overview')
+        && currentScope === this.scope
+      ) return
+      return this.$router[history === 'push' ? 'push' : 'replace']({ query })
+    },
+    async restoreWorkspaceFromRoute() {
+      const requestId = Number(this.$route.query.request_id)
+      if (!Number.isSafeInteger(requestId) || requestId < 1) return
+      const request = this.requests.items.find(item => item.id === requestId)
+      if (!request) {
+        this.syncWorkspaceRoute(null)
+        return
+      }
+      await this.selectRequest(request, { updateRoute: false })
+      const section = String(this.$route.query.section || 'overview')
       if (this.reportWorkspaceSections.some(item => item.id === section)) this.workspaceSection = section
     },
     closeReportWorkspace() {
+      this.syncWorkspaceRoute(null)
+      this.clearReportWorkspaceState()
+    },
+    clearReportWorkspaceState() {
       this.stopPolling()
       this.selectedRequest = null
       this.workspace = null
@@ -278,46 +368,16 @@ export default {
       this.reportCaseCompletionGate = null
       this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
       this.reportAnalysisRuns = []
+      this.reportNarrative = { current_plan: null, candidate_runs: [], fragment_runs: [] }
+      this.reportQuality = {
+        quality_status: 'NOT_RUN', latest_validator_run: null, issues: [],
+        can_approve: false, blocking_count: 0, open_count: 0
+      }
       this.workspaceSection = 'overview'
-      this.$nextTick(() => window.scrollTo(0, 0))
+      this.scrollWorkspaceToTop()
     },
-    contextLabel(key) {
-      return {
-        focus_topics: '关注主题', selected_topics: '关注主题', current_challenge: '当前挑战',
-        expected_outcomes: '期待结果', issue_duration: '持续时间', impact_level: '影响程度',
-        decision_status: '决策进度', decision_description: '决策情况', decision_style: '决策方式',
-        additional_info: '补充说明', usage_scenario: '使用场景', calendar_goal: '当前目标',
-        goal: '当前目标', profile_version: '档案版本', gender: '性别', birth_date: '出生日期',
-        birth_time: '出生时间', birth_place: '出生地点'
-      }[key] || '其他补充信息'
-    },
-    contextValue(value) {
-      const labels = {
-        male: '男', female: '女', solar: '公历', lunar: '农历',
-        career: '职业发展', relationship: '亲密关系', family: '家庭议题',
-        self: '自我价值', growth: '个人成长', stress: '压力焦虑',
-        low: '较低', medium: '一般', high: '较高', critical: '非常高',
-        not_started: '尚未开始', considering: '正在考虑', decided: '已经决定',
-        undecided: '尚未决定', unsure: '尚未确定', yes: '是', no: '否'
-      }
-      const renderValue = item => {
-        if (Array.isArray(item)) return item.map(renderValue).filter(Boolean).join('、')
-        if (item && typeof item === 'object') return Object.values(item).map(renderValue).filter(Boolean).join('、')
-        if (item === true) return '是'
-        if (item === false) return '否'
-        if (item === null || item === undefined || item === '') return ''
-        const text = String(item)
-        return labels[text.toLowerCase().replace(/[ -]+/g, '_')] || this.consultantText(text, '已填写')
-      }
-      return renderValue(value) || '—'
-    },
-    evidenceLabel(evidence, index = 0) {
-      const prefix = evidence?.source_type === 'SYSTEM_CALCULATED'
-        ? '系统测算依据'
-        : evidence?.source_type === 'USER_CONTEXT' || evidence?.source_type === 'APPLICATION_CONTEXT'
-          ? '申请补充资料'
-          : '用户资料'
-      return `${prefix} ${index + 1}`
+    evidenceLabel(evidence) {
+      return reportEvidenceTitle(evidence)
     },
     evidenceSourceLabel(sourceType) {
       return {
@@ -326,13 +386,9 @@ export default {
         REPORT: '已交付报告', CONSULTANT: '咨询师补充'
       }[sourceType] || '用户资料'
     },
-    evidenceSummary(value) {
-      if (value === null || value === undefined || value === '') return '没有补充说明。'
-      if (Array.isArray(value)) return value.map(item => this.contextValue(item)).join('、')
-      if (typeof value !== 'object') return String(value)
-      return Object.entries(value)
-        .map(([key, item]) => `${this.contextLabel(key)}：${this.contextValue(item)}`)
-        .join('；')
+    evidenceSummary(evidence) {
+      const summary = formatConsultantEvidenceValue(evidence.value_json, evidence.source_type)
+      return summary === '—' ? '没有补充说明。' : summary
     },
     humanizeReference(value) {
       const labels = {
@@ -346,8 +402,8 @@ export default {
     evidenceTitles(keys) {
       const refs = Array.isArray(keys) ? keys : String(keys || '').split(/[\n,，]/).map(item => item.trim()).filter(Boolean)
       return [...new Set(refs.map(key => {
-        const index = this.reportCaseContent.evidence.findIndex(item => item.evidence_key === key)
-        return index >= 0 ? this.evidenceLabel(this.reportCaseContent.evidence[index], index) : ''
+        const index = this.reportEvidenceItems.findIndex(item => item.evidence_key === key)
+        return index >= 0 ? this.evidenceLabel(this.reportEvidenceItems[index]) : ''
       }).filter(Boolean))].join('、')
     },
     findingTitle(key) {
@@ -360,10 +416,13 @@ export default {
     },
     fragmentTitle(key, planFragment = null) {
       const fragment = this.reportCaseContent.fragments.find(item => item.fragment_key === key)
-      if (fragment?.title) return fragment.title
+      const translated = reportFragmentTitle(key)
+      if (translated !== '报告段落') return translated
+      const title = planFragment?.title || fragment?.title
+      if (title && !/[A-Za-z]{2,}/.test(title)) return title
       if (planFragment?.chapter) return this.chapterLabel(planFragment.chapter)
       const planned = this.reportContentPlan?.fragments?.find(item => item.fragment_key === key)
-      return planned?.chapter ? this.chapterLabel(planned.chapter) : '报告内容'
+      return reportFragmentTitle(key, planned?.title || (planned?.chapter ? this.chapterLabel(planned.chapter) : '报告内容'))
     },
     fragmentTitles(keys) {
       const refs = Array.isArray(keys) ? keys : String(keys || '').split(/[\n,，]/).map(item => item.trim()).filter(Boolean)
@@ -412,9 +471,22 @@ export default {
         MISSING_REPORT_CONTENT: '报告内容不完整', MISSING_SEMANTIC_SUPPORT: '内容缺少判断依据',
         SOURCE_COVERAGE_GAP: '部分内容缺少来源说明', DUPLICATE_CONTENT: '内容存在重复',
         UNSUPPORTED_CLAIM: '发现缺少依据的表述', INCONSISTENT_NARRATIVE: '前后表达不一致',
-        SAFETY_LANGUAGE: '需要检查建议表达', USER_CONTEXT_MISMATCH: '内容与用户情况不匹配'
+        SAFETY_LANGUAGE: '需要检查建议表达', USER_CONTEXT_MISMATCH: '内容与用户情况不匹配',
+        FINDING_OVER_REPEATED: '同一专业判断被多段引用'
       }
       return labels[type] || '报告内容需要检查'
+    },
+    qualityIssueMessage(issue) {
+      if (issue?.issue_type === 'FINDING_OVER_REPEATED') {
+        return '有一条已确认判断出现在多个报告段落中。请核对各段是否各自承担不同作用，避免重复解释。'
+      }
+      return this.consultantText(issue?.message, '请查看对应报告内容并核对来源与表达。')
+    },
+    qualityIssueSuggestion(issue) {
+      if (issue?.issue_type === 'FINDING_OVER_REPEATED') {
+        return '如果各段分别用于介绍、解释和提出行动，可以保留；如果只是重复说明，可精简其中一段。'
+      }
+      return this.consultantText(issue?.suggestion, '请检查对应内容，确认后记录处理方式。')
     },
     issueLabel(type) {
       return this.qualityIssueLabel(type)

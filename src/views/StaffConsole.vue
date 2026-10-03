@@ -9,7 +9,7 @@
           <p>打开报告后，将在独立工作区查看进度并完成当前任务。</p>
         </div>
         <div class="heading-actions">
-          <router-link class="secondary-button compact-button" to="/skills">技能工作室</router-link>
+          <router-link class="secondary-button compact-button" :to="skillStudioLocation">技能工作室</router-link>
           <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading || reportAnalysisPending }"></i>{{ reportAnalysisPending ? '分析建议处理中' : pollingTask ? '内容生成中' : reportCaseLoading ? '正在打开报告' : loading ? '正在同步' : '已同步' }}</span>
           <VanButton class="secondary-button" type="default" plain native-type="button" :disabled="loading" @click="loadRequests">刷新列表</VanButton>
         </div>
@@ -23,8 +23,9 @@
           <p>{{ workspace?.user?.phone || '未填写联系方式' }} · 申请编号 {{ selectedRequest.id }}</p>
         </div>
         <div class="workbench-header-actions">
+          <VanButton class="secondary-button compact-button workbench-overview-button" type="default" plain native-type="button" aria-label="返回报告处理总览" @click="setReportWorkspaceSection('overview')">回到处理总览</VanButton>
           <span :class="['status-badge', workbenchStatusClass]">{{ workbenchStatusLabel }}</span>
-          <router-link class="secondary-button compact-button" to="/skills">技能工作室</router-link>
+          <router-link class="secondary-button compact-button" :to="skillStudioLocation">技能工作室</router-link>
         </div>
       </header>
 
@@ -84,12 +85,15 @@
                   :quality-status="reportQuality.quality_status"
                   :narrative-plan-status="reportNarrative.current_plan?.status || ''"
                   :latest-analysis-run="latestReportAnalysisRun"
+                  :analysis-runs="reportAnalysisRuns"
+                  :narrative-plan="reportNarrative.current_plan"
+                  :quality="reportQuality"
                   :completion-gate="reportCaseCompletionGate"
                   :quality-issue-count="reportQuality.open_count"
                   :quality-blocking-count="reportQuality.blocking_count"
                   :loading="reportStepSaving"
                   :analysis-saving="reportAnalysisSaving"
-                  :can-reopen="true"
+                  :can-reopen="!['DELIVERED', 'CANCELLED'].includes(reportCase.status)"
                   @start-step="startReportStep"
                   @complete-step="completeReportStep"
                   @toggle-return="reportStepReturn.visible = !reportStepReturn.visible"
@@ -213,9 +217,9 @@
                   <p v-if="reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'" class="stale-note">检查发现必须处理的问题；修订报告内容后重新检查。</p>
                   <article v-for="issue in reportQuality.issues" :key="issue.id" class="quality-issue" :class="{ 'quality-issue-open': issue.status === 'OPEN' }">
                     <div class="asset-item-heading"><div><strong>{{ qualityIssueLabel(issue.issue_type) }}</strong><span class="asset-status">{{ issueSeverityLabel(issue.severity) }} · {{ assetStatusLabel(issue.status) }}</span></div></div>
-                    <p>{{ consultantText(issue.message) }}</p>
+                    <p>{{ qualityIssueMessage(issue) }}</p>
                     <p v-if="issue.target_fragment_key" class="asset-source">涉及内容：{{ fragmentTitle(issue.target_fragment_key) }}</p>
-                    <p v-if="issue.suggestion" class="asset-source">处理建议：{{ consultantText(issue.suggestion) }}</p>
+                    <p v-if="issue.suggestion || issue.issue_type === 'FINDING_OVER_REPEATED'" class="asset-source">处理建议：{{ qualityIssueSuggestion(issue) }}</p>
                     <div v-if="issue.status === 'OPEN' && currentReportStep?.step_key === 'S6' && currentReportStep.status === 'IN_REVIEW'" class="quality-resolution-form">
                       <label>处理方式<select v-model="reportQualityIssueDrafts[issue.id].status"><option value="RESOLVED">已修复并关闭</option><option v-if="issue.severity !== 'BLOCK'" value="ACCEPTED">接受该提示</option><option v-if="issue.severity !== 'BLOCK'" value="DISMISSED">判断为不适用</option></select></label>
                       <label>处理说明<textarea v-model.trim="reportQualityIssueDrafts[issue.id].resolution" rows="2" maxlength="2000" placeholder="记录修订内容或接受理由"></textarea></label>
@@ -237,15 +241,19 @@
 
                 <section id="report-section-context" v-show="workspaceSection === 'context'" class="report-data-panel">
                   <div class="panel-heading"><div><p class="eyebrow">用户情境</p><h3>本次申请资料</h3></div></div>
-                  <dl class="context-values"><div v-for="(value, key) in reportCase.application_snapshot?.context || {}" :key="key"><dt>{{ contextLabel(key) }}</dt><dd>{{ contextValue(value) }}</dd></div></dl>
-                  <p v-if="!Object.keys(reportCase.application_snapshot?.context || {}).length" class="empty-cell">本次申请没有补充额外情境信息。</p>
+                  <h4 class="context-subheading">申请时留存的出生档案</h4>
+                  <dl class="context-values"><div v-for="item in reportProfileItems" :key="item.title"><dt>{{ item.title }}</dt><dd>{{ item.body }}</dd></div></dl>
+                  <p v-if="!reportProfileItems.length" class="empty-cell">申请快照没有保存完整出生档案。</p>
+                  <h4 class="context-subheading">用户本次提出的情况</h4>
+                  <dl class="context-values"><div v-for="item in reportContextItems" :key="item.key"><dt>{{ item.title }}</dt><dd>{{ item.body }}</dd></div></dl>
+                  <p v-if="!reportContextItems.length" class="empty-cell">本次申请没有补充额外情境信息。</p>
                 </section>
                 <section id="report-section-evidence" v-show="workspaceSection === 'evidence'" class="report-data-panel">
-                  <div class="panel-heading"><div><p class="eyebrow">资料依据</p><h3>可供审核参考的资料</h3></div><span>{{ reportCaseContent.evidence.length }} 项</span></div>
-                  <div v-if="!reportCaseContent.evidence.length" class="empty-cell">当前没有可用的资料依据。</div>
-                  <article v-for="(evidence, index) in reportCaseContent.evidence" :key="evidence.id" class="case-evidence-item">
-                    <div><strong>{{ evidenceLabel(evidence, index) }}</strong><span>{{ evidenceSourceLabel(evidence.source_type) }} · {{ assetStatusLabel(evidence.status) }}</span></div>
-                    <p>{{ evidenceSummary(evidence.value_json) }}</p>
+                  <div class="panel-heading"><div><p class="eyebrow">资料依据</p><h3>可供审核参考的资料</h3></div><span>{{ reportEvidenceItems.length }} 项</span></div>
+                  <div v-if="!reportEvidenceItems.length" class="empty-cell">当前没有可用的资料依据。</div>
+                  <article v-for="evidence in reportEvidenceItems" :key="evidence.id" class="case-evidence-item">
+                    <div><strong>{{ evidenceLabel(evidence) }}</strong><span>{{ evidenceSourceLabel(evidence.source_type) }} · {{ assetStatusLabel(evidence.status) }}</span></div>
+                    <p>{{ evidenceSummary(evidence) }}</p>
                     <details v-if="evidence.source_ref" class="snapshot-details"><summary>查看来源说明</summary><p>{{ humanizeReference(evidence.source_ref) }}</p></details>
                   </article>
                 </section>
@@ -270,7 +278,7 @@
                         <label>判断内容<textarea v-model.trim="reportFindingDraft.claim" rows="3" maxlength="5000"></textarea></label>
                       <div class="form-grid two"><label>判断类别<select v-model="reportFindingDraft.semantic_role"><option v-if="!semanticRoleOptions.some(role => role.value === reportFindingDraft.semantic_role)" :value="reportFindingDraft.semantic_role">其他类别</option><option v-for="role in semanticRoleOptions" :key="role.value" :value="role.value">{{ role.label }}</option></select></label><label>把握程度<select v-model="reportFindingDraft.confidence"><option value="LOW">较低</option><option value="MEDIUM">一般</option><option value="HIGH">较高</option></select></label></div>
                         <div class="form-grid two"><label>参考优先级<select v-model="reportFindingDraft.importance"><option value="LOW">普通</option><option value="MEDIUM">关注</option><option value="HIGH">重要</option><option value="CRITICAL">优先处理</option></select></label><label>报告中的呈现程度<select v-model="reportFindingDraft.reportability"><option value="INTERNAL_ONLY">仅供内部参考</option><option value="OPTIONAL">可酌情呈现</option><option value="RECOMMENDED">建议呈现</option><option value="MUST_INCLUDE">报告需要包含</option></select></label></div>
-                        <fieldset class="reference-picker"><legend>关联资料依据</legend><label v-for="(evidence, index) in reportCaseContent.evidence" :key="evidence.id"><input type="checkbox" :checked="hasReference(reportFindingDraft.evidence_refs, evidence.evidence_key)" @change="toggleReference(reportFindingDraft, 'evidence_refs', evidence.evidence_key, $event)"><span>{{ evidenceLabel(evidence, index) }}</span></label><small v-if="!reportCaseContent.evidence.length">当前没有可关联的资料依据。</small></fieldset>
+                        <fieldset class="reference-picker"><legend>关联资料依据</legend><label v-for="evidence in reportEvidenceItems" :key="evidence.id"><input type="checkbox" :checked="hasReference(reportFindingDraft.evidence_refs, evidence.evidence_key)" @change="toggleReference(reportFindingDraft, 'evidence_refs', evidence.evidence_key, $event)"><span>{{ evidenceLabel(evidence) }}</span></label><small v-if="!reportEvidenceItems.length">当前没有可关联的资料依据。</small></fieldset>
                         <div class="asset-actions"><VanButton class="secondary-button compact-button" type="default" plain native-type="button" @click="editingFindingKey = null">取消</VanButton><VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportFindingSaving" :loading="reportFindingSaving" @click="saveReportFinding">保存新版本</VanButton></div>
                       </div>
                     </template>
@@ -290,7 +298,7 @@
                     <h4>新增专业判断</h4>
                     <label>判断类别<select v-model="newReportFinding.semantic_role"><option v-for="role in semanticRoleOptions" :key="role.value" :value="role.value">{{ role.label }}</option></select></label>
                     <label>判断内容<textarea v-model.trim="newReportFinding.claim" rows="3" maxlength="5000"></textarea></label>
-                    <fieldset class="reference-picker"><legend>关联资料依据</legend><label v-for="(evidence, index) in reportCaseContent.evidence" :key="evidence.id"><input type="checkbox" :checked="hasReference(newReportFinding.evidence_refs, evidence.evidence_key)" @change="toggleReference(newReportFinding, 'evidence_refs', evidence.evidence_key, $event)"><span>{{ evidenceLabel(evidence, index) }}</span></label><small v-if="!reportCaseContent.evidence.length">当前没有可关联的资料依据。</small></fieldset>
+                    <fieldset class="reference-picker"><legend>关联资料依据</legend><label v-for="evidence in reportEvidenceItems" :key="evidence.id"><input type="checkbox" :checked="hasReference(newReportFinding.evidence_refs, evidence.evidence_key)" @change="toggleReference(newReportFinding, 'evidence_refs', evidence.evidence_key, $event)"><span>{{ evidenceLabel(evidence) }}</span></label><small v-if="!reportEvidenceItems.length">当前没有可关联的资料依据。</small></fieldset>
                     <VanButton class="primary-button compact-button" type="primary" native-type="submit" :disabled="reportFindingSaving || !newReportFinding.claim.trim()" :loading="reportFindingSaving">新增为待审核</VanButton>
                   </form>
                 </section>
@@ -298,7 +306,7 @@
                 <section id="report-section-fragments" v-show="workspaceSection === 'fragments'" class="report-data-panel report-asset-panel">
                   <div class="panel-heading"><div><p class="eyebrow">报告内容</p><h3>报告段落</h3></div><span>{{ reportCaseContent.fragments.length }} 段</span></div>
                   <article v-for="fragment in reportCaseContent.fragments" :key="fragment.id" class="fragment-item">
-                    <div class="asset-item-heading"><div><strong>{{ fragment.title || '报告内容' }}</strong><span class="asset-status">{{ assetStatusLabel(fragment.status) }}</span></div><small>{{ editKindLabel(fragment.edit_kind) }}</small></div>
+                    <div class="asset-item-heading"><div><strong>{{ fragmentTitle(fragment.fragment_key, fragment) }}</strong><span class="asset-status">{{ assetStatusLabel(fragment.status) }}</span></div><small>{{ editKindLabel(fragment.edit_kind) }}</small></div>
                     <label>标题<input v-model.trim="reportFragmentDrafts[fragment.fragment_key].title" :disabled="currentReportStep?.status !== 'IN_REVIEW' || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"></label>
                     <label>正文<textarea v-model="reportFragmentDrafts[fragment.fragment_key].content" rows="5" :disabled="currentReportStep?.status !== 'IN_REVIEW' || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"></textarea></label>
                     <div class="form-grid two"><label>修改范围<select v-model="reportFragmentDrafts[fragment.fragment_key].edit_kind" :disabled="currentReportStep?.status !== 'IN_REVIEW' || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"><option value="STYLE">只调整表达方式</option><option value="SEMANTIC">调整内容含义</option></select></label><label>审核结果<select v-model="reportFragmentDrafts[fragment.fragment_key].status" :disabled="currentReportStep?.status !== 'IN_REVIEW' || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"><option value="PROPOSED">待确认</option><option value="CONFIRMED">已确认</option></select></label></div>
@@ -312,7 +320,7 @@
                     <label>标题<input v-model.trim="newReportFragment.title" maxlength="240"></label>
                     <label>正文<textarea v-model.trim="newReportFragment.content" rows="5" maxlength="30000"></textarea></label>
                     <fieldset class="reference-picker"><legend>关联已确认判断</legend><label v-for="finding in reportCaseContent.findings.filter(item => item.status === 'CONFIRMED')" :key="finding.id"><input type="checkbox" :checked="hasReference(newReportFragment.finding_refs, finding.finding_key)" @change="toggleReference(newReportFragment, 'finding_refs', finding.finding_key, $event)"><span>{{ finding.claim }}</span></label><small v-if="!reportCaseContent.findings.some(item => item.status === 'CONFIRMED')">当前没有已确认的判断。</small></fieldset>
-                    <fieldset class="reference-picker"><legend>关联资料依据</legend><label v-for="(evidence, index) in reportCaseContent.evidence" :key="evidence.id"><input type="checkbox" :checked="hasReference(newReportFragment.evidence_refs, evidence.evidence_key)" @change="toggleReference(newReportFragment, 'evidence_refs', evidence.evidence_key, $event)"><span>{{ evidenceLabel(evidence, index) }}</span></label></fieldset>
+                      <fieldset class="reference-picker"><legend>关联资料依据</legend><label v-for="evidence in reportEvidenceItems" :key="evidence.id"><input type="checkbox" :checked="hasReference(newReportFragment.evidence_refs, evidence.evidence_key)" @change="toggleReference(newReportFragment, 'evidence_refs', evidence.evidence_key, $event)"><span>{{ evidenceLabel(evidence) }}</span></label></fieldset>
                     <VanButton class="primary-button compact-button" type="primary" native-type="submit" :disabled="reportFragmentSaving || !newReportFragment.content.trim()" :loading="reportFragmentSaving">新增待确认内容</VanButton>
                   </form>
                 </section>
