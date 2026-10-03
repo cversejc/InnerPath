@@ -29,8 +29,8 @@
   }
 
   .markdown-content {
-    font-size: 16px;
-    line-height: 1.85;
+    font-size: var(--text-body);
+    line-height: var(--leading-prose);
   }
 
   .markdown-content h2 {

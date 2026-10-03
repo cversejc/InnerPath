@@ -8,7 +8,7 @@
 
 .content-card h2 {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: var(--weight-medium, 500);
   color: var(--ink, #2f241b);
   margin-bottom: 25px;
   padding-bottom: 15px;
@@ -17,7 +17,8 @@
 
 .content-card h3 {
   font-size: 18px;
-  font-weight: 600;
+  font-family: var(--font-ui);
+  font-weight: var(--weight-semibold, 600);
   color: var(--ink, #2f241b);
   margin: 20px 0 12px;
 }
@@ -31,7 +32,7 @@
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   margin-bottom: 25px;
 }
 
@@ -42,7 +43,9 @@
 }
 
 .markdown-content {
-  line-height: 2;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--leading-prose);
   color: var(--muted, #7d6653);
 }
 
@@ -67,14 +70,15 @@
   margin-bottom: 18px;
   color: var(--cinnabar, #b85c50);
   font-size: 18px;
-  font-weight: 600;
+  font-family: var(--font-ui);
+  font-weight: var(--weight-semibold, 600);
 }
 
 .markdown-content h4,
 .markdown-content h5 {
   margin-bottom: 15px;
   color: var(--muted, #7d6653);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 .markdown-content h4 {
@@ -123,7 +127,7 @@
   position: relative;
   margin-bottom: 12px;
   padding-left: 25px;
-  line-height: 2;
+  line-height: var(--leading-prose);
 }
 
 .markdown-content li::before {
@@ -132,12 +136,12 @@
   color: var(--cinnabar, #b85c50);
   content: '•';
   font-size: 18px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 .markdown-content strong {
   color: var(--ink, #2f241b);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 .section-icon {

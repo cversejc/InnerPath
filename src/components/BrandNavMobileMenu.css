@@ -64,7 +64,7 @@
     background: transparent;
     color: var(--ink);
     font-size: 15px;
-    font-weight: 700;
+    font-weight: var(--weight-medium);
   }
 
   .nav-mobile-link.router-link-active :deep(.van-cell) {

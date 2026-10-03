@@ -50,7 +50,7 @@
 .profile-label {
   color: var(--ink);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
 }
 
 .required {
@@ -61,7 +61,7 @@
 .recommended {
   color: var(--muted);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
 }
 
 .recommended {
@@ -179,7 +179,7 @@
 .profile-option-cells :deep(.van-cell__title) {
   color: var(--ink);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
 }
 
 .profile-option-cells :deep(.van-cell__label) {
@@ -221,9 +221,9 @@
   border-radius: 50%;
   background: rgba(255, 250, 240, .72);
   color: var(--gold-deep);
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--weight-semibold);
 }
 
 @media (max-width: 640px) {

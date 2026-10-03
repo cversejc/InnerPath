@@ -23,7 +23,7 @@
 
 .report-header h4 {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   color: var(--ink, #2f241b);
 }
 

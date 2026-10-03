@@ -110,16 +110,19 @@ export default {
 .growth-card-head h2 {
   margin-top: 6px;
   color: var(--ink, #2f241b);
-  font-family: var(--font-display, Georgia, serif);
+  font-family: var(--font-ui);
   font-size: clamp(22px, 3vw, 32px);
+  font-weight: var(--weight-semibold);
   line-height: 1.2;
 }
 
 .growth-percent {
   flex: 0 0 auto;
   color: var(--cinnabar-deep, #9e3f35);
-  font-family: var(--font-display, Georgia, serif);
+  font-family: var(--font-ui);
   font-size: clamp(28px, 4vw, 42px);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 

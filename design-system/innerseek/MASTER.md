@@ -8,7 +8,7 @@
 
 **Project:** chenvis / 辰鉴
 
-**Updated:** 2026-10-02
+**Updated:** 2026-10-03
 
 **Product type:** Personal insight, report and decision-calendar product
 **Visual thesis:** A calm Chinese editorial interface built from paper, ink, cinnabar,
@@ -51,14 +51,33 @@ colors for long-form copy or critical labels without checking the actual backgro
 
 ### Typography
 
-- **Display:** `"Noto Serif SC", "Songti SC", STSong, SimSun, serif`
-- **Interface:** `"Avenir Next", "Manrope", "PingFang SC", "Microsoft YaHei", sans-serif`
-- Fonts are resolved locally/system-first. No external Google Fonts import is part of
-  the current implementation.
-- Body text defaults to `16px` with `line-height: 1.6`.
+- **Display:** `"Source Han Serif SC", "Noto Serif SC", "Songti SC", STSong, SimSun, serif`
+- **Body / interface:** `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif`
+- **Technical:** `ui-monospace, "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace`
+- The web bundle loads only the Source Han Serif SC display cuts. Body and interface text
+  use the platform's system UI font stack; no external Google Fonts import is used.
+- Display roles cover the logo fallback, hero, page H1/H2, report H1/H2 and key insights.
+  Card titles, H3/H6, navigation, buttons, forms, tables and AI dialogue stay in the UI
+  stack. Prompt, DSL, JSON, IDs and debug output use the technical stack.
+- Body text defaults to `16px` with `line-height: 1.6`; report prose uses `1.75`.
+- Display weights are `400 / 500 / 600`; UI weights are `400 / 500 / 600`. The project
+  avoids 700+ weights and browser-synthesized bold.
+- The canonical font, size, leading and weight tokens live in `src/styles/foundation.css`.
+  Reuse them instead of introducing page-level font families or one-off scales.
 - Mobile form controls remain at least `16px` to prevent browser zoom.
 - English kickers and metadata may be smaller, but user-facing explanatory copy should
   normally remain at `13px` or larger.
+
+### Typography maintenance
+
+- Treat this section and the tokens in `src/styles/foundation.css` as the single source
+  of truth for new frontend features. Start with a semantic role and shared token before
+  introducing a local font, size, line-height or weight.
+- Keep `src/styles/vant.css` aligned when a typography token affects Vant controls. Do not
+  add external font loading or a second font family system in a page or feature stylesheet.
+- When the approved typography changes, update the implementation tokens, Vant mapping
+  when applicable, and this document in the same change. Record the source design
+  decision and verify with `npm run build` plus `git diff --check`.
 
 ### Spacing and shape
 

@@ -1,4 +1,5 @@
 :root:root {
+  --van-base-font: var(--font-ui);
   --van-primary-color: var(--cinnabar);
   --van-success-color: var(--jade);
   --van-warning-color: var(--gold-deep);
@@ -11,7 +12,7 @@
   --van-background-2: var(--paper-soft);
   --van-active-color: rgba(158, 63, 53, 0.08);
   --van-font-size-md: 14px;
-  --van-font-bold: 600;
+  --van-font-bold: var(--weight-semibold);
   --van-button-default-height: var(--button-height);
   --van-button-large-height: 48px;
   --van-button-normal-font-size: 14px;
@@ -62,6 +63,16 @@
   --van-tabbar-item-icon-margin-bottom: 2px;
 }
 
+.van-button,
+.van-cell,
+.van-field,
+.van-action-sheet,
+.van-dialog,
+.van-picker,
+.van-tabbar {
+  font-family: var(--font-ui);
+}
+
 .van-tabbar {
   border-top: 1px solid var(--line);
   box-shadow: 0 -14px 30px -24px rgba(84, 48, 25, 0.72);
@@ -80,7 +91,7 @@
   padding: 20px 18px 12px;
   color: var(--ink);
   font-size: 17px;
-  font-weight: 700;
+  font-weight: var(--weight-semibold);
 }
 
 .mobile-form-dialog__copy {

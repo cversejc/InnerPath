@@ -27,8 +27,9 @@
 }
 
 .report-header h1 {
+  font-family: var(--font-display);
   font-size: 36px;
-  font-weight: 700;
+  font-weight: var(--weight-medium, 500);
   color: var(--ink, #2f241b);
   margin-bottom: 15px;
 }
