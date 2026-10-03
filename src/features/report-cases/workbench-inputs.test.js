@@ -77,8 +77,9 @@ test('every report step exposes a task, concrete inputs, and consultant tools', 
 })
 
 test('report fragment headings are presented in Chinese', () => {
-  assert.equal(reportFragmentTitle('report.overview.psychic_structure', 'psychic structure'), '整体概览：专业能力与自主方向')
-  assert.equal(reportFragmentTitle('report.identity.hidden_self', 'hidden self'), '不确定时的应对方式')
+  assert.equal(reportFragmentTitle('report.overview.psychic_structure', 'psychic structure'), '整体心灵结构')
+  assert.equal(reportFragmentTitle('report.identity.hidden_self', 'hidden self'), '被隐藏的自己')
+  assert.equal(reportFragmentTitle('report.identity.outer_self', '在连接中留出边界'), '在连接中留出边界')
   assert.equal(reportFragmentTitle('report.unknown', 'unknown title'), '报告段落')
 })
 
@@ -384,7 +385,7 @@ test('quality issues use clear Chinese action labels and severity levels', () =>
   })
 
   const issue = groups[2].items[0]
-  assert.equal(issue.title, '已经推进的选择与行动 · 报告表达需要复核')
+  assert.equal(issue.title, '当前职业处境 · 报告表达需要复核')
   assert.match(issue.body, /统一叙述方式/)
   assert.match(issue.meta, /需要处理 · 待处理/)
   assert.doesNotMatch(JSON.stringify(issue), /report\.identity|report_coherence/)

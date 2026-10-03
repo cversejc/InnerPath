@@ -184,25 +184,29 @@ export function reportStage(stepKey) {
 }
 
 const REPORT_FRAGMENT_TITLES = {
-  'report.overview.psychic_structure': '整体概览：专业能力与自主方向',
-  'report.identity.outer_self': '已经推进的选择与行动',
-  'report.identity.hidden_self': '不确定时的应对方式',
-  'report.identity.self_direction': '想要的工作条件是什么',
-  'report.blocks.block_01': '卡点一：比较何时还能带来新信息',
-  'report.blocks.block_02': '卡点二：专业能力与自主空间',
-  'report.blocks.block_03': '卡点三：持续比较能否减少不确定',
-  'report.blocks.block_04': '卡点四：判断何时进入下一步',
-  'report.blocks.block_05': '卡点五：盘点可迁移的专业优势',
-  'report.blocks.common_pattern': '共同模式：用比较保持可控',
-  'report.blocks.breakthrough': '变化方向：让谨慎带来行动',
-  'report.direction.life_map': '发展方向：带着能力拓展选择',
-  'report.direction.growth_experiments': '行动实验：把卡点变成可验证条件',
-  'report.ending': '结语：让下一步可以被验证'
+  'report.overview.psychic_structure': '整体心灵结构',
+  'report.identity.outer_self': '世界看到的你',
+  'report.identity.foundation_notes': '命盘逻辑旁注',
+  'report.identity.self_perception': '你眼中的自己',
+  'report.identity.hidden_self': '被隐藏的自己',
+  'report.identity.energy_pattern': '能量如何流动',
+  'report.identity.relationship_pattern': '关系中的循环',
+  'report.identity.self_direction': '走向更完整的自己',
+  'report.blocks.block_01': '卡点一',
+  'report.blocks.block_02': '卡点二',
+  'report.blocks.block_03': '卡点三',
+  'report.blocks.block_04': '卡点四',
+  'report.blocks.block_05': '卡点五',
+  'report.blocks.common_pattern': '卡点背后的共性',
+  'report.blocks.breakthrough': '整合与破局方向',
+  'report.direction.current_stage': '当下的阶段主题',
+  'report.direction.life_map': '人生阶段地图',
+  'report.direction.growth_experiments': '专属成长实验',
+  'report.ending': '给你的寄语'
 }
 
 export function reportFragmentTitle(fragmentKey, fallback = '') {
-  const knownTitle = REPORT_FRAGMENT_TITLES[String(fragmentKey || '')]
-  if (knownTitle) return knownTitle
   const title = String(fallback || '').trim()
-  return title && !/[A-Za-z]{2,}/.test(title) ? title : '报告段落'
+  if (title && !/[A-Za-z]{2,}/.test(title)) return title
+  return REPORT_FRAGMENT_TITLES[String(fragmentKey || '')] || '报告段落'
 }

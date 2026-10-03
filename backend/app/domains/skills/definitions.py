@@ -256,6 +256,12 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         ],
     }
     candidates["tool_policy"] = {"allowed": []}
+    candidates["example_policy"] = {"enabled": True, "max_examples": 3}
+    candidates["instructions"]["methodology"].extend([
+        "总叙事：心灵结构→认识自己→隐藏部分→卡点→保护功能→共性模式→整合能力→人生方向→成长实验。",
+        "保持你是谁/卡在哪/往哪去三章分工，候选主线和标题必须围绕用户独特矛盾，避免固定模板。",
+        "按S4已审核卡点选择优先4–5项（证据不足可3项），不得为了数量发明卡点。",
+    ])
     candidates["processor_policy"] = {"processor": "reports.narrative_candidates"}
     candidates["output_contract"] = {
         "type": "object",
@@ -328,6 +334,17 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         ],
     }
     authoring["tool_policy"] = {"allowed": []}
+    authoring["example_policy"] = {"enabled": True, "max_examples": 3}
+    authoring["knowledge_policy"] = {"snapshot": knowledge_for_stage("S5"), "retrieval": "VERSION_SNAPSHOT"}
+    authoring["instructions"]["methodology"].extend([
+        "使用第二人称，描述模式并说明保护功能，不评判、不诊断；先意识后潜意识，命理术语翻译成日常语言。",
+        "章节首页输出一句有依据的关键结论和简短关系路径图（可用箭头文本）。卡点部分只解释场景/运作/保护/代价/整合邀请，具体解法留给往哪去。",
+        "阶段地图须保留上游已确认的大运起止年份、阶段主题/能力/旧模式，以条件式表达未来。",
+        "成长实验只转述已确认ACTION的动作、频率、耗时、观察、退出条件，3–5个即可。",
+        "参考用户自报MBTI与明确的深入/简洁偏好调整理论密度、篇幅和隐喻量，不推断八维分数，不改变事实。",
+        "结尾简短回扣哲学方向和用户现实，不堆安慰；署名金句只能逐字来自 skill_knowledge.quote_library 中 VERIFIED 条目，否则用不署名原创寄语。",
+        "每个分配的分析来源都须转译或明确指出资料边界，不暴露SOP编号、内部ID或审核过程。",
+    ])
     authoring["processor_policy"] = {"processor": "reports.fragment_authoring"}
     authoring["output_contract"] = {
         "type": "object",
@@ -381,6 +398,7 @@ ANALYSIS_STEPS: dict[str, dict[str, Any]] = {
             "区分用户直接表达、S1 命理解释与本阶段的心理映射。",
             "优先说明触发情境、自动想法、情绪、应对方式及保护功能；输入不足时明确保留不确定性。",
             "只能引用输入中的 Evidence 和已确认上游 Finding，不把未确认内容当作事实。",
+            "标为用户自述的每句话必须能回到问卷原文；‘自我不适’‘短期维持关系’等未直接表述的内容必须标为假设。额外紫微宫位没有咨询师选用依据时不调用。",
             "分析片段只用于咨询师审阅，不是给用户的报告正文。",
         ],
     },

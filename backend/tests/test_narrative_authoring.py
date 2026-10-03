@@ -25,7 +25,7 @@ from app.domains.content.report_content_plan import (
     validate_report_content_plan,
 )
 from app.domains.skills.definitions import default_narrative_skill_specifications
-from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.skills.models import AISkillVersion, SkillRun, SkillExample
 from app.domains.skills.runtime import (
     ModelCompletion,
     SkillExecutionError,
@@ -92,6 +92,7 @@ def narrative_db():
         ReportCase.__table__,
         AISkillVersion.__table__,
         SkillRun.__table__,
+        SkillExample.__table__,
         FindingRevision.__table__,
         CaseEvidenceItem.__table__,
         ContentFragmentRevision.__table__,

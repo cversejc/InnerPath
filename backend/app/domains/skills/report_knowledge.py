@@ -30,6 +30,8 @@ STARS = {
 
 
 def knowledge_for_stage(step_key):
+    if step_key == "S5":
+        return [{"key": "report-writing-v1", "source": "docs/产品分析框架.md §5.1–5.7", "quote_library": [{"key": "laozi-33-self-knowledge", "text": "知人者智，自知者明。", "attribution": "《道德经》第三十三章", "source_url": "https://ctext.org/dao-de-jing/zh", "status": "VERIFIED", "verified_on": "2026-10-04"}], "style": "按用户自报偏好调节直接程度、温柔程度、理论/行动密度、篇幅与比喻。没有自报类型时不能补推MBTI。", "scope": "认识→理解→行动，写作不新增判断；资料不足明示，金句非必需。"}]
     if step_key == "S4":
         return [{"key": "everyday-growth-tools-v1", "source": "docs/产品分析框架.md §4、§5.4", "tools": {
             "CBT": "记录事件/自动想法/感受/证据反证，做可逆的小实验", "ACT": "把想法写成‘我正在有…的想法’，区分价值与讨好，选一个价值行动", "短焦": "找例外、用0–10刻度观察小幅改变", "EFT": "只用日常情绪命名和需求表达，不实施情绪唤起治疗", "依恋沟通": "稳定而低负担的连接邀请，核查双方需要，不判断依恋类型"}, "energy_options": {"木": "自然/学习/规划", "火": "表达/创造/适量社交", "土": "规律/身体劳动", "金": "整理/决断/边界", "水": "写作/静观/独处"}, "limits": "不得自动推荐临床治疗、断绝关系或辞职。每个练习必须可自主停止，效果以现实观察为准。"}]

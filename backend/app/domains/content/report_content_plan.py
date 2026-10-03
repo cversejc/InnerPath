@@ -1,5 +1,6 @@
 from collections import Counter
 from typing import Any
+from .report_sop_plan import enrich_sop_plan
 
 
 _IMPORTANCE_SCORE = {"LOW": 0, "MEDIUM": 100, "HIGH": 250, "CRITICAL": 400}
@@ -401,7 +402,7 @@ def build_report_content_plan(
         )
     if block_finding_refs and action_refs and direction_refs:
         growth_refs = list(
-            dict.fromkeys(block_finding_refs[:2] + direction_refs[:1] + action_refs[:3])
+            dict.fromkeys(block_finding_refs[:2] + direction_refs[:1] + action_refs[:5])
         )
         add(
             "report.direction.growth_experiments",
@@ -410,7 +411,7 @@ def build_report_content_plan(
             growth_refs,
             role="RESPOND",
             must_cover=["目标卡点", "具体做法", "观察内容", "适配原因"],
-            action_source_refs=action_refs[:3],
+            action_source_refs=action_refs[:5],
         )
     add(
         "report.ending",
@@ -423,6 +424,8 @@ def build_report_content_plan(
         action_source_refs=action_refs[:1],
     )
 
+    enrich_sop_plan(specs, semantic_model, by_key, ranked)
+
     high_priority = [
         key
         for key in ranked
@@ -433,7 +436,8 @@ def build_report_content_plan(
     for finding_key in dict.fromkeys(must_include + high_priority):
         if finding_key in allocated:
             continue
-        target = next((item for item in specs if item["chapter"] == "identity"), None)
+        preferred = "direction" if _contains(_role(by_key[finding_key]), _ACTION_ROLE_TOKENS + _DIRECTION_ROLE_TOKENS) else "identity"
+        target = next((item for item in specs if item["chapter"] == preferred and (not _contains(_role(by_key[finding_key]), _ACTION_ROLE_TOKENS) or item["fragment_key"] == "report.direction.growth_experiments")), None)
         if target:
             target["finding_refs"].append(finding_key)
             target["finding_roles"][finding_key] = "REFERENCE"
@@ -461,6 +465,10 @@ def build_report_content_plan(
     analysis_by_key = {item["fragment_key"]: item for item in analysis_fragments}
     analysis_coverage = {key: [] for key in analysis_by_key}
     for analysis_key, analysis_fragment in analysis_by_key.items():
+        assigned = [spec["fragment_key"] for spec in specs if analysis_key in spec["analysis_refs"]]
+        if assigned:
+            analysis_coverage[analysis_key] = assigned
+            continue
         source_findings, source_evidence = _resolved_analysis_sources(
             analysis_key, analysis_by_key
         )
