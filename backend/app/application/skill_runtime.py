@@ -20,6 +20,7 @@ from app.domains.content.narrative import (
 )
 from app.domains.content.queries import load_case_semantic_model
 from app.domains.skills.definitions import (
+    ANALYSIS_STEPS,
     DEFAULT_SKILL_KEY,
     default_skill_specification,
 )
@@ -35,6 +36,7 @@ from app.domains.skills.runtime import (
 )
 from app.domains.skills.service import (
     create_skill_run,
+    ensure_default_analysis_skill_versions,
     ensure_default_skill_version,
     ensure_default_validator_skill_version,
 )
@@ -48,7 +50,11 @@ from app.domains.workflow.models import (
     WorkflowOutbox,
     WorkflowVersion,
 )
-from app.domains.workflow.service import create_workflow_draft, publish_workflow_version
+from app.domains.workflow.service import (
+    create_workflow_draft,
+    latest_published_version,
+    publish_workflow_version,
+)
 from app.domains.quality.service import replace_validator_issues
 from app.models.user import User
 
@@ -92,6 +98,58 @@ async def ensure_skill_workflow_version(db: AsyncSession) -> WorkflowVersion:
             )
         )
         if existing and existing.status == "PUBLISHED":
+            return existing
+        raise
+
+
+async def ensure_analysis_workflow_version(db: AsyncSession) -> WorkflowVersion:
+    latest = await latest_published_version(db, DEFAULT_WORKFLOW_KEY)
+    if latest is not None:
+        steps = latest.definition_json.get("steps", [])
+        by_key = {step.get("step_key"): step for step in steps}
+        if all(
+            by_key.get(step_key, {}).get("executor") == "HYBRID"
+            and by_key.get(step_key, {}).get("config", {}).get("skill_key")
+            == stage["skill_key"]
+            for step_key, stage in ANALYSIS_STEPS.items()
+        ):
+            return latest
+
+    skill_versions = await ensure_default_analysis_skill_versions(db)
+    skill_by_key = {skill.skill_key: skill for skill in skill_versions}
+    definition = default_workflow_definition()
+    for step in definition["steps"]:
+        stage = ANALYSIS_STEPS.get(step["step_key"])
+        if stage is None:
+            continue
+        skill = skill_by_key[stage["skill_key"]]
+        step["executor"] = "HYBRID"
+        step["config"].update(
+            {"skill_key": skill.skill_key, "skill_version_id": skill.id}
+        )
+
+    authoring = await ensure_default_skill_version(db)
+    authoring_step = next(
+        step for step in definition["steps"] if step["step_key"] == "S5"
+    )
+    authoring_step["executor"] = "HYBRID"
+    authoring_step["config"].update(
+        {"skill_key": DEFAULT_SKILL_KEY, "skill_version_id": authoring.id}
+    )
+    try:
+        async with db.begin_nested():
+            version = await create_workflow_draft(
+                db,
+                DEFAULT_WORKFLOW_KEY,
+                "咨询师报告生产流程·AI分析",
+                definition,
+                created_by=None,
+            )
+            await publish_workflow_version(db, version.id, published_by=None)
+        return version
+    except IntegrityError:
+        existing = await latest_published_version(db, DEFAULT_WORKFLOW_KEY)
+        if existing is not None:
             return existing
         raise
 
@@ -698,6 +756,8 @@ async def execute_skill_run_record(
                 "qa_fingerprint",
                 "coherence_fingerprint",
                 "evaluation",
+                "analysis_step_key",
+                "analysis_activation_no",
             )
             if key in prior_context
         }

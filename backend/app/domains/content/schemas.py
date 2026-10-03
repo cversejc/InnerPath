@@ -158,6 +158,10 @@ class NarrativePlanConfirm(BaseModel):
     overrides: dict[str, Any] = Field(default_factory=dict)
 
 
+class AnalysisCandidateApplyInput(BaseModel):
+    expected_revision_no: Optional[int] = Field(None, ge=1)
+
+
 class ReportFragmentGenerate(BaseModel):
     idempotency_key: str = Field(..., min_length=1, max_length=200)
     fragment_key: str = Field(..., min_length=1, max_length=200)

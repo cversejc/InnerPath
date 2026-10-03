@@ -18,19 +18,23 @@ import assignmentMethods from '../features/service-requests/methods/assignment.j
 import queueMethods from '../features/service-requests/methods/queue.js'
 import workflowMethods from '../features/service-requests/methods/workflow.js'
 import reportCaseMethods from '../features/service-requests/methods/report-case.js'
+import reportAnalysisMethods from '../features/service-requests/methods/report-analysis.js'
+import ReportNodeWorkbench from '../features/report-cases/components/ReportNodeWorkbench.vue'
+import AnalysisDraftsPanel from '../features/report-cases/components/AnalysisDraftsPanel.vue'
+import { REPORT_STEP_STATUS_LABELS, reportStage } from '../features/report-cases/stages.js'
 import { confirmAction } from '../utils/confirmAction.js'
 
 export default {
   name: 'StaffConsole',
-  components: { VanButton, VanDialog, VanField },
+  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel },
   data() {
     const admin = hasRole('admin')
     return {
       admin,
-      scope: admin ? 'all' : 'available',
+      scope: admin ? 'all' : 'mine',
       scopeOptions: admin
         ? [{ id: 'all', label: '全部申请' }, { id: 'available', label: '待接单' }, { id: 'mine', label: '我的处理中' }]
-        : [{ id: 'available', label: '待接单' }, { id: 'mine', label: '我的处理中' }],
+        : [{ id: 'mine', label: '我的处理中' }, { id: 'available', label: '待接单' }],
       serviceType: '',
       statusFilter: '',
       statusOptions: ['submitted', 'accepted', 'ai_processing', 'ai_ready', 'reviewing', 'needs_info', 'failed', 'delivered'],
@@ -39,6 +43,8 @@ export default {
       workspace: null,
       reportCase: null,
       reportCaseContent: { evidence: [], findings: [], fragments: [] },
+      reportCaseCompletionGate: null,
+      reportAnalysisRuns: [],
       reportNarrative: { current_plan: null, candidate_runs: [], fragment_runs: [] },
       reportQuality: {
         quality_status: 'NOT_RUN',
@@ -53,6 +59,9 @@ export default {
       reportCaseDelivering: false,
       finalGateAttested: false,
       reportCaseLoading: false,
+      reportAnalysisSaving: false,
+      reportAnalysisFindingSavingKey: '',
+      reportAnalysisFragmentSavingKey: '',
       reportNarrativeSaving: false,
       reportNarrativePollTimer: null,
       narrativeCandidateDrafts: {},
@@ -91,6 +100,15 @@ export default {
     currentReportStep() {
       const steps = this.reportCase?.workflow_instance?.steps || []
       return steps.find(step => ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status)) || null
+    },
+    latestReportAnalysisRun() {
+      if (!this.currentReportStep) return null
+      return this.reportAnalysisRuns
+        .filter(run => run.target_type === 'REPORT_ANALYSIS_DRAFT' && run.target_key === this.currentReportStep.step_key)
+        .sort((left, right) => right.id - left.id)[0] || null
+    },
+    reportAnalysisPending() {
+      return this.reportAnalysisSaving || this.reportAnalysisRuns.some(run => ['PENDING', 'RUNNING'].includes(run.status))
     },
     reportReturnTargets() {
       const active = this.currentReportStep
@@ -137,6 +155,7 @@ export default {
     ...queueMethods,
     ...workflowMethods,
     ...reportCaseMethods,
+    ...reportAnalysisMethods,
     ...assignmentMethods,
     reportFragmentStatus(fragmentKey) {
       return this.reportCaseContent.fragments.find(item => item.fragment_key === fragmentKey)?.status || '待写作'
@@ -160,6 +179,15 @@ export default {
     },
     statusLabel(status) {
       return SERVICE_REQUEST_STATUS_LABELS[status] || status
+    },
+    reportStepLabel(stepKey) {
+      return reportStage(stepKey)?.shortName || stepKey
+    },
+    reportStepStatusLabel(status) {
+      return REPORT_STEP_STATUS_LABELS[status] || status
+    },
+    scrollToReportSection(sectionId) {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     },
     genderLabel,
     topicLabel,

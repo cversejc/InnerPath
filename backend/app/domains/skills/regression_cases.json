@@ -104,6 +104,93 @@
         "allowed_finding_refs": ["finding.small-step"],
         "minimum_score": 1.0
       }
+    },
+    {
+      "skill_key": "report.s1_foundation_analysis",
+      "case_key": "analysis.s1.evidence-grounded-signal",
+      "title": "S1 结构判断引用计算依据",
+      "description": "验证 S1 仅把计算结果作为有来源的命理判断或待验证 Signal。",
+      "input_data": {
+        "profile": { "gender": "female", "birth_year": 1992, "birth_month": 6, "birth_day": 14 },
+        "context": { "focus_topics": ["career"] },
+        "analysis_context": {
+          "step_key": "S1",
+          "evidence": [
+            { "evidence_key": "calculated.mingli_foundation.v1", "source_type": "SYSTEM_CALCULATED", "value": { "calculation_method": "deterministic-mingli" } }
+          ],
+          "upstream_confirmed_findings": []
+        }
+      },
+      "expectation": {
+        "required_fields": ["summary", "findings", "analysis_fragments", "risk_flags"],
+        "minimum_array_length": [{ "path": ["findings"], "value": 1 }],
+        "minimum_score": 1.0
+      }
+    },
+    {
+      "skill_key": "report.s2_psychology_mapping",
+      "case_key": "analysis.s2.mapping-without-diagnosis",
+      "title": "S2 将心理映射保留为假设",
+      "description": "验证 S2 心理映射引用上游判断与用户 Evidence，不使用诊断结论。",
+      "input_data": {
+        "profile": { "name": "Regression User" },
+        "context": { "current_challenge": "比较稳定岗位与新方向" },
+        "analysis_context": {
+          "step_key": "S2",
+          "evidence": [{ "evidence_key": "input.context.current_challenge", "source_type": "USER_PROVIDED", "value": "比较稳定岗位与新方向" }],
+          "upstream_confirmed_findings": [{ "finding_key": "foundation.balance", "claim": "用户重视可预期的工作节奏。" }]
+        }
+      },
+      "expectation": {
+        "required_fields": ["summary", "findings", "analysis_fragments", "risk_flags"],
+        "minimum_array_length": [{ "path": ["findings"], "value": 1 }],
+        "minimum_score": 1.0
+      }
+    },
+    {
+      "skill_key": "report.s3_integration",
+      "case_key": "analysis.s3.integrate-confirmed-assets",
+      "title": "S3 整合已确认语义",
+      "description": "验证 S3 以 S1、S2 已确认判断为整合输入。",
+      "input_data": {
+        "profile": { "name": "Regression User" },
+        "context": { "focus_topics": ["career"] },
+        "analysis_context": {
+          "step_key": "S3",
+          "evidence": [{ "evidence_key": "input.context.focus_topics", "source_type": "USER_PROVIDED", "value": ["career"] }],
+          "upstream_confirmed_findings": [
+            { "finding_key": "foundation.balance", "claim": "用户重视可预期的工作节奏。" },
+            { "finding_key": "psychology.autonomy", "claim": "用户希望在明确边界内保留自主空间。" }
+          ],
+          "upstream_confirmed_analysis_fragments": []
+        }
+      },
+      "expectation": {
+        "required_fields": ["summary", "findings", "analysis_fragments", "risk_flags"],
+        "minimum_array_length": [{ "path": ["findings"], "value": 1 }],
+        "minimum_score": 1.0
+      }
+    },
+    {
+      "skill_key": "report.s4_mechanism_block_action",
+      "case_key": "analysis.s4.low-risk-action",
+      "title": "S4 行动建议低风险且可追溯",
+      "description": "验证 S4 的机制或行动引用已确认判断 / 用户 Evidence。",
+      "input_data": {
+        "profile": { "name": "Regression User" },
+        "context": { "current_challenge": "评估是否转换方向" },
+        "analysis_context": {
+          "step_key": "S4",
+          "evidence": [{ "evidence_key": "input.context.current_challenge", "source_type": "USER_PROVIDED", "value": "评估是否转换方向" }],
+          "upstream_confirmed_findings": [{ "finding_key": "integration.central_tension", "claim": "稳定感和自主探索需要同时被照顾。" }],
+          "upstream_confirmed_analysis_fragments": []
+        }
+      },
+      "expectation": {
+        "required_fields": ["summary", "findings", "analysis_fragments", "risk_flags"],
+        "minimum_array_length": [{ "path": ["findings"], "value": 1 }],
+        "minimum_score": 1.0
+      }
     }
   ]
 }

@@ -16,7 +16,27 @@ export default {
       })
       if (this.selectedRequest) {
         const refreshed = this.requests.items.find(item => item.id === this.selectedRequest.id)
-        if (refreshed) this.selectedRequest = refreshed
+        if (refreshed) {
+          this.selectedRequest = refreshed
+        } else {
+          this.selectedRequest = null
+          this.workspace = null
+          this.reportCase = null
+          this.reportCaseCompletionGate = null
+          this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
+          this.stopPolling()
+        }
+      }
+      if (!this.selectedRequest && !this.admin && this.scope === 'mine') {
+        const reportRequests = this.requests.items
+          .filter(item => item.service_type === 'report' && item.current_step_key)
+          .sort((left, right) => {
+            const leftStep = Number(String(left.current_step_key).replace('S', '')) || Infinity
+            const rightStep = Number(String(right.current_step_key).replace('S', '')) || Infinity
+            return leftStep - rightStep || left.id - right.id
+          })
+        const nextRequest = reportRequests[0]
+        if (nextRequest) await this.selectRequest(nextRequest)
       }
     } catch (error) {
       this.message = this.errorText(error)
@@ -28,6 +48,9 @@ export default {
     this.scope = scope
     this.selectedRequest = null
     this.workspace = null
+    this.reportCase = null
+    this.reportCaseCompletionGate = null
+    this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
     this.stopPolling()
     await this.loadRequests()
   },
@@ -36,7 +59,9 @@ export default {
     this.selectedRequest = item
     this.workspace = null
     this.reportCase = null
+    this.reportCaseCompletionGate = null
     this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
+    this.reportAnalysisRuns = []
     this.message = ''
     if (item.assigned_consultant_id || this.admin) await this.loadWorkspace(item.id)
   },

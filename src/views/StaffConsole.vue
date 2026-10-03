@@ -10,7 +10,7 @@
         </div>
         <div class="heading-actions">
           <router-link class="secondary-button compact-button" to="/skills">Skill Studio</router-link>
-          <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading }"></i>{{ pollingTask ? 'AI 初稿处理中' : reportCaseLoading ? '正在读取 Case' : loading ? '正在同步' : '已同步' }}</span>
+          <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading || reportAnalysisPending }"></i>{{ reportAnalysisPending ? 'AI 分析草稿处理中' : pollingTask ? 'AI 初稿处理中' : reportCaseLoading ? '正在读取 Case' : loading ? '正在同步' : '已同步' }}</span>
           <VanButton class="secondary-button" type="default" plain native-type="button" :disabled="loading" @click="loadRequests">刷新申请</VanButton>
         </div>
       </header>
@@ -33,7 +33,7 @@
           <div class="request-list" aria-label="服务申请列表">
             <button v-for="item in requests.items" :key="item.id" type="button" class="request-item" :class="{ selected: selectedRequest?.id === item.id }" :aria-pressed="selectedRequest?.id === item.id" @click="selectRequest(item)">
               <span class="request-item-icon" :class="`type-${item.service_type}`"><IconMark :name="item.service_type === 'report' ? 'reports' : 'calendar'" /></span>
-              <span class="request-item-copy"><strong>{{ item.service_type === 'report' ? '人生说明书' : '决策日历' }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · #{{ item.id }}</small><em>{{ formatDate(item.created_at) }}</em></span>
+              <span class="request-item-copy"><strong>{{ item.service_type === 'report' ? '人生说明书' : '决策日历' }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · #{{ item.id }}</small><small v-if="item.service_type === 'report' && item.current_step_key" class="request-item-step">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><em>{{ formatDate(item.created_at) }}</em></span>
               <span class="request-item-status">{{ statusLabel(item.status) }}</span>
             </button>
             <div v-if="!requests.items.length" class="empty-cell">当前筛选下没有申请。</div>
@@ -64,17 +64,40 @@
               <div v-if="reportCaseLoading" class="empty-cell" role="status">正在读取 Case 内容…</div>
               <template v-else-if="reportCase">
                 <div class="report-case-heading">
-                  <div><p class="eyebrow">REPORT CASE / #{{ reportCase.id }}</p><h3>咨询师审核</h3><p>工作流版本 v{{ reportCase.workflow_instance?.workflow_version_id }} · {{ reportCase.status }}</p></div>
-                  <div v-if="currentReportStep" class="report-step-controls">
-                    <span class="step-current">当前步骤 {{ currentReportStep.step_key }} · {{ currentReportStep.status }}</span>
-                    <VanButton v-if="currentReportStep.status === 'READY'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving" :loading="reportStepSaving" @click="startReportStep">开始审核</VanButton>
-                    <template v-else-if="currentReportStep.status === 'IN_REVIEW'">
-                      <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportStepSaving" @click="reportStepReturn.visible = !reportStepReturn.visible">退回上一步</VanButton>
-                      <VanButton v-if="currentReportStep.step_key !== 'S6'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving" :loading="reportStepSaving" @click="completeReportStep">完成步骤</VanButton>
-                    </template>
-                  </div>
-                  <p v-else class="case-complete-state">工作流步骤已完成，等待后续质量审核与交付阶段。</p>
+                  <div><p class="eyebrow">REPORT CASE / #{{ reportCase.id }}</p><h3>咨询师工作台</h3><p>工作流版本 v{{ reportCase.workflow_instance?.workflow_version_id }} · {{ reportCase.status }}</p></div>
                 </div>
+
+                <ReportNodeWorkbench
+                  :report-case="reportCase"
+                  :content="reportCaseContent"
+                  :current-step="currentReportStep"
+                  :quality-status="reportQuality.quality_status"
+                  :narrative-plan-status="reportNarrative.current_plan?.status || ''"
+                  :latest-analysis-run="latestReportAnalysisRun"
+                  :completion-gate="reportCaseCompletionGate"
+                  :loading="reportStepSaving"
+                  :analysis-saving="reportAnalysisSaving"
+                  :can-reopen="true"
+                  @start-step="startReportStep"
+                  @complete-step="completeReportStep"
+                  @toggle-return="reportStepReturn.visible = !reportStepReturn.visible"
+                  @to-section="scrollToReportSection"
+                  @run-analysis="startReportAnalysisDraft"
+                  @reopen="reopenReportStep"
+                />
+
+                <AnalysisDraftsPanel
+                  v-if="currentReportStep && ['S1', 'S2', 'S3', 'S4'].includes(currentReportStep.step_key) && currentReportStep.status === 'IN_REVIEW'"
+                  :runs="reportAnalysisRuns"
+                  :content="reportCaseContent"
+                  :step-key="currentReportStep.step_key"
+                  :current-step="currentReportStep"
+                  :saving="Boolean(reportAnalysisFindingSavingKey || reportAnalysisFragmentSavingKey)"
+                  :saving-finding-key="reportAnalysisFindingSavingKey"
+                  :saving-fragment-key="reportAnalysisFragmentSavingKey"
+                  @apply-finding="applyReportAnalysisFinding"
+                  @apply-fragment="applyReportAnalysisFragment"
+                />
 
                 <div v-if="reportStepReturn.visible" class="report-return-form">
                   <label>退回步骤<select v-model="reportStepReturn.targetStepKey"><option value="">选择已完成的上游步骤</option><option v-for="step in reportReturnTargets" :key="step.step_key" :value="step.step_key">{{ step.step_key }} · 第 {{ step.sequence_no }} 步</option></select></label>
@@ -82,15 +105,7 @@
                   <VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving || !reportStepReturn.targetStepKey || !reportStepReturn.reason" :loading="reportStepSaving" @click="submitReportStepReturn">确认退回</VanButton>
                 </div>
 
-                <ol class="report-step-list" aria-label="报告工作流步骤">
-                  <li v-for="step in reportCase.workflow_instance?.steps || []" :key="step.id" :class="`step-${step.status.toLowerCase()}`">
-                    <span><strong>{{ step.step_key }}</strong><small>第 {{ step.sequence_no }} 步 · {{ step.required_capability || '无额外能力要求' }}</small></span>
-                    <span class="step-state">{{ step.status }}</span>
-                    <VanButton v-if="step.status === 'COMPLETED'" class="text-button" type="default" plain native-type="button" :disabled="reportStepSaving" @click="reopenReportStep(step)">重开</VanButton>
-                  </li>
-                </ol>
-
-                <section class="report-data-panel narrative-panel" aria-label="报告叙事方案与写作">
+                <section id="case-narrative" class="report-data-panel narrative-panel" aria-label="报告叙事方案与写作">
                   <div class="panel-heading">
                     <div><p class="eyebrow">NARRATIVE / AUTHORING</p><h3>叙事方案与报告写作</h3></div>
                     <span v-if="reportNarrative.current_plan">Plan v{{ reportNarrative.current_plan.version_no }} · {{ reportNarrative.current_plan.status }}</span>
@@ -173,7 +188,7 @@
                   </div>
                 </section>
 
-                <section class="report-data-panel quality-panel" aria-label="最终质量审核">
+                <section id="case-quality" class="report-data-panel quality-panel" aria-label="最终质量审核">
                   <div class="panel-heading">
                     <div><p class="eyebrow">FINAL QA / DELIVERY</p><h3>最终质量审核</h3></div>
                     <span>{{ reportQuality.open_count }} 项待处理 · {{ reportQuality.blocking_count }} 项阻断</span>
@@ -211,12 +226,12 @@
                 </section>
 
                 <div class="report-case-grid">
-                  <section class="report-data-panel">
+                  <section id="case-context" class="report-data-panel">
                     <div class="panel-heading"><div><p class="eyebrow">APPLICATION SNAPSHOT</p><h3>本次情境</h3></div><span>档案 v{{ reportCase.application_snapshot?.profile_version || '—' }}</span></div>
                     <dl class="context-values"><div v-for="(value, key) in reportCase.application_snapshot?.context || {}" :key="key"><dt>{{ key }}</dt><dd>{{ Array.isArray(value) ? value.join('、') || '—' : value || '—' }}</dd></div></dl>
                     <details class="snapshot-details"><summary>查看完整资料快照</summary><pre>{{ pretty(reportCase.application_snapshot) }}</pre></details>
                   </section>
-                  <section class="report-data-panel">
+                  <section id="case-evidence" class="report-data-panel">
                     <div class="panel-heading"><div><p class="eyebrow">EVIDENCE</p><h3>Evidence 来源</h3></div><span>{{ reportCaseContent.evidence.length }} 条</span></div>
                     <div v-if="!reportCaseContent.evidence.length" class="empty-cell">当前没有 Evidence。</div>
                     <article v-for="evidence in reportCaseContent.evidence" :key="evidence.id" class="case-evidence-item">
@@ -226,7 +241,7 @@
                   </section>
                 </div>
 
-                <section class="report-data-panel report-asset-panel">
+                <section id="case-findings" class="report-data-panel report-asset-panel">
                   <div class="panel-heading"><div><p class="eyebrow">FINDINGS</p><h3>专业判断审核</h3></div><span>{{ reportCaseContent.findings.length }} 条 · 只有确认项会进入已确认语义</span></div>
                   <article v-for="finding in reportCaseContent.findings" :key="finding.id" class="finding-item">
                     <template v-if="editingFindingKey === finding.finding_key && reportFindingDraft">
@@ -260,7 +275,7 @@
                   </form>
                 </section>
 
-                <section class="report-data-panel report-asset-panel">
+                <section id="case-fragments" class="report-data-panel report-asset-panel">
                   <div class="panel-heading"><div><p class="eyebrow">FRAGMENTS</p><h3>内容片段</h3></div><span>{{ reportCaseContent.fragments.length }} 条</span></div>
                   <article v-for="fragment in reportCaseContent.fragments" :key="fragment.id" class="fragment-item">
                     <div class="asset-item-heading"><div><strong>{{ fragment.fragment_key }}</strong><span class="asset-status">{{ fragment.status }} · v{{ fragment.revision_no }}</span></div><small>{{ fragment.edit_kind }} 修改</small></div>

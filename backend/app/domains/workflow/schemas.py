@@ -78,6 +78,17 @@ class StepCompleteInput(BaseModel):
     result_json: Optional[dict[str, Any]] = None
 
 
+class StepCompletionGateResponse(BaseModel):
+    step_key: str
+    can_complete: bool
+    confirmed_finding_count: int
+    confirmed_fragment_count: int
+    pending_finding_count: int
+    pending_fragment_count: int
+    stale_fragment_count: int
+    blockers: list[str]
+
+
 class StepReturnInput(BaseModel):
     target_step_key: str = Field(..., min_length=1, max_length=100)
     reason: str = Field(..., min_length=1, max_length=1000)

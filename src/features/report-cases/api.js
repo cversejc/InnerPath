@@ -53,6 +53,35 @@ export async function startReportCaseStep(caseId, stepKey) {
   return response.data
 }
 
+export async function getReportCaseStepCompletionGate(caseId, stepKey) {
+  const response = await apiClient.get(`/report-cases/${caseId}/steps/${stepKey}/completion-gate`)
+  return response.data
+}
+
+export async function startReportCaseAnalysisDraft(caseId, stepKey, payload) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/steps/${stepKey}/analysis-drafts`,
+    payload
+  )
+  return response.data
+}
+
+export async function applyReportCaseAnalysisFinding(caseId, stepKey, runId, findingKey, payload) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/steps/${stepKey}/analysis-drafts/${runId}/findings/${encodeURIComponent(findingKey)}/apply`,
+    payload
+  )
+  return response.data
+}
+
+export async function applyReportCaseAnalysisFragment(caseId, stepKey, runId, fragmentKey, payload) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/steps/${stepKey}/analysis-drafts/${runId}/fragments/${encodeURIComponent(fragmentKey)}/apply`,
+    payload
+  )
+  return response.data
+}
+
 export async function completeReportCaseStep(caseId, stepKey, result = {}) {
   const response = await apiClient.post(`/report-cases/${caseId}/steps/${stepKey}/complete`, {
     result_json: result

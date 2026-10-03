@@ -32,6 +32,54 @@ def project_report_case_status(case_status: str, step_status: str | None, fallba
     return "accepted"
 
 
+async def report_case_progress_for_requests(
+    db: AsyncSession, request_ids: list[int]
+) -> dict[int, dict[str, int | str | None]]:
+    if not request_ids:
+        return {}
+    cases = list(
+        await db.scalars(
+            select(ReportCase).where(ReportCase.service_request_id.in_(request_ids))
+        )
+    )
+    workflow_ids = [case.workflow_instance_id for case in cases if case.workflow_instance_id]
+    active_steps = []
+    if workflow_ids:
+        active_steps = list(
+            await db.scalars(
+                select(StepTask)
+                .where(
+                    StepTask.workflow_instance_id.in_(workflow_ids),
+                    StepTask.status.in_(
+                        ["READY", "IN_REVIEW", "EXECUTING", "WAITING_REVIEW"]
+                    ),
+                )
+                .order_by(StepTask.sequence_no)
+            )
+        )
+    current_by_workflow = {}
+    for step in active_steps:
+        current_by_workflow.setdefault(step.workflow_instance_id, step)
+    return {
+        case.service_request_id: {
+            "report_case_id": case.id,
+            "report_case_status": case.status,
+            "current_step_key": (
+                current_by_workflow[case.workflow_instance_id].step_key
+                if case.workflow_instance_id in current_by_workflow
+                else None
+            ),
+            "current_step_status": (
+                current_by_workflow[case.workflow_instance_id].status
+                if case.workflow_instance_id in current_by_workflow
+                else None
+            ),
+        }
+        for case in cases
+        if case.service_request_id is not None
+    }
+
+
 def _detail_for_error(error: ValueError) -> tuple[int, str]:
     code = str(error)
     if code in {"service_request_not_found", "service_request_draft_not_found"}:

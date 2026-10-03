@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 import time
 from copy import deepcopy
 from dataclasses import dataclass
@@ -291,6 +292,30 @@ def _authoring_prompts(
     return system_prompt, user_prompt
 
 
+def _analysis_prompts(
+    context: dict[str, Any],
+    specification: dict[str, Any],
+    runtime_instruction: str | None,
+) -> tuple[str, str]:
+    instructions = json.dumps(
+        specification["instructions"], ensure_ascii=False, indent=2
+    )
+    runtime_note = (
+        f"\n\n【本次运行补充要求】\n{runtime_instruction}"
+        if runtime_instruction
+        else ""
+    )
+    system_prompt = (
+        f"{GLOBAL_POLICY}\n\n【任务类型】\n"
+        "你正在生成咨询师内部审核用的分析候选，不是在写最终报告。"
+        "只输出符合契约的严格 JSON；不能输出 Markdown、推理过程或输入之外的事实。\n\n"
+        f"【Skill Instructions】\n{instructions}{runtime_note}"
+        f"{_example_guidance(context.get('few_shot_examples') or [])}"
+    )
+    user_prompt = json.dumps(context, ensure_ascii=False, indent=2, default=str)
+    return system_prompt, user_prompt
+
+
 def _parse_json_output(raw: str) -> dict[str, Any]:
     candidate = raw.strip()
     if candidate.startswith("```"):
@@ -394,6 +419,119 @@ def _validate_authoring_output(
         raise ValueError("report_fragment_output_invalid")
 
 
+def _validate_analysis_draft_output(
+    output: dict[str, Any], context: dict[str, Any]
+) -> None:
+    analysis_context = context.get("analysis_context") or {}
+    if analysis_context.get("step_key") not in {"S1", "S2", "S3", "S4"}:
+        raise ValueError("report_analysis_step_invalid")
+    if not isinstance(output.get("summary"), str) or not output["summary"].strip():
+        raise ValueError("report_analysis_summary_invalid")
+    findings = output.get("findings")
+    fragments = output.get("analysis_fragments")
+    risk_flags = output.get("risk_flags")
+    if not isinstance(findings, list) or len(findings) > 20:
+        raise ValueError("report_analysis_findings_invalid")
+    if not isinstance(fragments, list) or len(fragments) > 20:
+        raise ValueError("report_analysis_fragments_invalid")
+    if not isinstance(risk_flags, list) or len(risk_flags) > 20:
+        raise ValueError("report_analysis_risk_flags_invalid")
+
+    evidence_keys = {
+        item.get("evidence_key")
+        for item in analysis_context.get("evidence", [])
+        if isinstance(item, dict) and isinstance(item.get("evidence_key"), str)
+    }
+    confirmed_finding_keys = {
+        item.get("finding_key")
+        for item in analysis_context.get("upstream_confirmed_findings", [])
+        if isinstance(item, dict) and isinstance(item.get("finding_key"), str)
+    }
+    finding_keys: set[str] = set()
+    for item in findings:
+        if not isinstance(item, dict):
+            raise ValueError("report_analysis_finding_invalid")
+        key = item.get("finding_key")
+        claim = item.get("claim")
+        role = item.get("semantic_role")
+        if (
+            not isinstance(key, str)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,199}", key)
+            or key in finding_keys
+            or not isinstance(claim, str)
+            or not claim.strip()
+            or len(claim) > 5000
+            or not isinstance(role, str)
+            or not role.strip()
+            or len(role) > 48
+            or item.get("kind") not in {"FINDING", "SIGNAL"}
+            or item.get("confidence") not in {"LOW", "MEDIUM", "HIGH"}
+            or item.get("importance") not in {"LOW", "MEDIUM", "HIGH", "CRITICAL"}
+            or item.get("reportability")
+            not in {"INTERNAL_ONLY", "OPTIONAL", "RECOMMENDED", "MUST_INCLUDE"}
+        ):
+            raise ValueError("report_analysis_finding_invalid")
+        finding_keys.add(key)
+        evidence_refs = item.get("evidence_refs")
+        relation_refs = item.get("relation_refs")
+        if (
+            not isinstance(evidence_refs, list)
+            or any(not isinstance(ref, str) or ref not in evidence_keys for ref in evidence_refs)
+            or not isinstance(relation_refs, list)
+        ):
+            raise ValueError("report_analysis_finding_reference_invalid")
+        if not evidence_refs and not relation_refs:
+            raise ValueError("report_analysis_finding_support_required")
+        for relation in relation_refs:
+            target = relation.get("finding_key") if isinstance(relation, dict) else relation
+            if not isinstance(target, str) or target not in confirmed_finding_keys:
+                raise ValueError("report_analysis_finding_reference_invalid")
+        if not isinstance(item.get("structured_data"), dict):
+            raise ValueError("report_analysis_finding_invalid")
+
+    valid_finding_refs = confirmed_finding_keys | finding_keys
+    fragment_keys: set[str] = set()
+    for item in fragments:
+        if not isinstance(item, dict):
+            raise ValueError("report_analysis_fragment_invalid")
+        key = item.get("fragment_key")
+        content = item.get("content")
+        title = item.get("title")
+        finding_refs = item.get("finding_refs")
+        evidence_refs = item.get("evidence_refs")
+        if (
+            not isinstance(key, str)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,199}", key)
+            or key in fragment_keys
+            or not isinstance(content, str)
+            or not content.strip()
+            or len(content) > 30000
+            or (title is not None and (not isinstance(title, str) or len(title) > 240))
+            or not isinstance(finding_refs, list)
+            or any(not isinstance(ref, str) or ref not in valid_finding_refs for ref in finding_refs)
+            or not isinstance(evidence_refs, list)
+            or any(not isinstance(ref, str) or ref not in evidence_keys for ref in evidence_refs)
+            or not finding_refs and not evidence_refs
+        ):
+            raise ValueError("report_analysis_fragment_invalid")
+        fragment_keys.add(key)
+
+    for flag in risk_flags:
+        if (
+            not isinstance(flag, dict)
+            or not isinstance(flag.get("message"), str)
+            or not flag["message"].strip()
+            or not isinstance(flag.get("references"), list)
+        ):
+            raise ValueError("report_analysis_risk_flag_invalid")
+        references = flag["references"]
+        if any(
+            not isinstance(ref, str) or ref not in evidence_keys | valid_finding_refs
+            for ref in references
+        ):
+            raise ValueError("report_analysis_risk_flag_invalid")
+
+
 def _validate_output(
     output: dict[str, Any], raw: str, specification: dict[str, Any]
 ) -> None:
@@ -438,9 +576,14 @@ async def execute_skill(
     if specification["identity"]["skill_key"] != skill_version.skill_key:
         raise ValueError("skill_identity_mismatch")
     processor = specification["processor_policy"]["processor"]
+    if processor == "reports.analysis_draft":
+        stage_key = (context.get("analysis_context") or {}).get("step_key")
+        expected_stage = specification["instructions"].get("stage_key")
+        if stage_key != expected_stage:
+            raise ValueError("report_analysis_skill_stage_mismatch")
     if processor == "reports.single_step" and "reports.calculate_mingli_foundation" not in specification["tool_policy"].get("allowed", []):
         raise ValueError("skill_required_tool_not_allowed")
-    if processor not in {"reports.single_step", "reports.narrative_candidates", "reports.fragment_authoring", "reports.validator"}:
+    if processor not in {"reports.single_step", "reports.analysis_draft", "reports.narrative_candidates", "reports.fragment_authoring", "reports.validator"}:
         raise ValueError("skill_processor_unsupported")
     profile = context.get("profile") or {}
     context_data = context.get("context") or {}
@@ -461,6 +604,10 @@ async def execute_skill(
     foundation = context.get("foundation_data")
     if processor == "reports.single_step":
         system_prompt, user_prompt, foundation = _report_prompts(
+            context, specification, runtime_instruction
+        )
+    elif processor == "reports.analysis_draft":
+        system_prompt, user_prompt = _analysis_prompts(
             context, specification, runtime_instruction
         )
     else:
@@ -508,7 +655,9 @@ async def execute_skill(
             else _parse_json_output(completion.content)
         )
         _validate_output(output, completion.content, specification)
-        if processor != "reports.single_step":
+        if processor == "reports.analysis_draft":
+            _validate_analysis_draft_output(output, context)
+        elif processor != "reports.single_step":
             _validate_authoring_output(output, context, processor)
     except Exception as error:
         trace["output_validation"] = "failed"

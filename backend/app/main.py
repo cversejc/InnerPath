@@ -7,8 +7,12 @@ from app.core.cache import init_redis, close_redis
 from app.core.logging_config import setup_logging, get_logger
 from app.db.session import AsyncSessionLocal
 from app.application.report_cases import ensure_default_workflow_version
-from app.application.skill_runtime import ensure_skill_workflow_version
+from app.application.skill_runtime import (
+    ensure_analysis_workflow_version,
+    ensure_skill_workflow_version,
+)
 from app.domains.skills.service import (
+    ensure_default_analysis_skill_versions,
     ensure_default_narrative_skill_versions,
     ensure_default_skill_version,
     ensure_default_validator_skill_version,
@@ -50,9 +54,11 @@ async def lifespan(app: FastAPI):
     async with AsyncSessionLocal() as db:
         await ensure_default_workflow_version(db)
         await ensure_default_skill_version(db)
+        await ensure_default_analysis_skill_versions(db)
         await ensure_default_narrative_skill_versions(db)
         await ensure_default_validator_skill_version(db)
         await ensure_skill_workflow_version(db)
+        await ensure_analysis_workflow_version(db)
         await db.commit()
     logger.info(f"应用启动完成 | 环境: {settings.ENVIRONMENT} | 调试模式: {settings.DEBUG}")
     yield

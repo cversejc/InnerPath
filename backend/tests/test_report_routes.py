@@ -3,9 +3,10 @@ from app.main import app
 
 def test_report_router_keeps_task_and_report_endpoints_registered():
     routes = {
-        (route.path, method)
-        for route in app.routes
-        for method in (route.methods or set())
+        (path, method.upper())
+        for path, operations in app.openapi()["paths"].items()
+        for method in operations
+        if method.lower() in {"get", "post", "put", "patch", "delete", "options", "head"}
     }
 
     assert {

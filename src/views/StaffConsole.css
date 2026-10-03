@@ -30,6 +30,8 @@
 .request-item-copy { display: grid; gap: 3px; min-width: 0; }
 .request-item-copy strong { overflow: hidden; color: var(--ink, #3b2d24); text-overflow: ellipsis; white-space: nowrap; }
 .request-item-copy small, .request-item-copy em { overflow: hidden; color: var(--muted, #7d6653); font-size: 12px; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.request-item-copy .request-item-step { color: var(--cinnabar-deep, #9e3f35); font-weight: var(--weight-semibold); }
+.report-case-workspace [id^="case-"] { scroll-margin-top: 88px; }
 .request-item-status { max-width: 76px; color: var(--gold-deep, #8a621b); font-size: 11px; font-weight: var(--weight-semibold); line-height: 1.35; text-align: right; }
 .empty-cell, .empty-state { padding: 34px 12px; color: var(--muted, #7d6653); text-align: center; }
 .empty-state small { display: block; margin-top: 8px; color: var(--muted, #7d6653); }

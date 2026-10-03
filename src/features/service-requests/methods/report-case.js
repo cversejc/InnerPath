@@ -9,6 +9,7 @@ import {
   getReportCaseContent,
   getReportCaseNarrative,
   getReportCaseQuality,
+  getReportCaseStepCompletionGate,
   reopenReportCaseStep,
   resolveReportCaseQualityIssue,
   returnReportCaseStep,
@@ -19,6 +20,7 @@ import {
   startReportCaseGeneration,
   startReportCaseStep
 } from '../../report-cases/api.js'
+import { getCaseSkillRuns } from '../../skills/api.js'
 
 function splitReferences(value) {
   return String(value || '')
@@ -35,16 +37,25 @@ export default {
       this.reportNarrativePollTimer = null
     }
     try {
-      const [reportCase, content, narrative, quality] = await Promise.all([
+      const [reportCase, content, narrative, quality, analysisRuns] = await Promise.all([
         getReportCase(caseId),
         getReportCaseContent(caseId),
         getReportCaseNarrative(caseId),
-        getReportCaseQuality(caseId)
+        getReportCaseQuality(caseId),
+        getCaseSkillRuns(caseId)
       ])
       this.reportCase = reportCase
       this.reportCaseContent = content
       this.reportNarrative = narrative
       this.reportQuality = quality
+      this.reportAnalysisRuns = analysisRuns
+      const activeStep = (reportCase.workflow_instance?.steps || []).find(step =>
+        ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status)
+      )
+      this.reportCaseCompletionGate = activeStep?.status === 'IN_REVIEW'
+        && ['S1', 'S2', 'S3', 'S4'].includes(activeStep.step_key)
+        ? await getReportCaseStepCompletionGate(reportCase.id, activeStep.step_key)
+        : null
       this.reportQualityIssueDrafts = Object.fromEntries(
         quality.issues
           .filter(issue => issue.status === 'OPEN')
@@ -96,6 +107,7 @@ export default {
     const runs = [
       ...(this.reportNarrative.candidate_runs || []),
       ...(this.reportNarrative.fragment_runs || []),
+      ...(this.reportAnalysisRuns || []),
       ...(this.reportQuality.latest_validator_run ? [this.reportQuality.latest_validator_run] : [])
     ]
     const generationRunning = [
@@ -109,14 +121,23 @@ export default {
     this.reportNarrativePollTimer = setTimeout(async () => {
       if (this.reportCase?.id !== caseId) return
       try {
-        const [content, narrative, quality] = await Promise.all([
+        const [content, narrative, quality, analysisRuns] = await Promise.all([
           getReportCaseContent(caseId),
           getReportCaseNarrative(caseId),
-          getReportCaseQuality(caseId)
+          getReportCaseQuality(caseId),
+          getCaseSkillRuns(caseId)
         ])
         this.reportCaseContent = content
         this.reportNarrative = narrative
         this.reportQuality = quality
+        this.reportAnalysisRuns = analysisRuns
+        const activeStep = (this.reportCase?.workflow_instance?.steps || []).find(step =>
+          ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status)
+        )
+        this.reportCaseCompletionGate = activeStep?.status === 'IN_REVIEW'
+          && ['S1', 'S2', 'S3', 'S4'].includes(activeStep.step_key)
+          ? await getReportCaseStepCompletionGate(caseId, activeStep.step_key)
+          : null
         this.reportQualityIssueDrafts = Object.fromEntries(
           quality.issues
             .filter(issue => issue.status === 'OPEN')

@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -10,12 +11,21 @@ from sqlalchemy.orm import Session
 from app.db.base import Base
 from app.domains.skills.definitions import (
     DEFAULT_SKILL_KEY,
+    default_analysis_skill_specifications,
     default_skill_specification,
     validate_skill_specification,
 )
 from app.domains.skills.models import AISkillVersion, SkillExample, SkillRun
-from app.domains.content.models import CaseEvidenceItem
-from app.domains.skills.runtime import ModelCompletion, execute_skill
+from app.domains.content.models import (
+    CaseEvidenceItem,
+    ContentFragmentRevision,
+    FindingRevision,
+)
+from app.domains.skills.runtime import (
+    ModelCompletion,
+    SkillExecutionError,
+    execute_skill,
+)
 from app.domains.skills.service import (
     create_skill_run,
     create_skill_draft,
@@ -134,6 +144,8 @@ def skill_db():
         StepTask.__table__,
         WorkflowOutbox.__table__,
         CaseEvidenceItem.__table__,
+        ContentFragmentRevision.__table__,
+        FindingRevision.__table__,
     ]
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine, tables=tables)
@@ -186,6 +198,124 @@ def _report_text(extra=""):
         "## 三、我往哪去\n下周可以先完成一个小实验。\n\n"
         "## 五、总结与寄语\n你可以保留自己的节奏。\n" + extra
     )
+
+
+@pytest.mark.asyncio
+async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
+    specification = next(
+        item
+        for item in default_analysis_skill_specifications()
+        if item["instructions"]["stage_key"] == "S2"
+    )
+    output = {
+        "summary": "基于用户表达与上游结构提出可复核的心理模式假设。",
+        "findings": [
+            {
+                "finding_key": "s2.psychology.autonomy",
+                "claim": "用户希望在边界清楚时保留自主空间。",
+                "kind": "FINDING",
+                "semantic_role": "MOTIVATION_PATTERN",
+                "confidence": "MEDIUM",
+                "importance": "HIGH",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": ["input.context.current_challenge"],
+                "relation_refs": [{"finding_key": "foundation.balance", "relation": "MAPS_TO"}],
+                "structured_data": {},
+            }
+        ],
+        "analysis_fragments": [
+            {
+                "fragment_key": "analysis.psychology.persona",
+                "title": "心理映射候选",
+                "content": "在边界清楚时，用户更容易开展探索。",
+                "finding_refs": ["s2.psychology.autonomy"],
+                "evidence_refs": ["input.context.current_challenge"],
+            }
+        ],
+        "risk_flags": [],
+    }
+    skill = SimpleNamespace(
+        id=71,
+        skill_key=specification["identity"]["skill_key"],
+        version=1,
+        specification_json=specification,
+    )
+    context = {
+        "profile": {"name": "演示用户"},
+        "context": {"current_challenge": "评估工作方向"},
+        "analysis_context": {
+            "step_key": "S2",
+            "evidence": [
+                {
+                    "evidence_key": "input.context.current_challenge",
+                    "source_type": "USER_PROVIDED",
+                }
+            ],
+            "upstream_confirmed_findings": [
+                {"finding_key": "foundation.balance", "claim": "重视稳定。"}
+            ],
+        },
+    }
+    result = await execute_skill(
+        skill_version=skill,
+        input_data=context,
+        gateway=StubGateway(json.dumps(output, ensure_ascii=False)),
+    )
+    assert result.output_parsed["findings"][0]["evidence_refs"] == [
+        "input.context.current_challenge"
+    ]
+
+    context["analysis_context"]["step_key"] = "S3"
+    with pytest.raises(ValueError, match="report_analysis_skill_stage_mismatch"):
+        await execute_skill(
+            skill_version=skill,
+            input_data=context,
+            gateway=StubGateway(json.dumps(output, ensure_ascii=False)),
+        )
+
+
+@pytest.mark.asyncio
+async def test_analysis_skill_rejects_unsupported_evidence_reference():
+    specification = default_analysis_skill_specifications()[0]
+    skill = SimpleNamespace(
+        id=72,
+        skill_key=specification["identity"]["skill_key"],
+        version=1,
+        specification_json=specification,
+    )
+    output = {
+        "summary": "候选摘要。",
+        "findings": [
+            {
+                "finding_key": "s1.foundation.test",
+                "claim": "有依据的候选判断。",
+                "kind": "SIGNAL",
+                "semantic_role": "CORE_STRUCTURE",
+                "confidence": "LOW",
+                "importance": "MEDIUM",
+                "reportability": "INTERNAL_ONLY",
+                "evidence_refs": ["evidence.not.in.case"],
+                "relation_refs": [],
+                "structured_data": {},
+            }
+        ],
+        "analysis_fragments": [],
+        "risk_flags": [],
+    }
+    with pytest.raises(SkillExecutionError, match="report_analysis_finding_reference_invalid"):
+        await execute_skill(
+            skill_version=skill,
+            input_data={
+                "profile": {},
+                "context": {},
+                "analysis_context": {
+                    "step_key": "S1",
+                    "evidence": [{"evidence_key": "evidence.valid"}],
+                    "upstream_confirmed_findings": [],
+                },
+            },
+            gateway=StubGateway(json.dumps(output, ensure_ascii=False)),
+        )
 
 
 def test_skill_specification_rejects_unregistered_tools_and_processors():
@@ -492,6 +622,221 @@ async def test_case_skill_run_requires_assigned_consultant(skill_db):
             actor=SimpleNamespace(id=7, role="consultant"),
             idempotency_key="case-81-step-s5-unassigned",
             runtime_instruction=None,
+        )
+
+
+@pytest.mark.asyncio
+async def test_analysis_workflow_pins_hybrid_skills_to_s1_through_s4(skill_db):
+    from app.application.report_cases import ensure_default_workflow_version
+    from app.application.skill_runtime import (
+        ensure_analysis_workflow_version,
+        ensure_skill_workflow_version,
+    )
+
+    await ensure_default_workflow_version(skill_db)
+    await ensure_skill_workflow_version(skill_db)
+    first = await ensure_analysis_workflow_version(skill_db)
+    second = await ensure_analysis_workflow_version(skill_db)
+
+    assert first.id == second.id
+    steps = {item["step_key"]: item for item in first.definition_json["steps"]}
+    for step_key in ("S1", "S2", "S3", "S4"):
+        assert steps[step_key]["executor"] == "HYBRID"
+        assert steps[step_key]["config"]["skill_key"].startswith("report.s")
+        assert steps[step_key]["config"]["skill_version_id"]
+    assert steps["S5"]["executor"] == "HYBRID"
+    assert steps["S6"]["executor"] == "HUMAN"
+
+
+@pytest.mark.asyncio
+async def test_analysis_draft_is_assignment_checked_and_candidates_keep_run_provenance(skill_db):
+    from app.application.report_analysis import (
+        apply_analysis_finding_candidate,
+        apply_analysis_fragment_candidate,
+        queue_case_analysis_draft,
+    )
+
+    now = datetime.utcnow()
+    report_case = ReportCase(
+        id=84,
+        user_id=19,
+        service_request_id=77,
+        status="ACTIVE",
+        application_snapshot={
+            "profile": _profile(),
+            "context": {"current_challenge": "评估工作方向"},
+        },
+        application_submitted_at=now,
+        workflow_instance_id=204,
+        created_at=now,
+        updated_at=now,
+    )
+    previous = StepTask(
+        id=304,
+        workflow_instance_id=204,
+        step_key="S1",
+        sequence_no=1,
+        executor="HUMAN",
+        status="COMPLETED",
+        required_capability="consultant",
+        assignee_id=7,
+        activation_no=1,
+        config_snapshot={},
+        created_at=now,
+        updated_at=now,
+    )
+    current = StepTask(
+        id=305,
+        workflow_instance_id=204,
+        step_key="S2",
+        sequence_no=2,
+        executor="HUMAN",
+        status="IN_REVIEW",
+        required_capability="consultant",
+        assignee_id=7,
+        activation_no=1,
+        config_snapshot={},
+        created_at=now,
+        updated_at=now,
+        started_at=now,
+    )
+    evidence = CaseEvidenceItem(
+        id=405,
+        report_case_id=84,
+        evidence_key="input.context.current_challenge",
+        source_type="USER_PROVIDED",
+        source_ref="application_snapshot.context.current_challenge",
+        value_json="评估工作方向",
+        status="ACTIVE",
+        created_by=None,
+        created_at=now,
+    )
+    upstream = FindingRevision(
+        id=406,
+        report_case_id=84,
+        finding_key="foundation.balance",
+        revision_no=1,
+        semantic_revision=1,
+        content_revision=1,
+        kind="FINDING",
+        semantic_role="CORE_STRUCTURE",
+        claim="用户重视可预期的工作节奏。",
+        confidence="MEDIUM",
+        importance="HIGH",
+        reportability="RECOMMENDED",
+        status="CONFIRMED",
+        evidence_refs=[evidence.evidence_key],
+        relation_refs=[],
+        structured_data_json={},
+        edit_kind="SEMANTIC",
+        is_current=True,
+        owner_step_task_id=previous.id,
+        source_skill_run_id=None,
+        created_by=None,
+        created_at=now,
+    )
+    skill_db.add_all([report_case, previous, current, evidence, upstream])
+    await skill_db.flush()
+    actor = SimpleNamespace(id=7, role="consultant")
+    assigned_db = CaseAccessSession(
+        skill_db.session,
+        SimpleNamespace(assigned_consultant_id=7, status="accepted"),
+    )
+
+    run, created = await queue_case_analysis_draft(
+        assigned_db,
+        case_id=84,
+        step_key="S2",
+        actor=actor,
+        idempotency_key="case-84-s2-activation-1",
+    )
+    assert created is True
+    assert run.target_type == "REPORT_ANALYSIS_DRAFT"
+    assert run.step_task_id == current.id
+    assert run.input_snapshot["analysis_context"]["upstream_confirmed_findings"][0]["finding_key"] == upstream.finding_key
+    assert run.context_snapshot["analysis_activation_no"] == current.activation_no
+
+    unassigned_db = CaseAccessSession(
+        skill_db.session,
+        SimpleNamespace(assigned_consultant_id=8, status="accepted"),
+    )
+    with pytest.raises(ValueError, match="report_case_forbidden"):
+        await queue_case_analysis_draft(
+            unassigned_db,
+            case_id=84,
+            step_key="S2",
+            actor=actor,
+            idempotency_key="case-84-s2-unassigned",
+        )
+
+    run.status = "COMPLETED"
+    run.output_parsed = {
+        "summary": "基于用户情境和已确认上游判断形成心理映射候选。",
+        "findings": [
+            {
+                "finding_key": "s2.psychology.autonomy",
+                "claim": "用户希望在边界清楚时保留自主空间。",
+                "kind": "FINDING",
+                "semantic_role": "MOTIVATION_PATTERN",
+                "confidence": "MEDIUM",
+                "importance": "HIGH",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": [evidence.evidence_key],
+                "relation_refs": [{"finding_key": upstream.finding_key, "relation": "MAPS_TO"}],
+                "structured_data": {},
+            }
+        ],
+        "analysis_fragments": [
+            {
+                "fragment_key": "analysis.psychology.persona",
+                "title": "心理映射候选",
+                "content": "在边界清楚时，用户更容易开展探索。",
+                "finding_refs": ["s2.psychology.autonomy"],
+                "evidence_refs": [evidence.evidence_key],
+            }
+        ],
+        "risk_flags": [],
+    }
+    run.context_snapshot = {
+        **run.context_snapshot,
+        "analysis_activation_no": current.activation_no,
+    }
+    finding = await apply_analysis_finding_candidate(
+        assigned_db,
+        case_id=84,
+        step_key="S2",
+        run_id=run.id,
+        finding_key="s2.psychology.autonomy",
+        expected_revision_no=None,
+        actor=actor,
+    )
+    assert finding.status == "PROPOSED"
+    assert finding.source_skill_run_id == run.id
+    assert finding.owner_step_task_id == current.id
+
+    fragment = await apply_analysis_fragment_candidate(
+        assigned_db,
+        case_id=84,
+        step_key="S2",
+        run_id=run.id,
+        fragment_key="analysis.psychology.persona",
+        expected_revision_no=None,
+        actor=actor,
+    )
+    assert fragment.status == "PROPOSED"
+    assert fragment.source_skill_run_id == run.id
+    assert fragment.source_snapshot["findings"][0]["finding_key"] == finding.finding_key
+
+    current.activation_no = 2
+    with pytest.raises(ValueError, match="report_analysis_run_activation_changed"):
+        await apply_analysis_finding_candidate(
+            assigned_db,
+            case_id=84,
+            step_key="S2",
+            run_id=run.id,
+            finding_key="s2.psychology.autonomy",
+            expected_revision_no=finding.revision_no,
+            actor=actor,
         )
 
 

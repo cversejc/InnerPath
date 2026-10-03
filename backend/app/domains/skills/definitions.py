@@ -13,6 +13,7 @@ never transfer facts from an example to the current user."""
 
 ALLOWED_PROCESSORS = {
     "reports.single_step",
+    "reports.analysis_draft",
     "reports.narrative_candidates",
     "reports.fragment_authoring",
     "reports.validator",
@@ -325,6 +326,105 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         },
     }
     return [validate_skill_specification(candidates), validate_skill_specification(authoring)]
+
+
+ANALYSIS_STEPS: dict[str, dict[str, Any]] = {
+    "S1": {
+        "skill_key": "report.s1_foundation_analysis",
+        "name": "S1 命理基础结构分析",
+        "objective": "整理系统计算的命理基础，形成可供咨询师审核的结构判断与待验证信号。",
+        "methodology": [
+            "只解释输入中的确定性命理计算结果，不自行排盘或补充缺失数据。",
+            "将传统命理解释明确标为解释视角，不写成客观事实或确定性预测。",
+            "可以提出待 S2 验证的心理 Signal，但不得在 S1 将其写成心理诊断或定论。",
+            "每项判断至少引用一条输入 Evidence；无证据时不生成该判断。",
+            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+        ],
+    },
+    "S2": {
+        "skill_key": "report.s2_psychology_mapping",
+        "name": "S2 心理映射分析",
+        "objective": "基于用户 Evidence 与已确认的 S1 结构，提出可审阅的心理运作模式假设。",
+        "methodology": [
+            "心理结论必须作为可验证的运作模式假设，不得诊断心理或精神疾病。",
+            "区分用户直接表达、S1 命理解释与本阶段的心理映射。",
+            "优先说明触发情境、自动想法、情绪、应对方式及保护功能；输入不足时明确保留不确定性。",
+            "只能引用输入中的 Evidence 和已确认上游 Finding，不把未确认内容当作事实。",
+            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+        ],
+    },
+    "S3": {
+        "skill_key": "report.s3_integration",
+        "name": "S3 命理心理哲学整合",
+        "objective": "综合已确认的命理与心理判断，提出中心张力、自我方向和整合任务候选。",
+        "methodology": [
+            "整合已确认的上游 Finding，不重复执行 S1 命理分析或 S2 心理映射。",
+            "明确指出整合判断引用的上游 Finding 与 Evidence。",
+            "描述需要发展的能力与两端张力，不塑造完美人格，也不预测必然结果。",
+            "输入不足或上游判断冲突时，将其列为待咨询师核查的风险，不自行消解冲突。",
+            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+        ],
+    },
+    "S4": {
+        "skill_key": "report.s4_mechanism_block_action",
+        "name": "S4 机制卡点与行动",
+        "objective": "将已确认的上游语义组织为可核查的运作机制、关键卡点与低风险行动候选。",
+        "methodology": [
+            "解释模式可能发挥的保护功能、触发条件和长期代价，不将其描述成缺陷或诊断。",
+            "优先提出可逆、具体、低成本且可复盘的行动，不替用户作重大决定。",
+            "每项机制、卡点或行动都必须引用已确认的 Finding 或 Evidence。",
+            "行动与专业判断分开表述；不得在本阶段创造缺少来源的新事实。",
+            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+        ],
+    },
+}
+
+
+def default_analysis_skill_specifications() -> list[dict[str, Any]]:
+    specifications = []
+    for step_key, stage in ANALYSIS_STEPS.items():
+        spec = deepcopy(DEFAULT_SKILL_SPECIFICATION)
+        spec["identity"] = {
+            "skill_key": stage["skill_key"],
+            "name": stage["name"],
+            "description": stage["objective"],
+        }
+        spec["input_contract"] = {"required": [], "type": "object"}
+        spec["context_policy"] = {
+            "required": [],
+            "optional": [],
+            "forbidden": ["other_users", "internal_chain_of_thought"],
+            "projection": "FULL",
+        }
+        spec["instructions"] = {
+            "objective": stage["objective"],
+            "methodology": stage["methodology"],
+            "stage_key": step_key,
+        }
+        spec["example_policy"] = {"enabled": True, "max_examples": 3}
+        spec["processor_policy"] = {"processor": "reports.analysis_draft"}
+        spec["tool_policy"] = {"allowed": []}
+        spec["model_policy"].update(temperature=0.35, max_tokens=5000)
+        spec["output_contract"] = {
+            "type": "object",
+            "required": ["summary", "findings", "analysis_fragments", "risk_flags"],
+            "properties": {
+                "summary": {"type": "string"},
+                "findings": {"type": "array"},
+                "analysis_fragments": {"type": "array"},
+                "risk_flags": {"type": "array"},
+            },
+        }
+        spec["guardrails"] = {
+            "global_policy_version": GLOBAL_POLICY_VERSION,
+            "blocked_phrases": ["注定发财", "必然离婚", "保证治愈"],
+        }
+        spec["evaluation_profile"] = {
+            "metrics": ["schema", "source_fidelity", "safety", "stage_fit"],
+            "minimum_score": 0.8,
+        }
+        specifications.append(validate_skill_specification(spec))
+    return specifications
 
 
 def default_validator_skill_specification() -> dict[str, Any]:

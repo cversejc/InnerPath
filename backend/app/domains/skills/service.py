@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .definitions import (
     DEFAULT_SKILL_KEY,
+    default_analysis_skill_specifications,
     default_validator_skill_specification,
     default_narrative_skill_specifications,
     default_skill_specification,
@@ -220,6 +221,20 @@ async def ensure_default_narrative_skill_versions(
             specification=spec,
         )
         for spec in default_narrative_skill_specifications()
+    ]
+
+
+async def ensure_default_analysis_skill_versions(
+    db: AsyncSession,
+) -> list[AISkillVersion]:
+    return [
+        await _ensure_published_builtin_version(
+            db,
+            skill_key=spec["identity"]["skill_key"],
+            category="ANALYSIS",
+            specification=spec,
+        )
+        for spec in default_analysis_skill_specifications()
     ]
 
 

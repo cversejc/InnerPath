@@ -14,6 +14,13 @@ from app.application.workflow_commands import (
     return_case_step,
     start_case_step,
 )
+from app.application.report_analysis import (
+    apply_analysis_finding_candidate,
+    apply_analysis_fragment_candidate,
+    get_analysis_step_completion_gate,
+    queue_case_analysis_draft,
+    validate_analysis_step_completion,
+)
 from app.application.skill_runtime import queue_case_authoring_skill_run
 from app.application.report_generation import (
     start_case_report_coherence_check,
@@ -38,6 +45,7 @@ from app.domains.content.models import (
     FindingRevision,
 )
 from app.domains.content.schemas import (
+    AnalysisCandidateApplyInput,
     ContentFragmentRevisionCreate,
     ContentFragmentRevisionResponse,
     FindingRevisionCreate,
@@ -74,12 +82,13 @@ from app.domains.workflow.models import (
     WorkflowVersion,
 )
 from app.domains.skills.models import SkillRun
-from app.domains.skills.schemas import SkillRunResponse
+from app.domains.skills.schemas import SkillRunResponse, StepSkillRunCreate
 from app.domains.workflow.schemas import (
     ReportCaseListResponse,
     ReportCaseResponse,
     StepAssignmentInput,
     StepCompleteInput,
+    StepCompletionGateResponse,
     StepReturnInput,
     StepTaskResponse,
     WorkflowInstanceResponse,
@@ -103,6 +112,8 @@ def _workflow_error(error: ValueError) -> None:
         "finding_not_found",
         "fragment_not_found",
         "qa_issue_not_found",
+        "report_analysis_run_not_found",
+        "report_analysis_candidate_not_found",
     }:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
     if code in {
@@ -118,6 +129,15 @@ def _workflow_error(error: ValueError) -> None:
         "workflow_case_already_delivered",
         "finding_revision_conflict",
         "fragment_revision_conflict",
+        "report_analysis_step_not_current",
+        "report_analysis_step_not_in_review",
+        "report_analysis_run_not_completed",
+        "report_analysis_run_activation_changed",
+        "report_analysis_candidate_owned_by_another_step",
+        "report_analysis_output_required",
+        "report_analysis_findings_unreviewed",
+        "report_analysis_fragments_unreviewed",
+        "report_analysis_fragments_stale",
         "step_not_current",
         "narrative_candidate_run_not_completed",
         "narrative_semantics_changed",
@@ -144,7 +164,7 @@ def _workflow_error(error: ValueError) -> None:
         "report_coherence_state_invalid",
     }:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=code)
-    if code == "report_case_forbidden":
+    if code in {"report_case_forbidden", "step_assigned_to_another_consultant"}:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
@@ -835,6 +855,95 @@ async def start_report_case_step(
     return task
 
 
+@router.post(
+    "/{case_id}/steps/{step_key}/analysis-drafts",
+    response_model=SkillRunResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def start_report_case_analysis_draft(
+    case_id: int,
+    step_key: str,
+    data: StepSkillRunCreate,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        run, _created = await queue_case_analysis_draft(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+            idempotency_key=data.idempotency_key,
+            runtime_instruction=data.runtime_instruction,
+        )
+        return run
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/steps/{step_key}/analysis-drafts/{run_id}/findings/{finding_key}/apply",
+    response_model=FindingRevisionResponse,
+)
+async def apply_report_case_analysis_finding(
+    case_id: int,
+    step_key: str,
+    run_id: int,
+    finding_key: str,
+    data: AnalysisCandidateApplyInput,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        revision = await apply_analysis_finding_candidate(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            run_id=run_id,
+            finding_key=finding_key,
+            expected_revision_no=data.expected_revision_no,
+            actor=current_user,
+        )
+        await db.commit()
+        await db.refresh(revision)
+        return revision
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/steps/{step_key}/analysis-drafts/{run_id}/fragments/{fragment_key}/apply",
+    response_model=ContentFragmentRevisionResponse,
+)
+async def apply_report_case_analysis_fragment(
+    case_id: int,
+    step_key: str,
+    run_id: int,
+    fragment_key: str,
+    data: AnalysisCandidateApplyInput,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        revision = await apply_analysis_fragment_candidate(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            run_id=run_id,
+            fragment_key=fragment_key,
+            expected_revision_no=data.expected_revision_no,
+            actor=current_user,
+        )
+        await db.commit()
+        await db.refresh(revision)
+        return revision
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
 @router.post("/{case_id}/steps/{step_key}/complete", response_model=StepTaskResponse)
 async def complete_report_case_step(
     case_id: int,
@@ -846,6 +955,13 @@ async def complete_report_case_step(
 ):
     await _authorize_step_action(db, case_id, step_key, current_user)
     try:
+        if step_key in {"S1", "S2", "S3", "S4"}:
+            await validate_analysis_step_completion(
+                db,
+                case_id=case_id,
+                step_key=step_key,
+                actor=current_user,
+            )
         if step_key == "S5":
             await validate_report_authoring_completion(db, case_id)
         task = await complete_case_step(
@@ -859,6 +975,27 @@ async def complete_report_case_step(
     except ValueError as error:
         _workflow_error(error)
     return task
+
+
+@router.get(
+    "/{case_id}/steps/{step_key}/completion-gate",
+    response_model=StepCompletionGateResponse,
+)
+async def get_report_case_step_completion_gate(
+    case_id: int,
+    step_key: str,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await get_analysis_step_completion_gate(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+        )
+    except ValueError as error:
+        _workflow_error(error)
 
 
 @router.post("/{case_id}/steps/{step_key}/return", response_model=StepTaskResponse)

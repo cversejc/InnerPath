@@ -19,7 +19,10 @@ from app.domains.service_requests.schemas import (
 )
 from app.domains.audit.service import record_audit
 from app.domains.service_requests.service import get_service_request, list_staff_service_requests
-from app.api.v1.service_request_api_support import _serialize_public
+from app.api.v1.service_request_api_support import (
+    _serialize_public,
+    report_case_progress_for_requests,
+)
 from app.application.report_cases import cancel_report_case_for_service_request
 
 admin_router = APIRouter()
@@ -32,6 +35,9 @@ async def list_admin_requests(
 ):
     rows = await list_staff_service_requests(db, current_user, request_status, service_type, "all")
     items = []
+    progress_by_request = await report_case_progress_for_requests(
+        db, [item.id for item, _target_user in rows]
+    )
     for item, target_user in rows:
         assigned_name = None
         if item.assigned_consultant_id:
@@ -48,6 +54,7 @@ async def list_admin_requests(
                 assigned_consultant_name=assigned_name,
                 needs_info_reason=item.needs_info_reason,
                 last_error=item.last_error,
+                **progress_by_request.get(item.id, {}),
                 created_at=item.created_at,
                 updated_at=item.updated_at,
             )
