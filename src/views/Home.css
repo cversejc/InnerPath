@@ -37,27 +37,6 @@
   text-transform: none;
 }
 
-.profile-journey-section {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-.profile-journey-shell {
-  width: min(900px, 100%);
-}
-
-.hero-actions {
-  display: flex;
-  width: 100%;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 48px;
-}
-
-.hero-actions > * {
-  min-width: 0;
-}
-
 .compass-visual {
   justify-self: end;
   display: grid;

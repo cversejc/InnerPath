@@ -10,22 +10,7 @@
           <p class="hero-intro">
             把你的个人特质、当下节奏和现实选择放在一张地图上，帮你更清楚地走下一步
           </p>
-          <div class="hero-actions">
-            <VanButton class="primary-button" type="primary" native-type="button" @click="goToAssessment"><IconMark name="reports" />申请人生说明书</VanButton>
-            <VanButton class="secondary-button" native-type="button" @click="goToCalendar"><IconMark name="calendar" />打开决策日历</VanButton>
-          </div>
         </div>
-      </div>
-    </section>
-
-    <section v-if="profile" class="section-band profile-journey-section">
-      <div class="container profile-journey-shell">
-        <ProfileGrowthCard
-          :profile="profile"
-          :completion="profileCompletion"
-          :last-confirmed-at="profile.profile_last_confirmed_at"
-          @edit="goToProfile"
-        />
       </div>
     </section>
 
@@ -120,37 +105,17 @@
 </template>
 
 <script>
-import { getCurrentUser } from '../features/users/service.js'
 import { Button as VanButton } from 'vant'
-import ProfileGrowthCard from '../components/ProfileGrowthCard.vue'
 
 export default {
   name: 'Home',
-  components: { ProfileGrowthCard, VanButton },
-  data() {
-    return {
-      profile: null,
-      profileCompletion: 0
-    }
-  },
-  async mounted() {
-    try {
-      const user = await getCurrentUser()
-      this.profile = user
-      this.profileCompletion = Number(user.profile_completion || 0)
-    } catch (error) {
-      console.warn('读取首页个人档案失败', error)
-    }
-  },
+  components: { VanButton },
   methods: {
     goToAssessment() {
       this.$router.push('/pages/assessment/assessment')
     },
     goToCalendar() {
       this.$router.push('/pages/calendar/calendar')
-    },
-    goToProfile() {
-      this.$router.push('/pages/user/user?tab=settings')
     }
   }
 }
