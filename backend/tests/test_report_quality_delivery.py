@@ -143,6 +143,171 @@ async def test_programmatic_qa_persists_blocking_findings_for_incomplete_case(
 
 
 @pytest.mark.asyncio
+async def test_current_report_coherence_context_omits_stale_chapter_checks(quality_db):
+    from app.application.report_generation import (
+        _chapter_snapshot,
+        _coherence_fingerprint,
+        _fragment_snapshot,
+        _load_authored_fragments,
+        current_report_coherence_context,
+    )
+
+    now = datetime.utcnow()
+    report_case = ReportCase(
+        user_id=43,
+        status="ACTIVE",
+        application_snapshot={"profile": {"name": "林女士"}, "context": {}},
+        application_submitted_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    quality_db.add(report_case)
+    await quality_db.flush()
+    plan = NarrativePlan(
+        report_case_id=report_case.id,
+        version_no=1,
+        is_current=True,
+        status="CONFIRMED",
+        plan_json={
+            "content_plan": {
+                "fragments": [
+                    {
+                        "fragment_key": "report.identity",
+                        "chapter": "identity",
+                        "sequence_no": 1,
+                    }
+                ]
+            }
+        },
+        source_snapshot={},
+        created_at=now,
+        confirmed_at=now,
+    )
+    quality_db.add(plan)
+    await quality_db.flush()
+    fragment = await create_content_fragment_revision(
+        quality_db,
+        report_case_id=report_case.id,
+        fragment_key="report.identity",
+        fragment_type="REPORT",
+        title="你是谁",
+        content="你重视稳定，也希望保留自主空间。",
+        status="CONFIRMED",
+        source_narrative_plan_id=plan.id,
+    )
+    rows = await _load_authored_fragments(quality_db, report_case.id, plan)
+    snapshot = _fragment_snapshot(plan, rows)
+    identity_fingerprint = _coherence_fingerprint(
+        plan,
+        _chapter_snapshot(plan.plan_json["content_plan"], snapshot, "identity"),
+    )
+    report_fingerprint = _coherence_fingerprint(plan, snapshot)
+    plan.plan_json = {
+        **plan.plan_json,
+        "generation": {
+            "coherence": {"status": "PASSED", "fingerprint": report_fingerprint},
+            "chapter_checks": {
+                "identity": {
+                    "status": "PASSED",
+                    "fingerprint": identity_fingerprint,
+                },
+                "challenge": {"status": "BLOCKED", "fingerprint": "old-version"},
+            },
+            "issues": [
+                {"scope": "CHAPTER", "chapter_key": "identity"},
+                {"scope": "CHAPTER", "chapter_key": "challenge"},
+                {"scope": "REPORT", "message": "current report issue"},
+            ],
+        },
+    }
+
+    current = await current_report_coherence_context(quality_db, report_case.id)
+    assert set(current["chapter_checks"]) == {"identity"}
+    assert current["coherence"]["status"] == "PASSED"
+    assert [issue.get("message") for issue in current["issues"]] == [
+        "current report issue"
+    ]
+
+    await create_content_fragment_revision(
+        quality_db,
+        report_case_id=report_case.id,
+        fragment_key=fragment.fragment_key,
+        fragment_type="REPORT",
+        title=fragment.title,
+        content="你重视稳定，也希望逐步扩大自主空间。",
+        status="CONFIRMED",
+        edit_kind="STYLE",
+        source_narrative_plan_id=plan.id,
+    )
+    stale = await current_report_coherence_context(quality_db, report_case.id)
+
+    assert stale["chapter_checks"] == {}
+    assert stale["coherence"]["status"] == "STALE"
+    assert stale["issues"] == []
+
+
+@pytest.mark.asyncio
+async def test_quality_state_hides_validator_issues_for_a_stale_report_fingerprint(
+    quality_db,
+):
+    from app.application.report_quality import quality_state
+    from app.domains.skills.service import create_skill_run
+
+    now = datetime.utcnow()
+    report_case = ReportCase(
+        user_id=44,
+        status="ACTIVE",
+        application_snapshot={"profile": {"name": "林女士"}, "context": {}},
+        application_submitted_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    quality_db.add(report_case)
+    await quality_db.flush()
+    validator = AISkillVersion(
+        skill_key="report.final_validator",
+        name="Final Validator",
+        category="VALIDATION",
+        version=1,
+        status="PUBLISHED",
+        specification_json={"identity": {"skill_key": "report.final_validator"}},
+        created_at=now,
+    )
+    quality_db.add(validator)
+    await quality_db.flush()
+    run, _ = await create_skill_run(
+        quality_db,
+        skill_version_id=validator.id,
+        idempotency_key="stale-quality-state-run",
+        input_snapshot={},
+        context_snapshot={"qa_fingerprint": "old-report-version"},
+        run_type="VALIDATE",
+        target_type="REPORT_QA",
+        target_key="report.final",
+        report_case_id=report_case.id,
+    )
+    run.status = "COMPLETED"
+    run.completed_at = now
+    quality_db.add(
+        QAIssue(
+            report_case_id=report_case.id,
+            source_type="VALIDATOR",
+            source_ref_id=run.id,
+            issue_type="SAFETY_LANGUAGE",
+            severity="BLOCK",
+            status="OPEN",
+            message="This issue belongs to an older report version.",
+            created_at=now,
+        )
+    )
+
+    state = await quality_state(quality_db, report_case)
+
+    assert all(issue.source_type != "VALIDATOR" for issue in state.issues)
+    assert state.can_approve is False
+
+
+@pytest.mark.asyncio
 async def test_block_rework_and_qa_rerun_reaches_pass_with_stub_gateway(
     quality_db, monkeypatch
 ):
@@ -306,6 +471,7 @@ async def test_block_rework_and_qa_rerun_reaches_pass_with_stub_gateway(
     assert gateway.calls == 1
     assert state.quality_status == "COMPLETED"
     assert state.open_count == 0
+    assert state.issues == []
     assert state.can_approve is True
     assert await case_can_be_delivered(quality_db, report_case) is True
 

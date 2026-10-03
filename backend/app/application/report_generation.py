@@ -99,6 +99,55 @@ def _coherence_fingerprint(
     return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
 
+async def current_report_coherence_context(
+    db: AsyncSession, case_id: int
+) -> dict[str, Any] | None:
+    plan = await get_current_narrative_plan(db, case_id)
+    if plan is None:
+        return None
+
+    generation = _generation_state(plan)
+    fragments = _fragment_snapshot(
+        plan, await _load_authored_fragments(db, case_id, plan)
+    )
+    content_plan = _content_plan(plan)
+    chapter_checks = {}
+    for chapter_key, check in (generation.get("chapter_checks") or {}).items():
+        if not isinstance(check, dict):
+            continue
+        current_fingerprint = _coherence_fingerprint(
+            plan,
+            _chapter_snapshot(content_plan, fragments, chapter_key),
+        )
+        if check.get("fingerprint") == current_fingerprint:
+            chapter_checks[chapter_key] = deepcopy(check)
+
+    coherence = deepcopy(generation.get("coherence") or {})
+    coherence_is_current = (
+        coherence.get("status") in {"PASSED", "BLOCKED"}
+        and coherence.get("fingerprint")
+        == _coherence_fingerprint(plan, fragments)
+    )
+    if coherence.get("status") in {"PASSED", "BLOCKED"} and not coherence_is_current:
+        coherence["status"] = "STALE"
+        coherence["issues"] = []
+
+    current_issues = []
+    for issue in generation.get("issues") or []:
+        scope = issue.get("scope")
+        if scope == "CHAPTER" and issue.get("chapter_key") not in chapter_checks:
+            continue
+        if scope == "REPORT" and not coherence_is_current:
+            continue
+        current_issues.append(deepcopy(issue))
+
+    return {
+        "chapter_checks": chapter_checks,
+        "coherence": coherence,
+        "issues": current_issues,
+    }
+
+
 async def _load_authored_fragments(
     db: AsyncSession, case_id: int, plan: NarrativePlan
 ) -> list[ContentFragmentRevision]:

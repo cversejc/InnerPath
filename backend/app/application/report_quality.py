@@ -4,8 +4,9 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.report_generation import current_report_coherence_context
 from app.domains.quality.programmatic import collect_programmatic_issues
-from app.domains.quality.schemas import ReportQualityResponse
+from app.domains.quality.schemas import QAIssueResponse, ReportQualityResponse
 from app.domains.quality.service import (
     get_case_qa_issues,
     latest_validator_run,
@@ -78,16 +79,28 @@ async def queue_case_quality_run(
         }
 
     request_snapshot = report_case.application_snapshot or {}
+    narrative_plan_snapshot = deepcopy(snapshot["narrative_plan"])
+    coherence_context = await current_report_coherence_context(
+        db, report_case.id
+    )
+    if narrative_plan_snapshot is not None and coherence_context is not None:
+        plan_json = narrative_plan_snapshot.get("plan_json") or {}
+        generation = plan_json.get("generation") or {}
+        generation["chapter_checks"] = coherence_context["chapter_checks"]
+        generation["coherence"] = coherence_context["coherence"]
+        generation["issues"] = coherence_context["issues"]
+        plan_json["generation"] = generation
+        narrative_plan_snapshot["plan_json"] = plan_json
     qa_input = {
         "application_context": {
             "context": request_snapshot.get("context") or {},
             "selected_topics": request_snapshot.get("selected_topics") or [],
         },
         "confirmed_semantics": snapshot["semantic_model"],
-        "narrative_plan": snapshot["narrative_plan"],
+        "narrative_plan": narrative_plan_snapshot,
         "content_plan": (
-            (snapshot["narrative_plan"].get("plan_json") or {}).get("content_plan")
-            if snapshot["narrative_plan"]
+            (narrative_plan_snapshot.get("plan_json") or {}).get("content_plan")
+            if narrative_plan_snapshot
             else None
         ),
         "validation_scope": [
@@ -151,15 +164,29 @@ async def queue_case_quality_run(
 async def quality_state(
     db: AsyncSession, report_case: ReportCase
 ) -> ReportQualityResponse:
-    issues = await get_case_qa_issues(db, report_case.id)
+    issue_history = await get_case_qa_issues(db, report_case.id)
     run = await latest_validator_run(db, report_case.id)
     _, current_fingerprint, _ = await collect_programmatic_issues(db, report_case)
-    open_issues = [issue for issue in issues if issue.status == "OPEN"]
     fingerprint_matches = bool(
         run
         and run.status == "COMPLETED"
         and (run.context_snapshot or {}).get("qa_fingerprint") == current_fingerprint
     )
+    issues = [
+        issue
+        for issue in issue_history
+        if (
+            issue.source_type == "PROGRAMMATIC"
+            and (issue.evidence_json or {}).get("qa_fingerprint") == current_fingerprint
+        )
+        or (
+            issue.source_type == "VALIDATOR"
+            and run is not None
+            and fingerprint_matches
+            and issue.source_ref_id == run.id
+        )
+    ]
+    open_issues = [issue for issue in issues if issue.status == "OPEN"]
     return ReportQualityResponse(
         report_case_id=report_case.id,
         quality_status=(
@@ -202,13 +229,17 @@ async def delivery_quality_snapshot(
     state = await quality_state(db, report_case)
     if not state.can_approve:
         raise ValueError("final_qa_issues_open_or_stale")
+    issue_history = await get_case_qa_issues(db, report_case.id)
     return {
         "can_approve": True,
         "quality_status": state.quality_status,
         "qa_fingerprint": state.qa_fingerprint_current,
         "blocking_count": state.blocking_count,
         "open_count": state.open_count,
-        "issues": [issue.model_dump(mode="json") for issue in state.issues],
+        "issues": [
+            QAIssueResponse.model_validate(issue).model_dump(mode="json")
+            for issue in issue_history
+        ],
         "validator_run_id": (state.latest_validator_run or {}).get("id"),
     }
 
