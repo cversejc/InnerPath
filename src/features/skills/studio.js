@@ -24,6 +24,22 @@ export function parseSpecification(text) {
   }
 }
 
+export function isReportAnalysisFeedbackRun(run) {
+  return Boolean(
+    run?.report_case_id &&
+      run.target_type === "REPORT_ANALYSIS_DRAFT" &&
+      String(run.runtime_instruction || "").trim(),
+  );
+}
+
+export function feedbackPreviewFromRun(run) {
+  if (!isReportAnalysisFeedbackRun(run) || !run.input_snapshot) return null;
+  return {
+    inputText: JSON.stringify(run.input_snapshot, null, 2),
+    runtimeInstruction: String(run.runtime_instruction || "").trim(),
+  };
+}
+
 export function formatTrace(trace = {}) {
   return [
     ['模型服务', trace.provider],

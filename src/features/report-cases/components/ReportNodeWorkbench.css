@@ -240,6 +240,12 @@
   margin: var(--space-4) 0;
   color: var(--cinnabar-deep);
 }
+.node-run-review-link {
+  display: inline-block;
+  margin-left: var(--space-2);
+  color: var(--cinnabar-deep);
+  font-size: var(--text-body-sm);
+}
 .node-responsibilities {
   display: grid;
   grid-template-columns: 80px minmax(0, 1fr);

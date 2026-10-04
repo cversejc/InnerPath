@@ -183,6 +183,18 @@ async def list_skill_runs(
     return list(rows.all())
 
 
+@admin_router.get("/skill-runs/{run_id}", response_model=SkillRunResponse)
+async def get_skill_run(
+    run_id: int,
+    db: AsyncSession = Depends(get_db),
+    _actor: User = Depends(require_roles("admin")),
+):
+    run = await db.get(SkillRun, run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="skill_run_not_found")
+    return run
+
+
 @staff_router.get(
     "/report-cases/{case_id}/skill-runs",
     response_model=list[ConsultantSkillRunResponse],

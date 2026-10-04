@@ -217,6 +217,12 @@
                 {{ runStatus(run.status) }} · 技能版本
                 {{ run.skill_version_id }} · 使用
                 {{ run.selected_examples?.length || 0 }} 个样例
+                <router-link
+                  v-if="run.target_type === 'REPORT_ANALYSIS_DRAFT' && run.runtime_instruction"
+                  class="node-run-review-link"
+                  :to="studioLocationForRun(run)"
+                  >查看反馈与技能维护</router-link
+                >
               </li>
             </ul>
           </details></template
@@ -447,6 +453,17 @@ export default {
           FAILED: "失败",
         }[status] || "待处理"
       );
+    },
+    studioLocationForRun(run) {
+      const base = this.studioLocation || { path: "/skills", query: {} };
+      return {
+        ...base,
+        query: {
+          ...(base.query || {}),
+          run_id: String(run.id),
+          panel: this.actor?.role === "admin" ? "feedback" : "runs",
+        },
+      };
     },
     viewHint(id) {
       return {

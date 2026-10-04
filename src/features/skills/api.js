@@ -30,6 +30,11 @@ export async function getSkillRuns(versionId) {
   return response.data
 }
 
+export async function getSkillRun(runId) {
+  const response = await apiClient.get(`/admin/skill-runs/${runId}`)
+  return response.data
+}
+
 export async function getCaseSkillRuns(caseId) {
   const response = await apiClient.get(`/staff/report-cases/${caseId}/skill-runs`)
   return response.data
@@ -104,6 +109,7 @@ export default {
   publishSkillVersion,
   runSkill,
   getSkillRuns,
+  getSkillRun,
   getCaseSkillRuns,
   recommendSkillExample,
   recommendCalendarSkillExample,

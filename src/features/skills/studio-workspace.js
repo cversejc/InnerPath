@@ -12,6 +12,8 @@ import {
 } from "./presentation.js";
 import {
   parseSpecification,
+  feedbackPreviewFromRun,
+  isReportAnalysisFeedbackRun,
   RUN_STATUS_LABELS,
   sampleInput,
   VERSION_STATUS_LABELS,
@@ -43,7 +45,7 @@ export default {
         "overview",
         "examples",
         "runs",
-        ...(hasRole("admin") ? ["skills", "debug", "evaluation"] : []),
+        ...(hasRole("admin") ? ["skills", "feedback", "debug", "evaluation"] : []),
       ].includes(this.$route.query.panel)
         ? this.$route.query.panel
         : "overview",
@@ -58,6 +60,11 @@ export default {
       caseIdDraft: this.$route.query.case_id
         ? String(this.$route.query.case_id)
         : "",
+      sourceRunId: Number.isSafeInteger(Number(this.$route.query.run_id)) && Number(this.$route.query.run_id) > 0
+        ? Number(this.$route.query.run_id)
+        : null,
+      feedbackSourceRun: null,
+      previewRunId: null,
       loading: false,
       saving: false,
       publishing: false,
@@ -90,6 +97,30 @@ export default {
         ? this.runs
         : this.runs.filter((run) => runSkillKey(run) === this.selectedSkillKey);
     },
+    feedbackRuns() {
+      if (!this.isAdmin) return [];
+      const rows = this.visibleRuns.filter(
+        isReportAnalysisFeedbackRun,
+      );
+      if (
+        this.feedbackSourceRun &&
+        this.versions.some(
+          (version) =>
+            version.id === this.feedbackSourceRun.skill_version_id &&
+            version.skill_key === this.selectedSkillKey,
+        ) &&
+        !rows.some((run) => run.id === this.feedbackSourceRun.id)
+      )
+        rows.push(this.feedbackSourceRun);
+      return rows.sort((left, right) => right.id - left.id);
+    },
+    previewRun() {
+      if (!this.previewRunId) return null;
+      return (
+        this.runs.find((run) => run.id === this.previewRunId) ||
+        (this.selectedRun?.id === this.previewRunId ? this.selectedRun : null)
+      );
+    },
     studioTabs() {
       return [
         { id: "overview", label: "使用说明" },
@@ -98,6 +129,7 @@ export default {
         { id: "runs", label: "运行记录" },
         ...(this.isAdmin
           ? [
+              { id: "feedback", label: `咨询师反馈${this.feedbackRuns.length ? ` · ${this.feedbackRuns.length}` : ""}` },
               { id: "debug", label: "试运行" },
               { id: "evaluation", label: "质量评估" },
             ]
@@ -154,7 +186,31 @@ export default {
           )
         )
           this.selectedSkillKey = this.$route.query.skill;
-        const current =
+        let feedbackVersion = null;
+        if (this.isAdmin && this.sourceRunId && !this.feedbackSourceRun) {
+          try {
+            const sourceRun = await api.getSkillRun(this.sourceRunId);
+            const sourceVersion = this.versions.find(
+              (item) => item.id === sourceRun.skill_version_id,
+            );
+            if (
+              sourceVersion?.skill_key === this.selectedSkillKey &&
+              sourceRun.target_type === "REPORT_ANALYSIS_DRAFT" &&
+              sourceRun.report_case_id
+            ) {
+              this.loadFeedbackSource(sourceRun);
+              feedbackVersion = sourceVersion;
+            } else {
+              this.showMessage("反馈记录与当前节点技能不匹配，未加载该记录。", "error");
+            }
+          } catch (error) {
+            this.showMessage(
+              error.response?.data?.detail || "无法读取该节点的反馈运行记录。",
+              "error",
+            );
+          }
+        }
+        const current = feedbackVersion ||
           this.skillVersions.find(
             (item) => item.id === this.selectedVersion?.id,
           ) ||
@@ -172,6 +228,7 @@ export default {
     },
     selectVersion(version) {
       this.selectedVersion = version;
+      this.previewRunId = null;
       this.specificationText = JSON.stringify(
         version.specification_json,
         null,
@@ -229,6 +286,7 @@ export default {
         this.showMessage(
           `已创建${this.selectedSkill.name}第 ${created.version} 版草稿。`,
         );
+        return created;
       } catch (error) {
         this.showMessage(
           error.response?.data?.detail || "创建草稿失败。",
@@ -300,6 +358,7 @@ export default {
       if (this.inputError || !this.selectedVersion) return;
       this.running = true;
       try {
+        if (this.editable) await this.saveDraft({ rethrow: true });
         const run = await api.runSkill(this.selectedVersion.id, {
           idempotency_key:
             globalThis.crypto?.randomUUID?.() ||
@@ -308,10 +367,9 @@ export default {
           runtime_instruction: this.runtimeInstruction || null,
         });
         this.selectedRun = run;
+        this.previewRunId = run.id;
         await this.loadRuns();
-        this.changeTab("runs");
-        this.startPoll();
-        this.showMessage(`运行记录 ${run.id} 已加入队列。`);
+        this.showMessage(`草稿已保存，预览运行 ${run.id} 已加入队列。`);
       } catch (error) {
         this.showMessage(
           error.response?.data?.detail || "运行请求失败。",
@@ -320,6 +378,32 @@ export default {
       } finally {
         this.running = false;
       }
+    },
+    loadFeedbackSource(run) {
+      const preview = feedbackPreviewFromRun(run);
+      if (
+        !preview ||
+        !this.versions.some(
+          (version) =>
+            version.id === run.skill_version_id &&
+            version.skill_key === this.selectedSkillKey,
+        )
+      )
+        return false;
+      this.feedbackSourceRun = run;
+      this.sourceRunId = run.id;
+      this.inputText = preview.inputText;
+      this.runtimeInstruction = preview.runtimeInstruction;
+      return true;
+    },
+    async prepareFeedbackPreview(run = this.feedbackSourceRun) {
+      if (!this.loadFeedbackSource(run)) return;
+      if (!this.selectedVersion || this.selectedVersion.status !== "DRAFT") {
+        await this.createDraft();
+      }
+      if (!this.selectedVersion || this.selectedVersion.status !== "DRAFT") return;
+      this.changeTab("skills");
+      this.showMessage("已创建草稿并加载该节点的真实输入与咨询师反馈；编辑并保存后可在“试运行”预览。", "");
     },
     async startEvaluation(caseKeys) {
       if (!this.selectedVersion) throw new Error("请先选择技能版本。");
@@ -366,7 +450,10 @@ export default {
           query: { ...this.$route.query, case_id: String(id) },
         });
         this.runs = await api.getCaseSkillRuns(id);
-        this.selectedRun = this.visibleRuns[0] || null;
+        this.selectedRun =
+          this.visibleRuns.find((run) => run.id === this.sourceRunId) ||
+          this.visibleRuns[0] ||
+          null;
         if (
           this.runs.some((run) => ["PENDING", "RUNNING"].includes(run.status))
         )

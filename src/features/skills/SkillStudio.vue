@@ -151,6 +151,9 @@
               <p v-if="!isAdmin">
                 咨询师可查看已发布示例，并从本报告的运行结果推荐经验；管理员负责脱敏审核、版本维护和发布。
               </p>
+              <p v-else>
+                管理员可在“咨询师反馈”查看节点反馈，从对应版本创建草稿，用原节点输入预览，再按现有质量评估流程发布。
+              </p>
               <details>
                 <summary>技术标识</summary>
                 <code>{{ selectedSkill.key }}</code>
@@ -207,6 +210,24 @@
               <p>
                 验证当前版本的输出。试运行结果须经过咨询师审核，才能用于实际报告。
               </p>
+              <div v-if="feedbackSourceRun" class="feedback-preview-source">
+                <strong>反馈来源：报告案例 {{ feedbackSourceRun.report_case_id }} · {{ feedbackSourceRun.target_key }} · 运行 {{ feedbackSourceRun.id }}</strong>
+                <p><b>咨询师反馈</b>：{{ feedbackSourceRun.runtime_instruction || "本次运行没有补充反馈。" }}</p>
+                <p>输入框已载入该节点实际使用的资料；试运行只生成预览，不会写入原报告。</p>
+                <details>
+                  <summary>查看被反馈的原始 AI 结果</summary>
+                  <RunDetail :run="feedbackSourceRun" :admin="true" :case-id="feedbackSourceRun.report_case_id" />
+                </details>
+                <VanButton
+                  v-if="!editable"
+                  plain
+                  native-type="button"
+                  :disabled="saving || !selectedVersion"
+                  :loading="saving"
+                  @click="prepareFeedbackPreview()"
+                  >基于此反馈创建可编辑草稿</VanButton
+                >
+              </div>
               <label class="json-label" for="skill-input"
                 >测试输入资料（结构化数据）</label
               ><textarea
@@ -240,8 +261,16 @@
                 "
                 :loading="running"
                 @click="startRun"
-                >{{ running ? "正在提交" : "开始试运行" }}</VanButton
+                >{{ running ? "正在提交" : editable ? "保存并预览草稿" : "试运行当前版本" }}</VanButton
               >
+              <RunDetail
+                v-if="previewRun"
+                :key="previewRun.id"
+                class="feedback-preview-result"
+                :run="previewRun"
+                :admin="true"
+                :case-id="feedbackSourceRun?.report_case_id"
+              />
             </section>
             <EvaluationPanel
               v-else-if="activeAdminTab === 'evaluation' && isAdmin"
@@ -314,6 +343,47 @@
                       ? "本报告暂无该技能的运行记录，请回到对应节点处理。"
                       : "先选择已分配的报告，再查看运行结果和推荐经验。"
                 }}
+              </p>
+            </section>
+            <section
+              v-else-if="activeAdminTab === 'feedback' && isAdmin"
+              class="skill-feedback-inbox"
+            >
+              <div class="panel-heading">
+                <div>
+                  <h3>咨询师反馈</h3>
+                  <p>反馈与报告案例、节点、技能版本和原始运行记录绑定，可在草稿上用该次真实输入复现。</p>
+                </div>
+                <span>{{ feedbackRuns.length }} 条</span>
+              </div>
+              <article v-for="run in feedbackRuns" :key="run.id" class="skill-feedback-card">
+                <header>
+                  <strong>案例 {{ run.report_case_id }} · {{ run.target_key }} · 运行 {{ run.id }}</strong>
+                  <small>{{ RUN_STATUS_LABELS[run.status] || run.status }} · {{ formatDate(run.created_at) }}</small>
+                </header>
+                <p class="skill-feedback-text">{{ run.runtime_instruction }}</p>
+                <div class="feedback-card-actions">
+                  <VanButton
+                    class="primary-button compact-button"
+                    type="primary"
+                    native-type="button"
+                    :disabled="saving || !run.input_snapshot"
+                    :loading="saving && feedbackSourceRun?.id === run.id"
+                    @click="prepareFeedbackPreview(run)"
+                    >{{ selectedVersion?.status === 'DRAFT' ? '加载真实输入并编辑草稿' : '从反馈创建草稿并载入真实输入' }}</VanButton
+                  >
+                </div>
+                <details class="feedback-run-details">
+                  <summary>查看原始 AI 结果与节点实际输入</summary>
+                  <RunDetail :run="run" :admin="true" :case-id="run.report_case_id" />
+                  <details>
+                    <summary>查看送入节点技能的输入快照</summary>
+                    <pre class="output-block">{{ JSON.stringify(run.input_snapshot, null, 2) }}</pre>
+                  </details>
+                </details>
+              </article>
+              <p v-if="!feedbackRuns.length" class="empty-reference">
+                当前技能版本还没有咨询师反馈。请在节点工作台中提交反馈并重跑后，这里会出现可复现的记录。
               </p>
             </section>
           </div>

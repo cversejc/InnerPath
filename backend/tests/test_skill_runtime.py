@@ -941,10 +941,20 @@ async def test_analysis_draft_is_assignment_checked_and_candidates_keep_run_prov
     assert feedback_run.input_snapshot["analysis_context"]["previous_analysis"]["output_parsed"]["findings"][0]["finding_key"] == "s2.psychology.autonomy"
     assert feedback_run.context_snapshot["analysis_feedback_source_run_id"] == run.id
 
-    from app.domains.skills.schemas import ConsultantSkillRunResponse
+    from app.domains.skills.schemas import (
+        ConsultantSkillRunResponse,
+        SkillRunResponse,
+    )
 
     run_response = ConsultantSkillRunResponse.model_validate(feedback_run)
     assert run_response.runtime_instruction == feedback_run.runtime_instruction
+    admin_run_response = SkillRunResponse.model_validate(feedback_run)
+    assert (
+        admin_run_response.input_snapshot["analysis_context"]["previous_analysis"][
+            "source_run_id"
+        ]
+        == run.id
+    )
 
     with pytest.raises(ValueError, match="report_analysis_feedback_source_invalid"):
         await queue_case_analysis_draft(

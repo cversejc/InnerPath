@@ -249,6 +249,25 @@ textarea {
 .panel-heading {
   margin-bottom: var(--space-4);
 }
+.skill-feedback-inbox { display:grid; gap:var(--space-4); }
+.skill-feedback-inbox > .panel-heading { align-items:flex-start; }
+.skill-feedback-inbox > .panel-heading p { margin-top:var(--space-1); color:var(--muted); font-size:var(--text-body-sm); }
+.skill-feedback-card,
+.feedback-preview-source { padding:var(--space-4); border:1px solid var(--line); border-radius:var(--button-radius); background:var(--surface-strong); }
+.skill-feedback-card > header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--space-2); }
+.skill-feedback-card > header strong { color:var(--ink); font-size:var(--text-body); font-weight:var(--weight-medium); }
+.skill-feedback-card > header small { color:var(--muted); font-size:var(--text-caption); }
+.skill-feedback-text { margin:var(--space-3) 0; padding:var(--space-3); border-left:2px solid var(--jade); background:rgba(237,246,242,.72); color:var(--ink); white-space:pre-wrap; overflow-wrap:anywhere; }
+.feedback-card-actions { display:flex; flex-wrap:wrap; gap:var(--space-2); }
+.feedback-run-details { margin-top:var(--space-3); }
+.feedback-run-details pre { max-height:420px; overflow:auto; padding:var(--space-3); border:1px solid var(--line); border-radius:var(--button-radius); background:var(--paper-soft); color:var(--ink-soft); font:12px/1.55 var(--font-mono); white-space:pre-wrap; overflow-wrap:anywhere; }
+.feedback-preview-source { display:grid; gap:var(--space-2); margin:var(--space-4) 0; }
+.feedback-preview-source > strong { color:var(--ink); font-size:var(--text-body); }
+.feedback-preview-source > p { color:var(--ink-soft); font-size:var(--text-body-sm); overflow-wrap:anywhere; }
+.feedback-preview-source > p b { color:var(--ink); }
+.feedback-preview-source details { border-top:1px solid var(--line); }
+.feedback-preview-result { display:block; margin-top:var(--space-5); }
+.empty-reference { padding:var(--space-4); border-left:2px solid var(--jade); background:var(--surface); color:var(--muted); }
 @media (max-width: 760px) {
   .studio-heading {
     gap: var(--space-2);
@@ -301,6 +320,10 @@ textarea {
   .version-selector {
     justify-content: flex-start;
   }
+  .skill-feedback-card,
+  .feedback-preview-source { padding:var(--space-3); }
+  .feedback-card-actions,
+  .feedback-card-actions :deep(.van-button) { width:100%; }
   .consultant-case-lookup form {
     grid-template-columns: 1fr;
   }

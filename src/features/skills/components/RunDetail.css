@@ -6,6 +6,26 @@
   color: var(--gold-deep);
   font-size: var(--text-body-sm);
 }
+.run-detail .run-consultant-feedback {
+  margin: 12px 0;
+  padding: 12px;
+  border-left: 2px solid var(--jade);
+  background: rgba(237, 246, 242, 0.72);
+}
+.run-detail .run-consultant-feedback strong {
+  color: var(--jade);
+  font-size: var(--text-body-sm);
+}
+.run-detail .run-consultant-feedback p,
+.run-detail .run-feedback-source {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.run-detail .run-feedback-source { margin-bottom: 12px; }
 .run-detail summary { display: flex; align-items: center; min-height: var(--touch-target); color: var(--cinnabar-deep); cursor: pointer; }
 @media (max-width: 600px) { .run-detail input, .run-detail select, .run-detail textarea { font-size: var(--text-body); } }
 
