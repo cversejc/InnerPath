@@ -1,6 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domains.skills.models import SkillRun
+
 from .models import ContentFragmentRevision, NarrativePlan
 
 
@@ -72,7 +74,6 @@ async def mark_dependents_stale(
             report_case_id=report_case_id,
             source_kind=origin_kind,
             source_key=origin_key,
-            reason=f"SOURCE_CHANGED:{origin_kind}:{origin_key}",
         )
     return len(stale_ids)
 
@@ -83,8 +84,6 @@ async def invalidate_narrative_for_source(
     report_case_id: int,
     source_kind: str,
     source_key: str,
-    reason: str,
-    force: bool = False,
 ) -> bool:
     plan = await db.scalar(
         select(NarrativePlan)
@@ -97,41 +96,51 @@ async def invalidate_narrative_for_source(
     )
     if plan is None:
         return False
-    collection, key_field = {
-        "finding": ("findings", "finding_key"),
-        "fragment": ("analysis_fragments", "fragment_key"),
-        "evidence": ("evidence", "evidence_key"),
-    }[source_kind]
-    is_source = any(
-        isinstance(item, dict) and item.get(key_field) == source_key
-        for item in (plan.source_snapshot or {}).get(collection, [])
+
+    plan_json = plan.plan_json or {}
+    narrative_refs = plan_json.get("narrative_source_refs") or {}
+    narrative_findings = set(
+        value
+        for value in (narrative_refs.get("finding_refs") or [])
+        if isinstance(value, str)
     )
-    if not is_source and not force:
+    narrative_findings.update(
+        value
+        for value in (plan_json.get("must_include_findings") or [])
+        if isinstance(value, str)
+    )
+    if isinstance(plan_json.get("self_direction"), str):
+        narrative_findings.add(plan_json["self_direction"])
+    for block in plan_json.get("priority_blocks") or []:
+        if isinstance(block, dict):
+            narrative_findings.update(
+                value
+                for value in (block.get("finding_refs") or [])
+                if isinstance(value, str)
+            )
+    if not narrative_findings:
+        run = await db.get(SkillRun, plan.selected_skill_run_id)
+        candidates = (run.output_parsed or {}).get("candidates", []) if run else []
+        candidate = next(
+            (
+                item
+                for item in candidates
+                if isinstance(item, dict)
+                and item.get("candidate_key") == plan.selected_candidate_key
+            ),
+            None,
+        )
+        narrative_findings = set(
+            value
+            for value in ((candidate or {}).get("supporting_findings") or [])
+            if isinstance(value, str)
+        )
+
+    # A changed source only invalidates the mainline when it supported the
+    # selected narrative. Direct and transitive report dependencies have
+    # already been marked stale by mark_dependents_stale.
+    if source_kind != "finding" or source_key not in narrative_findings:
         return False
     plan.status = "STALE"
-    await mark_report_fragments_stale_for_plan(
-        db, plan.id, reason=f"SOURCE_CHANGED:{source_kind}:{source_key}"
-    )
-    return True
-
-
-async def mark_report_fragments_stale_for_plan(
-    db, narrative_plan_id: int, *, reason: str
-) -> int:
-    rows = await db.scalars(
-        select(ContentFragmentRevision)
-        .where(
-            ContentFragmentRevision.source_narrative_plan_id == narrative_plan_id,
-            ContentFragmentRevision.fragment_type == "REPORT",
-            ContentFragmentRevision.is_current.is_(True),
-        )
-        .with_for_update()
-    )
-    count = 0
-    for row in rows:
-        if row.status != "STALE":
-            row.status = "STALE"
-            count += 1
-        row.stale_reason = reason
     await db.flush()
-    return count
+    return True

@@ -19,6 +19,12 @@ from app.domains.content.narrative import (
     confirm_narrative_plan,
     semantic_source_snapshot,
 )
+from app.domains.content.narrative_lineage import (
+    allocation_semantic_sources_match,
+    carry_forward_unchanged_report_fragments,
+    narrative_semantic_sources_match,
+    semantic_source_snapshot_for_allocation,
+)
 from app.domains.content.queries import load_case_semantic_model
 from app.domains.content.report_content_plan import (
     build_report_content_plan,
@@ -322,7 +328,24 @@ async def test_confirmed_plan_is_versioned_and_semantic_change_stales_report_fra
         source_narrative_plan_id=plan.id,
         created_at=datetime.utcnow(),
     )
+    unrelated = ContentFragmentRevision(
+        report_case_id=case_id,
+        fragment_key="report.identity.unrelated",
+        revision_no=1,
+        semantic_revision=1,
+        content_revision=1,
+        fragment_type="REPORT",
+        title="Unrelated",
+        content="No dependency on the changed source.",
+        status="CONFIRMED",
+        source_snapshot={"findings": [], "fragments": [], "evidence": []},
+        edit_kind="SEMANTIC",
+        is_current=True,
+        source_narrative_plan_id=plan.id,
+        created_at=datetime.utcnow(),
+    )
     db.session.add(fragment)
+    db.session.add(unrelated)
     await db.flush()
 
     await mark_dependents_stale(
@@ -334,9 +357,291 @@ async def test_confirmed_plan_is_versioned_and_semantic_change_stales_report_fra
     )
     await db.refresh(plan)
     await db.refresh(fragment)
+    await db.refresh(unrelated)
     assert plan.status == "STALE"
     assert fragment.status == "STALE"
-    assert fragment.stale_reason == "SOURCE_CHANGED:finding:finding.core"
+    assert fragment.stale_reason == "semantic_dependency_changed:finding:core"
+    assert unrelated.status == "CONFIRMED"
+
+
+@pytest.mark.asyncio
+async def test_unrelated_source_change_stales_only_dependent_fragments(narrative_db):
+    db, case_id, run_id, _finding_id = narrative_db
+    plan = await confirm_narrative_plan(
+        db,
+        report_case_id=case_id,
+        skill_run_id=run_id,
+        candidate_key="candidate_a",
+        overrides={},
+        actor_id=12,
+    )
+    unrelated_finding = FindingRevision(
+        report_case_id=case_id,
+        finding_key="finding.unrelated",
+        revision_no=1,
+        semantic_revision=1,
+        content_revision=1,
+        kind="FINDING",
+        semantic_role="UNALLOCATED_NOTE",
+        claim="A source outside the selected narrative and report allocations.",
+        confidence="LOW",
+        importance="LOW",
+        reportability="OPTIONAL",
+        status="CONFIRMED",
+        evidence_refs=[],
+        relation_refs=[],
+        structured_data_json={},
+        edit_kind="SEMANTIC",
+        is_current=True,
+        created_at=datetime.utcnow(),
+    )
+    db.session.add(unrelated_finding)
+    dependent = ContentFragmentRevision(
+        report_case_id=case_id,
+        fragment_key="report.local.dependent",
+        revision_no=1,
+        semantic_revision=1,
+        content_revision=1,
+        fragment_type="REPORT",
+        content="Depends on the optional note.",
+        status="CONFIRMED",
+        source_snapshot={
+            "findings": [{"finding_key": "finding.unrelated", "revision_no": 1}],
+            "fragments": [],
+            "evidence": [],
+        },
+        edit_kind="SEMANTIC",
+        is_current=True,
+        source_narrative_plan_id=plan.id,
+        created_at=datetime.utcnow(),
+    )
+    downstream = ContentFragmentRevision(
+        report_case_id=case_id,
+        fragment_key="report.local.downstream",
+        revision_no=1,
+        semantic_revision=1,
+        content_revision=1,
+        fragment_type="REPORT",
+        content="Depends on the prior report fragment.",
+        status="CONFIRMED",
+        source_snapshot={
+            "findings": [],
+            "fragments": [{"fragment_key": "report.local.dependent", "revision_no": 1}],
+            "evidence": [],
+        },
+        edit_kind="SEMANTIC",
+        is_current=True,
+        source_narrative_plan_id=plan.id,
+        created_at=datetime.utcnow(),
+    )
+    independent = ContentFragmentRevision(
+        report_case_id=case_id,
+        fragment_key="report.local.independent",
+        revision_no=1,
+        semantic_revision=1,
+        content_revision=1,
+        fragment_type="REPORT",
+        content="No dependency on the optional note.",
+        status="CONFIRMED",
+        source_snapshot={"findings": [], "fragments": [], "evidence": []},
+        edit_kind="SEMANTIC",
+        is_current=True,
+        source_narrative_plan_id=plan.id,
+        created_at=datetime.utcnow(),
+    )
+    db.session.add_all([dependent, downstream, independent])
+    await db.flush()
+
+    semantic_model = await load_case_semantic_model(db, case_id)
+    assert narrative_semantic_sources_match(plan, semantic_model)
+    await mark_dependents_stale(
+        db,
+        report_case_id=case_id,
+        origin_kind="finding",
+        origin_key="finding.unrelated",
+        reason="semantic_dependency_changed:finding:finding.unrelated",
+    )
+    for row in (plan, dependent, downstream, independent):
+        await db.refresh(row)
+
+    assert plan.status == "CONFIRMED"
+    assert dependent.status == downstream.status == "STALE"
+    assert independent.status == "CONFIRMED"
+
+
+@pytest.mark.asyncio
+async def test_allocation_source_snapshot_ignores_unrelated_findings(narrative_db):
+    db, case_id, run_id, _finding_id = narrative_db
+    plan = await confirm_narrative_plan(
+        db,
+        report_case_id=case_id,
+        skill_run_id=run_id,
+        candidate_key="candidate_a",
+        overrides={},
+        actor_id=12,
+    )
+    semantic_model = await load_case_semantic_model(db, case_id)
+    allocation = plan.plan_json["content_plan"]["fragments"][0]
+    snapshot = semantic_source_snapshot_for_allocation(allocation, semantic_model)
+    unrelated_model = {
+        **semantic_model,
+        "findings": [*semantic_model["findings"], {
+            "finding_key": "finding.unrelated",
+            "revision_no": 1,
+            "semantic_revision": 1,
+            "evidence_refs": [],
+        }],
+    }
+    assert allocation_semantic_sources_match(snapshot, allocation, unrelated_model)
+
+    changed_model = {
+        **semantic_model,
+        "findings": [
+            {**item, "semantic_revision": item["semantic_revision"] + 1}
+            if item["finding_key"] in allocation["finding_refs"]
+            else item
+            for item in semantic_model["findings"]
+        ],
+    }
+    assert not allocation_semantic_sources_match(snapshot, allocation, changed_model)
+
+
+@pytest.mark.asyncio
+async def test_unchanged_allocations_carry_report_fragment_to_next_plan(narrative_db):
+    db, case_id, run_id, _finding_id = narrative_db
+    plan_v1 = await confirm_narrative_plan(
+        db,
+        report_case_id=case_id,
+        skill_run_id=run_id,
+        candidate_key="candidate_a",
+        overrides={},
+        actor_id=12,
+    )
+    allocation = plan_v1.plan_json["content_plan"]["fragments"][0]
+    fragment = await create_content_fragment_revision(
+        db,
+        report_case_id=case_id,
+        fragment_key=allocation["fragment_key"],
+        fragment_type="REPORT",
+        title="稳定片段",
+        content="在两版中分配与叙事均未改变的内容。",
+        status="CONFIRMED",
+        finding_refs=allocation["finding_refs"],
+        fragment_refs=allocation["analysis_refs"],
+        evidence_refs=allocation["evidence_refs"],
+        source_narrative_plan_id=plan_v1.id,
+    )
+
+    plan_v2 = await confirm_narrative_plan(
+        db,
+        report_case_id=case_id,
+        skill_run_id=run_id,
+        candidate_key="candidate_a",
+        overrides={},
+        actor_id=12,
+    )
+    current_rows = list(
+        (await db.scalars(
+            select(ContentFragmentRevision).where(
+                ContentFragmentRevision.report_case_id == case_id,
+                ContentFragmentRevision.fragment_key == allocation["fragment_key"],
+                ContentFragmentRevision.is_current.is_(True),
+            )
+        )).all()
+    )
+    assert len(current_rows) == 1
+    assert current_rows[0].id != fragment.id
+    assert current_rows[0].revision_no == 2
+    assert current_rows[0].status == "CONFIRMED"
+    assert current_rows[0].source_narrative_plan_id == plan_v2.id
+
+
+@pytest.mark.asyncio
+async def test_allocation_change_stales_changed_and_later_continuity_fragments(narrative_db):
+    db, case_id, run_id, _finding_id = narrative_db
+    plan_v1 = await confirm_narrative_plan(
+        db,
+        report_case_id=case_id,
+        skill_run_id=run_id,
+        candidate_key="candidate_a",
+        overrides={},
+        actor_id=12,
+    )
+    allocations_v1 = [
+        {"fragment_key": "report.test.first", "sequence_no": 1, "purpose": "same"},
+        {"fragment_key": "report.test.changed", "sequence_no": 2, "purpose": "old"},
+        {"fragment_key": "report.test.later", "sequence_no": 3, "purpose": "same"},
+    ]
+    plan_v1.plan_json = {
+        **plan_v1.plan_json,
+        "content_plan": {"fragments": allocations_v1},
+    }
+    rows = [
+        ContentFragmentRevision(
+            report_case_id=case_id,
+            fragment_key=allocation["fragment_key"],
+            revision_no=1,
+            semantic_revision=1,
+            content_revision=1,
+            fragment_type="REPORT",
+            content=f"Content for {allocation['fragment_key']}.",
+            status="CONFIRMED",
+            source_snapshot={"findings": [], "fragments": [], "evidence": []},
+            edit_kind="SEMANTIC",
+            is_current=True,
+            source_narrative_plan_id=plan_v1.id,
+            created_at=datetime.utcnow(),
+        )
+        for allocation in allocations_v1
+    ]
+    db.session.add_all(rows)
+    plan_v1.is_current = False
+    plan_v1.status = "SUPERSEDED"
+    plan_json_v2 = {
+        **plan_v1.plan_json,
+        "content_plan": {
+            "fragments": [
+                allocations_v1[0],
+                {**allocations_v1[1], "purpose": "revised"},
+                allocations_v1[2],
+            ]
+        },
+    }
+    plan_v2 = NarrativePlan(
+        report_case_id=case_id,
+        version_no=2,
+        is_current=True,
+        status="CONFIRMED",
+        selected_skill_run_id=run_id,
+        selected_candidate_key="candidate_a",
+        plan_json=plan_json_v2,
+        source_snapshot=plan_v1.source_snapshot,
+        created_by=12,
+        confirmed_by=12,
+        created_at=datetime.utcnow(),
+        confirmed_at=datetime.utcnow(),
+    )
+    db.session.add(plan_v2)
+    await db.flush()
+
+    await carry_forward_unchanged_report_fragments(
+        db, previous=plan_v1, current=plan_v2, actor_id=12
+    )
+    current_rows = {
+        row.fragment_key: row
+        for row in (
+            await db.scalars(
+                select(ContentFragmentRevision).where(
+                    ContentFragmentRevision.report_case_id == case_id,
+                    ContentFragmentRevision.is_current.is_(True),
+                )
+            )
+        ).all()
+    }
+    assert current_rows["report.test.first"].status == "CONFIRMED"
+    assert current_rows["report.test.first"].source_narrative_plan_id == plan_v2.id
+    assert current_rows["report.test.changed"].status == "STALE"
+    assert current_rows["report.test.later"].status == "STALE"
 
 
 @pytest.mark.asyncio
@@ -455,6 +760,29 @@ async def test_fragment_authoring_worker_saves_source_mapped_report_fragment(nar
         created_at=datetime.utcnow(),
     )
     db.session.add(writer_run)
+    await db.flush()
+    db.session.add(
+        FindingRevision(
+            report_case_id=case_id,
+            finding_key="finding.added_after_queue",
+            revision_no=1,
+            semantic_revision=1,
+            content_revision=1,
+            kind="FINDING",
+            semantic_role="UNALLOCATED_NOTE",
+            claim="This optional source arrived after the fragment was queued.",
+            confidence="LOW",
+            importance="LOW",
+            reportability="OPTIONAL",
+            status="CONFIRMED",
+            evidence_refs=[],
+            relation_refs=[],
+            structured_data_json={},
+            edit_kind="SEMANTIC",
+            is_current=True,
+            created_at=datetime.utcnow(),
+        )
+    )
     await db.flush()
 
     completed = await execute_skill_run_record(

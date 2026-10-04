@@ -7,38 +7,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domains.skills.models import SkillRun
 
 from .common import require_case
-from .dependencies import mark_report_fragments_stale_for_plan
 from .models import NarrativePlan
 from .queries import load_case_semantic_model
+from .narrative_lineage import (
+    carry_forward_unchanged_report_fragments,
+    semantic_source_snapshot,
+)
 from .report_content_plan import (
     build_report_content_plan,
     validate_report_content_plan,
 )
-
-
-def semantic_source_snapshot(semantic_model: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
-    return {
-        "findings": [
-            {
-                "finding_key": item["finding_key"],
-                "revision_no": item["revision_no"],
-                "semantic_revision": item["semantic_revision"],
-            }
-            for item in semantic_model["findings"]
-        ],
-        "analysis_fragments": [
-            {
-                "fragment_key": item["fragment_key"],
-                "revision_no": item["revision_no"],
-                "semantic_revision": item["semantic_revision"],
-            }
-            for item in semantic_model["analysis_fragments"]
-        ],
-        "evidence": [
-            {"evidence_key": item["evidence_key"]}
-            for item in semantic_model["evidence"]
-        ],
-    }
 
 
 async def get_current_narrative_plan(
@@ -93,8 +71,13 @@ async def confirm_narrative_plan(
         raise ValueError("narrative_candidate_not_found")
     supported_ordered = list(dict.fromkeys(candidate.get("supporting_findings") or []))
     supported = set(supported_ordered)
+    deemphasized_ordered = list(
+        dict.fromkeys(candidate.get("deemphasized_findings") or [])
+    )
     valid_finding_keys = {item["finding_key"] for item in semantic_model["findings"]}
-    if not supported.issubset(valid_finding_keys):
+    if not supported.issubset(valid_finding_keys) or not set(
+        deemphasized_ordered
+    ).issubset(valid_finding_keys):
         raise ValueError("narrative_candidate_unsupported_finding")
 
     allowed_overrides = {
@@ -151,7 +134,11 @@ async def confirm_narrative_plan(
         "narrative_arc": narrative_arc,
         "chapter_strategy": overrides.get("chapter_strategy", {}),
         "rationale": candidate.get("rationale", ""),
-        "deemphasized_findings": candidate.get("deemphasized_findings") or [],
+        "deemphasized_findings": deemphasized_ordered,
+        "narrative_source_refs": {
+            "finding_refs": list(dict.fromkeys(supported_ordered + deemphasized_ordered)),
+            "analysis_refs": [],
+        },
     }
     if semantic_model.get("framework_contract"):
         plan_json["framework_contract"] = semantic_model["framework_contract"]
@@ -160,6 +147,20 @@ async def confirm_narrative_plan(
         plan_json["chapter_strategy"], dict
     ):
         raise ValueError("narrative_plan_structure_invalid")
+    plan_json["narrative_source_refs"]["finding_refs"] = list(
+        dict.fromkeys(
+            plan_json["narrative_source_refs"]["finding_refs"]
+            + list(must_include)
+            + ([self_direction] if isinstance(self_direction, str) else [])
+            + [
+                ref
+                for block in priority_blocks
+                if isinstance(block, dict)
+                for ref in (block.get("finding_refs") or [])
+                if isinstance(ref, str)
+            ]
+        )
+    )
 
     application_snapshot = (await require_case(db, report_case_id)).application_snapshot or {}
     content_plan = build_report_content_plan(
@@ -198,9 +199,6 @@ async def confirm_narrative_plan(
     if current is not None:
         current.is_current = False
         current.status = "SUPERSEDED"
-        await mark_report_fragments_stale_for_plan(
-            db, current.id, reason="NARRATIVE_CHANGED"
-        )
     now = datetime.utcnow()
     plan = NarrativePlan(
         report_case_id=report_case_id,
@@ -218,4 +216,8 @@ async def confirm_narrative_plan(
     )
     db.add(plan)
     await db.flush()
+    if current is not None:
+        await carry_forward_unchanged_report_fragments(
+            db, previous=current, current=plan, actor_id=actor_id
+        )
     return plan

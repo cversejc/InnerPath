@@ -17,8 +17,8 @@ from app.application.skill_runtime import (
 from app.domains.content.models import ContentFragmentRevision, NarrativePlan
 from app.domains.content.narrative import (
     get_current_narrative_plan,
-    semantic_source_snapshot,
 )
+from app.domains.content.narrative_lineage import narrative_semantic_sources_match
 from app.domains.content.queries import load_case_semantic_model
 from app.domains.content.report_content_plan import validate_report_content_plan
 from app.domains.skills.models import SkillRun
@@ -367,7 +367,7 @@ async def _validate_current_plan(
     if plan.status != "CONFIRMED" or not plan.is_current:
         raise ValueError("narrative_plan_confirmation_required")
     semantic_model = await load_case_semantic_model(db, report_case.id)
-    if plan.source_snapshot != semantic_source_snapshot(semantic_model):
+    if not narrative_semantic_sources_match(plan, semantic_model):
         raise ValueError("narrative_semantics_changed")
     content_plan = _content_plan(plan)
     if not content_plan:
@@ -703,7 +703,7 @@ async def advance_case_report_generation(db: AsyncSession, run_id: int) -> Narra
             await db.commit()
             return plan
         semantic_model = await load_case_semantic_model(db, report_case.id)
-        if plan.source_snapshot != semantic_source_snapshot(semantic_model):
+        if not narrative_semantic_sources_match(plan, semantic_model):
             plan.status = "STALE"
             generation["status"] = "CHAPTER_COHERENCE_STALE" if is_chapter else "COHERENCE_STALE"
             generation["error"] = "narrative_semantics_changed"
@@ -975,7 +975,7 @@ async def advance_case_report_generation(db: AsyncSession, run_id: int) -> Narra
             return plan
         try:
             semantic_model = await load_case_semantic_model(db, report_case.id)
-            if plan.source_snapshot != semantic_source_snapshot(semantic_model):
+            if not narrative_semantic_sources_match(plan, semantic_model):
                 generation["status"] = "BLOCKED"
                 generation["error"] = "narrative_semantics_changed"
                 generation["active_run_id"] = None
@@ -1035,7 +1035,7 @@ async def advance_case_report_generation(db: AsyncSession, run_id: int) -> Narra
         return plan
     try:
         semantic_model = await load_case_semantic_model(db, report_case.id)
-        if plan.source_snapshot != semantic_source_snapshot(semantic_model):
+        if not narrative_semantic_sources_match(plan, semantic_model):
             generation["status"] = "BLOCKED"
             generation["error"] = "narrative_semantics_changed"
             generation["active_run_id"] = None

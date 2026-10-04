@@ -12,7 +12,7 @@ from app.domains.content.models import (
     FindingRevision,
     NarrativePlan,
 )
-from app.domains.content.narrative import semantic_source_snapshot
+from app.domains.content.narrative_lineage import narrative_semantic_sources_match
 from app.domains.content.queries import load_case_semantic_model
 from app.domains.content.report_content_plan import validate_report_content_plan
 from app.domains.content.framework_coverage import report_coverage_issues
@@ -134,7 +134,7 @@ async def collect_programmatic_issues(
             )
         )
     if current_plan is not None and current_plan.status == "CONFIRMED" and semantic_model:
-        if current_plan.source_snapshot != semantic_source_snapshot(semantic_model):
+        if not narrative_semantic_sources_match(current_plan, semantic_model):
             issues.append(
                 _issue(
                     "NARRATIVE_PLAN_STALE",

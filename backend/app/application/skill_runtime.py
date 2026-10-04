@@ -18,6 +18,11 @@ from app.domains.content.narrative import (
     get_current_narrative_plan,
     semantic_source_snapshot,
 )
+from app.domains.content.narrative_lineage import (
+    allocation_semantic_sources_match,
+    narrative_semantic_sources_match,
+    semantic_source_snapshot_for_allocation,
+)
 from app.domains.content.queries import load_case_semantic_model
 from app.domains.skills.definitions import (
     ANALYSIS_STEPS,
@@ -400,7 +405,9 @@ async def queue_allocated_fragment_skill_run(
     input_data = {
         **application_snapshot,
         "context": context,
-        "semantic_source_snapshot": semantic_source_snapshot(semantic_model),
+        "semantic_source_snapshot": semantic_source_snapshot_for_allocation(
+            allocation, semantic_model
+        ),
         "source_narrative_plan_id": plan.id,
     }
     context_metadata = (
@@ -556,7 +563,7 @@ async def queue_case_authoring_skill_run(
         plan = await get_current_narrative_plan(db, case_id)
         if plan is None or plan.status != "CONFIRMED":
             raise ValueError("narrative_plan_confirmation_required")
-        if plan.source_snapshot != source_snapshot:
+        if not narrative_semantic_sources_match(plan, semantic_model):
             plan.status = "STALE"
             raise ValueError("narrative_semantics_changed")
         if not fragment_key or not fragment_key.strip():
@@ -852,18 +859,22 @@ async def _save_authored_report_fragment(db: AsyncSession, run: SkillRun) -> Non
         raise ValueError("narrative_plan_confirmation_required")
     semantic_model = context.get("semantic_model") or {}
     semantic_now = await load_case_semantic_model(db, run.report_case_id)
-    if semantic_source_snapshot(semantic_now) != (run.context_snapshot or {}).get(
+    allocation = context.get("fragment_allocation")
+    saved_source_snapshot = (run.context_snapshot or {}).get(
         "semantic_source_snapshot"
-    ):
+    ) or {}
+    if isinstance(allocation, dict):
+        if not allocation_semantic_sources_match(
+            saved_source_snapshot, allocation, semantic_now
+        ):
+            raise ValueError("narrative_semantics_changed")
+    elif semantic_source_snapshot(semantic_now) != saved_source_snapshot:
         raise ValueError("narrative_semantics_changed")
-    if plan.source_snapshot != (run.context_snapshot or {}).get(
-        "semantic_source_snapshot"
-    ):
+    if not narrative_semantic_sources_match(plan, semantic_now):
         raise ValueError("narrative_semantics_changed")
 
     used_findings = output.get("used_findings") or []
     used_fragments = output.get("used_analysis_fragments") or []
-    allocation = context.get("fragment_allocation")
     if isinstance(allocation, dict):
         if allocation.get("fragment_key") != (request.get("fragment_key") or run.target_key):
             raise ValueError("report_fragment_allocation_invalid")

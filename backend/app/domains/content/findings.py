@@ -230,8 +230,6 @@ async def create_finding_revision(
             report_case_id=report_case_id,
             source_kind="finding",
             source_key=key,
-            reason=f"SOURCE_CHANGED:finding:{key}",
-            force=current is None or current.status != "CONFIRMED",
         )
     return revision
 

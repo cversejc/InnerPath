@@ -399,8 +399,6 @@ async def create_content_fragment_revision(
             report_case_id=report_case_id,
             source_kind="fragment",
             source_key=key,
-            reason=f"SOURCE_CHANGED:fragment:{key}",
-            force=current is None or current.status != "CONFIRMED",
         )
     return revision
 
