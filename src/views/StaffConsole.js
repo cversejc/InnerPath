@@ -104,6 +104,7 @@ export default {
       message: '',
       showInfoPanel: false,
       infoReason: '',
+      infoStepKey: '',
       rejectDialog: { visible: false, reason: '', error: '' },
       rejectSaving: false,
       reportEditor: reportEditorFromPayload(),
@@ -266,6 +267,11 @@ export default {
   },
   methods: {
     canHandleReportStep(step) { return canHandleStep(step, this.staffActor) },
+    openReportInfoPanel(step) {
+      this.infoStepKey = step?.step_key || this.currentReportStep?.step_key || ''
+      this.infoReason = ''
+      this.showInfoPanel = Boolean(this.infoStepKey)
+    },
     confirmAction,
     ...queueMethods,
     ...workflowMethods,

@@ -49,6 +49,9 @@ export default {
   async selectRequest(item, { updateRoute = true } = {}) {
     this.stopPolling()
     this.selectedRequest = item
+    this.showInfoPanel = false
+    this.infoReason = ''
+    this.infoStepKey = ''
     this.workspaceSection = 'overview'
     this.selectedReportStepKey = ''
     if (updateRoute) this.syncWorkspaceRoute(item.id, 'overview', { history: 'push' })

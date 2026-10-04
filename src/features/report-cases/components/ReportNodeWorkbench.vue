@@ -111,7 +111,7 @@
           </li>
         </ul>
       </div>
-      <p v-if="viewStep" class="node-owner" role="status">负责专业：{{ ownerLabel }} · {{ viewStep.assignee_id ? "已接单" : "待接单" }}<span v-if="!canAct"> · 本节点供你查看，由对应负责人处理</span></p>
+      <p v-if="viewStep" class="node-owner" role="status">负责专业：{{ ownerLabel }} · {{ viewStep.assignee_id ? "已接单" : "待接单" }}<span v-if="!canAct && !waitingForUser"> · 本节点供你查看，由对应负责人处理</span></p>
       <footer v-if="section === 'overview'" class="node-actions">
         <VanButton
           v-if="canAct && isCurrent && viewStep.status === 'READY'"
@@ -144,6 +144,13 @@
             @click="$emit('complete-step')"
             >确认成果并完成本节点</VanButton
           ></template
+        ><VanButton
+          v-if="canAct && isCurrent && viewStep.status === 'IN_REVIEW'"
+          plain
+          native-type="button"
+          :disabled="loading || toolPending || ['IN_PROGRESS', 'CHAPTER_COHERENCE_CHECK', 'COHERENCE_CHECK'].includes(generationStatus)"
+          @click="$emit('request-info', viewStep)"
+          >向用户补问</VanButton
         ><VanButton
           v-if="viewStep.status === 'COMPLETED' && canReopen && canAct"
           plain
@@ -337,6 +344,7 @@ export default {
     toolPending: Boolean,
     generationStatus: String,
     canReopen: Boolean,
+    waitingForUser: Boolean,
     studioLocation: Object,
   },
   emits: [
@@ -344,13 +352,14 @@ export default {
     "to-section",
     "start-step",
     "complete-step",
+    "request-info",
     "toggle-return",
     "reopen",
     "run-tool",
   ],
   data: () => ({ dialog: "", dialogKind: "tools", dialogTrigger: null }),
   computed: {
-    canAct() { return canHandleStep(this.viewStep, this.actor) },
+    canAct() { return canHandleStep(this.viewStep, this.actor) && !this.waitingForUser },
     ownerLabel() { return specialtyLabels[this.viewStep?.required_capability] || "咨询师" },
     steps() {
       return this.reportCase.workflow_instance?.steps || [];

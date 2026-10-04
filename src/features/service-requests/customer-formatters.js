@@ -33,9 +33,12 @@ export function canWithdrawServiceRequest(status) {
 }
 
 export function serviceRequestEditPath(item) {
-  return item.service_type === 'report'
-    ? '/pages/assessment/assessment?requestId=' + item.id
-    : '/pages/user/user?tab=reports'
+  if (item.service_type === 'report') {
+    return item.report_case_id
+      ? `/pages/requests/requests#request-${item.id}-supplement`
+      : '/pages/assessment/assessment?requestId=' + item.id
+  }
+  return '/pages/user/user?tab=reports'
 }
 
 export { topicLabel }

@@ -173,6 +173,14 @@ async def _authorize_case(db: AsyncSession, case_id: int, actor: User) -> Report
     report_case = await db.get(ReportCase, case_id)
     if report_case is None:
         raise ValueError("report_case_not_found")
+    if report_case.service_request_id is not None:
+        request_status = await db.scalar(
+            select(ServiceRequest.status).where(
+                ServiceRequest.id == report_case.service_request_id
+            )
+        )
+        if request_status == "needs_info":
+            raise ValueError("report_case_waiting_for_user_info")
     if actor.role == "admin":
         return report_case
     if actor.role != "consultant" or report_case.service_request_id is None:

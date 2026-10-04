@@ -114,7 +114,7 @@ async def test_consultant_step_access_checks_assignment_capability_and_current_s
     )
     db = SimpleNamespace(
         get=AsyncMock(return_value=case),
-        scalar=AsyncMock(side_effect=[assigned_request, active_step, active_step]),
+        scalar=AsyncMock(side_effect=[assigned_request, active_step, "accepted", active_step]),
     )
 
     found_case, found_step = await _authorize_step_action(
@@ -127,7 +127,7 @@ async def test_consultant_step_access_checks_assignment_capability_and_current_s
 
     assert found_case is case
     assert found_step is active_step
-    assert db.scalar.await_count == 3
+    assert db.scalar.await_count == 4
 
 
 @pytest.mark.asyncio
@@ -152,6 +152,7 @@ async def test_consultant_cannot_open_unassigned_case_or_ungranted_capability():
             required_capability="skill_editor",
             assignee_id=None,
         ),
+        "accepted",
     ])
     with pytest.raises(HTTPException) as missing_capability:
         await _authorize_step_action(

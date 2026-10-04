@@ -101,6 +101,7 @@
                   :quality="reportQuality"
                   :completion-gate="reportCaseCompletionGate"
                   :loading="reportStepSaving"
+                  :waiting-for-user="workspace.request.status === 'needs_info'"
                   :can-reopen="!['DELIVERED', 'CANCELLED'].includes(reportCase.status)"
                   @start-step="startReportStep"
                   @complete-step="completeReportStep"
@@ -109,7 +110,14 @@
                   @select-step="selectReportNode"
                   @run-tool="runReportNodeTool"
                   @reopen="reopenReportStep"
+                  @request-info="openReportInfoPanel"
                 >
+
+                <div v-if="workspaceSection === 'overview' && showInfoPanel && infoStepKey === selectedReportStepKey" class="info-panel report-info-panel">
+                  <label>向用户补充提问<textarea v-model.trim="infoReason" rows="3" maxlength="1000" placeholder="写清楚需要补充的事实，以及它与当前节点判断的关系。"></textarea></label>
+                  <div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" @click="showInfoPanel = false; infoReason = ''; infoStepKey = ''">取消</VanButton><VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="infoSaving || !infoReason" :loading="infoSaving" @click="requestInfo">{{ infoSaving ? '发送中…' : '发送补充问题' }}</VanButton></div>
+                </div>
+                <div v-if="workspace.request.status === 'needs_info' && workspace.request.needs_info_reason" class="report-waiting-note" role="status">等待用户回复：{{ workspace.request.needs_info_reason }}</div>
 
                 <div v-if="workspaceSection === 'overview' && reportStepReturn.visible" class="report-return-form">
                   <label>退回到哪一步<select v-model="reportStepReturn.targetStepKey"><option value="">选择已完成的前序步骤</option><option v-for="step in reportReturnTargets" :key="step.step_key" :value="step.step_key">第 {{ step.sequence_no }} 步 · {{ reportStepLabel(step.step_key) }}</option></select></label>

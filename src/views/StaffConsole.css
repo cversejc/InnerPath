@@ -61,8 +61,10 @@
 .info-panel { display: grid; gap: 10px; margin-bottom: 16px; border: 1px solid rgba(196, 151, 57, .28); border-radius: 11px; padding: 14px; background: rgba(196, 151, 57, .08); }
 .info-panel label, .editor-panel label, .editor-fieldset label { display: grid; gap: 6px; color: var(--ink-soft, #51463d); font-size: 13px; font-weight: var(--weight-semibold); }
 .info-panel textarea, .editor-panel input, .editor-panel textarea, .editor-panel select { width: 100%; border: 1px solid rgba(80, 54, 32, .16); border-radius: 9px; background: rgba(255, 250, 240, .9); padding: 10px 11px; color: var(--ink, #3b2d24); font: inherit; font-weight: var(--weight-medium); line-height: 1.6; }
+.report-info-panel textarea { font-size: 16px; }
 .info-panel textarea, .editor-panel textarea { resize: vertical; }
 .info-panel > div { display: flex; justify-content: flex-end; gap: 8px; }
+.report-waiting-note { margin: 12px 0; border: 1px solid rgba(196, 151, 57, .28); border-radius: 10px; padding: 11px 13px; background: rgba(196, 151, 57, .1); color: #78561c; line-height: 1.6; }
 .workspace-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-top: 4px; }
 .facts-panel, .ai-panel, .editor-panel { border: 1px solid rgba(80, 54, 32, .11); border-radius: 13px; padding: 15px; background: rgba(255, 250, 240, .5); }
 .panel-heading { align-items: flex-start; margin-bottom: 12px; }

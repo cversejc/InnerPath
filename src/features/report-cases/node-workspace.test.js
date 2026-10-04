@@ -6,7 +6,7 @@ import {
   resolveNodeLocation,
   nodeViews,
 } from "./node-workspace.js";
-import { nodeWorkspaceMethods } from "./node-workspace-state.js";
+import { nodeWorkspaceComputed, nodeWorkspaceMethods } from "./node-workspace-state.js";
 
 const steps = ["S1", "S2", "S3", "S4", "S5", "S6"].map((step_key, index) => ({
   id: index + 1,
@@ -14,6 +14,26 @@ const steps = ["S1", "S2", "S3", "S4", "S5", "S6"].map((step_key, index) => ({
   sequence_no: index + 1,
   status: index === 0 ? "COMPLETED" : index === 1 ? "IN_REVIEW" : "PENDING",
 }));
+
+test("a report node stays read-only while its case waits for user information", () => {
+  const step = {
+    id: 1,
+    status: "IN_REVIEW",
+    required_capability: "mingli",
+    assignee_id: 4,
+  };
+  const context = {
+    selectedReportStep: step,
+    currentReportStep: step,
+    staffActor: { id: 4, role: "consultant", consultant_type: "mingli" },
+    reportCase: { status: "ACTIVE" },
+    workspace: { request: { status: "accepted" } },
+  };
+
+  assert.equal(nodeWorkspaceComputed.canEditSelectedReportStep.call(context), true);
+  context.workspace.request.status = "needs_info";
+  assert.equal(nodeWorkspaceComputed.canEditSelectedReportStep.call(context), false);
+});
 
 test("node links restore the selected history without exposing unrelated functional pages", () => {
   assert.deepEqual(

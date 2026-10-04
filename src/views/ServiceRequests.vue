@@ -46,7 +46,7 @@
       </section>
 
       <section v-else class="request-list" aria-label="我的申请列表">
-        <article v-for="item in filteredRequests" :key="item.id" class="request-card paper-card" :class="`status-${item.status}`">
+        <article v-for="item in filteredRequests" :id="`request-${item.id}`" :key="item.id" class="request-card paper-card" :class="`status-${item.status}`">
           <div class="request-card-head">
             <div class="request-type-mark" :class="`type-${item.service_type}`" aria-hidden="true"><IconMark :name="item.service_type === 'report' ? 'reports' : 'calendar'" /></div>
             <div class="request-card-title">
@@ -65,6 +65,30 @@
               <strong>请补充资料</strong>
               <p>{{ item.needs_info_reason || '咨询师希望进一步了解你的需求。' }}</p>
             </div>
+            <form
+              v-if="item.status === 'needs_info' && item.service_type === 'report' && item.report_case_id"
+              :id="`request-${item.id}-supplement`"
+              class="report-supplement-form"
+              @submit.prevent="submitReportSupplement(item)"
+            >
+              <label :for="`request-${item.id}-answer`">回复咨询师</label>
+              <textarea
+                :id="`request-${item.id}-answer`"
+                v-model="followUpAnswers[item.id]"
+                rows="4"
+                maxlength="4000"
+                required
+                placeholder="补充与问题相关的实际情况；不确定的部分可以直接说明。"
+              ></textarea>
+              <p>回复会作为新的用户资料进入当前审核节点。</p>
+              <VanButton
+                class="primary-button compact-button"
+                type="primary"
+                native-type="submit"
+                :disabled="supplementSubmittingId === item.id || !String(followUpAnswers[item.id] || '').trim()"
+                :loading="supplementSubmittingId === item.id"
+              >{{ supplementSubmittingId === item.id ? '提交中…' : '提交补充资料' }}</VanButton>
+            </form>
             <div v-if="item.status === 'failed'" class="needs-info-note failed-note" role="alert">
               <strong>初步分析暂未完成</strong>
               <p>咨询师会在工作台中重试，当前申请仍可继续跟进。</p>
@@ -74,7 +98,7 @@
           <footer class="request-card-actions">
             <router-link v-if="item.status === 'delivered' && item.result_type === 'report'" class="primary-button compact-button" :to="`/pages/report/detail?id=${item.result_id}`">查看报告</router-link>
             <router-link v-else-if="item.status === 'delivered' && item.result_type === 'calendar'" class="primary-button compact-button" to="/pages/calendar/calendar">打开日历</router-link>
-            <router-link v-if="item.status === 'needs_info'" class="secondary-button compact-button" :to="editPath(item)">补充资料</router-link>
+            <router-link v-if="item.status === 'needs_info' && !(item.service_type === 'report' && item.report_case_id)" class="secondary-button compact-button" :to="editPath(item)">补充资料</router-link>
             <VanButton v-if="canWithdraw(item.status)" type="default" plain native-type="button" class="text-button danger-text" :disabled="withdrawnId === item.id" @click="withdraw(item)">{{ withdrawnId === item.id ? '撤回中…' : '撤回申请' }}</VanButton>
             <span v-if="item.status === 'delivered'" class="delivered-stamp">已由咨询师交付</span>
           </footer>

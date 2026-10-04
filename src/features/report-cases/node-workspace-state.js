@@ -36,6 +36,7 @@ export const nodeWorkspaceComputed = {
       this.selectedReportStep?.id === this.currentReportStep?.id &&
       this.currentReportStep?.status === "IN_REVIEW" &&
       canHandleStep(this.selectedReportStep, this.staffActor) &&
+      this.workspace?.request?.status !== "needs_info" &&
       !["DELIVERED", "CANCELLED"].includes(this.reportCase?.status)
     );
   },

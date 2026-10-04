@@ -42,6 +42,11 @@
 .needs-info-note strong { font-size: 14px; }
 .needs-info-note p { margin: 4px 0 0; line-height: 1.6; }
 .failed-note { background: rgba(158, 63, 53, .08); color: var(--cinnabar-deep, #9e3f35); }
+.report-supplement-form { display: grid; gap: 8px; margin-top: 12px; border-top: 1px solid rgba(125, 102, 83, .16); padding-top: 12px; }
+.report-supplement-form label { color: var(--ink-soft, #51463d); font-size: var(--text-body-sm, 14px); font-weight: var(--weight-semibold); }
+.report-supplement-form textarea { width: 100%; min-height: 104px; border: 1px solid rgba(80, 54, 32, .18); border-radius: 10px; padding: 10px 12px; background: rgba(255, 250, 240, .9); color: var(--ink, #3b2d24); font: inherit; font-size: 16px; line-height: 1.6; resize: vertical; }
+.report-supplement-form p { margin: 0; color: var(--muted, #7d6653); font-size: var(--text-caption, 12px); line-height: 1.5; }
+.report-supplement-form :deep(button) { min-height: 44px; justify-self: start; }
 .request-card-actions { margin-left: 62px; }
 .text-button { height: auto; min-height: 44px; border: 0; padding: 0 4px; background: transparent; font: inherit; font-weight: var(--weight-medium); cursor: pointer; }
 .danger-text { color: var(--cinnabar-deep, #9e3f35); }
@@ -64,6 +69,7 @@
   .request-card-title h2 { font-size: 20px; }
   .request-card-body, .request-card-actions { margin-left: 0; }
   .request-card-body { margin-top: 14px; }
+  .report-supplement-form :deep(button) { width: 100%; }
   .request-card-actions { align-items: stretch; }
   .request-card-actions > .primary-button, .request-card-actions > .secondary-button { flex: 1; text-align: center; }
   .delivered-stamp { width: 100%; margin-left: 0; }

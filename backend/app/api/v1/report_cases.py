@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
+from app.api.v1.service_request_api_support import _serialize_public
 from app.application.workflow_commands import (
     assign_case_step,
     complete_case_step,
@@ -36,6 +37,10 @@ from app.application.report_quality import (
 from app.application.report_delivery import (
     approve_case_final_gate,
     deliver_report_case,
+)
+from app.application.report_case_info import (
+    request_report_case_info,
+    submit_report_case_supplement,
 )
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
@@ -75,6 +80,10 @@ from app.domains.quality.schemas import (
     ReportQualityResponse,
 )
 from app.domains.service_requests.models import ServiceRequest
+from app.domains.service_requests.schemas import (
+    ServiceRequestInfoInput,
+    ServiceRequestResponse,
+)
 from app.domains.workflow.models import (
     ReportCase,
     StepTask,
@@ -90,6 +99,8 @@ from app.domains.workflow.schemas import (
     StepCompleteInput,
     StepCompletionGateResponse,
     StepReturnInput,
+    ReportCaseSupplementInput,
+    ReportCaseSupplementResponse,
     StepTaskResponse,
     WorkflowInstanceResponse,
     WorkflowVersionCreate,
@@ -106,6 +117,7 @@ def _workflow_error(error: ValueError) -> None:
     code = str(error)
     if code in {
         "report_case_not_found",
+        "report_case_user_request_required",
         "workflow_instance_not_found",
         "step_task_not_found",
         "workflow_version_not_found",
@@ -152,6 +164,13 @@ def _workflow_error(error: ValueError) -> None:
         "final_qa_not_complete",
         "final_qa_issues_open_or_stale",
         "workflow_not_ready_to_deliver",
+        "step_not_current",
+        "report_case_info_request_not_allowed",
+        "report_case_skill_run_in_progress",
+        "report_case_waiting_for_user_info",
+        "report_case_not_waiting_for_user_info",
+        "report_case_supplement_idempotency_conflict",
+        "report_case_waiting_step_missing",
         "workflow_not_complete",
         "report_fragments_required",
         "report_profile_snapshot_invalid",
@@ -172,7 +191,7 @@ def _workflow_error(error: ValueError) -> None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
-    if code.startswith(("workflow_", "step_", "narrative_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_authoring_", "report_coherence_", "fragment_narrative_", "final_qa_", "qa_", "framework_", "product_framework_", "reasoning_", "case_skill_")):
+    if code.startswith(("workflow_", "step_", "narrative_", "report_case_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_authoring_", "report_coherence_", "fragment_narrative_", "final_qa_", "qa_", "framework_", "product_framework_", "reasoning_", "case_skill_")):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
         )
@@ -235,6 +254,17 @@ async def _authorize_step_action(
     )
     if task is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Step not found")
+    if report_case.service_request_id is not None:
+        request_status = await db.scalar(
+            select(ServiceRequest.status).where(
+                ServiceRequest.id == report_case.service_request_id
+            )
+        )
+        if request_status == "needs_info":
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="report_case_waiting_for_user_info",
+            )
     try:
         validate_step_actor(task, actor)
     except ValueError as error:
@@ -396,6 +426,58 @@ async def get_report_case(
 ):
     report_case = await _case_for_read_or_action(db, case_id, current_user)
     return await _serialize_case(db, report_case)
+
+
+@router.post("/{case_id}/steps/{step_key}/request-info", response_model=ServiceRequestResponse)
+async def request_report_case_user_info(
+    case_id: int,
+    step_key: str,
+    data: ServiceRequestInfoInput,
+    request: Request,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _authorize_step_action(
+        db, case_id, step_key, current_user, require_current_review=True
+    )
+    try:
+        service_request = await request_report_case_info(
+            db,
+            report_case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+            reason=data.reason,
+            audit_context=audit_context_from_request(request),
+        )
+        return await _serialize_public(db, service_request)
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/supplements",
+    response_model=ReportCaseSupplementResponse,
+)
+async def submit_report_case_user_supplement(
+    case_id: int,
+    data: ReportCaseSupplementInput,
+    request: Request,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        return await submit_report_case_supplement(
+            db,
+            report_case_id=case_id,
+            user=current_user,
+            response_key=data.response_key,
+            answer=data.answer,
+            audit_context=audit_context_from_request(request),
+        )
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
 
 
 @router.get("/{case_id}/content", response_model=ReportCaseContentResponse)

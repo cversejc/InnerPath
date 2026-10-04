@@ -94,5 +94,18 @@ class StepReturnInput(BaseModel):
     reason: str = Field(..., min_length=1, max_length=1000)
 
 
+class ReportCaseSupplementInput(BaseModel):
+    response_key: str = Field(..., min_length=8, max_length=128)
+    answer: str = Field(..., min_length=1, max_length=4000)
+
+
+class ReportCaseSupplementResponse(BaseModel):
+    report_case_id: int
+    service_request_id: int
+    evidence_key: str
+    step_key: str
+    status: str
+
+
 class StepAssignmentInput(BaseModel):
     assignee_id: Optional[int] = Field(None, gt=0)

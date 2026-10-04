@@ -599,9 +599,12 @@ async def test_http_application_dual_acceptance_and_step_permissions(chain_db):
     import httpx
     from app.db.session import get_db
     from app.dependencies import get_current_active_user
-    from app.domains.workflow.models import ReportCase
+    from app.domains.content.models import CaseEvidenceItem
+    from app.domains.service_requests.models import ServiceRequest
+    from app.domains.skills.service import create_skill_run
+    from app.domains.workflow.models import ReportCase, WorkflowInstance
 
-    user, _, _, _ = await seed_report(chain_db)
+    user, other, _, _ = await seed_report(chain_db)
     mingli = User(phone="13800009921", name="命理接口测试", role="consultant", consultant_type="mingli")
     psychology = User(phone="13800009922", name="心理接口测试", role="consultant", consultant_type="psychology")
     chain_db.add_all([mingli, psychology])
@@ -639,5 +642,145 @@ async def test_http_application_dual_acceptance_and_step_permissions(chain_db):
             actor = mingli
             started = await client.post(f"/api/v1/report-cases/{case.id}/steps/S1/start")
             assert started.status_code == 200 and started.json()["status"] == "IN_REVIEW"
+
+            step = await chain_db.scalar(select(StepTask).where(
+                StepTask.workflow_instance_id == case.workflow_instance_id,
+                StepTask.step_key == "S1",
+            ))
+            original_activation = step.activation_no
+            pending_run, _ = await create_skill_run(
+                chain_db,
+                skill_version_id=case.application_snapshot["skill_bindings"]["report.s1_foundation_analysis"]["id"],
+                idempotency_key="pending-before-report-follow-up",
+                input_snapshot={},
+                context_snapshot={},
+                run_type="INITIAL",
+                target_type="REPORT_ANALYSIS_DRAFT",
+                target_key="S1",
+                report_case_id=case.id,
+                workflow_instance_id=case.workflow_instance_id,
+                step_task_id=step.id,
+            )
+            await chain_db.commit()
+            blocked_info_request = await client.post(
+                f"/api/v1/report-cases/{case.id}/steps/S1/request-info",
+                json={"reason": "等待中的技能任务必须先完成"},
+            )
+            assert blocked_info_request.status_code == 409
+            assert blocked_info_request.json()["detail"] == "report_case_skill_run_in_progress"
+            still_active_request = await chain_db.get(ServiceRequest, request_id)
+            assert still_active_request.status == "accepted" and case.status == "ACTIVE"
+            pending_run.status = "FAILED"
+            await chain_db.commit()
+
+            original_snapshot = deepcopy(case.application_snapshot)
+            question = "最近的工作边界冲突具体发生在什么情境？"
+            requested_info = await client.post(
+                f"/api/v1/report-cases/{case.id}/steps/S1/request-info",
+                json={"reason": question},
+            )
+            assert requested_info.status_code == 200, requested_info.text
+            assert requested_info.json()["status"] == "needs_info"
+            request = await chain_db.get(ServiceRequest, request_id)
+            instance = await chain_db.get(WorkflowInstance, case.workflow_instance_id)
+            step = await chain_db.scalar(select(StepTask).where(
+                StepTask.workflow_instance_id == case.workflow_instance_id,
+                StepTask.step_key == "S1",
+            ))
+            assert request.needs_info_reason == question
+            assert case.status == "BLOCKED" and instance.status == "SUSPENDED"
+            assert step.status == "IN_REVIEW"
+
+            blocked_action = await client.post(f"/api/v1/report-cases/{case.id}/steps/S1/start")
+            assert blocked_action.status_code == 409
+            assert blocked_action.json()["detail"] == "report_case_waiting_for_user_info"
+            blocked_skill = await client.post(
+                f"/api/v1/report-cases/{case.id}/steps/S1/analysis-drafts",
+                json={"idempotency_key": "blocked-report-analysis"},
+            )
+            assert blocked_skill.status_code == 409
+            assert blocked_skill.json()["detail"] == "report_case_waiting_for_user_info"
+            actor = other
+            denied_supplement = await client.post(
+                f"/api/v1/report-cases/{case.id}/supplements",
+                json={"response_key": "other-user-reply-1", "answer": "无权查看的回复"},
+            )
+            assert denied_supplement.status_code == 404
+
+            actor = user
+            answer = "冲突主要发生在临时增加工作任务时，我通常会先答应再感到压力。"
+            supplement_payload = {"response_key": "report-user-reply-001", "answer": answer}
+            supplemented = await client.post(
+                f"/api/v1/report-cases/{case.id}/supplements", json=supplement_payload
+            )
+            assert supplemented.status_code == 200, supplemented.text
+            supplement = supplemented.json()
+            assert supplement["status"] == "accepted"
+            assert supplement["step_key"] == "S1"
+            assert supplement["evidence_key"] == "user.follow_up.001"
+            assert case.application_snapshot == original_snapshot
+            assert case.status == "ACTIVE" and instance.status == "RUNNING"
+            assert step.status == "IN_REVIEW"
+            assert step.activation_no == original_activation + 1
+            evidence = await chain_db.scalar(select(CaseEvidenceItem).where(
+                CaseEvidenceItem.report_case_id == case.id,
+                CaseEvidenceItem.evidence_key == supplement["evidence_key"],
+            ))
+            assert evidence.source_type == "USER_PROVIDED"
+            assert evidence.value_json == {"question": question, "answer": answer, "step_key": "S1"}
+            assert request.request_payload["report_case_supplements"][0]["evidence_key"] == evidence.evidence_key
+
+            duplicate = await client.post(
+                f"/api/v1/report-cases/{case.id}/supplements", json=supplement_payload
+            )
+            assert duplicate.status_code == 200
+            assert duplicate.json()["evidence_key"] == evidence.evidence_key
+            assert await chain_db.scalar(select(func.count(CaseEvidenceItem.id)).where(
+                CaseEvidenceItem.report_case_id == case.id,
+                CaseEvidenceItem.evidence_key == evidence.evidence_key,
+            )) == 1
+            conflicting_retry = await client.post(
+                f"/api/v1/report-cases/{case.id}/supplements",
+                json={"response_key": "report-user-reply-001", "answer": "不同答案"},
+            )
+            assert conflicting_retry.status_code == 409
+            assert conflicting_retry.json()["detail"] == "report_case_supplement_idempotency_conflict"
+
+            actor = mingli
+            second_question = "你提到先答应，之后通常会如何影响休息或关系？"
+            requested_again = await client.post(
+                f"/api/v1/report-cases/{case.id}/steps/S1/request-info",
+                json={"reason": second_question},
+            )
+            assert requested_again.status_code == 200, requested_again.text
+            actor = user
+            second_answer = "那周会减少休息时间，也会担心拒绝后影响合作。"
+            second_supplement = await client.post(
+                f"/api/v1/report-cases/{case.id}/supplements",
+                json={"response_key": "report-user-reply-002", "answer": second_answer},
+            )
+            assert second_supplement.status_code == 200, second_supplement.text
+            assert second_supplement.json()["evidence_key"] == "user.follow_up.002"
+            assert step.activation_no == original_activation + 2
+            assert len(request.request_payload["report_case_supplements"]) == 2
+            second_evidence = await chain_db.scalar(select(CaseEvidenceItem).where(
+                CaseEvidenceItem.report_case_id == case.id,
+                CaseEvidenceItem.evidence_key == "user.follow_up.002",
+            ))
+            assert second_evidence.value_json == {
+                "question": second_question,
+                "answer": second_answer,
+                "step_key": "S1",
+            }
+
+            actor = mingli
+            resumed_case = await client.get(f"/api/v1/report-cases/{case.id}")
+            assert resumed_case.status_code == 200
+            resumed_step = next(item for item in resumed_case.json()["workflow_instance"]["steps"]
+                                if item["step_key"] == "S1")
+            assert resumed_step["status"] == "IN_REVIEW"
+            report_content = await client.get(f"/api/v1/report-cases/{case.id}/content")
+            assert report_content.status_code == 200
+            assert any(item["evidence_key"] == evidence.evidence_key for item in report_content.json()["evidence"])
     finally:
         app.dependency_overrides.clear()

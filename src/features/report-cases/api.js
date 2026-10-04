@@ -5,6 +5,19 @@ export async function getReportCase(caseId) {
   return response.data
 }
 
+export async function requestReportCaseInfo(caseId, stepKey, reason) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/steps/${stepKey}/request-info`,
+    { reason }
+  )
+  return response.data
+}
+
+export async function submitReportCaseSupplement(caseId, payload) {
+  const response = await apiClient.post(`/report-cases/${caseId}/supplements`, payload)
+  return response.data
+}
+
 export async function getReportCaseContent(caseId) {
   const response = await apiClient.get(`/report-cases/${caseId}/content`)
   return response.data
