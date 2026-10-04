@@ -415,106 +415,183 @@ async def test_public_endpoints_return_queue_progress_and_only_owner_calendar(ch
 
 @pytest.mark.asyncio
 async def test_delivered_version_is_calendar_source_and_links_logs_to_case(chain_db, monkeypatch):
-    """Exercise the delivery/calendar seam with a supplied approved QA fixture.
+    """Exercise the user-to-consultant-to-report-to-calendar API chain.
 
-    Report quality and step completion gates are exercised in their own suites.
-    This test uses real persisted report assets, assembly and calendar production.
+    The analysis assets and completed QA run are a synthetic, pre-reviewed
+    professional fixture; the HTTP workflow, final attestation, delivery,
+    customer report read, calendar request, and calendar production are real.
     """
     from unittest.mock import AsyncMock
+    import httpx
     from app.application import report_delivery
     from app.domains.content.models import CaseEvidenceItem, FindingRevision, NarrativePlan, ContentFragmentRevision
+    from app.domains.service_requests.models import ServiceRequest
     from app.domains.workflow.models import WorkflowInstance
     from app.domains.skills.service import create_skill_run
     from app.domains.calendar.context import calendar_model_context
+    from app.db.session import get_db
+    from app.dependencies import get_current_active_user
 
     db = chain_db
-    user, _, _, data = await seed_report(db)
+    user, other, _, data = await seed_report(db)
     mingli = User(phone="13800009911", name="合成命理", role="consultant", consultant_type="mingli")
     psychology = User(phone="13800009912", name="合成心理", role="consultant", consultant_type="psychology")
     db.add_all([mingli, psychology])
     await db.flush()
-    request, case = await create_user_service_request(db, user, ServiceRequestCreate(service_type="report",
-        profile={"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
-        context={"current_challenge": "测试边界", "focus_topics": ["career"]}, idempotency_key="delivered-chain"))
-    await accept_service_request(db, request.id, mingli)
-    await accept_service_request(db, request.id, psychology)
-    skill_id = case.application_snapshot["skill_bindings"]["report.narrative_plan"]["id"]
-    source_run, _ = await create_skill_run(db, skill_version_id=skill_id,
-        idempotency_key="delivered-fixture", input_snapshot={}, context_snapshot={}, report_case_id=case.id)
-    source_run.status = "COMPLETED"
-    now = datetime.utcnow()
-    foundation = {"bazi": {"day": "丁丑"}, "bazi_facts": {"dayun": [
-        {"pillar": "甲寅", "start_year": 2020, "end_year": 2029}]}}
-    db.add(CaseEvidenceItem(report_case_id=case.id, evidence_key="reviewed.chart", source_type="SYSTEM_CALCULATED",
-        source_ref="reviewed-fixture", value_json=foundation, status="ACTIVE", created_at=now))
-    db.add(FindingRevision(report_case_id=case.id, finding_key="finding.boundary", revision_no=1,
-        semantic_revision=1, content_revision=1, semantic_role="RESOURCE", claim="小步验证工作边界",
-        confidence="MEDIUM", importance="MEDIUM", reportability="RECOMMENDED", status="CONFIRMED",
-        evidence_refs=["reviewed.chart"], structured_data_json={"action_experiment": "先协商一项具体分工"}, created_at=now))
-    db.add(FindingRevision(report_case_id=case.id, finding_key="finding.block", revision_no=1,
-        semantic_revision=1, content_revision=1, semantic_role="BLOCK", claim="表达边界前反复准备",
-        confidence="MEDIUM", importance="HIGH", reportability="MUST_INCLUDE", status="CONFIRMED",
-        evidence_refs=["reviewed.chart"], structured_data_json={}, created_at=now))
-    db.add(FindingRevision(report_case_id=case.id, finding_key="zz.action.boundary", revision_no=1,
-        semantic_revision=1, content_revision=1, semantic_role="ACTION", claim="每周做一次低风险边界沟通",
-        confidence="MEDIUM", importance="MEDIUM", reportability="RECOMMENDED", status="CONFIRMED",
-        evidence_refs=["reviewed.chart"], structured_data_json={
-            "frequency": "weekly", "duration_minutes": 15,
-            "steps": ["写下一句边界表达", "选择一次低风险沟通"], "method": "小步沟通",
-            "observation": "记录对方实际回应", "stop_rule": "感到不安全时暂停",
-            "block_refs": ["finding.block"], "reasoning_path": {
-                "resource_refs": ["finding.boundary"], "regulation_function": "降低准备成本",
-                "capacity": "清晰表达", "reality_gap": "表达前容易反复准备",
-                "integration_task": "兼顾关系与边界", "tool": "小步沟通",
-                "rationale": "从低风险情境开始",
-            },
-        }, created_at=now))
-    plan = NarrativePlan(report_case_id=case.id, version_no=1, status="CONFIRMED",
-        selected_skill_run_id=source_run.id, selected_candidate_key="fixture", plan_json={"core_theme": "已签核的边界主题"},
-        source_snapshot={}, created_at=now, confirmed_at=now)
-    db.add(plan)
-    await db.flush()
-    db.add(ContentFragmentRevision(report_case_id=case.id, fragment_key="report.boundary", revision_no=1,
-        semantic_revision=1, content_revision=1, fragment_type="REPORT", title="工作边界", content="先协商一项具体分工。",
-        status="CONFIRMED", source_snapshot={}, source_narrative_plan_id=plan.id, source_skill_run_id=source_run.id,
-        created_at=now))
-    steps = list(await db.scalars(select(StepTask).where(StepTask.workflow_instance_id == case.workflow_instance_id)))
-    for step in steps:
-        step.status = "COMPLETED"
-        step.completed_at = now
-        if step.step_key == "S6":
-            step.result_json = {"final_gate_approved": True, "attested_by": psychology.id}
-    instance = await db.get(WorkflowInstance, case.workflow_instance_id)
-    instance.status, case.status = "COMPLETED", "READY_TO_DELIVER"
-    await db.commit()
-    monkeypatch.setattr(report_delivery, "delivery_quality_snapshot", AsyncMock(return_value={"can_approve": True}))
-    with pytest.raises(ValueError, match="step_specialty_required"):
-        await report_delivery.deliver_report_case(db, report_case=case, actor=mingli)
-    version = await report_delivery.deliver_report_case(db, report_case=case, actor=psychology)
-    delivered = await db.get(Report, request.result_id)
-    assert case.status == "DELIVERED" and request.status == "delivered"
-    assert delivered.input_snapshot["report_version"]["id"] == version.id
-    # The mutable user-facing projection must never overwrite the signed snapshot.
-    delivered.summary = "后来改写的投影"
-    delivered.content_payload = {"structured_sections": [{"fragment_key": "changed", "content": "changed"}]}
-    await db.commit()
-    calendar_request = await queue_calendar_from_report(db, user, data.model_copy(update={"source_report_id": delivered.id}))
-    source = calendar_request.input_snapshot["source_report"]
-    assert source["summary"] == "已签核的边界主题"
-    assert source["reviewed_foundation"] == foundation and source["report_version_id"] == version.id
-    assert source["practice_rhythm"]["report_version_id"] == version.id
-    assert [action["action_id"] for action in source["practice_rhythm"]["actions"]] == ["zz.action.boundary"]
-    projected = calendar_model_context(calendar_request.input_snapshot, calculate_temporal_facts(data.start_date, foundation))
-    assert any(f["structured_data"].get("action_experiment")
-        for f in projected["source_report"]["confirmed_semantics"]["findings"])
-    assert (await execute_calendar_production(db, calendar_request.id, 1, gateway=CalendarGateway()))["status"] == "fulfilled"
-    calendar = await db.scalar(select(UserCalendar).where(UserCalendar.calendar_request_id == calendar_request.id))
-    assert calendar.meta_payload["source_report_version_id"] == version.id
-    assert calendar.meta_payload["practice_rhythm"]["report_version_id"] == version.id
-    assert sum(details["action_refs"] == ["zz.action.boundary"]
-        for details in calendar.meta_payload["daily_details"].values()) == 5
-    runs = list(await db.scalars(select(SkillRun).where(SkillRun.target_type == "CALENDAR_PRODUCTION")))
-    assert len(runs) == 8 and all(run.report_case_id == case.id for run in runs)
+    actor = user
+
+    async def database():
+        yield db
+
+    async def current_user():
+        return actor
+
+    app.dependency_overrides[get_db] = database
+    app.dependency_overrides[get_current_active_user] = current_user
+    try:
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            submitted = await client.post("/api/v1/service-requests", json={
+                "service_type": "report",
+                "profile": {"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
+                "context": {"current_challenge": "测试边界", "focus_topics": ["career"]},
+                "idempotency_key": "delivered-chain-http",
+            })
+            assert submitted.status_code == 201, submitted.text
+            request_id = submitted.json()["id"]
+            from app.domains.workflow.models import ReportCase
+            request = await db.get(ServiceRequest, request_id)
+            case = await db.scalar(select(ReportCase).where(ReportCase.service_request_id == request_id))
+            assert request is not None and case is not None
+
+            actor = mingli
+            accepted_mingli = await client.post(f"/api/v1/staff/service-requests/{request_id}/accept")
+            assert accepted_mingli.status_code == 200, accepted_mingli.text
+            actor = psychology
+            accepted_psychology = await client.post(f"/api/v1/staff/service-requests/{request_id}/accept")
+            assert accepted_psychology.status_code == 200, accepted_psychology.text
+            assert accepted_psychology.json()["assigned_mingli_consultant_id"] == mingli.id
+            assert accepted_psychology.json()["assigned_psychology_consultant_id"] == psychology.id
+
+            skill_id = case.application_snapshot["skill_bindings"]["report.narrative_plan"]["id"]
+            source_run, _ = await create_skill_run(db, skill_version_id=skill_id,
+                idempotency_key="delivered-fixture", input_snapshot={}, context_snapshot={}, report_case_id=case.id)
+            source_run.status = "COMPLETED"
+            now = datetime.utcnow()
+            foundation = {"bazi": {"day": "丁丑"}, "bazi_facts": {"dayun": [
+                {"pillar": "甲寅", "start_year": 2020, "end_year": 2029}]}}
+            db.add(CaseEvidenceItem(report_case_id=case.id, evidence_key="reviewed.chart", source_type="SYSTEM_CALCULATED",
+                source_ref="reviewed-fixture", value_json=foundation, status="ACTIVE", created_at=now))
+            db.add(FindingRevision(report_case_id=case.id, finding_key="finding.boundary", revision_no=1,
+                semantic_revision=1, content_revision=1, semantic_role="RESOURCE", claim="小步验证工作边界",
+                confidence="MEDIUM", importance="MEDIUM", reportability="RECOMMENDED", status="CONFIRMED",
+                evidence_refs=["reviewed.chart"], structured_data_json={"action_experiment": "先协商一项具体分工"}, created_at=now))
+            db.add(FindingRevision(report_case_id=case.id, finding_key="finding.block", revision_no=1,
+                semantic_revision=1, content_revision=1, semantic_role="BLOCK", claim="表达边界前反复准备",
+                confidence="MEDIUM", importance="HIGH", reportability="MUST_INCLUDE", status="CONFIRMED",
+                evidence_refs=["reviewed.chart"], structured_data_json={}, created_at=now))
+            db.add(FindingRevision(report_case_id=case.id, finding_key="zz.action.boundary", revision_no=1,
+                semantic_revision=1, content_revision=1, semantic_role="ACTION", claim="每周做一次低风险边界沟通",
+                confidence="MEDIUM", importance="MEDIUM", reportability="RECOMMENDED", status="CONFIRMED",
+                evidence_refs=["reviewed.chart"], structured_data_json={
+                    "frequency": "weekly", "duration_minutes": 15,
+                    "steps": ["写下一句边界表达", "选择一次低风险沟通"], "method": "小步沟通",
+                    "observation": "记录对方实际回应", "stop_rule": "感到不安全时暂停",
+                    "block_refs": ["finding.block"], "reasoning_path": {
+                        "resource_refs": ["finding.boundary"], "regulation_function": "降低准备成本",
+                        "capacity": "清晰表达", "reality_gap": "表达前容易反复准备",
+                        "integration_task": "兼顾关系与边界", "tool": "小步沟通",
+                        "rationale": "从低风险情境开始",
+                    },
+                }, created_at=now))
+            plan = NarrativePlan(report_case_id=case.id, version_no=1, status="CONFIRMED",
+                selected_skill_run_id=source_run.id, selected_candidate_key="fixture", plan_json={"core_theme": "已签核的边界主题"},
+                source_snapshot={}, created_at=now, confirmed_at=now)
+            db.add(plan)
+            await db.flush()
+            db.add(ContentFragmentRevision(report_case_id=case.id, fragment_key="report.boundary", revision_no=1,
+                semantic_revision=1, content_revision=1, fragment_type="REPORT", title="工作边界", content="先协商一项具体分工。",
+                status="CONFIRMED", source_snapshot={}, source_narrative_plan_id=plan.id, source_skill_run_id=source_run.id,
+                created_at=now))
+            steps = list(await db.scalars(select(StepTask).where(StepTask.workflow_instance_id == case.workflow_instance_id)))
+            for step in steps:
+                if step.step_key == "S6":
+                    step.status = "IN_REVIEW"
+                    step.started_at = now
+                else:
+                    step.status = "COMPLETED"
+                    step.completed_at = now
+            instance = await db.get(WorkflowInstance, case.workflow_instance_id)
+            instance.status, case.status = "RUNNING", "ACTIVE"
+            validator_id = case.application_snapshot["skill_bindings"]["report.final_validator"]["id"]
+            validator, _ = await create_skill_run(db, skill_version_id=validator_id,
+                idempotency_key="delivered-qa-fixture", input_snapshot={}, context_snapshot={"qa_fingerprint": "fixture-approved"},
+                run_type="VALIDATE", target_type="REPORT_QA", target_key="report.final", report_case_id=case.id,
+                workflow_instance_id=case.workflow_instance_id)
+            validator.status, validator.output_raw, validator.output_parsed = "COMPLETED", "{}", {"approved": True}
+            validator.completed_at = now
+            await db.commit()
+
+            monkeypatch.setattr(report_delivery, "case_can_be_delivered", AsyncMock(return_value=True))
+            monkeypatch.setattr(report_delivery, "delivery_quality_snapshot", AsyncMock(return_value={"can_approve": True}))
+            actor = mingli
+            denied = await client.post(f"/api/v1/report-cases/{case.id}/final-gate/approve", json={"attested": True})
+            assert denied.status_code == 403 and denied.json()["detail"] == "step_specialty_required"
+            actor = psychology
+            approved = await client.post(f"/api/v1/report-cases/{case.id}/final-gate/approve", json={
+                "attested": True, "note": "合成测试：已完成心理侧最终复核",
+            })
+            assert approved.status_code == 200 and approved.json()["status"] == "COMPLETED"
+            delivered_response = await client.post(f"/api/v1/report-cases/{case.id}/deliver")
+            assert delivered_response.status_code == 200, delivered_response.text
+            version = delivered_response.json()
+            assert version["structured_data"]["structured_sections"][0]["fragment_key"] == "report.boundary"
+            delivered = await db.get(Report, request.result_id)
+            assert case.status == "DELIVERED" and request.status == "delivered"
+            assert version["id"] == delivered.input_snapshot["report_version"]["id"]
+
+            actor = user
+            user_report = await client.get(f"/api/v1/reports/{delivered.id}")
+            assert user_report.status_code == 200 and user_report.json()["id"] == delivered.id
+            assert user_report.json()["content_payload"]["structured_sections"][0]["content"] == "先协商一项具体分工。"
+
+            # The mutable user-facing projection must never overwrite the signed snapshot.
+            delivered.summary = "后来改写的投影"
+            delivered.content_payload = {"structured_sections": [{"fragment_key": "changed", "content": "changed"}]}
+            await db.commit()
+            calendar_data = data.model_copy(update={"source_report_id": delivered.id})
+            calendar_response = await client.post("/api/v1/calendar/requests", json=calendar_data.model_dump(mode="json"))
+            assert calendar_response.status_code == 202, calendar_response.text
+            calendar_request_id = calendar_response.json()["id"]
+            assert calendar_response.json()["status"] == "queued"
+            calendar_request = await db.get(CalendarRequest, calendar_request_id)
+            source = calendar_request.input_snapshot["source_report"]
+            assert source["summary"] == "已签核的边界主题"
+            assert source["reviewed_foundation"] == foundation and source["report_version_id"] == version["id"]
+            assert source["practice_rhythm"]["report_version_id"] == version["id"]
+            assert [action["action_id"] for action in source["practice_rhythm"]["actions"]] == ["zz.action.boundary"]
+            projected = calendar_model_context(calendar_request.input_snapshot,
+                calculate_temporal_facts(calendar_data.start_date, foundation))
+            assert any(f["structured_data"].get("action_experiment")
+                for f in projected["source_report"]["confirmed_semantics"]["findings"])
+            assert (await execute_calendar_production(db, calendar_request.id, 1, gateway=CalendarGateway()))["status"] == "fulfilled"
+            progress = (await client.get("/api/v1/calendar/requests")).json()["items"][0]
+            assert progress["id"] == calendar_request.id and progress["completed_runs"] == 8
+            calendars = await client.get("/api/v1/calendar/me")
+            assert calendars.status_code == 200 and len(calendars.json()["items"][0]["entries"]) == 30
+            calendar = await db.scalar(select(UserCalendar).where(UserCalendar.calendar_request_id == calendar_request.id))
+            assert calendar.meta_payload["source_report_version_id"] == version["id"]
+            assert calendar.meta_payload["practice_rhythm"]["report_version_id"] == version["id"]
+            assert sum(details["action_refs"] == ["zz.action.boundary"]
+                for details in calendar.meta_payload["daily_details"].values()) == 5
+            runs = list(await db.scalars(select(SkillRun).where(SkillRun.target_type == "CALENDAR_PRODUCTION")))
+            assert len(runs) == 8 and all(run.report_case_id == case.id for run in runs)
+            actor = other
+            assert (await client.get(f"/api/v1/reports/{delivered.id}")).status_code == 404
+            assert (await client.get("/api/v1/calendar/me")).json()["items"] == []
+            assert (await client.post("/api/v1/calendar/requests",
+                json=calendar_data.model_dump(mode="json"))).status_code == 422
+    finally:
+        app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
