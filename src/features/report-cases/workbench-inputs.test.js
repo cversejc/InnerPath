@@ -76,6 +76,34 @@ test('every report step exposes a task, concrete inputs, and consultant tools', 
   }
 })
 
+test('collection reading retains complete confirmed prose and its originating node', () => {
+  const prose = '已确认的分析内容。'.repeat(60) + '完整结尾不能被概览截断。'
+  const content = { findings: [foundationFinding], evidence: [], fragments: [
+    { fragment_key: 'analysis.s1.complete', fragment_type: 'ANALYSIS', status: 'CONFIRMED', owner_step_task_id: 1, content: prose, title: '前序分析' },
+    { fragment_key: 'report.identity.outer_self', fragment_type: 'REPORT', status: 'CONFIRMED', owner_step_task_id: 5, content: prose, title: '完整正文' },
+    { fragment_key: 'unreviewed', fragment_type: 'REPORT', status: 'PROPOSED', owner_step_task_id: 5, content: '未审核内容' }
+  ] }
+  const s3 = buildWorkbenchInputGroups({ stage: reportStage('S3'), reportCase: makeCase('S3'), content })
+  const analysis = s3.find(group => group.key === 'upstreamFragments')
+  assert.equal(analysis.continuous, true)
+  assert.equal(analysis.items[0].body, prose)
+  assert.equal(analysis.items[0].origin, '第 1 步')
+  assert.equal(s3.find(group => group.key === 'upstreamFindings').items[0].origin, '第 1 步')
+  const report = buildWorkbenchInputGroups({ stage: reportStage('S6'), reportCase: makeCase('S6'), content }).find(group => group.key === 'reportFragments')
+  assert.equal(report.items.length, 1)
+  assert.equal(report.items[0].body, prose)
+  assert.equal(report.items[0].origin, '第 5 步')
+})
+
+test('report continuous reading follows the confirmed plan and retains unplanned confirmed sections', () => {
+  const fragments = ['report.ending', 'report.overview.psychic_structure', 'report.direction.life_map', 'custom.appendix'].map(fragment_key => ({ fragment_key, fragment_type: 'REPORT', status: 'CONFIRMED', content: fragment_key }))
+  const makeGroups = narrativePlan => buildWorkbenchInputGroups({ stage: reportStage('S6'), reportCase: makeCase('S6'), content: { fragments }, narrativePlan }).find(group => group.key === 'reportFragments').items.map(item => item.key)
+  assert.deepEqual(makeGroups(null), ['report.overview.psychic_structure', 'report.direction.life_map', 'report.ending', 'custom.appendix'])
+  const narrativePlan = { plan_json: { content_plan: { fragments: [{ fragment_key: 'report.direction.life_map' }, { fragment_key: 'report.overview.psychic_structure' }, { fragment_key: 'report.ending' }] } } }
+  assert.deepEqual(makeGroups(narrativePlan), ['report.direction.life_map', 'report.overview.psychic_structure', 'report.ending', 'custom.appendix'])
+  assert.equal(fragments[0].fragment_key, 'report.ending')
+})
+
 test('report fragment headings are presented in Chinese', () => {
   assert.equal(reportFragmentTitle('report.overview.psychic_structure', 'psychic structure'), '整体心灵结构')
   assert.equal(reportFragmentTitle('report.identity.hidden_self', 'hidden self'), '被隐藏的自己')
@@ -133,6 +161,10 @@ test('system calculation evidence is summarized and duplicate calculations are c
   })
 
   assert.equal(groups[2].items.length, 1)
+  assert.equal(groups[0].display, 'fields')
+  assert.equal(groups[1].display, 'fields')
+  assert.equal(groups[2].display, 'calculation')
+  assert.deepEqual(groups[2].items[0].calculation, calculation)
   assert.match(groups[2].items[0].body, /年柱辛未、月柱丁酉、日柱乙未、时柱辛巳/)
   assert.match(groups[2].items[0].body, /命宫：辰宫，天同/)
   assert.doesNotMatch(groups[2].items[0].body, /internal_run_id|70/)

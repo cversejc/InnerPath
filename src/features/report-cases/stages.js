@@ -122,7 +122,7 @@ export const REPORT_WORKFLOW_STAGES = [
       '逐段生成报告草稿，核对每段引用的判断和资料。',
       '修正事实、逻辑和表达后，确认可以进入最终检查的段落。'
     ],
-    inputGuidance: '写作只能重组、解释和表达已确认的专业判断；不能新增事实、诊断、Finding 或确定的未来事件。',
+    inputGuidance: '写作只能重组、解释和表达已确认的专业判断；不能新增事实、诊断、专业判断或确定的未来事件。',
     deliverable: '一份按确认主线组织、每段都能追溯到已确认判断的报告初稿。',
     outputEmpty: '确认主线并生成报告段落后，写作结果会显示在这里。',
     inputGroups: [
@@ -209,4 +209,9 @@ export function reportFragmentTitle(fragmentKey, fallback = '') {
   const title = String(fallback || '').trim()
   if (title && !/[A-Za-z]{2,}/.test(title)) return title
   return REPORT_FRAGMENT_TITLES[String(fragmentKey || '')] || '报告段落'
+}
+
+export function reportFragmentOrder(fragmentKey) {
+  const index = Object.keys(REPORT_FRAGMENT_TITLES).indexOf(fragmentKey)
+  return index < 0 ? Number.MAX_SAFE_INTEGER : index
 }

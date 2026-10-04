@@ -12,8 +12,15 @@
     <div>
       <details v-for="(dimension, key) in scorecard.dimensions" :key="key">
         <summary>
-          {{ dimension.label }} · {{ dimension.score }} /
-          {{ dimension.max_score }}
+          <span
+            >{{ dimension.label }} · {{ dimension.score }} /
+            {{ dimension.max_score }}</span
+          >
+          <progress
+            :value="dimension.score"
+            :max="dimension.max_score"
+            :aria-label="`${dimension.label}得分`"
+          ></progress>
         </summary>
         <p>{{ dimension.reason }}</p>
       </details>
@@ -48,6 +55,28 @@ summary {
   cursor: pointer;
   min-height: var(--touch-target);
   padding: var(--space-2);
+}
+summary span {
+  display: block;
+  margin-bottom: var(--space-2);
+}
+progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  border: 0;
+  border-radius: var(--button-radius);
+  accent-color: var(--jade-deep);
+  overflow: hidden;
+}
+progress::-webkit-progress-bar {
+  background: var(--paper-deep);
+}
+progress::-webkit-progress-value {
+  background: var(--jade-deep);
+}
+progress::-moz-progress-bar {
+  background: var(--jade-deep);
 }
 details p {
   padding: var(--space-2);

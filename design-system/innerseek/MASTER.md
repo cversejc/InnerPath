@@ -175,7 +175,16 @@ shapes for statuses, seals, tags and compact metadata.
   scrolls; navigation never overlays it. Long goals and responsibilities open in
   the task dialog. The node home gives the human task and dedicated work entries.
   Switching views resets the content scroll and reveals the selected navigation item.
-  Inputs and review records use a single-record selector with previous/next actions.
+  Profile and situation inputs use a labeled field grid for comparison at a glance.
+  Collections open in a compact overview, with source-node filters and a detail reader;
+  long analysis and report inputs also support complete continuous reading. Preserve
+  the confirmed report order, complete text and source disclosures. Editing and review
+  actions retain the single-record selector with previous/next actions.
+  Stored calculations use four-pillar comparisons, count tables, a chronological
+  dayun timeline and grouped palace records. Keep calculation assumptions visible,
+  fold original JSON, and never turn occurrence counts into inferred strength scores.
+  Wide prose tables scroll inside their own region on mobile. Quality dimension
+  bars reflect the stored score and maximum without changing delivery thresholds.
   Skills and completion checklists open in dialogs rather than permanent side columns.
   Skill buttons invoke actual commands, show prerequisites, and keep history read-only.
   Report overview retains the delivered report entry. See

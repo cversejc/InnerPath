@@ -1,4 +1,4 @@
-import { reportFragmentTitle } from './stages.js'
+import { reportFragmentTitle, reportFragmentOrder } from './stages.js'
 
 const CONTEXT_LABELS = {
   focus_topics: '关注主题',
@@ -7,7 +7,7 @@ const CONTEXT_LABELS = {
   expected_outcomes: '期待获得的帮助',
   issue_duration: '持续时间',
   impact_level: '影响程度',
-  decision_status: '目前的决策进度',
+  decision_status: '最近是否面临重要决策',
   decision_description: '选择情况',
   decision_style: '通常如何做决定',
   additional_info: '补充说明',
@@ -51,7 +51,7 @@ const EVIDENCE_KEY_LABELS = {
   'input.context.expected_outcomes': '期待获得的帮助',
   'input.context.issue_duration': '困扰持续时间',
   'input.context.impact_level': '对生活的影响',
-  'input.context.decision_status': '目前的决策进度',
+  'input.context.decision_status': '最近是否面临重要决策',
   'input.context.decision_description': '选择情况',
   'input.context.decision_options': '正在比较的选项',
   'input.context.decision_style': '通常如何做决定',
@@ -278,6 +278,7 @@ function evidenceItems(evidence = [], keys = null) {
       key: item.evidence_key,
       title: evidenceTitle(item),
       body: formatConsultantEvidenceValue(item.value_json, item.source_type),
+      calculation: item.source_type === 'SYSTEM_CALCULATED' ? item.value_json : null,
       meta: item.source_type === 'SYSTEM_CALCULATED' ? '系统测算' : item.source_type === 'EXTERNAL_REFERENCE' ? '外部资料' : '用户提供'
     }))
 }
@@ -511,8 +512,29 @@ export function buildWorkbenchInputGroups({ stage, reportCase, content, narrativ
     qualityIssues: qualityCards(quality, content || {})
   }
 
+  const stepsById = new Map(steps.map(step => [step.id, step.step_key]))
+  const plannedOrder = new Map((narrativePlan?.plan_json?.content_plan?.fragments || []).map((fragment, index) => [fragment.fragment_key, index]))
+  const reportRank = item => plannedOrder.has(item.key) ? plannedOrder.get(item.key) : plannedOrder.size + reportFragmentOrder(item.key)
+  inputItems.reportFragments.sort((left, right) => reportRank(left) - reportRank(right))
+  for (const key of ['upstreamFindings', 'confirmedFindings']) {
+    inputItems[key] = inputItems[key].map(item => {
+      const finding = findingsByKey.get(item.key)
+      const originStep = stepsById.get(finding?.owner_step_task_id)
+      return { ...item, origin: originStep ? `第 ${originStep.slice(1)} 步` : '' }
+    })
+  }
+  for (const key of ['upstreamFragments', 'confirmedFragments', 'reportFragments']) {
+    inputItems[key] = inputItems[key].map(item => {
+      const fragment = (content?.fragments || []).find(fragment => fragment.fragment_key === item.key)
+      const originStep = stepsById.get(fragment?.owner_step_task_id)
+      return { ...item, body: fragment?.content || item.body, origin: originStep ? `第 ${originStep.slice(1)} 步` : '' }
+    })
+  }
+
   return stage.inputGroups.map(group => ({
     ...group,
+    display: ['profile', 'context'].includes(group.key) ? 'fields' : group.key === 'systemEvidence' ? 'calculation' : 'collection',
+    continuous: ['upstreamFragments', 'confirmedFragments', 'reportFragments'].includes(group.key),
     items: inputItems[group.key] || []
   }))
 }

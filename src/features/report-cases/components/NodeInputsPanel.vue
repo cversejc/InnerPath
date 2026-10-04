@@ -16,33 +16,53 @@
     </div>
     <template v-if="activeGroup">
       <p class="input-reason">{{ activeGroup.reason }}</p>
-      <WorkbenchRecordPicker
-        v-model="selectedKey"
+      <p v-if="!activeGroup.items.length" class="input-empty">
+        {{ activeGroup.empty }}
+      </p>
+      <dl
+        v-else-if="activeGroup.display === 'fields'"
+        class="input-fields"
+        :aria-label="activeGroup.title"
+      >
+        <div
+          v-for="item in activeGroup.items"
+          :key="item.key || item.title"
+          :class="{
+            wide:
+              String(item.body).length > 60 ||
+              [
+                '本次主要困扰',
+                '期待获得的帮助',
+                '补充说明',
+                '选择情况',
+                '工作经历补充',
+              ].includes(item.title),
+          }"
+        >
+          <dt>{{ item.title }}</dt>
+          <dd>{{ item.body }}</dd>
+        </div>
+      </dl>
+      <InputRecordCollection
+        v-else
+        :key="activeGroup.key"
         :items="activeGroup.items"
-        label="选择输入"
+        :continuous="activeGroup.continuous"
+        :label="activeGroup.title"
       />
-      <article v-if="selectedItem" class="input-detail">
-        <header>
-          <h4>{{ selectedItem.title }}</h4>
-          <span>{{ selectedItem.meta }}</span>
-        </header>
-        <p>{{ selectedItem.body }}</p>
-        <small v-if="selectedItem.source">{{ selectedItem.source }}</small>
-      </article>
-      <p v-else class="input-empty">{{ activeGroup.empty }}</p>
     </template>
   </section>
 </template>
 <script>
 import { Button as VanButton } from "vant";
-import WorkbenchRecordPicker from "./WorkbenchRecordPicker.vue";
+import InputRecordCollection from "./InputRecordCollection.vue";
 export default {
-  components: { VanButton, WorkbenchRecordPicker },
+  components: { VanButton, InputRecordCollection },
   props: {
     groups: { type: Array, default: () => [] },
     guidance: { type: String, default: "" },
   },
-  data: () => ({ groupKey: "", selectedKey: "" }),
+  data: () => ({ groupKey: "" }),
   computed: {
     activeGroup() {
       return (
@@ -50,18 +70,13 @@ export default {
         this.groups[0]
       );
     },
-    selectedItem() {
-      return (
-        this.activeGroup?.items.find(
-          (item) => String(item.key || item.title) === this.selectedKey,
-        ) || this.activeGroup?.items[0]
-      );
-    },
   },
   methods: {
     selectGroup(key) {
       this.groupKey = key;
-      this.selectedKey = "";
+      this.$nextTick(() =>
+        this.$el.closest(".node-workspace-body")?.scrollTo({ top: 0 }),
+      );
     },
   },
 };
@@ -102,29 +117,53 @@ p {
 .input-empty {
   color: var(--muted);
 }
-.input-detail {
+.input-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-5);
+  margin: 0;
   padding: var(--space-5);
-  background: var(--paper-soft);
   border-radius: var(--button-radius);
+  background: var(--paper-soft);
 }
-.input-detail header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
+.input-fields > div {
+  min-width: 0;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
 }
-.input-detail header span,
-small {
+.input-fields > .wide {
+  grid-column: 1 / -1;
+}
+dt {
   color: var(--muted);
   font-size: var(--text-body-sm);
+  margin-bottom: var(--space-1);
 }
-.input-detail p {
+dd {
+  margin: 0;
   white-space: pre-wrap;
+  line-height: var(--leading-body);
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1000px) {
+  .input-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .input-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (max-width: 600px) {
   .node-input-panel,
-  .input-detail {
+  .input-fields {
     padding: var(--space-4);
+  }
+}
+@media (max-width: 360px) {
+  .input-fields {
+    grid-template-columns: 1fr;
   }
 }
 </style>

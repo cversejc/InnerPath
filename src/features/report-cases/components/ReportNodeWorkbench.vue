@@ -436,7 +436,7 @@ export default {
     },
     viewHint(id) {
       return {
-        inputs: `${this.inputGroups.length} 类输入，逐项查看来源`,
+        inputs: `${this.inputGroups.length} 类输入，集中核对资料与来源`,
         suggestions: "查看技能候选，选择加入审核",
         findings: `${nodeAssets(this.content, this.viewStep, "findings").length} 条本步判断，逐条确认`,
         fragments: `${nodeAssets(this.content, this.viewStep, "fragments").length} 项内容，逐项审阅与编辑`,
