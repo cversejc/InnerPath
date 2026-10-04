@@ -2,18 +2,23 @@
   <div class="report-detail">
     <BrandNav />
 
-    <section v-if="report" class="report-header report-header--document">
-      <div class="container report-header__inner">
-        <div class="report-header__copy">
-          <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
-          <p v-if="report.basicInfo?.reportDate" class="report-header__eyebrow">PERSONAL REPORT / {{ report.basicInfo.reportDate }}</p>
-          <h1>人生说明书</h1>
-          <div v-if="report.basicInfo?.reportDate || report.basicInfo?.name" class="report-meta">
-            <span v-if="report.basicInfo?.reportDate">生成日期：{{ report.basicInfo.reportDate }}</span>
-            <span v-if="report.basicInfo?.reportDate && report.basicInfo?.name" class="divider">|</span>
-            <span v-if="report.basicInfo?.name">{{ report.basicInfo.name }}</span>
-          </div>
+    <BrandPageHeader
+      eyebrow="YOUR PERSONAL REPORT"
+      :title="report ? '辰鉴 · 人生说明书' : loading ? '正在打开你的个人报告…' : loadError || '报告不存在或无权访问'"
+      :description="report ? '从你的特质与处境出发，读懂反复出现的模式，也为下一步留一点新的可能。' : ''"
+      seal="见己"
+    >
+      <template #leading>
+        <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
+      </template>
+      <template v-if="report" #default>
+        <div class="report-meta">
+          <span>生成日期：{{ report.basicInfo?.reportDate || '今天' }}</span>
+          <span class="divider">|</span>
+          <span>{{ report.basicInfo?.name || '用户' }}</span>
         </div>
+      </template>
+      <template v-if="report" #actions>
         <div class="report-toolbar" aria-label="报告操作">
           <VanButton
             type="default"
@@ -30,24 +35,15 @@
           </VanButton>
           <p v-if="pdfError" class="report-toolbar__error" role="alert">{{ pdfError }}</p>
         </div>
-      </div>
-    </section>
-
-    <section v-else-if="loading" class="report-header">
-      <div class="container"><h1>正在打开你的个人报告…</h1></div>
-    </section>
-    <section v-else class="report-header report-header--document">
-      <div class="container">
-        <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
-        <h1>{{ loadError || '报告不存在或无权访问' }}</h1>
-      </div>
-    </section>
+      </template>
+    </BrandPageHeader>
 
     <section class="report-content">
       <div class="container">
         <ReportContent v-if="reportDocument" :document="reportDocument" />
 
-        <div class="report-actions">
+        <div v-if="report" class="report-actions paper-card">
+          <div class="report-next-copy"><p class="section-kicker">FROM INSIGHT TO ACTION</p><h2>把看见的，带回生活里</h2><p>用决策日历照看日常节奏，留下自己的行动与选择。</p></div>
           <VanButton type="primary" native-type="button" class="btn-action primary" @click="goToCalendar">
             <template #icon><IconMark class="icon" name="calendar" /></template>
             打开决策日历
@@ -62,6 +58,7 @@
 
 <script>
 import { Button as VanButton } from 'vant'
+import BrandPageHeader from '../../../components/BrandPageHeader.vue'
 import { downloadReportPdf, downloadReportPreviewPdf, getReportDetail } from '../api.js'
 import ReportContent from '../components/ReportContent.vue'
 import { normalizeReportData } from '../report-content.js'
@@ -70,7 +67,7 @@ import { createReportPreview } from '../preview.js'
 
 export default {
   name: 'ReportDetail',
-  components: { ReportContent, VanButton },
+  components: { BrandPageHeader, ReportContent, VanButton },
   data() {
     return {
       report: null,

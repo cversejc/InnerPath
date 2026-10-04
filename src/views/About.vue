@@ -2,13 +2,12 @@
   <div class="page-shell about">
     <BrandNav />
 
-    <section class="page-header about-header">
-      <div class="container header-inner">
-        <p class="section-kicker">ABOUT CHENVIS</p>
-        <h1>星辰引路，镜子照见</h1>
-        <p>辰鉴不是替你算出答案，而是帮你看见：你是谁、你正处在哪个时序，以及下一步如何把主动权留在自己手里</p>
-      </div>
-    </section>
+    <BrandPageHeader
+      eyebrow="ABOUT CHENVIS"
+      title="星辰引路，镜子照见"
+      description="辰鉴不是替你算出答案，而是帮你看见：你是谁、你正处在哪个时序，以及下一步如何把主动权留在自己手里"
+      seal="辰鉴"
+    />
 
     <section class="section-band about-story">
       <div class="container about-story-grid">

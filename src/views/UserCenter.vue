@@ -2,35 +2,26 @@
   <div class="user-center">
     <BrandNav />
 
-    <section class="user-header">
-      <div class="container user-header-inner">
-        <div class="user-info">
-          <div class="user-avatar">{{ userName.charAt(0) }}</div>
-          <div class="user-details">
-            <h2>{{ userName }}</h2>
-            <p class="user-type">{{ userType }}</p>
-          </div>
+    <BrandPageHeader eyebrow="YOUR PERSONAL SPACE" title="我的个人空间" description="你的档案、报告与行动记录，都在这里。每一次回看，都可以成为下一步的起点。" seal="行路">
+      <div class="user-info">
+        <div class="user-avatar">{{ userName.charAt(0) }}</div>
+        <div class="user-details">
+          <strong class="user-name">{{ userName }}</strong>
+          <p class="user-type">{{ userType }}</p>
         </div>
-        <router-link v-if="isAdmin" to="/admin" class="admin-entry-link">
+      </div>
+      <template v-if="isAdmin" #actions>
+        <router-link to="/admin" class="admin-entry-link">
           <span>进入管理中心</span>
           <IconMark name="arrow" />
         </router-link>
-      </div>
-    </section>
+      </template>
+    </BrandPageHeader>
 
     <section class="user-content">
       <div class="container">
         <p v-if="loading" class="dashboard-message" role="status" aria-live="polite">正在打开你的个人空间…</p>
         <p v-if="message" class="dashboard-message" role="status" aria-live="polite">{{ message }}</p>
-        <ProfileGrowthCard
-          v-if="!loading"
-          class="user-growth-card"
-          :profile="settings"
-          :completion="profileCompletion"
-          :last-confirmed-at="profileLastConfirmedAt"
-          @edit="openProfileSettings"
-        />
-
         <div class="content-layout">
           <aside class="sidebar">
             <nav class="sidebar-nav" role="tablist" aria-label="个人空间分区">
@@ -62,21 +53,41 @@
               @request-report="goToAssessment"
               @view-report="viewReport"
             />
-            <DecisionCalendarPanel v-else-if="activeTab === 'calendar'" @open-calendar="goToCalendar" />
+            <DecisionCalendarPanel
+              v-else-if="activeTab === 'calendar'"
+              :title="calendarCover.title"
+              :quote="calendarCover.quote"
+              :season="calendarCover.season"
+              @open-calendar="goToCalendar"
+            />
             <RequestsPanel v-else-if="activeTab === 'requests'" :requests="requests" />
-            <AccountSettingsPanel
-              v-else-if="activeTab === 'settings'"
+            <ProfileSettingsPanel
+              v-else-if="activeTab === 'profile'"
               v-model:settings="settings"
               v-model:optional-profile-expanded="optionalProfileExpanded"
-              v-model:password-form="passwordForm"
               :settings-errors="settingsErrors"
               :settings-error="settingsError"
               :saving-settings="savingSettings"
+              @save-profile="saveSettings"
+            />
+            <AccountSettingsPanel
+              v-else-if="activeTab === 'settings'"
+              :account-phone="accountPhone"
+              v-model:phone-change-form="phoneChangeForm"
+              v-model:password-form="passwordForm"
+              :phone-change-error="phoneChangeError"
+              :phone-change-message="phoneChangeMessage"
+              :requesting-phone-code="requestingPhoneCode"
+              :saving-phone-change="savingPhoneChange"
               :saving-password="savingPassword"
               :logging-out="loggingOut"
-              @save-settings="saveSettings"
+              :deactivating="deactivating"
+              :deactivation-error="deactivationError"
+              @request-phone-code="requestPhoneChangeCode"
+              @save-phone-change="savePhoneChange"
               @save-password="savePassword"
               @logout="handleLogout"
+              @deactivate-account="deactivateAccount"
             />
           </main>
         </div>

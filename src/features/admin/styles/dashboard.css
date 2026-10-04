@@ -10,9 +10,9 @@
 .admin-shell .auto-refresh { display: inline-flex; align-items: center; gap: 6px; color: var(--muted, #7d6653); font-size: 11px; white-space: nowrap; }
 .admin-shell .auto-refresh input { accent-color: #b85c50; }
 .admin-shell .metric-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 11px; margin-bottom: 18px; }
-.admin-shell .metric-card, .admin-shell .dashboard-panel, .admin-shell .table-panel, .admin-shell .panel-surface { border: 1px solid rgba(80, 54, 32, .13); background: linear-gradient(145deg, rgba(255, 252, 245, .93), rgba(255, 247, 231, .72)); box-shadow: 0 18px 44px -35px rgba(84, 48, 25, .62), inset 0 1px rgba(255, 255, 255, .74); backdrop-filter: blur(14px); }
+.admin-shell .metric-card, .admin-shell .dashboard-panel, .admin-shell .table-panel, .admin-shell .panel-surface { border: 1px solid var(--line); background: var(--surface-strong); box-shadow: var(--shadow-card); }
 .admin-shell .metric-card { position: relative; min-height: 142px; overflow: hidden; border-radius: 15px; padding: 17px; }
-.admin-shell .metric-card::after { content: ""; position: absolute; right: -22px; bottom: -35px; width: 110px; height: 110px; border: 1px solid currentColor; border-radius: 50%; opacity: .13; }
+.admin-shell .metric-card::after { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: currentColor; opacity: .6; }
 .admin-shell .metric-card.metric-cinnabar { color: #b85c50; }
 .admin-shell .metric-card.metric-gold { color: var(--gold-deep, #8b5a14); }
 .admin-shell .metric-card.metric-jade { color: #4f8875; }

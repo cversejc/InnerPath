@@ -1,6 +1,6 @@
 @media (max-width: 1000px) {
   .calendar-page .calendar-hero-inner { grid-template-columns: minmax(0, 1fr) minmax(280px, 0.74fr); gap: 28px; }
-  .calendar-page .calendar-hero h1 { font-size: clamp(41px, 6vw, 64px); }
+  .calendar-page .calendar-hero h1 { font-size: var(--text-display-lg); }
   .calendar-page .calendar-layout { grid-template-columns: minmax(0, 1fr) minmax(290px, 0.7fr); }
   .calendar-page .date-cell, .calendar-page .calendar-empty { min-height: 100px; }
   .calendar-page .date-cell-status { font-size: 8px; }
@@ -8,7 +8,7 @@
 }
 
 @media (max-width: 900px) {
-  .calendar-page .calendar-hero-inner { grid-template-columns: 1fr; min-height: auto; padding-top: 58px; }
+  .calendar-page .calendar-hero-inner { grid-template-columns: 1fr; min-height: auto; padding-top: var(--space-6); }
   .calendar-page .calendar-hero-copy { max-width: 720px; }
   .calendar-page .orbit-card { justify-self: start; width: min(100%, 390px); }
   .calendar-page .overview-grid { grid-template-columns: 1fr; }
@@ -33,12 +33,12 @@
     max-width: 100%;
   }
 
-  .calendar-page .calendar-hero { min-height: auto; }
+  .calendar-page .calendar-hero { min-height: auto; background-image: var(--landscape-wash-mobile); }
   .calendar-page .calendar-hero-inner { width: min(100% - 32px, 640px); padding-top: 34px; padding-bottom: 36px; }
-  .calendar-page .calendar-hero h1 { font-size: clamp(32px, 10vw, 48px); line-height: 1.1; }
+  .calendar-page .calendar-hero h1 { font-size: var(--text-display-md); line-height: var(--leading-heading); }
   .calendar-page .calendar-hero-intro { font-size: 16px; line-height: 1.75; }
   .calendar-page .calendar-hero-meta { gap: 6px; margin-top: 17px; }
-  .calendar-page .hero-chip { font-size: 10px; }
+  .calendar-page .hero-chip { font-size: var(--text-caption); }
   .calendar-page .orbit-card { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 10px; width: 100%; padding: 12px; border-radius: 14px; }
   .calendar-page .orbit-ring-outer { width: 120px; }
   .calendar-page .orbit-ring-outer::before { inset: 12px; }

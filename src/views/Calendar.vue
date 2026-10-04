@@ -2,14 +2,17 @@
   <div class="page-shell calendar-page">
     <BrandNav />
 
+    <BrandPageHeader v-if="loading || !calendar || !days.length" eyebrow="YOUR PERSONAL TIMING" title="给行动，找到自己的节奏" description="一段三十天的个人日历。看见适合推进与停留的时刻，把每一次选择留成可回看的记录。" seal="知序" />
+
     <main v-if="loading" class="calendar-empty-state">
-      <div class="container"><h1>正在为你打开决策日历…</h1></div>
+      <div class="container calendar-loading" role="status" aria-live="polite"><IconMark name="calendar" /><h2>正在为你打开决策日历…</h2></div>
     </main>
 
     <main v-else-if="!calendar || !days.length" class="calendar-empty-state">
       <div class="container paper-card">
-        <span class="seal-badge">PERSONAL TIMEZONE</span>
-        <h1>还没有已交付的决策日历</h1>
+        <span class="calendar-empty-seal" aria-hidden="true"><IconMark name="calendar" /></span>
+        <p class="section-kicker">A NEW RHYTHM</p>
+        <h2>为接下来的三十天，留一点从容</h2>
         <p>{{ calendarError || '提交申请后，咨询师会基于你的起始日期和关注目标，完成一段 30 天的 AI 初稿与人工审校。' }}</p>
         <div class="calendar-empty-actions">
           <router-link class="primary-button" to="/pages/requests/new?type=calendar">申请决策日历</router-link>

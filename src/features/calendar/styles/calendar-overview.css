@@ -60,9 +60,9 @@
   position: relative;
   z-index: 1;
   max-width: 650px;
-  color: var(--calendar-muted);
-  font-size: 16px;
-  line-height: 1.95;
+  color: var(--ink-soft);
+  font-size: var(--text-body);
+  line-height: var(--leading-prose);
 }
 
 .calendar-page .overview-story p + p { margin-top: 14px; }

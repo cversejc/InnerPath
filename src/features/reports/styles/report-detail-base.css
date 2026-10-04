@@ -1,56 +1,10 @@
-
-.report-detail {
-  width: 100%;
-  background: var(--surface-strong, #fffaf0);
-  min-height: 100dvh;
-}
-
-/* 报告头部 */
-.report-header {
-  padding: 100px 20px 40px;
-  background: linear-gradient(135deg, rgba(255, 240, 223, .85) 0%, rgba(184, 92, 80, .22) 100%);
-}
-
-.btn-back {
-  padding: 8px 16px;
-  font-size: 14px;
-  color: var(--muted, #7d6653);
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  margin-bottom: 20px;
-  transition: background var(--motion-standard, 220ms) var(--ease-out, ease), color var(--motion-standard, 220ms) var(--ease-out, ease), border-color var(--motion-standard, 220ms) var(--ease-out, ease);
-}
-
-.btn-back:hover {
-  background: #fff;
-  color: var(--cinnabar-deep, #9e3f35);
-}
-
-.report-header h1 {
-  font-family: var(--font-display);
-  font-size: 36px;
-  font-weight: var(--weight-medium, 500);
-  color: var(--ink, #2f241b);
-  margin-bottom: 15px;
-}
-
-.report-meta {
-  font-size: 15px;
-  color: var(--muted, #7d6653);
-}
-
-.divider {
-  margin: 0 10px;
-}
-
-/* 容器 */
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0;
-}
-
-/* 报告内容 */
-.report-content {
-  padding: 40px 0 80px;
-}
+.report-detail { min-height: 100dvh; background: var(--paper-scene) center top / cover; }
+.report-content > .container { max-width: 900px; }
+.report-content { padding: var(--space-6) 0 72px; }
+.report-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); color: var(--ink-soft); font-size: var(--text-body-sm); }
+.divider { color: var(--gold-deep); }
+.btn-back { display: inline-flex; min-height: var(--touch-target); align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: var(--button-radius); padding: 0 var(--space-4); background: var(--surface-strong); color: var(--cinnabar-deep); font-size: var(--text-body-sm); }
+.btn-back:hover { border-color: var(--cinnabar); background: var(--paper-soft); }
+.btn-action { display: inline-flex; min-height: var(--button-height); align-items: center; justify-content: center; gap: var(--space-2); border: 1px solid var(--cinnabar-deep); border-radius: var(--button-radius); padding: 0 var(--space-5); background: linear-gradient(180deg, var(--cinnabar), var(--cinnabar-deep)); color: var(--paper-soft); font-family: var(--font-ui); font-size: var(--text-body-sm); }
+.btn-action:hover { box-shadow: var(--shadow-card); }
+.btn-action .icon { width: 18px; height: 18px; }

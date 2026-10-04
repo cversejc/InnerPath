@@ -1,12 +1,11 @@
-.request-form-page { min-height: 100dvh; background: var(--paper, #f8f1e6); }
-.request-form-main { width: min(860px, calc(100% - 32px)); margin: 0 auto; padding: 72px 0 92px; }
-.form-hero { max-width: 720px; margin-bottom: 28px; }
-.form-hero h1 { margin: 8px 0 14px; font-size: clamp(36px, 7vw, 66px); line-height: 1.08; }
-.form-hero p:not(.section-kicker) { margin: 0; color: var(--muted, #7d6653); line-height: 1.8; }
-.request-form { padding: clamp(20px, 5vw, 42px); }
+.request-form-page { min-height: 100dvh; background: var(--paper-scene) center top / cover; }
+.request-form-main { width: min(900px, calc(100% - 32px)); margin: 0 auto; padding: var(--space-6) 0 72px; }
+.form-hero { margin-bottom: var(--space-5); }
+.request-form-note { color: var(--gold-deep); font-size: var(--text-body-sm); line-height: var(--leading-body); }
+.request-form { padding: var(--space-6); background: var(--surface-strong); }
 .form-section + .form-section { margin-top: 40px; padding-top: 34px; border-top: 1px solid rgba(80, 54, 32, .12); }
 .section-heading { margin-bottom: 24px; }
-.section-heading h2 { margin: 6px 0; color: var(--ink, #3b2d24); font-size: clamp(24px, 4vw, 34px); }
+.section-heading h2 { margin: var(--space-2) 0; color: var(--ink); font-size: var(--text-h2); }
 .section-heading p:not(.section-kicker) { margin: 0; color: var(--muted, #7d6653); line-height: 1.7; }
 .form-grid { display: grid; gap: 18px; margin-bottom: 18px; }
 .form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -15,7 +14,7 @@
 .field > span, .choice-fieldset > legend { color: var(--ink, #3b2d24); font-weight: var(--weight-semibold); }
 .field b, .choice-fieldset b { color: var(--cinnabar-deep, #9e3f35); }
 .field em, .field-hint { color: var(--muted, #7d6653); font-size: 12px; font-style: normal; font-weight: var(--weight-medium); }
-.field input, .field textarea { width: 100%; min-height: 48px; border: 1px solid rgba(80, 54, 32, .17); border-radius: 10px; background: rgba(255, 250, 240, .8); padding: 11px 12px; color: var(--ink, #3b2d24); font: inherit; font-weight: var(--weight-medium); }
+.field input, .field textarea { width: 100%; min-height: 48px; border: 1px solid var(--line); border-radius: var(--button-radius); background: var(--paper-soft); padding: var(--space-3); color: var(--ink); font: inherit; font-size: var(--text-body); font-weight: var(--weight-regular); }
 .field textarea { min-height: 132px; resize: vertical; line-height: 1.7; }
 .field input:focus, .field textarea:focus, .choice-row button:focus-visible { outline: 3px solid rgba(184, 92, 80, .18); outline-offset: 2px; border-color: var(--cinnabar, #b85c50); }
 .choice-fieldset { min-width: 0; border: 0; padding: 0; }

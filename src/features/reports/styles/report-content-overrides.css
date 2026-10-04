@@ -1,6 +1,8 @@
 .content-card {
-  border: 1px solid rgba(139, 90, 20, 0.13);
-  background: linear-gradient(180deg, rgba(255, 252, 245, 0.92), rgba(255, 247, 231, 0.72));
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface-strong);
+  padding: var(--space-6);
   box-shadow: var(--shadow-card, 0 16px 48px -34px rgba(84, 48, 25, 0.48));
 }
 
@@ -10,6 +12,10 @@
   font-family: var(--font-display);
   font-weight: var(--weight-medium, 500);
 }
+
+.content-card h2 { font-size: var(--text-h2); padding-bottom: var(--space-4); border-bottom-width: 1px; }
+.content-card h3 { font-size: var(--text-h4); }
+.action-item { border-left: 2px solid var(--cinnabar); background: var(--paper-soft); }
 
 .ai-badge,
 .type-badge,
@@ -55,14 +61,14 @@
 @media (max-width: 768px) {
   .content-card {
     margin-bottom: 12px;
-    padding: 16px 14px;
-    border-radius: 14px;
+    padding: var(--space-5) var(--space-4);
+    border-radius: var(--radius-card);
   }
 
   .content-card h2,
   .section-title {
     gap: 7px;
-    font-size: 19px;
+    font-size: var(--text-h3);
   }
 
   .subsection-title {
@@ -95,7 +101,7 @@
     margin-top: 28px;
     margin-bottom: 14px;
     padding-bottom: 9px;
-    font-size: 19px;
+    font-size: var(--text-h3);
   }
 
   .markdown-content h3 {

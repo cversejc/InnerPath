@@ -15,13 +15,13 @@ from app.domains.reports.models import Report
 from app.models.user import User
 from app.domains.reports.schemas import (
     LatestReportContextResponse,
-    ReportListItem,
     ReportListResponse,
     ReportPdfPreviewRequest,
     ReportResponse,
 )
 from app.domains.reports.service import (
     delete_report,
+    format_report_list_item,
     format_report_response,
     get_report_by_id,
     get_user_reports,
@@ -32,22 +32,6 @@ from app.services.intake_service import normalize_context
 from app.domains.service_requests.service import has_staff_assignment
 
 router = APIRouter()
-
-
-def format_report_list(reports):
-    items = []
-    for report in reports:
-        energy_profile = report.energy_profile or {}
-        items.append(
-            ReportListItem(
-                id=report.id,
-                title=report.title,
-                created_at=report.created_at,
-                energy_type=energy_profile.get("type"),
-                core_traits=energy_profile.get("core_traits") or energy_profile.get("coreTraits"),
-            )
-        )
-    return items
 
 
 async def _create_pdf_response(
@@ -98,7 +82,7 @@ async def get_reports(
     skip = (page - 1) * size
     reports, total = await get_user_reports(db, current_user.id, skip=skip, limit=size)
 
-    return ReportListResponse(total=total, items=format_report_list(reports))
+    return ReportListResponse(total=total, items=[format_report_list_item(report) for report in reports])
 
 
 @router.get("/staff/users/{user_id}", response_model=ReportListResponse)
@@ -111,7 +95,7 @@ async def get_staff_user_reports(
         if not await has_staff_assignment(db, current_user.id, user_id):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not assigned")
     reports, total = await get_user_reports(db, user_id)
-    return ReportListResponse(total=total, items=format_report_list(reports))
+    return ReportListResponse(total=total, items=[format_report_list_item(report) for report in reports])
 
 
 @router.get("/admin/users/{user_id}", response_model=ReportListResponse)
@@ -121,7 +105,7 @@ async def get_admin_user_reports(
     db: AsyncSession = Depends(get_db),
 ):
     reports, total = await get_user_reports(db, user_id)
-    return ReportListResponse(total=total, items=format_report_list(reports))
+    return ReportListResponse(total=total, items=[format_report_list_item(report) for report in reports])
 
 
 @router.get("/latest/context", response_model=LatestReportContextResponse)

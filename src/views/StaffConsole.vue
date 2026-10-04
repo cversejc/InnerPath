@@ -2,17 +2,12 @@
   <div class="staff-shell">
     <BrandNav />
     <main class="staff-main">
-      <header class="staff-heading">
-        <div>
-          <p class="section-kicker">SERVICE REQUESTS / REVIEW ROOM</p>
-          <h1>咨询申请工作台</h1>
-          <p>接收用户申请，参考 AI 初稿完成结构化审校，再将可交付的结果发回用户。</p>
-        </div>
-        <div class="heading-actions">
+      <BrandPageHeader class="staff-heading" contained compact eyebrow="REVIEW ROOM" title="咨询申请工作台" description="从认真理解一份资料开始，让每一次交付都有依据。接收申请、审校初稿，再把清晰的结果交给用户。" seal="照见">
+        <template #actions>
           <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask }"></i>{{ pollingTask ? 'AI 初稿处理中' : loading ? '正在同步' : '已同步' }}</span>
           <VanButton class="secondary-button" type="default" plain native-type="button" :disabled="loading" @click="loadRequests">刷新申请</VanButton>
-        </div>
-      </header>
+        </template>
+      </BrandPageHeader>
 
       <p v-if="message" class="console-message" role="status" aria-live="polite">{{ message }}</p>
 
