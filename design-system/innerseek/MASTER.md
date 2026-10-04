@@ -8,7 +8,7 @@
 
 **Project:** chenvis / 辰鉴
 
-**Updated:** 2026-10-03
+**Updated:** 2026-10-04
 
 **Product type:** Personal insight, report and decision-calendar product
 **Visual thesis:** A calm Chinese editorial interface built from paper, ink, cinnabar,
@@ -21,27 +21,27 @@ enough for forms, calendars and operations work.
 
 | Role | Value | CSS variable | Usage |
 |------|-------|--------------|-------|
-| Paper | `#f8f1e6` | `--paper` | Global page background |
-| Paper soft | `#fffaf0` | `--paper-soft` | Card and input surfaces |
-| Paper deep | `#ead9bf` | `--paper-deep` | Warm depth and gradients |
-| Ink | `#2f241b` | `--ink` | Headings and primary text |
-| Ink soft | `#614d3d` | `--ink-soft` | Secondary copy |
-| Muted | `#7d6653` | `--muted` | Supporting text; use sparingly for small type |
+| Paper | `#f7f4ed` | `--paper` | Global page background |
+| Paper soft | `#fffcf6` | `--paper-soft` | Card and input surfaces |
+| Paper deep | `#e9dfcf` | `--paper-deep` | Warm depth and gradients |
+| Ink | `#302c25` | `--ink` | Headings and primary text |
+| Ink soft | `#5f564b` | `--ink-soft` | Secondary copy |
+| Muted | `#786b5c` | `--muted` | Supporting text; use sparingly for small type |
 | Cinnabar | `#b5574c` | `--cinnabar` | Brand accent, focus and decorative emphasis; passes 4.5:1 on paper |
 | Cinnabar deep | `#9e3f35` | `--cinnabar-deep` | Primary actions, links and error text |
 | Gold | `#d9ba62` | `--gold` | Highlight, seal and editorial ornament |
 | Gold deep | `#8b5a14` | `--gold-deep` | Small labels and secondary emphasis |
 | Jade | `#6f9f93` | `--jade` | Positive, steady and reflective states |
-| Line | `rgba(139, 90, 20, 0.16)` | `--line` | Borders and dividers |
-| Surface | `rgba(255, 250, 240, 0.78)` | `--surface` | Translucent panels |
-| Strong surface | `rgba(255, 252, 245, 0.94)` | `--surface-strong` | High-contrast cards and overlays |
+| Line | `rgba(111, 88, 55, 0.14)` | `--line` | Borders and dividers |
+| Surface | `rgba(255, 252, 246, 0.8)` | `--surface` | Translucent panels |
+| Strong surface | `#fffcf6` | `--surface-strong` | High-contrast cards and overlays |
 
 Calendar-specific semantic tones are scoped to `.calendar-page`:
 
 | Meaning | Value |
 |---------|-------|
-| Calendar ink | `#2e251d` |
-| Calendar muted | `var(--muted)` → `#7d6653` |
+| Calendar ink | `var(--ink)` → `#302c25` |
+| Calendar muted | `var(--muted)` → `#786b5c` |
 | 推进 / positive | `#658f73` |
 | 观察 / neutral | `#bd9550` |
 | 收气 / caution | `#b45d58` |
@@ -91,11 +91,11 @@ colors for long-form copy or critical labels without checking the actual backgro
 | `--space-6` | `32px` |
 | `--space-7` | `48px` |
 | `--radius-card` | `18px` |
-| `--button-radius` | `13px` |
-| `--button-height` | `46px` |
+| `--button-radius` | `12px` |
+| `--button-height` | `48px` |
 | `--touch-target` | `44px` minimum; prefer `48px` for primary mobile actions |
 
-Use rounded paper cards with restrained depth. Avoid excessive pills: reserve pill
+Use rounded paper cards with restrained depth. Default cards use an opaque paper surface; reserve translucency for navigation and overlays. Avoid excessive pills: reserve pill
 shapes for statuses, seals, tags and compact metadata.
 
 ### Motion and viewport behavior
@@ -121,9 +121,9 @@ shapes for statuses, seals, tags and compact metadata.
 
 ### Buttons
 
-- Primary: cinnabar gradient, light paper text, strong but soft shadow.
+- Primary: cinnabar gradient, light paper text, restrained warm shadow.
 - Secondary: light paper surface, warm border, deep cinnabar text.
-- Both use a stable `46px` minimum height, `13px` radius and `8px` icon gap.
+- Both use a stable `48px` minimum height, `12px` radius and `8px` icon gap.
 - Every button needs visible hover, focus, pressed and disabled states.
 - Loading labels must not cause the button to change size.
 
@@ -189,3 +189,37 @@ shapes for statuses, seals, tags and compact metadata.
 - Page-specific tokens must be added as documented scoped extensions, not silently
   introduced as unrelated one-off colors.
 - When changing the visual direction, update this file and the implementation together.
+
+## Visual refinement decision · 2026-10-04
+
+Source: the product-wide UI refinement requested on 2026-10-04; this section is the
+maintained decision record for the implementation in this change.
+
+- Retain the paper / ink / cinnabar / gold / jade identity. Lighten the paper and
+  neutralize reading text to reduce the brown cast. Keep the existing locally
+  bundled display fonts and UI font roles.
+- Remove the full-page grid and large background illustration from content areas.
+  Reuse the existing `src/assets/home-hero.webp` only for the home hero and desktop
+  authentication brand panel; text sits on a light veil for contrast.
+- Introduce `--line-strong` for inputs and selected surfaces, `--accent-soft` for
+  subtle selection, and `--jade-deep: #356b59` for readable success text.
+- Use `--content-width: 1120px`, `--page-gutter: 32px` (16px on mobile) and
+  `--space-8: 64px` for consistent page rhythm. Operations tables may retain their
+  wider containers. Cards use `--shadow-card`; prominent form panels use
+  `--shadow-soft`. Avoid blur on repeated cards.
+- Primary user actions and Vant buttons use the shared 16px body scale and 48px
+  height; dense table commands may retain their documented compact styles.
+  Vant fields use the shared 16px input scale. Bottom navigation labels use the
+  12px caption token, with a subtle active icon background.
+- Desktop navigation uses soft rectangular active states with a small underline;
+  rounded pills remain reserved for metadata and status. Personal-space navigation
+  uses the same restrained selection treatment.
+- Home exposes exploration in the first viewport and links both product paths.
+  Authentication uses an editorial brand panel and focused form on desktop, and a
+  single-column form on mobile. Reports retain generous reading space; operation
+  metrics use four desktop columns to match the four actual indicators. Mobile
+  operation navigation wraps so every section remains visible. Calendar detail
+  headers reserve room for the close control; status labels use readable deep tones.
+- Verify narrow forms, fixed navigation and page overflow at 320 / 375 / 768 /
+  1024 / 1440px, including authentication modes, assessment, calendar, reports,
+  personal space and operations. Use local fixture data when no backend is running.

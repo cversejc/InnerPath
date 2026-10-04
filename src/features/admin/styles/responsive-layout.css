@@ -69,8 +69,7 @@
   }
 
   .admin-shell .admin-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    flex-wrap: wrap;
     padding: 16px 0 20px;
     scrollbar-width: none;
   }
@@ -82,6 +81,7 @@
   .admin-shell .admin-tab {
     flex: 0 0 auto;
     min-height: 44px;
+    font-size: var(--text-body-sm);
   }
 
   .admin-shell .range-switch {

@@ -1,6 +1,7 @@
 .content-card {
   border: 1px solid rgba(139, 90, 20, 0.13);
-  background: linear-gradient(180deg, rgba(255, 252, 245, 0.92), rgba(255, 247, 231, 0.72));
+  border-radius: var(--radius-card);
+  background: var(--surface-strong);
   box-shadow: var(--shadow-card, 0 16px 48px -34px rgba(84, 48, 25, 0.48));
 }
 
@@ -54,15 +55,15 @@
 
 @media (max-width: 768px) {
   .content-card {
-    margin-bottom: 12px;
-    padding: 16px 14px;
+    margin-bottom: var(--space-5);
+    padding: var(--space-5) var(--space-4);
     border-radius: 14px;
   }
 
   .content-card h2,
   .section-title {
     gap: 7px;
-    font-size: 19px;
+    font-size: var(--text-h3);
   }
 
   .subsection-title {
@@ -95,7 +96,7 @@
     margin-top: 28px;
     margin-bottom: 14px;
     padding-bottom: 9px;
-    font-size: 19px;
+    font-size: var(--text-h3);
   }
 
   .markdown-content h3 {

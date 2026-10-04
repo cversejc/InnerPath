@@ -32,22 +32,25 @@
 
 :root {
   color-scheme: light;
-  --paper: #f8f1e6;
-  --paper-soft: #fffaf0;
-  --paper-deep: #ead9bf;
-  --ink: #2f241b;
-  --ink-soft: #614d3d;
-  --muted: #7d6653;
+  --paper: #f7f4ed;
+  --paper-soft: #fffcf6;
+  --paper-deep: #e9dfcf;
+  --ink: #302c25;
+  --ink-soft: #5f564b;
+  --muted: #786b5c;
   --cinnabar: #b5574c;
   --cinnabar-deep: #9e3f35;
   --gold: #d9ba62;
   --gold-deep: #8b5a14;
   --jade: #6f9f93;
-  --line: rgba(139, 90, 20, 0.16);
-  --surface: rgba(255, 250, 240, 0.78);
-  --surface-strong: rgba(255, 252, 245, 0.94);
-  --shadow-soft: 0 24px 70px -42px rgba(84, 48, 25, 0.48);
-  --shadow-card: 0 16px 48px -34px rgba(84, 48, 25, 0.48);
+  --jade-deep: #356b59;
+  --line: rgba(111, 88, 55, 0.14);
+  --line-strong: rgba(111, 88, 55, 0.24);
+  --accent-soft: rgba(181, 87, 76, 0.07);
+  --surface: rgba(255, 252, 246, 0.8);
+  --surface-strong: #fffcf6;
+  --shadow-soft: 0 20px 60px -28px rgba(70, 52, 31, 0.16);
+  --shadow-card: 0 6px 24px -12px rgba(70, 52, 31, 0.12);
   /* Typography roles: brand/display serif, platform UI sans, and technical mono. */
   --font-display: "Source Han Serif SC", "Noto Serif SC", "Songti SC", STSong, SimSun, serif;
   --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
@@ -79,12 +82,15 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
+  --space-8: 64px;
+  --content-width: 1120px;
+  --page-gutter: 32px;
   --motion-fast: 150ms;
   --motion-standard: 220ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --touch-target: 44px;
-  --button-height: 46px;
-  --button-radius: 13px;
+  --button-height: 48px;
+  --button-radius: 12px;
   --button-gap: 8px;
   --radius-card: 18px;
   --nav-height: 70px;
@@ -109,12 +115,8 @@ body {
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   background:
-    linear-gradient(90deg, rgba(139, 90, 20, 0.055) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(139, 90, 20, 0.045) 1px, transparent 1px),
-    radial-gradient(circle at 18% 8%, rgba(217, 186, 98, 0.22), transparent 30%),
-    linear-gradient(145deg, var(--paper) 0%, #fbf6ec 54%, var(--paper-deep) 100%);
-  background-size: 28px 28px, 28px 28px, auto, auto;
-  background-attachment: fixed, fixed, fixed, fixed;
+    radial-gradient(ellipse at 0% 0%, rgba(217, 186, 98, 0.07), transparent 50%),
+    var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--text-body);
@@ -129,10 +131,7 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    linear-gradient(118deg, rgba(255, 255, 255, 0.28), transparent 45%),
-    radial-gradient(circle at 82% 14%, rgba(184, 92, 80, 0.08), transparent 24%),
-    radial-gradient(circle at 12% 88%, rgba(111, 159, 147, 0.12), transparent 30%);
+  background: radial-gradient(ellipse at 100% 0%, rgba(111, 159, 147, 0.04), transparent 45%);
 }
 
 a {

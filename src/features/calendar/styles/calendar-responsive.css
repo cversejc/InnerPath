@@ -8,6 +8,11 @@
 }
 
 @media (max-width: 900px) {
+  .calendar-page .detail-header {
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-right: var(--touch-target);
+  }
   .calendar-page .calendar-hero-inner { grid-template-columns: 1fr; min-height: auto; padding-top: 58px; }
   .calendar-page .calendar-hero-copy { max-width: 720px; }
   .calendar-page .orbit-card { justify-self: start; width: min(100%, 390px); }
@@ -173,7 +178,7 @@
   min-height: var(--button-height, 46px);
   padding: 0 14px;
   border-radius: var(--button-radius, 13px);
-  font-size: 14px;
+  font-size: var(--text-body);
 }
 
 .calendar-page .phase-card {

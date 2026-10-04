@@ -2,11 +2,11 @@
   :root {
     --nav-height: 62px;
     --radius-card: 16px;
+    --page-gutter: 16px;
   }
 
   body {
     font-size: var(--text-body);
-    background-size: 24px 24px, 24px 24px, auto, auto;
   }
 
   .container {
@@ -77,7 +77,7 @@
     min-height: var(--button-height);
     padding-right: 16px;
     padding-left: 16px;
-    font-size: 14px;
+    font-size: var(--text-body);
   }
 
   input,

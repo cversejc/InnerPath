@@ -1,12 +1,12 @@
 
 .calendar-page {
-  --calendar-ink: #2e251d;
+  --calendar-ink: var(--ink);
   --calendar-muted: var(--muted, #7d6653);
-  --calendar-line: rgba(139, 90, 20, 0.16);
+  --calendar-line: var(--line);
   --calendar-green: #658f73;
   --calendar-yellow: #bd9550;
   --calendar-red: #b45d58;
-  background: linear-gradient(180deg, rgba(255, 250, 240, 0.38), rgba(234, 217, 191, 0.14));
+  background: var(--paper);
 }
 
 .calendar-page .calendar-empty-state {
@@ -44,11 +44,11 @@
 .calendar-page .calendar-hero {
   position: relative;
   overflow: hidden;
-  min-height: 560px;
+  min-height: 480px;
   background:
-    radial-gradient(circle at 76% 24%, rgba(217, 186, 98, 0.24), transparent 25%),
-    radial-gradient(circle at 10% 100%, rgba(111, 159, 147, 0.16), transparent 34%),
-    linear-gradient(130deg, rgba(255, 250, 240, 0.72), rgba(247, 235, 216, 0.72) 55%, rgba(232, 215, 190, 0.68));
+    radial-gradient(ellipse at 80% 30%, rgba(111, 159, 147, 0.08), transparent 50%),
+    linear-gradient(130deg, var(--paper-soft), var(--paper));
+  border-bottom: 1px solid var(--line);
 }
 
 .calendar-page .calendar-hero::before {
@@ -56,7 +56,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.44;
+  opacity: 0.15;
   background:
     linear-gradient(115deg, transparent 0 48%, rgba(184, 92, 80, 0.08) 49%, transparent 50%),
     linear-gradient(65deg, transparent 0 65%, rgba(139, 90, 20, 0.06) 66%, transparent 67%),
@@ -84,7 +84,7 @@
   grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.92fr);
   align-items: center;
   gap: clamp(30px, 6vw, 96px);
-  min-height: 560px;
+  min-height: 480px;
   padding-top: 58px;
   padding-bottom: 70px;
 }
@@ -124,8 +124,8 @@
   max-width: 560px;
   margin-top: 25px;
   color: var(--calendar-muted);
-  font-size: 18px;
-  line-height: 1.85;
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-prose);
 }
 
 .calendar-page .calendar-hero-meta {
@@ -172,10 +172,9 @@
   width: min(100%, 390px);
   padding: 26px 28px 24px;
   border: 1px solid rgba(139, 90, 20, 0.15);
-  border-radius: 28px;
-  background: rgba(255, 252, 245, 0.47);
-  box-shadow: 0 26px 70px -38px rgba(79, 51, 30, 0.56), inset 0 1px 0 rgba(255, 255, 255, 0.62);
-  backdrop-filter: blur(15px);
+  border-radius: var(--radius-card);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-soft);
 }
 
 .calendar-page .orbit-ring {

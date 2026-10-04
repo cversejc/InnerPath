@@ -7,7 +7,7 @@
 }
 
 .container {
-  width: min(1120px, calc(100% - 40px));
+  width: min(var(--content-width), calc(100% - var(--page-gutter) * 2));
   margin: 0 auto;
 }
 
@@ -30,14 +30,14 @@
   top: 0;
   z-index: 1000;
   padding-top: env(safe-area-inset-top, 0px);
-  border-bottom: 1px solid rgba(139, 90, 20, 0.1);
-  background: rgba(255, 250, 240, 0.8);
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 252, 246, 0.92);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
 }
 
 .nav-container {
-  width: min(1120px, calc(100% - 28px));
+  width: min(var(--content-width), calc(100% - var(--page-gutter) * 2));
   min-height: var(--nav-height);
   margin: 0 auto;
   display: flex;
@@ -59,13 +59,13 @@
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
 }
 
 .brand-emblem {
   display: block;
   width: auto;
-  height: 42px;
+  height: 36px;
   flex: 0 0 auto;
   object-fit: contain;
 }
@@ -77,11 +77,12 @@
 }
 
 .nav-link {
+  position: relative;
   display: inline-flex;
-  min-height: 38px;
+  min-height: var(--touch-target);
   align-items: center;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 10px;
   padding: 0 14px;
   color: var(--ink-soft);
   font-family: var(--font-ui);
@@ -90,12 +91,26 @@
   transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
-.nav-link:hover,
+.nav-link:hover {
+  background: var(--accent-soft);
+  color: var(--cinnabar-deep);
+}
+
 .nav-link.active,
 .router-link-active.nav-link {
-  border-color: rgba(184, 92, 80, 0.18);
-  background: rgba(184, 92, 80, 0.08);
+  background: var(--accent-soft);
   color: var(--cinnabar-deep);
+}
+
+.router-link-active.nav-link::after {
+  position: absolute;
+  right: 14px;
+  bottom: 4px;
+  left: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--cinnabar);
+  content: "";
 }
 
 .landscape-hero,
@@ -104,10 +119,9 @@
   isolation: isolate;
   overflow: hidden;
   background:
-    linear-gradient(90deg, rgba(139, 90, 20, 0.05) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(139, 90, 20, 0.045) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(255, 252, 245, 0.96), rgba(255, 250, 240, 0.84) 58%, rgba(248, 240, 227, 0.9));
-  background-size: 28px 28px, 28px 28px, auto;
+    radial-gradient(ellipse at 85% 20%, rgba(217, 186, 98, 0.1), transparent 45%),
+    linear-gradient(180deg, var(--paper-soft), var(--paper));
+  border-bottom: 1px solid var(--line);
 }
 
 .landscape-hero::before,
@@ -116,9 +130,9 @@
   position: absolute;
   inset: auto 0 0 0;
   z-index: -2;
-  height: 38%;
+  height: 1px;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(248, 240, 227, 0), rgba(232, 212, 181, 0.5));
+  background: var(--line);
 }
 
 .landscape-hero::after,
@@ -134,7 +148,7 @@
 }
 
 .section-band {
-  padding: 72px 0;
+  padding: var(--space-8) 0;
 }
 
 .section-band.alt {
@@ -147,7 +161,7 @@
   font-family: var(--font-ui);
   font-size: var(--text-caption);
   font-weight: var(--weight-semibold);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 

@@ -42,14 +42,6 @@
   flex: 0 0 auto;
 }
 
-/* 页脚 */
-.footer {
-  background: var(--ink, #2f241b);
-  padding: 40px 0;
-  text-align: center;
-  color: rgba(255, 250, 240, .76);
-}
-
 /* 响应式 */
 @media (max-width: 768px) {
   .report-header {

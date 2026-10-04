@@ -1,7 +1,7 @@
 :root:root {
   --van-base-font: var(--font-ui);
   --van-primary-color: var(--cinnabar);
-  --van-success-color: var(--jade);
+  --van-success-color: var(--jade-deep);
   --van-warning-color: var(--gold-deep);
   --van-danger-color: var(--cinnabar-deep);
   --van-text-color: var(--ink);
@@ -15,8 +15,8 @@
   --van-font-bold: var(--weight-semibold);
   --van-button-default-height: var(--button-height);
   --van-button-large-height: 48px;
-  --van-button-normal-font-size: 14px;
-  --van-button-default-font-size: 14px;
+  --van-button-normal-font-size: var(--text-body);
+  --van-button-default-font-size: var(--text-body);
   --van-button-default-color: var(--cinnabar-deep);
   --van-button-default-background: var(--surface-strong);
   --van-button-default-border-color: var(--line);
@@ -58,7 +58,7 @@
   --van-tabbar-item-active-color: var(--cinnabar-deep);
   --van-tabbar-item-active-background: transparent;
   --van-tabbar-item-text-color: var(--muted);
-  --van-tabbar-item-font-size: 11px;
+  --van-tabbar-item-font-size: var(--text-caption);
   --van-tabbar-item-icon-size: 20px;
   --van-tabbar-item-icon-margin-bottom: 2px;
 }
@@ -73,11 +73,25 @@
   font-family: var(--font-ui);
 }
 
+.van-field__control {
+  font-size: var(--text-body);
+}
+
 .van-tabbar {
   border-top: 1px solid var(--line);
-  box-shadow: 0 -14px 30px -24px rgba(84, 48, 25, 0.72);
+  box-shadow: 0 -4px 20px -10px rgba(70, 52, 31, 0.14);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
+}
+
+.van-tabbar-item__icon {
+  border-radius: 10px;
+  padding: 4px 14px;
+  transition: background var(--motion-standard) var(--ease-out);
+}
+
+.van-tabbar-item--active .van-tabbar-item__icon {
+  background: var(--accent-soft);
 }
 
 .van-dialog.mobile-form-dialog {

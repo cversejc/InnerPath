@@ -12,6 +12,13 @@
               把你的个人特质、当下节奏和现实选择，<br class="desktop-break" />
               放在一张清晰的人生地图里。
             </p>
+            <div class="home-hero-actions">
+              <VanButton class="primary-button" type="primary" native-type="button" @click="goToAssessment">
+                <template #icon><IconMark name="compass" /></template>
+                开始探索自己
+              </VanButton>
+              <router-link class="home-text-link" to="/pages/calendar/calendar">看看决策日历 <span aria-hidden="true">↗</span></router-link>
+            </div>
           </div>
           <ul class="home-hero-features" aria-label="辰鉴探索方向">
             <li v-for="feature in heroFeatures" :key="feature.title" class="home-hero-feature">
@@ -84,6 +91,7 @@
               <ul class="path-card-list">
                 <li v-for="bullet in card.bullets" :key="bullet">{{ bullet }}</li>
               </ul>
+              <router-link class="home-text-link path-card-link" :to="card.to">{{ card.action }} <span aria-hidden="true">↗</span></router-link>
             </article>
           </div>
         </div>
@@ -103,7 +111,7 @@
                 <span class="journey-step-icon"><IconMark :name="step.icon" /></span>
               </div>
               <div class="journey-step-copy">
-                <h2>{{ step.title }}</h2>
+                <h3>{{ step.title }}</h3>
                 <p>{{ step.description }}</p>
               </div>
             </li>
@@ -161,6 +169,8 @@ export default {
           eyebrow: 'PERSONAL REPORT',
           icon: 'document',
           title: '人生说明书',
+          to: '/pages/assessment/assessment',
+          action: '写下我的说明书',
           summary: '先清楚我是谁，我卡在哪，往哪走。',
           bullets: ['个人属性、天赋与能量通路', '核心矛盾与人生重复模式', '当前阶段的环境坐标']
         },
@@ -169,6 +179,8 @@ export default {
           eyebrow: 'DECISION CALENDAR',
           icon: 'calendar',
           title: '决策日历',
+          to: '/pages/calendar/calendar',
+          action: '查看我的日历',
           summary: '把“了解自己”变成每天可使用的节奏。',
           bullets: ['行动建议', '适宜行动和需缓事项', '留下真实行动记录，持续复盘']
         }

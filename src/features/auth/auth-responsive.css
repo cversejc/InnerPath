@@ -1,6 +1,11 @@
+@media (max-width: 1023px) {
+  .auth-page { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .auth-aside { display: none; }
+}
+
 @media (max-width: 760px) {
   .auth-page {
-    padding: 32px 28px;
+    padding: var(--space-6) var(--space-5);
   }
 
   .auth-topbar {
@@ -12,7 +17,7 @@
   }
 
   .auth-card h1 {
-    font-size: 36px;
+    font-size: var(--text-display-md);
   }
 }
 
@@ -30,21 +35,21 @@
   }
 
   .auth-page {
-    place-items: start center;
+    align-items: start;
     padding:
-      max(72px, calc(env(safe-area-inset-top, 0px) + 48px))
-      max(22px, env(safe-area-inset-right, 0px))
+      max(32px, calc(env(safe-area-inset-top, 0px) + 24px))
+      max(16px, env(safe-area-inset-right, 0px))
       max(24px, env(safe-area-inset-bottom, 0px))
-      max(22px, env(safe-area-inset-left, 0px));
+      max(16px, env(safe-area-inset-left, 0px));
   }
 
   .auth-topbar {
-    margin-bottom: 34px;
+    margin-bottom: var(--space-5);
   }
 
   .auth-logo {
     gap: 8px;
-    font-size: 20px;
+    font-size: var(--text-h3);
   }
 
   .auth-logo-mark {
@@ -52,20 +57,22 @@
   }
 
   .auth-card h1 {
-    font-size: 32px;
+    font-size: var(--text-h1);
   }
 
   .auth-subtitle {
-    font-size: 15px;
+    font-size: var(--text-body-sm);
   }
 
   .auth-legal {
     max-width: 100%;
-    font-size: 12px;
+    font-size: var(--text-body-sm);
   }
 
+  .auth-card { padding: var(--space-5) var(--space-4); }
+
   .auth-fields {
-    gap: 18px;
+    gap: var(--space-4);
   }
 
   .auth-code-field {
@@ -73,7 +80,7 @@
   }
 
   .auth-code-button {
-    min-width: 116px;
+    min-width: 104px;
     padding: 0 8px;
   }
 

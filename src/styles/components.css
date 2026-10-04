@@ -2,11 +2,8 @@
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
-  background:
-    linear-gradient(180deg, rgba(255, 252, 245, 0.92), rgba(255, 247, 231, 0.72));
-  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.72);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-card);
 }
 
 .seal-badge {
@@ -17,7 +14,7 @@
   border: 1px solid rgba(184, 92, 80, 0.22);
   border-radius: 999px;
   padding: 0 12px;
-  background: rgba(184, 92, 80, 0.08);
+  background: var(--accent-soft);
   color: var(--cinnabar-deep);
   font-family: var(--font-ui);
   font-size: var(--text-caption);
@@ -36,7 +33,7 @@
   border-radius: var(--button-radius);
   padding: 0 18px;
   font-family: var(--font-ui);
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body);
   font-weight: var(--weight-medium);
   letter-spacing: normal;
   line-height: var(--leading-ui);
@@ -54,26 +51,26 @@
 
 .primary-button {
   background: linear-gradient(180deg, var(--cinnabar), var(--cinnabar-deep));
-  color: #fffaf0;
-  box-shadow: 0 14px 30px -18px rgba(158, 63, 53, 0.8);
+  color: var(--paper-soft);
+  box-shadow: 0 5px 12px -6px rgba(158, 63, 53, 0.45);
 }
 
 .secondary-button {
-  border: 1px solid rgba(139, 90, 20, 0.2);
-  background: rgba(255, 252, 245, 0.78);
+  border: 1px solid var(--line-strong);
+  background: var(--surface-strong);
   color: var(--cinnabar-deep);
 }
 
-.primary-button:hover {
+.primary-button:hover:not(:disabled) {
   transform: none;
   filter: saturate(1.04);
-  box-shadow: 0 16px 30px -18px rgba(158, 63, 53, 0.9);
+  box-shadow: 0 8px 18px -8px rgba(158, 63, 53, 0.5);
 }
 
-.secondary-button:hover {
+.secondary-button:hover:not(:disabled) {
   transform: none;
   border-color: rgba(184, 92, 80, 0.34);
-  background: rgba(255, 247, 231, 0.96);
+  background: var(--accent-soft);
   box-shadow: 0 10px 22px -20px rgba(84, 48, 25, 0.7);
 }
 
@@ -91,8 +88,8 @@
 
 .form-panel {
   border: 1px solid var(--line);
-  border-radius: 22px;
-  background: rgba(255, 252, 245, 0.74);
+  border-radius: var(--radius-card);
+  background: var(--surface-strong);
   box-shadow: var(--shadow-soft);
 }
 
@@ -106,7 +103,7 @@
 .form-group textarea {
   border: 1px solid rgba(139, 90, 20, 0.16);
   border-radius: 14px;
-  background: rgba(255, 250, 240, 0.72);
+  background: var(--paper-soft);
   color: var(--ink);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
@@ -125,7 +122,8 @@
 
 .footer {
   border-top: 1px solid rgba(139, 90, 20, 0.14);
-  background: linear-gradient(180deg, rgba(255, 252, 245, 0.74), rgba(248, 240, 227, 0.94));
+  padding: var(--space-6) 0;
+  background: var(--paper);
   color: var(--ink-soft);
   text-align: center;
 }
@@ -140,6 +138,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  flex-wrap: wrap;
+  font-size: var(--text-body-sm);
 }
 
 .footer-brand .brand-emblem {

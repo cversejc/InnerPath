@@ -1,7 +1,7 @@
-.admin-shell { min-height: 100dvh; background: radial-gradient(circle at 84% 4%, rgba(217, 186, 98, .16), transparent 22%), linear-gradient(135deg, var(--paper, #f8f1e6) 0%, #fffaf0 48%, #ead9bf 100%); }
-.admin-shell .admin-main { width: min(1440px, calc(100% - 48px)); margin: 0 auto; padding: 58px 0 100px; }
+.admin-shell { min-height: 100dvh; background: var(--paper); }
+.admin-shell .admin-main { width: min(1440px, calc(100% - 48px)); margin: 0 auto; padding: var(--space-6) 0 var(--space-8); }
 .admin-shell .admin-hero { display: flex; align-items: end; justify-content: space-between; gap: 28px; padding: 30px 0 32px; border-bottom: 1px solid rgba(80, 54, 32, .14); }
-.admin-shell .admin-hero h1 { margin: 8px 0 12px; color: #30241b; font-size: clamp(38px, 6vw, 72px); line-height: .98; letter-spacing: -.045em; }
+.admin-shell .admin-hero h1 { margin: 8px 0 12px; color: #30241b; font-size: var(--text-display-md); line-height: var(--leading-heading); letter-spacing: .01em; }
 .admin-shell .hero-caption, .admin-shell .view-heading p, .admin-shell .dashboard-toolbar p { color: var(--muted, #7d6653); line-height: 1.7; }
 .admin-shell .hero-actions { display: flex; align-items: center; gap: 14px; padding-bottom: 3px; }
 .admin-shell .sync-state { display: inline-flex; align-items: center; gap: 8px; color: var(--muted, #7d6653); font-family: var(--font-ui); font-size: 11px; letter-spacing: .04em; white-space: nowrap; }
@@ -15,9 +15,9 @@
 .admin-shell .admin-account-button:focus-visible { outline: 3px solid rgba(181, 87, 76, .3); outline-offset: 2px; }
 .admin-shell .admin-account-button:disabled { cursor: wait; opacity: .62; }
 .admin-shell .admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; padding: 20px 0 28px; }
-.admin-shell .admin-tab { display: inline-flex; align-items: center; gap: 9px; border: 1px solid rgba(80, 54, 32, .14); border-radius: 999px; padding: 10px 15px; color: var(--muted, #7d6653); background: rgba(255, 250, 240, .56); cursor: pointer; transition: .2s ease; }
-.admin-shell .admin-tab:hover { border-color: rgba(184, 92, 80, .5); color: #9e3f35; transform: translateY(-1px); }
-.admin-shell .admin-tab.active { border-color: #b85c50; background: #fff0df; color: #8f352f; box-shadow: 0 8px 22px -17px rgba(158, 63, 53, .9); }
+.admin-shell .admin-tab { display: inline-flex; align-items: center; gap: 9px; border: 1px solid rgba(80, 54, 32, .14); min-height: var(--touch-target); border-radius: 10px; padding: 10px 15px; color: var(--muted, #7d6653); background: rgba(255, 250, 240, .56); cursor: pointer; transition: .2s ease; }
+.admin-shell .admin-tab:hover { border-color: rgba(184, 92, 80, .5); color: #9e3f35; background: var(--accent-soft); }
+.admin-shell .admin-tab.active { border-color: var(--line-strong); background: var(--accent-soft); color: var(--cinnabar-deep); box-shadow: none; }
 .admin-shell .tab-index, .admin-shell .eyebrow { font-family: var(--font-ui); }
 .admin-shell .action-code, .admin-shell .mono-text { font-family: var(--font-mono); }
 .admin-shell .tab-index { font-size: 10px; font-weight: var(--weight-semibold); letter-spacing: .08em; opacity: .65; }

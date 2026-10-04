@@ -5,10 +5,10 @@
 .calendar-page .detail-header h3 { margin-top: 8px; color: var(--calendar-ink); font-size: 30px; }
 .calendar-page .detail-header h3 small { color: var(--calendar-muted); font-size: 12px; font-weight: var(--weight-medium); }
 
-.calendar-page .status-pill { display: inline-flex; max-width: 126px; align-items: center; border-radius: 999px; padding: 7px 10px; color: #fff; font-size: 10px; font-weight: var(--weight-semibold); line-height: 1.35; text-align: center; }
-.calendar-page .status-pill.tone-yellow { background: var(--calendar-yellow); }
-.calendar-page .status-pill.tone-green { background: var(--calendar-green); }
-.calendar-page .status-pill.tone-red { background: var(--calendar-red); }
+.calendar-page .status-pill { display: inline-flex; max-width: 126px; align-items: center; border-radius: 999px; padding: 7px 10px; color: var(--paper-soft); font-size: var(--text-caption); font-weight: var(--weight-semibold); line-height: var(--leading-ui); text-align: center; }
+.calendar-page .status-pill.tone-yellow { background: var(--gold-deep); }
+.calendar-page .status-pill.tone-green { background: var(--jade-deep); }
+.calendar-page .status-pill.tone-red { background: var(--cinnabar-deep); }
 .calendar-page .status-pill.tone-yellow-green, .calendar-page .status-pill.tone-green-yellow { color: #566b45; background: linear-gradient(90deg, #d1ad5e, #92b39a); }
 .calendar-page .status-pill.tone-red-yellow { color: #704c32; background: linear-gradient(90deg, #ba6861, #d2ad5c); }
 .calendar-page .status-pill.tone-rest { color: #704c32; background: linear-gradient(90deg, #d2ad5c, #ba6861); }

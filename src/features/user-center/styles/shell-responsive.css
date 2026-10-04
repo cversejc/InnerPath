@@ -4,15 +4,14 @@
   }
 
   .user-header-inner {
-    align-items: center;
+    align-items: flex-start;
     flex-direction: column;
-    gap: 14px;
-    text-align: center;
+    gap: var(--space-4);
   }
 
   .user-info {
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-start;
+    gap: var(--space-4);
   }
 
   .user-avatar {
@@ -22,7 +21,7 @@
   }
 
   .user-details h2 {
-    font-size: 21px;
+    font-size: var(--text-h2);
   }
 
   .user-type {
@@ -60,7 +59,7 @@
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: minmax(0, 1fr);
-    gap: 0;
+    gap: var(--space-1);
     overflow: visible;
   }
 
@@ -71,7 +70,8 @@
     flex-direction: column;
     justify-content: center;
     gap: 4px;
-    border-left: 0;
+    border: 0;
+    border-radius: 8px;
     border-bottom: 2px solid transparent;
     padding: 7px 8px;
     text-align: center;
@@ -94,7 +94,7 @@
 
   .main-content {
     min-height: 0;
-    padding: 16px 12px;
+    padding: var(--space-5) var(--space-4);
   }
 
   .user-growth-card {
@@ -114,7 +114,7 @@
   }
 
   .user-details h2 {
-    font-size: 20px;
+    font-size: var(--text-h2);
   }
 
   .content-layout {
@@ -122,7 +122,7 @@
   }
 
   .main-content {
-    padding: 14px 11px;
+    padding: var(--space-5) var(--space-4);
   }
 
   .nav-item {

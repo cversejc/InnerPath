@@ -134,16 +134,5 @@
   min-width: 0;
   padding: 25px;
   overflow: hidden;
-  background: linear-gradient(155deg, rgba(255, 252, 245, 0.96), rgba(249, 239, 218, 0.82));
-}
-
-.calendar-page .day-detail::after {
-  content: '时';
-  position: absolute;
-  right: -22px;
-  bottom: -60px;
-  color: rgba(111, 159, 147, 0.1);
-  font-size: 180px;
-  font-weight: var(--weight-semibold);
-  line-height: 1;
+  background: var(--surface-strong);
 }

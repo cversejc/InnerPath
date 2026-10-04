@@ -11,6 +11,13 @@
       </section>
     </Transition>
 
+    <aside class="auth-aside" aria-hidden="true">
+      <p class="section-kicker">CHENVIS · PERSONAL INSIGHT</p>
+      <h2>见自己，<br />知其序，<br /><span>行其路。</span></h2>
+      <p class="auth-aside-copy">在纷繁的生活里，<br />找到属于自己的方向与节奏。</p>
+      <p class="auth-aside-note">一份洞察，一段新的开始</p>
+    </aside>
+
     <div class="auth-shell" :aria-hidden="showIntro || legalDocument ? 'true' : undefined" :inert="showIntro || !!legalDocument">
       <header class="auth-topbar">
         <router-link class="auth-logo" to="/" aria-label="辰鉴首页">
@@ -20,6 +27,7 @@
           </picture>
           <span>辰鉴</span>
         </router-link>
+        <span class="auth-brand-note">见自己 · 知其序 · 行其路</span>
       </header>
 
       <main class="auth-card">
