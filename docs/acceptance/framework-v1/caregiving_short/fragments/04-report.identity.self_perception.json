@@ -1,0 +1,63 @@
+{
+  "signature": "b371ea1df1892949f53b2e04e692f4932020ff9ba20d1ca6e78319b5ba31a1ea",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "眼中的自己",
+    "content": "你说过一句话：“我不觉得拒绝本身有错；事情一多时，我会先等规则和时间表更清楚。”这句话里其实有两层：一层是你对拒绝的态度，另一层是你面对不确定时的第一反应。这节先看后者。\n\n在轮班和照护父亲这两条线同时压着的时候，你倾向以“能扛事、按规则办事”的方式被自己和别人识别——这是假设，需要你核对，但它和你自述的“先等规则和时间表更清楚”是吻合的。意识的这一层，是你知道自己在等；更底下可能还有一层：安排没确定之前，先不推进自己的事。上个月想报名内部培训，因为担心父亲复诊时间变化，连续两周没去问清课程安排，可能就是这个信念在起作用。\n\n与之配套的，是一组“应该/必须/不能”：必须先把该做的做完、不能漏掉交接、应该等安排确定再推进自己的事。这些要求的来源还没验证，可能来自职业交接规范、家庭照护角色，也可能来自你自己的标准；紫微里文曲忌落父母宫只是一条参考线索，不推断具体家庭经历，也不指向任何家庭责任。\n\n被这套要求排到后面的，可能是休息、把责任交出去、允许自己“先不管”。夜班后继续查工作群、怕漏掉交接，把手机交给同事保管半小时反而能睡着——这提示控制感与放松之间存在张力，但不等于任何诊断。它的保护功能是防止交接失误，这一点值得被承认。\n\n需要补一个反证：你已经和姐姐协商陪诊轮换并达成，说明你并非一味讨好或害怕权威，先答应再协商不等于不能协商。待核对的是：这种延迟是只在涉及父亲安排时出现，还是所有不确定场景都会出现？这些“必须”最早是从哪里学来的，在什么场景最强、什么场景最弱？",
+    "used_findings": [
+      "s2.persona.role_holder",
+      "s2.belief.wait_for_clarity",
+      "s2.shadow.rest_and_letting_go",
+      "s2.complex.responsibility_autonomy",
+      "s2.authority.internalized_should"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.mapping",
+      "analysis.s2.authority"
+    ],
+    "used_actions": [],
+    "transition_hint": "这一节看的是你眼里的自己；接下来会看“先稳住”的模式在哪些具体场景里成为卡点。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_perception",
+      "sequence_no": 4,
+      "new_information_role": "DEEPEN",
+      "reading_depth": "简洁清楚",
+      "theory_density": "medium",
+      "metaphor_density": "low"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_belief",
+        "status": "FULFILLED",
+        "reason": "意识自我（能扛事、按规则办事的角色假设）与底层信念（安排未确定前先不推进自己的事）已分开陈述并标注为假设；应该/必须/不能及来源未验证已写明，紫微线索仅作参考、不推断家庭经历；反证（已与姐姐协商轮换）与两条待补问均已给出。",
+        "quote": "意识的这一层，是你知道自己在等；更底下可能还有一层：安排没确定之前，先不推进自己的事。",
+        "follow_up_questions": [
+          "这种延迟是只在涉及父亲安排时出现，还是所有不确定场景都会出现？",
+          "这些“必须”最早是从哪里学来的，在什么场景最强、什么场景最弱？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 14532,
+    "output_tokens": 862,
+    "latency_ms": 4112,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b62d02ea-4745-4678-b51b-b3a7c2ca0f5f",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "a2eacf9bb307863f3381f52e39d9cf2267c600a8cc871c8098b90b6335e9b666",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

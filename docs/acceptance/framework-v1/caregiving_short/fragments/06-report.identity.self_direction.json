@@ -1,0 +1,64 @@
+{
+  "signature": "82db242a0cc1fbe3f0c84d7318d798c60c8434ec8b78a1359fb3866c2efe8681",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "往哪去：把“等确定”变成起点",
+    "content": "这一节只铺方向，具体怎么走放在后面的成长实验里。\n\n先说一个关键结论：你不需要先变成一个不再等待的人，而是让“等确定”和“先推进自己的事”在同一件事里同时出现。\n\n你目前更偏重的一端，是先把规则与家庭安排确定下来，再推进自己的事。你说过“事情一多时，我会先等规则和时间表更清楚”；上个月想报名内部培训，担心父亲复诊时间变化，连续两周没有问清课程安排，也是这一端的体现。被排除的另一端，是带着不确定先行动、允许自己休息、把责任交出去。夜班后继续查工作群、先答应替班再协商，都说明这一端常被排到最后。\n\n两端整合不是变成完美的人，而是在具体情境里让两者同时在场：比如先问清培训课程安排，再根据父亲复诊时间做调整，而不是等所有安排都确定。\n\n你已经有了整合的底子。你与姐姐协商陪诊分工并达成轮换，说明在责任里争取和调整位置的能力存在；把手机交给同事保管半小时后能睡着，说明放松与交托的能力也存在，只是需要条件。所以方向不是推翻“先稳住”，而是在稳住的同时，给自己留一个可以先动的小口子。\n\n从更长的线索看，当前阶段更像承担与调整期，传统上用“先立根基，再图进展”来理解这种时义：先把交接和照护的底子稳住，再一点点推进转岗准备。这只是一个方向提示，不预测结果，也不替代你的现实判断。\n\n需要说明的是：命理里“身弱”和“喜用印比”属于解释性判断，来源不足处暂缓，待你或咨询师确认后再作为结论使用。",
+    "used_findings": [
+      "s3.self.rule_vs_autonomy",
+      "s3.integration.threefold"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.self",
+      "analysis.s3.integration"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向先放在这里：不是先变成另一个人，而是让“等确定”和“先推进”在同一件事里同时出现。具体动作、频率和退出条件，统一放到成长实验节展开。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_direction",
+      "sequence_no": 6,
+      "reading_depth": "简洁清楚",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "person": "second",
+      "contains_experiment_steps": false,
+      "contains_quote": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_direction",
+        "status": "FULFILLED",
+        "reason": "已写出当前倾向的一端（先等规则与家庭安排确定再推进自己的事）、被排除的另一端（带着不确定先行动、允许休息、把责任交出去），并明确两端整合不是变成完美的人，而是在具体情境里让两者同时在场；同时保留解释性判断的边界，未把命理符号当作结论。",
+        "quote": "两端整合不是变成完美的人，而是在具体情境里让两者同时在场：比如先问清培训课程安排，再根据父亲复诊时间做调整，而不是等所有安排都确定。",
+        "follow_up_questions": [
+          "你更希望先在哪件事上练习“先问清、再调整”，而不是等全部确定？",
+          "如果只给自己留一个可以先动的小口子，你愿意从转岗准备、休息安排、家庭分工里的哪一项开始？",
+          "关于“身弱”和“喜用印比”这类解释性判断，你希望保留为参考线索，还是先暂缓不用？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 13558,
+    "output_tokens": 911,
+    "latency_ms": 4352,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "c14051ba-5b89-46a0-bd47-e11e657958b4",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "6cdda5529c7bf3bdc17aa5785cd2a6b982e8f3b3e3e1e2d2a96954f104fdf140",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -1,0 +1,398 @@
+{
+  "signature": "cbd48a4d31c838906f2d59475f992939fb2f2205ed8a3d35fc459fe976435bbf",
+  "skill_digest": "869a4188a9b860aeacb588086232e67088f7f15e681c5380c217f60c09af10b5",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每个规定分析片段都须有framework_coverage；structured_analysis/details严格使用当前reasoning_contract字段。Action的reasoning_path逐项具体，不用通用空话。",
+  "output": {
+    "summary": "本阶段整合已确认的命理与心理判断：核心张力在“先等安排确定再行动”与“休息、协商、自主推进”之间。当前大运辛未（2018–2027）偏财，责任与资源并增。自性化方向是让规则感与自主性同时在场，以现实协商经验校正延迟假设，保留用户主体选择。",
+    "findings": [
+      {
+        "finding_key": "s3.self.rule_vs_autonomy",
+        "claim": "核心对立面候选：一端是“先等规则与安排确定”的秩序感，另一端是“先推进自己的事、允许休息与协商”的自主性；两端并非好坏之分，整合点是带着不确定先做小步。",
+        "kind": "FINDING",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.belief.wait_for_clarity"
+          },
+          {
+            "finding_key": "s2.resource.negotiation_capacity"
+          }
+        ],
+        "structured_data": {
+          "dominant_pole": "等规则与安排确定",
+          "excluded_pole": "先推进与允许休息",
+          "note": "解释性整合判断，待咨询师确认"
+        }
+      },
+      {
+        "finding_key": "s3.quadrant.holder_learner",
+        "claim": "四象限候选：用户当前更接近“角色中的承担者”（财官与照护责任并重），同时带“孤独普罗米修斯”式独自消化倾向；成长任务偏建立原则与主权，学习协商与交托，而非强化征服或退回思虑。",
+        "kind": "FINDING",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.persona.role_holder"
+          },
+          {
+            "finding_key": "s2.shadow.rest_and_letting_go"
+          }
+        ],
+        "structured_data": {
+          "primary_quadrant": "角色中的承担者",
+          "secondary_quadrant": "孤独普罗米修斯",
+          "note": "象限为成长隐喻，非人格等级"
+        }
+      },
+      {
+        "finding_key": "s3.timeline.current_xinwei",
+        "claim": "当前大运辛未（2018–2027，偏财），未土加重土气、偏财透干，主题偏资源与责任并增；阶段基调可作“承担与调整期”，放大主题是家庭与工作双重责任，发展能力为协商与边界，防范旧模式是延迟推进与反复查群。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.analysis_date"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.dayun.current_xinwei"
+          },
+          {
+            "finding_key": "s2.complex.responsibility_autonomy"
+          }
+        ],
+        "structured_data": {
+          "pillar": "辛未",
+          "start_year": 2018,
+          "end_year": 2027,
+          "ten_god": "偏财",
+          "note": "条件式描述，非必然事件"
+        }
+      },
+      {
+        "finding_key": "s3.yijing.qian_zhun",
+        "claim": "时义比喻候选：当下境遇近似“屯”卦意象——起步阶段资源未齐、需先立根基再图进展；匹配点是转岗准备与家庭安排交错，不适用边界是当现实条件已明确时不宜再以“时机未到”推迟行动。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.belief.wait_for_clarity"
+          }
+        ],
+        "structured_data": {
+          "hexagram_image": "屯",
+          "note": "哲学比喻，非起卦结果或占卜证明"
+        }
+      },
+      {
+        "finding_key": "s3.bridge.self_knowing",
+        "claim": "个体与集体桥梁候选：以“自知”与“反向整合”为线索——把“等确定”看作一种保护而非缺陷，同时以主动实践（先问清课程、先谈分工）让改变从现实经验中生长，而非等待命运或权威许可。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.counterexample",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.resource.negotiation_capacity"
+          }
+        ],
+        "structured_data": {
+          "philosophy_refs": [
+            "道德经自知",
+            "了凡四训主动实践"
+          ],
+          "note": "不虚构引文或页码"
+        }
+      },
+      {
+        "finding_key": "s3.integration.threefold",
+        "claim": "三重对应候选：先天格局（丁火身弱候选、印比资源）↔意识与潜意识（面具承担者、信念等确定）↔天命之性（以持续照护与自主并存）；大运辛未↔承担调整期↔屯卦时义；喜用印比↔学习与同伴支持↔明德；忌食伤财过旺↔休息被挤压↔反者道之动。",
+        "kind": "FINDING",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description",
+          "input.context.concrete_events"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          }
+        ],
+        "structured_data": {
+          "note": "对应为解释性框架，来源不足处暂缓"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s3.self",
+        "title": "3.1 自性化方向",
+        "content": "你目前更偏重的一端，是先把规则与家庭安排确定下来，再推进自己的事；被排除的另一端，是带着不确定先行动、允许自己休息和把责任交出去。两端整合不是变成完美的人，而是在具体情境里让两者同时在场：比如先问清培训课程安排，再根据父亲复诊时间做调整，而不是等所有安排都确定。你与姐姐协商陪诊轮换、把手机交给同事后能睡着，说明自主与放松的能力已经存在，只是需要条件。z 轴螺旋成长意味着每次回到类似情境时，能多带一点选择权，而不是要求自己一次到位。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已给出偏重的一端、被排除的一端与两端整合的具体情境，并结合现实自述与反证。",
+          "quote": "你目前更偏重的一端，是先把规则与家庭安排确定下来，再推进自己的事；被排除的另一端，是带着不确定先行动、允许自己休息和把责任交出去。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "主导端、被排除端与整合能力均已基于用户自述与反证给出，未塑造完美人格。",
+          "quote": "两端整合不是变成完美的人，而是在具体情境里让两者同时在场",
+          "follow_up_questions": [],
+          "details": {
+            "dominant_pole": "先把规则与家庭安排确定下来，再推进自己的事；依据自述“事情一多时先等规则和时间表更清楚”与培训报名延迟两周。",
+            "excluded_pole": "带着不确定先行动、允许休息、把责任交出去；依据夜班后仍查群、先答应替班再协商。",
+            "integration": "在具体情境中让两端同时在场，如先问清课程安排再按复诊时间调整；依据已成功协商轮换与交出手机后能睡着。"
+          }
+        },
+        "finding_refs": [
+          "s3.self.rule_vs_autonomy"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample",
+          "input.context.concrete_events"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.quadrant",
+        "title": "3.2 英雄四象限",
+        "content": "四象限是成长隐喻，不是人格等级。你当前更接近“角色中的承担者”：轮班主管加照护长辈，责任与外部评价并重，成长任务是建立原则与主权，而不是继续加码承担。同时带“孤独普罗米修斯”式倾向：夜班后独自查群、把洞见与压力自己消化，成长任务是以身入局、持续协商。相对少见的依据是“战神征服者”式的主动出击与“退回内在的探索者”式的长期思虑替代行动，但两者都有反证——你能主动与姐姐谈轮换，说明行动力存在。可借的中式意象是“守城而不闭门”的守将：守住职责，也开一道门让同伴分担。边界：这些意象只作理解工具，不作史实或人格诊断。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已比较四象限依据与反证，给出成长任务与中式人物意象，并声明非史实或人格诊断。",
+          "quote": "你当前更接近“角色中的承担者”：轮班主管加照护长辈，责任与外部评价并重，成长任务是建立原则与主权，而不是继续加码承担。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "原型意象、可学习能力、适配理由与边界均已给出，依据用户现实自述。",
+          "quote": "可借的中式意象是“守城而不闭门”的守将：守住职责，也开一道门让同伴分担。",
+          "follow_up_questions": [],
+          "details": {
+            "archetype": "“守城而不闭门”的守将意象；依据轮班主管与照护长辈的双重承担，以及已与姐姐协商轮换。",
+            "learnable_capacity": "在守住职责的同时主动分派与协商，让同伴分担；依据陪诊轮换的成功经验。",
+            "fit_reason": "回应责任与自主的拉扯：既不放掉责任，也不把一切独自扛下。",
+            "boundary": "仅为成长隐喻，不作史实或人格诊断；当现实需要果断决策时，守将意象不适用。"
+          }
+        },
+        "finding_refs": [
+          "s3.quadrant.holder_learner"
+        ],
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.timeline",
+        "title": "3.3 人生时序",
+        "content": "按分析日期2026-10-04，你正处于辛未大运（2018–2027，偏财），未土加重土气、偏财透干，阶段基调偏承担与调整，放大主题是家庭与工作双重责任，发展能力是协商与边界，需防范的旧模式是延迟推进与反复查群。后续大运沿库计算起止：庚午2028–2037（正财）偏资源整合与稳定经营；己巳2038–2047（食神）偏表达与照料；戊辰2048–2057（伤官）偏突破与调整。面具/阴影遭遇/整合/完整四阶段是成长隐喻，可往返，不能仅凭顺逆大运判定心理阶段。以上为条件式描述，非必然事件。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "当前及后续每个大运均给出起止年份、阶段基调、放大主题、发展能力与防范旧模式，并声明条件式与阶段隐喻边界。",
+          "quote": "按分析日期2026-10-04，你正处于辛未大运（2018–2027，偏财），未土加重土气、偏财透干，阶段基调偏承担与调整",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "阶段对象逐项给出起止年份与四要素，起止年份逐字采用计算证据，并说明条件式边界。",
+          "quote": "后续大运沿库计算起止：庚午2028–2037（正财）偏资源整合与稳定经营",
+          "follow_up_questions": [],
+          "details": {
+            "periods": [
+              {
+                "start_year": 2018,
+                "end_year": 2027,
+                "interaction": "辛未偏财，未土加重土气，与月支戌、日支卯互动；原局戌辰冲、卯辰害提示家庭与工作牵拉。",
+                "theme": "承担与调整期，资源与责任并增。",
+                "capacity": "协商与边界设定，先问清再推进。",
+                "old_pattern": "延迟推进、夜班后反复查群。"
+              },
+              {
+                "start_year": 2028,
+                "end_year": 2037,
+                "interaction": "庚午正财，午火助身、财星透干；与日支卯有生扶关系。",
+                "theme": "资源整合与稳定经营期。",
+                "capacity": "把协商经验制度化，形成可持续分工。",
+                "old_pattern": "以等待确定替代主动规划。"
+              },
+              {
+                "start_year": 2038,
+                "end_year": 2047,
+                "interaction": "己巳食神，巳火藏劫财、正财、伤官；与年支巳同气。",
+                "theme": "表达与照料期，输出与滋养并重。",
+                "capacity": "直接表达需求，减少先承接后协商的滞后。",
+                "old_pattern": "把休息与自我表达排在最后。"
+              },
+              {
+                "start_year": 2048,
+                "end_year": 2057,
+                "interaction": "戊辰伤官，辰土与月支戌冲、与日支卯害，变动线索增强。",
+                "theme": "突破与调整期，旧结构可能松动。",
+                "capacity": "在变动中保留原则与主权，稳步调整。",
+                "old_pattern": "以控制感应对不确定。"
+              }
+            ],
+            "uncertainty": "大运起止年份来自库计算（起运约10岁，阳年男命顺排）；阶段基调为解释性描述，非必然事件，需结合现实经验修正。"
+          }
+        },
+        "finding_refs": [
+          "s3.timeline.current_xinwei"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.analysis_date"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.yijing",
+        "title": "3.3 易经时义",
+        "content": "以“屯”卦作哲学比喻：屯为初生之难，草木穿土而出，需先立根基、再图进展。这与你的当下境遇匹配——想转岗却总等家庭安排确定，像种子等待土壤稳定才发芽；而现实中你已能协商轮换、交出手机入睡，说明根基其实在。屯的启示不是无限等待，而是先做能做的准备，如问清课程安排、把复诊时间纳入计划。不适用边界：当条件已明确、只差行动时，继续以“时机未到”解释延迟就不再贴切。此为哲学比喻，不是起卦结果或占卜证明。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已选卦象作哲学比喻，说明匹配理由与不适用边界，并声明非起卦或占卜证明。",
+          "quote": "以“屯”卦作哲学比喻：屯为初生之难，草木穿土而出，需先立根基、再图进展。",
+          "follow_up_questions": []
+        },
+        "finding_refs": [
+          "s3.yijing.qian_zhun"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.expected_outcomes"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.bridge",
+        "title": "3.4 个体与集体桥梁",
+        "content": "金花的秘密以种子与节律为喻：成长有自己的周期，急不得，但也不能一直埋在土里。道德经讲自知与反向整合——看见“等确定”其实是一种保护，而非缺陷，才可能松动它。了凡四训强调主动实践：改变不是等命运或权威许可，而是从问清课程、谈好分工这样的小事开始。你与姐姐协商轮换、把手机交给同事，已经是主动实践的雏形。个体与集体的桥梁在于：你的调整不只为自己，也让家庭分工更可持续。红书关于自我与自性的方向仅作参考，不虚构引文或页码。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已结合金花种子隐喻、道德经自知与反向整合、了凡四训主动实践，并声明红书仅作参考方向、不虚构引文。",
+          "quote": "金花的秘密以种子与节律为喻：成长有自己的周期，急不得，但也不能一直埋在土里。",
+          "follow_up_questions": []
+        },
+        "finding_refs": [
+          "s3.bridge.self_knowing"
+        ],
+        "evidence_refs": [
+          "input.context.counterexample",
+          "input.context.expected_outcomes"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.integration",
+        "title": "3.5 三重对应",
+        "content": "三重对应如下：先天格局（丁火身弱候选、印比资源）↔意识与潜意识（面具是承担者，信念是等确定才安全）↔天命之性（持续照护与自主并存）；大运辛未（2018–2027）↔承担调整期↔屯卦时义；喜用印比↔学习与同伴支持↔明德；忌食伤财过旺↔休息被挤压↔反者道之动；干支关系（戌辰冲、卯辰害）↔家庭与工作的冲突↔阴阳张力；藏干透出（伤官、偏印）↔潜能意识化↔静观。来源不足处暂缓：身弱与用神为解释性判断，待咨询师确认。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "六组对应均已给出，来源不足处（身弱与用神）明确标注暂缓待确认。",
+          "quote": "喜用印比↔学习与同伴支持↔明德；忌食伤财过旺↔休息被挤压↔反者道之动",
+          "follow_up_questions": []
+        },
+        "finding_refs": [
+          "s3.integration.threefold"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description",
+          "input.context.concrete_events"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "身弱候选与用神（印比）为解释性判断，存在流派分歧，需咨询师确认后再用于报告结论。",
+        "references": [
+          "s1.structure.candidate_weak",
+          "s1.useful_gods.candidate"
+        ]
+      },
+      {
+        "message": "底层信念“等安排确定才安全”的来源（家庭、职业或自我要求）尚未验证，不得补造童年经历或家庭关系。",
+        "references": [
+          "s2.belief.wait_for_clarity",
+          "s2.authority.internalized_should"
+        ]
+      },
+      {
+        "message": "夜班后查群与交出手机后能睡着提示控制感与放松的张力，但不等于焦虑障碍，不得作临床判断。",
+        "references": [
+          "s2.shadow.rest_and_letting_go"
+        ]
+      },
+      {
+        "message": "大运阶段基调为条件式描述，不能仅凭顺逆大运判定心理阶段或预测必然事件。",
+        "references": [
+          "s3.timeline.current_xinwei"
+        ]
+      },
+      {
+        "message": "四象限与卦象均为成长隐喻，不作史实诊断或人格等级，需结合现实经验修正。",
+        "references": [
+          "s3.quadrant.holder_learner",
+          "s3.yijing.qian_zhun"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 37056,
+    "output_tokens": 5029,
+    "latency_ms": 20795,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "9089f572-b2f6-4187-8d5e-ecc8df000095",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.s3_integration",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "6b4d113a9d90d0f923f8977cb6a78c1ae9e7ba34e8f09e7521c1a2740b16cc56",
+    "output_validation": "passed",
+    "reference_repairs": {
+      "invalid_finding_refs_removed": 1
+    }
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

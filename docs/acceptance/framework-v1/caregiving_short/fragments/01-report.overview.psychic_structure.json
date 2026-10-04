@@ -1,0 +1,62 @@
+{
+  "signature": "dde434d58ffd981785bb11b2ded4777e091ea8cea3045dc13d49343f0e0ad61a",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。\n上一轮输出未通过程序校验：report_fragment_unsupported_fragment。请重新生成完整JSON。reasoning_path.resource_refs只能引用指定角色资源，不能用PERSONA代替。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "这份说明书的主线：先稳住，再往前",
+    "content": "你在轮班物流和照顾父亲的双重节奏里，被自己和他人识别为“能扛事、按规则办事”的人；事情一多，你会先等规则和时间表更清楚，再推进自己的安排。这不是缺陷，而是长期保护交接安全与家庭运转的方式。\n\n当外在的承担者角色被反复使用，它也可能悄悄变成你以为的全部自己：一个必须先把该做的做完、不能漏掉交接的人。休息、把责任交出去、先推进自己的事，则常被排在最后。这里的“必须”来源（职业规范、家庭角色或自我标准）尚未核实，只作为待核对的线索保留。\n\n但已确认的现实资源说明另一面同样存在：你与姐姐说清轮班表后改成轮流陪诊，把手机交给同事保管半小时后能睡着。这说明协商与放松的能力并非缺失，只是在“等确定”的模式下被延后。\n\n整合方向不是推翻秩序感，而是带着不确定先做小步：一端是等规则与安排确定，另一端是先推进与允许休息，整合点是让两者并存。\n\n关键结论：你的稳定来自“先稳住”，你的推进可能来自“允许不确定先走一小步”。\n\n路径图：向世界展示的我（可靠执行者）→ 以为的自己（必须做完才安心）→ 潜意识层面的自己（休息与自主被排在最后）→ 整合后的方向（带着不确定先做小步）。",
+    "used_findings": [
+      "s3.self.rule_vs_autonomy",
+      "s3.integration.threefold",
+      "s2.resource.negotiation_capacity",
+      "s2.persona.role_holder",
+      "s2.authority.internalized_should",
+      "s2.shadow.rest_and_letting_go"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "本章已铺出“先稳住，再往前”的主线；后续章节会分别展开卡点、保护功能与整合能力，成长实验节再给出具体动作。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.overview.psychic_structure",
+      "chapter_opening": true,
+      "sequence_no": 1,
+      "reading_preference": "简洁清楚",
+      "theory_density": "medium",
+      "metaphor_density": "low",
+      "word_count": 386
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "status": "FULFILLED",
+        "reason": "正文按“向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向”四层依次铺开，并给出关键结论与箭头路径图；未展开卡点保护/代价细节，具体实践留给成长实验节。",
+        "quote": "路径图：向世界展示的我（可靠执行者）→ 以为的自己（必须做完才安心）→ 潜意识层面的自己（休息与自主被排在最后）→ 整合后的方向（带着不确定先做小步）。",
+        "follow_up_questions": [
+          "“必须先把该做的做完”这个要求，更接近职业规范、家庭角色，还是你自己的标准？",
+          "除了交手机那半小时，还有哪些时刻你允许自己先不管？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 12452,
+    "output_tokens": 780,
+    "latency_ms": 3998,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "ebf1c323-5260-453c-b4e1-aa97cd134499",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "afd1f5941d80097e014807139cf495f7672c3599f3ececab20b3529c6a1ae509",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

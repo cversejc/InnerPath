@@ -1,0 +1,55 @@
+{
+  "signature": "85245a6d0e3f98ddcc654321aab85fe4bb559baa981c8f3f3fff7d62e1963309",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点二：夜班后靠反复查群才敢休息",
+    "content": "你提到，夜班结束后你会继续查工作群，担心漏掉交接信息；把手机交给同事保管半小时，你才能睡着。这是一个具体的现实场景，也是一个可以被观察的触发链：触发点可能是下班那一刻交接是否“完全清楚”的不确定感，运作方式是反复检查来维持交接安全感，过去的保护功能是防止交接失误、避免责任风险，长期代价是入睡被推迟、休息质量下降，而整合邀请是把放松部分交给可信任的外部结构。\n\n需要先区分：夜班后查群、把手机交给同事后能睡着，是你自己说出的观察；而“用检查维持安全感”是对这个行为可能起到的作用的一种解释，不是定论。如果后续出现反证——比如某次没查群也顺利入睡——那会帮助校正这个理解。\n\n从已确认的机制看，这个卡点与“先稳住”的模式相连：在不确定时先维持秩序与责任，再考虑自己的休息。它保护的是交接安全和家庭运转，不是缺陷。但代价也很具体：休息被挤压，而休息又是你维持轮班和照护的基础。\n\n这一节只解释场景、触发、运作、保护功能和长期代价，不展开具体解决步骤；把手机交给同事这个动作已经出现，但它的频率、观察方式和退出条件，统一放到成长实验节说明。下一步的理解是：这个卡点不是要你“别查群”，而是看到检查背后的保护意图，并允许可信任的外部结构暂时接管。",
+    "used_findings": [
+      "s4.block.control_rest"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这个卡点先看到这里：查群保护了交接安全，代价落在休息上。接下来会看第三个卡点——先答应请求，再补协商。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_02",
+      "sequence_no": 10,
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "正文按场景→触发→运作→过去保护→长期代价→整合邀请的顺序展开，只解释卡点，不展开解决步骤。",
+        "quote": "触发点可能是下班那一刻交接是否“完全清楚”的不确定感，运作方式是反复检查来维持交接安全感，过去的保护功能是防止交接失误、避免责任风险，长期代价是入睡被推迟、休息质量下降，而整合邀请是把放松部分交给可信任的外部结构。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4861,
+    "output_tokens": 669,
+    "latency_ms": 3430,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "682264f6-92c7-4245-8ebe-2c73777cf272",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "3ef4177db026094749513514237b629c2b1f1f4b02607617924eb2b5cb53750f",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

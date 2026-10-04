@@ -1,0 +1,65 @@
+{
+  "signature": "7f1a69b197aacd70d76ca28cf8dbf01f1992d8ae1c169c9a1706abba3dd4b6f0",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "世界看到的你：可靠、能扛事、按规则办事",
+    "content": "在世界眼里，你大概是一个“能扛事、按规则办事”的人：轮班物流主管，同时照顾长辈。这个角色不是凭空贴上的标签——你说过，事情一多时，你会先等规则和时间表更清楚；你也说，你不觉得拒绝本身有错。把这两句放在一起看，你并不是不敢拒绝，而是习惯先让秩序稳定下来，再决定自己怎么动。\n\n从符号线索看，丁火日主，月柱与时柱两位甲木正印透出，年干一位己土食神；命宫廉贞、七杀，加擎羊、火星、天空，官禄宫武曲化禄。这些线索可以被读作“按规则扛事、持续照护”的角色底色：正印像“先把事情弄清楚、按规矩来”的习惯，七杀与擎羊火星像“撑住、别松手”的惯性，武曲化禄像在工作场景里把成果和责任看得重。需要说明的是，这一层是解释性假设，不是对你人格的定论；你自述的部分是事实，符号解释只是提供一个观察角度，两者不能混同。角色认同到什么程度，还需要你自己核对。\n\n同样属于事实层面的，还有你已经展现出的协商能力：姐姐临时请你替她陪诊，你先答应了；后来你和她说清轮班表，你们改成轮流陪诊。夜班后你继续查工作群，害怕漏掉交接；把手机交给同事保管半小时后，你能睡着。这两件事说明，你不只是“等确定”的人，你也能把安排谈成、把控制交出去。它们是现实中的资源证据，而不是需要被解释掉的例外。\n\n所以，这一节想先建立的是共鸣而不是结论：你被看到的样子，和你实际能做到的事，都比“总是等到所有安排确定才行动”这一句话更宽。接下来会看这种“先稳住”的模式在哪些场景里帮你，又在哪些场景里让你把自己的事排在最后。",
+    "used_findings": [
+      "s2.resource.negotiation_capacity",
+      "s1.ten_gods.visible_hidden",
+      "s2.persona.role_holder"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.persona",
+      "analysis.s2.ten_gods",
+      "analysis.s2.stars"
+    ],
+    "used_actions": [],
+    "transition_hint": "这一节先铺出“可靠执行者与照护者”的外在角色，以及你已有的协商与交出控制的能力；下一节会看这种“先稳住”的模式在哪些具体场景里成为卡点。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.outer_self",
+      "sequence_no": 2,
+      "new_information_role": "INTRODUCE",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、简洁清楚；命理术语已转译为日常语言；未展开实验动作与收束金句。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.persona",
+        "status": "FULFILLED",
+        "reason": "已写出用户可识别的外在角色（轮班物流主管、同时照顾长辈、被识别为能扛事按规则办事的人），并明确区分自述事实与符号解释假设，说明角色认同程度需本人核对。",
+        "quote": "在世界眼里，你大概是一个“能扛事、按规则办事”的人：轮班物流主管，同时照顾长辈。",
+        "follow_up_questions": [
+          "在哪些场景你最能认同“可靠执行者与照护者”这个角色？",
+          "有没有场景你不想再扮演这个角色？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 13547,
+    "output_tokens": 895,
+    "latency_ms": 4602,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "1ca872d2-a858-4f87-bfac-669b00dc5bb1",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "56755dd445a3d4df9da4d9d530c682070228485cc75d830a0882139b36f948d8",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

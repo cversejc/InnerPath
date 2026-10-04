@@ -1,0 +1,25 @@
+{
+  "error": "report_fragment_unsupported_fragment",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 12953,
+    "output_tokens": 800,
+    "latency_ms": 3565,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "3979a755-9405-4b1e-86b7-aa97d25e0ee4",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "07a4867d360698b3140928bc3a0659e4c568e8b8a56bba546e8ae6c1cface70e",
+    "output_validation": "failed",
+    "error_type": "ValueError"
+  },
+  "unvalidated_output": "{\n  \"status\": \"READY_FOR_REVIEW\",\n  \"title\": \"这份说明书的主线：先稳住，再往前\",\n  \"content\": \"你在轮班物流和照顾父亲的双重节奏里，被自己和他人识别为“能扛事、按规则办事”的人；事情一多，你会先等规则和时间表更清楚，再推进自己的安排。这不是缺陷，而可能是长期保护交接安全与家庭运转的方式。\\n\\n当承担者的角色被反复使用，它也可能悄悄变成你以为的全部自己：一个必须先把该做的做完、不能漏掉交接的人。休息、把责任交出去、先推进自己的事，则常被排在后面。这里的“必须”来源（职业规范、家庭角色或自我标准）尚未核实，只作为待核对的线索保留。\\n\\n但已确认的现实资源说明另一面同样存在：你与姐姐说清轮班表后改成轮流陪诊，把手机交给同事保管半小时后能睡着。这说明协商与放松的能力并非缺失，只是在“先等确定”的模式下被延后。\\n\\n整合方向不是推翻秩序感，而是带着不确定先做小步：一端是等规则与安排确定，另一端是先推进与允许休息，整合点是让两者并存。\\n\\n关键结论：你的稳定来自“先稳住”，你的推进可能来自“允许不确定先走一小步”。\\n\\n路径图：向世界展示的我（可靠执行者）→ 以为的自己（必须做完才安心）→ 潜意识层面的自己（休息与自主被排在后面）→ 整合后的方向（带着不确定先做小步）。\",\n  \"used_findings\": [\n    \"s3.self.rule_vs_autonomy\",\n    \"s3.integration.threefold\",\n    \"s2.resource.negotiation_capacity\",\n    \"s2.persona.role_holder\",\n    \"s2.authority.internalized_should\",\n    \"s2.shadow.rest_and_letting_go\"\n  ],\n  \"used_analysis_fragments\": [\n    \"analysis.s2.persona\",\n    \"analysis.s2.authority\",\n    \"analysis.s2.shadow\",\n    \"analysis.s3.self\"\n  ],\n  \"used_actions\": [],\n  \"transition_hint\": \"从用户能够识别的外在表现开始建立共鸣。\",\n  \"presentation_meta\": {\n    \"fragment_key\": \"report.overview.psychic_structure\",\n    \"chapter\": \"identity\",\n    \"sequence_no\": 1,\n    \"chapter_opening\": true,\n    \"reader_profile\": {\n      \"theory_density\": \"medium\",\n      \"action_density\": \"high\",\n      \"metaphor_density\": \"low\"\n    },\n    \"tone\": \"第二人称、现实语言、简洁清楚\",\n    \"style_notes\": [\n      \"概览只呈现四层主线，不展开卡点机制\",\n      \"对解释性判断使用可能/尚未核实等限定\",\n      \"不引用金句，不写具体实验动作\"\n    ]\n  },\n  \"requirement_coverage\": [\n    {\n      \"requirement_id\": \"R.psychic_structure\",\n      \"status\": \"FULFILLED\",\n      \"reason\": \"正文按“向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向”组织，并保持概览暗线，未展开卡点的触发链与保护/代价。\",\n      \"quote\": \"路径图：向世界展示的我（可靠执行者）→ 以为的自己（必须做完才安心）→ 潜意识层面的自己（休息与自主被排在后面）→ 整合后的方向（带着不确定先做小步）。\",\n      \"follow_up_questions\": []\n    }\n  ]\n}",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "signature": "1704a3bb4438103a2d7088d21477ddf7c6f18996a0780b1bdba7eaa1ab6e14ea"
+}

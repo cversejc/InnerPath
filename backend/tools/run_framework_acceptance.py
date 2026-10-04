@@ -55,6 +55,36 @@ def sample_input(scenario):
         available_time="工作日每晚5–10分钟，周末20分钟；不能增加大量写日记负担。",
         expected_outcomes=["理解反复出现的机制", "练习有余地的表达", "减少透支"],
         synthetic_notice="全部人物资料及经历为开发验收编写的合成数据，不是真实客户或专业评估。")
+    if scenario == "caregiving_short":
+        profile.update(
+            name="合成验收样本-caregiving_short",
+            gender="male",
+            birth_year=1989,
+            birth_month=11,
+            birth_day=3,
+            birth_hour=7,
+            birth_minute=20,
+            birth_place="四川成都",
+            latitude=30.57,
+            longitude=104.07,
+            current_residence="成都",
+            occupation_status="轮班物流主管，同时照顾长辈",
+            mbti="ISTJ",
+            preferred_content_depth="简洁清楚",
+        )
+        context.update(
+            focus_topics=["career_transition", "family_responsibility"],
+            current_challenge="轮班工作和照顾父亲挤压休息时间；想转岗，却总等到所有家庭安排都确定后才行动。",
+            concrete_events=[
+                "上个月想报名内部培训，担心父亲复诊时间变化，连续两周没有问清课程安排。",
+                "姐姐临时请我替她陪诊，我先答应；后来和她说清轮班表后，我们改成轮流陪诊。",
+                "夜班后我会继续查工作群，害怕漏掉交接；把手机交给同事保管半小时后能睡着。",
+            ],
+            self_description="我不觉得拒绝本身有错；事情一多时，我会先等规则和时间表更清楚。",
+            counterexample="我曾与姐姐协商陪诊分工并达成轮换；不能把所有延迟都解释成讨好或害怕权威。",
+            available_time="轮班工作日通常只有8分钟，休息日约25分钟；不接受每天写长日记。",
+            expected_outcomes=["弄清转岗所需的下一步", "减少夜班后的消息检查", "维持可持续的家庭分工"],
+        )
     if scenario == "missing_time":
         profile.pop("birth_hour")
         profile.pop("birth_minute")
@@ -326,7 +356,11 @@ async def repair_report(output, scenario, round_no):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--scenario", choices=["full", "missing_time", "counterexample"], default="full")
+    parser.add_argument(
+        "--scenario",
+        choices=["full", "missing_time", "counterexample", "caregiving_short"],
+        default="full",
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--repair", type=int, choices=[1, 2, 3])
     args = parser.parse_args()

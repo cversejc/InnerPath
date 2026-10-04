@@ -1,0 +1,424 @@
+{
+  "signature": "9fb4f794dd3c290c258b7f7fb206a9aea5f31fbabdebf9e11627641b01498452",
+  "skill_digest": "676cf435dae8a64dfa47517e2446246544936bae6dfa5ef8dfefa123f0991cc1",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每个规定分析片段都须有framework_coverage；structured_analysis/details严格使用当前reasoning_contract字段。Action的reasoning_path逐项具体，不用通用空话。",
+  "output": {
+    "summary": "本阶段基于已确认S1结构与用户自述，提出可审阅的心理运作模式假设：外在角色偏扛事与规则先行，底层信念可能是“安排未定就不宜行动”，情结线索围绕责任与自主的拉扯。所有心理表述均为假设，须以真实事件和反证校正，不作诊断。",
+    "findings": [
+      {
+        "finding_key": "s2.persona.role_holder",
+        "claim": "假设：用户在轮班工作与照顾父亲的双重场景中，倾向以“能扛事、按规则办事”的角色被自己和他人识别；这与自述“事情一多时先等规则和时间表更清楚”一致，但角色认同程度需访谈确认。",
+        "kind": "SIGNAL",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.profile.occupation_status"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.life_palace"
+          },
+          {
+            "finding_key": "s1.day_master.ding_fire"
+          }
+        ],
+        "structured_data": {
+          "layer": "意识层假设",
+          "note": "自述与符号解释分开，非人格定论"
+        }
+      },
+      {
+        "finding_key": "s2.belief.wait_for_clarity",
+        "claim": "假设：底层信念可能是“所有家庭安排确定后，我才能安全地推进自己的事”。依据是用户自述先等规则清楚，以及想报名培训却连续两周未问清课程安排；该信念来源（家庭、职业或自我要求）尚未验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "input.context.current_challenge"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.month.xu_climate"
+          },
+          {
+            "finding_key": "s1.interactions.list"
+          }
+        ],
+        "structured_data": {
+          "layer": "潜意识层假设",
+          "note": "需核对是否每次遇到不确定都会延迟"
+        }
+      },
+      {
+        "finding_key": "s2.shadow.rest_and_letting_go",
+        "claim": "假设：休息、把责任交出去、允许自己“先不管”可能是被排斥的面向。依据是夜班后仍继续查工作群、害怕漏掉交接，以及把手机交给同事保管半小时后能睡着；这提示控制感与放松之间存在张力，但不等于焦虑障碍。",
+        "kind": "SIGNAL",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.wellbeing"
+          },
+          {
+            "finding_key": "s1.day_branch.mao_yin"
+          }
+        ],
+        "structured_data": {
+          "layer": "阴影假设",
+          "note": "阴影不等于缺点；保护功能是防止交接失误"
+        }
+      },
+      {
+        "finding_key": "s2.complex.responsibility_autonomy",
+        "claim": "假设：情结线索围绕“责任与自主”的拉扯——先答应替班、再谈轮换，说明用户并非一味讨好，而是先承接再协商；核心情绪可能是担心安排变动带来的失控感，需以更多真实事件核对。",
+        "kind": "SIGNAL",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "input.context.self_description"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.interactions.list"
+          },
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          }
+        ],
+        "structured_data": {
+          "layer": "情结假设",
+          "note": "反证：已与姐姐协商达成轮换，不能全解释为讨好"
+        }
+      },
+      {
+        "finding_key": "s2.authority.internalized_should",
+        "claim": "假设：用户内在可能存在“必须先把该做的做完、不能漏掉交接”的自我要求；其来源（职业规范、家庭角色或自我标准）需访谈验证。紫微文曲忌落父母宫可作参考线索，但不推断具体家庭经历。",
+        "kind": "SIGNAL",
+        "semantic_role": "STRUCTURE",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.self_description"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.year_sihua"
+          },
+          {
+            "finding_key": "s1.hour.chen_yin"
+          }
+        ],
+        "structured_data": {
+          "layer": "超我假设",
+          "note": "来源未验证，不补造童年经历"
+        }
+      },
+      {
+        "finding_key": "s2.resource.negotiation_capacity",
+        "claim": "用户已展现协商能力：与姐姐说清轮班表后改为轮流陪诊，把手机交给同事保管后能睡着。这两项是现实中的资源证据，可作为后续行动设计的支点，而非仅聚焦延迟。",
+        "kind": "FINDING",
+        "semantic_role": "RESOURCE",
+        "confidence": "HIGH",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          }
+        ],
+        "structured_data": {
+          "layer": "现实资源",
+          "note": "用户自述事实，非解释"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s2.mapping",
+        "title": "2.1 双层对应",
+        "content": "【假设，待核对】日主丁火与双透甲木正印，可作面具线索：以持续、温和、按规则照护的方式被识别；用户在自述中说“事情一多时，我会先等规则和时间表更清楚”，这与面具一致。月令戌土伤官与日支卯木偏印，可作底层信念线索：一方面需要表达与突破，一方面需要先获得内在滋养与确定感，故“安排未定就不宜行动”可能是信念假设。藏干伤官多、七杀藏辰，可作阴影线索：被排斥的可能是直接争取、把责任交出去、允许自己休息。戌辰六冲、卯辰六害可作情结线索：家庭与工作两边牵拉时易生隐性摩擦。喜用印比可作资源线索：学习、被支持、同伴协作是充电方向；食伤财过旺可作耗能线索：事务性输出与责任叠加易耗。以上均为解释视角，非定论。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "面具、信念、阴影、情结、资源/耗能六条均已给出意识层与潜意识层假设，并声明非定论。",
+          "quote": "【假设，待核对】日主丁火与双透甲木正印，可作面具线索：以持续、温和、按规则照护的方式被识别",
+          "follow_up_questions": [
+            "每次遇到安排不确定时，你具体会先做什么、等多久？",
+            "有没有一次你没等安排确定就直接行动，结果如何？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "用户自述、信念假设、权威来源与反证均已给出，未补造经历。",
+          "quote": "【假设，待核对】日主丁火与双透甲木正印，可作面具线索：以持续、温和、按规则照护的方式被识别",
+          "follow_up_questions": [
+            "每次遇到安排不确定时，你具体会先做什么、等多久？",
+            "有没有一次你没等安排确定就直接行动，结果如何？"
+          ],
+          "details": {
+            "self_description": "用户自述：不觉得拒绝本身有错；事情一多时先等规则和时间表更清楚。此为自述，非解释。",
+            "core_belief": "假设：安排未确定前不宜推进自己的事，否则可能出错或影响他人。",
+            "authority_origin": "可能来自职业交接规范与家庭照护角色；紫微文曲忌落父母宫仅作参考，来源需访谈验证。",
+            "counterexample": "用户已与姐姐协商陪诊轮换并达成；不能把所有延迟都解释成讨好或害怕权威。待核对：延迟是否只在涉及父亲安排时出现。"
+          }
+        },
+        "finding_refs": [
+          "s2.persona.role_holder",
+          "s2.belief.wait_for_clarity",
+          "s2.shadow.rest_and_letting_go",
+          "s2.complex.responsibility_autonomy"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.ten_gods",
+        "title": "2.2 十神映射",
+        "content": "【假设，待核对】本案例相关十神：正印双透——机制为安全与知识滋养，原型偏母性，显性表现为好学稳重、按规则行事，阴影假设为用“先弄清楚”回避行动；用户自述先等规则清楚可作对照。偏印藏于日支与时支——机制为独特视角与维持距离，显性表现为独立判断，阴影假设为不易信任或疏离，与夜班后独自查群、把手机交出去才放松可作对照。伤官当令且藏多——机制为反抗与真实表达，显性表现为创新批判，阴影假设为靠否定建立自我；用户先答应替班再协商，提示表达可能滞后。食神透年干——机制为表达与滋养，显性表现为温和创造，阴影假设为以享受回避责任。七杀藏辰——机制为威胁应对，显性表现为果断抗压，阴影假设为过度防御。正官不透，不代表人格缺陷。以上为解释视角，非诊断量表。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按十神对应表逐项给出机制/原型/显性表现/阴影，并声明非诊断量表。",
+          "quote": "本案例相关十神：正印双透——机制为安全与知识滋养，原型偏母性，显性表现为好学稳重、按规则行事，阴影假设为用“先弄清楚”回避行动",
+          "follow_up_questions": [
+            "你通常怎么判断一件事‘已经够清楚了’？",
+            "有没有一次你直接表达需求而没有先铺垫，结果如何？"
+          ]
+        },
+        "finding_refs": [
+          "s2.persona.role_holder",
+          "s2.belief.wait_for_clarity",
+          "s2.shadow.rest_and_letting_go"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description",
+          "input.context.concrete_events"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.stars",
+        "title": "2.3 星曜原型",
+        "content": "【假设，待核对】命宫廉贞（平）、七杀（旺）加擎羊火星天空：面具偏刚毅、能扛事、行动力强；阴影假设为持续战斗、难以松手；触发信念可能是“只有撑住才安全”。身宫落财帛宫紫微贪狼化权：后天方向偏资源经营与灵活应变，与命宫面具形成对照，提示用户可能在工作资源与家庭责任之间寻找平衡。福德宫无主星、无化忌空劫：面具与内在安顿之间存在张力线索，可能表现为对外扛事、对内不易放松，与夜班后查群可作对照，但不能据此诊断。官禄宫武曲破军化禄：工作场景有成果与变革资源。八字与紫微线索不强行统一，冲突处保留待核对。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按命/身/福德与四化对照面具、阴影及触发点，并声明不强行统一冲突。",
+          "quote": "命宫廉贞（平）、七杀（旺）加擎羊火星天空：面具偏刚毅、能扛事、行动力强",
+          "follow_up_questions": [
+            "在什么场景你觉得自己必须撑住、不能松手？",
+            "有没有一次你放下控制后结果并不糟？"
+          ]
+        },
+        "finding_refs": [
+          "s2.persona.role_holder",
+          "s2.shadow.rest_and_letting_go"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.concrete_events"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.persona",
+        "title": "2.4.1 人格面具",
+        "content": "【假设，待核对】用户自报：轮班物流主管，同时照顾长辈；不觉得拒绝本身有错；事情一多时先等规则和时间表更清楚。解释层：日主丁火双透甲木正印与命宫廉贞七杀，可作“按规则扛事、持续照护”的面具线索；官禄宫武曲化禄提示工作场景中成果与责任被看重。用户可能在“可靠的执行者与照护者”角色中最认同自己，但认同程度需访谈确认。注意区分：自述是事实，符号解释是假设，二者不可混同。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "自我核心/透干与命迁线索已给出，自报与解释分开。",
+          "quote": "用户自报：轮班物流主管，同时照顾长辈；不觉得拒绝本身有错；事情一多时先等规则和时间表更清楚。",
+          "follow_up_questions": [
+            "在哪些场景你最能认同‘可靠执行者’这个角色？",
+            "有没有场景你不想再扮演这个角色？"
+          ]
+        },
+        "finding_refs": [
+          "s2.persona.role_holder"
+        ],
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.context.self_description",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.shadow",
+        "title": "2.4.2 阴影",
+        "content": "【假设，待核对】被排斥的面向可能包括：休息、把责任交出去、允许自己先不管、直接争取。依据：夜班后仍继续查工作群、害怕漏掉交接；把手机交给同事保管半小时后能睡着，说明放松需要外部结构支持。福德宫无主星可作内在安顿张力的参考线索。阴影不等于缺点：查群与先答应替班的保护功能是防止交接失误、维持家庭运转。需检验的边界是：这种保护是否已挤压休息与自主。反证：用户已能把手机交出去并睡着，说明放松能力存在，只是需要条件。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已检验边界、休息、脆弱等被排斥面向，并说明保护功能与反证，未把阴影等同缺点。",
+          "quote": "被排斥的面向可能包括：休息、把责任交出去、允许自己先不管、直接争取。",
+          "follow_up_questions": [
+            "除了把手机交给同事，还有哪些条件能让你真正休息？",
+            "如果一次交接真的漏了，你预想会发生什么？"
+          ]
+        },
+        "finding_refs": [
+          "s2.shadow.rest_and_letting_go"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.expected_outcomes",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.complex",
+        "title": "2.4.3 情结",
+        "content": "【假设，待核对】重复情境：安排变动时先承接、后协商。上个月想报名培训，担心父亲复诊时间变化，连续两周没问清课程安排；姐姐临时请替班，先答应，后说清轮班表改成轮流。核心情绪假设：担心安排变动带来的失控与对他人不便。自动想法假设：“等所有安排确定，我才不会出错或拖累别人。”防御方式：延迟询问、先承接再协商、夜班后反复查群。短期保护：避免冲突与交接失误。长期代价：转岗准备被推迟、休息被挤压。现实依据与反证：用户已与姐姐协商成功、把手机交出后能睡着，说明协商与放松能力存在；需核对延迟是否只在涉及父亲安排时出现。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已回到真实重复情境，描述核心情绪与信念，并给出反证与核对方式。",
+          "quote": "重复情境：安排变动时先承接、后协商。",
+          "follow_up_questions": [
+            "每次遇到安排变动，你第一反应是什么、多久后开始协商？",
+            "有没有一次你没等确定就直接行动，结果如何？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "触发、情绪、自动想法、防御、保护、代价与核对方式均已给出，基于用户自述事件。",
+          "quote": "重复情境：安排变动时先承接、后协商。",
+          "follow_up_questions": [
+            "每次遇到安排变动，你第一反应是什么、多久后开始协商？",
+            "有没有一次你没等确定就直接行动，结果如何？"
+          ],
+          "details": {
+            "trigger": "父亲复诊时间可能变化、姐姐临时请求替班等家庭安排变动。",
+            "emotion": "假设：担心失控与对他人造成不便，可能伴随紧绷。",
+            "automatic_thought": "假设：等所有安排确定，我才不会出错或拖累别人。",
+            "defense": "延迟询问、先承接再协商、夜班后反复查群。",
+            "protection": "短期避免冲突与交接失误，维持家庭与工作运转。",
+            "repetition_cost": "转岗准备被推迟、休息被挤压，长期可能累积耗竭。",
+            "reality_check": "反证：已与姐姐协商达成轮换、把手机交出后能睡着。核对方式：记录每次延迟的触发与结果。"
+          }
+        },
+        "finding_refs": [
+          "s2.complex.responsibility_autonomy",
+          "s2.belief.wait_for_clarity"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "input.context.current_challenge"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.cycle",
+        "title": "2.4.4 激活路径",
+        "content": "【假设，待核对】触发（事实）：父亲复诊时间可能变化、姐姐临时请求替班。阴影浮现（假设）：休息与把责任交出去被排斥，查群与先答应成为自动反应。核心情绪/情结（假设）：担心失控与对他人不便，围绕责任与自主拉扯。防御（事实+假设）：延迟询问课程安排、先答应再协商、夜班后查群。短期结果（事实）：避免冲突、维持运转；把手机交出后能睡着。长期重复（假设）：转岗准备推迟、休息被挤压。可能反证：用户已成功协商轮换、能交出手机入睡，说明路径并非固定；需核对是否只在涉及父亲安排时出现。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "触发→阴影→情绪/情结→防御→短期结果→长期重复各环已标注事实/假设/待补问，并给出反证。",
+          "quote": "触发（事实）：父亲复诊时间可能变化、姐姐临时请求替班。",
+          "follow_up_questions": [
+            "每次触发后，你多久开始协商或询问？",
+            "有没有触发后你直接行动、没有延迟的例子？"
+          ]
+        },
+        "finding_refs": [
+          "s2.complex.responsibility_autonomy",
+          "s2.shadow.rest_and_letting_go",
+          "s2.belief.wait_for_clarity"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "input.context.current_challenge"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.authority",
+        "title": "2.4.5 权威与超我",
+        "content": "【假设，待核对】可能的“应该/必须/不能”：必须先把该做的做完、不能漏掉交接、应该等安排确定再推进自己的事。来源假设：职业交接规范、家庭照护角色、自我标准；紫微文曲忌落父母宫与官禄宫飞武曲忌可作参考线索，但不推断具体家庭经历，也不指责家庭。主权交接方向：把“谁的标准在说话”辨清，由用户自主选择保留哪些原则、调整哪些。需访谈验证：这些要求最早从哪来、在什么场景最强。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "官杀/印与父母宫线索已给出，应该/必须/不能来源标注需访谈验证，并说明主权交接而非指责家庭。",
+          "quote": "可能的“应该/必须/不能”：必须先把该做的做完、不能漏掉交接、应该等安排确定再推进自己的事。",
+          "follow_up_questions": [
+            "这些‘必须’最早是从哪里学来的？",
+            "在什么场景这些要求最强、什么场景最弱？"
+          ]
+        },
+        "finding_refs": [
+          "s2.authority.internalized_should"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "calculated.foundation"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "本阶段所有心理表述均为可验证假设，非诊断；需以真实事件与反证校正，不得写入确定性人格结论。",
+        "references": [
+          "s2.persona.role_holder",
+          "s2.belief.wait_for_clarity",
+          "s2.shadow.rest_and_letting_go",
+          "s2.complex.responsibility_autonomy"
+        ]
+      },
+      {
+        "message": "紫微父母宫、福德宫线索仅作参考，未获用户访谈依据前不得推断家庭经历或心理状况。",
+        "references": [
+          "s2.authority.internalized_should",
+          "s2.shadow.rest_and_letting_go"
+        ]
+      },
+      {
+        "message": "用户已提供反证（与姐姐协商成功、交出手机后能睡着），报告不得把所有延迟解释为讨好或害怕权威。",
+        "references": [
+          "s2.complex.responsibility_autonomy",
+          "s2.resource.negotiation_capacity"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 29804,
+    "output_tokens": 5487,
+    "latency_ms": 22533,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "3e0d7efb-8d2a-4905-b312-253df7ca1351",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.s2_psychology_mapping",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "c89efeb3821e56e07077db3fe8cae4096710d14815bf9e9183ac6dd9928215fd",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

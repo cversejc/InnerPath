@@ -1,0 +1,74 @@
+{
+  "signature": "b9e27fb630fd0453c39412c043e5f4ce04bb0f7e7c4d09e6b086b83b199ebb5b",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "破局：让“等确定”和“先推进”同时在场",
+    "content": "三个卡点背后，其实连着同一条保护逻辑：不确定时，你先稳住秩序与责任，再考虑自己的推进与休息。它不是缺陷，而是你在轮班与照护之间长出来的应对方式。要发展的能力，是让承担与自主同时在场——不必等所有安排都落定，也能先走一小步；不必独自消化，也能把一部分交出去。\n\n从资源到能力，可以这样看：你自述“事情一多时，会先等规则和时间表更清楚”，这份对秩序的敏感，调节的是“怕出错、怕影响家人”的不安，转译过来，就是先获取信息、把不确定拆成可问清的一小块的能力；你已经和姐姐协商出轮流陪诊，说明协商经验可以转成提前表达时间边界的能力。现实缺口也很具体：培训课程安排连续两周没问清，夜班后的消息检查还没减下来，临时请求仍容易先答应。整合任务不是变成另一个人，而是让“等确定”和“先推进”在同一件事里同时出现。\n\n中式意象上，可以借“守城而不闭门”的守将：守住职责，也开一道门让同伴分担。它对应的可学习能力，是在守住职责的同时主动分派与协商；适用边界是，当现实需要果断决策时，这个意象不适用。它只是理解工具，不作史实或人格诊断。\n\n这些能力会落到第三章的具体动作里，并且一一对应：先问清课程安排，对应卡点一“等安排确定才推进自己的事”；把手机交给同事保管，对应卡点二“夜班后靠反复查群才敢休息”；把协商提前到答应之前，对应卡点三“先答应请求，再补协商”。这一节只指出方向，不展开步骤、频率和退出条件；具体怎么做，统一在成长实验节展开。",
+    "used_findings": [
+      "s4.block.delay_until_certain",
+      "s4.block.control_rest",
+      "s3.self.rule_vs_autonomy",
+      "s3.quadrant.holder_learner",
+      "s4.block.accept_then_negotiate"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.quadrant",
+      "analysis.s4.breakthrough"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向先放在这里：不是先变成另一个人，而是让“等确定”和“先推进”在同一件事里同时出现。具体动作、频率和退出条件，统一放到成长实验节展开。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.breakthrough",
+      "sequence_no": 13,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、简洁清楚；理论密度中等，隐喻仅一处并声明边界。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.breakthrough",
+        "status": "FULFILLED",
+        "reason": "按资源→调节功能→能力→现实缺口→整合任务→工具→实验的顺序推导：秩序敏感调节“怕出错、怕影响家人”的不安，转为先获取信息的能力，协商经验转为提前表达边界的能力；现实缺口列出培训信息未问清、夜班检查未减、临时请求先答应；整合任务为让承担与自主同时在场；并以“先问清课程安排对应卡点一、交出手机对应卡点二、提前协商对应卡点三”把能力指向第三章，未展开步骤、频率与退出条件。",
+        "quote": "这些能力会落到第三章的具体动作里，并且一一对应：先问清课程安排，对应卡点一“等安排确定才推进自己的事”；把手机交给同事保管，对应卡点二“夜班后靠反复查群才敢休息”；把协商提前到答应之前，对应卡点三“先答应请求，再补协商”。",
+        "follow_up_questions": [
+          "这三项动作里，哪一项你觉得最先能试？",
+          "夜班后的检查减量，是否需要和同事约定更明确的交接方式？"
+        ]
+      },
+      {
+        "requirement_id": "R.archetype",
+        "status": "FULFILLED",
+        "reason": "具象化中式意象“守城而不闭门”的守将，给出可学习能力“在守住职责的同时主动分派与协商”，说明适用边界“当现实需要果断决策时，这个意象不适用”，并声明仅为理解工具、不作史实或人格诊断。",
+        "quote": "中式意象上，可以借“守城而不闭门”的守将：守住职责，也开一道门让同伴分担。",
+        "follow_up_questions": [
+          "在哪些场景里你更愿意开这道门、让同伴分担？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 9308,
+    "output_tokens": 1143,
+    "latency_ms": 4628,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "7c30f3ee-db70-4b75-8e38-924258a77cad",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "b07e98782e4cab7ddc1aee5931474616f5addd3cddd9f9d0100d5117e22439e8",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}
