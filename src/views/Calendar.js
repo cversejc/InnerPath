@@ -1,6 +1,7 @@
 
 import CalendarRequestSection from '../features/calendar/components/CalendarRequestSection.vue'
 import CalendarPlanningSection from '../features/calendar/components/CalendarPlanningSection.vue'
+import { Button as VanButton } from 'vant'
 import { isToday, parseDateKey } from '../features/calendar/helpers.js'
 import requestsMethods from '../features/calendar/methods/requests.js'
 import calendarDataMethods from '../features/calendar/methods/calendarData.js'
@@ -16,7 +17,7 @@ const mobileDetailMediaQuery = typeof window === 'undefined' ? null : window.mat
 
 export default {
   name: 'Calendar',
-  components: { CalendarPlanningSection, CalendarRequestSection },
+  components: { CalendarPlanningSection, CalendarRequestSection, VanButton },
   data() {
     const sourceReportId = Number(this.$route.query.source_report_id)
     const hasSourceReport = Number.isSafeInteger(sourceReportId) && sourceReportId > 0

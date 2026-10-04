@@ -10,7 +10,7 @@ import {
 import { dateKeyFromLabel, isToday, parseDateKey, weekdays } from '../helpers.js'
 import { resolveCalendarPracticeRefs } from '../practice-actions.js'
 
-const allowDemoCalendar = import.meta.env.DEV && import.meta.env.VITE_DEMO_CALENDAR === 'true'
+const allowDemoCalendar = Boolean(import.meta.env?.DEV && import.meta.env?.VITE_DEMO_CALENDAR === 'true')
 
 function createMockCalendar() {
   return {
@@ -39,35 +39,40 @@ function createMockCalendar() {
 }
 
 export default {
-  async loadCalendar() {
-      try {
-        const response = await getMyCalendars()
-        const publishedCalendar = response.items?.find(item => item.status === 'published' && item.entries?.length) || null
-        if (publishedCalendar) {
-          this.calendarError = ''
-          this.applyCalendar(publishedCalendar, 'api')
-        } else if (allowDemoCalendar) {
-          this.applyCalendar(createMockCalendar(), 'mock')
-        } else {
-          this.calendar = null
-          this.calendarSource = 'empty'
-          this.days = []
-          this.meta = {}
-        }
-      } catch (error) {
-        if (allowDemoCalendar) {
-          this.applyCalendar(createMockCalendar(), 'mock')
-        } else {
-          this.calendar = null
-          this.calendarSource = 'empty'
-          this.days = []
-          this.meta = {}
-          this.calendarError = '暂时无法读取已交付日历，请稍后重试或先提交一份申请。'
-        }
-      } finally {
-        this.loading = false
+  async loadCalendar(fetchCalendars = getMyCalendars) {
+    try {
+      this.calendarError = ''
+      const response = await fetchCalendars()
+      const publishedCalendar = response.items?.find(item => item.status === 'published' && item.entries?.length) || null
+      if (publishedCalendar) {
+        this.applyCalendar(publishedCalendar, 'api')
+      } else if (allowDemoCalendar) {
+        this.applyCalendar(createMockCalendar(), 'mock')
+      } else {
+        this.calendar = null
+        this.calendarSource = 'empty'
+        this.days = []
+        this.meta = {}
       }
-    },
+    } catch (error) {
+      if (allowDemoCalendar) {
+        this.calendarError = ''
+        this.applyCalendar(createMockCalendar(), 'mock')
+      } else {
+        this.calendar = null
+        this.calendarSource = 'empty'
+        this.days = []
+        this.meta = {}
+        this.calendarError = '暂时无法读取已交付日历，请重新加载或稍后再试。'
+      }
+    } finally {
+      this.loading = false
+    }
+  },
+  async retryCalendarLoad() {
+    this.loading = true
+    await this.loadCalendar()
+  },
   applyCalendar(calendar, source) {
       this.calendar = calendar
       this.calendarSource = source
