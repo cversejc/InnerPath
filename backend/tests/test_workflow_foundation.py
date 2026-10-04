@@ -344,6 +344,12 @@ async def test_published_workflow_version_cannot_be_published_or_edited_again(
 @pytest.mark.asyncio
 async def test_outbox_publish_and_consume_are_idempotent(workflow_db, monkeypatch):
     from app.tasks import workflow_tasks
+    from app.application import calendar_production
+
+    async def no_calendar_requests(_db):
+        return 0
+
+    monkeypatch.setattr(calendar_production, "recover_stalled_calendar_requests", no_calendar_requests)
 
     class SessionContext:
         def __init__(self, session):

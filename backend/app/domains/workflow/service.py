@@ -9,6 +9,7 @@ from app.domains.content.reasoning_contract import reasoning_snapshot
 from app.domains.skills.bindings import freeze_report_skills
 
 from .definitions import validate_workflow_definition
+from .authorization import STEP_SPECIALTIES
 from .models import (
     ReportCase,
     StepTask,
@@ -143,6 +144,9 @@ async def create_report_case(
 
     now = _now()
     frozen_application = deepcopy(application_snapshot)
+    collaboration = version.definition_json.get("collaboration_contract")
+    if collaboration:
+        frozen_application["collaboration_contract"] = deepcopy(collaboration)
     if version.workflow_key == "report.production":
         # Only newly created production cases opt in. Existing cases are never rewritten.
         frozen_application["framework_contract"] = framework_snapshot()
@@ -183,7 +187,7 @@ async def create_report_case(
             sequence_no=step["sequence_no"],
             executor=step["executor"],
             status="READY" if is_first else "PENDING",
-            required_capability=step.get("required_capability"),
+            required_capability=STEP_SPECIALTIES.get(step["step_key"]) if collaboration else step.get("required_capability"),
             activation_no=1 if is_first else 0,
             config_snapshot=step.get("config", {}),
             activated_at=now if is_first else None,
@@ -492,6 +496,22 @@ async def assign_step(
     if report_case.status in {"CANCELLED", "DELIVERED"}:
         raise ValueError("workflow_not_active")
     task = _find_step(tasks, step_key)
+    from app.models.user import User
+    from app.domains.service_requests.models import ServiceRequest
+    from .authorization import SPECIALTY_FIELDS
+    if task.required_capability in SPECIALTY_FIELDS:
+        assignee = await db.get(User, assignee_id) if assignee_id is not None else None
+        if assignee_id is not None and (assignee is None or assignee.role != "consultant" or not assignee.is_active or assignee.consultant_type != task.required_capability):
+            raise ValueError("step_specialty_required")
+        affected = [item for item in tasks if item.required_capability == task.required_capability]
+        if any(item.status in {"IN_REVIEW", "COMPLETED"} and item.assignee_id != assignee_id for item in affected):
+            raise ValueError("step_assignment_locked")
+        request = await db.get(ServiceRequest, report_case.service_request_id)
+        if request:
+            setattr(request, SPECIALTY_FIELDS[task.required_capability], assignee_id)
+            request.assigned_consultant_id = request.assigned_mingli_consultant_id or request.assigned_psychology_consultant_id
+        for item in affected:
+            item.assignee_id = assignee_id
     task.assignee_id = assignee_id
     task.updated_at = _now()
     await db.flush()

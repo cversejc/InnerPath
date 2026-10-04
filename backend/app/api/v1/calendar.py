@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
-from app.application.calendar_generation import generate_calendar_from_report
+from app.application.calendar_production import queue_calendar_from_report, retry_calendar_production
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.user import User
@@ -43,7 +43,7 @@ async def get_my_calendars(
     return CalendarListResponse(items=calendars)
 
 
-@router.post("/requests", response_model=CalendarRequestResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/requests", response_model=CalendarRequestResponse, status_code=status.HTTP_202_ACCEPTED)
 async def create_my_calendar_request(
     data: CalendarRequestCreate,
     request: Request,
@@ -51,7 +51,7 @@ async def create_my_calendar_request(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        calendar_request = await generate_calendar_from_report(
+        calendar_request = await queue_calendar_from_report(
             db,
             current_user,
             data,
@@ -81,6 +81,14 @@ async def create_my_calendar_request(
         )
         raise HTTPException(status_code=code, detail=message_map.get(str(error), str(error)))
     return await serialize_calendar_request(db, calendar_request)
+
+
+@router.post("/requests/{request_id}/retry", response_model=CalendarRequestResponse, status_code=202)
+async def retry_my_calendar_request(request_id: int, current_user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
+    try:
+        return await serialize_calendar_request(db, await retry_calendar_production(db, current_user, request_id))
+    except ValueError as error:
+        raise HTTPException(status_code=404 if str(error) == "calendar_request_not_found" else 409, detail=str(error))
 
 
 @router.get("/requests", response_model=CalendarRequestListResponse)

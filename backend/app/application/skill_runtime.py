@@ -58,6 +58,7 @@ from app.domains.workflow.service import (
 )
 from app.domains.quality.service import replace_validator_issues
 from app.models.user import User
+from app.domains.workflow.authorization import is_assigned, assignment_condition, validate_step_actor
 
 
 async def ensure_skill_workflow_version(db: AsyncSession) -> WorkflowVersion:
@@ -178,7 +179,7 @@ async def _authorize_case(db: AsyncSession, case_id: int, actor: User) -> Report
     )
     if (
         request_row is None
-        or request_row.assigned_consultant_id != actor.id
+        or not is_assigned(request_row, actor.id)
         or request_row.status in {"withdrawn", "rejected"}
     ):
         raise ValueError("report_case_forbidden")
@@ -485,8 +486,7 @@ async def queue_case_step_skill_run(
         raise ValueError("step_task_not_found")
     if step.status not in {"READY", "IN_REVIEW", "NEEDS_REVISION"}:
         raise ValueError("step_not_ready")
-    if actor.role == "consultant" and step.assignee_id not in (None, actor.id):
-        raise ValueError("step_assigned_to_another_consultant")
+    validate_step_actor(step, actor)
     version_id = (step.config_snapshot or {}).get("skill_version_id")
     if step.executor not in {"AI", "HYBRID"} or not version_id:
         raise ValueError("step_skill_not_configured")
@@ -533,8 +533,7 @@ async def queue_case_authoring_skill_run(
         raise ValueError("step_task_not_found")
     if step_key != "S5" or step.status != "IN_REVIEW":
         raise ValueError("narrative_step_not_in_review")
-    if actor.role == "consultant" and step.assignee_id not in (None, actor.id):
-        raise ValueError("step_assigned_to_another_consultant")
+    validate_step_actor(step, actor)
     if skill_key not in {"report.narrative_plan", "report.fragment_authoring"}:
         raise ValueError("narrative_skill_unavailable")
 

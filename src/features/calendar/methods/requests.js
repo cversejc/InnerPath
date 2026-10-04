@@ -1,6 +1,6 @@
 import { authState } from '../../../stores/auth'
 import { getCurrentUser } from '../../users/service.js'
-import { createCalendarRequest, getCalendarRequests } from '../api.js'
+import { createCalendarRequest, getCalendarRequests, retryCalendarRequest } from '../api.js'
 import {
   buildCalendarRequestPayload,
   defaultThirtyDayRange,
@@ -14,6 +14,7 @@ export default {
         this.profile = user
         this.calendarRequestDraft.profile_version = user.profile_version || 1
         this.calendarRequests = requestResponse.items || []
+        this.scheduleCalendarPolling()
       } catch (error) {
         this.profile = this.profile || authState.user
         this.calendarRequests = []
@@ -88,7 +89,9 @@ export default {
           )
         )
         this.calendarRequests = [created, ...this.calendarRequests]
-        this.calendarRequestFeedback = `已基于报告 #${created.source_report_id} 生成并交付日历 #${created.calendar_id}。`
+        this.calendarRequestFeedback = created.calendar_id
+          ? `已基于报告 #${created.source_report_id} 生成日历 #${created.calendar_id}。`
+          : '已提交生成。你可以离开页面，回来后继续查看进度。'
         this.showCalendarRequestForm = false
         this.calendarRequestDraft = {
           profile_version: this.profile?.profile_version || 1,
@@ -106,6 +109,39 @@ export default {
       } catch (error) {
         this.calendarRequestError = error.response?.data?.detail || '申请提交失败，请稍后再试。'
         await this.loadCalendarRequestData()
+      } finally {
+        this.submittingCalendarRequest = false
+      }
+    },
+  scheduleCalendarPolling() {
+      clearTimeout(this.calendarPollTimer)
+      if (this.calendarPollingDisposed) return
+      if (!this.calendarRequests.some(item => ['queued', 'generating'].includes(item.status))) return
+      this.calendarPollTimer = window.setTimeout(async () => {
+        try {
+          const old = this.calendarRequests
+          const response = await getCalendarRequests()
+          if (this.calendarPollingDisposed) return
+          this.calendarRequests = response.items || []
+          if (this.calendarRequests.some(item => item.status === 'fulfilled' && old.find(row => row.id === item.id)?.status !== 'fulfilled')) {
+            this.calendarRequestFeedback = '日历已生成并交付，可以选择日期查看建议。'
+            await this.loadCalendar()
+          }
+        } catch (error) {
+          this.calendarRequestError = '进度暂时读取失败，正在重试。'
+        }
+        this.scheduleCalendarPolling()
+      }, 5000)
+    },
+  async retryCalendarGeneration(requestId) {
+      if (this.submittingCalendarRequest) return
+      this.submittingCalendarRequest = true
+      try {
+        await retryCalendarRequest(requestId)
+        await this.loadCalendarRequestData()
+        this.calendarRequestFeedback = '已使用原报告、资料和技能版本重新生成。'
+      } catch (error) {
+        this.calendarRequestError = error.response?.data?.detail || '重试失败，请稍后再试。'
       } finally {
         this.submittingCalendarRequest = false
       }

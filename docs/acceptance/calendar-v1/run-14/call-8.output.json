@@ -1,0 +1,14 @@
+{
+  "raw": "{\"approved\": true, \"issues\": [{\"code\": \"window_label_mismatch\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-17\", \"field_path\": \"windows.0.label\", \"observed_text\": \"向外沟通\", \"message\": \"11:00–13:00窗口标签写作“向外沟通”，建议却是“避免在此窗口做重大答应或拒绝”，标签与提示相左；10-23同此。\"}, {\"code\": \"repetition_low_progression\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-24\", \"field_path\": \"windows.2.suggestion\", \"observed_text\": \"用5–10分钟散步或静坐，给今天的紧张度打一个0–10分，只记录不评价。\", \"message\": \"恢复窗口“散步或静坐…0–10分只记录不评价”在10-24/26/28/29、11-01近逐字重复，观察点未随日程递进，建议轮换角度。\"}], \"patches\": []}",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 48081,
+    "output_tokens": 11560,
+    "latency_ms": 45394,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "88db9e8b-9773-49b5-b070-0b964dc86021",
+    "thinking_enabled": true
+  }
+}

@@ -107,6 +107,7 @@ test("tool dispatch invokes the actual workflow command and opens its review des
       },
       calls = [];
     const ctx = {
+      staffActor: { id: 1, role: "consultant" },
       selectedReportStep: step,
       currentReportStep: step,
       reportNarrative: { current_plan: { status: "CONFIRMED" } },

@@ -66,9 +66,16 @@ export const REPORT_SKILLS = [
   },
 ];
 
+export const CALENDAR_SKILLS = [
+  { key: 'calendar.temporal_analysis', name: '30天时序分析', node: '日历分析', input: '已审核命盘、报告、问卷与逐日历法', output: '每日心理主题、权重依据与换气口', task: '检查来源引用与缺失资料边界。' },
+  { key: 'calendar.monthly_tone', name: '30天总基调', node: '日历基调', input: '报告与30天时序分析', output: '成长任务、资源、旧模式和决定原则', task: '核对月度方向是否承接报告。' },
+  { key: 'calendar.daily_authoring', name: '逐日决策文案', node: '日历文案', input: '每日分析、月基调与本次目标', output: '关键词、具体行动、觉察问题与时段建议', task: '维护有针对性且可执行的表达。' },
+  { key: 'calendar.calibration', name: '30天整体校准', node: '日历校准', input: '完整30天日历及分析依据', output: '重复、节奏和一致性问题及修订', task: '严重问题未解决时阻止发布。' }
+]
+
 export function skillInfo(key, fallback = "") {
   return (
-    REPORT_SKILLS.find((item) => item.key === key) || {
+    [...REPORT_SKILLS, ...CALENDAR_SKILLS].find((item) => item.key === key) || {
       key,
       step: "",
       name: /[\u4e00-\u9fff]/.test(fallback)
@@ -85,7 +92,7 @@ export function skillInfo(key, fallback = "") {
 }
 
 export function buildSkillCatalog(versions = []) {
-  const catalog = REPORT_SKILLS.map((item) => ({ ...item }));
+  const catalog = [...REPORT_SKILLS, ...CALENDAR_SKILLS].map((item) => ({ ...item }));
   for (const version of versions) {
     if (!catalog.some((item) => item.key === version.skill_key))
       catalog.push(skillInfo(version.skill_key, version.name));
@@ -94,6 +101,7 @@ export function buildSkillCatalog(versions = []) {
 }
 
 export function runSkillKey(run) {
+  if (run.target_type === 'CALENDAR_PRODUCTION') return run.context_snapshot?.skill_key || run.model_trace?.skill_key || ''
   const step =
     run.context_snapshot?.analysis_context?.step_key ||
     (/^S[1-4]$/.test(run.target_key || "") ? run.target_key : "");

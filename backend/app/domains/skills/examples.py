@@ -36,6 +36,11 @@ _SENSITIVE_FIELDS = {
     "user_id",
     "report_case_id",
     "source_case_id",
+    "source_report_id",
+    "report_version_id",
+    "source_report_version_id",
+    "calendar_request_id",
+    "id",
 }
 
 
@@ -88,7 +93,7 @@ def _normalize_tags(tags: list[str]) -> list[str]:
 async def create_example_candidate(
     db: AsyncSession,
     *,
-    report_case_id: int,
+    report_case_id: int | None,
     skill_run: SkillRun,
     example_type: str,
     scenario_tags: list[str],
@@ -236,13 +241,14 @@ async def publish_skill_example(
     _normalize_applicability(row.applicability_json or {})
     bundled = EXAMPLES.get(row.skill_key)
     is_synthetic_builtin = bundled is not None and bundled[0] == row.example_key
-    if not is_synthetic_builtin and (row.source_case_id is None or row.source_skill_run_id is None):
+    if not is_synthetic_builtin and row.source_skill_run_id is None:
         raise ValueError("skill_example_source_required")
     source_run = await db.get(SkillRun, row.source_skill_run_id) if row.source_skill_run_id else None
     if not is_synthetic_builtin and (
         source_run is None
         or source_run.status != "COMPLETED"
         or source_run.report_case_id != row.source_case_id
+        or (row.source_case_id is None and source_run.target_type != "CALENDAR_PRODUCTION")
     ):
         raise ValueError("skill_example_source_invalid")
 

@@ -1,0 +1,13 @@
+{
+  "raw": "{\n  \"approved\": false,\n  \"issues\": [\n    {\n      \"code\": \"MONTH_DAY_INCONSISTENCY\",\n      \"severity\": \"MAJOR\",\n      \"entry_date\": null,\n      \"message\": \"月基调称本月练习容量为工作日每晚5–10分钟、周末20分钟，但逐日多处要求每日停顿、每周复盘、每月回顾、每季复盘，节奏与容量不一致。\"\n    },\n    {\n      \"code\": \"TONE_TIMING_MISMATCH\",\n      \"severity\": \"MAJOR\",\n      \"entry_date\": \"2026-10-08\",\n      \"message\": \"10-08分析称流月由丁酉转戊戌、月令交接，但facts仍标month_pillar为丁酉，时序依据与事实字段不一致。\"\n    },\n    {\n      \"code\": \"REPEATED_ACTION\",\n      \"severity\": \"MAJOR\",\n      \"entry_date\": null,\n      \"message\": \"10-04至10-07连续四天均以“收到请求先回复我需要看一下时间”为主建议，动作与情境高度重复，缺少分层变化。\"\n    },\n    {\n      \"code\": \"REPEATED_ACTION\",\n      \"severity\": \"MAJOR\",\n      \"entry_date\": null,\n      \"message\": \"10-24至10-27连续四天均围绕“先停一下/先写草稿再回应”展开，动作与情境重复，未体现觉察→尝试→反馈的推进。\"\n    },\n    {\n      \"code\": \"REPEATED_ACTION\",\n      \"severity\": \"MAJOR\",\n      \"entry_date\": null,\n      \"message\": \"10-30至11-02连续四天均以“先列出可协商事项/最小可交付版本”为主建议，动作与情境重复，缺少新尝试。\"\n    },\n    {\n      \"code\": \"OVEREMPHASIS_SAME_WEAKNESS\",\n      \"severity\": \"MAJOR\",\n      \"entry_date\": null,\n      \"message\": \"全月多日持续强调“先答应后透支”同一缺点，未分层回应职业、关系、恢复等不同现实议题，易造成自我标签化。\"\n    },\n    {\n      \"code\": \"COLOR_TIMING_MISMATCH\",\n      \"severity\": \"MINOR\",\n      \"entry_date\": \"2026-10-14\",\n      \"message\": \"10-14分析称流月戊戌土旺，但facts仍标month_pillar为戊戌且未说明月令交接，色块与月令时序依据衔接不清。\"\n    },\n    {\n      \"code\": \"MISSING_ANALYSIS_BASIS\",\n      \"severity\": \"MINOR\",\n      \"entry_date\": \"2026-10-08\",\n      \"message\": \"10-08分析称流月交接，但facts未提供交接后的月柱字段，导致月令依据在事实层缺失。\"\n    }\n  ],\n  \"patches\": []\n}",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 48639,
+    "output_tokens": 651,
+    "latency_ms": 3955,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "843b6025-a0fd-4bfe-8804-966783281a36"
+  }
+}

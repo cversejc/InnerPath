@@ -97,7 +97,7 @@ export default {
       calendarSaving: false,
       showCalendarImport: false,
       calendarImportJson: '',
-      inviteForm: { phone: '', role: 'consultant' },
+      inviteForm: { phone: '', role: 'consultant', consultant_type: 'mingli' },
       inviteToken: '',
       inviteSaving: false,
       staffLoading: false,

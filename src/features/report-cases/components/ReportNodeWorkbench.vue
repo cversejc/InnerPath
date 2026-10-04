@@ -111,9 +111,10 @@
           </li>
         </ul>
       </div>
+      <p v-if="viewStep" class="node-owner" role="status">负责专业：{{ ownerLabel }} · {{ viewStep.assignee_id ? "已接单" : "待接单" }}<span v-if="!canAct"> · 本节点供你查看，由对应负责人处理</span></p>
       <footer v-if="section === 'overview'" class="node-actions">
         <VanButton
-          v-if="isCurrent && viewStep.status === 'READY'"
+          v-if="canAct && isCurrent && viewStep.status === 'READY'"
           type="primary"
           class="primary-button"
           native-type="button"
@@ -122,7 +123,7 @@
           >开始本节点</VanButton
         ><template
           v-if="
-            isCurrent &&
+            canAct && isCurrent &&
             viewStep.status === 'IN_REVIEW' &&
             viewStep.step_key !== 'S6'
           "
@@ -144,7 +145,7 @@
             >确认成果并完成本节点</VanButton
           ></template
         ><VanButton
-          v-if="viewStep.status === 'COMPLETED' && canReopen"
+          v-if="viewStep.status === 'COMPLETED' && canReopen && canAct"
           plain
           native-type="button"
           :disabled="loading"
@@ -309,6 +310,7 @@
   </section>
 </template>
 <script>
+import { canHandleStep, specialtyLabels } from "../professional-ownership.js";
 import { Button as VanButton } from "vant";
 import { REPORT_STEP_STATUS_LABELS, reportStage } from "../stages.js";
 import {
@@ -322,6 +324,7 @@ export default {
   components: { VanButton, NodeInputsPanel, NodeWorkbenchDialog },
   props: {
     reportCase: Object,
+    actor: Object,
     content: Object,
     currentStep: Object,
     selectedStepKey: String,
@@ -347,6 +350,8 @@ export default {
   ],
   data: () => ({ dialog: "", dialogKind: "tools", dialogTrigger: null }),
   computed: {
+    canAct() { return canHandleStep(this.viewStep, this.actor) },
+    ownerLabel() { return specialtyLabels[this.viewStep?.required_capability] || "咨询师" },
     steps() {
       return this.reportCase.workflow_instance?.steps || [];
     },
@@ -379,7 +384,7 @@ export default {
     },
     tools() {
       return nodeTools(this.viewStep, this.currentStep, {
-        pending: this.toolPending,
+        pending: this.toolPending || !this.canAct,
         generationStatus: this.generationStatus,
         planReady:
           this.narrativePlan?.status === "CONFIRMED" &&

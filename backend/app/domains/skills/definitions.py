@@ -15,6 +15,7 @@ experiences, or expose hidden reasoning. Treat examples as style guidance only;
 never transfer facts from an example to the current user."""
 
 ALLOWED_PROCESSORS = {
+    "calendar.production",
     "reports.single_step",
     "reports.analysis_draft",
     "reports.narrative_candidates",
@@ -210,9 +211,12 @@ def validate_skill_specification(specification: dict[str, Any]) -> dict[str, Any
         timeout_seconds = float(model_policy.get("timeout_seconds", 120))
     except (TypeError, ValueError):
         raise ValueError("skill_model_policy_invalid")
-    if not 0 <= temperature <= 2 or not 1 <= max_tokens <= 16000:
+    token_limit = 32768 if model_policy.get("thinking") is True else 16000
+    if not 0 <= temperature <= 2 or not 1 <= max_tokens <= token_limit:
         raise ValueError("skill_model_policy_invalid")
     if not 1 <= timeout_seconds <= 240:
+        raise ValueError("skill_model_policy_invalid")
+    if "thinking" in model_policy and not isinstance(model_policy["thinking"], bool):
         raise ValueError("skill_model_policy_invalid")
     if model_policy_version := spec["guardrails"].get("global_policy_version"):
         if model_policy_version != GLOBAL_POLICY_VERSION:

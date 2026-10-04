@@ -14,6 +14,9 @@ def load_regression_dataset() -> dict[str, Any]:
         dataset = json.load(source)
     if not isinstance(dataset, dict) or not isinstance(dataset.get("cases"), list):
         raise ValueError("skill_regression_dataset_invalid")
+    calendar = json.loads(_DATASET_PATH.with_name("calendar_regression_cases.json").read_text(encoding="utf-8"))
+    dataset["cases"].extend(calendar["cases"])
+    dataset["version"] += "+" + calendar["version"]
     return dataset
 
 
@@ -87,6 +90,11 @@ def evaluate_regression_output(
             actual=length,
         )
 
+    for path in expectation.get("nonempty_paths", []):
+        actual = _path_value(output, path)
+        record(f"nonempty:{'.'.join(map(str, path))}", isinstance(actual, str) and bool(actual.strip()),
+               expected="nonempty string", actual=None if actual is _MISSING else actual)
+
     allowed_refs = expectation.get("allowed_finding_refs")
     if allowed_refs is not None:
         actual_refs = sorted(_finding_references(output))
@@ -130,6 +138,7 @@ def _finding_references(value: Any, *, key: str | None = None) -> set[str]:
         "supporting_findings",
         "deemphasized_findings",
         "used_findings",
+        "source_refs",
     }
     if isinstance(value, dict):
         for child_key, child in value.items():

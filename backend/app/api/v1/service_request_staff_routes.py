@@ -78,6 +78,8 @@ async def list_staff_requests(
                     "birth_year": profile.get("birth_year") if scope != "available" or current_user.role == "admin" else None,
                 },
                 assigned_consultant_id=item.assigned_consultant_id,
+                assigned_mingli_consultant_id=item.assigned_mingli_consultant_id,
+                assigned_psychology_consultant_id=item.assigned_psychology_consultant_id,
                 assigned_consultant_name=assigned_name,
                 needs_info_reason=item.needs_info_reason,
                 last_error=item.last_error,

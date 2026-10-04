@@ -1,4 +1,4 @@
-import { hasRole } from '../stores/auth'
+import { authState, hasRole } from '../stores/auth'
 import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'vant'
 import {
   SERVICE_REQUEST_STATUS_LABELS,
@@ -14,6 +14,7 @@ import {
   calendarEditorFromPayload,
   reportEditorFromPayload
 } from '../features/service-requests/payloads.js'
+import { canHandleStep, canAcceptRequest, ownsRequest, specialtyLabels } from '../features/report-cases/professional-ownership.js'
 import assignmentMethods from '../features/service-requests/methods/assignment.js'
 import queueMethods from '../features/service-requests/methods/queue.js'
 import workflowMethods from '../features/service-requests/methods/workflow.js'
@@ -113,6 +114,10 @@ export default {
     }
   },
   computed: {
+    staffActor() { return authState.user },
+    canAcceptSelectedRequest() { return canAcceptRequest(this.selectedRequest, this.staffActor) },
+    ownsSelectedRequest() { return ownsRequest(this.selectedRequest, this.staffActor) },
+    specialtyLabel() { return specialtyLabels[this.staffActor?.consultant_type] || (this.admin ? "管理员" : "尚未设置专业类型") },
     ...nodeWorkspaceComputed,
     currentReportStep() {
       const steps = this.reportCase?.workflow_instance?.steps || []
@@ -135,7 +140,7 @@ export default {
       )
     },
     scopeDescription() {
-      if (this.scope === 'available') return '仅展示还未被接单的申请。'
+      if (this.scope === 'available') return `展示尚缺${this.specialtyLabel}的报告申请，接单后负责对应节点。`
       if (this.scope === 'mine') return '展示分配给当前咨询师的申请。'
       return '管理员可查看全量申请并介入处理。'
     },
@@ -260,6 +265,7 @@ export default {
     if (this.reportNarrativePollTimer) clearTimeout(this.reportNarrativePollTimer)
   },
   methods: {
+    canHandleReportStep(step) { return canHandleStep(step, this.staffActor) },
     confirmAction,
     ...queueMethods,
     ...workflowMethods,

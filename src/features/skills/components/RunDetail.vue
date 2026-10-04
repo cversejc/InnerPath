@@ -151,6 +151,7 @@ export default {
       return formatTrace(this.run.model_trace);
     },
     canRecommend() {
+      if (this.admin && this.run.target_type === 'CALENDAR_PRODUCTION') return this.run.status === 'COMPLETED'
       return (
         !this.admin &&
         this.caseId &&
@@ -174,7 +175,9 @@ export default {
           .split(/\r?\n/)
           .map((item) => item.trim())
           .filter(Boolean);
-        const candidate = await api.recommendSkillExample(Number(this.caseId), {
+        const recommend = this.admin && this.run.target_type === 'CALENDAR_PRODUCTION'
+          ? api.recommendCalendarSkillExample : api.recommendSkillExample
+        const candidate = await recommend(this.admin ? this.run.id : Number(this.caseId), {
           skill_run_id: this.run.id,
           example_type: this.exampleType,
           scenario_tags: tags,

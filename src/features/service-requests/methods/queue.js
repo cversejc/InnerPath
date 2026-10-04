@@ -3,6 +3,7 @@ import {
   getStaffServiceRequestWorkspace,
   getStaffServiceRequests
 } from '../api.js'
+import { ownsRequest } from '../../report-cases/professional-ownership.js'
 import { calendarEditorFromPayload, reportEditorFromPayload } from '../payloads.js'
 
 export default {
@@ -60,7 +61,7 @@ export default {
     this.$nextTick(() => {
       if (this.selectedRequest?.id === item.id) this.$el?.scrollTo?.(0, 0)
     })
-    if (item.assigned_consultant_id || this.admin) await this.loadWorkspace(item.id)
+    if (ownsRequest(item, this.staffActor)) await this.loadWorkspace(item.id)
   },
   async loadWorkspace(requestId) {
     this.loading = true

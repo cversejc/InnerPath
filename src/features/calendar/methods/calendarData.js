@@ -76,6 +76,7 @@ export default {
         const date = parseDateKey(entryDate)
         return {
           ...entry,
+          ...(calendar.meta_payload?.daily_details?.[entryDate] || {}),
           date: entryDate,
           month: date.getMonth() + 1,
           day: date.getDate(),
@@ -103,7 +104,9 @@ export default {
             pillars: calendarMeta.pillars || '',
             rhythm: calendarMeta.rhythm || '少说，多做，多记录',
             intro: calendarMeta.intro || '这是一张属于你的决策时机参照系，帮你在重要选择前留出观察、行动与复盘的空间。',
-            overview: Array.isArray(calendarMeta.overview) ? calendarMeta.overview : []
+            overview: Array.isArray(calendarMeta.overview) ? calendarMeta.overview : [],
+            monthly: calendarMeta.monthly || null,
+            limitations: Array.isArray(calendarMeta.limitations) ? calendarMeta.limitations : []
           }
       this.todayDate = this.days.find(day => isToday(day.date))?.date || this.days[0]?.date || null
       this.selectedDate = this.todayDate
@@ -124,13 +127,17 @@ export default {
   buildPhases() {
       const grouped = []
       for (const day of this.days) {
-        const existing = grouped.find(phase => phase.id === day.phaseId)
-        if (existing) {
+        const sourceId = day.phaseId
+        const existing = grouped[grouped.length - 1]
+        if (existing?.sourceId === sourceId) {
           existing.endDate = day.date
           existing.dateRange = `${existing.startDate}—${existing.endDate}`
+          day.phaseId = existing.id
         } else {
+          day.phaseId = `${sourceId}:${day.date}`
           grouped.push({
             id: day.phaseId,
+            sourceId,
             label: day.phaseLabel || day.shortLabel,
             tone: day.tone || 'yellow',
             startDate: day.date,

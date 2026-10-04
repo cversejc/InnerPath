@@ -26,6 +26,24 @@ admin_router = APIRouter()
 staff_router = APIRouter()
 
 
+@admin_router.post("/calendar-skill-runs/{run_id}/examples", response_model=SkillExampleAdminResponse, status_code=201)
+async def recommend_calendar_example(run_id: int, payload: SkillExampleRecommendation,
+        db: AsyncSession = Depends(get_db), actor: User = Depends(require_roles("admin"))):
+    run = await db.get(SkillRun, run_id)
+    if run is None or run.target_type != "CALENDAR_PRODUCTION" or payload.skill_run_id != run_id:
+        raise HTTPException(status_code=404, detail="skill_run_not_found")
+    try:
+        example = await create_example_candidate(db, report_case_id=run.report_case_id, skill_run=run,
+            example_type=payload.example_type, scenario_tags=payload.scenario_tags,
+            teaching_points=payload.teaching_points, expected_output=payload.expected_output, created_by=actor.id)
+        await db.commit()
+        await db.refresh(example)
+        return example
+    except ValueError as error:
+        await db.rollback()
+        _example_error(error)
+
+
 def _example_error(error: ValueError) -> None:
     code = str(error)
     if code in {"skill_example_not_found", "skill_run_not_found", "report_case_not_found"}:

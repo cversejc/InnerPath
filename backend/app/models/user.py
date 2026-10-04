@@ -43,6 +43,7 @@ class User(Base, TimestampMixin):
     avatar_url = Column(String(255), nullable=True)
     user_type = Column(String(20), default="explorer", nullable=False)
     role = Column(String(20), default="user", nullable=False, index=True)
+    consultant_type = Column(String(20), nullable=True)
     password_hash = Column(String(255), nullable=True)
     phone_verified_at = Column(DateTime, nullable=True)
     last_login_at = Column(DateTime, nullable=True)

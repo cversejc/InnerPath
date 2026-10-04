@@ -25,6 +25,8 @@ async def _run_with_engine_disposal(operation):
 async def _dispatch_pending_events(batch_size: int = 100) -> int:
     published = 0
     async with AsyncSessionLocal() as db:
+        from app.application.calendar_production import recover_stalled_calendar_requests
+        await recover_stalled_calendar_requests(db)
         events = await db.scalars(
             select(WorkflowOutbox)
             .where(WorkflowOutbox.status == "PENDING")
@@ -35,7 +37,7 @@ async def _dispatch_pending_events(batch_size: int = 100) -> int:
         for event in events:
             try:
                 celery_app.send_task(
-                    "consume_workflow_outbox_event",
+                    "consume_calendar_outbox_event" if event.event_type == "calendar.generation.requested" else "consume_workflow_outbox_event",
                     args=[event.id],
                     task_id=f"workflow-outbox-{event.id}",
                 )
@@ -56,6 +58,11 @@ async def _consume_outbox_event(event_id: int) -> dict:
             return {"event_id": event_id, "status": "missing"}
         if event.status == "FAILED":
             return {"event_id": event_id, "status": "not_published"}
+
+        if event.event_type == "calendar.generation.requested":
+            from app.application.calendar_production import execute_calendar_production
+            payload = event.payload_json or {}
+            return await execute_calendar_production(db, payload["calendar_request_id"], payload.get("attempt", 1))
 
         if event.event_type == "workflow.step.ready":
             payload = event.payload_json or {}
@@ -112,3 +119,8 @@ def consume_workflow_outbox_event(event_id: int):
     return asyncio.run(
         _run_with_engine_disposal(_consume_outbox_event(event_id))
     )
+
+
+@celery_app.task(name="consume_calendar_outbox_event", time_limit=2400, soft_time_limit=2340)
+def consume_calendar_outbox_event(event_id: int):
+    return asyncio.run(_run_with_engine_disposal(_consume_outbox_event(event_id)))

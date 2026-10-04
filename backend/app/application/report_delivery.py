@@ -1,3 +1,4 @@
+from app.domains.workflow.authorization import validate_step_actor
 from copy import deepcopy
 from datetime import datetime
 from typing import Optional
@@ -96,8 +97,7 @@ async def approve_case_final_gate(
         raise ValueError("step_task_not_found")
     if step.status != "IN_REVIEW":
         raise ValueError("step_not_in_review")
-    if actor.role == "consultant" and step.assignee_id not in (None, actor.id):
-        raise ValueError("step_assigned_to_another_consultant")
+    validate_step_actor(step, actor)
     run = await latest_validator_run(db, report_case.id)
     if run is None or run.status != "COMPLETED":
         raise ValueError("final_qa_not_complete")
@@ -134,6 +134,12 @@ async def deliver_report_case(
     )
     if locked_case is None:
         raise ValueError("report_case_not_found")
+    if (locked_case.application_snapshot or {}).get("collaboration_contract"):
+        final_step = await db.scalar(select(StepTask).where(
+            StepTask.workflow_instance_id == locked_case.workflow_instance_id, StepTask.step_key == "S6"))
+        if final_step is None:
+            raise ValueError("step_task_not_found")
+        validate_step_actor(final_step, actor)
     if locked_case.status == "DELIVERED":
         existing = await db.scalar(
             select(ReportVersion)

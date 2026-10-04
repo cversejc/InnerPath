@@ -1,3 +1,4 @@
+from app.domains.workflow.authorization import validate_step_actor
 import hashlib
 import json
 from copy import deepcopy
@@ -356,8 +357,7 @@ async def _require_authoring_step(
         raise ValueError("step_task_not_found")
     if step.status != "IN_REVIEW":
         raise ValueError("narrative_step_not_in_review")
-    if actor.role == "consultant" and step.assignee_id not in (None, actor.id):
-        raise ValueError("step_assigned_to_another_consultant")
+    validate_step_actor(step, actor)
     return step
 
 

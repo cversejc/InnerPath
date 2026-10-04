@@ -1,5 +1,6 @@
 <script setup>
 import { formatReportMarkdown } from '../report-content.js'
+import ReportChapterReader from './ReportChapterReader.vue'
 
 defineProps({
   report: { type: Object, required: true },
@@ -9,13 +10,7 @@ defineProps({
 </script>
 
 <template>
-  <div v-if="report.structuredSections?.length" class="authored-content">
-    <article v-for="section in report.structuredSections" :key="section.fragment_key" class="content-card authored-section">
-      <p class="section-eyebrow">{{ section.section_title }}</p>
-      <h2>{{ section.title || section.section_title }}</h2>
-      <p class="authored-section-content">{{ section.content }}</p>
-    </article>
-  </div>
+  <ReportChapterReader v-if="report.structuredSections?.length" :sections="report.structuredSections" />
 
   <div v-else-if="report.aiGeneratedContent" class="ai-content">
     <div class="content-card">
@@ -175,10 +170,3 @@ defineProps({
 <style scoped src="../styles/report-content.css"></style>
 <style scoped src="../styles/report-content-layout.css"></style>
 <style scoped src="../styles/report-content-overrides.css"></style>
-<style scoped>
-.authored-content { display: grid; gap: 16px; }
-.authored-section { margin: 0; }
-.section-eyebrow { margin: 0 0 8px; color: var(--gold-deep, #8a621b); font-size: 12px; font-weight: var(--weight-semibold); }
-.authored-section h2 { margin: 0 0 12px; }
-.authored-section-content { margin: 0; line-height: 1.9; white-space: pre-line; overflow-wrap: anywhere; }
-</style>

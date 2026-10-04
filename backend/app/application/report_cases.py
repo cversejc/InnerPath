@@ -15,7 +15,10 @@ from app.domains.workflow.definitions import (
 )
 from app.domains.workflow.models import ReportCase, WorkflowVersion
 from app.domains.workflow.service import cancel_case, create_report_case
+from app.domains.workflow.service import latest_published_version, create_workflow_draft, publish_workflow_version
+from copy import deepcopy
 from app.models.user import User
+from app.domains.workflow.authorization import STEP_SPECIALTIES
 
 
 async def ensure_default_workflow_version(db: AsyncSession) -> WorkflowVersion:
@@ -48,11 +51,35 @@ async def ensure_default_workflow_version(db: AsyncSession) -> WorkflowVersion:
         existing = await db.scalar(
             select(WorkflowVersion).where(
                 WorkflowVersion.workflow_key == DEFAULT_WORKFLOW_KEY,
-                WorkflowVersion.version == 1,
+                    WorkflowVersion.version == 1,
             )
         )
         if existing:
             return existing
+        raise
+
+
+async def ensure_collaborative_workflow_version(db: AsyncSession) -> WorkflowVersion:
+    from app.application.skill_runtime import ensure_skill_workflow_version, ensure_analysis_workflow_version
+    await ensure_default_workflow_version(db)
+    await ensure_skill_workflow_version(db)
+    await ensure_analysis_workflow_version(db)
+    latest = await latest_published_version(db)
+    if latest and latest.definition_json.get("collaboration_contract"):
+        return latest
+    definition = deepcopy(latest.definition_json)
+    definition["collaboration_contract"] = {"version": "professional-handoff-v1", "step_specialties": STEP_SPECIALTIES}
+    for step in definition["steps"]:
+        step["required_capability"] = STEP_SPECIALTIES[step["step_key"]]
+    # Published workflow versions and existing cases stay immutable.
+    try:
+        async with db.begin_nested():
+            version = await create_workflow_draft(db, DEFAULT_WORKFLOW_KEY, "命理与心理协作报告流程", definition, created_by=None)
+            return await publish_workflow_version(db, version.id, published_by=None)
+    except IntegrityError:
+        latest = await latest_published_version(db)
+        if latest and latest.definition_json.get("collaboration_contract"):
+            return latest
         raise
 
 
@@ -91,7 +118,7 @@ async def create_user_service_request(
     )
     report_case = await get_report_case_for_service_request(db, request.id)
     if report_case is None and request.status not in {"withdrawn", "rejected"}:
-        await ensure_default_workflow_version(db)
+        await ensure_collaborative_workflow_version(db)
         report_case = await create_report_case(
             db,
             user_id=user.id,

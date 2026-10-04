@@ -109,7 +109,10 @@ async def create_ai_calendar_for_request(
     calendar_request.status = "fulfilled"
     snapshot = dict(calendar_request.input_snapshot or {})
     snapshot["generation"] = {
+        **(snapshot.get("generation") or {}),
         "status": "COMPLETED",
+        "completed_runs": len((snapshot.get("production_trace") or {}).get("skill_run_ids") or []) or 8,
+        "total_runs": len((snapshot.get("production_trace") or {}).get("skill_run_ids") or []) or 8,
         "calendar_id": calendar.id,
         "completed_at": now.isoformat(),
     }

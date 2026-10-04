@@ -1,3 +1,4 @@
+from app.domains.workflow.authorization import validate_step_actor
 from copy import deepcopy
 from typing import Any
 
@@ -79,8 +80,7 @@ async def _authorize_analysis_step(
     )
     if step is None:
         raise ValueError("step_task_not_found")
-    if actor.role == "consultant" and step.assignee_id not in (None, actor.id):
-        raise ValueError("step_assigned_to_another_consultant")
+    validate_step_actor(step, actor)
     current = await db.scalar(
         select(StepTask)
         .where(

@@ -15,6 +15,11 @@ export async function createCalendarRequest(requestData) {
   return response.data
 }
 
+export async function retryCalendarRequest(requestId) {
+  const response = await apiClient.post(`/calendar/requests/${requestId}/retry`)
+  return response.data
+}
+
 export async function getMyDecisionLogs(params = {}) {
   const response = await apiClient.get('/calendar/decision-logs', { params })
   return response.data

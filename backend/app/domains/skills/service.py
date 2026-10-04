@@ -285,7 +285,7 @@ async def create_skill_run(
         raise ValueError("skill_version_not_found")
     if skill.status == "RETIRED":
         raise ValueError("skill_version_retired")
-    if report_case_id is not None:
+    if report_case_id is not None and target_type != "CALENDAR_PRODUCTION":
         from app.domains.workflow.models import ReportCase
         from .bindings import resolve_case_skill
         case = await db.get(ReportCase, report_case_id)

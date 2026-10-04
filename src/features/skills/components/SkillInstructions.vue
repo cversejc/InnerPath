@@ -54,7 +54,7 @@
           }}
         </p>
         <p>
-          示例帮助学习方法与表达；用户事实仍须来自本次资料，结果由咨询师确认。
+          示例帮助学习方法与表达；用户事实须来自本次资料。报告由咨询师确认，日历通过整体校准后交付。
         </p>
       </div>
       <details v-if="specification.instructions?.sop_contract">

@@ -96,6 +96,7 @@ from app.domains.workflow.schemas import (
     WorkflowVersionResponse,
 )
 from app.models.user import User
+from app.domains.workflow.authorization import is_assigned, assignment_condition, validate_step_actor
 
 
 router = APIRouter()
@@ -167,7 +168,7 @@ def _workflow_error(error: ValueError) -> None:
         "report_coherence_state_invalid",
     }:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=code)
-    if code in {"report_case_forbidden", "step_assigned_to_another_consultant"}:
+    if code in {"report_case_forbidden", "step_assigned_to_another_consultant", "step_specialty_required"}:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
@@ -200,7 +201,7 @@ async def _case_for_read_or_action(
             request_row = await db.scalar(query)
         if (
             request_row is None
-            or request_row.assigned_consultant_id != actor.id
+            or not is_assigned(request_row, actor.id)
             or request_row.status in {"withdrawn", "rejected"}
         ):
             raise HTTPException(
@@ -234,18 +235,10 @@ async def _authorize_step_action(
     )
     if task is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Step not found")
-    capabilities = {"consultant": {"consultant"}, "admin": {"*"}}
-    if (
-        task.required_capability
-        and "*" not in capabilities.get(actor.role, set())
-        and task.required_capability not in capabilities.get(actor.role, set())
-    ):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Step capability is required")
-    if actor.role == "consultant" and task.assignee_id not in (None, actor.id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Step is assigned to another consultant",
-        )
+    try:
+        validate_step_actor(task, actor)
+    except ValueError as error:
+        _workflow_error(error)
     if require_current_review:
         current = await db.scalar(
             select(StepTask)
@@ -352,7 +345,7 @@ async def list_staff_report_cases(
         query = query.join(
             ServiceRequest, ServiceRequest.id == ReportCase.service_request_id
         ).where(
-            ServiceRequest.assigned_consultant_id == current_user.id,
+            assignment_condition(current_user.id),
             ServiceRequest.status.notin_(["withdrawn", "rejected"]),
         )
     rows = await db.scalars(query)

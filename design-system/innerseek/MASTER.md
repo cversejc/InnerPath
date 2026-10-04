@@ -8,7 +8,7 @@
 
 **Project:** chenvis / 辰鉴
 
-**Updated:** 2026-10-03
+**Updated:** 2026-10-04
 
 **Product type:** Personal insight, report and decision-calendar product
 **Visual thesis:** A calm Chinese editorial interface built from paper, ink, cinnabar,
@@ -43,8 +43,20 @@ Calendar-specific semantic tones are scoped to `.calendar-page`:
 | Calendar ink | `#2e251d` |
 | Calendar muted | `var(--muted)` → `#7d6653` |
 | 推进 / positive | `#658f73` |
-| 观察 / neutral | `#bd9550` |
-| 收气 / caution | `#b45d58` |
+| 探索 / exploration | `#567d96` (`--calendar-blue`) |
+| 校准 / calibration | `#bd9550` |
+| 收束 / consolidation | `#b45d58` |
+
+The four tones follow [日历生成思路](../../docs/日历生成思路.md). Show text labels
+alongside color. Progress, limitations and awareness questions use body/UI tokens.
+Generated monthly guidance keeps its field labels and supports expanding each
+part. Show the actual count of contiguous tone phases; avoid a fixed phase count.
+
+Structured reports use a chapter directory and native expandable sections. Group
+labels follow [产品分析框架](../../docs/产品分析框架.md): 你是谁、卡在哪、往哪去、带回日常.
+Show the expanded section count; it is not a claim that the user has read them.
+Directory controls use UI tokens, chapter headings use display tokens, and prose
+uses the shared body size and prose line-height. The delivered text stays intact.
 
 Contrast rule: normal reading text should target at least 4.5:1. Do not use muted
 colors for long-form copy or critical labels without checking the actual background.

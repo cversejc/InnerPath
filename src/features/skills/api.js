@@ -40,6 +40,11 @@ export async function recommendSkillExample(caseId, data) {
   return response.data
 }
 
+export async function recommendCalendarSkillExample(runId, data) {
+  const response = await apiClient.post(`/admin/calendar-skill-runs/${runId}/examples`, data)
+  return response.data
+}
+
 export async function getPublishedSkillExamples(params = {}) {
   const response = await apiClient.get('/staff/skill-examples', { params })
   return response.data
@@ -101,6 +106,7 @@ export default {
   getSkillRuns,
   getCaseSkillRuns,
   recommendSkillExample,
+  recommendCalendarSkillExample,
   getPublishedSkillExamples,
   getSkillExamples,
   updateSkillExample,

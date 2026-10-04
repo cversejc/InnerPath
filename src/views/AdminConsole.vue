@@ -122,6 +122,7 @@
         :staff-loading="staffLoading"
         :staff-users="staffUsers"
         @invite="inviteStaff"
+        @specialty="updateStaffSpecialty"
       />
 
       <AdminReportsSection

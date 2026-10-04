@@ -65,17 +65,20 @@
 
         <section v-if="selectedRequest" class="console-card paper-card workspace-panel" aria-live="polite">
           <div v-if="loading && !workspace" class="workspace-loading" role="status">正在打开报告工作区…</div>
-          <div v-else-if="selectedRequest.assigned_consultant_id && !workspace" class="workspace-load-error" role="alert">暂时无法读取报告资料。请返回列表刷新后重试。</div>
+          <div v-else-if="ownsSelectedRequest && !workspace" class="workspace-load-error" role="alert">暂时无法读取报告资料。请返回列表刷新后重试。</div>
           <div v-else-if="selectedRequest && !workspace" class="request-preview">
-            <div class="preview-note"><strong>{{ selectedRequest.user_name || '未填写姓名' }}</strong><p>这份报告尚未接单。接单后会开放本次申请资料，并进入六步处理工作台。</p></div>
+            <div class="preview-note"><strong>{{ selectedRequest.user_name || '未填写姓名' }}</strong><p>这份报告正在等待对应专业咨询师。接单后会开放申请资料，并由你负责本专业的节点。</p></div>
             <dl class="detail-list"><div><dt>关注主题</dt><dd>{{ requestGoal(selectedRequest) }}</dd></div><div><dt>补充说明</dt><dd>{{ selectedRequest.request_preview?.additional_info || '暂无补充说明' }}</dd></div></dl>
-            <VanButton v-if="selectedRequest.status === 'submitted' && !selectedRequest.assigned_consultant_id" class="primary-button" type="primary" native-type="button" :disabled="accepting" :aria-busy="accepting" @click="acceptRequest">{{ accepting ? '正在接单…' : '接单并查看资料' }}</VanButton>
+            <VanButton v-if="canAcceptSelectedRequest" class="primary-button" type="primary" native-type="button" :disabled="accepting" :aria-busy="accepting" @click="acceptRequest">{{ accepting ? '正在接单…' : '接单并查看资料' }}</VanButton>
             <p v-else class="preview-lock">当前申请已分配给其他咨询师。返回列表后可切换查看范围。</p>
           </div>
 
           <div v-else-if="workspace" class="workspace-content">
             <DeliveredReportSummary v-if="!selectedReportStepKey" :request="workspace.request" @view-analysis="selectReportNode('S1')" />
-            <div v-if="admin && !selectedReportStepKey" class="assignment-row">
+            <div v-if="admin && !selectedReportStepKey && reportCase?.application_snapshot?.collaboration_contract" class="assignment-row">
+              <label v-for="specialty in ['mingli', 'psychology']" :key="specialty">{{ specialty === 'mingli' ? '命理负责人' : '心理负责人' }}<select :value="workspace.request['assigned_' + specialty + '_consultant_id'] || ''" :disabled="assignmentSaving" @change="assignProfessional(specialty, $event.target.value)"><option value="">待接单</option><option v-for="consultant in consultants.filter(item => item.consultant_type === specialty)" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
+            </div>
+            <div v-else-if="admin && !selectedReportStepKey" class="assignment-row">
               <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving" @change="assignConsultant"><option :value="null">未分配</option><option v-for="consultant in consultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
               <small>管理员可改派；改派不会覆盖已有版本。</small>
             </div>
@@ -85,6 +88,7 @@
               <template v-else-if="reportCase">
                 <ReportNodeWorkbench
                   :report-case="reportCase"
+                  :actor="staffActor"
                   :selected-step-key="selectedReportStepKey"
                   :section="workspaceSection"
                   :studio-location="skillStudioLocation"
@@ -230,7 +234,7 @@
                     <label><input v-model="finalGateAttested" type="checkbox" :disabled="!reportQuality.can_approve"> 我已复核报告主线、用户贴合度和全部检查记录，并承担最终交付责任。</label>
                     <VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="!reportQuality.can_approve || !finalGateAttested || reportStepSaving" :loading="reportStepSaving" @click="approveReportFinalGate">确认最终复核</VanButton>
                   </div>
-                  <div v-if="selectedReportStepKey === 'S6' && reportCase.status === 'READY_TO_DELIVER'" class="final-gate-controls">
+                  <div v-if="selectedReportStepKey === 'S6' && reportCase.status === 'READY_TO_DELIVER' && canHandleReportStep(selectedReportStep)" class="final-gate-controls">
                     <strong>最终复核已通过</strong>
                     <VanButton class="primary-button compact-button deliver-button" type="primary" native-type="button" :disabled="!reportQuality.can_approve || reportCaseDelivering" :loading="reportCaseDelivering" @click="deliverReportCaseVersion">{{ reportCaseDelivering ? '交付中…' : '生成并交付版本' }}</VanButton>
                   </div>

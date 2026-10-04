@@ -6,13 +6,15 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domains.calendar.models import CalendarRequest, UserCalendar
+from app.domains.calendar.models import CalendarRequest, UserCalendar, DecisionLog
 from app.domains.reports.models import Report
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarRequestAdminUpdate, CalendarRequestCreate
 from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from app.services.intake_service import build_intake_snapshot
+from app.domains.delivery.models import ReportVersion
+from copy import deepcopy
 
 def _calendar_request_context(data: CalendarRequestCreate) -> dict:
     return {
@@ -29,6 +31,7 @@ async def create_calendar_request(
     user: User,
     data: CalendarRequestCreate,
     audit_context: Optional[AuditContext] = None,
+    *, commit: bool = True,
 ) -> CalendarRequest:
     """Create a user-owned calendar request with an immutable profile snapshot."""
     if user.profile_completion < 100:
@@ -71,6 +74,30 @@ async def create_calendar_request(
         "relationship_pattern": report_content.get("relationship_pattern") or source_report.relationship_pattern,
         "personal_growth": report_content.get("personal_growth") or source_report.personal_growth,
     }
+    version_id = (source_report.input_snapshot or {}).get("report_version", {}).get("id")
+    if version_id is not None:
+        version = await db.get(ReportVersion, version_id)
+        if version is None:
+            raise ValueError("calendar_source_version_missing")
+        from app.domains.workflow.models import ReportCase
+        source_case = await db.get(ReportCase, version.report_case_id)
+        if source_case is None or source_case.user_id != user.id or source_case.status != "DELIVERED":
+            raise ValueError("calendar_request_source_report_mismatch")
+        semantics = (version.semantic_snapshot or {}).get("semantics") or {}
+        evidence = semantics.get("evidence") or []
+        foundation = next((e.get("value") for e in evidence
+                           if e.get("source_type") == "SYSTEM_CALCULATED" and isinstance(e.get("value"), dict) and e["value"].get("bazi")), {})
+        source_report_snapshot.update({
+            "report_version_id": version.id, "report_case_id": version.report_case_id,
+            "summary": (version.structured_data.get("narrative_plan") or {}).get("core_theme"),
+            "structured_sections": deepcopy(version.structured_data.get("structured_sections") or []),
+            "confirmed_semantics": deepcopy(semantics), "reviewed_foundation": deepcopy(foundation),
+            "application": deepcopy((version.semantic_snapshot or {}).get("application_snapshot") or {}),
+        })
+    else:
+        # Legacy delivered reports remain useful for growth prompts. No re-charting.
+        source_report_snapshot["reviewed_foundation"] = deepcopy(report_content.get("mingli_foundation") or {})
+        source_report_snapshot["application"] = deepcopy(source_report.input_snapshot or {})
 
     snapshot = build_intake_snapshot(
         user,
@@ -87,6 +114,10 @@ async def create_calendar_request(
         },
     )
     snapshot["source_report"] = source_report_snapshot
+    feedback = await db.scalars(select(DecisionLog).where(DecisionLog.user_id == user.id,
+        DecisionLog.log_date < data.start_date).order_by(DecisionLog.log_date.desc(), DecisionLog.id.desc()).limit(30))
+    snapshot["decision_feedback"] = [{"log_date": row.log_date.isoformat(), "kind": row.kind,
+        "status": row.status, "content": row.content, "note": row.note} for row in feedback]
     snapshot["generation"] = {"status": "RUNNING"}
     calendar_request = CalendarRequest(
         user_id=user.id,
@@ -118,8 +149,9 @@ async def create_calendar_request(
         },
         audit_context=audit_context,
     )
-    await db.commit()
-    await db.refresh(calendar_request)
+    if commit:
+        await db.commit()
+        await db.refresh(calendar_request)
     return calendar_request
 
 
@@ -152,6 +184,9 @@ async def serialize_calendar_request(db: AsyncSession, calendar_request: Calenda
         "reviewed_at": calendar_request.reviewed_at,
         "review_note": calendar_request.review_note,
         "generation_error": (calendar_request.input_snapshot or {}).get("generation", {}).get("error_code"),
+        "generation_stage": (calendar_request.input_snapshot or {}).get("generation", {}).get("stage"),
+        "completed_runs": (calendar_request.input_snapshot or {}).get("generation", {}).get("completed_runs", 0),
+        "total_runs": (calendar_request.input_snapshot or {}).get("generation", {}).get("total_runs", 8),
         "created_at": calendar_request.created_at,
         "updated_at": calendar_request.updated_at,
     }

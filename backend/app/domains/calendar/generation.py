@@ -184,6 +184,7 @@ def validate_generated_calendar(
             entry.tone
             and entry.tone not in {
                 "green",
+                "blue",
                 "yellow",
                 "rest",
                 "red",

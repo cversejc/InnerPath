@@ -84,6 +84,7 @@ defineExpose({ focusCloseButton, focusContainer, getFocusableItems })
       <span class="detail-phase">{{ selectedEntry.phaseLabel }}</span>
     </div>
     <div class="day-signal-card">
+      <p v-if="selectedEntry.energy_awareness" class="day-awareness">能量觉察：{{ selectedEntry.energy_awareness }}</p>
       <div class="day-signal-top">
         <div class="day-signal-copy">
           <span class="detail-section-kicker">ACTION CLIMATE</span>

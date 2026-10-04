@@ -1,6 +1,7 @@
 <script setup>
 import { Button as VanButton } from 'vant'
 import ProfileSummary from '../../../components/ProfileSummary.vue'
+import { calendarGenerationText } from '../generation-progress.js'
 
 defineProps({
   calendarRequests: { type: Array, default: () => [] },
@@ -21,6 +22,7 @@ defineEmits([
   'go-to-profile',
   'go-to-reports',
   'submit',
+  'retry',
   'toggle-topic',
   'toggle-outcome'
 ])
@@ -165,7 +167,7 @@ function requestStatusLabel(status) {
           <p v-if="feedback" class="request-feedback" role="status">{{ feedback }}</p>
           <div class="request-actions">
             <VanButton type="default" plain native-type="button" class="btn-secondary" @click="$emit('close')">取消</VanButton>
-            <VanButton type="primary" native-type="submit" class="btn-action" :disabled="submitting" :aria-busy="submitting">{{ submitting ? 'AI 正在生成并交付…' : '生成并交付日历' }}</VanButton>
+            <VanButton type="primary" native-type="submit" class="btn-action" :disabled="submitting" :loading="submitting" :aria-busy="submitting">{{ submitting ? '正在提交…' : '生成30天日历' }}</VanButton>
           </div>
         </form>
       </div>
@@ -175,7 +177,8 @@ function requestStatusLabel(status) {
         <div class="request-history-list">
           <article v-for="item in calendarRequests" :key="item.id" class="request-history-item">
             <div><strong>{{ formatRequestDate(item.start_date, item.end_date) }}</strong><span>{{ item.goal }}</span></div>
-            <span class="request-status" :class="`status-${item.status}`">{{ requestStatusLabel(item.status) }}<small v-if="item.calendar_id"> · 日历 #{{ item.calendar_id }}</small></span>
+            <span class="request-status" :class="`status-${item.status}`" role="status">{{ calendarGenerationText(item) }}<small v-if="item.calendar_id"> · 日历 #{{ item.calendar_id }}</small></span>
+            <VanButton v-if="item.status === 'failed'" plain native-type="button" :disabled="submitting" @click="$emit('retry', item.id)">重试生成</VanButton>
           </article>
         </div>
       </div>

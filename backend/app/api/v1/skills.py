@@ -67,6 +67,9 @@ async def list_skills(
     db: AsyncSession = Depends(get_db),
     _actor: User = Depends(require_roles("admin")),
 ):
+    from app.domains.calendar.production import ensure_calendar_skills
+    await ensure_calendar_skills(db)
+    await db.commit()
     rows = await db.scalars(
         select(AISkillVersion).order_by(
             AISkillVersion.skill_key, AISkillVersion.version.desc()

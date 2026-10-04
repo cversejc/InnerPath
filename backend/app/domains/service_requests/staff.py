@@ -4,7 +4,7 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, Optional
 
-from sqlalchemy import select
+from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import ServiceRequest, ServiceRequestTask
@@ -12,6 +12,8 @@ from app.models.user import User
 from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from .repository import _get_draft, _get_latest_task, _get_request_for_update
+from app.domains.workflow.authorization import assignment_condition, is_assigned, SPECIALTY_FIELDS
+from app.domains.workflow.models import ReportCase, StepTask
 
 
 async def accept_service_request(
@@ -25,6 +27,37 @@ async def accept_service_request(
         raise ValueError("service_request_not_found")
     if service_request.service_type == "calendar":
         raise ValueError("calendar_requires_delivered_report")
+    case = await db.scalar(select(ReportCase).where(ReportCase.service_request_id == request_id))
+    if case and (case.application_snapshot or {}).get("collaboration_contract"):
+        specialty = getattr(consultant, "consultant_type", None)
+        if specialty not in SPECIALTY_FIELDS or consultant.role != "consultant" or not consultant.is_active:
+            raise ValueError("consultant_specialty_required")
+        field = SPECIALTY_FIELDS[specialty]
+        if service_request.status in {"withdrawn", "rejected", "delivered"}:
+            raise ValueError("service_request_read_only")
+        assigned = getattr(service_request, field)
+        if assigned not in (None, consultant.id):
+            raise ValueError("service_request_already_taken")
+        setattr(service_request, field, consultant.id)
+        service_request.assigned_consultant_id = service_request.assigned_consultant_id or consultant.id
+        tasks = await db.scalars(select(StepTask).where(
+            StepTask.workflow_instance_id == case.workflow_instance_id,
+            StepTask.required_capability == specialty,
+        ).with_for_update())
+        for task in tasks:
+            if task.status == "COMPLETED" and task.assignee_id != consultant.id:
+                raise ValueError("service_request_read_only")
+            task.assignee_id = consultant.id
+        if service_request.status == "submitted":
+            service_request.status = "accepted"
+        service_request.accepted_at = service_request.accepted_at or datetime.utcnow()
+        service_request.updated_by = consultant.id
+        await record_audit(db, consultant.id, "service_request.specialty.accept", "service_request",
+                           str(request_id), target_user_id=service_request.user_id,
+                           details={"specialty": specialty}, audit_context=audit_context)
+        await db.commit()
+        await db.refresh(service_request)
+        return service_request
     if service_request.status == "accepted" and service_request.assigned_consultant_id == consultant.id:
         return service_request
     if service_request.status != "submitted" or service_request.assigned_consultant_id is not None:
@@ -48,7 +81,8 @@ async def accept_service_request(
 
 def staff_can_access(service_request: ServiceRequest, user: User) -> bool:
     return service_request.service_type != "calendar" and (
-        user.role == "admin" or service_request.assigned_consultant_id == user.id
+        getattr(service_request, "status", None) not in {"withdrawn", "rejected"}
+        and (user.role == "admin" or is_assigned(service_request, user.id))
     )
 
 
@@ -57,7 +91,7 @@ async def has_staff_assignment(db: AsyncSession, staff_id: int, user_id: int) ->
         select(ServiceRequest.id)
         .where(
             ServiceRequest.user_id == user_id,
-            ServiceRequest.assigned_consultant_id == staff_id,
+            assignment_condition(staff_id),
             ServiceRequest.status.not_in(("withdrawn", "rejected")),
         )
         .limit(1)
@@ -74,18 +108,24 @@ async def list_staff_service_requests(
 ) -> list[tuple[ServiceRequest, Optional[User]]]:
     query = select(ServiceRequest, User).join(User, User.id == ServiceRequest.user_id)
     query = query.where(ServiceRequest.service_type == "report")
+    collaborative = select(ReportCase.id).join(StepTask, StepTask.workflow_instance_id == ReportCase.workflow_instance_id).where(
+        ReportCase.service_request_id == ServiceRequest.id,
+        StepTask.required_capability.in_(SPECIALTY_FIELDS),
+    ).exists()
+    legacy_available = and_(~collaborative, ServiceRequest.status == "submitted", ServiceRequest.assigned_consultant_id.is_(None))
     if user.role != "admin":
         if scope == "available":
+            field = SPECIALTY_FIELDS.get(getattr(user, "consultant_type", None))
             query = query.where(
-                ServiceRequest.status == "submitted",
-                ServiceRequest.assigned_consultant_id.is_(None),
+                ServiceRequest.status.not_in(("withdrawn", "rejected", "delivered")),
+                or_(and_(collaborative, getattr(ServiceRequest, field).is_(None)), legacy_available) if field else legacy_available,
             )
         else:
-            query = query.where(ServiceRequest.assigned_consultant_id == user.id)
+            query = query.where(assignment_condition(user.id), ServiceRequest.status.not_in(("withdrawn", "rejected")))
     elif scope == "available":
         query = query.where(
-            ServiceRequest.status == "submitted",
-            ServiceRequest.assigned_consultant_id.is_(None),
+            ServiceRequest.status.not_in(("withdrawn", "rejected", "delivered")),
+            or_(and_(collaborative, or_(ServiceRequest.assigned_mingli_consultant_id.is_(None), ServiceRequest.assigned_psychology_consultant_id.is_(None))), legacy_available),
         )
     elif scope == "mine":
         query = query.where(ServiceRequest.assigned_consultant_id == user.id)
@@ -144,6 +184,8 @@ def serialize_service_request(
         "result_type": service_request.result_type,
         "result_id": service_request.result_id,
         "assigned_consultant_id": service_request.assigned_consultant_id,
+        "assigned_mingli_consultant_id": service_request.assigned_mingli_consultant_id,
+        "assigned_psychology_consultant_id": service_request.assigned_psychology_consultant_id,
         "needs_info_reason": service_request.needs_info_reason,
         "rejection_reason": service_request.rejection_reason,
         "last_error": service_request.last_error,

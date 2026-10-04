@@ -60,6 +60,7 @@ class DeepSeekGateway:
     ) -> ModelCompletion:
         model = model_policy.get("model") or settings.DEEPSEEK_MODEL
         timeout = min(max(float(model_policy.get("timeout_seconds") or 120), 1), 240)
+        thinking_enabled = model_policy.get("thinking", settings.DEEPSEEK_THINKING)
         request_body = {
             "model": model,
             "messages": [
@@ -67,10 +68,10 @@ class DeepSeekGateway:
                 {"role": "user", "content": user_prompt},
             ],
             "temperature": float(model_policy.get("temperature", 0.7)),
-            "max_tokens": min(int(model_policy.get("max_tokens") or 8000), 16000),
+            "max_tokens": min(int(model_policy.get("max_tokens") or 8000), 32768 if thinking_enabled else 16000),
             "stream": False,
             "thinking": {
-                "type": "enabled" if settings.DEEPSEEK_THINKING else "disabled"
+                "type": "enabled" if thinking_enabled else "disabled"
             },
         }
         started = time.perf_counter()
@@ -86,22 +87,27 @@ class DeepSeekGateway:
             response.raise_for_status()
             response_data = response.json()
         elapsed_ms = round((time.perf_counter() - started) * 1000)
-        content = extract_chat_content(response_data)
         usage = response_data.get("usage") or {}
         choice = (response_data.get("choices") or [{}])[0]
-        return ModelCompletion(
-            content=content,
-            trace={
-                "provider": "deepseek",
-                "model": model,
-                "input_tokens": usage.get("prompt_tokens"),
-                "output_tokens": usage.get("completion_tokens"),
-                "latency_ms": elapsed_ms,
-                "estimated_cost": None,
-                "finish_reason": choice.get("finish_reason"),
-                "request_id": response_data.get("id"),
-            },
-        )
+        trace = {
+            "provider": "deepseek",
+            "model": model,
+            "input_tokens": usage.get("prompt_tokens"),
+            "output_tokens": usage.get("completion_tokens"),
+            "latency_ms": elapsed_ms,
+            "estimated_cost": None,
+            "finish_reason": choice.get("finish_reason"),
+            "request_id": response_data.get("id"),
+            "thinking_enabled": thinking_enabled,
+        }
+        try:
+            content = extract_chat_content(response_data)
+        except ValueError as error:
+            code = "skill_output_truncated" if choice.get("finish_reason") == "length" else "skill_provider_response_invalid"
+            raise SkillExecutionError(code, {
+                **trace, "output_validation": "failed", "error_type": "EmptyProviderContent"
+            }, output_raw="") from error
+        return ModelCompletion(content=content, trace=trace)
 
 
 @dataclass(frozen=True)
@@ -113,9 +119,10 @@ class SkillExecutionResult:
 
 
 class SkillExecutionError(ValueError):
-    def __init__(self, code: str, model_trace: dict[str, Any] | None = None):
+    def __init__(self, code: str, model_trace: dict[str, Any] | None = None, *, output_raw: str | None = None):
         super().__init__(code)
         self.model_trace = model_trace or {}
+        self.output_raw = output_raw
 
 
 def _without_forbidden(value: Any, forbidden: set[str]) -> Any:
@@ -835,7 +842,7 @@ async def execute_skill(
             raise ValueError("report_analysis_skill_stage_mismatch")
     if processor == "reports.single_step" and "reports.calculate_mingli_foundation" not in specification["tool_policy"].get("allowed", []):
         raise ValueError("skill_required_tool_not_allowed")
-    if processor not in {"reports.single_step", "reports.analysis_draft", "reports.narrative_candidates", "reports.fragment_authoring", "reports.validator"}:
+    if processor not in {"reports.single_step", "reports.analysis_draft", "reports.narrative_candidates", "reports.fragment_authoring", "reports.validator", "calendar.production"}:
         raise ValueError("skill_processor_unsupported")
     profile = context.get("profile") or {}
     context_data = context.get("context") or {}
@@ -855,7 +862,12 @@ async def execute_skill(
     if missing_input:
         raise ValueError("skill_input_contract_missing_fields")
     foundation = context.get("foundation_data")
-    if processor == "reports.single_step":
+    if processor == "calendar.production":
+        system_prompt = GLOBAL_POLICY + "\n" + json.dumps(specification["instructions"], ensure_ascii=False) + "\n输出契约：" + json.dumps(specification["output_contract"], ensure_ascii=False)
+        user_prompt = json.dumps(context, ensure_ascii=False)
+        if runtime_instruction:
+            system_prompt += "\n" + runtime_instruction
+    elif processor == "reports.single_step":
         system_prompt, user_prompt, foundation = _report_prompts(
             context, specification, runtime_instruction
         )
@@ -879,6 +891,10 @@ async def execute_skill(
             user_prompt=user_prompt,
             model_policy=specification["model_policy"],
         )
+    except SkillExecutionError as error:
+        raise SkillExecutionError(str(error), {**error.model_trace, "prompt_sha256": prompt_hash,
+            "skill_version_id": skill_version.id, "skill_key": skill_version.skill_key,
+            "skill_version": skill_version.version}, output_raw=error.output_raw) from error
     except Exception as error:
         trace = {
             "provider": provider,
@@ -901,7 +917,7 @@ async def execute_skill(
     }
     if completion.trace.get("finish_reason") == "length":
         trace.update(output_validation="failed", error_type="TruncatedOutput")
-        raise SkillExecutionError("skill_output_truncated", trace)
+        raise SkillExecutionError("skill_output_truncated", trace, output_raw=completion.content)
     try:
         output = (
             parse_ai_response(
@@ -918,7 +934,7 @@ async def execute_skill(
             _validate_analysis_draft_output(output, context)
             if reference_repairs:
                 trace["reference_repairs"] = reference_repairs
-        elif processor != "reports.single_step":
+        elif processor not in {"reports.single_step", "calendar.production"}:
             _validate_authoring_output(output, context, processor)
     except Exception as error:
         trace["output_validation"] = "failed"
@@ -926,7 +942,7 @@ async def execute_skill(
         code = (
             str(error) if isinstance(error, ValueError) else "skill_output_parse_failed"
         )
-        raise SkillExecutionError(code, trace) from error
+        raise SkillExecutionError(code, trace, output_raw=completion.content) from error
     return SkillExecutionResult(
         output_raw=completion.content,
         output_parsed=output,

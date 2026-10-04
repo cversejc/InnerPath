@@ -5,6 +5,8 @@ import {
   resolveNodeLocation,
 } from "./node-workspace.js";
 
+import { canHandleStep } from "./professional-ownership.js";
+
 function selected(items, key, field) {
   const item = items.find((row) => String(row[field]) === key) || items[0];
   return item ? [item] : [];
@@ -33,6 +35,7 @@ export const nodeWorkspaceComputed = {
     return (
       this.selectedReportStep?.id === this.currentReportStep?.id &&
       this.currentReportStep?.status === "IN_REVIEW" &&
+      canHandleStep(this.selectedReportStep, this.staffActor) &&
       !["DELIVERED", "CANCELLED"].includes(this.reportCase?.status)
     );
   },
@@ -180,7 +183,7 @@ export const nodeWorkspaceMethods = {
         this.reportContentPlan?.status === "READY",
       generationStatus: this.reportGeneration?.status,
     }).find((item) => item.action === requestedTool.action);
-    if (!tool || tool.disabled) return;
+    if (!tool || tool.disabled || !canHandleStep(this.selectedReportStep, this.staffActor)) return;
     this.setReportWorkspaceSection(tool.destination);
     const method = {
       analysis: "startReportAnalysisDraft",

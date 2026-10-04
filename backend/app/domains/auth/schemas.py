@@ -56,11 +56,13 @@ class RefreshTokenResponse(BaseModel):
 
 
 class StaffInviteCreate(BaseModel):
+    consultant_type: Literal["mingli", "psychology"] | None = None
     phone: str = Field(..., min_length=11, max_length=11, pattern=r"^\d{11}$")
     role: str = Field(..., pattern="^(admin|consultant)$")
 
 
 class StaffInviteResponse(BaseModel):
+    consultant_type: Literal["mingli", "psychology"] | None = None
     id: int
     phone: str
     role: str

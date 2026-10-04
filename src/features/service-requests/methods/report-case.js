@@ -21,6 +21,7 @@ import {
   startReportCaseStep
 } from '../../report-cases/api.js'
 import { getCaseSkillRuns } from '../../skills/api.js'
+import { canHandleStep } from '../../report-cases/professional-ownership.js'
 import { reportFragmentTitle } from '../../report-cases/stages.js'
 
 function splitReferences(value) {
@@ -54,7 +55,7 @@ export default {
       const activeStep = (reportCase.workflow_instance?.steps || []).find(step =>
         ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status)
       )
-      this.reportCaseCompletionGate = activeStep?.status === 'IN_REVIEW'
+      this.reportCaseCompletionGate = activeStep?.status === 'IN_REVIEW' && canHandleStep(activeStep, this.staffActor)
         && ['S1', 'S2', 'S3', 'S4'].includes(activeStep.step_key)
         ? await getReportCaseStepCompletionGate(reportCase.id, activeStep.step_key)
         : null
@@ -136,7 +137,7 @@ export default {
         const activeStep = (this.reportCase?.workflow_instance?.steps || []).find(step =>
           ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status)
         )
-        this.reportCaseCompletionGate = activeStep?.status === 'IN_REVIEW'
+        this.reportCaseCompletionGate = activeStep?.status === 'IN_REVIEW' && canHandleStep(activeStep, this.staffActor)
           && ['S1', 'S2', 'S3', 'S4'].includes(activeStep.step_key)
           ? await getReportCaseStepCompletionGate(caseId, activeStep.step_key)
           : null
