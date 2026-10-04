@@ -8,7 +8,7 @@
 
 **Project:** chenvis / 辰鉴
 
-**Updated:** 2026-10-03
+**Updated:** 2026-10-04
 
 **Product type:** Personal insight, report and decision-calendar product
 **Visual thesis:** A calm Chinese editorial interface built from paper, ink, cinnabar,
@@ -133,6 +133,23 @@ shapes for statuses, seals, tags and compact metadata.
 - Use translucent `surface`/`surface-strong` layers over the paper background.
 - Admin panels may be denser, but must retain the same ink, border and status colors.
 
+### Interior page composition
+
+- Reuse `BrandPageHeader` for page titles, introductory copy, seal ornaments and page
+  actions. Full-width headers belong below navigation; `contained` headers belong inside
+  application content widths, and `compact` headers suit staff and operations screens.
+- `--landscape-wash` reuses `--landscape-art` (the homepage mountain image) with an opaque paper layer
+  behind text. `--paper-scene` reuses the homepage paper backdrop with a quiet wash.
+  Both are canonical background tokens in `src/styles/foundation.css`; do not copy the
+  image paths or create unrelated backgrounds in each domain.
+- `--landscape-wash-mobile` increases the paper opacity across the full header width,
+  keeping text readable when a narrow viewport places it over the artwork.
+- Keep illustrations concentrated in page headers. Forms, report prose and operational
+  data use readable `surface-strong` cards. Seal ornaments are decorative and hidden
+  from assistive technology. Existing typography roles and scales remain authoritative.
+- Authentication pairs a landscape introduction with a paper form card on desktop;
+  mobile uses a compact introduction above the form. All actual input text stays at 16px.
+
 ### Inputs and forms
 
 - Visible labels are required; placeholders are supplementary only.
@@ -146,6 +163,9 @@ shapes for statuses, seals, tags and compact metadata.
 - Mobile bottom navigation owns the four primary destinations: 首页、报告、日历、我的。
 - Hamburger navigation is reserved for secondary links, role-specific entries and
   account actions.
+- About remains a standalone page at `/pages/about/about`. Desktop navigation includes
+  “关于”; the mobile secondary menu includes “关于辰鉴”. Keep its full brand introduction
+  separate from the homepage until the product structure is reassessed.
 - Menu, sheet, drawer and modal surfaces must provide dialog semantics, Escape close,
   focus entry, focus containment and focus restoration.
 - Fixed navigation must be compensated by page padding and safe-area variables.
@@ -189,3 +209,6 @@ shapes for statuses, seals, tags and compact metadata.
 - Page-specific tokens must be added as documented scoped extensions, not silently
   introduced as unrelated one-off colors.
 - When changing the visual direction, update this file and the implementation together.
+- 2026-10-04 source decision: the user's request to extend homepage styling to the
+  remaining pages. Implemented in `BrandPageHeader` and domain styles without changing
+  fonts. The user's subsequent decision retains About as a separate page for evaluation.

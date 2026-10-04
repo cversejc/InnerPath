@@ -1,10 +1,24 @@
+@media (max-width: 1000px) {
+  .auth-layout { gap: var(--space-5); }
+  .auth-story { min-height: 560px; padding: var(--space-6) var(--space-5); }
+}
+
 @media (max-width: 760px) {
+  .auth-shell { max-width: 480px; }
+  .auth-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+  .auth-story { min-height: 180px; padding: var(--space-5); background-position: center 42%; }
+  .auth-story .section-kicker { margin-bottom: var(--space-2); }
+  .auth-story h2 { margin: 0; font-size: var(--text-h2); }
+  .auth-story h2 br { display: none; }
+  .auth-story-copy { max-width: 270px; margin-top: var(--space-3); font-size: var(--text-body-sm); }
+  .auth-story-copy br { display: none; }
+  .auth-story-foot { display: none; }
   .auth-page {
     padding: 32px 28px;
   }
 
   .auth-topbar {
-    margin-bottom: 38px;
+    margin-bottom: var(--space-5);
   }
 
   .auth-head {
@@ -12,7 +26,7 @@
   }
 
   .auth-card h1 {
-    font-size: 36px;
+    font-size: var(--text-display-md);
   }
 }
 
@@ -32,14 +46,14 @@
   .auth-page {
     place-items: start center;
     padding:
-      max(72px, calc(env(safe-area-inset-top, 0px) + 48px))
+      max(24px, calc(env(safe-area-inset-top, 0px) + 16px))
       max(22px, env(safe-area-inset-right, 0px))
       max(24px, env(safe-area-inset-bottom, 0px))
       max(22px, env(safe-area-inset-left, 0px));
   }
 
   .auth-topbar {
-    margin-bottom: 34px;
+    margin-bottom: var(--space-4);
   }
 
   .auth-logo {
@@ -52,20 +66,20 @@
   }
 
   .auth-card h1 {
-    font-size: 32px;
+    font-size: var(--text-display-md);
   }
 
   .auth-subtitle {
-    font-size: 15px;
+    font-size: var(--text-body-sm);
   }
 
   .auth-legal {
     max-width: 100%;
-    font-size: 12px;
+    font-size: var(--text-body-sm);
   }
 
   .auth-fields {
-    gap: 18px;
+    gap: var(--space-4);
   }
 
   .auth-code-field {
@@ -73,13 +87,16 @@
   }
 
   .auth-code-button {
-    min-width: 116px;
+    min-width: 100px;
     padding: 0 8px;
   }
 
   .auth-form {
     gap: 24px;
   }
+
+  .auth-card { padding: var(--space-5) var(--space-4); }
+  .auth-field { padding: var(--space-2) var(--space-3); }
 }
 
 @media (max-height: 680px) {

@@ -111,7 +111,7 @@
         </div>
       </section>
 
-      <section class="belief-section section-band" aria-labelledby="belief-title">
+      <section v-if="showBeliefSection" class="belief-section section-band" aria-labelledby="belief-title">
         <div class="container belief-inner">
           <p class="section-kicker">OUR BELIEF</p>
           <h2 id="belief-title">报告不是答案，而是<span>一面镜子</span></h2>
@@ -150,6 +150,8 @@ export default {
   components: { VanButton, IconMark },
   data() {
     return {
+      // OUR BELIEF 暂时隐藏，保留内容和样式作为备选。
+      showBeliefSection: false,
       heroFeatures: [
         { icon: 'compass', title: '认识自己', detail: '个人特质' },
         { icon: 'refresh', title: '把握节奏', detail: '生活与选择' },

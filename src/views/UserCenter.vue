@@ -2,21 +2,21 @@
   <div class="user-center">
     <BrandNav />
 
-    <section class="user-header">
-      <div class="container user-header-inner">
-        <div class="user-info">
-          <div class="user-avatar">{{ userName.charAt(0) }}</div>
-          <div class="user-details">
-            <h2>{{ userName }}</h2>
-            <p class="user-type">{{ userType }}</p>
-          </div>
+    <BrandPageHeader eyebrow="YOUR PERSONAL SPACE" title="我的个人空间" description="你的档案、报告与行动记录，都在这里。每一次回看，都可以成为下一步的起点。" seal="行路">
+      <div class="user-info">
+        <div class="user-avatar">{{ userName.charAt(0) }}</div>
+        <div class="user-details">
+          <strong class="user-name">{{ userName }}</strong>
+          <p class="user-type">{{ userType }}</p>
         </div>
-        <router-link v-if="isAdmin" to="/admin" class="admin-entry-link">
+      </div>
+      <template v-if="isAdmin" #actions>
+        <router-link to="/admin" class="admin-entry-link">
           <span>进入管理中心</span>
           <IconMark name="arrow" />
         </router-link>
-      </div>
-    </section>
+      </template>
+    </BrandPageHeader>
 
     <section class="user-content">
       <div class="container">

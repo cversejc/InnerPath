@@ -1,292 +1,39 @@
-.dashboard-message {
-  margin: 0 0 16px;
-  color: var(--muted, #7d6653);
-}
-
 .user-center {
   width: 100%;
-  background: var(--surface-strong, #fffaf0);
   min-height: 100dvh;
+  background: var(--paper-scene) center top / cover;
 }
-
-/* 用户头部 */
-
-.user-header {
-  padding: 100px 20px 40px;
-  background: linear-gradient(135deg, rgba(255, 240, 223, .85) 0%, rgba(184, 92, 80, .22) 100%);
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.user-header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.admin-entry-link {
-  display: inline-flex;
-  min-height: var(--button-height, 46px);
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1px solid rgba(158, 63, 53, .3);
-  border-radius: var(--button-radius, 13px);
-  padding: 0 16px;
-  background: rgba(255, 250, 240, .64);
-  color: var(--cinnabar-deep, #9e3f35);
-  font-size: 14px;
-  font-weight: var(--weight-semibold);
-  text-decoration: none;
-  transition: background var(--motion-standard, 220ms) var(--ease-out, ease), border-color var(--motion-standard, 220ms) var(--ease-out, ease), transform var(--motion-fast, 150ms) var(--ease-out, ease);
-}
-
-.admin-entry-link:hover {
-  border-color: var(--cinnabar-deep, #9e3f35);
-  background: rgba(158, 63, 53, .08);
-}
-
-.admin-entry-link:active {
-  transform: scale(.985);
-}
-
-.admin-entry-link:focus-visible {
-  outline: 3px solid rgba(181, 87, 76, .3);
-  outline-offset: 2px;
-}
-
-.admin-entry-link .icon-mark {
-  width: 16px;
-  height: 16px;
-}
-
+.dashboard-message { margin-bottom: var(--space-4); color: var(--ink-soft); }
+.user-info { display: flex; align-items: center; gap: var(--space-4); }
 .user-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--cinnabar, #b85c50);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: var(--weight-semibold);
-}
-
-.user-details h2 {
-  font-size: 28px;
-  font-weight: var(--weight-semibold);
-  color: var(--ink, #2f241b);
-  margin-bottom: 8px;
-}
-
-.user-type {
-  font-size: 16px;
-  color: var(--muted, #7d6653);
-}
-
-/* 容器 */
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0;
-}
-
-/* 内容区 */
-
-.user-content {
-  padding: 40px 0 80px;
-}
-
-.content-layout {
   display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 30px;
-}
-
-/* 侧边栏 */
-
-.sidebar {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px 0;
-  height: fit-content;
-  position: sticky;
-  top: 100px;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-}
-
-.nav-item {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 12px;
-  border-top: 0;
-  border-right: 0;
-  border-bottom: 0;
-  background: transparent;
-  padding: 15px 25px;
-  color: var(--muted, #7d6653);
-  cursor: pointer;
-  transition: background var(--motion-standard, 220ms) var(--ease-out, ease), color var(--motion-standard, 220ms) var(--ease-out, ease), border-color var(--motion-standard, 220ms) var(--ease-out, ease);
-  border-left: 3px solid transparent;
-}
-
-.nav-item:hover {
-  background: var(--surface-strong, #fffaf0);
-  color: var(--ink, #2f241b);
-}
-
-.nav-item.active {
-  background: rgba(255, 240, 223, .78);
-  color: var(--cinnabar-deep, #9e3f35);
-  border-left-color: var(--cinnabar, #b85c50);
-  font-weight: var(--weight-semibold);
-}
-
-.nav-icon {
-  width: 20px;
-  height: 20px;
+  width: 56px;
+  height: 56px;
   flex: 0 0 auto;
-}
-
-.nav-label {
-  font-size: 15px;
-}
-
-/* 主内容 */
-
-.main-content {
-  background: #fff;
-  border-radius: 12px;
-  padding: 40px;
-  min-height: 500px;
-}
-
-/* 空状态 */
-
-/* 报告列表 */
-
-/* 决策日历入口 */
-
-/* 设置表单 */
-
-/* 页脚 */
-
-.footer {
-  background: var(--ink, #2f241b);
-  padding: 40px 0;
-  text-align: center;
-  color: rgba(255, 250, 240, .76);
-}
-
-/* 响应式 */
-
-/* 与主站纸张视觉统一，减少旧版后台面板的生硬白底。 */
-
-.user-center {
-  background: transparent;
-}
-
-.user-header {
-  position: relative;
-  overflow: hidden;
-  padding: 62px 0 38px;
-  background:
-    linear-gradient(105deg, rgba(255, 250, 240, 0.82), rgba(255, 239, 222, 0.72)),
-    radial-gradient(circle at 86% 24%, rgba(111, 159, 147, 0.18), transparent 28%),
-    var(--paper-deep, #ead9bf);
-}
-
-.user-header::after {
-  content: "辰鉴";
-  position: absolute;
-  right: 7%;
-  bottom: -40px;
-  color: rgba(184, 92, 80, 0.08);
+  place-items: center;
+  border: 1px solid var(--cinnabar);
+  border-radius: 4px;
+  background: var(--surface-strong);
+  box-shadow: inset 0 0 0 4px var(--paper-soft), inset 0 0 0 5px var(--line);
+  color: var(--cinnabar-deep);
   font-family: var(--font-display);
-  font-size: 150px;
-  font-weight: var(--weight-semibold);
-  line-height: 1;
-  pointer-events: none;
+  font-size: var(--text-h2);
 }
-
-.user-info,
-.user-header .container {
-  position: relative;
-  z-index: 1;
-}
-
-.user-info {
-  gap: 16px;
-}
-
-.user-avatar {
-  width: 66px;
-  height: 66px;
-  border: 1px solid rgba(139, 90, 20, 0.22);
-  border-radius: 16px;
-  background: rgba(255, 252, 245, 0.76);
-  box-shadow: inset 0 0 0 5px rgba(217, 186, 98, 0.15);
-  color: var(--cinnabar-deep, #9e3f35);
-  font-family: var(--font-display);
-}
-
-.user-details h2 {
-  font-family: var(--font-display);
-  letter-spacing: 0.02em;
-}
-
-.user-content {
-  padding: 46px 0 78px;
-}
-
-.content-layout {
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 20px;
-}
-
-.sidebar,
-.main-content {
-  border: 1px solid rgba(139, 90, 20, 0.13);
-  box-shadow: var(--shadow-card, 0 16px 48px -34px rgba(84, 48, 25, 0.48));
-}
-
-.sidebar {
-  padding: 8px 0;
-  background: rgba(255, 252, 245, 0.72);
-}
-
-.nav-item {
-  min-height: 48px;
-  padding: 12px 18px;
-  border-left-width: 2px;
-}
-
-.main-content {
-  background: rgba(255, 252, 245, 0.78);
-  min-width: 0;
-}
-
-.content-section {
-  min-width: 0;
-}
-
-/* 最终移动端紧凑版：保留触控尺寸，减少视觉体积与空白。 */
-
-/* 按钮专项：个人中心的主操作统一为卡片内 CTA，表单按钮移动端全宽。 */
-
-.user-growth-card {
-  margin-bottom: 20px;
-}
+.user-name { color: var(--ink); font-size: var(--text-h4); font-weight: var(--weight-medium); }
+.user-type { margin-top: var(--space-1); color: var(--ink-soft); font-size: var(--text-body-sm); }
+.admin-entry-link { display: inline-flex; min-height: var(--button-height); align-items: center; justify-content: center; gap: var(--space-2); border: 1px solid var(--line); border-radius: var(--button-radius); padding: 0 var(--space-4); background: var(--surface-strong); color: var(--cinnabar-deep); font-size: var(--text-body-sm); }
+.admin-entry-link .icon-mark { width: 18px; height: 18px; }
+.admin-entry-link:hover { border-color: var(--cinnabar); background: var(--paper-soft); }
+.user-content { padding: var(--space-6) 0 72px; }
+.content-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-5); }
+.sidebar, .main-content { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--surface-strong); box-shadow: var(--shadow-card); }
+.sidebar { position: sticky; top: calc(var(--nav-height) + var(--space-5)); height: fit-content; padding: var(--space-3); }
+.sidebar-nav { display: flex; flex-direction: column; gap: var(--space-2); }
+.nav-item { display: flex; width: 100%; min-height: 48px; align-items: center; gap: var(--space-3); border: 1px solid transparent; border-radius: var(--button-radius); padding: var(--space-3); color: var(--ink-soft); background: transparent; transition: background var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out), border-color var(--motion-fast) var(--ease-out); }
+.nav-item:hover { border-color: var(--line); background: var(--paper-soft); }
+.nav-item.active { border-color: rgba(181, 87, 76, 0.3); background: rgba(181, 87, 76, 0.08); color: var(--cinnabar-deep); font-weight: var(--weight-medium); }
+.nav-icon { width: 20px; height: 20px; flex: 0 0 auto; }
+.nav-label { font-size: var(--text-body-sm); }
+.main-content { min-height: 440px; padding: var(--space-6); }
+.content-section { min-width: 0; }
+.user-growth-card { margin-bottom: var(--space-5); }

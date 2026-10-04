@@ -4,9 +4,10 @@
 }
 
 .report-card {
-  background: var(--surface-strong, #fffaf0);
-  border-radius: 12px;
-  padding: 25px;
+  border: 1px solid var(--line);
+  background: var(--paper-soft);
+  border-radius: var(--radius-card);
+  padding: var(--space-5);
   transition: box-shadow var(--motion-standard, 220ms) var(--ease-out, ease);
 }
 
@@ -22,7 +23,7 @@
 }
 
 .report-header h4 {
-  font-size: 18px;
+  font-size: var(--text-h4);
   font-weight: var(--weight-semibold);
   color: var(--ink, #2f241b);
 }

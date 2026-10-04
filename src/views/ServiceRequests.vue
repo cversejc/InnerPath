@@ -3,17 +3,12 @@
     <BrandNav />
 
     <main class="requests-main">
-      <header class="requests-hero">
-        <div>
-          <p class="section-kicker">MY REQUESTS / SERVICE FLOW</p>
-          <h1>我的申请</h1>
-          <p>申请提交后，会由咨询师接单、生成 AI 初稿并完成审校，最终结果只在交付后向你开放。</p>
-        </div>
-        <div class="hero-actions">
+      <BrandPageHeader class="requests-hero" contained eyebrow="MY REQUESTS" title="我的申请" description="让每一次探索，都有回音。在这里查看申请进度，交付后即可阅读报告或打开日历。" seal="有信">
+        <template #actions>
           <router-link class="secondary-button" to="/pages/assessment/assessment">申请人生说明书</router-link>
           <router-link class="primary-button" to="/pages/requests/new?type=calendar">申请决策日历</router-link>
-        </div>
-      </header>
+        </template>
+      </BrandPageHeader>
 
       <p v-if="message" class="page-message" :class="{ error: messageType === 'error' }" role="status" aria-live="polite">{{ message }}</p>
 

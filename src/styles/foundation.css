@@ -46,6 +46,10 @@
   --line: rgba(139, 90, 20, 0.16);
   --surface: rgba(255, 250, 240, 0.78);
   --surface-strong: rgba(255, 252, 245, 0.94);
+  --paper-scene: linear-gradient(rgba(248, 241, 230, 0.84), rgba(248, 241, 230, 0.94)), url('../assets/home-background.webp');
+  --landscape-art: url('../assets/home-hero.webp');
+  --landscape-wash: linear-gradient(90deg, rgba(255, 250, 240, 0.97) 0%, rgba(255, 250, 240, 0.91) 42%, rgba(255, 250, 240, 0.36) 100%), var(--landscape-art);
+  --landscape-wash-mobile: linear-gradient(90deg, rgba(255, 250, 240, 0.97), rgba(255, 250, 240, 0.84)), var(--landscape-art);
   --shadow-soft: 0 24px 70px -42px rgba(84, 48, 25, 0.48);
   --shadow-card: 0 16px 48px -34px rgba(84, 48, 25, 0.48);
   /* Typography roles: brand/display serif, platform UI sans, and technical mono. */
