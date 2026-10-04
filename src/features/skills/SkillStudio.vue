@@ -211,7 +211,7 @@
                 验证当前版本的输出。试运行结果须经过咨询师审核，才能用于实际报告。
               </p>
               <div v-if="feedbackSourceRun" class="feedback-preview-source">
-                <strong>反馈来源：报告案例 {{ feedbackSourceRun.report_case_id }} · {{ feedbackSourceRun.target_key }} · 运行 {{ feedbackSourceRun.id }}</strong>
+                <strong>反馈来源：报告案例 {{ feedbackSourceRun.report_case_id }} · {{ feedbackTargetLabel(feedbackSourceRun) }} · 运行 {{ feedbackSourceRun.id }}</strong>
                 <p><b>咨询师反馈</b>：{{ feedbackSourceRun.runtime_instruction || "本次运行没有补充反馈。" }}</p>
                 <p>输入框已载入该节点实际使用的资料；试运行只生成预览，不会写入原报告。</p>
                 <details>
@@ -358,7 +358,7 @@
               </div>
               <article v-for="run in feedbackRuns" :key="run.id" class="skill-feedback-card">
                 <header>
-                  <strong>案例 {{ run.report_case_id }} · {{ run.target_key }} · 运行 {{ run.id }}</strong>
+                  <strong>案例 {{ run.report_case_id }} · {{ feedbackTargetLabel(run) }} · 运行 {{ run.id }}</strong>
                   <small>{{ RUN_STATUS_LABELS[run.status] || run.status }} · {{ formatDate(run.created_at) }}</small>
                 </header>
                 <p class="skill-feedback-text">{{ run.runtime_instruction }}</p>

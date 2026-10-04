@@ -18,8 +18,8 @@
       <strong>本次咨询师反馈</strong>
       <p>{{ run.runtime_instruction }}</p>
     </div>
-    <p v-if="run.context_snapshot?.analysis_feedback_source_run_id" class="run-feedback-source">
-      本次重跑针对运行记录 {{ run.context_snapshot.analysis_feedback_source_run_id }} 的 AI 结果。
+    <p v-if="feedbackSourceRunId" class="run-feedback-source">
+      本次重跑针对运行记录 {{ feedbackSourceRunId }} 的 AI 结果。
     </p>
     <p v-if="run.error" class="run-error" role="alert">{{ run.error }}</p>
     <SkillResultReader v-if="run.output_parsed" :value="run.output_parsed" />
@@ -151,6 +151,13 @@ export default {
     };
   },
   computed: {
+    feedbackSourceRunId() {
+      const context = this.run.context_snapshot || {};
+      return context.analysis_feedback_source_run_id ||
+        context.authoring_feedback_source_run_id ||
+        context.quality_feedback_source_run_id ||
+        null;
+    },
     runStatusLabel() {
       return RUN_STATUS_LABELS[this.run.status] || "未知状态";
     },

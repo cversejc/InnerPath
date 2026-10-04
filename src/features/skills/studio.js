@@ -24,16 +24,27 @@ export function parseSpecification(text) {
   }
 }
 
-export function isReportAnalysisFeedbackRun(run) {
+const REPORT_FEEDBACK_TARGET_TYPES = new Set([
+  "REPORT_ANALYSIS_DRAFT",
+  "NARRATIVE_CANDIDATES",
+  "REPORT_FRAGMENT",
+  "REPORT_QA",
+]);
+
+export function isReportSkillFeedbackRun(run) {
   return Boolean(
     run?.report_case_id &&
-      run.target_type === "REPORT_ANALYSIS_DRAFT" &&
+      REPORT_FEEDBACK_TARGET_TYPES.has(run.target_type) &&
       String(run.runtime_instruction || "").trim(),
   );
 }
 
+export function isReportAnalysisFeedbackRun(run) {
+  return Boolean(run?.target_type === "REPORT_ANALYSIS_DRAFT" && isReportSkillFeedbackRun(run));
+}
+
 export function feedbackPreviewFromRun(run) {
-  if (!isReportAnalysisFeedbackRun(run) || !run.input_snapshot) return null;
+  if (!isReportSkillFeedbackRun(run) || !run.input_snapshot) return null;
   return {
     inputText: JSON.stringify(run.input_snapshot, null, 2),
     runtimeInstruction: String(run.runtime_instruction || "").trim(),

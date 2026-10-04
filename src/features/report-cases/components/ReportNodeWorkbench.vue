@@ -218,7 +218,7 @@
                 {{ run.skill_version_id }} · 使用
                 {{ run.selected_examples?.length || 0 }} 个样例
                 <router-link
-                  v-if="run.target_type === 'REPORT_ANALYSIS_DRAFT' && run.runtime_instruction"
+                  v-if="isFeedbackRerun(run)"
                   class="node-run-review-link"
                   :to="studioLocationForRun(run)"
                   >查看反馈与技能维护</router-link
@@ -333,6 +333,7 @@ import {
 import { nodeViews, nodeTools, nodeAssets } from "../node-workspace.js";
 import NodeInputsPanel from "./NodeInputsPanel.vue";
 import NodeWorkbenchDialog from "./NodeWorkbenchDialog.vue";
+import { runSkillKey } from "../../skills/presentation.js";
 export default {
   components: { VanButton, NodeInputsPanel, NodeWorkbenchDialog },
   props: {
@@ -460,10 +461,17 @@ export default {
         ...base,
         query: {
           ...(base.query || {}),
+          skill: runSkillKey(run) || base.query?.skill,
           run_id: String(run.id),
           panel: this.actor?.role === "admin" ? "feedback" : "runs",
         },
       };
+    },
+    isFeedbackRerun(run) {
+      return Boolean(
+        run.runtime_instruction &&
+          ["REPORT_ANALYSIS_DRAFT", "NARRATIVE_CANDIDATES", "REPORT_FRAGMENT", "REPORT_QA"].includes(run.target_type),
+      );
     },
     viewHint(id) {
       return {

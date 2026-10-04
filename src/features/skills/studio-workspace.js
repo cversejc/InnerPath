@@ -13,7 +13,7 @@ import {
 import {
   parseSpecification,
   feedbackPreviewFromRun,
-  isReportAnalysisFeedbackRun,
+  isReportSkillFeedbackRun,
   RUN_STATUS_LABELS,
   sampleInput,
   VERSION_STATUS_LABELS,
@@ -100,7 +100,7 @@ export default {
     feedbackRuns() {
       if (!this.isAdmin) return [];
       const rows = this.visibleRuns.filter(
-        isReportAnalysisFeedbackRun,
+        isReportSkillFeedbackRun,
       );
       if (
         this.feedbackSourceRun &&
@@ -194,10 +194,11 @@ export default {
               (item) => item.id === sourceRun.skill_version_id,
             );
             if (
-              sourceVersion?.skill_key === this.selectedSkillKey &&
-              sourceRun.target_type === "REPORT_ANALYSIS_DRAFT" &&
+              sourceVersion?.skill_key &&
+              isReportSkillFeedbackRun(sourceRun) &&
               sourceRun.report_case_id
             ) {
+              this.selectedSkillKey = sourceVersion.skill_key;
               this.loadFeedbackSource(sourceRun);
               feedbackVersion = sourceVersion;
             } else {
@@ -508,6 +509,16 @@ export default {
       return value
         ? new Date(value).toLocaleString("zh-CN", { hour12: false })
         : "—";
+    },
+    feedbackTargetLabel(run) {
+      const skill = this.catalog.find((item) => item.key === runSkillKey(run));
+      const target = {
+        REPORT_ANALYSIS_DRAFT: `分析建议 · ${run.target_key || "当前节点"}`,
+        NARRATIVE_CANDIDATES: "S5 报告主线候选",
+        REPORT_FRAGMENT: `S5 报告段落 · ${run.target_key || "内容片段"}`,
+        REPORT_QA: "S6 交付前检查",
+      }[run.target_type] || run.target_key || "节点运行";
+      return skill ? `${skill.node} · ${target}` : target;
     },
     showMessage(message, kind = "") {
       this.message = message;
