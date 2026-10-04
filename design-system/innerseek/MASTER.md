@@ -169,6 +169,13 @@ shapes for statuses, seals, tags and compact metadata.
   calendar.
 - **Admin:** scanable metrics, filters, tables or mobile cards, explicit loading/empty/
   error states and task-oriented drawers.
+- **Consultant report workbench:** the six-stage rail owns workflow navigation. A
+  node home explains its goal and human task, then opens one dedicated working view.
+  Inputs and review records use a single-record selector with previous/next actions.
+  Skills and completion checklists open in dialogs rather than permanent side columns.
+  Skill buttons invoke actual commands, show prerequisites, and keep history read-only.
+  Report overview retains the delivered report entry. See
+  `docs/consultant-analysis-implementation.md` for the decision and browser acceptance.
 
 ## Anti-patterns
 

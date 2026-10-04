@@ -46,6 +46,7 @@ export default {
         getCaseSkillRuns(caseId)
       ])
       this.reportCase = reportCase
+      if (this.restoreReportNode && !this.selectedReportStepKey) this.restoreReportNode()
       this.reportCaseContent = content
       this.reportNarrative = narrative
       this.reportQuality = quality
@@ -441,8 +442,9 @@ export default {
       reportability: finding.reportability,
       status: finding.status,
       evidence_refs: [...(finding.evidence_refs || [])].join('\n'),
-      relation_refs: structuredClone(finding.relation_refs || []),
-      structured_data: structuredClone(finding.structured_data_json || {}),
+      // API values are JSON; serialization also detaches nested reactive proxies.
+      relation_refs: JSON.parse(JSON.stringify(finding.relation_refs || [])),
+      structured_data: JSON.parse(JSON.stringify(finding.structured_data_json || {})),
       edit_kind: 'SEMANTIC'
     }
   },

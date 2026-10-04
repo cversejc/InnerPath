@@ -21,6 +21,9 @@ import reportCaseMethods from '../features/service-requests/methods/report-case.
 import reportAnalysisMethods from '../features/service-requests/methods/report-analysis.js'
 import ReportNodeWorkbench from '../features/report-cases/components/ReportNodeWorkbench.vue'
 import AnalysisDraftsPanel from '../features/report-cases/components/AnalysisDraftsPanel.vue'
+import WorkbenchRecordPicker from '../features/report-cases/components/WorkbenchRecordPicker.vue'
+import QualityScorecard from '../features/report-cases/components/QualityScorecard.vue'
+import { nodeWorkspaceComputed, nodeWorkspaceMethods } from '../features/report-cases/node-workspace-state.js'
 import DeliveredReportSummary from '../features/report-cases/components/DeliveredReportSummary.vue'
 import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
 import {
@@ -34,7 +37,7 @@ import { confirmAction } from '../utils/confirmAction.js'
 
 export default {
   name: 'StaffConsole',
-  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, DeliveredReportSummary },
+  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, DeliveredReportSummary, WorkbenchRecordPicker, QualityScorecard },
   data() {
     const admin = hasRole('admin')
     return {
@@ -49,6 +52,10 @@ export default {
       requests: { total: 0, items: [] },
       selectedRequest: null,
       workspaceSection: 'overview',
+      selectedReportStepKey: '',
+      nodeRecordKeys: {findings:'',fragments:'',quality:'',planned:'',candidate:''},
+      nodeWritingMode: 'plan',
+      showNodeAddForm: false,
       workspace: null,
       reportCase: null,
       reportCaseContent: { evidence: [], findings: [], fragments: [] },
@@ -106,6 +113,7 @@ export default {
     }
   },
   computed: {
+    ...nodeWorkspaceComputed,
     currentReportStep() {
       const steps = this.reportCase?.workflow_instance?.steps || []
       return steps.find(step => ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status)) || null
@@ -158,26 +166,6 @@ export default {
         chapterKey,
         status: checks[chapterKey]?.status || '待检查'
       }))
-    },
-    reportWorkspaceSections() {
-      const countBy = (items, predicate) => items.filter(predicate).length
-      return [
-        { id: 'overview', label: '处理总览' },
-        { id: 'context', label: '用户情境' },
-        { id: 'evidence', label: '资料依据', count: this.reportEvidenceItems.length },
-        {
-          id: 'findings',
-          label: '判断审核',
-          count: countBy(this.reportCaseContent.findings, item => item.status === 'PROPOSED')
-        },
-        {
-          id: 'fragments',
-          label: '报告内容',
-          count: countBy(this.reportCaseContent.fragments, item => ['PROPOSED', 'STALE'].includes(item.status))
-        },
-        { id: 'writing', label: '叙事写作' },
-        { id: 'quality', label: '交付前检查', count: this.reportQuality.open_count }
-      ]
     },
     semanticRoleOptions() {
       return [
@@ -247,6 +235,9 @@ export default {
       if (request) this.selectRequest(request, { updateRoute: false })
       else this.clearReportWorkspaceState()
     },
+    '$route.query.step'() {
+      if(this.reportCase) this.restoreReportNode()
+    },
     '$route.query.section'(sectionId) {
       if (!this.selectedRequest) return
       const section = this.reportWorkspaceSections.some(item => item.id === sectionId)
@@ -274,6 +265,7 @@ export default {
     ...reportCaseMethods,
     ...reportAnalysisMethods,
     ...assignmentMethods,
+    ...nodeWorkspaceMethods,
     reportFragmentStatus(fragmentKey) {
       const status = this.reportCaseContent.fragments.find(item => item.fragment_key === fragmentKey)?.status
       return this.assetStatusLabel(status) || '待撰写'
@@ -306,8 +298,8 @@ export default {
     },
     setReportWorkspaceSection(sectionId) {
       const sectionMap = {
-        'case-context': 'context',
-        'case-evidence': 'evidence',
+        'case-context': 'inputs',
+        'case-evidence': 'inputs',
         'case-findings': 'findings',
         'case-fragments': 'fragments',
         'case-narrative': 'writing',
@@ -331,9 +323,12 @@ export default {
       if (requestId) {
         query.request_id = String(requestId)
         query.section = section
+        if(this.selectedReportStepKey) query.step = this.selectedReportStepKey
+        else query.step = 'all'
       } else {
         delete query.request_id
         delete query.section
+        delete query.step
       }
       const currentRequestId = String(this.$route.query.request_id || '')
       const currentSection = String(this.$route.query.section || 'overview')
@@ -342,6 +337,7 @@ export default {
         currentRequestId === String(requestId || '')
         && currentSection === (requestId ? section : 'overview')
         && currentScope === this.scope
+        && String(this.$route.query.step || '').replace(/^all$/, '') === (requestId ? this.selectedReportStepKey : '')
       ) return
       return this.$router[history === 'push' ? 'push' : 'replace']({ query })
     },
@@ -354,8 +350,7 @@ export default {
         return
       }
       await this.selectRequest(request, { updateRoute: false })
-      const section = String(this.$route.query.section || 'overview')
-      if (this.reportWorkspaceSections.some(item => item.id === section)) this.workspaceSection = section
+      this.restoreReportNode()
     },
     closeReportWorkspace() {
       this.syncWorkspaceRoute(null)
@@ -375,6 +370,7 @@ export default {
         can_approve: false, blocking_count: 0, open_count: 0
       }
       this.workspaceSection = 'overview'
+      this.selectedReportStepKey = ''
       this.scrollWorkspaceToTop()
     },
     evidenceLabel(evidence) {
@@ -434,7 +430,7 @@ export default {
       const numbered = chapter.match(/(?:chapter|第)[_ -]?(\d+)/i)
       if (numbered) return `第 ${numbered[1]} 章`
       return ({
-        INTRO: '开篇', OVERVIEW: '整体概览', BACKGROUND: '背景', SUMMARY: '总结',
+        INTRO: '开篇', OVERVIEW: '整体概览', IDENTITY: '第一章 · 心灵结构', BLOCKS: '第二章 · 卡点与机制', CHALLENGE: '第二章 · 卡点与机制', DIRECTION: '第三章 · 方向与成长', ENDING: '寄语', BACKGROUND: '背景', SUMMARY: '总结',
         CONCLUSION: '结语', ACTION_PLAN: '行动建议', CORE_PATTERN: '核心模式'
       })[chapter.toUpperCase()] || '报告章节'
     },
@@ -464,7 +460,8 @@ export default {
     qualityStatusLabel(status) {
       return {
         NOT_RUN: '尚未检查', PASSED: '检查通过', PROGRAMMATIC_BLOCKED: '发现必须处理的问题',
-        BLOCKED: '暂不能交付', READY: '可以进行最终复核'
+        BLOCKED: '暂不能交付', READY: '可以进行最终复核',
+        COMPLETED: '检查已完成，请核对评分与问题', RUNNING: '正在检查', PENDING: '等待检查', FAILED: '检查暂时失败'
       }[status] || '尚未检查'
     },
     qualityIssueLabel(type) {

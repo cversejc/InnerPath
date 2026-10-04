@@ -49,6 +49,7 @@ export default {
     this.stopPolling()
     this.selectedRequest = item
     this.workspaceSection = 'overview'
+    this.selectedReportStepKey = ''
     if (updateRoute) this.syncWorkspaceRoute(item.id, 'overview', { history: 'push' })
     this.workspace = null
     this.reportCase = null

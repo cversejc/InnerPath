@@ -23,7 +23,7 @@
           <p>{{ workspace?.user?.phone || '未填写联系方式' }} · 申请编号 {{ selectedRequest.id }}</p>
         </div>
         <div class="workbench-header-actions">
-          <VanButton class="secondary-button compact-button workbench-overview-button" type="default" plain native-type="button" aria-label="返回报告处理总览" @click="setReportWorkspaceSection('overview')">回到处理总览</VanButton>
+          <VanButton class="secondary-button compact-button workbench-overview-button" type="default" plain native-type="button" aria-label="返回报告处理总览" @click="openReportOverview">回到处理总览</VanButton>
           <span :class="['status-badge', workbenchStatusClass]">{{ workbenchStatusLabel }}</span>
           <router-link class="secondary-button compact-button" :to="skillStudioLocation">技能工作室</router-link>
         </div>
@@ -69,7 +69,7 @@
           </div>
 
           <div v-else-if="workspace" class="workspace-content">
-            <DeliveredReportSummary :request="workspace.request" @view-analysis="setReportWorkspaceSection('overview')" />
+            <DeliveredReportSummary v-if="!selectedReportStepKey" :request="workspace.request" @view-analysis="selectReportNode('S1')" />
             <div v-if="admin" class="assignment-row">
               <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving" @change="assignConsultant"><option :value="null">未分配</option><option v-for="consultant in consultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
               <small>管理员可改派；改派不会覆盖已有版本。</small>
@@ -80,71 +80,58 @@
               <template v-else-if="reportCase">
                 <ReportNodeWorkbench
                   :report-case="reportCase"
-                  :compact="workspaceSection !== 'overview'"
+                  :selected-step-key="selectedReportStepKey"
+                  :section="workspaceSection"
+                  :studio-location="skillStudioLocation"
+                  :tool-pending="nodeToolPending"
+                  :generation-status="reportGeneration.status"
                   :content="reportCaseContent"
                   :current-step="currentReportStep"
-                  :quality-status="reportQuality.quality_status"
-                  :narrative-plan-status="reportNarrative.current_plan?.status || ''"
-                  :latest-analysis-run="latestReportAnalysisRun"
                   :analysis-runs="reportAnalysisRuns"
                   :narrative-plan="reportNarrative.current_plan"
                   :quality="reportQuality"
                   :completion-gate="reportCaseCompletionGate"
-                  :quality-issue-count="reportQuality.open_count"
-                  :quality-blocking-count="reportQuality.blocking_count"
                   :loading="reportStepSaving"
-                  :analysis-saving="reportAnalysisSaving"
                   :can-reopen="!['DELIVERED', 'CANCELLED'].includes(reportCase.status)"
                   @start-step="startReportStep"
                   @complete-step="completeReportStep"
                   @toggle-return="reportStepReturn.visible = !reportStepReturn.visible"
                   @to-section="setReportWorkspaceSection"
-                  @run-analysis="startReportAnalysisDraft"
+                  @select-step="selectReportNode"
+                  @run-tool="runReportNodeTool"
                   @reopen="reopenReportStep"
                 />
 
-                <nav class="report-workspace-nav" aria-label="报告工作区">
-                  <button
-                    v-for="section in reportWorkspaceSections"
-                    :key="section.id"
-                    type="button"
-                    :aria-controls="`report-section-${section.id}`"
-                    :aria-current="workspaceSection === section.id ? 'page' : undefined"
-                    :class="{ active: workspaceSection === section.id }"
-                    @click="setReportWorkspaceSection(section.id)"
-                  >
-                    <span>{{ section.label }}</span>
-                    <small v-if="section.count">{{ section.count }}</small>
-                  </button>
-                </nav>
-
-                <div v-show="workspaceSection === 'overview' && reportStepReturn.visible" class="report-return-form">
+                <div v-if="workspaceSection === 'overview' && reportStepReturn.visible" class="report-return-form">
                   <label>退回到哪一步<select v-model="reportStepReturn.targetStepKey"><option value="">选择已完成的前序步骤</option><option v-for="step in reportReturnTargets" :key="step.step_key" :value="step.step_key">第 {{ step.sequence_no }} 步 · {{ reportStepLabel(step.step_key) }}</option></select></label>
                   <label>退回原因<textarea v-model.trim="reportStepReturn.reason" rows="2" maxlength="1000"></textarea></label>
                   <VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportStepSaving || !reportStepReturn.targetStepKey || !reportStepReturn.reason" :loading="reportStepSaving" @click="submitReportStepReturn">确认退回</VanButton>
                 </div>
 
-                <section id="report-section-writing" v-show="workspaceSection === 'writing'" class="report-data-panel narrative-panel" aria-label="报告主线与写作">
+                <section id="report-section-writing" v-if="workspaceSection === 'writing'" class="report-data-panel narrative-panel" aria-label="报告主线与写作">
                   <div class="panel-heading">
                     <div><p class="eyebrow">报告内容</p><h3>叙事方案与报告写作</h3></div>
                     <span>{{ narrativePlanStatusLabel }}</span>
                   </div>
+                  <div class="node-writing-modes" aria-label="写作工作界面"><VanButton plain native-type="button" :aria-pressed="nodeWritingMode === 'plan'" @click="nodeWritingMode='plan'">主线方案</VanButton><VanButton plain native-type="button" :aria-pressed="nodeWritingMode === 'allocation'" @click="nodeWritingMode='allocation'">逐段编排</VanButton><VanButton plain native-type="button" :aria-pressed="nodeWritingMode === 'progress'" @click="nodeWritingMode='progress'">生成进度</VanButton></div>
+                  <template v-if="nodeWritingMode === 'plan'">
+                  <WorkbenchRecordPicker v-model="nodeRecordKeys.candidate" :items="nodeNarrativeCandidates" label="选择主线候选" />
                   <div v-if="reportNarrative.current_plan" class="narrative-current-plan">
                     <strong>{{ consultantText(reportNarrative.current_plan.plan_json.core_theme, '尚未确定报告主线') }}</strong>
-                    <small>主线重点：{{ findingTitles(reportNarrative.current_plan.plan_json.must_include_findings) || '尚未选择重点判断' }}</small>
+                    <details class="node-source-details"><summary>查看已选主线的重点判断</summary><small>{{ findingTitles(reportNarrative.current_plan.plan_json.must_include_findings) || '尚未选择重点判断' }}</small></details>
                     <p v-if="reportNarrative.current_plan.status === 'STALE'" class="stale-note">前序判断已有更新，需要重新生成并确认报告主线。</p>
                   </div>
                   <div class="narrative-actions">
-                    <VanButton v-if="currentReportStep?.step_key === 'S5' && currentReportStep.status === 'IN_REVIEW'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportNarrativeSaving" :loading="reportNarrativeSaving" @click="generateNarrativeCandidates">生成报告主线建议</VanButton>
+                    <VanButton v-if="canEditSelectedReportStep && selectedReportStepKey === 'S5'" class="primary-button compact-button" type="primary" native-type="button" :disabled="nodeToolPending" :loading="reportNarrativeSaving" @click="generateNarrativeCandidates">生成报告主线建议</VanButton>
                   </div>
-                  <div v-for="run in reportNarrative.candidate_runs" :key="run.id" class="narrative-run">
+                  <div v-for="run in visibleNarrativeCandidateRuns" :key="run.id" class="narrative-run">
                     <div class="asset-item-heading"><div><strong>报告主线建议</strong><span class="asset-status">{{ assetStatusLabel(run.status) }}</span></div></div>
                     <p v-if="run.status === 'FAILED'" class="task-error">报告主线建议暂时无法生成，请稍后重试。</p>
                     <article v-for="candidate in run.output_parsed?.candidates || []" :key="candidate.candidate_key" class="narrative-candidate">
                       <div class="asset-item-heading"><div><strong>{{ consultantText(candidate.theme, '报告主线建议') }}</strong></div></div>
                       <p>{{ consultantText(candidate.rationale) }}</p>
-                      <small class="asset-source">主要依据：{{ findingTitles(candidate.supporting_findings) || '暂无' }}<template v-if="candidate.deemphasized_findings?.length"> · 暂不展开：{{ findingTitles(candidate.deemphasized_findings) }}</template></small>
-                      <div v-if="currentReportStep?.step_key === 'S5' && currentReportStep.status === 'IN_REVIEW'" class="narrative-choice-form">
+                      <details class="node-source-details"><summary>查看主线引用的判断</summary><small class="asset-source">主要依据：{{ findingTitles(candidate.supporting_findings) || '暂无' }}<template v-if="candidate.deemphasized_findings?.length"> · 暂不展开：{{ findingTitles(candidate.deemphasized_findings) }}</template></small></details>
+                      <div v-if="canEditSelectedReportStep && selectedReportStepKey === 'S5'" class="narrative-choice-form">
                         <label>核心主题<input v-model.trim="narrativeCandidateDrafts[narrativeDraftKey(run, candidate)].core_theme" maxlength="1000"></label>
                         <fieldset><legend>报告需要重点回应的判断</legend><label v-for="findingKey in candidate.supporting_findings" :key="findingKey" class="narrative-checkbox"><input v-model="narrativeCandidateDrafts[narrativeDraftKey(run, candidate)].must_include_findings" type="checkbox" :value="findingKey">{{ findingTitle(findingKey) }}</label></fieldset>
                         <label>报告希望强调的方向<select v-model="narrativeCandidateDrafts[narrativeDraftKey(run, candidate)].self_direction"><option value="">暂不指定</option><option v-for="findingKey in candidate.supporting_findings" :key="findingKey" :value="findingKey">{{ findingTitle(findingKey) }}</option></select></label>
@@ -153,10 +140,11 @@
                     </article>
                   </div>
                   <div v-if="reportNarrative.current_plan?.status === 'CONFIRMED' && !reportContentPlan" class="stale-note">这条报告主线还没有逐段内容安排。请重新生成并确认主线后继续。</div>
-                  <section v-if="reportContentPlan" class="narrative-allocation" aria-label="报告内容分配与顺序生成">
+                  </template>
+                  <section v-if="nodeWritingMode === 'allocation' && reportContentPlan" class="narrative-allocation" aria-label="报告内容分配与顺序生成">
                     <div class="narrative-allocation-heading">
                       <strong>内容分配 · {{ reportContentPlan.fragments?.length || 0 }} 段</strong>
-                      <span class="asset-status">{{ assetStatusLabel(reportContentPlan.status) || '待处理' }}</span>
+                      <span class="asset-status">{{ reportContentPlan.status === 'READY' ? '编排已就绪' : assetStatusLabel(reportContentPlan.status) || '待处理' }}</span>
                     </div>
                     <p class="narrative-progress">
                       {{ reportGenerationStatusLabel }}
@@ -173,8 +161,9 @@
                         {{ chapterLabel(chapter.chapterKey) }} · {{ assetStatusLabel(chapter.status) || '待检查' }}
                       </span>
                     </div>
+                    <WorkbenchRecordPicker v-model="nodeRecordKeys.planned" :items="nodePlannedFragments" key-field="fragment_key" label="选择编排段落" />
                     <ol class="narrative-allocation-list">
-                      <li v-for="fragment in reportContentPlan.fragments || []" :key="fragment.fragment_key">
+                      <li v-for="fragment in visiblePlannedFragments" :key="fragment.fragment_key">
                         <div class="narrative-allocation-row">
                             <strong>{{ String(fragment.sequence_no).padStart(2, '0') }} · {{ fragmentTitle(fragment.fragment_key, fragment) }}</strong>
                           <span class="asset-status">{{ reportFragmentStatus(fragment.fragment_key) }}</span>
@@ -189,22 +178,23 @@
                     <p v-if="reportGeneration.status === 'CHAPTER_COHERENCE_CHECK'" class="narrative-progress">正在检查“{{ chapterLabel(reportGeneration.current_chapter_key) }}”，处理完成后会继续生成下一部分。</p>
                     <p v-if="reportGeneration.status === 'COHERENCE_CHECK'" class="narrative-progress">各部分已生成，正在检查全文主线和内容重复。</p>
                     <p v-if="reportGeneration.coherence?.status === 'PASSED'" class="narrative-progress">全文连贯性检查已通过。请逐段审阅后完成本步骤。</p>
-                    <VanButton v-if="currentReportStep?.step_key === 'S5' && currentReportStep.status === 'IN_REVIEW' && reportContentPlan.status === 'READY' && !['IN_PROGRESS', 'CHAPTER_COHERENCE_CHECK', 'CHAPTER_COHERENCE_BLOCKED', 'CHAPTER_COHERENCE_FAILED', 'CHAPTER_COHERENCE_STALE', 'COHERENCE_CHECK', 'READY_FOR_REVIEW', 'COHERENCE_BLOCKED', 'COHERENCE_FAILED', 'COHERENCE_STALE', 'NEEDS_INPUT', 'BLOCKED'].includes(reportGeneration.status)" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportNarrativeSaving" :loading="reportNarrativeSaving" @click="generateCompleteReport">
+                    <VanButton v-if="canEditSelectedReportStep && selectedReportStepKey === 'S5' && reportContentPlan.status === 'READY' && !['IN_PROGRESS', 'CHAPTER_COHERENCE_CHECK', 'CHAPTER_COHERENCE_BLOCKED', 'CHAPTER_COHERENCE_FAILED', 'CHAPTER_COHERENCE_STALE', 'COHERENCE_CHECK', 'READY_FOR_REVIEW', 'COHERENCE_BLOCKED', 'COHERENCE_FAILED', 'COHERENCE_STALE', 'NEEDS_INPUT', 'BLOCKED'].includes(reportGeneration.status)" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportNarrativeSaving" :loading="reportNarrativeSaving" @click="generateCompleteReport">
                       {{ reportGeneration.status === 'FAILED' || reportGeneration.status === 'PAUSED' ? '继续生成未完成内容' : '按顺序生成报告内容' }}
                     </VanButton>
-                    <VanButton v-if="currentReportStep?.step_key === 'S5' && currentReportStep.status === 'IN_REVIEW' && ['READY_FOR_REVIEW', 'CHAPTER_COHERENCE_BLOCKED', 'CHAPTER_COHERENCE_FAILED', 'CHAPTER_COHERENCE_STALE', 'COHERENCE_BLOCKED', 'COHERENCE_FAILED', 'COHERENCE_STALE'].includes(reportGeneration.status)" class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportNarrativeSaving" :loading="reportNarrativeSaving" @click="runReportCoherenceCheck">
+                    <VanButton v-if="canEditSelectedReportStep && selectedReportStepKey === 'S5' && ['READY_FOR_REVIEW', 'CHAPTER_COHERENCE_BLOCKED', 'CHAPTER_COHERENCE_FAILED', 'CHAPTER_COHERENCE_STALE', 'COHERENCE_BLOCKED', 'COHERENCE_FAILED', 'COHERENCE_STALE'].includes(reportGeneration.status)" class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportNarrativeSaving" :loading="reportNarrativeSaving" @click="runReportCoherenceCheck">
                       {{ reportGeneration.status.startsWith('CHAPTER_') ? `重新检查${chapterLabel(reportGeneration.current_chapter_key)}` : '重新检查整篇报告' }}
                     </VanButton>
                     <p v-if="reportGeneration.status === 'READY_FOR_REVIEW'" class="narrative-progress">报告内容已生成。请逐段审阅、修改并确认，再完成本步骤。</p>
                   </section>
-                  <div v-for="run in reportNarrative.fragment_runs" :key="run.id" class="narrative-run">
+                  <div v-if="nodeWritingMode === 'progress'" class="narrative-progress">{{ reportGenerationStatusLabel }} · 已完成 {{ reportGeneration.completed_fragment_keys?.length || 0 }} / {{ reportContentPlan?.fragments?.length || 0 }} 段</div>
+                  <div v-for="run in nodeWritingMode === 'progress' ? reportNarrative.fragment_runs : []" :key="run.id" class="narrative-run">
                     <div class="asset-item-heading"><div><strong>{{ fragmentTitle(run.target_key) }}</strong><span class="asset-status">{{ assetStatusLabel(run.status) }}</span></div></div>
                     <p v-if="run.status === 'FAILED'" class="task-error">这段内容暂时无法生成，请稍后重试。</p>
                     <p v-else-if="run.output_parsed?.status === 'MISSING_SEMANTIC_SUPPORT'" class="stale-note">当前内容缺少已确认的判断依据，暂未补写相关结论。请先回到判断审核页面处理。</p>
                   </div>
                 </section>
 
-                <section id="report-section-quality" v-show="workspaceSection === 'quality'" class="report-data-panel quality-panel" aria-label="交付前检查">
+                <section id="report-section-quality" v-if="workspaceSection === 'quality'" class="report-data-panel quality-panel" aria-label="交付前检查">
                   <div class="panel-heading">
                     <div><p class="eyebrow">交付前检查</p><h3>最终复核</h3></div>
                     <span>{{ reportQuality.open_count }} 项待处理 · {{ reportQuality.blocking_count }} 项必须处理</span>
@@ -212,16 +202,18 @@
                   <div class="quality-status-row">
                     <strong>检查结果：{{ qualityStatusLabel(reportQuality.quality_status) }}</strong>
                     <span v-if="reportQuality.latest_validator_run">最近检查：{{ assetStatusLabel(reportQuality.latest_validator_run.status) }}</span>
-                    <VanButton v-if="currentReportStep?.step_key === 'S6' && currentReportStep.status === 'IN_REVIEW'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportQualitySaving" :loading="reportQualitySaving" @click="runReportQuality">运行交付前检查</VanButton>
+                    <VanButton v-if="canEditSelectedReportStep && selectedReportStepKey === 'S6'" class="primary-button compact-button" type="primary" native-type="button" :disabled="nodeToolPending" :loading="reportQualitySaving" @click="runReportQuality">运行交付前检查</VanButton>
                   </div>
                   <p v-if="reportQuality.latest_validator_run?.status === 'FAILED'" class="task-error">交付前检查暂时无法完成，请稍后重试。</p>
                   <p v-if="reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'" class="stale-note">检查发现必须处理的问题；修订报告内容后重新检查。</p>
-                  <article v-for="issue in reportQuality.issues" :key="issue.id" class="quality-issue" :class="{ 'quality-issue-open': issue.status === 'OPEN' }">
+                  <QualityScorecard :scorecard="reportQuality.latest_validator_run?.scorecard" />
+                  <WorkbenchRecordPicker v-model="nodeRecordKeys.quality" :items="nodeQualityItems" label="选择检查问题" />
+                  <article v-for="issue in visibleNodeQualityIssues" :key="issue.id" class="quality-issue" :class="{ 'quality-issue-open': issue.status === 'OPEN' }">
                     <div class="asset-item-heading"><div><strong>{{ qualityIssueLabel(issue.issue_type) }}</strong><span class="asset-status">{{ issueSeverityLabel(issue.severity) }} · {{ assetStatusLabel(issue.status) }}</span></div></div>
                     <p>{{ qualityIssueMessage(issue) }}</p>
                     <p v-if="issue.target_fragment_key" class="asset-source">涉及内容：{{ fragmentTitle(issue.target_fragment_key) }}</p>
                     <p v-if="issue.suggestion || issue.issue_type === 'FINDING_OVER_REPEATED'" class="asset-source">处理建议：{{ qualityIssueSuggestion(issue) }}</p>
-                    <div v-if="issue.status === 'OPEN' && currentReportStep?.step_key === 'S6' && currentReportStep.status === 'IN_REVIEW'" class="quality-resolution-form">
+                    <div v-if="issue.status === 'OPEN' && canEditSelectedReportStep && selectedReportStepKey === 'S6'" class="quality-resolution-form">
                       <label>处理方式<select v-model="reportQualityIssueDrafts[issue.id].status"><option value="RESOLVED">已修复并关闭</option><option v-if="issue.severity !== 'BLOCK'" value="ACCEPTED">接受该提示</option><option v-if="issue.severity !== 'BLOCK'" value="DISMISSED">判断为不适用</option></select></label>
                       <label>处理说明<textarea v-model.trim="reportQualityIssueDrafts[issue.id].resolution" rows="2" maxlength="2000" placeholder="记录修订内容或接受理由"></textarea></label>
                       <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportQualitySaving || !reportQualityIssueDrafts[issue.id].resolution.trim()" :loading="reportQualitySaving" @click="resolveReportQualityIssue(issue)">保存处理记录</VanButton>
@@ -229,52 +221,25 @@
                     <small v-else-if="issue.resolution" class="asset-source">处理记录：{{ issue.resolution }}</small>
                   </article>
                   <p v-if="!reportQuality.issues.length && reportQuality.latest_validator_run?.status === 'COMPLETED'" class="quality-clear-state">检查通过，目前没有待处理问题。</p>
-                  <div v-if="currentReportStep?.step_key === 'S6' && currentReportStep.status === 'IN_REVIEW'" class="final-gate-controls">
+                  <div v-if="canEditSelectedReportStep && selectedReportStepKey === 'S6'" class="final-gate-controls">
                     <label><input v-model="finalGateAttested" type="checkbox" :disabled="!reportQuality.can_approve"> 我已复核报告主线、用户贴合度和全部检查记录，并承担最终交付责任。</label>
                     <VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="!reportQuality.can_approve || !finalGateAttested || reportStepSaving" :loading="reportStepSaving" @click="approveReportFinalGate">确认最终复核</VanButton>
                   </div>
-                  <div v-if="reportCase.status === 'READY_TO_DELIVER'" class="final-gate-controls">
+                  <div v-if="selectedReportStepKey === 'S6' && reportCase.status === 'READY_TO_DELIVER'" class="final-gate-controls">
                     <strong>最终复核已通过</strong>
                     <VanButton class="primary-button compact-button deliver-button" type="primary" native-type="button" :disabled="!reportQuality.can_approve || reportCaseDelivering" :loading="reportCaseDelivering" @click="deliverReportCaseVersion">{{ reportCaseDelivering ? '交付中…' : '生成并交付版本' }}</VanButton>
                   </div>
                   <p v-else-if="reportCase.status === 'DELIVERED'" class="quality-clear-state">报告已交付，版本快照不可覆盖。</p>
                 </section>
 
-                <section id="report-section-context" v-show="workspaceSection === 'context'" class="report-data-panel">
-                  <div class="panel-heading"><div><p class="eyebrow">用户情境</p><h3>本次申请资料</h3></div></div>
-                  <h4 class="context-subheading">申请时留存的出生档案</h4>
-                  <dl class="context-values"><div v-for="item in reportProfileItems" :key="item.title"><dt>{{ item.title }}</dt><dd>{{ item.body }}</dd></div></dl>
-                  <p v-if="!reportProfileItems.length" class="empty-cell">申请快照没有保存完整出生档案。</p>
-                  <h4 class="context-subheading">用户本次提出的情况</h4>
-                  <dl class="context-values"><div v-for="item in reportContextItems" :key="item.key"><dt>{{ item.title }}</dt><dd>{{ item.body }}</dd></div></dl>
-                  <p v-if="!reportContextItems.length" class="empty-cell">本次申请没有补充额外情境信息。</p>
+                <section v-if="workspaceSection === 'suggestions'" class="report-data-panel" aria-label="本节点技能建议">
+                  <AnalysisDraftsPanel :key="selectedReportStepKey" :runs="reportAnalysisRuns" :content="reportCaseContent" :step-key="selectedReportStepKey" :current-step="canEditSelectedReportStep ? currentReportStep : null" :read-only="!canEditSelectedReportStep" :saving="Boolean(reportAnalysisFindingSavingKey || reportAnalysisFragmentSavingKey)" :saving-finding-key="reportAnalysisFindingSavingKey" :saving-fragment-key="reportAnalysisFragmentSavingKey" @apply-finding="applyReportAnalysisFinding" @apply-fragment="applyReportAnalysisFragment" />
                 </section>
-                <section id="report-section-evidence" v-show="workspaceSection === 'evidence'" class="report-data-panel">
-                  <div class="panel-heading"><div><p class="eyebrow">资料依据</p><h3>可供审核参考的资料</h3></div><span>{{ reportEvidenceItems.length }} 项</span></div>
-                  <div v-if="!reportEvidenceItems.length" class="empty-cell">当前没有可用的资料依据。</div>
-                  <article v-for="evidence in reportEvidenceItems" :key="evidence.id" class="case-evidence-item">
-                    <div><strong>{{ evidenceLabel(evidence) }}</strong><span>{{ evidenceSourceLabel(evidence.source_type) }} · {{ assetStatusLabel(evidence.status) }}</span></div>
-                    <p>{{ evidenceSummary(evidence) }}</p>
-                    <details v-if="evidence.source_ref" class="snapshot-details"><summary>查看来源说明</summary><p>{{ humanizeReference(evidence.source_ref) }}</p></details>
-                  </article>
-                </section>
-
-                <section id="report-section-findings" v-show="workspaceSection === 'findings'" class="report-data-panel report-asset-panel">
-                  <AnalysisDraftsPanel
-                    v-if="currentReportStep && ['S1', 'S2', 'S3', 'S4'].includes(currentReportStep.step_key) && currentReportStep.status === 'IN_REVIEW'"
-                    :runs="reportAnalysisRuns"
-                    :content="reportCaseContent"
-                    :step-key="currentReportStep.step_key"
-                    :current-step="currentReportStep"
-                    :saving="Boolean(reportAnalysisFindingSavingKey || reportAnalysisFragmentSavingKey)"
-                    :saving-finding-key="reportAnalysisFindingSavingKey"
-                    :saving-fragment-key="reportAnalysisFragmentSavingKey"
-                    @apply-finding="applyReportAnalysisFinding"
-                    @apply-fragment="applyReportAnalysisFragment"
-                  />
-                  <div class="panel-heading"><div><p class="eyebrow">专业判断</p><h3>逐条审核判断</h3></div><span>{{ reportCaseContent.findings.length }} 条 · 确认后用于后续写作</span></div>
-                  <article v-for="finding in reportCaseContent.findings" :key="finding.id" class="finding-item">
-                    <template v-if="editingFindingKey === finding.finding_key && reportFindingDraft">
+                <section id="report-section-findings" v-if="workspaceSection === 'findings'" class="report-data-panel report-asset-panel">
+                  <div class="panel-heading"><div><p class="eyebrow">专业判断</p><h3>逐条审核判断</h3></div><span>{{ nodeFindings.length }} 条本节点判断 · 确认后用于后续写作</span></div>
+                  <WorkbenchRecordPicker v-model="nodeRecordKeys.findings" :items="nodeFindings" key-field="finding_key" title-field="claim" label="选择判断" />
+                  <article v-for="finding in visibleNodeFindings" :key="finding.id" class="finding-item">
+                    <template v-if="canEditSelectedReportStep && editingFindingKey === finding.finding_key && reportFindingDraft">
                       <div class="finding-editor">
                         <label>判断内容<textarea v-model.trim="reportFindingDraft.claim" rows="3" maxlength="5000"></textarea></label>
                       <div class="form-grid two"><label>判断类别<select v-model="reportFindingDraft.semantic_role"><option v-if="!semanticRoleOptions.some(role => role.value === reportFindingDraft.semantic_role)" :value="reportFindingDraft.semantic_role">其他类别</option><option v-for="role in semanticRoleOptions" :key="role.value" :value="role.value">{{ role.label }}</option></select></label><label>把握程度<select v-model="reportFindingDraft.confidence"><option value="LOW">较低</option><option value="MEDIUM">一般</option><option value="HIGH">较高</option></select></label></div>
@@ -287,15 +252,16 @@
                       <div class="asset-item-heading"><div><strong>{{ semanticRoleLabel(finding.semantic_role) }}</strong><span class="asset-status">{{ assetStatusLabel(finding.status) }}</span></div><small>{{ confidenceLabel(finding.confidence) }}把握 · {{ importanceLabel(finding.importance) }}</small></div>
                       <p>{{ finding.claim }}</p>
                       <small class="asset-source">参考依据：{{ evidenceTitles(finding.evidence_refs) || '暂未关联资料' }}</small>
-                      <div v-if="currentReportStep?.status === 'IN_REVIEW'" class="asset-actions">
+                      <div v-if="canEditSelectedReportStep" class="asset-actions">
                         <VanButton class="secondary-button compact-button" type="default" plain native-type="button" @click="editReportFinding(finding)">修改</VanButton>
                         <VanButton v-if="finding.status !== 'CONFIRMED'" class="primary-button compact-button" type="primary" native-type="button" :disabled="reportFindingSaving" @click="setReportFindingStatus(finding, 'CONFIRMED')">接受</VanButton>
                         <VanButton v-if="finding.status !== 'REJECTED'" class="text-button danger-text" type="danger" plain native-type="button" :disabled="reportFindingSaving" @click="setReportFindingStatus(finding, 'REJECTED')">拒绝</VanButton>
                       </div>
                     </template>
                   </article>
-                  <p v-if="!reportCaseContent.findings.length" class="empty-cell">暂无专业判断，可以在当前步骤新增。</p>
-                  <form v-if="currentReportStep?.status === 'IN_REVIEW'" class="new-asset-form" @submit.prevent="addReportFinding">
+                  <p v-if="!nodeFindings.length" class="empty-cell">暂无专业判断，可以在当前步骤新增。</p>
+                  <VanButton v-if="canEditSelectedReportStep" plain native-type="button" @click="showNodeAddForm = !showNodeAddForm">{{ showNodeAddForm ? '收起补充表单' : '人工补充本节点内容' }}</VanButton>
+                  <form v-if="canEditSelectedReportStep && showNodeAddForm" class="new-asset-form" @submit.prevent="addReportFinding">
                     <h4>新增专业判断</h4>
                     <label>判断类别<select v-model="newReportFinding.semantic_role"><option v-for="role in semanticRoleOptions" :key="role.value" :value="role.value">{{ role.label }}</option></select></label>
                     <label>判断内容<textarea v-model.trim="newReportFinding.claim" rows="3" maxlength="5000"></textarea></label>
@@ -304,20 +270,22 @@
                   </form>
                 </section>
 
-                <section id="report-section-fragments" v-show="workspaceSection === 'fragments'" class="report-data-panel report-asset-panel">
-                  <div class="panel-heading"><div><p class="eyebrow">报告内容</p><h3>报告段落</h3></div><span>{{ reportCaseContent.fragments.length }} 段</span></div>
-                  <article v-for="fragment in reportCaseContent.fragments" :key="fragment.id" class="fragment-item">
+                <section id="report-section-fragments" v-if="workspaceSection === 'fragments'" class="report-data-panel report-asset-panel">
+                  <div class="panel-heading"><div><p class="eyebrow">报告内容</p><h3>{{ ['S5','S6'].includes(selectedReportStepKey) ? '逐段审阅报告正文' : '本节点分析内容' }}</h3></div><span>{{ nodeFragments.length }} 项</span></div>
+                  <WorkbenchRecordPicker v-model="nodeRecordKeys.fragments" :items="nodeFragments" key-field="fragment_key" title-field="title" label="选择内容" />
+                  <article v-for="fragment in visibleNodeFragments" :key="fragment.id" class="fragment-item">
                     <div class="asset-item-heading"><div><strong>{{ fragmentTitle(fragment.fragment_key, fragment) }}</strong><span class="asset-status">{{ assetStatusLabel(fragment.status) }}</span></div><small>{{ editKindLabel(fragment.edit_kind) }}</small></div>
-                    <label>标题<input v-model.trim="reportFragmentDrafts[fragment.fragment_key].title" :disabled="currentReportStep?.status !== 'IN_REVIEW' || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"></label>
-                    <label>正文<textarea v-model="reportFragmentDrafts[fragment.fragment_key].content" rows="5" :disabled="currentReportStep?.status !== 'IN_REVIEW' || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"></textarea></label>
-                    <div class="form-grid two"><label>修改范围<select v-model="reportFragmentDrafts[fragment.fragment_key].edit_kind" :disabled="currentReportStep?.status !== 'IN_REVIEW' || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"><option value="STYLE">只调整表达方式</option><option value="SEMANTIC">调整内容含义</option></select></label><label>审核结果<select v-model="reportFragmentDrafts[fragment.fragment_key].status" :disabled="currentReportStep?.status !== 'IN_REVIEW' || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"><option value="PROPOSED">待确认</option><option value="CONFIRMED">已确认</option></select></label></div>
+                    <label>标题<input v-model.trim="reportFragmentDrafts[fragment.fragment_key].title" :disabled="!canEditSelectedReportStep || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"></label>
+                    <label>正文<textarea v-model="reportFragmentDrafts[fragment.fragment_key].content" rows="5" :disabled="!canEditSelectedReportStep || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"></textarea></label>
+                    <div class="form-grid two"><label>修改范围<select v-model="reportFragmentDrafts[fragment.fragment_key].edit_kind" :disabled="!canEditSelectedReportStep || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"><option value="STYLE">只调整表达方式</option><option value="SEMANTIC">调整内容含义</option></select></label><label>审核结果<select v-model="reportFragmentDrafts[fragment.fragment_key].status" :disabled="!canEditSelectedReportStep || (fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')"><option value="PROPOSED">待确认</option><option value="CONFIRMED">已确认</option></select></label></div>
                     <p class="asset-source">关联依据：{{ findingTitles(reportFragmentDrafts[fragment.fragment_key].finding_refs) || '待补充' }}<template v-if="reportFragmentDrafts[fragment.fragment_key].evidence_refs"> · {{ evidenceTitles(reportFragmentDrafts[fragment.fragment_key].evidence_refs) }}</template></p>
                     <div v-if="fragment.stale_reason" class="stale-note">前序内容已有调整，这段报告需要重新审核后才能使用。</div>
-                    <div v-if="currentReportStep?.status === 'IN_REVIEW' && !(fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')" class="asset-actions"><VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportFragmentSaving" :loading="reportFragmentSaving" @click="saveReportFragment(fragment)">保存新版本</VanButton></div>
+                    <div v-if="canEditSelectedReportStep && !(fragment.fragment_type === 'REPORT' && fragment.status === 'STALE')" class="asset-actions"><VanButton class="primary-button compact-button" type="primary" native-type="button" :disabled="reportFragmentSaving" :loading="reportFragmentSaving" @click="saveReportFragment(fragment)">保存新版本</VanButton></div>
                   </article>
-                  <p v-if="!reportCaseContent.fragments.length" class="empty-cell">暂无报告内容，可以在当前步骤新增。</p>
-                  <form v-if="currentReportStep?.status === 'IN_REVIEW'" class="new-asset-form" @submit.prevent="addReportFragment">
-                    <h4>新增报告内容</h4>
+                  <p v-if="!nodeFragments.length" class="empty-cell">暂无本节点内容，请先运行对应技能。</p>
+                  <VanButton v-if="canEditSelectedReportStep && ['S1', 'S2', 'S3', 'S4'].includes(selectedReportStepKey)" plain native-type="button" @click="showNodeAddForm = !showNodeAddForm">{{ showNodeAddForm ? '收起补充表单' : '人工补充本节点分析' }}</VanButton>
+                  <form v-if="canEditSelectedReportStep && ['S1', 'S2', 'S3', 'S4'].includes(selectedReportStepKey) && showNodeAddForm" class="new-asset-form" @submit.prevent="addReportFragment">
+                    <h4>新增分析内容</h4>
                     <label>标题<input v-model.trim="newReportFragment.title" maxlength="240"></label>
                     <label>正文<textarea v-model.trim="newReportFragment.content" rows="5" maxlength="30000"></textarea></label>
                     <fieldset class="reference-picker"><legend>关联已确认判断</legend><label v-for="finding in reportCaseContent.findings.filter(item => item.status === 'CONFIRMED')" :key="finding.id"><input type="checkbox" :checked="hasReference(newReportFragment.finding_refs, finding.finding_key)" @change="toggleReference(newReportFragment, 'finding_refs', finding.finding_key, $event)"><span>{{ finding.claim }}</span></label><small v-if="!reportCaseContent.findings.some(item => item.status === 'CONFIRMED')">当前没有已确认的判断。</small></fieldset>

@@ -44,7 +44,11 @@ export default {
         { expected_revision_no: expectedRevisionNo }
       )
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '建议判断已加入待审核列表，确认后才会用于后续报告。'
+      if (this.nodeRecordKeys) {
+        this.nodeRecordKeys.findings = candidate.finding_key
+        this.setReportWorkspaceSection('findings')
+      }
+      this.message = '建议判断已加入待审核列表，请修改、接受或拒绝；确认后才会用于后续报告。'
     } catch (error) {
       this.message = error.response?.status === 409
         ? '专业判断已有更新，内容已刷新，请核对后再应用。'
@@ -76,7 +80,11 @@ export default {
         { expected_revision_no: expectedRevisionNo }
       )
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = '建议内容已加入待审核列表。'
+      if (this.nodeRecordKeys) {
+        this.nodeRecordKeys.fragments = candidate.fragment_key
+        this.setReportWorkspaceSection('fragments')
+      }
+      this.message = '建议内容已加入待审核列表，请审阅并确认。'
     } catch (error) {
       this.message = error.response?.status === 409
         ? '分析内容已有更新，内容已刷新，请核对后再应用。'

@@ -3,7 +3,7 @@
     <div class="analysis-drafts-heading">
       <div>
         <p class="eyebrow">本步骤的辅助建议</p>
-        <h4>建议内容与人工审核</h4>
+        <h3>建议内容与人工审核</h3>
       </div>
       <span>{{ stageRuns.length }} 份建议记录</span>
     </div>
@@ -13,7 +13,8 @@
       还没有本步骤的建议。开始处理后，可以生成一份基于用户情境和前序已确认内容的参考意见。
     </div>
 
-    <article v-for="run in stageRuns" :key="run.id" class="analysis-run">
+    <label v-if="stageRuns.length" class="analysis-run-select">技能运行记录<select v-model="activeRunId"><option v-for="(record, index) in stageRuns" :key="record.id" :value="String(record.id)">记录 {{ stageRuns.length - index }} · {{ formatDate(record.created_at) }} · {{ runStatusLabel(record.status) }}</option></select></label>
+    <article v-for="run in visibleRuns" :key="run.id" class="analysis-run">
       <header class="analysis-run-header">
         <div>
           <strong>分析建议</strong>
@@ -27,6 +28,7 @@
         {{ run.status === 'PENDING' ? '正在准备分析建议…' : '正在生成分析建议…' }}
       </div>
       <template v-else-if="run.status === 'COMPLETED' && run.output_parsed">
+        <details class="analysis-run-context"><summary>生成摘要与注意事项 · {{ run.output_parsed.risk_flags?.length || 0 }} 项提示</summary>
         <p class="analysis-run-summary">{{ consultantText(run.output_parsed.summary, '分析建议已生成，请查看下方内容并结合资料审核。') }}</p>
         <div v-if="run.output_parsed.risk_flags?.length" class="analysis-risk-list">
           <strong>需要留意</strong>
@@ -35,9 +37,12 @@
           </p>
         </div>
 
-        <div v-if="run.output_parsed.findings?.length" class="analysis-candidate-group">
-          <h5>候选专业判断 · {{ run.output_parsed.findings.length }}</h5>
-          <article v-for="candidate in run.output_parsed.findings" :key="candidate.finding_key" class="analysis-candidate">
+        </details>
+        <div class="candidate-kind"><VanButton plain native-type="button" :aria-pressed="candidateKind==='findings'" @click="candidateKind='findings'; selectedCandidateKey=''">判断建议</VanButton><VanButton plain native-type="button" :aria-pressed="candidateKind==='fragments'" @click="candidateKind='fragments'; selectedCandidateKey=''">分析建议</VanButton></div>
+        <WorkbenchRecordPicker v-model="selectedCandidateKey" :items="candidateKind==='findings' ? (run.output_parsed.findings || []) : (run.output_parsed.analysis_fragments || [])" :key-field="candidateKind==='findings' ? 'finding_key' : 'fragment_key'" :title-field="candidateKind==='findings' ? 'claim' : 'title'" label="选择技能建议" />
+        <div v-if="candidateKind==='findings' && run.output_parsed.findings?.length" class="analysis-candidate-group">
+          <h4>当前判断建议</h4>
+          <article v-for="candidate in selectedCandidates(run.output_parsed.findings, 'finding_key')" :key="candidate.finding_key" class="analysis-candidate">
             <div class="analysis-candidate-title">
               <strong>{{ candidate.kind === 'SIGNAL' ? '待验证线索' : '专业判断建议' }}</strong>
               <span>{{ candidate.kind === 'SIGNAL' ? '需要更多资料验证' : '需要咨询师审核' }}</span>
@@ -54,7 +59,8 @@
               <ul><li v-for="key in candidate.evidence_refs" :key="key">{{ evidenceLabel(key) }}</li></ul>
             </details>
             <div class="analysis-candidate-action">
-              <span v-if="isAppliedFinding(run, candidate)" class="analysis-applied-state">已加入待审核判断</span>
+              <span v-if="readOnly" class="analysis-applied-state">历史建议，仅供查看</span>
+              <span v-else-if="isAppliedFinding(run, candidate)" class="analysis-applied-state">{{ appliedStatus(currentFinding(candidate.finding_key)?.status) }}</span>
               <span v-else-if="hasForeignFindingOwner(candidate)" class="analysis-blocked-state">前序步骤已有相同判断，请查看已确认内容，避免重复添加。</span>
               <span v-else-if="!consultantText(candidate.claim, '')" class="analysis-blocked-state">这条建议暂时无法用中文展示，请重新生成后再审核。</span>
               <VanButton
@@ -73,15 +79,16 @@
           </article>
         </div>
 
-        <div v-if="run.output_parsed.analysis_fragments?.length" class="analysis-candidate-group">
-          <h5>候选分析片段 · {{ run.output_parsed.analysis_fragments.length }}</h5>
-          <article v-for="candidate in run.output_parsed.analysis_fragments" :key="candidate.fragment_key" class="analysis-candidate analysis-fragment-candidate">
+        <div v-if="candidateKind==='fragments' && run.output_parsed.analysis_fragments?.length" class="analysis-candidate-group">
+          <h4>当前分析建议</h4>
+          <article v-for="candidate in selectedCandidates(run.output_parsed.analysis_fragments, 'fragment_key')" :key="candidate.fragment_key" class="analysis-candidate analysis-fragment-candidate">
             <div class="analysis-candidate-title"><strong>{{ consultantText(candidate.title, '分析内容建议') }}</strong><span>报告内容</span></div>
             <p>{{ consultantText(candidate.content, '这段建议暂时无法用中文展示，请重新生成后再审核。') }}</p>
-            <small class="analysis-candidate-source">关联 {{ candidate.finding_refs?.length || 0 }} 条已确认判断和 {{ candidate.evidence_refs?.length || 0 }} 项资料依据</small>
+            <small class="analysis-candidate-source">关联 {{ candidate.finding_refs?.length || 0 }} 条专业判断和 {{ candidate.evidence_refs?.length || 0 }} 项资料依据</small>
             <div class="analysis-candidate-action">
-              <span v-if="isAppliedFragment(run, candidate)" class="analysis-applied-state">已加入待审核内容</span>
-              <span v-else-if="missingFragmentFindings(candidate).length" class="analysis-blocked-state">需先审核相关专业判断，再加入这段内容。</span>
+              <span v-if="readOnly" class="analysis-applied-state">历史建议，仅供查看</span>
+              <span v-else-if="isAppliedFragment(run, candidate)" class="analysis-applied-state">{{ appliedStatus(currentFragment(candidate.fragment_key)?.status) }}</span>
+              <span v-else-if="missingFragmentFindings(candidate).length" class="analysis-blocked-state">需先将相关判断加入审核列表，再加入这段内容。</span>
               <span v-else-if="hasForeignFragmentOwner(candidate)" class="analysis-blocked-state">前序步骤已有相同内容，请查看原有内容，避免重复添加。</span>
               <span v-else-if="!consultantText(candidate.content, '')" class="analysis-blocked-state">这段建议暂时无法用中文展示，请重新生成后再审核。</span>
               <VanButton
@@ -110,13 +117,16 @@
 
 <script>
 import { Button as VanButton } from 'vant'
+import WorkbenchRecordPicker from './WorkbenchRecordPicker.vue'
 import { reportEvidenceTitle } from '../workbench-inputs.js'
 import { formatDate } from '../../service-requests/formatters.js'
 
 export default {
   name: 'AnalysisDraftsPanel',
-  components: { VanButton },
+  components: { VanButton, WorkbenchRecordPicker },
+  data: () => ({ selectedRunId: '', selectedCandidateKey: '', candidateKind: 'findings' }),
   props: {
+    readOnly: Boolean,
     runs: { type: Array, default: () => [] },
     content: { type: Object, required: true },
     stepKey: { type: String, default: '' },
@@ -128,6 +138,8 @@ export default {
   emits: ['apply-finding', 'apply-fragment'],
   methods: {
     formatDate,
+    appliedStatus(status) { return ({CONFIRMED:'已加入并确认',REJECTED:'已加入并拒绝',STALE:'已加入，需重新审核'})[status] || '已加入，待审核' },
+    selectedCandidates(items, field) { const item = (items || []).find(row => row[field] === this.selectedCandidateKey) || items?.[0]; return item ? [item] : [] },
     runStatusLabel(status) {
       return { PENDING: '正在准备', RUNNING: '正在生成', COMPLETED: '已生成', FAILED: '暂时失败' }[status] || '处理中'
     },
@@ -137,7 +149,7 @@ export default {
     },
     consultantText(value, fallback = '请结合相关资料进一步核对。') {
       const text = String(value || '').trim()
-      return text && !/[A-Za-z]{2,}/.test(text) ? text : fallback
+      return text && /[\u3400-\u9fff]/.test(text) ? text : fallback
     },
     semanticRoleLabel(role) {
       return {
@@ -184,8 +196,11 @@ export default {
     }
   },
   computed: {
+    activeRunId: { get() { return String(this.visibleRuns[0]?.id || '') }, set(value) { this.selectedRunId=value; this.selectedCandidateKey='' } },
+    visibleRuns() { const run = this.stageRuns.find(item => String(item.id) === this.selectedRunId) || this.stageRuns[0]; return run ? [run] : [] },
     stageRuns() {
       return this.runs
+        .filter(run => !this.currentStep || run.context_snapshot?.analysis_activation_no === this.currentStep.activation_no)
         .filter(run => run.target_type === 'REPORT_ANALYSIS_DRAFT' && run.target_key === this.stepKey)
         .sort((left, right) => right.id - left.id)
     },

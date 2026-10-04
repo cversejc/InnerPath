@@ -20,7 +20,7 @@
   align-items: center;
 }
 
-.analysis-drafts-heading h4 {
+.analysis-drafts-heading h3 {
   margin: 0;
   color: var(--ink);
   font-size: 16px;
@@ -255,3 +255,10 @@
     flex-direction: column;
   }
 }
+
+.analysis-run-select { display:grid;gap:var(--space-2);font-size:var(--text-body-sm); }
+.analysis-run-select select { min-width:0;width:100%;min-height:var(--touch-target);padding:var(--space-3);border:1px solid var(--line);border-radius:var(--button-radius);background:var(--paper-soft);color:var(--ink);font:inherit;font-size:var(--text-body); }
+.candidate-kind { display:flex;gap:var(--space-2);margin-top:var(--space-4); }
+.candidate-kind [aria-pressed="true"] { border-color:var(--cinnabar);color:var(--cinnabar-deep); }
+
+.analysis-run-context summary { cursor:pointer;min-height:var(--touch-target);padding:var(--space-3) 0;color:var(--gold-deep); }

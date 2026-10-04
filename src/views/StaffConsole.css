@@ -302,3 +302,8 @@
   .report-workspace-nav button { min-height: 46px; padding: 0 11px; font-size: 13px; }
   .reference-picker { grid-template-columns: 1fr; }
 }
+
+.node-writing-modes { display:flex;flex-wrap:wrap;gap:var(--space-2);margin:var(--space-4) 0; }
+.node-writing-modes [aria-pressed="true"] { border-color:var(--cinnabar);color:var(--cinnabar-deep); }
+.node-source-details { margin:var(--space-3) 0; }
+.node-source-details summary { min-height:var(--touch-target);cursor:pointer;color:var(--cinnabar-deep); }
