@@ -1,9 +1,9 @@
 import { hasRole } from '../../stores/auth.js'
 import AccountSettingsPanel from './components/AccountSettingsPanel.vue'
 import DecisionCalendarPanel from './components/DecisionCalendarPanel.vue'
+import ProfileSettingsPanel from './components/ProfileSettingsPanel.vue'
 import ReportsPanel from './components/ReportsPanel.vue'
 import RequestsPanel from './components/RequestsPanel.vue'
-import ProfileGrowthCard from '../../components/ProfileGrowthCard.vue'
 import { createEmptyProfile } from '../users/profile.js'
 import accountMethods from './methods/account.js'
 import dashboardMethods from './methods/dashboard.js'
@@ -14,7 +14,7 @@ export default {
   components: {
     AccountSettingsPanel,
     DecisionCalendarPanel,
-    ProfileGrowthCard,
+    ProfileSettingsPanel,
     ReportsPanel,
     RequestsPanel
   },
@@ -29,20 +29,27 @@ export default {
         { id: 'reports', icon: 'reports', label: '报告' },
         { id: 'calendar', icon: 'calendar', label: '日历' },
         { id: 'requests', icon: 'document', label: '我的申请' },
-        { id: 'settings', icon: 'settings', label: '设置' }
+        { id: 'profile', icon: 'person', label: '本人画像' },
+        { id: 'settings', icon: 'settings', label: '账号设置' }
       ],
       reports: [],
       requests: [],
       settings: createEmptyProfile(),
-      profileCompletion: 0,
-      profileLastConfirmedAt: null,
       optionalProfileExpanded: false,
       settingsErrors: {},
       settingsError: '',
+      accountPhone: '',
+      phoneChangeForm: { newPhone: '', code: '', currentPassword: '' },
+      phoneChangeError: '',
+      phoneChangeMessage: '',
+      requestingPhoneCode: false,
+      savingPhoneChange: false,
       passwordForm: { current: '', next: '' },
       savingSettings: false,
       savingPassword: false,
-      loggingOut: false
+      loggingOut: false,
+      deactivating: false,
+      deactivationError: ''
     }
   },
   computed: {
@@ -51,7 +58,7 @@ export default {
     }
   },
   async mounted() {
-    if (['reports', 'calendar', 'settings'].includes(this.$route.query.tab)) {
+    if (['reports', 'calendar', 'profile', 'settings'].includes(this.$route.query.tab)) {
       this.activeTab = this.$route.query.tab
     }
     await this.loadDashboard()

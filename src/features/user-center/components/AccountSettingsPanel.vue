@@ -1,27 +1,82 @@
 <template>
   <section id="user-panel-settings" class="content-section" role="tabpanel" aria-labelledby="user-tab-settings" tabindex="0">
-    <h3 class="section-title">个人档案与账户设置</h3>
-    <form class="settings-form" @submit.prevent="$emit('save-settings')">
-      <ProfileFields
-        :model-value="settings"
-        id-prefix="user-profile"
-        :show-optional="true"
-        :optional-collapsible="true"
-        :optional-expanded="optionalProfileExpanded"
-        :errors="settingsErrors"
-        @update:model-value="$emit('update:settings', $event)"
-        @update:optional-expanded="$emit('update:optionalProfileExpanded', $event)"
-      />
-      <div class="form-group account-contact-field">
-        <label for="user-contact">账户联系方式</label>
-        <input id="user-contact" :value="settings.contact" type="tel" autocomplete="tel" readonly>
-        <p class="form-hint">联系方式由账户系统管理，不会发送给报告分析模型</p>
+    <h3 class="section-title">账号设置</h3>
+
+    <section class="settings-section account-info-section" aria-labelledby="account-info-title">
+      <div class="settings-section-heading">
+        <h4 id="account-info-title">登录账号</h4>
+        <p>手机号用于登录。更换时需要验证新手机号并输入当前密码。</p>
       </div>
-      <VanButton type="primary" native-type="submit" class="btn-save" :disabled="savingSettings" :aria-busy="savingSettings">{{ savingSettings ? '保存中…' : '保存个人档案' }}</VanButton>
-      <p v-if="settingsError" class="settings-error" role="alert">{{ settingsError }}</p>
-    </form>
-    <form class="password-form" @submit.prevent="$emit('save-password')">
-      <h4>修改密码</h4>
+      <div class="current-phone-card">
+        <span>当前手机号</span>
+        <strong>{{ maskedPhone }}</strong>
+      </div>
+      <form class="account-form" @submit.prevent="$emit('save-phone-change')">
+        <div class="form-group">
+          <label for="new-account-phone">新手机号</label>
+          <input
+            id="new-account-phone"
+            :value="phoneChangeForm.newPhone"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="tel"
+            maxlength="11"
+            required
+            @input="updatePhoneChange('newPhone', $event.target.value)"
+          >
+        </div>
+        <div class="form-group">
+          <label for="phone-change-code">短信验证码</label>
+          <div class="verification-control">
+            <input
+              id="phone-change-code"
+              :value="phoneChangeForm.code"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="6"
+              required
+              @input="updatePhoneChange('code', $event.target.value)"
+            >
+            <VanButton
+              type="default"
+              plain
+              native-type="button"
+              class="btn-code"
+              :disabled="requestingPhoneCode || !phoneChangeForm.newPhone"
+              :aria-busy="requestingPhoneCode"
+              @click="$emit('request-phone-code')"
+            >
+              {{ requestingPhoneCode ? '发送中…' : '获取验证码' }}
+            </VanButton>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="phone-change-password">当前密码</label>
+          <input
+            id="phone-change-password"
+            :value="phoneChangeForm.currentPassword"
+            type="password"
+            minlength="8"
+            maxlength="128"
+            autocomplete="current-password"
+            required
+            @input="updatePhoneChange('currentPassword', $event.target.value)"
+          >
+        </div>
+        <p v-if="phoneChangeError" class="settings-error" role="alert">{{ phoneChangeError }}</p>
+        <p v-if="phoneChangeMessage" class="settings-success" role="status">{{ phoneChangeMessage }}</p>
+        <VanButton type="primary" native-type="submit" class="btn-save" :disabled="savingPhoneChange" :aria-busy="savingPhoneChange">
+          {{ savingPhoneChange ? '更新中…' : '更新手机号' }}
+        </VanButton>
+      </form>
+    </section>
+
+    <form class="settings-section password-form" @submit.prevent="$emit('save-password')">
+      <div class="settings-section-heading">
+        <h4>修改密码</h4>
+        <p>请使用不与其他网站共用的新密码，并妥善保管。</p>
+      </div>
       <div class="form-group">
         <label for="current-password">当前密码</label>
         <input id="current-password" :value="passwordForm.current" type="password" minlength="8" maxlength="128" required autocomplete="current-password" @input="updatePassword('current', $event.target.value)">
@@ -30,11 +85,14 @@
         <label for="new-password">新密码</label>
         <input id="new-password" :value="passwordForm.next" type="password" minlength="8" maxlength="128" required autocomplete="new-password" @input="updatePassword('next', $event.target.value)">
       </div>
-      <VanButton type="primary" native-type="submit" class="btn-save" :disabled="savingPassword" :aria-busy="savingPassword">{{ savingPassword ? '更新中…' : '更新密码' }}</VanButton>
+      <VanButton type="primary" native-type="submit" class="btn-save" :disabled="savingPassword" :aria-busy="savingPassword">
+        {{ savingPassword ? '更新中…' : '更新密码' }}
+      </VanButton>
     </form>
-    <section class="account-actions" aria-labelledby="account-actions-title">
-      <div>
-        <h4 id="account-actions-title">账号操作</h4>
+
+    <section class="settings-section account-actions" aria-labelledby="account-actions-title">
+      <div class="settings-section-heading">
+        <h4 id="account-actions-title">当前设备</h4>
         <p>退出当前设备上的辰鉴账号</p>
       </div>
       <VanButton type="default" plain native-type="button" class="btn-logout" :disabled="loggingOut" :aria-busy="loggingOut" @click="$emit('logout')">
@@ -42,37 +100,124 @@
         {{ loggingOut ? '退出中…' : '退出登录' }}
       </VanButton>
     </section>
+
+    <section class="settings-section danger-zone" aria-labelledby="deactivate-account-title">
+      <div class="settings-section-heading">
+        <h4 id="deactivate-account-title">注销账号</h4>
+        <p>注销后账号会进入停用状态，你将无法登录。个人资料、报告、申请及相关记录会继续保留，后台仍可查看。</p>
+      </div>
+      <VanButton type="default" plain native-type="button" class="btn-deactivate" :disabled="deactivating" @click="openDeactivationDialog">
+        注销账号
+      </VanButton>
+    </section>
+
+    <VanDialog
+      v-model:show="showDeactivationDialog"
+      title="确认注销账号"
+      :show-confirm-button="false"
+      :show-cancel-button="false"
+      :close-on-click-overlay="false"
+      class="deactivation-dialog"
+    >
+      <div class="deactivation-dialog-content">
+        <p>注销后账号会停用，并退出所有设备；历史资料仍会保留。请输入当前密码继续。</p>
+        <div class="form-group">
+          <label for="deactivation-password">当前密码</label>
+          <input
+            id="deactivation-password"
+            v-model="deactivationPassword"
+            type="password"
+            minlength="8"
+            maxlength="128"
+            autocomplete="current-password"
+            required
+            @input="dialogValidationError = ''"
+          >
+        </div>
+        <p v-if="dialogValidationError || deactivationError" class="settings-error" role="alert">
+          {{ dialogValidationError || deactivationError }}
+        </p>
+        <div class="dialog-actions">
+          <VanButton type="default" plain native-type="button" :disabled="deactivating" @click="closeDeactivationDialog">再想想</VanButton>
+          <VanButton type="danger" native-type="button" :disabled="deactivating" :aria-busy="deactivating" @click="confirmDeactivation">
+            {{ deactivating ? '正在注销…' : '确认注销' }}
+          </VanButton>
+        </div>
+      </div>
+    </VanDialog>
   </section>
 </template>
 
 <script>
-import { Button as VanButton } from 'vant'
-import ProfileFields from '../../../components/ProfileFields.vue'
+import { Button as VanButton, Dialog as VanDialog } from 'vant'
 
 export default {
   name: 'AccountSettingsPanel',
-  components: { ProfileFields, VanButton },
+  components: { VanButton, VanDialog },
   props: {
-    settings: { type: Object, required: true },
-    optionalProfileExpanded: { type: Boolean, default: false },
-    settingsErrors: { type: Object, default: () => ({}) },
-    settingsError: { type: String, default: '' },
+    accountPhone: { type: String, default: '' },
+    phoneChangeForm: { type: Object, required: true },
+    phoneChangeError: { type: String, default: '' },
+    phoneChangeMessage: { type: String, default: '' },
+    requestingPhoneCode: { type: Boolean, default: false },
+    savingPhoneChange: { type: Boolean, default: false },
     passwordForm: { type: Object, required: true },
-    savingSettings: { type: Boolean, default: false },
     savingPassword: { type: Boolean, default: false },
-    loggingOut: { type: Boolean, default: false }
+    loggingOut: { type: Boolean, default: false },
+    deactivating: { type: Boolean, default: false },
+    deactivationError: { type: String, default: '' }
   },
   emits: [
-    'update:settings',
-    'update:optionalProfileExpanded',
+    'update:phoneChangeForm',
     'update:passwordForm',
-    'save-settings',
+    'request-phone-code',
+    'save-phone-change',
     'save-password',
-    'logout'
+    'logout',
+    'deactivate-account'
   ],
+  data() {
+    return {
+      showDeactivationDialog: false,
+      deactivationPassword: '',
+      dialogValidationError: ''
+    }
+  },
+  computed: {
+    maskedPhone() {
+      const phone = String(this.accountPhone || '')
+      return phone.length === 11 ? `${phone.slice(0, 3)}****${phone.slice(-4)}` : phone || '未设置'
+    }
+  },
   methods: {
+    updatePhoneChange(field, value) {
+      this.$emit('update:phoneChangeForm', { ...this.phoneChangeForm, [field]: value })
+    },
     updatePassword(field, value) {
       this.$emit('update:passwordForm', { ...this.passwordForm, [field]: value })
+    },
+    openDeactivationDialog() {
+      this.dialogValidationError = ''
+      this.showDeactivationDialog = true
+      this.$nextTick(() => document.getElementById('deactivation-password')?.focus())
+    },
+    closeDeactivationDialog() {
+      if (this.deactivating) return
+      this.showDeactivationDialog = false
+      this.deactivationPassword = ''
+      this.dialogValidationError = ''
+    },
+    confirmDeactivation() {
+      this.dialogValidationError = ''
+      if (!this.deactivationPassword) {
+        this.dialogValidationError = '请输入当前密码。'
+        return
+      }
+      if (this.deactivationPassword.length < 8) {
+        this.dialogValidationError = '当前密码至少需要 8 位。'
+        return
+      }
+      this.$emit('deactivate-account', this.deactivationPassword)
     }
   }
 }

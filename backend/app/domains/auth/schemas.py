@@ -42,6 +42,19 @@ class ChangePasswordRequest(BaseModel):
     new_password: str = Field(..., min_length=8, max_length=128)
 
 
+class PhoneChangeCodeRequest(BaseModel):
+    new_phone: str = Field(..., min_length=11, max_length=11, pattern=r"^\d{11}$")
+
+
+class PhoneChangeRequest(PhoneChangeCodeRequest):
+    code: str = Field(..., min_length=6, max_length=6, pattern=r"^\d{6}$")
+    current_password: str = Field(..., min_length=8, max_length=128)
+
+
+class DeactivateAccountRequest(BaseModel):
+    current_password: str = Field(..., min_length=8, max_length=128)
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"

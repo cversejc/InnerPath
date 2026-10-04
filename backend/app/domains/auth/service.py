@@ -90,6 +90,29 @@ async def revoke_all_auth_sessions(db: AsyncSession, user_id: int) -> None:
     await db.commit()
 
 
+async def change_user_phone(db: AsyncSession, user: User, new_phone: str) -> User:
+    result = await db.execute(select(User).where(User.phone == new_phone, User.id != user.id))
+    if result.scalar_one_or_none():
+        raise ValueError("phone_already_registered")
+    user.phone = new_phone
+    user.phone_verified_at = datetime.utcnow()
+    return user
+
+
+async def deactivate_user_account(db: AsyncSession, user: User) -> None:
+    """Disable an account and revoke its sessions without deleting retained data."""
+    now = datetime.utcnow()
+    user.is_active = False
+    result = await db.execute(
+        select(AuthSession).where(
+            AuthSession.user_id == user.id,
+            AuthSession.revoked_at.is_(None),
+        )
+    )
+    for session in result.scalars().all():
+        session.revoked_at = now
+
+
 async def admin_reset_password(db: AsyncSession, user: User, password: str) -> User:
     user.password_hash = get_password_hash(password)
     user.updated_at = datetime.utcnow()

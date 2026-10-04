@@ -21,10 +21,9 @@ export default {
       }
       this.userName = user.name
       this.userType = user.role === 'admin' ? '管理员' : user.role === 'consultant' ? '咨询师' : '成长探索者'
+      this.accountPhone = user.phone || ''
       this.settings = mapUserToProfile(user)
-      this.profileCompletion = Number(user.profile_completion || 0)
-      this.profileLastConfirmedAt = user.profile_last_confirmed_at || null
-      this.optionalProfileExpanded = this.profileCompletion < 100
+      this.optionalProfileExpanded = Number(user.profile_completion || 0) < 100
       this.reports = (reportResponse.items || []).map(report => ({
         id: report.id,
         title: report.title,

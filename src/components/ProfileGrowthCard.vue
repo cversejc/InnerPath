@@ -3,7 +3,7 @@
     <div class="growth-card-head">
       <div>
         <p class="section-kicker">YOUR PROFILE / LONG-TERM CONTEXT</p>
-        <h2 id="profile-growth-title">{{ safeCompletion >= 100 ? '你的个人档案已准备好' : '让辰鉴逐渐了解你' }}</h2>
+        <h2 id="profile-growth-title">{{ safeCompletion >= 100 ? '本人画像已准备好' : '完善本人画像' }}</h2>
       </div>
       <strong class="growth-percent" :aria-label="`档案完整度 ${safeCompletion}%`">{{ safeCompletion }}%</strong>
     </div>
@@ -23,7 +23,7 @@
       <p>
         {{ safeCompletion >= 100
           ? '以后只在信息发生变化时更新，每次申请都会使用当时的资料快照，历史报告不会被改写'
-          : '这不是一次性问卷，每次愿意补充一小点，之后的报告和日历就会更贴近你' }}
+          : '补充真实、准确的本人资料，之后生成的报告和日历会更贴近你的实际情况' }}
       </p>
       <ul v-if="suggestions.length" class="growth-suggestions" aria-label="可以继续完善的内容">
         <li v-for="suggestion in suggestions" :key="suggestion">{{ suggestion }}</li>
@@ -32,7 +32,7 @@
 
     <div class="growth-card-foot">
       <VanButton native-type="button" class="secondary-button growth-action" @click="$emit('edit')">
-        {{ safeCompletion >= 100 ? '查看 / 更新档案' : '继续完善档案' }}
+        {{ safeCompletion >= 100 ? '查看 / 更新画像' : '完善本人画像' }}
       </VanButton>
       <span v-if="lastConfirmedAt" class="growth-meta">最近确认：{{ formatDate(lastConfirmedAt) }}</span>
       <span v-else class="growth-meta">核心资料确认后即可跨场景复用</span>

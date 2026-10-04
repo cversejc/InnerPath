@@ -2,12 +2,11 @@
   .user-content { padding: var(--space-5) 0 var(--space-7); }
   .content-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
   .sidebar { top: calc(var(--nav-height) + env(safe-area-inset-top, 0px)); z-index: 8; padding: var(--space-2); box-shadow: 0 10px 24px -22px rgba(47, 36, 27, 0.78); }
-  .sidebar-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-1); }
+  .sidebar-nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-1); }
   .nav-item { justify-content: center; flex-direction: column; gap: var(--space-1); min-width: 0; padding: var(--space-2) var(--space-1); text-align: center; }
   .nav-icon { width: 18px; height: 18px; }
   .nav-label { font-size: var(--text-caption); }
   .main-content { min-height: 0; padding: var(--space-5) var(--space-4); }
-  .user-growth-card { margin-bottom: var(--space-4); }
 }
 @media (max-width: 420px) {
   .main-content { padding: var(--space-4) var(--space-3); }

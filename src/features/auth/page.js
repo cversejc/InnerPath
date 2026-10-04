@@ -98,6 +98,9 @@ export default {
   },
   mounted() {
     this.syncRouteMode()
+    if (this.$route.query.notice === 'account-deactivated') {
+      this.successMessage = '账号已停用，历史资料仍会保留。'
+    }
     if (this.showIntro && this.mode === 'login') {
       this.introTimer = window.setTimeout(() => this.dismissIntro(), 1500)
     } else {

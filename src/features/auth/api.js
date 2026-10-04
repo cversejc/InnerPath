@@ -38,3 +38,22 @@ export async function logoutRequest() {
   const response = await apiClient.post('/auth/logout')
   return response.data
 }
+
+export async function requestPhoneChangeCodeRequest(newPhone) {
+  const response = await apiClient.post('/auth/me/phone-change-code', { new_phone: newPhone })
+  return response.data
+}
+
+export async function changePhoneRequest(newPhone, code, currentPassword) {
+  const response = await apiClient.put('/auth/me/phone', {
+    new_phone: newPhone,
+    code,
+    current_password: currentPassword
+  })
+  return response.data
+}
+
+export async function deactivateAccountRequest(currentPassword) {
+  const response = await apiClient.post('/auth/me/deactivate', { current_password: currentPassword })
+  return response.data
+}
