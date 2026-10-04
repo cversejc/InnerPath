@@ -10,13 +10,16 @@ export function buildReportRequest(userData) {
       profile_version: userData.profile_version ? Number(userData.profile_version) : null,
       context: {
         focus_topics: userData.context?.focus_topics || [],
+        focus_topics_other: userData.context?.focus_topics_other?.trim() || null,
         current_challenge: userData.context?.current_challenge?.trim() || null,
         expected_outcomes: userData.context?.expected_outcomes || [],
+        expected_outcomes_other: userData.context?.expected_outcomes_other?.trim() || null,
         issue_duration: userData.context?.issue_duration || null,
         impact_level: userData.context?.impact_level || null,
         decision_status: userData.context?.decision_status || null,
         decision_description: userData.context?.decision_description?.trim() || null,
         decision_style: userData.context?.decision_style || [],
+        decision_style_other: userData.context?.decision_style_other?.trim() || null,
         additional_info: userData.context?.additional_info?.trim() || null
       }
     }
@@ -40,23 +43,29 @@ export function buildReportRequest(userData) {
   }
 }
 
-export async function generateReportWithAI(userData) {
+export async function generateReportWithAI(userData, { onTaskCreated, onProgress } = {}) {
   const task = await createReportTask(buildReportRequest(userData))
-  return pollTaskStatus(task.task_id)
+  onTaskCreated?.(task)
+  return waitForReportTask(task.task_id, { onProgress })
 }
 
-async function pollTaskStatus(taskId, maxAttempts = 120) {
+export async function waitForReportTask(taskId, { maxAttempts = 120, onProgress } = {}) {
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     const task = await getReportTask(taskId)
+    onProgress?.(task)
     if (task.status === 'completed' && task.report_id) {
       return formatReportForFrontend(await getReportDetail(task.report_id))
     }
     if (task.status === 'failed') {
-      throw new Error(task.error || '报告生成失败')
+      const error = new Error(task.error || '报告生成失败')
+      error.code = 'report_task_failed'
+      throw error
     }
     await new Promise(resolve => setTimeout(resolve, 1000))
   }
-  throw new Error('报告生成超时')
+  const error = new Error('报告生成超时')
+  error.code = 'report_task_timeout'
+  throw error
 }
 
 export function formatReportForFrontend(reportData) {

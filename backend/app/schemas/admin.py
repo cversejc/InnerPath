@@ -41,9 +41,11 @@ class AdminUserUpdate(BaseModel):
     strengths: Optional[str] = Field(None, max_length=500)
     limitations: Optional[str] = Field(None, max_length=500)
     mingli_experience: Optional[list[str]] = Field(None, max_length=3)
+    mingli_experience_other: Optional[str] = Field(None, max_length=500)
     mingli_attitude: Optional[str] = Field(None, max_length=30)
     preferred_content_depth: Optional[str] = Field(None, max_length=30)
     default_usage_scenarios: Optional[list[str]] = Field(None, max_length=6)
+    default_usage_scenarios_other: Optional[str] = Field(None, max_length=500)
     avatar_url: Optional[str] = None
 
 

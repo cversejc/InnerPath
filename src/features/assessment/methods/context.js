@@ -10,6 +10,7 @@ export default {
     if (index >= 0) topics.splice(index, 1)
     else if (topics.length < 3) topics.push(topicId)
     this.contextDraft.focus_topics = topics
+    if (!topics.includes('other')) this.contextDraft.focus_topics_other = ''
     if (topics.length) delete this.contextErrors.focus_topics
   },
   toggleExpectedOutcome(value) {
@@ -18,6 +19,7 @@ export default {
     if (index >= 0) outcomes.splice(index, 1)
     else if (outcomes.length < 7) outcomes.push(value)
     this.contextDraft.expected_outcomes = outcomes
+    if (!outcomes.includes('其他')) this.contextDraft.expected_outcomes_other = ''
     if (outcomes.length) delete this.contextErrors.expected_outcomes
   },
   toggleDecisionStyle(value) {
@@ -26,6 +28,7 @@ export default {
     if (index >= 0) styles.splice(index, 1)
     else if (styles.length < 6) styles.push(value)
     this.contextDraft.decision_style = styles
+    if (!styles.includes('other')) this.contextDraft.decision_style_other = ''
   },
   validateContextField(field) {
     if (field === 'current_challenge' && String(this.contextDraft.current_challenge || '').trim()) {

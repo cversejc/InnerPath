@@ -29,8 +29,8 @@ defineExpose({ focusStepHeading })
   <div class="step-content form-panel">
     <div class="step-heading">
       <p class="section-kicker">STEP 01</p>
-      <h2 ref="stepHeading" tabindex="-1">{{ hasExistingProfile ? '确认你的个人档案' : '建立你的个人档案' }}</h2>
-      <p>{{ hasExistingProfile ? '档案会用于后续报告与日历申请。你可以只修改发生变化的内容。' : '核心资料用于建立命理基础，画像信息先填你愿意分享的部分。' }}</p>
+      <h2 ref="stepHeading" tabindex="-1">{{ hasExistingProfile ? '确认你的个人档案' : '填写你的个人档案' }}</h2>
+      <p>档案资料用于生成人生说明书和决策日历，确认后仍可修改。</p>
       <div v-if="draftRestored || draftStatus" class="draft-status" role="status" aria-live="polite">
         <span class="draft-status-dot" aria-hidden="true"></span>
         <span>{{ draftRestored ? '已恢复上次未完成的草稿，你可以继续编辑。' : draftStatus }}</span>
@@ -54,13 +54,17 @@ defineExpose({ focusStepHeading })
         :aria-expanded="showOptionalProfile"
         @click="emit('update:show-optional-profile', !showOptionalProfile)"
       >
-        <span>{{ showOptionalProfile ? '收起个人画像选填项' : '完善个人画像（选填，之后可修改）' }}</span>
+        <span class="fold-toggle-copy">
+          <strong>完善个人画像</strong>
+          <small>选填，提供的信息越丰富，人生地图越清晰</small>
+        </span>
+        <span class="fold-toggle-action">{{ showOptionalProfile ? '收起' : '开始填写' }}</span>
         <span aria-hidden="true">{{ showOptionalProfile ? '−' : '+' }}</span>
       </VanButton>
 
       <div class="privacy-note">
         <span class="privacy-mark" aria-hidden="true">私</span>
-        <p>姓名和出生资料只用于你的账户服务。当前困惑、关系和身心状态不会自动写入长期档案。</p>
+        <p>基本信息和个人画像仅用于你的账号服务，不作其他用途。</p>
       </div>
 
       <div v-if="profileErrorSummary.length" class="error-summary" role="alert" aria-live="assertive">

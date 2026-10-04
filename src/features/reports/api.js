@@ -10,6 +10,11 @@ export async function getReportTask(taskId) {
   return response.data
 }
 
+export async function getLatestReportTask() {
+  const response = await apiClient.get('/reports/tasks/latest')
+  return response.data
+}
+
 export async function getUserReports(page = 1, size = 10) {
   const response = await apiClient.get('/reports', { params: { page, size } })
   return response.data

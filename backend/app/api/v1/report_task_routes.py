@@ -11,6 +11,7 @@ from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.user import User
 from app.domains.reports.schemas import (
+    LatestReportTaskResponse,
     ReportCreate,
     ReportTaskResponse,
     ReportTaskStatusResponse,
@@ -23,6 +24,7 @@ from app.services.intake_service import (
 )
 from app.domains.reports.task_service import (
     create_report_task,
+    get_latest_report_task,
     get_report_task,
     get_report_task_by_id,
 )
@@ -144,6 +146,23 @@ async def create_report(
         task_id=task_id,
         status="processing",
         estimated_time=60,
+    )
+
+
+@router.get("/tasks/latest", response_model=LatestReportTaskResponse)
+async def get_latest_report_task_status(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    task = await get_latest_report_task(db, current_user.id)
+    if task is None:
+        return LatestReportTaskResponse()
+    return LatestReportTaskResponse(
+        task_id=task.task_id,
+        status=task.status,
+        report_id=task.report_id,
+        progress=task.progress,
+        error=task.error,
     )
 
 

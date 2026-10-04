@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Button as VanButton } from 'vant'
+import IconMark from '../../../components/IconMark.vue'
 import ProfileSummary from '../../../components/ProfileSummary.vue'
 
 const props = defineProps({
@@ -14,6 +15,7 @@ const props = defineProps({
   expectedOutcomeOptions: { type: Array, default: () => [] },
   formMessage: { type: String, default: '' },
   lastContext: { type: Object, default: null },
+  latestReportStatus: { type: String, default: 'none' },
   profile: { type: Object, required: true },
   profileLastConfirmedAt: { type: String, default: null },
   profileVersion: { type: Number, default: 1 },
@@ -24,6 +26,7 @@ const props = defineProps({
 
 const emit = defineEmits([
   'edit-profile',
+  'open-latest-report',
   'reuse-context',
   'submit-assessment',
   'toggle-advanced-context',
@@ -57,7 +60,7 @@ defineExpose({ focusStepHeading })
     <div class="step-heading">
       <p class="section-kicker">STEP 02</p>
       <h2 ref="stepHeading" tabindex="-1">这一次，你想看什么</h2>
-      <p>当前问题只属于本次报告。每次申请都可以换一个问题，不会覆盖你的个人档案。</p>
+      <p>当前页面收集的信息只用于生成本次说明书，不会写入个人档案。</p>
       <div v-if="draftRestored || draftStatus" class="draft-status" role="status" aria-live="polite">
         <span class="draft-status-dot" aria-hidden="true"></span>
         <span>{{ draftRestored ? '已恢复上次未完成的草稿，你可以继续编辑。' : draftStatus }}</span>
@@ -65,6 +68,38 @@ defineExpose({ focusStepHeading })
     </div>
 
     <ProfileSummary :profile="profile" :profile-version="profileVersion" :last-confirmed-at="profileLastConfirmedAt" @edit="emit('edit-profile')" />
+
+    <section
+      v-if="latestReportStatus !== 'none'"
+      class="latest-report-status"
+      :class="`latest-report-status--${latestReportStatus}`"
+      aria-labelledby="latest-report-status-title"
+    >
+      <div class="latest-report-status-copy">
+        <span class="mini-label">人生说明书进度</span>
+        <h3 id="latest-report-status-title">
+          {{ latestReportStatus === 'processing' ? '已提交申请' : latestReportStatus === 'completed' ? '说明书已生成' : '上次申请未完成' }}
+        </h3>
+        <p role="status" aria-live="polite">
+          {{ latestReportStatus === 'processing'
+            ? '正在等待生成你的专属人生说明书。'
+            : latestReportStatus === 'completed'
+              ? '最近一份人生说明书已准备好，可以打开查看。'
+              : '上次生成没有完成。你可以重新填写本次问题并再次提交。' }}
+        </p>
+      </div>
+      <VanButton
+        v-if="latestReportStatus === 'processing' || latestReportStatus === 'completed'"
+        type="primary"
+        native-type="button"
+        class="primary-button latest-report-status-action"
+        :aria-busy="latestReportStatus === 'processing'"
+        @click="emit('open-latest-report')"
+      >
+        <template #icon><IconMark :name="latestReportStatus === 'processing' ? 'hourglass' : 'document'" /></template>
+        {{ latestReportStatus === 'processing' ? '生成中' : '查看报告' }}
+      </VanButton>
+    </section>
 
     <div v-if="lastContext" class="reuse-context-card">
       <div>
@@ -74,8 +109,6 @@ defineExpose({ focusStepHeading })
       <VanButton type="default" native-type="button" class="secondary-button small-button" @click="emit('reuse-context')">沿用上次背景并编辑</VanButton>
     </div>
     <p v-if="contextMessage" class="context-message" role="status">{{ contextMessage }}</p>
-    <p class="context-scope-note">本次困惑、关系和身心状态只用于这份申请，默认不会写入长期档案。</p>
-
     <form class="assessment-form context-form" novalidate @submit.prevent="emit('submit-assessment')">
       <fieldset class="form-group choice-fieldset" :aria-describedby="contextErrors.focus_topics ? 'assessment-focus-topics-error' : undefined">
         <legend class="form-label">当前最关注的生活领域 <span class="required">*</span> <span class="form-hint">最多选择 3 项</span> <span class="selection-count">{{ contextDraft.focus_topics.length }}/3</span></legend>
@@ -94,6 +127,10 @@ defineExpose({ focusStepHeading })
             <strong>{{ topic.title }}</strong>
             <small>{{ topic.desc }}</small>
           </VanButton>
+        </div>
+        <div v-if="contextDraft.focus_topics.includes('other')" class="form-group other-detail-field">
+          <label class="form-label" for="assessment-focus-topics-other">补充其他关注领域（选填）</label>
+          <textarea id="assessment-focus-topics-other" :value="contextDraft.focus_topics_other" rows="2" maxlength="500" placeholder="写下你想关注的其他领域" @input="updateField('focus_topics_other', $event.target.value)"></textarea>
         </div>
         <p v-if="contextErrors.focus_topics" id="assessment-focus-topics-error" class="field-error" role="alert">{{ contextErrors.focus_topics }}</p>
       </fieldset>
@@ -115,6 +152,10 @@ defineExpose({ focusStepHeading })
             <input type="checkbox" :checked="contextDraft.expected_outcomes.includes(outcome.value)" @change="emit('toggle-expected-outcome', outcome.value)">
             <span>{{ outcome.label }}</span>
           </label>
+        </div>
+        <div v-if="contextDraft.expected_outcomes.includes('其他')" class="form-group other-detail-field">
+          <label class="form-label" for="assessment-expected-outcomes-other">补充其他期待（选填）</label>
+          <textarea id="assessment-expected-outcomes-other" :value="contextDraft.expected_outcomes_other" rows="2" maxlength="500" placeholder="写下你希望从说明书中获得的其他帮助" @input="updateField('expected_outcomes_other', $event.target.value)"></textarea>
         </div>
         <p v-if="contextErrors.expected_outcomes" id="assessment-expected-outcomes-error" class="field-error" role="alert">{{ contextErrors.expected_outcomes }}</p>
       </fieldset>
@@ -167,6 +208,10 @@ defineExpose({ focusStepHeading })
                 <span>{{ style.label }}</span>
               </label>
             </div>
+            <div v-if="contextDraft.decision_style.includes('other')" class="form-group other-detail-field">
+              <label class="form-label" for="assessment-decision-style-other">补充其他决策方式（选填）</label>
+              <textarea id="assessment-decision-style-other" :value="contextDraft.decision_style_other" rows="2" maxlength="500" placeholder="写下你通常会采用的其他方式" @input="updateField('decision_style_other', $event.target.value)"></textarea>
+            </div>
           </fieldset>
           <div class="form-group field-wide">
             <label class="form-label" for="assessment-additional-info">还想告诉我们的事</label>
@@ -185,7 +230,6 @@ defineExpose({ focusStepHeading })
       </div>
       <p v-if="formMessage" class="form-message" role="alert" aria-live="assertive">{{ formMessage }}</p>
       <div class="button-row form-submit-bar">
-        <VanButton type="default" native-type="button" class="secondary-button" @click="emit('edit-profile')">修改档案</VanButton>
         <VanButton type="primary" native-type="submit" class="primary-button" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '生成我的说明书' }}</VanButton>
       </div>
     </form>

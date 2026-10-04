@@ -40,7 +40,7 @@ function listIncludes(field, value) {
         <p class="section-kicker">OPTIONAL PORTRAIT</p>
         <h3 id="profile-optional-title">完善个人画像</h3>
       </div>
-      <p>选填信息会作为稳定背景复用；当前困惑、关系和身心状态只放在本次申请里</p>
+      <p>选填信息会作为生成人生说明书和决策日历的参考，可重复修改，以最终填写版本为准</p>
     </div>
 
     <div class="profile-optional-grid">
@@ -174,6 +174,22 @@ function listIncludes(field, value) {
             </VanCell>
           </VanCellGroup>
         </VanCheckboxGroup>
+        <div v-if="listIncludes('mingli_experience', 'other')" class="profile-field profile-other-detail">
+          <label class="profile-label" :for="idPrefix + '-mingli-experience-other'">补充其他命理体验 <span class="optional">选填</span></label>
+          <VanField
+            :id="idPrefix + '-mingli-experience-other'"
+            class="profile-van-field"
+            :model-value="profile.mingli_experience_other || ''"
+            name="mingli_experience_other"
+            type="textarea"
+            rows="2"
+            maxlength="500"
+            autosize
+            placeholder="简单说说你接触过的其他形式"
+            :border="false"
+            @update:model-value="emit('set-field', 'mingli_experience_other', $event)"
+          />
+        </div>
       </fieldset>
 
       <fieldset class="profile-field profile-choice-fieldset">
@@ -254,6 +270,22 @@ function listIncludes(field, value) {
             </VanCell>
           </VanCellGroup>
         </VanCheckboxGroup>
+        <div v-if="listIncludes('default_usage_scenarios', 'other')" class="profile-field profile-other-detail">
+          <label class="profile-label" :for="idPrefix + '-usage-scenarios-other'">补充其他使用场景 <span class="optional">选填</span></label>
+          <VanField
+            :id="idPrefix + '-usage-scenarios-other'"
+            class="profile-van-field"
+            :model-value="profile.default_usage_scenarios_other || ''"
+            name="default_usage_scenarios_other"
+            type="textarea"
+            rows="2"
+            maxlength="500"
+            autosize
+            placeholder="写下你希望使用说明书或日历的其他场景"
+            :border="false"
+            @update:model-value="emit('set-field', 'default_usage_scenarios_other', $event)"
+          />
+        </div>
       </fieldset>
     </div>
   </section>

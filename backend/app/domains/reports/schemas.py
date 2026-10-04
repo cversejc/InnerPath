@@ -9,13 +9,16 @@ class ReportContext(BaseModel):
     """Per-request context; deliberately separate from the reusable profile."""
 
     focus_topics: List[str] = Field(default_factory=list, max_length=3)
+    focus_topics_other: Optional[str] = Field(None, max_length=500)
     current_challenge: Optional[str] = Field(None, max_length=2000)
     expected_outcomes: List[str] = Field(default_factory=list, max_length=7)
+    expected_outcomes_other: Optional[str] = Field(None, max_length=500)
     issue_duration: Optional[str] = Field(None, max_length=50)
     impact_level: Optional[str] = Field(None, max_length=50)
     decision_status: Optional[str] = Field(None, max_length=50)
     decision_description: Optional[str] = Field(None, max_length=1000)
     decision_style: List[str] = Field(default_factory=list, max_length=6)
+    decision_style_other: Optional[str] = Field(None, max_length=500)
     additional_info: Optional[str] = Field(None, max_length=2000)
 
 
@@ -64,6 +67,14 @@ class ReportTaskStatusResponse(BaseModel):
     status: str  # processing/completed/failed
     report_id: Optional[int] = None
     report_data: Optional[Dict[str, Any]] = None
+    progress: int = 0
+    error: Optional[str] = None
+
+
+class LatestReportTaskResponse(BaseModel):
+    task_id: Optional[str] = None
+    status: str = "none"
+    report_id: Optional[int] = None
     progress: int = 0
     error: Optional[str] = None
 

@@ -65,6 +65,20 @@ Legacy Markdown supports headings, bold text, unordered lists and horizontal rul
 Escape raw HTML before formatting. Do not pass report text directly to `v-html` or
 inject untrusted markup.
 
+## Online Reader Navigation
+
+The web reader presents the cover, foreword, contents, each report section and an
+available summary as individual reader pages. Its directory shows the page number
+within that reader sequence; selecting an entry opens that page, and clicking outside
+the directory closes it. Readers can also advance from the page surface, use the
+previous/next controls or arrow and Page Up/Page Down keys, and enter a page number to
+jump directly. Keep controls keyboard-accessible and retain visible focus states.
+
+Reader page numbers describe this online sequence, not physical PDF pages. A long
+section may flow across multiple printed pages, so the printed contents page remains
+an ordered list without page numbers. Print must show every report page even when the
+web reader has one page selected.
+
 ## Visual Hierarchy
 
 - Use the existing paper, ink, gold and dark closing-page colors defined by

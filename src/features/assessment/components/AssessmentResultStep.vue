@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Button as VanButton } from 'vant'
+import IconMark from '../../../components/IconMark.vue'
 
 defineProps({
   genStep: { type: Number, default: 0 },
@@ -21,8 +22,8 @@ defineExpose({ focusStepHeading })
 <template>
   <div class="step-content form-panel">
     <div v-if="isGenerating" class="generating">
-      <div class="loading-compass" aria-hidden="true"></div>
-      <h2 ref="stepHeading" tabindex="-1">正在为你生成专属报告</h2>
+      <div class="generating-hourglass" aria-hidden="true"><IconMark name="hourglass" /></div>
+      <h2 ref="stepHeading" tabindex="-1">已提交申请，等待生成你的专属人生说明书</h2>
       <p>你的个人特质、当下处境与关注的议题，正在汇成一张更清晰的自我地图。</p>
       <div class="generating-steps">
         <div class="gen-step" :class="{ active: genStep >= 1 }">认识你的起点</div>
