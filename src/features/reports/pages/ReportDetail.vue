@@ -6,6 +6,7 @@
       <div class="container">
         <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
         <h1>辰鉴·人生说明书</h1>
+        <p v-if="staffView" class="report-meta">已交付最终报告 · 与用户收到的正文一致</p>
         <div class="report-meta">
           <span>生成日期：{{ report.basicInfo?.reportDate || '今天' }}</span>
           <span class="divider">|</span>
@@ -33,7 +34,7 @@
           :content-without-foundation="contentWithoutFoundation"
         />
 
-        <div class="report-actions">
+        <div v-if="report && !staffView" class="report-actions">
           <VanButton type="primary" native-type="button" class="btn-action primary" @click="goToCalendar">
             <template #icon><IconMark class="icon" name="calendar" /></template>
             基于这份报告生成决策日历
@@ -51,6 +52,7 @@ import { Button as VanButton } from 'vant'
 import { getReportDetail } from '../api.js'
 import ReportContent from '../components/ReportContent.vue'
 import { normalizeReportData, parseLegacyReportContent } from '../report-content.js'
+import { hasRole } from '../../../stores/auth'
 
 export default {
   name: 'ReportDetail',
@@ -66,6 +68,9 @@ export default {
   },
   async mounted() {
     await this.loadReport()
+  },
+  computed: {
+    staffView() { return hasRole('admin', 'consultant') }
   },
   methods: {
     async loadReport() {
@@ -87,7 +92,10 @@ export default {
       }
     },
     goBack() {
-      this.$router.go(-1)
+      const requestId = Number(this.$route.query.request_id)
+      if (this.staffView && Number.isSafeInteger(requestId) && requestId > 0) {
+        this.$router.push({ path: '/staff', query: { request_id: String(requestId), section: 'overview' } })
+      } else this.$router.go(-1)
     },
     goToCalendar() {
       const reportId = Number(this.$route.query.id)

@@ -69,6 +69,7 @@
           </div>
 
           <div v-else-if="workspace" class="workspace-content">
+            <DeliveredReportSummary :request="workspace.request" @view-analysis="setReportWorkspaceSection('overview')" />
             <div v-if="admin" class="assignment-row">
               <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving" @change="assignConsultant"><option :value="null">未分配</option><option v-for="consultant in consultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
               <small>管理员可改派；改派不会覆盖已有版本。</small>

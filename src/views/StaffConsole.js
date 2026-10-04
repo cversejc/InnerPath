@@ -21,6 +21,7 @@ import reportCaseMethods from '../features/service-requests/methods/report-case.
 import reportAnalysisMethods from '../features/service-requests/methods/report-analysis.js'
 import ReportNodeWorkbench from '../features/report-cases/components/ReportNodeWorkbench.vue'
 import AnalysisDraftsPanel from '../features/report-cases/components/AnalysisDraftsPanel.vue'
+import DeliveredReportSummary from '../features/report-cases/components/DeliveredReportSummary.vue'
 import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
 import {
   buildApplicationContextItems,
@@ -33,15 +34,15 @@ import { confirmAction } from '../utils/confirmAction.js'
 
 export default {
   name: 'StaffConsole',
-  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel },
+  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, DeliveredReportSummary },
   data() {
     const admin = hasRole('admin')
     return {
       admin,
       scope: admin ? 'all' : 'mine',
       scopeOptions: admin
-        ? [{ id: 'all', label: '全部申请' }, { id: 'available', label: '待接单' }, { id: 'mine', label: '我的处理中' }]
-        : [{ id: 'mine', label: '我的处理中' }, { id: 'available', label: '待接单' }],
+        ? [{ id: 'all', label: '全部申请' }, { id: 'available', label: '待接单' }, { id: 'mine', label: '我的报告' }]
+        : [{ id: 'mine', label: '我的报告' }, { id: 'available', label: '待接单' }],
       serviceType: 'report',
       statusFilter: '',
       statusOptions: ['submitted', 'accepted', 'ai_processing', 'ai_ready', 'reviewing', 'needs_info', 'failed', 'delivered'],
