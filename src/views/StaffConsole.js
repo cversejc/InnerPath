@@ -220,6 +220,7 @@ export default {
     skillStudioLocation() {
       const query = { return_to: this.$route.fullPath }
       if (this.reportCase?.id) query.case_id = String(this.reportCase.id)
+      if (this.selectedReportStepKey) query.step = this.selectedReportStepKey
       return { path: '/skills', query }
     }
   },

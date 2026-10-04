@@ -4,9 +4,10 @@
 
 .run-detail .eyebrow {
   color: var(--gold-deep);
-  font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--text-body-sm);
 }
+.run-detail summary { display: flex; align-items: center; min-height: var(--touch-target); color: var(--cinnabar-deep); cursor: pointer; }
+@media (max-width: 600px) { .run-detail input, .run-detail select, .run-detail textarea { font-size: var(--text-body); } }
 
 .run-detail h3 {
   margin-top: 3px;

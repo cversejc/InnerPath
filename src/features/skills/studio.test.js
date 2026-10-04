@@ -13,7 +13,7 @@ test('specification editor reports malformed and non-object JSON', () => {
 
 test('trace view omits absent fields and includes provider metadata', () => {
   assert.deepEqual(formatTrace({ provider: 'deepseek', latency_ms: 23 }), [
-    ['Provider', 'deepseek'],
+    ['模型服务', 'deepseek'],
     ['耗时', '23 ms']
   ])
 })

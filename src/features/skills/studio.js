@@ -16,7 +16,7 @@ export function parseSpecification(text) {
   try {
     const value = JSON.parse(text)
     if (!value || Array.isArray(value) || typeof value !== 'object') {
-      return { value: null, error: 'Skill 配置必须是 JSON 对象。' }
+      return { value: null, error: '技能配置必须是 JSON 对象。' }
     }
     return { value, error: '' }
   } catch (error) {
@@ -26,15 +26,15 @@ export function parseSpecification(text) {
 
 export function formatTrace(trace = {}) {
   return [
-    ['Provider', trace.provider],
-    ['Model', trace.model],
-    ['输入 Tokens', trace.input_tokens],
-    ['输出 Tokens', trace.output_tokens],
+    ['模型服务', trace.provider],
+    ['模型名称', trace.model],
+    ['输入用量', trace.input_tokens],
+    ['输出用量', trace.output_tokens],
     ['估算成本', trace.estimated_cost],
     ['耗时', Number.isFinite(trace.latency_ms) ? `${trace.latency_ms} ms` : null],
     ['完成原因', trace.finish_reason],
     ['策略版本', trace.global_policy_version],
-    ['Prompt 摘要', trace.prompt_sha256]
+    ['提示词摘要', trace.prompt_sha256]
   ].filter(([, value]) => value !== null && value !== undefined && value !== '')
 }
 

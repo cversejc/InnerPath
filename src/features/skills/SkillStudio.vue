@@ -1,361 +1,328 @@
 <template>
   <div class="skill-studio-shell">
-    <BrandNav />
     <main class="skill-studio-main">
       <header class="studio-heading">
-        <div>
-          <p class="section-kicker">AI PRODUCTION / SKILL STUDIO</p>
-          <h1>Skill Studio</h1>
-          <p v-if="!isAdmin && caseId">Case #{{ caseId }}</p>
-        </div>
-        <div class="studio-heading-actions">
-          <router-link class="secondary-button compact-button" :to="studioReturnLocation">返回工作台</router-link>
-          <VanButton v-if="isAdmin" class="secondary-button compact-button" type="default" plain :disabled="loading" @click="loadVersions">刷新</VanButton>
-        </div>
+        <router-link
+          class="secondary-button compact-button"
+          :to="studioReturnLocation"
+          >返回咨询工作台</router-link
+        >
+        <h1>技能与示例工作台</h1>
+        <span>{{ isAdmin ? "管理员维护" : "咨询师参考" }}</span>
       </header>
-
-      <p v-if="message" class="studio-message" :class="{ error: messageKind === 'error' }" role="status" aria-live="polite">{{ message }}</p>
-
-      <template v-if="isAdmin">
-        <nav class="studio-tabs" aria-label="Skill Studio">
-          <button type="button" role="tab" :aria-selected="activeAdminTab === 'skills'" :class="{ selected: activeAdminTab === 'skills' }" @click="activeAdminTab = 'skills'">Skills</button>
-          <button type="button" role="tab" :aria-selected="activeAdminTab === 'examples'" :class="{ selected: activeAdminTab === 'examples' }" @click="activeAdminTab = 'examples'">Examples</button>
-          <button type="button" role="tab" :aria-selected="activeAdminTab === 'evaluation'" :class="{ selected: activeAdminTab === 'evaluation' }" @click="activeAdminTab = 'evaluation'">Evaluation</button>
-        </nav>
-
-        <template v-if="activeAdminTab === 'skills'">
-        <section class="studio-toolbar" aria-label="技能版本">
-          <div class="version-heading"><div><p class="eyebrow">VERSIONS</p><h2>Skill 版本</h2></div><VanButton class="primary-button compact-button" type="primary" :disabled="saving || !selectedVersion" :loading="saving" @click="createDraft">从当前版本创建草稿</VanButton></div>
-          <div class="version-list" role="list">
-            <button v-for="version in versions" :key="version.id" type="button" role="listitem" class="version-row" :class="{ selected: selectedVersion?.id === version.id }" @click="selectVersion(version)">
-              <span><strong>{{ version.name }}</strong><small>{{ version.skill_key }} · v{{ version.version }}</small></span>
-              <span class="version-state" :class="`state-${version.status.toLowerCase()}`">{{ VERSION_STATUS_LABELS[version.status] || version.status }}</span>
+      <p
+        v-if="message"
+        class="studio-message"
+        :class="{ error: messageKind === 'error' }"
+        role="status"
+      >
+        {{ message }}
+      </p>
+      <div class="studio-workspace">
+        <aside class="skill-catalog" aria-label="咨询流程技能">
+          <h2>咨询流程技能</h2>
+          <p>按报告节点维护方法与示例</p>
+          <label class="mobile-skill-select"
+            >选择技能<select
+              :value="selectedSkillKey"
+              @change="selectSkill($event.target.value)"
+            >
+              <option
+                v-for="skill in catalog"
+                :key="skill.key"
+                :value="skill.key"
+              >
+                {{ skill.node }} · {{ skill.name }}
+              </option>
+            </select></label
+          >
+          <div class="skill-catalog-list">
+            <button
+              v-for="skill in catalog"
+              :key="skill.key"
+              type="button"
+              :aria-pressed="selectedSkillKey === skill.key"
+              :class="{ selected: selectedSkillKey === skill.key }"
+              @click="selectSkill(skill.key)"
+            >
+              <small
+                >{{ skill.step ? `第 ${skill.step.slice(1)} 步 · ` : ""
+                }}{{ skill.node }}</small
+              ><strong>{{ skill.name }}</strong>
             </button>
-            <p v-if="!loading && !versions.length" class="empty-line">暂无 Skill 版本。</p>
           </div>
-        </section>
-
-        <section v-if="selectedVersion" class="studio-grid">
-          <div class="studio-editor">
-            <div class="panel-heading"><div><p class="eyebrow">SPECIFICATION / V{{ selectedVersion.version }}</p><h2>{{ selectedVersion.name }}</h2></div><span class="version-state" :class="`state-${selectedVersion.status.toLowerCase()}`">{{ VERSION_STATUS_LABELS[selectedVersion.status] }}</span></div>
-            <label class="json-label" for="skill-specification">Skill 配置</label>
-            <textarea id="skill-specification" v-model="specificationText" class="json-editor" :readonly="!editable" spellcheck="false"></textarea>
-            <p v-if="specError" class="field-error" role="alert">{{ specError }}</p>
-            <div class="editor-actions">
-              <VanButton v-if="editable" class="secondary-button compact-button" type="default" plain :disabled="saving || !specificationText.trim() || Boolean(specError)" :loading="saving" @click="saveDraft">保存草稿</VanButton>
-              <VanButton v-if="editable" class="primary-button compact-button" type="primary" :disabled="saving || publishing || Boolean(specError) || selectedVersion.status !== 'DRAFT'" :loading="publishing" @click="publish">发布版本</VanButton>
+        </aside>
+        <section class="studio-working-area" aria-label="当前技能工作区">
+          <div class="studio-work-toolbar">
+            <div class="selected-skill-heading">
+              <h2>{{ selectedSkill.name }}</h2>
+              <div v-if="isAdmin" class="version-selector">
+                <label for="studio-version">版本</label
+                ><select
+                  id="studio-version"
+                  :value="selectedVersion?.id || ''"
+                  @change="selectVersionById($event.target.value)"
+                >
+                  <option v-if="!skillVersions.length" value="">
+                    暂无版本
+                  </option>
+                  <option
+                    v-for="version in skillVersions"
+                    :key="version.id"
+                    :value="version.id"
+                  >
+                    第 {{ version.version }} 版 ·
+                    {{ VERSION_STATUS_LABELS[version.status] || "未知状态" }}
+                  </option></select
+                ><VanButton
+                  plain
+                  native-type="button"
+                  :disabled="loading"
+                  @click="loadVersions"
+                  >刷新</VanButton
+                >
+              </div>
+              <span v-else>{{ selectedSkill.node }}节点使用</span>
             </div>
-          </div>
-
-          <aside class="studio-run-panel">
-            <div class="panel-heading"><div><p class="eyebrow">DEBUG RUN</p><h2>试运行</h2></div></div>
-            <label class="json-label" for="skill-input">输入快照</label>
-            <textarea id="skill-input" v-model="inputText" class="json-editor input-editor" spellcheck="false"></textarea>
-            <label class="json-label" for="skill-instruction">本次附加指令</label>
-            <textarea id="skill-instruction" v-model.trim="runtimeInstruction" class="instruction-input" maxlength="4000" rows="3" placeholder="可留空"></textarea>
-            <p v-if="inputError" class="field-error" role="alert">{{ inputError }}</p>
-            <VanButton class="primary-button run-button" type="primary" :disabled="running || selectedVersion.status === 'RETIRED'" :loading="running" @click="startRun">{{ running ? '已加入运行队列' : '运行 Skill' }}</VanButton>
-          </aside>
-        </section>
-
-        <section v-if="selectedVersion" class="runs-section">
-          <div class="panel-heading"><div><p class="eyebrow">RUNS / ISSUES</p><h2>运行记录与问题</h2></div><span>{{ runs.length }} 条</span></div>
-          <div class="runs-layout">
-            <div class="run-list">
-              <button v-for="run in runs" :key="run.id" type="button" class="run-row" :class="{ selected: selectedRun?.id === run.id }" @click="selectRun(run)">
-                <span><strong>Run #{{ run.id }}</strong><small>{{ formatDate(run.created_at) }} · {{ run.model_trace?.model || '等待执行' }}</small></span>
-                <span class="version-state" :class="`state-${run.status.toLowerCase()}`">{{ RUN_STATUS_LABELS[run.status] || run.status }}</span>
+            <nav class="studio-tabs" aria-label="技能工作界面">
+              <button
+                v-for="tab in studioTabs"
+                :key="tab.id"
+                type="button"
+                :aria-pressed="activeAdminTab === tab.id"
+                :class="{ selected: activeAdminTab === tab.id }"
+                @click="changeTab(tab.id)"
+              >
+                {{ tab.label }}
               </button>
-              <p v-if="!runs.length" class="empty-line">该版本还没有运行记录。</p>
-            </div>
-            <RunDetail v-if="selectedRun" :run="selectedRun" :admin="true" />
-            <div v-else class="run-detail-empty">暂无选中的运行记录。</div>
+            </nav>
+          </div>
+          <div
+            ref="workBody"
+            class="studio-work-body"
+            role="region"
+            :aria-label="`${selectedSkill.name}工作内容`"
+            tabindex="0"
+          >
+            <section
+              v-if="activeAdminTab === 'overview'"
+              class="skill-overview"
+            >
+              <p class="studio-intro">
+                这里维护咨询工作台使用的技能方法和参考示例。分析、审核和报告交付在对应报告节点中完成。
+              </p>
+              <dl class="skill-usage">
+                <div>
+                  <dt>使用位置</dt>
+                  <dd>{{ selectedSkill.node }}</dd>
+                </div>
+                <div>
+                  <dt>输入资料</dt>
+                  <dd>{{ selectedSkill.input }}</dd>
+                </div>
+                <div>
+                  <dt>技能产出</dt>
+                  <dd>{{ selectedSkill.output }}</dd>
+                </div>
+                <div>
+                  <dt>咨询师负责</dt>
+                  <dd>{{ selectedSkill.task }}</dd>
+                </div>
+              </dl>
+              <div class="studio-entry-actions">
+                <VanButton
+                  plain
+                  native-type="button"
+                  @click="changeTab('examples')"
+                  >查看参考示例</VanButton
+                ><VanButton
+                  plain
+                  native-type="button"
+                  @click="changeTab('runs')"
+                  >查看运行记录</VanButton
+                ><VanButton
+                  v-if="isAdmin"
+                  plain
+                  native-type="button"
+                  @click="changeTab('skills')"
+                  >维护技能方法</VanButton
+                >
+              </div>
+              <p v-if="!isAdmin">
+                咨询师可查看已发布示例，并从本报告的运行结果推荐经验；管理员负责脱敏审核、版本维护和发布。
+              </p>
+              <details>
+                <summary>技术标识</summary>
+                <code>{{ selectedSkill.key }}</code>
+              </details>
+            </section>
+            <template v-else-if="activeAdminTab === 'skills' && isAdmin">
+              <div class="panel-heading">
+                <h3>技能维护</h3>
+                <VanButton
+                  class="primary-button compact-button"
+                  type="primary"
+                  native-type="button"
+                  :disabled="saving || !selectedVersion"
+                  :loading="saving"
+                  @click="createDraft"
+                  >从当前版本创建草稿</VanButton
+                >
+              </div>
+              <SkillInstructions
+                v-if="selectedVersion"
+                v-model:text="specificationText"
+                :editable="editable"
+                ><VanButton
+                  v-if="editable"
+                  plain
+                  native-type="button"
+                  :disabled="saving || Boolean(specError)"
+                  :loading="saving"
+                  @click="saveDraft"
+                  >保存草稿</VanButton
+                ><VanButton
+                  v-if="editable"
+                  type="primary"
+                  native-type="button"
+                  :disabled="saving || publishing || Boolean(specError)"
+                  :loading="publishing"
+                  @click="publish"
+                  >发布版本</VanButton
+                ></SkillInstructions
+              >
+              <p v-else>当前技能暂无可维护的版本。</p>
+            </template>
+            <ExamplesPanel
+              v-else-if="activeAdminTab === 'examples'"
+              :key="selectedSkillKey"
+              :admin="isAdmin"
+              :skill-key="selectedSkillKey"
+            />
+            <section
+              v-else-if="activeAdminTab === 'debug' && isAdmin"
+              class="studio-run-panel"
+            >
+              <h3>试运行技能</h3>
+              <p>
+                验证当前版本的输出。试运行结果须经过咨询师审核，才能用于实际报告。
+              </p>
+              <label class="json-label" for="skill-input"
+                >测试输入资料（结构化数据）</label
+              ><textarea
+                id="skill-input"
+                v-model="inputText"
+                class="json-editor input-editor"
+                spellcheck="false"
+              ></textarea>
+              <label class="json-label" for="skill-instruction"
+                >本次补充要求</label
+              ><textarea
+                id="skill-instruction"
+                v-model.trim="runtimeInstruction"
+                class="instruction-input"
+                maxlength="4000"
+                rows="3"
+                placeholder="可留空"
+              ></textarea>
+              <p v-if="inputError" class="field-error" role="alert">
+                {{ inputError }}
+              </p>
+              <VanButton
+                class="primary-button"
+                type="primary"
+                native-type="button"
+                :disabled="
+                  running ||
+                  !selectedVersion ||
+                  selectedVersion.status === 'RETIRED' ||
+                  Boolean(inputError)
+                "
+                :loading="running"
+                @click="startRun"
+                >{{ running ? "正在提交" : "开始试运行" }}</VanButton
+              >
+            </section>
+            <EvaluationPanel
+              v-else-if="activeAdminTab === 'evaluation' && isAdmin"
+              :version="selectedVersion"
+              :start-evaluation="startEvaluation"
+            />
+            <section v-else-if="activeAdminTab === 'runs'" class="runs-section">
+              <details
+                v-if="!isAdmin"
+                :open="!caseId"
+                class="consultant-case-lookup"
+              >
+                <summary>
+                  {{
+                    caseId
+                      ? `当前报告案例 ${caseId} · 切换报告`
+                      : "选择已分配的报告案例"
+                  }}
+                </summary>
+                <form @submit.prevent="loadCaseRuns">
+                  <label for="case-id">报告案例编号</label
+                  ><input
+                    id="case-id"
+                    v-model.trim="caseIdDraft"
+                    type="number"
+                    min="1"
+                    required
+                  /><VanButton
+                    type="primary"
+                    native-type="submit"
+                    :disabled="caseLoading"
+                    :loading="caseLoading"
+                    >读取记录</VanButton
+                  >
+                </form>
+              </details>
+              <div class="panel-heading">
+                <h3>本技能运行记录</h3>
+                <span>{{ visibleRuns.length }} 条</span>
+              </div>
+              <label class="run-selector"
+                >选择运行记录<select
+                  :value="selectedRun?.id || ''"
+                  @change="selectRunById($event.target.value)"
+                >
+                  <option v-if="!selectedRun" value="">选择一条记录</option>
+                  <option
+                    v-for="run in visibleRuns"
+                    :key="run.id"
+                    :value="run.id"
+                  >
+                    记录 {{ run.id }} ·
+                    {{ RUN_STATUS_LABELS[run.status] || "未知状态" }} ·
+                    {{ formatDate(run.created_at) }}
+                  </option>
+                </select></label
+              >
+              <RunDetail
+                v-if="selectedRun"
+                :key="selectedRun.id"
+                :run="selectedRun"
+                :admin="isAdmin"
+                :case-id="caseId"
+              />
+              <p v-else>
+                {{
+                  isAdmin
+                    ? "该版本暂无运行记录。"
+                    : caseId
+                      ? "本报告暂无该技能的运行记录，请回到对应节点处理。"
+                      : "先选择已分配的报告，再查看运行结果和推荐经验。"
+                }}
+              </p>
+            </section>
           </div>
         </section>
-        </template>
-
-        <ExamplesPanel v-else-if="activeAdminTab === 'examples'" :admin="true" :skill-key="selectedVersion?.skill_key || ''" />
-        <EvaluationPanel
-          v-else
-          :version="selectedVersion"
-          :start-evaluation="startEvaluation"
-        />
-      </template>
-
-      <template v-else>
-        <section class="consultant-case-lookup" aria-label="报告 Case">
-          <form @submit.prevent="loadCaseRuns">
-            <label for="case-id">已分配报告 Case 编号</label>
-            <input id="case-id" v-model.trim="caseIdDraft" type="number" min="1" required>
-            <VanButton class="primary-button compact-button" type="primary" native-type="submit" :disabled="caseLoading" :loading="caseLoading">查看运行结果</VanButton>
-          </form>
-        </section>
-        <section v-if="caseId" class="runs-section">
-          <div class="panel-heading"><div><p class="eyebrow">ASSIGNED CASE / #{{ caseId }}</p><h2>Skill 运行结果</h2></div><span>{{ runs.length }} 条</span></div>
-          <div class="runs-layout">
-            <div class="run-list">
-              <button v-for="run in runs" :key="run.id" type="button" class="run-row" :class="{ selected: selectedRun?.id === run.id }" @click="selectRun(run)">
-                <span><strong>{{ run.target_key || run.target_type }} · Run #{{ run.id }}</strong><small>{{ formatDate(run.created_at) }} · {{ run.model_trace?.model || '等待执行' }}</small></span>
-                <span class="version-state" :class="`state-${run.status.toLowerCase()}`">{{ RUN_STATUS_LABELS[run.status] || run.status }}</span>
-              </button>
-              <p v-if="!runs.length" class="empty-line">该 Case 暂无 Skill 运行记录。</p>
-            </div>
-            <RunDetail v-if="selectedRun" :run="selectedRun" :admin="false" :case-id="caseId" />
-            <div v-else class="run-detail-empty">暂无选中的运行记录。</div>
-          </div>
-        </section>
-        <section class="published-example-section">
-          <ExamplesPanel :admin="false" />
-        </section>
-      </template>
+      </div>
     </main>
   </div>
 </template>
 
-<script>
-import { Button as VanButton } from 'vant'
-import BrandNav from '../../components/BrandNav.vue'
-import { hasRole } from '../../stores/auth.js'
-import api from './api.js'
-import RunDetail from './components/RunDetail.vue'
-import ExamplesPanel from './components/ExamplesPanel.vue'
-import EvaluationPanel from './components/EvaluationPanel.vue'
-import { parseSpecification, RUN_STATUS_LABELS, sampleInput, VERSION_STATUS_LABELS } from './studio.js'
-
-const POLL_INTERVAL = 2500
-
-export default {
-  name: 'SkillStudio',
-  components: { BrandNav, RunDetail, ExamplesPanel, EvaluationPanel, VanButton },
-  data() {
-    return {
-      isAdmin: hasRole('admin'),
-      versions: [],
-      selectedVersion: null,
-      activeAdminTab: 'skills',
-      specificationText: '',
-      inputText: JSON.stringify(sampleInput(), null, 2),
-      runtimeInstruction: '',
-      runs: [],
-      selectedRun: null,
-      caseId: this.$route.query.case_id ? String(this.$route.query.case_id) : '',
-      caseIdDraft: this.$route.query.case_id ? String(this.$route.query.case_id) : '',
-      loading: false,
-      saving: false,
-      publishing: false,
-      running: false,
-      caseLoading: false,
-      message: '',
-      messageKind: '',
-      pollTimer: null,
-      RUN_STATUS_LABELS,
-      VERSION_STATUS_LABELS
-    }
-  },
-  computed: {
-    studioReturnLocation() {
-      const fallback = this.isAdmin ? '/admin' : '/staff'
-      const target = typeof this.$route.query.return_to === 'string' ? this.$route.query.return_to : ''
-      if (target === '/staff' || target.startsWith('/staff?')) return target
-      if (this.isAdmin && (target === '/admin' || target.startsWith('/admin?'))) return target
-      return fallback
-    },
-    editable() {
-      return this.isAdmin && this.selectedVersion?.status === 'DRAFT'
-    },
-    specError() {
-      return this.editable ? parseSpecification(this.specificationText).error : ''
-    },
-    inputError() {
-      if (!this.isAdmin) return ''
-      try {
-        const parsed = JSON.parse(this.inputText)
-        return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? '' : '输入快照必须是 JSON 对象。'
-      } catch (error) {
-        return `JSON 格式错误：${error.message}`
-      }
-    }
-  },
-  mounted() {
-    if (this.isAdmin) this.loadVersions()
-    else if (this.caseId) this.loadCaseRuns()
-  },
-  beforeUnmount() {
-    this.clearPoll()
-  },
-  methods: {
-    async loadVersions() {
-      this.loading = true
-      try {
-        this.versions = await api.getSkillVersions()
-        const current = this.versions.find(item => item.id === this.selectedVersion?.id) || this.versions[0]
-        if (current) this.selectVersion(current)
-      } catch (error) {
-        this.showMessage(error.response?.data?.detail || '无法读取 Skill 版本。', 'error')
-      } finally {
-        this.loading = false
-      }
-    },
-    selectVersion(version) {
-      this.selectedVersion = version
-      this.specificationText = JSON.stringify(version.specification_json, null, 2)
-      this.selectedRun = null
-      this.loadRuns()
-    },
-    async createDraft() {
-      if (!this.selectedVersion) return
-      this.saving = true
-      try {
-        const created = await api.createSkillVersion({
-          skill_key: this.selectedVersion.skill_key,
-          name: this.selectedVersion.name,
-          category: this.selectedVersion.category,
-          specification_json: this.selectedVersion.specification_json
-        })
-        this.versions.unshift(created)
-        this.selectVersion(created)
-        this.showMessage(`已创建 ${created.skill_key} v${created.version} 草稿。`)
-      } catch (error) {
-        this.showMessage(error.response?.data?.detail || '创建草稿失败。', 'error')
-      } finally {
-        this.saving = false
-      }
-    },
-    async saveDraft(options = {}) {
-      const parsed = parseSpecification(this.specificationText)
-      if (parsed.error) {
-        this.showMessage(parsed.error, 'error')
-        if (options.rethrow) throw new Error(parsed.error)
-        return
-      }
-      this.saving = true
-      try {
-        const updated = await api.updateSkillVersion(this.selectedVersion.id, {
-          name: parsed.value.identity?.name || this.selectedVersion.name,
-          category: this.selectedVersion.category,
-          specification_json: parsed.value
-        })
-        this.replaceVersion(updated)
-        this.showMessage('草稿已保存。')
-        return updated
-      } catch (error) {
-        this.showMessage(error.response?.data?.detail || '保存草稿失败。', 'error')
-        if (options.rethrow) throw error
-      } finally {
-        this.saving = false
-      }
-    },
-    async publish() {
-      const parsed = parseSpecification(this.specificationText)
-      if (parsed.error) return
-      this.publishing = true
-      try {
-        if (this.selectedVersion.status === 'DRAFT') await this.saveDraft({ rethrow: true })
-        const published = await api.publishSkillVersion(this.selectedVersion.id)
-        this.replaceVersion(published)
-        this.showMessage(`已发布 ${published.skill_key} v${published.version}。`)
-      } catch (error) {
-        this.showMessage(error.response?.data?.detail || '发布失败。', 'error')
-      } finally {
-        this.publishing = false
-      }
-    },
-    replaceVersion(version) {
-      this.versions = this.versions.map(item => item.id === version.id ? version : item)
-      this.selectedVersion = version
-      this.specificationText = JSON.stringify(version.specification_json, null, 2)
-    },
-    async startRun() {
-      if (this.inputError || !this.selectedVersion) return
-      this.running = true
-      try {
-        const run = await api.runSkill(this.selectedVersion.id, {
-          idempotency_key: globalThis.crypto?.randomUUID?.() || `studio-${Date.now()}-${Math.random()}`,
-          input_data: JSON.parse(this.inputText),
-          runtime_instruction: this.runtimeInstruction || null
-        })
-        this.selectedRun = run
-        await this.loadRuns()
-        this.startPoll()
-        this.showMessage(`Run #${run.id} 已加入队列。`)
-      } catch (error) {
-        this.showMessage(error.response?.data?.detail || '运行请求失败。', 'error')
-      } finally {
-        this.running = false
-      }
-    },
-    async startEvaluation(caseKeys) {
-      if (!this.selectedVersion) throw new Error('请先选择 Skill 版本。')
-      if (this.editable) await this.saveDraft({ rethrow: true })
-      return api.startSkillEvaluation(this.selectedVersion.id, { case_keys: caseKeys })
-    },
-    async loadRuns() {
-      if (!this.selectedVersion) return
-      try {
-        this.runs = await api.getSkillRuns(this.selectedVersion.id)
-        if (this.selectedRun) this.selectedRun = this.runs.find(run => run.id === this.selectedRun.id) || this.selectedRun
-        if (this.runs.some(run => ['PENDING', 'RUNNING'].includes(run.status))) this.startPoll()
-        else this.clearPoll()
-      } catch (error) {
-        this.showMessage(error.response?.data?.detail || '无法读取运行记录。', 'error')
-      }
-    },
-    selectRun(run) {
-      this.selectedRun = run
-    },
-    async loadCaseRuns() {
-      const id = Number(this.caseIdDraft)
-      if (!Number.isSafeInteger(id) || id < 1) return
-      this.caseLoading = true
-      try {
-        this.caseId = String(id)
-        this.$router.replace({ query: { ...this.$route.query, case_id: String(id) } })
-        this.runs = await api.getCaseSkillRuns(id)
-        this.selectedRun = this.runs[0] || null
-        if (this.runs.some(run => ['PENDING', 'RUNNING'].includes(run.status))) this.startPoll()
-        else this.clearPoll()
-        this.message = ''
-      } catch (error) {
-        this.showMessage(error.response?.data?.detail || '无权查看该 Case 或读取失败。', 'error')
-        this.runs = []
-        this.selectedRun = null
-        this.clearPoll()
-      } finally {
-        this.caseLoading = false
-      }
-    },
-    async refreshCaseRuns() {
-      if (!this.caseId) return
-      try {
-        this.runs = await api.getCaseSkillRuns(Number(this.caseId))
-        if (this.selectedRun) this.selectedRun = this.runs.find(run => run.id === this.selectedRun.id) || this.selectedRun
-        else this.selectedRun = this.runs[0] || null
-        if (!this.runs.some(run => ['PENDING', 'RUNNING'].includes(run.status))) this.clearPoll()
-      } catch (error) {
-        this.showMessage(error.response?.data?.detail || '无法读取运行记录。', 'error')
-        this.clearPoll()
-      }
-    },
-    startPoll() {
-      if (this.pollTimer) return
-      this.pollTimer = window.setInterval(() => {
-        if (this.isAdmin) this.loadRuns()
-        else this.refreshCaseRuns()
-      }, POLL_INTERVAL)
-    },
-    clearPoll() {
-      if (this.pollTimer) window.clearInterval(this.pollTimer)
-      this.pollTimer = null
-    },
-    formatDate(value) {
-      return value ? new Date(value).toLocaleString('zh-CN', { hour12: false }) : '—'
-    },
-    showMessage(message, kind = '') {
-      this.message = message
-      this.messageKind = kind
-    }
-  }
-}
-</script>
+<script src="./studio-workspace.js"></script>
 
 <style scoped src="./studio.css"></style>

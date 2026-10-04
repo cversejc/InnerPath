@@ -9,7 +9,7 @@
           <p>打开报告后，将在独立工作区查看进度并完成当前任务。</p>
         </div>
         <div class="heading-actions">
-          <router-link class="secondary-button compact-button" :to="skillStudioLocation">技能工作室</router-link>
+          <router-link class="secondary-button compact-button" :to="skillStudioLocation">技能与示例工作台</router-link>
           <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading || reportAnalysisPending }"></i>{{ reportAnalysisPending ? '分析建议处理中' : pollingTask ? '内容生成中' : reportCaseLoading ? '正在打开报告' : loading ? '正在同步' : '已同步' }}</span>
           <VanButton class="secondary-button" type="default" plain native-type="button" :disabled="loading" @click="loadRequests">刷新列表</VanButton>
         </div>
@@ -30,7 +30,7 @@
         <div class="workbench-header-actions">
           <VanButton class="secondary-button compact-button workbench-overview-button" type="default" plain native-type="button" aria-label="返回报告处理总览" @click="openReportOverview">回到处理总览</VanButton>
           <span :class="['status-badge', workbenchStatusClass]">{{ workbenchStatusLabel }}</span>
-          <router-link class="secondary-button compact-button" :to="skillStudioLocation">技能工作室</router-link>
+          <router-link class="secondary-button compact-button" :to="skillStudioLocation">技能与示例工作台</router-link>
         </div>
       </header>
 

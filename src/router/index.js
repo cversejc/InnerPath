@@ -30,7 +30,7 @@ const routes = [
   { path: '/pages/about/about', name: 'About', component: loadAbout, meta: { requiresAuth: true, title: '关于辰鉴' } },
   { path: '/admin', name: 'AdminConsole', component: loadAdminConsole, meta: { requiresAuth: true, roles: ['admin'], title: '运营中枢' } },
   { path: '/staff', name: 'StaffConsole', component: loadStaffConsole, meta: { requiresAuth: true, roles: ['admin', 'consultant'], title: '咨询工作台' } },
-  { path: '/skills', name: 'SkillStudio', component: loadSkillStudio, meta: { requiresAuth: true, roles: ['admin', 'consultant'], title: 'Skill Studio' } }
+  { path: '/skills', name: 'SkillStudio', component: loadSkillStudio, meta: { requiresAuth: true, roles: ['admin', 'consultant'], title: '技能与示例工作台' } }
 ]
 
 const router = createRouter({

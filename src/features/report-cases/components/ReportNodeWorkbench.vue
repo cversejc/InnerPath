@@ -200,7 +200,7 @@
             >
           </article>
           <router-link class="node-studio-link" :to="studioLocation"
-            >前往技能工作室查看技能与样例</router-link
+            >前往技能与示例工作台</router-link
           >
           <details v-if="stageRuns.length">
             <summary>本节点运行记录 · {{ stageRuns.length }} 次</summary>
