@@ -147,8 +147,8 @@ shapes for statuses, seals, tags and compact metadata.
 - Keep illustrations concentrated in page headers. Forms, report prose and operational
   data use readable `surface-strong` cards. Seal ornaments are decorative and hidden
   from assistive technology. Existing typography roles and scales remain authoritative.
-- Authentication pairs a landscape introduction with a paper form card on desktop;
-  mobile uses a compact introduction above the form. All actual input text stays at 16px.
+- Authentication retains the previous centered, single-column form layout on a plain
+  paper background. All actual input text stays at 16px.
 
 ### Inputs and forms
 

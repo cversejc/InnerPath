@@ -22,163 +22,154 @@
         </router-link>
       </header>
 
-      <div class="auth-layout">
-        <aside class="auth-story" aria-labelledby="auth-story-title">
-          <p class="section-kicker">A MOMENT FOR YOURSELF</p>
-          <h2 id="auth-story-title">停一停，<br />看见自己的<span>节奏</span></h2>
-          <p class="auth-story-copy">把个人特质、当下处境与现实选择，<br />慢慢整理成一张属于你的人生地图。</p>
-          <div class="auth-story-foot"><span>见自己</span><i aria-hidden="true"></i><span>知其序</span><i aria-hidden="true"></i><span>行其路</span></div>
-        </aside>
-        <main class="auth-card">
-          <header class="auth-head">
-            <p class="section-kicker">YOUR JOURNEY STARTS HERE</p>
-            <h1>{{ title }}</h1>
-            <p class="auth-subtitle">{{ subtitle }}</p>
-          </header>
+      <main class="auth-card">
+        <header class="auth-head">
+          <h1>{{ title }}</h1>
+          <p class="auth-subtitle">{{ subtitle }}</p>
+        </header>
 
-          <p v-if="errorMessage" id="auth-error" class="auth-message error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
-          <p v-if="successMessage" id="auth-success" class="auth-message success" role="status" aria-live="polite">{{ successMessage }}</p>
+        <p v-if="errorMessage" id="auth-error" class="auth-message error" role="alert" aria-live="assertive">{{ errorMessage }}</p>
+        <p v-if="successMessage" id="auth-success" class="auth-message success" role="status" aria-live="polite">{{ successMessage }}</p>
 
-          <div id="auth-panel" ref="authPanel" class="auth-panel" role="region" :aria-label="title" tabindex="-1">
-            <VanForm
-              ref="authForm"
-              class="auth-form"
-              :aria-describedby="errorMessage ? 'auth-error' : undefined"
-              show-error
-              scroll-to-error
-              @submit="submit"
-            >
-              <div class="auth-fields">
+        <div id="auth-panel" ref="authPanel" class="auth-panel" role="region" :aria-label="title" tabindex="-1">
+          <VanForm
+            ref="authForm"
+            class="auth-form"
+            :aria-describedby="errorMessage ? 'auth-error' : undefined"
+            show-error
+            scroll-to-error
+            @submit="submit"
+          >
+            <div class="auth-fields">
+              <VanField
+                v-if="mode === 'register' || mode === 'invite'"
+                id="auth-name"
+                v-model.trim="form.name"
+                class="auth-field"
+                name="name"
+                label="姓名"
+                label-align="top"
+                autocomplete="name"
+                placeholder="你的称呼"
+                :rules="nameRules"
+                :border="false"
+              />
+
+              <VanField
+                id="auth-phone"
+                v-model.trim="form.phone"
+                class="auth-field"
+                name="phone"
+                type="tel"
+                inputmode="numeric"
+                label="手机号"
+                label-align="top"
+                autocomplete="tel"
+                maxlength="11"
+                placeholder="请输入手机号"
+                :rules="phoneRules"
+                :border="false"
+              />
+
+              <VanField
+                v-if="mode === 'invite'"
+                id="auth-token"
+                v-model.trim="form.token"
+                class="auth-field"
+                name="token"
+                label="邀请令牌"
+                label-align="top"
+                autocomplete="one-time-code"
+                placeholder="粘贴邀请令牌"
+                :rules="tokenRules"
+                :border="false"
+              />
+
+              <div v-if="requiresCode" class="auth-code-field">
                 <VanField
-                  v-if="mode === 'register' || mode === 'invite'"
-                  id="auth-name"
-                  v-model.trim="form.name"
-                  class="auth-field"
-                  name="name"
-                  label="姓名"
+                  id="auth-verification-code"
+                  v-model.trim="form.code"
+                  class="auth-field auth-code-input"
+                  name="code"
+                  label="短信验证码"
                   label-align="top"
-                  autocomplete="name"
-                  placeholder="你的称呼"
-                  :rules="nameRules"
-                  :border="false"
-                />
-
-                <VanField
-                  id="auth-phone"
-                  v-model.trim="form.phone"
-                  class="auth-field"
-                  name="phone"
-                  type="tel"
                   inputmode="numeric"
-                  label="手机号"
-                  label-align="top"
-                  autocomplete="tel"
-                  maxlength="11"
-                  placeholder="请输入手机号"
-                  :rules="phoneRules"
-                  :border="false"
-                />
-
-                <VanField
-                  v-if="mode === 'invite'"
-                  id="auth-token"
-                  v-model.trim="form.token"
-                  class="auth-field"
-                  name="token"
-                  label="邀请令牌"
-                  label-align="top"
                   autocomplete="one-time-code"
-                  placeholder="粘贴邀请令牌"
-                  :rules="tokenRules"
+                  maxlength="6"
+                  placeholder="输入 6 位验证码"
+                  :rules="codeRules"
                   :border="false"
                 />
-
-                <div v-if="requiresCode" class="auth-code-field">
-                  <VanField
-                    id="auth-verification-code"
-                    v-model.trim="form.code"
-                    class="auth-field auth-code-input"
-                    name="code"
-                    label="短信验证码"
-                    label-align="top"
-                    inputmode="numeric"
-                    autocomplete="one-time-code"
-                    maxlength="6"
-                    placeholder="输入 6 位验证码"
-                    :rules="codeRules"
-                    :border="false"
-                  />
-                  <VanButton type="default" plain native-type="button" class="auth-code-button" :disabled="sendingCode || codeCooldown > 0" @click="sendCode">
-                    {{ codeButtonLabel }}
-                  </VanButton>
-                </div>
-
-                <VanField
-                  id="auth-password"
-                  v-model="form.password"
-                  class="auth-field"
-                  name="password"
-                  type="password"
-                  :label="mode === 'reset' ? '新密码' : mode === 'login' ? '密码' : '设置密码'"
-                  label-align="top"
-                  :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
-                  maxlength="128"
-                  :placeholder="mode === 'login' ? '请输入密码' : '至少 8 位密码'"
-                  :rules="passwordRules"
-                  :border="false"
-                />
-
-                <VanField
-                  v-if="mode === 'reset'"
-                  id="auth-password-confirmation"
-                  v-model="form.passwordConfirmation"
-                  class="auth-field"
-                  name="passwordConfirmation"
-                  type="password"
-                  label="确认新密码"
-                  label-align="top"
-                  autocomplete="new-password"
-                  maxlength="128"
-                  placeholder="再次输入新密码"
-                  :rules="passwordConfirmationRules"
-                  :border="false"
-                />
+                <VanButton type="default" plain native-type="button" class="auth-code-button" :disabled="sendingCode || codeCooldown > 0" @click="sendCode">
+                  {{ codeButtonLabel }}
+                </VanButton>
               </div>
 
-              <VanButton type="primary" native-type="submit" class="primary-button full-width auth-submit" :disabled="submitting" :aria-busy="submitting">
-                {{ submitting ? '请稍候…' : submitLabel }}
-              </VanButton>
-            </VanForm>
+              <VanField
+                id="auth-password"
+                v-model="form.password"
+                class="auth-field"
+                name="password"
+                type="password"
+                :label="mode === 'reset' ? '新密码' : mode === 'login' ? '密码' : '设置密码'"
+                label-align="top"
+                :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
+                maxlength="128"
+                :placeholder="mode === 'login' ? '请输入密码' : '至少 8 位密码'"
+                :rules="passwordRules"
+                :border="false"
+              />
 
-            <nav class="auth-actions" aria-label="账号操作">
-              <p v-if="mode === 'login'" class="auth-switch">
-                还没有账号？
-                <VanButton type="default" plain native-type="button" class="auth-inline-link" @click="openMode('register')">立即注册</VanButton>
-              </p>
-              <p v-else-if="mode === 'register'" class="auth-switch">
-                已有账号？
-                <VanButton type="default" plain native-type="button" class="auth-inline-link" @click="openMode('login')">立即登录</VanButton>
-              </p>
-              <VanButton v-else-if="mode === 'invite'" type="default" plain native-type="button" class="auth-inline-link" @click="openMode('login')">返回登录</VanButton>
+              <VanField
+                v-if="mode === 'reset'"
+                id="auth-password-confirmation"
+                v-model="form.passwordConfirmation"
+                class="auth-field"
+                name="passwordConfirmation"
+                type="password"
+                label="确认新密码"
+                label-align="top"
+                autocomplete="new-password"
+                maxlength="128"
+                placeholder="再次输入新密码"
+                :rules="passwordConfirmationRules"
+                :border="false"
+              />
+            </div>
 
-              <div class="auth-action-links">
-                <VanButton v-if="mode === 'login' || mode === 'register'" type="default" plain native-type="button" class="text-button" @click="openMode('reset')">忘记密码</VanButton>
-                <template v-else-if="mode === 'reset'">
-                  <VanButton type="default" plain native-type="button" class="text-button" @click="openMode('login')">返回登录</VanButton>
-                  <VanButton type="default" plain native-type="button" class="text-button" @click="openMode('register')">注册</VanButton>
-                </template>
-              </div>
-            </nav>
+            <VanButton type="primary" native-type="submit" class="primary-button full-width auth-submit" :disabled="submitting" :aria-busy="submitting">
+              {{ submitting ? '请稍候…' : submitLabel }}
+            </VanButton>
+          </VanForm>
 
-            <p v-if="mode === 'login' || mode === 'register' || mode === 'invite'" class="auth-legal">
-              {{ mode === 'login' ? '登录即代表您已阅读并同意' : '继续即代表您已阅读并同意' }}
-              <VanButton ref="termsLink" class="auth-legal-link" type="default" plain native-type="button" @click="openLegalDocument('terms')">《用户协议》</VanButton>
-              <span>与</span>
-              <VanButton ref="privacyLink" class="auth-legal-link" type="default" plain native-type="button" @click="openLegalDocument('privacy')">《隐私条款》</VanButton>
+          <nav class="auth-actions" aria-label="账号操作">
+            <p v-if="mode === 'login'" class="auth-switch">
+              还没有账号？
+              <VanButton type="default" plain native-type="button" class="auth-inline-link" @click="openMode('register')">立即注册</VanButton>
             </p>
-          </div>
-        </main>
-      </div>
+            <p v-else-if="mode === 'register'" class="auth-switch">
+              已有账号？
+              <VanButton type="default" plain native-type="button" class="auth-inline-link" @click="openMode('login')">立即登录</VanButton>
+            </p>
+            <VanButton v-else-if="mode === 'invite'" type="default" plain native-type="button" class="auth-inline-link" @click="openMode('login')">返回登录</VanButton>
+
+            <div class="auth-action-links">
+              <VanButton v-if="mode === 'login' || mode === 'register'" type="default" plain native-type="button" class="text-button" @click="openMode('reset')">忘记密码</VanButton>
+              <template v-else-if="mode === 'reset'">
+                <VanButton type="default" plain native-type="button" class="text-button" @click="openMode('login')">返回登录</VanButton>
+                <VanButton type="default" plain native-type="button" class="text-button" @click="openMode('register')">注册</VanButton>
+              </template>
+            </div>
+          </nav>
+
+          <p v-if="mode === 'login' || mode === 'register' || mode === 'invite'" class="auth-legal">
+            {{ mode === 'login' ? '登录即代表您已阅读并同意' : '继续即代表您已阅读并同意' }}
+            <VanButton ref="termsLink" class="auth-legal-link" type="default" plain native-type="button" @click="openLegalDocument('terms')">《用户协议》</VanButton>
+            <span>与</span>
+            <VanButton ref="privacyLink" class="auth-legal-link" type="default" plain native-type="button" @click="openLegalDocument('privacy')">《隐私条款》</VanButton>
+          </p>
+        </div>
+      </main>
     </div>
 
     <LegalDocumentDialog
