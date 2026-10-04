@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, time as dt_time
 from typing import List, Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -123,6 +124,61 @@ async def get_user_reports(
     reports = result.scalars().all()
 
     return list(reports), total
+
+
+def extract_report_day_pillar(report: Report) -> Optional[str]:
+    """Return a report's natal day pillar from structured or legacy content."""
+    content_payload = report.content_payload if isinstance(report.content_payload, dict) else {}
+    foundation_data = (
+        content_payload.get("foundation_data")
+        or content_payload.get("foundationData")
+        or {}
+    )
+    bazi = foundation_data.get("bazi") if isinstance(foundation_data, dict) else {}
+    day = bazi.get("day") if isinstance(bazi, dict) else {}
+
+    if isinstance(day, str):
+        candidate = day.strip()
+    elif isinstance(day, dict):
+        candidate = day.get("pillar") or f"{day.get('stem', '')}{day.get('branch', '')}"
+        candidate = candidate.strip()
+    else:
+        candidate = ""
+
+    valid_pillar = re.compile(r"^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]$")
+    if valid_pillar.fullmatch(candidate):
+        return candidate
+
+    legacy_content = report.ai_raw_content or ""
+    match = re.search(
+        r"\*\*日柱[^*]*\*\*\s*([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])",
+        legacy_content,
+    )
+    return match.group(1) if match else None
+
+
+def format_report_list_item(report: Report) -> dict[str, Any]:
+    """Project report content needed by report cards without loading detail pages."""
+    energy_profile = report.energy_profile or {}
+    content_payload = report.content_payload if isinstance(report.content_payload, dict) else {}
+    core_traits = energy_profile.get("core_traits") or energy_profile.get("coreTraits")
+    if isinstance(core_traits, list):
+        core_traits = "、".join(str(trait) for trait in core_traits if trait)
+    cover_description = content_payload.get("cover_description") or content_payload.get("coverDescription")
+    if not isinstance(cover_description, str) or not cover_description.strip():
+        cover_description = None
+    else:
+        cover_description = cover_description.strip()
+    return {
+        "id": report.id,
+        "title": report.title,
+        "created_at": report.created_at,
+        "energy_type": energy_profile.get("type"),
+        "core_traits": core_traits,
+        "summary": report.summary,
+        "day_pillar": extract_report_day_pillar(report),
+        "cover_description": cover_description,
+    }
 
 
 async def delete_report(db: AsyncSession, report_id: int, user_id: int) -> bool:

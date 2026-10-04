@@ -2,7 +2,10 @@ import { getCurrentUser } from '../../users/service.js'
 import { getUserReports } from '../../reports/api.js'
 import { getMyServiceRequests } from '../../service-requests/api.js'
 import { mapUserToProfile } from '../../users/profile.js'
-import { formatUserCenterDate } from '../presentation.js'
+import { getReportCoverTheme } from '../../reports/day-pillar-visual.js'
+import { REPORT_COVER_MOCKS } from '../../reports/report-cover-mock.js'
+
+const allowDemoReports = import.meta.env.DEV && import.meta.env.VITE_DEMO_REPORTS !== 'false'
 
 export default {
   async loadDashboard() {
@@ -24,13 +27,32 @@ export default {
       this.accountPhone = user.phone || ''
       this.settings = mapUserToProfile(user)
       this.optionalProfileExpanded = Number(user.profile_completion || 0) < 100
-      this.reports = (reportResponse.items || []).map(report => ({
-        id: report.id,
-        title: report.title,
-        date: formatUserCenterDate(report.created_at),
-        energyType: report.energy_type || '综合型',
-        coreTraits: report.core_traits || '—'
-      }))
+      const apiReports = Array.isArray(reportResponse.items) ? reportResponse.items : []
+      const reportsToDisplay = apiReports.length > 0
+        ? apiReports
+        : allowDemoReports
+          ? REPORT_COVER_MOCKS
+          : []
+
+      this.reports = reportsToDisplay.map((report, index) => {
+        const fallback = REPORT_COVER_MOCKS[index % REPORT_COVER_MOCKS.length]
+        const dayPillar = String(report.day_pillar || report.dayPillar || '').trim() || fallback.dayPillar
+        const pillarMock = REPORT_COVER_MOCKS.find(
+          mock => getReportCoverTheme(mock.dayPillar) === getReportCoverTheme(dayPillar)
+        ) || fallback
+        const description = [report.cover_description, report.coverDescription, report.description]
+          .find(value => typeof value === 'string' && value.trim())
+          ?.trim() || pillarMock.description
+
+        return {
+          id: report.id,
+          title: report.title || '辰鉴·人生说明书',
+          description,
+          dayPillar,
+          coverTheme: getReportCoverTheme(dayPillar),
+          isMock: Boolean(report.isMock)
+        }
+      })
       this.requests = requestResponse.items || []
     } catch (error) {
       this.message = error.response?.data?.detail || '暂时无法打开你的个人空间，请稍后再试'

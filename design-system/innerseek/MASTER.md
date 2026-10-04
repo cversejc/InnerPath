@@ -188,7 +188,9 @@ shapes for statuses, seals, tags and compact metadata.
 - **Calendar:** overview first, selected-day detail second, records alongside guidance;
   mobile detail opens as a sheet above the bottom navigation.
 - **Reports:** content-first reading layout with a single next action into the decision
-  calendar.
+  calendar. Report-list covers may use five subdued landscape variants selected by the
+  report's day-pillar Nayin element; keep the day pillar visible and use a warm scrim so
+  the summary stays readable.
 - **Admin:** scanable metrics, filters, tables or mobile cards, explicit loading/empty/
   error states and task-oriented drawers.
 
