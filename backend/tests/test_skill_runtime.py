@@ -997,9 +997,9 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
         report_case_id=81,
         skill_run=source_run,
         example_type="POSITIVE",
-        scenario_tags=["career", "职业发展"],
-        teaching_points=["林女士先用小步尝试收集信息。"],
-        expected_output={"summary": "林女士 13812345678，1992-06-18"},
+        scenario_tags=["career", "职业发展", "林女士13812345678", "上海市静安区"],
+        teaching_points=["林女士先用小步尝试收集信息，住在上海市静安区。"],
+        expected_output={"summary": "林女士 13812345678，1992-06-18，上海市静安区"},
         created_by=7,
     )
 
@@ -1013,6 +1013,12 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
         "latitude",
         "longitude",
     } & candidate.input_context["profile"].keys()
+    candidate_text = " ".join(
+        [*candidate.scenario_tags, *candidate.teaching_points, candidate.expected_output["summary"]]
+    )
+    assert all(value not in candidate_text for value in (
+        "林女士", "13812345678", "1992-06-18", "上海市静安区", "上海市"
+    ))
     assert "林女士" not in candidate.expected_output["summary"]
     assert "13812345678" not in candidate.expected_output["summary"]
     assert "1992-06-18" not in candidate.expected_output["summary"]
@@ -1030,7 +1036,7 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
         skill_db,
         example_id=candidate.id,
         target_fragment_key=None,
-        scenario_tags=["career", "职业发展"],
+        scenario_tags=["career", "职业发展", "上海市静安区", "林女士13812345678"],
         applicability_json={"focus_topics": ["career"]},
         input_context={
             "profile": {
@@ -1048,6 +1054,8 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
     assert "current_residence" not in reviewed.input_context["profile"]
     assert "city" not in reviewed.input_context["profile"]["home"]
     assert "postal_code" not in reviewed.input_context["profile"]["home"]
+    assert all("上海市" not in tag and "林女士" not in tag and "13812345678" not in tag
+        for tag in reviewed.scenario_tags)
     published = await publish_skill_example(
         skill_db, reviewed.id, reviewed_by=1
     )

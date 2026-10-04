@@ -19,19 +19,7 @@ _PHONE = re.compile(r"(?<!\d)1[3-9]\d{9}(?!\d)")
 _EMAIL = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE)
 _CHINA_ID = re.compile(r"(?<!\d)\d{17}[\dXx](?!\d)")
 _DATE = re.compile(r"(?<!\d)(?:19|20)\d{2}[-/.年]\d{1,2}[-/.月]\d{1,2}日?(?!\d)")
-_SENSITIVE_FIELDS = {
-    "name",
-    "phone",
-    "phone_number",
-    "mobile",
-    "email",
-    "address",
-    "birth_date",
-    "birth_year",
-    "birth_month",
-    "birth_day",
-    "birth_hour",
-    "birth_minute",
+_LOCATION_FIELDS = {
     "birth_place",
     "birth_address",
     "birth_city",
@@ -50,6 +38,21 @@ _SENSITIVE_FIELDS = {
     "zip_code",
     "latitude",
     "longitude",
+}
+_SENSITIVE_FIELDS = {
+    "name",
+    "phone",
+    "phone_number",
+    "mobile",
+    "email",
+    "address",
+    "birth_date",
+    "birth_year",
+    "birth_month",
+    "birth_day",
+    "birth_hour",
+    "birth_minute",
+    *_LOCATION_FIELDS,
     "user_id",
     "report_case_id",
     "source_case_id",
@@ -73,24 +76,58 @@ def _known_names(run: SkillRun | None) -> set[str]:
     return names
 
 
-def scrub_example_data(value: Any, *, known_names: set[str] | None = None) -> Any:
+def _known_locations(run: SkillRun | None) -> set[str]:
+    if run is None:
+        return set()
+    locations = set()
+    for snapshot in (run.input_snapshot or {}, run.context_snapshot or {}):
+        profile = snapshot.get("profile") or {}
+        if not isinstance(profile, dict):
+            continue
+        locations.update(
+            value.strip()
+            for field, value in profile.items()
+            if str(field).casefold() in _LOCATION_FIELDS
+            and isinstance(value, str)
+            and len(value.strip()) >= 2
+        )
+    return locations
+
+
+def scrub_example_data(
+    value: Any,
+    *,
+    known_names: set[str] | None = None,
+    known_locations: set[str] | None = None,
+) -> Any:
     names = known_names or set()
+    locations = known_locations or set()
     if isinstance(value, dict):
         return {
-            key: scrub_example_data(item, known_names=names)
+            key: scrub_example_data(
+                item, known_names=names, known_locations=locations
+            )
             for key, item in value.items()
             if str(key).casefold() not in _SENSITIVE_FIELDS
         }
     if isinstance(value, list):
-        return [scrub_example_data(item, known_names=names) for item in value]
+        return [
+            scrub_example_data(item, known_names=names, known_locations=locations)
+            for item in value
+        ]
     if isinstance(value, tuple):
-        return [scrub_example_data(item, known_names=names) for item in value]
+        return [
+            scrub_example_data(item, known_names=names, known_locations=locations)
+            for item in value
+        ]
     if not isinstance(value, str):
         return value
 
     result = value
     for name in sorted(names, key=len, reverse=True):
         result = result.replace(name, "[用户]")
+    for location in sorted(locations, key=len, reverse=True):
+        result = result.replace(location, "[位置]")
     result = _PHONE.sub("[手机号]", result)
     result = _EMAIL.sub("[邮箱]", result)
     result = _CHINA_ID.sub("[证件号]", result)
@@ -105,6 +142,16 @@ def _normalize_tags(tags: list[str]) -> list[str]:
         if value and value not in normalized:
             normalized.append(value)
     return normalized[:12]
+
+
+def _safe_tags(
+    tags: list[str], *, known_names: set[str], known_locations: set[str]
+) -> list[str]:
+    redacted = scrub_example_data(
+        tags, known_names=known_names, known_locations=known_locations
+    )
+    placeholders = {"用户", "位置", "手机号", "邮箱", "证件号", "日期"}
+    return [tag for tag in _normalize_tags(redacted) if tag not in placeholders]
 
 
 async def create_example_candidate(
@@ -127,7 +174,12 @@ async def create_example_candidate(
         raise ValueError("skill_version_not_found")
     now = datetime.utcnow()
     known_names = _known_names(skill_run)
-    input_context = scrub_example_data(skill_run.input_snapshot or {}, known_names=known_names)
+    known_locations = _known_locations(skill_run)
+    input_context = scrub_example_data(
+        skill_run.input_snapshot or {},
+        known_names=known_names,
+        known_locations=known_locations,
+    )
     output = expected_output if expected_output is not None else (skill_run.output_parsed or {})
     row = SkillExample(
         skill_key=skill.skill_key,
@@ -138,11 +190,19 @@ async def create_example_candidate(
         version_no=1,
         status="CANDIDATE",
         example_type=example_type,
-        scenario_tags=_normalize_tags(scenario_tags),
+        scenario_tags=_safe_tags(
+            scenario_tags,
+            known_names=known_names,
+            known_locations=known_locations,
+        ),
         applicability_json={},
         input_context=input_context,
-        expected_output=scrub_example_data(output, known_names=known_names),
-        teaching_points=scrub_example_data(teaching_points, known_names=known_names),
+        expected_output=scrub_example_data(
+            output, known_names=known_names, known_locations=known_locations
+        ),
+        teaching_points=scrub_example_data(
+            teaching_points, known_names=known_names, known_locations=known_locations
+        ),
         anti_patterns=[],
         quality_score=None,
         source_case_id=report_case_id,
@@ -184,15 +244,30 @@ async def update_example_redaction(
         else None
     )
     known_names = _known_names(source_run)
+    known_locations = _known_locations(source_run)
     row.target_fragment_key = target_fragment_key
-    row.scenario_tags = _normalize_tags(scenario_tags)
-    row.applicability_json = scrub_example_data(
-        normalized_applicability, known_names=known_names
+    row.scenario_tags = _safe_tags(
+        scenario_tags,
+        known_names=known_names,
+        known_locations=known_locations,
     )
-    row.input_context = scrub_example_data(input_context, known_names=known_names)
-    row.expected_output = scrub_example_data(expected_output, known_names=known_names)
-    row.teaching_points = scrub_example_data(teaching_points, known_names=known_names)
-    row.anti_patterns = scrub_example_data(anti_patterns, known_names=known_names)
+    row.applicability_json = scrub_example_data(
+        normalized_applicability,
+        known_names=known_names,
+        known_locations=known_locations,
+    )
+    row.input_context = scrub_example_data(
+        input_context, known_names=known_names, known_locations=known_locations
+    )
+    row.expected_output = scrub_example_data(
+        expected_output, known_names=known_names, known_locations=known_locations
+    )
+    row.teaching_points = scrub_example_data(
+        teaching_points, known_names=known_names, known_locations=known_locations
+    )
+    row.anti_patterns = scrub_example_data(
+        anti_patterns, known_names=known_names, known_locations=known_locations
+    )
     row.quality_score = quality_score
     row.deidentified = bool(confirmed_deidentified)
     await db.flush()
