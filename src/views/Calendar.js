@@ -62,6 +62,7 @@ export default {
         usage_scenario: '',
         goal: '',
         expected_outcomes: [],
+        available_minutes_per_day: 30,
         decision_description: '',
         additional_info: ''
       },

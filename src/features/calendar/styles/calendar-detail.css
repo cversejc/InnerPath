@@ -67,6 +67,15 @@
 .calendar-page .guidance-card li.guidance-empty::before { display: none; }
 .calendar-page .guidance-toggle { position: relative; z-index: 1; display: block; width: 100%; height: auto; margin-top: 8px; border: 0; padding: 0; color: var(--cinnabar-deep); background: transparent; font-family: var(--font-ui); font-size: 10px; font-weight: var(--weight-semibold); line-height: 1.5; text-align: center; }
 .calendar-page .guidance-toggle .guidance-toggle-icon { margin-left: 3px; font-size: 13px; }
+.calendar-page .report-practice-card { position: relative; z-index: 1; margin-top: 12px; padding: 13px; border: 1px solid rgba(86, 125, 150, .22); border-radius: 12px; background: rgba(86, 125, 150, .07); }
+.calendar-page .report-practice-head, .calendar-page .report-practice-title { display: flex; align-items: baseline; justify-content: space-between; gap: 9px; flex-wrap: wrap; }
+.calendar-page .report-practice-head strong { color: var(--calendar-ink); font-size: var(--text-body-sm); }
+.calendar-page .report-practice-head small, .calendar-page .report-practice-title span { flex: 0 0 auto; color: var(--calendar-muted); font-size: var(--text-caption); }
+.calendar-page .report-practice-card ul { display: grid; gap: 10px; margin-top: 11px; }
+.calendar-page .report-practice-card li { color: var(--calendar-muted); font-size: var(--text-body-sm); line-height: var(--leading-body); }
+.calendar-page .report-practice-title strong { min-width: 0; color: var(--calendar-ink); font-size: var(--text-body-sm); }
+.calendar-page .report-practice-card li p { margin-top: 4px; line-height: 1.65; }
+.calendar-page .report-practice-note { margin-top: 10px; color: var(--calendar-muted); font-size: var(--text-body-sm); line-height: var(--leading-body); }
 
 .calendar-page .actual-records { position: relative; z-index: 1; margin-top: 24px; padding-top: 19px; border-top: 1px solid rgba(184, 92, 80, 0.18); }
 .calendar-page .actual-records-head { display: flex; align-items: end; justify-content: space-between; gap: 10px; }

@@ -19,11 +19,13 @@ test('calendar request keeps the profile version and originating report referenc
   const payload = buildCalendarRequestPayload({
     profile_version: 2,
     source_report_id: '41',
-    focus_topics: ['career']
+    focus_topics: ['career'],
+    available_minutes_per_day: 45
   }, 3)
 
   assert.equal(payload.profile_version, 3)
   assert.equal(payload.source_report_id, 41)
+  assert.equal(payload.available_minutes_per_day, 45)
   assert.deepEqual(payload.focus_topics, ['career'])
 })
 

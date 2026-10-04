@@ -25,11 +25,12 @@ CALENDAR_STAGES = [
     ("calendar.daily_authoring", "逐日决策文案", "AUTHORING", {
         "required": ["entries"], "properties": {"entries": {"type": "array"}},
     }, [
-        "只输出requested_dates。entries每项含entry_date、keyword(2至4个词用顿号连接)、summary(30至60字)、suitable(2至3条)、unsuitable(可空)、energy_awareness、tone_explanation、windows。",
+        "只输出requested_dates。entries每项含entry_date、keyword(2至4个词用顿号连接)、summary(30至60字)、suitable(2至3条)、unsuitable(可空)、energy_awareness、tone_explanation、windows、action_refs(数组；没有承接报告行动时为空数组)。",
         "summary目标35–45个字符（包含标点），避免贴近60字符上限；一句说明当日重点，一句给出小步方向。keyword优先3个词。",
         "色块中文严格按color_policy：green推进、blue探索、yellow校准、red收束。蓝色不能说成内观恢复或收束；主主题可以包含恢复，但色块解释应回应系统分数与探索方向。",
         "green即使主主题为内观恢复，也要给出一个可完成的小步推进动作，不能仅安排休息；blue应包含观察或尝试，yellow包含核对/调整，red包含减量/收尾。月柱与时段依据只能引用facts，不自行纠正分析层干支。",
         "quality_feedback存在时针对独立审核意见重写previous_entries，实际改变具体情境和动作，保持系统色块/窗口。根据calendar_action_overview检查其他批次动作，避免整月重复同一脚本。从本次问卷提取不同真实情境与反证资源；资料未提供的事件不当作已发生事实。后三周安排行动复盘与调整步骤，不捏造未来反馈或效果。",
+        "逐日输出action_refs数组，必须与程序给出的practice_schedule中该日期ID完全一致，不得自行调整。practice_rhythm.actions保留报告Action来源、频率、步骤、耗时、卡点和资源；程序已按用户available_minutes_per_day生成节奏并把不可安排项目写入unavailable_actions。suitable必须落实该日引用Action的步骤，不改写其目标或停止条件。",
         "以对应时序分析、月基调、来源报告和用户当前目标写具体可执行决定方向。觉察问题来自真实模式，问句控制20–60字；四周递进为觉察、尝试、行动反馈、校准再行动，并覆盖现实目标的不同层面，不连续批评同一缺点，不泛用鸡汤。",
         "calendar_action_overview列出其他日期已写动作与觉察。相同练习再次出现时必须明确不同情境、递进任务或反馈观察点，不能只替换日期。",
         "tone_explanation解释系统给定的主色块；不修改系统tone或day_pillar。windows每项必须含period、label、suggestion，完整保留时序分析所选period，文案用日常语言，不直接说十神出现所以某事件。",

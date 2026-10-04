@@ -167,6 +167,10 @@
   box-shadow: 0 0 0 3px rgba(184, 92, 80, .12);
 }
 
+.calendar-page .availability-input-row { display: flex; align-items: center; gap: 10px; max-width: 240px; }
+.calendar-page .availability-input-row input { flex: 1; }
+.calendar-page .availability-input-row span { color: var(--calendar-muted); font-size: 14px; white-space: nowrap; }
+
 .calendar-page .request-option-grid,
 .calendar-page .request-check-grid {
   display: grid;

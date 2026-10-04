@@ -113,6 +113,15 @@ function requestStatusLabel(status) {
             </select>
           </div>
 
+          <div class="request-form-field">
+            <label for="calendar-request-availability">每天可投入时间 <span class="required">*</span></label>
+            <div class="availability-input-row">
+              <input id="calendar-request-availability" v-model.number="draft.available_minutes_per_day" type="number" min="5" max="480" step="5" required>
+              <span>分钟</span>
+            </div>
+            <small>日历会按这段时间安排报告中的行动练习；默认 30 分钟。</small>
+          </div>
+
           <fieldset class="request-form-field">
             <legend>关注领域 <span class="required">*</span> <small>最多 3 项</small></legend>
             <div class="request-option-grid">

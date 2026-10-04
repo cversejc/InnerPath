@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.calendar.models import CalendarRequest, UserCalendar, DecisionLog
+from app.domains.calendar.practices import project_report_practices
 from app.domains.reports.models import Report
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarRequestAdminUpdate, CalendarRequestCreate
@@ -23,6 +24,7 @@ def _calendar_request_context(data: CalendarRequestCreate) -> dict:
         "expected_outcomes": data.expected_outcomes,
         "decision_description": data.decision_description,
         "additional_info": data.additional_info,
+        "available_minutes_per_day": data.available_minutes_per_day,
     }
 
 
@@ -93,6 +95,7 @@ async def create_calendar_request(
             "structured_sections": deepcopy(version.structured_data.get("structured_sections") or []),
             "confirmed_semantics": deepcopy(semantics), "reviewed_foundation": deepcopy(foundation),
             "application": deepcopy((version.semantic_snapshot or {}).get("application_snapshot") or {}),
+            "practice_rhythm": project_report_practices(semantics, version.id),
         })
     else:
         # Legacy delivered reports remain useful for growth prompts. No re-charting.
@@ -110,10 +113,12 @@ async def create_calendar_request(
                 "start_date": data.start_date.isoformat(),
                 "end_date": data.end_date.isoformat(),
                 "usage_scenario": data.usage_scenario,
+                "available_minutes_per_day": data.available_minutes_per_day,
             }
         },
     )
     snapshot["source_report"] = source_report_snapshot
+    snapshot["available_minutes_per_day"] = data.available_minutes_per_day
     feedback = await db.scalars(select(DecisionLog).where(DecisionLog.user_id == user.id,
         DecisionLog.log_date < data.start_date).order_by(DecisionLog.log_date.desc(), DecisionLog.id.desc()).limit(30))
     snapshot["decision_feedback"] = [{"log_date": row.log_date.isoformat(), "kind": row.kind,
@@ -177,6 +182,9 @@ async def serialize_calendar_request(db: AsyncSession, calendar_request: Calenda
         "decision_description": calendar_request.decision_description,
         "expected_outcomes": calendar_request.expected_outcomes or [],
         "additional_info": calendar_request.additional_info,
+        "available_minutes_per_day": (calendar_request.input_snapshot or {}).get(
+            "available_minutes_per_day", 30
+        ),
         "status": calendar_request.status,
         "source_report_id": calendar_request.source_report_id,
         "calendar_id": await _linked_calendar_id(db, calendar_request.id),

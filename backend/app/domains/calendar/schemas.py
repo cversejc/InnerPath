@@ -103,6 +103,7 @@ class CalendarRequestCreate(BaseModel):
     decision_description: Optional[str] = Field(None, max_length=1000)
     expected_outcomes: List[str] = Field(default_factory=list, max_length=7)
     additional_info: Optional[str] = Field(None, max_length=2000)
+    available_minutes_per_day: int = Field(30, ge=5, le=480)
 
 
 class CalendarRequestResponse(CalendarRequestCreate):

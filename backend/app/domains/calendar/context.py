@@ -8,7 +8,7 @@ def calendar_model_context(snapshot, temporal):
     semantics = source.get("confirmed_semantics") or {}
     reviewed = {k: deepcopy(foundation[k]) for k in ("bazi", "bazi_facts", "limitations", "assumptions") if k in foundation}
     facts = {k: deepcopy(v) for k, v in temporal.items() if k != "natal_foundation"}
-    report = {k: deepcopy(source[k]) for k in ("id", "title", "summary", "report_version_id", "structured_sections") if k in source}
+    report = {k: deepcopy(source[k]) for k in ("id", "title", "summary", "report_version_id", "structured_sections", "practice_rhythm") if k in source}
     report["structured_sections"] = [{k: deepcopy(v) for k, v in section.items() if k in
         {"fragment_key", "section_key", "section_title", "title", "content"}}
         for section in source.get("structured_sections", [])]
@@ -26,4 +26,6 @@ def calendar_model_context(snapshot, temporal):
     }
     return {"profile": deepcopy(snapshot.get("profile") or {}), "source_report": report,
             "questionnaire": deepcopy((source.get("application") or {}).get("context") or {}),
-            "decision_feedback": deepcopy(snapshot.get("decision_feedback") or []), "temporal_facts": facts}
+            "decision_feedback": deepcopy(snapshot.get("decision_feedback") or []),
+            "available_minutes_per_day": snapshot.get("available_minutes_per_day", 30),
+            "temporal_facts": facts}

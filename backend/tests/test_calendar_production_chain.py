@@ -86,11 +86,14 @@ class CalendarGateway:
                 ["direction", "growth_task", "resource", "old_pattern", "decision_principle", "rhythm_changes"]}}
         elif "逐日决策文案" in system_prompt:
             analysis = {a["entry_date"]: a for a in inputs["temporal_analysis"]}
+            def action_refs(day):
+                return inputs["practice_schedule"].get(day, [])
+
             result = {"entries": [{"entry_date": d, "keyword": "边界、沟通",
                 "summary": f"第{d[-2:]}天先记录一件需要澄清的小事，再选择一个轻量沟通动作，并为当天的真实反馈留出复盘空间。",
                 "suitable": [f"记录{d}的实际沟通目标", "向相关同事确认一项具体安排"], "unsuitable": [],
                 "energy_awareness": "今天哪个动作能帮助我表达边界？", "tone_explanation": "综合四项条件支持小步推进，仍需核对现实反馈。",
-                "windows": analysis[d]["windows"]} for d in inputs["requested_dates"]]}
+                "windows": analysis[d]["windows"], "action_refs": action_refs(d)} for d in inputs["requested_dates"]]}
         else:
             result = {"approved": not self.reject, "issues": [], "patches": []}
         return ModelCompletion(json.dumps(result, ensure_ascii=False), {"provider": "test", "model": "deterministic"})
@@ -102,6 +105,7 @@ async def test_queued_calendar_pins_versions_publishes_30_days_and_preserves_log
     user, other, report, data = await seed_report(db)
     request = await queue_calendar_from_report(db, user, data)
     assert (await queue_calendar_from_report(db, user, data)).id == request.id
+    assert request.input_snapshot["available_minutes_per_day"] == 30
     assert request.input_snapshot["decision_feedback"][0]["content"] == "完成一次边界沟通"
     pins = deepcopy(request.input_snapshot["calendar_skill_bindings"])
     old = await db.get(AISkillVersion, pins["calendar.daily_authoring"]["id"])
@@ -393,10 +397,12 @@ async def test_public_endpoints_return_queue_progress_and_only_owner_calendar(ch
             submitted = await client.post("/api/v1/calendar/requests", json=data.model_dump(mode="json"))
             assert submitted.status_code == 202, submitted.text
             assert submitted.json()["status"] == "queued"
+            assert submitted.json()["available_minutes_per_day"] == 30
             request_id = submitted.json()["id"]
             assert (await execute_calendar_production(chain_db, request_id, 1, gateway=CalendarGateway()))["status"] == "fulfilled"
             progress = (await client.get("/api/v1/calendar/requests")).json()["items"][0]
             assert progress["completed_runs"] == 8 and progress["calendar_id"]
+            assert progress["available_minutes_per_day"] == 30
             calendars = await client.get("/api/v1/calendar/me")
             assert calendars.status_code == 200 and len(calendars.json()["items"][0]["entries"]) == 30
             actor = other
@@ -445,6 +451,24 @@ async def test_delivered_version_is_calendar_source_and_links_logs_to_case(chain
         semantic_revision=1, content_revision=1, semantic_role="RESOURCE", claim="小步验证工作边界",
         confidence="MEDIUM", importance="MEDIUM", reportability="RECOMMENDED", status="CONFIRMED",
         evidence_refs=["reviewed.chart"], structured_data_json={"action_experiment": "先协商一项具体分工"}, created_at=now))
+    db.add(FindingRevision(report_case_id=case.id, finding_key="finding.block", revision_no=1,
+        semantic_revision=1, content_revision=1, semantic_role="BLOCK", claim="表达边界前反复准备",
+        confidence="MEDIUM", importance="HIGH", reportability="MUST_INCLUDE", status="CONFIRMED",
+        evidence_refs=["reviewed.chart"], structured_data_json={}, created_at=now))
+    db.add(FindingRevision(report_case_id=case.id, finding_key="zz.action.boundary", revision_no=1,
+        semantic_revision=1, content_revision=1, semantic_role="ACTION", claim="每周做一次低风险边界沟通",
+        confidence="MEDIUM", importance="MEDIUM", reportability="RECOMMENDED", status="CONFIRMED",
+        evidence_refs=["reviewed.chart"], structured_data_json={
+            "frequency": "weekly", "duration_minutes": 15,
+            "steps": ["写下一句边界表达", "选择一次低风险沟通"], "method": "小步沟通",
+            "observation": "记录对方实际回应", "stop_rule": "感到不安全时暂停",
+            "block_refs": ["finding.block"], "reasoning_path": {
+                "resource_refs": ["finding.boundary"], "regulation_function": "降低准备成本",
+                "capacity": "清晰表达", "reality_gap": "表达前容易反复准备",
+                "integration_task": "兼顾关系与边界", "tool": "小步沟通",
+                "rationale": "从低风险情境开始",
+            },
+        }, created_at=now))
     plan = NarrativePlan(report_case_id=case.id, version_no=1, status="CONFIRMED",
         selected_skill_run_id=source_run.id, selected_candidate_key="fixture", plan_json={"core_theme": "已签核的边界主题"},
         source_snapshot={}, created_at=now, confirmed_at=now)
@@ -478,11 +502,17 @@ async def test_delivered_version_is_calendar_source_and_links_logs_to_case(chain
     source = calendar_request.input_snapshot["source_report"]
     assert source["summary"] == "已签核的边界主题"
     assert source["reviewed_foundation"] == foundation and source["report_version_id"] == version.id
+    assert source["practice_rhythm"]["report_version_id"] == version.id
+    assert [action["action_id"] for action in source["practice_rhythm"]["actions"]] == ["zz.action.boundary"]
     projected = calendar_model_context(calendar_request.input_snapshot, calculate_temporal_facts(data.start_date, foundation))
-    assert projected["source_report"]["confirmed_semantics"]["findings"][0]["structured_data"]["action_experiment"]
+    assert any(f["structured_data"].get("action_experiment")
+        for f in projected["source_report"]["confirmed_semantics"]["findings"])
     assert (await execute_calendar_production(db, calendar_request.id, 1, gateway=CalendarGateway()))["status"] == "fulfilled"
     calendar = await db.scalar(select(UserCalendar).where(UserCalendar.calendar_request_id == calendar_request.id))
     assert calendar.meta_payload["source_report_version_id"] == version.id
+    assert calendar.meta_payload["practice_rhythm"]["report_version_id"] == version.id
+    assert sum(details["action_refs"] == ["zz.action.boundary"]
+        for details in calendar.meta_payload["daily_details"].values()) == 5
     runs = list(await db.scalars(select(SkillRun).where(SkillRun.target_type == "CALENDAR_PRODUCTION")))
     assert len(runs) == 8 and all(run.report_case_id == case.id for run in runs)
 

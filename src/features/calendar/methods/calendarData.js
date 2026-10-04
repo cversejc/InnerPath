@@ -8,6 +8,7 @@ import {
   recordPrompts as mockRecordPrompts
 } from '../../../data/decisionCalendar.js'
 import { dateKeyFromLabel, isToday, parseDateKey, weekdays } from '../helpers.js'
+import { resolveCalendarPracticeRefs } from '../practice-actions.js'
 
 const allowDemoCalendar = import.meta.env.DEV && import.meta.env.VITE_DEMO_CALENDAR === 'true'
 
@@ -70,13 +71,16 @@ export default {
   applyCalendar(calendar, source) {
       this.calendar = calendar
       this.calendarSource = source
+      const calendarMeta = calendar.meta_payload || calendar.metaPayload || {}
+      const practiceRhythm = calendarMeta.practice_rhythm || {}
       this.days = (calendar.entries || []).map(entry => {
         const entryDate = entry.entry_date || entry.date
         if (!entryDate) return null
         const date = parseDateKey(entryDate)
+        const dailyDetails = calendarMeta.daily_details?.[entryDate] || {}
         return {
           ...entry,
-          ...(calendar.meta_payload?.daily_details?.[entryDate] || {}),
+          ...dailyDetails,
           date: entryDate,
           month: date.getMonth() + 1,
           day: date.getDate(),
@@ -89,12 +93,14 @@ export default {
           timeWindow: entry.time_window || entry.timeWindow || '按你的节奏安排，给决定留出换气空间。',
           suitable: entry.suitable || [],
           unsuitable: entry.unsuitable || [],
+          linkedPractices: resolveCalendarPracticeRefs(dailyDetails.action_refs, practiceRhythm),
+          unavailablePracticeCount: practiceRhythm.unavailable_actions?.length || 0,
+          availableMinutesPerDay: calendarMeta.available_minutes_per_day || 30,
           isPhase: entry.is_phase ?? entry.isPhase ?? false
         }
       }).filter(Boolean)
       const startDate = calendar.start_date || this.days[0]?.date || ''
       const year = startDate.slice(0, 4)
-      const calendarMeta = calendar.meta_payload || calendar.metaPayload || {}
       this.meta = source === 'mock'
         ? mockCalendarMeta
         : {

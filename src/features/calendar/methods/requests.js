@@ -69,6 +69,7 @@ export default {
       if (!draft.focus_topics.length) return '至少选择一个关注领域。'
       if (!draft.goal.trim()) return '请填写当前决策目标。'
       if (!draft.expected_outcomes.length) return '至少选择一个期望输出。'
+      if (!Number.isInteger(Number(draft.available_minutes_per_day)) || Number(draft.available_minutes_per_day) < 5 || Number(draft.available_minutes_per_day) > 480) return '每日可投入时间需在 5–480 分钟之间。'
       return ''
     },
   async submitCalendarRequest() {
@@ -101,6 +102,7 @@ export default {
           usage_scenario: '',
           goal: '',
           expected_outcomes: [],
+          available_minutes_per_day: 30,
           decision_description: '',
           additional_info: ''
         }
