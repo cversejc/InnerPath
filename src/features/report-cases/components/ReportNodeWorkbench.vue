@@ -1,6 +1,6 @@
 <template>
-  <section class="report-node-workbench" aria-label="报告节点工作台">
-    <ol class="workflow-progress-rail" aria-label="报告六步处理进度">
+  <section class="report-node-workbench" :class="{ 'node-focused': stage && viewStep }" aria-label="报告节点工作台">
+    <ol v-if="!viewStep" class="workflow-progress-rail" aria-label="报告六步处理进度">
       <li
         v-for="(step, index) in steps"
         :key="step.id"
@@ -30,15 +30,15 @@
       </li>
     </ol>
     <template v-if="stage && viewStep">
+      <div class="node-toolbar">
       <header class="node-heading">
-        <div>
-          <p class="eyebrow">
-            第 {{ viewStep.sequence_no }} 步 / 共 {{ steps.length }} 步 ·
-            {{ statusLabel(viewStep.status) }}
-          </p>
-          <h2>{{ stage.name }}</h2>
-          <p>{{ stage.purpose }}</p>
+        <div class="node-identity">
+          <h2>{{ stage.shortName }}</h2>
+          <span class="node-state" :title="viewMode === 'UPCOMING' ? '先完成前序节点，再开始处理' : viewMode !== 'CURRENT' ? '历史节点，可查看输入、技能记录和审核成果，当前内容只读' : ''">{{ statusLabel(viewStep.status) }}{{ viewMode === 'UPCOMING' ? ' · 预览' : viewMode !== 'CURRENT' ? ' · 只读' : '' }}</span>
         </div>
+        <select class="node-step-switch" aria-label="切换分析节点" :value="viewStep.step_key" @change="$emit('select-step', $event.target.value)">
+          <option v-for="step in steps" :key="step.id" :value="step.step_key">{{ step.sequence_no }}/{{ steps.length }} · {{ stageFor(step.step_key)?.shortName }} · {{ statusLabel(step.status) }}</option>
+        </select>
         <div class="node-header-actions">
           <VanButton
             plain
@@ -49,19 +49,12 @@
             plain
             native-type="button"
             @click="openDialog('tasks', $event)"
-            >任务与完成标准</VanButton
+            >任务说明</VanButton
           >
         </div>
       </header>
-      <p v-if="viewMode !== 'CURRENT'" class="node-history-note" role="status">
-        {{
-          viewMode === "UPCOMING"
-            ? "后续节点预览 · 先完成前序节点，再开始处理。"
-            : "历史节点 · 可查看输入、技能记录和审核成果，当前内容只读。"
-        }}
-      </p>
       <nav
-        v-if="section !== 'overview'"
+        ref="viewNavigation"
         class="node-view-actions"
         aria-label="本节点工作界面"
       >
@@ -76,12 +69,10 @@
           >{{ view.label }}</VanButton
         >
       </nav>
+      </div>
+      <div class="node-workspace-body" role="region" :aria-label="`${stage.shortName}工作内容`" tabindex="0">
       <div v-if="section === 'overview'" class="node-home">
         <div class="node-brief">
-          <div>
-            <p class="eyebrow">本步目标</p>
-            <h3>{{ stage.deliverable }}</h3>
-          </div>
           <div>
             <p class="eyebrow">你的任务</p>
             <p>{{ stage.task }}</p>
@@ -167,6 +158,8 @@
           >回到当前待办</VanButton
         >
       </footer>
+      <slot />
+      </div>
       <NodeWorkbenchDialog
         :return-focus-element="dialogTrigger"
         :show="Boolean(dialog)"
@@ -221,7 +214,10 @@
           </details></template
         >
         <template v-else
-          ><h3>本步要完成什么</h3>
+          ><h3>本步目标</h3>
+          <p>{{ stage.purpose }}</p>
+          <p>{{ stage.deliverable }}</p>
+          <h3>本步要完成什么</h3>
           <p>{{ stage.task }}</p>
           <ol>
             <li v-for="action in stage.actions" :key="action">{{ action }}</li>
@@ -256,7 +252,6 @@
           <ul>
             <li v-for="item in stage.checklist" :key="item">{{ item }}</li>
           </ul>
-          <p>{{ stage.deliverable }}</p>
           <details v-if="contract?.topics">
             <summary>详细分析范围 · {{ contract.topics.length }} 项</summary>
             <article v-for="topic in contract.topics" :key="topic.fragment_key">
@@ -406,9 +401,21 @@ export default {
     },
     selectedStepKey() {
       this.dialog = "";
+      this.revealSelectedView();
+    },
+    section() {
+      this.revealSelectedView();
     },
   },
+  mounted() {
+    this.revealSelectedView();
+  },
   methods: {
+    revealSelectedView() {
+      this.$nextTick(() => {
+        this.$refs.viewNavigation?.querySelector('[aria-pressed="true"]')?.scrollIntoView({ block: "nearest", inline: "nearest" });
+      });
+    },
     openDialog(kind, event) {
       this.dialogTrigger = event.currentTarget;
       this.dialog = kind;

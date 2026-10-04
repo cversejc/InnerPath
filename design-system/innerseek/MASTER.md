@@ -169,8 +169,12 @@ shapes for statuses, seals, tags and compact metadata.
   calendar.
 - **Admin:** scanable metrics, filters, tables or mobile cards, explicit loading/empty/
   error states and task-oriented drawers.
-- **Consultant report workbench:** the six-stage rail owns workflow navigation. A
-  node home explains its goal and human task, then opens one dedicated working view.
+- **Consultant report workbench:** the report overview owns the six-stage rail.
+  Selecting a node opens a viewport-height workspace with a compact client header,
+  node selector and persistent function/tool controls. Only the active work content
+  scrolls; navigation never overlays it. Long goals and responsibilities open in
+  the task dialog. The node home gives the human task and dedicated work entries.
+  Switching views resets the content scroll and reveals the selected navigation item.
   Inputs and review records use a single-record selector with previous/next actions.
   Skills and completion checklists open in dialogs rather than permanent side columns.
   Skill buttons invoke actual commands, show prerequisites, and keep history read-only.

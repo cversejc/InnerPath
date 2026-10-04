@@ -1,5 +1,5 @@
 <template>
-  <div class="staff-shell" :class="{ 'staff-shell-workspace': selectedRequest }">
+  <div class="staff-shell" :class="{ 'staff-shell-workspace': selectedRequest, 'staff-shell-node-focus': selectedReportStepKey && reportCase }">
     <BrandNav v-if="!selectedRequest" />
     <main class="staff-main" :class="{ 'staff-main-workspace': selectedRequest }">
       <header v-if="!selectedRequest" class="staff-heading">
@@ -15,6 +15,11 @@
         </div>
       </header>
 
+      <header v-else-if="selectedReportStepKey && reportCase" class="workbench-focus-header">
+        <VanButton plain native-type="button" aria-label="返回报告处理总览" @click="openReportOverview">报告总览</VanButton>
+        <strong :title="workspace?.user?.name || selectedRequest.user_name">{{ workspace?.user?.name || selectedRequest.user_name || '未填写姓名' }}</strong>
+        <span>申请 {{ selectedRequest.id }}</span>
+      </header>
       <header v-else class="workbench-global-header">
         <VanButton class="workbench-back-button" type="default" plain native-type="button" @click="closeReportWorkspace">返回报告列表</VanButton>
         <div class="workbench-client-heading">
@@ -70,7 +75,7 @@
 
           <div v-else-if="workspace" class="workspace-content">
             <DeliveredReportSummary v-if="!selectedReportStepKey" :request="workspace.request" @view-analysis="selectReportNode('S1')" />
-            <div v-if="admin" class="assignment-row">
+            <div v-if="admin && !selectedReportStepKey" class="assignment-row">
               <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving" @change="assignConsultant"><option :value="null">未分配</option><option v-for="consultant in consultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
               <small>管理员可改派；改派不会覆盖已有版本。</small>
             </div>
@@ -100,7 +105,7 @@
                   @select-step="selectReportNode"
                   @run-tool="runReportNodeTool"
                   @reopen="reopenReportStep"
-                />
+                >
 
                 <div v-if="workspaceSection === 'overview' && reportStepReturn.visible" class="report-return-form">
                   <label>退回到哪一步<select v-model="reportStepReturn.targetStepKey"><option value="">选择已完成的前序步骤</option><option v-for="step in reportReturnTargets" :key="step.step_key" :value="step.step_key">第 {{ step.sequence_no }} 步 · {{ reportStepLabel(step.step_key) }}</option></select></label>
@@ -293,6 +298,7 @@
                     <VanButton class="primary-button compact-button" type="primary" native-type="submit" :disabled="reportFragmentSaving || !newReportFragment.content.trim()" :loading="reportFragmentSaving">新增待确认内容</VanButton>
                   </form>
                 </section>
+                </ReportNodeWorkbench>
               </template>
               <div v-else class="empty-cell">暂时无法打开这份报告，请返回列表刷新后重试。</div>
             </section>

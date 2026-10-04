@@ -313,8 +313,9 @@ export default {
     },
     scrollWorkspaceToTop() {
       this.$nextTick(() => {
-        this.$el?.scrollTo?.({ top: 0, behavior: 'smooth' })
-        window.scrollTo?.({ top: 0, behavior: 'smooth' })
+        this.$el?.querySelector('.node-workspace-body')?.scrollTo({ top: 0 })
+        this.$el?.scrollTo?.({ top: 0 })
+        window.scrollTo?.({ top: 0 })
       })
     },
     syncWorkspaceRoute(requestId, section = 'overview', { history = 'replace' } = {}) {
