@@ -982,6 +982,14 @@ def _completed_example_source(version, *, run_id=901, case_id=81):
 async def test_skill_examples_require_redaction_and_publish_as_immutable_versions(skill_db):
     version = await ensure_default_skill_version(skill_db)
     source_run = _completed_example_source(version)
+    source_run.input_snapshot["profile"].update(
+        birth_place="杭州某区",
+        current_residence="上海市静安区",
+        current_city="上海市",
+        postal_code="200040",
+        latitude=31.228,
+        longitude=121.445,
+    )
     skill_db.add(source_run)
     await skill_db.flush()
     candidate = await create_example_candidate(
@@ -997,6 +1005,14 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
 
     assert candidate.status == "CANDIDATE"
     assert candidate.input_context["profile"].get("name") is None
+    assert not {
+        "birth_place",
+        "current_residence",
+        "current_city",
+        "postal_code",
+        "latitude",
+        "longitude",
+    } & candidate.input_context["profile"].keys()
     assert "林女士" not in candidate.expected_output["summary"]
     assert "13812345678" not in candidate.expected_output["summary"]
     assert "1992-06-18" not in candidate.expected_output["summary"]
@@ -1016,13 +1032,22 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
         target_fragment_key=None,
         scenario_tags=["career", "职业发展"],
         applicability_json={"focus_topics": ["career"]},
-        input_context={"context": {"focus_topics": ["career"]}},
+        input_context={
+            "profile": {
+                "current_residence": "上海市静安区",
+                "home": {"city": "上海市", "postal_code": "200040"},
+            },
+            "context": {"focus_topics": ["career"]},
+        },
         expected_output={"summary": "使用小步尝试而非立即做出决定。"},
         teaching_points=["把建议写成可执行的小行动。"],
         anti_patterns=["保证某个确定结果"],
         quality_score=0.92,
         confirmed_deidentified=True,
     )
+    assert "current_residence" not in reviewed.input_context["profile"]
+    assert "city" not in reviewed.input_context["profile"]["home"]
+    assert "postal_code" not in reviewed.input_context["profile"]["home"]
     published = await publish_skill_example(
         skill_db, reviewed.id, reviewed_by=1
     )
