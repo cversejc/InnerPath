@@ -175,8 +175,6 @@ class AdminReportTaskResponse(BaseModel):
     error: Optional[str] = None
     retry_count: int = 0
     retry_of_task_id: Optional[str] = None
-    has_input_snapshot: bool = False
-    has_retry: bool = False
     created_at: datetime
     updated_at: datetime
 

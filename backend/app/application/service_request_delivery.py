@@ -1,19 +1,15 @@
 """Create and deliver final report or calendar artifacts."""
 
-from copy import deepcopy
-from datetime import date, datetime, time as dt_time
+from datetime import date, datetime
 from typing import Optional
 from uuid import uuid4
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
 from app.domains.calendar.models import CalendarEntry, UserCalendar
-from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft
 from app.models.user import User
-from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.domains.calendar.schemas import CalendarEntryInput
 from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
@@ -27,57 +23,6 @@ from app.domains.service_requests.staff import staff_can_access
 from app.application.report_delivery import deliver_report_case
 from app.application.report_cases import get_report_case_for_service_request
 
-
-async def _create_final_report(
-    db: AsyncSession,
-    service_request: ServiceRequest,
-    draft: ServiceRequestDraft,
-    actor: User,
-) -> Report:
-    payload = validate_draft("report", draft.editable_payload)
-    request_payload = service_request.request_payload or {}
-    profile = request_payload.get("profile") or {}
-    birth_date = solar_date_for_birth(
-        int(profile["birth_year"]),
-        int(profile["birth_month"]),
-        int(profile["birth_day"]),
-        calendar_type=profile.get("calendar_type", "solar"),
-        is_leap_month=bool(profile.get("birth_is_leap_month", False)),
-    )
-    birth_time = None
-    if profile.get("birth_hour") is not None:
-        birth_time = dt_time(int(profile["birth_hour"]), int(profile.get("birth_minute") or 0))
-    report = Report(
-        user_id=service_request.user_id,
-        request_id=service_request.id,
-        title=payload.get("title") or "辰鉴·人生说明书",
-        birth_date=birth_date,
-        birth_time=birth_time,
-        birth_calendar_type=profile.get("calendar_type", "solar"),
-        birth_place=profile.get("birth_place"),
-        input_snapshot={
-            "service_type": service_request.service_type,
-            "name": profile.get("name") or "用户",
-            **deepcopy(request_payload),
-        },
-        energy_profile=payload["energy_profile"],
-        career_guidance=payload["career_guidance"],
-        relationship_pattern=payload["relationship_pattern"],
-        personal_growth=payload["personal_growth"],
-        summary=payload.get("summary"),
-        content_payload=payload,
-        ai_raw_content=draft.ai_payload.get("ai_generated_content"),
-        ai_model=settings.DEEPSEEK_MODEL,
-        selected_topics=request_payload.get("selected_topics", []),
-        additional_info=request_payload.get("additional_info"),
-        reviewed_by=actor.id,
-        reviewed_at=datetime.utcnow(),
-        status="completed",
-        is_deleted=False,
-    )
-    db.add(report)
-    await db.flush()
-    return report
 
 async def _create_final_calendar(
     db: AsyncSession,
@@ -142,15 +87,16 @@ async def deliver_service_request(
         raise ValueError("service_request_not_found")
     if locked.service_type == "report":
         report_case = await get_report_case_for_service_request(db, locked.id)
-        if report_case is not None:
-            await deliver_report_case(
-                db,
-                report_case=report_case,
-                actor=actor,
-                audit_context=audit_context,
-            )
-            await db.refresh(locked)
-            return locked
+        if report_case is None:
+            raise ValueError("report_case_workflow_required")
+        await deliver_report_case(
+            db,
+            report_case=report_case,
+            actor=actor,
+            audit_context=audit_context,
+        )
+        await db.refresh(locked)
+        return locked
     if locked.status == "delivered":
         return locked
     if locked.status not in {"ai_ready", "reviewing"}:
@@ -158,12 +104,8 @@ async def deliver_service_request(
     draft = await _get_draft(db, locked.id)
     if draft is None:
         raise ValueError("service_request_draft_not_found")
-    if locked.service_type == "report":
-        result = await _create_final_report(db, locked, draft, actor)
-        result_type = "report"
-    else:
-        result = await _create_final_calendar(db, locked, draft, actor)
-        result_type = "calendar"
+    result = await _create_final_calendar(db, locked, draft, actor)
+    result_type = "calendar"
     locked.status = "delivered"
     locked.result_type = result_type
     locked.result_id = result.id

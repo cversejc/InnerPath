@@ -7,7 +7,7 @@ from app.api.v1.report_cases import _authorize_step_action
 from app.api.v1.service_request_api_support import project_report_case_status
 from app.application.report_cases import (
     create_user_service_request,
-    ensure_legacy_report_request,
+    ensure_legacy_service_request_allowed,
 )
 from app.domains.service_requests.payloads import payload_from_create
 from app.domains.service_requests.schemas import (
@@ -160,26 +160,16 @@ async def test_consultant_cannot_open_unassigned_case_or_ungranted_capability():
     assert missing_capability.value.status_code == 403
 
 
-@pytest.mark.asyncio
-async def test_case_backed_report_cannot_use_legacy_service_request_workflow():
+def test_report_request_cannot_use_legacy_service_request_workflow():
     request = SimpleNamespace(id=30, service_type="report")
-    db = SimpleNamespace(scalar=AsyncMock(return_value=SimpleNamespace(id=81)))
-
     with pytest.raises(ValueError, match="report_case_workflow_required"):
-        await ensure_legacy_report_request(db, request)
-
-    db.scalar.assert_awaited_once()
+        ensure_legacy_service_request_allowed(request)
 
 
-@pytest.mark.asyncio
-async def test_calendar_request_keeps_legacy_service_request_workflow():
-    db = SimpleNamespace(scalar=AsyncMock())
-
-    await ensure_legacy_report_request(
-        db, SimpleNamespace(id=30, service_type="calendar")
+def test_calendar_request_keeps_legacy_service_request_workflow():
+    ensure_legacy_service_request_allowed(
+        SimpleNamespace(id=30, service_type="calendar")
     )
-
-    db.scalar.assert_not_awaited()
 
 
 @pytest.mark.asyncio

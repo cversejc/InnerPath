@@ -91,10 +91,9 @@ async def get_report_case_for_service_request(
     )
 
 
-async def ensure_legacy_report_request(db: AsyncSession, request: ServiceRequest) -> None:
-    if request.service_type != "report":
-        return
-    if await get_report_case_for_service_request(db, request.id):
+def ensure_legacy_service_request_allowed(request: ServiceRequest) -> None:
+    """Keep the legacy AI-draft endpoints available for calendars only."""
+    if request.service_type == "report":
         raise ValueError("report_case_workflow_required")
 
 

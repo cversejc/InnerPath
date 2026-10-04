@@ -24,7 +24,7 @@ from app.api.v1.service_request_api_support import _raise_value_error, _serializ
 from app.application.report_cases import (
     cancel_report_case_for_service_request,
     create_user_service_request,
-    ensure_legacy_report_request,
+    ensure_legacy_service_request_allowed,
 )
 
 router = APIRouter()
@@ -82,7 +82,7 @@ async def update_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        await ensure_legacy_report_request(db, service_request)
+        ensure_legacy_service_request_allowed(service_request)
         service_request = await update_user_service_request(
             db,
             service_request,
@@ -106,7 +106,7 @@ async def resubmit_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        await ensure_legacy_report_request(db, service_request)
+        ensure_legacy_service_request_allowed(service_request)
         service_request = await resubmit_service_request(
             db,
             service_request,

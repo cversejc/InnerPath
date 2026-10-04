@@ -63,6 +63,7 @@ def test_legacy_direct_report_generation_route_is_deprecated():
         if "POST" in route.methods and route.endpoint.__name__ == "create_report"
     )
     assert route.deprecated is True
+    assert route.status_code == 410
 
 
 def test_workflow_definition_rejects_duplicate_keys_and_sequence_gaps():

@@ -80,3 +80,29 @@ async def test_report_with_case_is_delivered_through_case_gate(monkeypatch):
     deliver_case.assert_awaited_once()
     assert deliver_case.await_args.kwargs["report_case"] is report_case
     legacy_draft.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_report_without_case_cannot_use_legacy_draft_delivery(monkeypatch):
+    request = SimpleNamespace(
+        id=25,
+        service_type="report",
+        status="ai_ready",
+        user_id=42,
+    )
+    actor = SimpleNamespace(id=8, role="admin")
+    db = SimpleNamespace(scalar=AsyncMock(return_value=None))
+    legacy_draft = AsyncMock()
+
+    monkeypatch.setattr(service_request_delivery, "staff_can_access", lambda *_: True)
+    monkeypatch.setattr(
+        service_request_delivery,
+        "_get_request_for_update",
+        AsyncMock(return_value=request),
+    )
+    monkeypatch.setattr(service_request_delivery, "_get_draft", legacy_draft)
+
+    with pytest.raises(ValueError, match="report_case_workflow_required"):
+        await service_request_delivery.deliver_service_request(db, request, actor)
+
+    legacy_draft.assert_not_awaited()

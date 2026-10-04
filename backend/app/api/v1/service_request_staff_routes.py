@@ -21,7 +21,7 @@ from app.domains.service_requests.schemas import (
 )
 from app.application.service_request_delivery import deliver_service_request
 from app.application.service_request_ai import start_service_request_ai_draft
-from app.application.report_cases import ensure_legacy_report_request
+from app.application.report_cases import ensure_legacy_service_request_allowed
 from app.domains.service_requests.service import (
     accept_service_request,
     get_service_request,
@@ -138,7 +138,7 @@ async def start_ai_draft(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        await ensure_legacy_report_request(db, service_request)
+        ensure_legacy_service_request_allowed(service_request)
         task = await start_service_request_ai_draft(
             db,
             service_request,
@@ -163,7 +163,7 @@ async def save_staff_draft(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        await ensure_legacy_report_request(db, service_request)
+        ensure_legacy_service_request_allowed(service_request)
         draft = await save_service_request_draft(
             db,
             service_request,
@@ -195,7 +195,7 @@ async def request_staff_info(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        await ensure_legacy_report_request(db, service_request)
+        ensure_legacy_service_request_allowed(service_request)
         service_request = await request_more_info(
             db,
             service_request,
@@ -220,7 +220,7 @@ async def retry_staff_ai(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
-        await ensure_legacy_report_request(db, service_request)
+        ensure_legacy_service_request_allowed(service_request)
         task = await start_service_request_ai_draft(
             db,
             service_request,

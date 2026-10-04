@@ -62,7 +62,6 @@ export default {
       taskFilters: { search: '', status: '' },
       taskPage: 1,
       taskPageSize: 12,
-      reportRetryLimit: 2,
       auditLogs: { ...EMPTY_PAGE },
       auditLoading: false,
       logFilters: { search: '', action: '', resource_type: '', actor_user_id: '', target_user_id: '', date_from: '', date_to: '' },

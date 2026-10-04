@@ -1,6 +1,10 @@
+import asyncio
 from datetime import date, datetime
 from types import SimpleNamespace
 
+import httpx
+
+from app.dependencies import get_current_active_user
 from app.main import app
 from app.domains.reports.schemas import ReportResponse
 from app.domains.reports.service import format_report_response
@@ -25,6 +29,45 @@ def test_report_router_keeps_task_and_report_endpoints_registered():
         ("/api/v1/reports/{report_id}", "GET"),
         ("/api/v1/reports/{report_id}", "DELETE"),
     }.issubset(routes)
+
+
+def test_legacy_report_generation_and_retry_are_retired_without_creating_tasks():
+    async def request_retired_endpoints():
+        previous_overrides = dict(app.dependency_overrides)
+
+        async def admin_user():
+            return SimpleNamespace(id=1, role="admin", is_active=True)
+
+        app.dependency_overrides[get_current_active_user] = admin_user
+        try:
+            async with httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=app), base_url="http://test"
+            ) as client:
+                create_response = await client.post(
+                    "/api/v1/reports", json={"name": "legacy"}
+                )
+                retry_response = await client.post(
+                    "/api/v1/admin/report-tasks/legacy-task/retry"
+                )
+            return create_response, retry_response
+        finally:
+            app.dependency_overrides = previous_overrides
+
+    create_response, retry_response = asyncio.run(request_retired_endpoints())
+    assert create_response.status_code == 410
+    assert "服务申请" in create_response.json()["detail"]
+    assert retry_response.status_code == 410
+    assert "服务申请工作流" in retry_response.json()["detail"]
+
+    openapi = app.openapi()
+    direct_report_operation = openapi["paths"]["/api/v1/reports"]["post"]
+    retry_operation = openapi["paths"][
+        "/api/v1/admin/report-tasks/{task_id}/retry"
+    ]["post"]
+    assert direct_report_operation["deprecated"] is True
+    assert "410" in direct_report_operation["responses"]
+    assert retry_operation["deprecated"] is True
+    assert "410" in retry_operation["responses"]
 
 
 def test_report_response_normalizes_decision_style_from_application_snapshot():
