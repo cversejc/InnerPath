@@ -13,7 +13,12 @@ from .skill_definitions import default_calendar_skill_specifications
 from .temporal import calculate_temporal_facts
 from .generation import validate_generated_calendar
 from .context import calendar_model_context
-from .practices import plan_practice_schedule, validate_practice_entry, validate_practice_schedule
+from .practices import (
+    plan_practice_schedule,
+    project_scheduled_actions_for_authoring,
+    validate_practice_entry,
+    validate_practice_schedule,
+)
 
 
 async def ensure_calendar_skills(db):
@@ -69,7 +74,9 @@ def validate_daily(row, analysis, facts, *, practice_rhythm=None, available_minu
         raise ValueError("calendar_summary_length_invalid")
     if not isinstance(row.get("keyword"), str) or not 2 <= len(row["keyword"].split("、")) <= 4:
         raise ValueError("calendar_keywords_invalid")
-    if not isinstance(row.get("suitable"), list) or not 2 <= len(row["suitable"]) <= 3 or any(not isinstance(s, str) or not s.strip() for s in row["suitable"]):
+    max_suitable = min(5, max(3, 2 + len(scheduled_refs or [])))
+    if (not isinstance(row.get("suitable"), list) or not 2 <= len(row["suitable"]) <= max_suitable
+            or any(not isinstance(s, str) or not s.strip() for s in row["suitable"])):
         raise ValueError("calendar_directions_invalid")
     if not row.get("energy_awareness") or not row.get("tone_explanation"):
         raise ValueError("calendar_awareness_required")
@@ -156,6 +163,12 @@ async def produce_calendar(db, request, *, gateway=None):
                     day: refs for day, refs in inputs["practice_schedule"].items()
                     if day in extra["requested_dates"]
                 }
+        if key == "calendar.daily_authoring" and "requested_dates" in extra:
+            scoped_report, scheduled_by_date = project_scheduled_actions_for_authoring(
+                inputs.get("source_report"), inputs.get("practice_schedule"), extra["requested_dates"]
+            )
+            inputs["source_report"] = scoped_report
+            inputs["scheduled_practice_by_date"] = scheduled_by_date
         if key == "calendar.calibration":
             analysis_map = {a["entry_date"]: a for a in inputs.pop("temporal_analysis")}
             facts_map = {f["entry_date"]: f for f in inputs["temporal_facts"].pop("days")}
@@ -226,7 +239,7 @@ async def produce_calendar(db, request, *, gateway=None):
                     "previous_output": log.output_parsed or log.output_raw,
                     "summary_character_counts": [{"entry_date": e.get("entry_date"), "characters": len(e.get("summary") or "")}
                         for e in (log.output_parsed or {}).get("entries", [])],
-                    "format_repair_instruction": f"上次输出未通过程序校验：{execution_error}。只修复结构或来源错误，重新返回本阶段完整JSON，不改变系统日期、干支、色块或窗口。windows每项含period、label、suggestion；daily summary含标点目标35–45字符，必须30–60字符；keyword用顿号连接2–4词；source_refs只能用allowed_source_refs。逐日文案必须带action_refs数组，只能引用报告行动并遵守每日时间预算与频率。校准MAJOR/BLOCK必须给出field_path和observed_text逐字引用实际交付文案；只评文案，不重排或质疑固定facts，不把已核验字段说成缺失。不得通过把approved改为true绕过质量问题。"}, validator)
+                    "format_repair_instruction": f"上次输出未通过程序校验：{execution_error}。只修复结构或来源错误，重新返回本阶段完整JSON，不改变系统日期、干支、色块或窗口。若错误包含calendar_practice_schedule_mismatch，逐日照抄错误详情中的expected数组，actual数组一律视为错误；不得添加未排入的报告Action，也不得在suitable中安排未排入行动的步骤。scheduled_practice_by_date是本批唯一可执行的报告行动清单，practice_schedule是最终排程。windows每项含period、label、suggestion；daily summary含标点目标35–45字符，必须30–60字符；keyword用顿号连接2–4词；source_refs只能用allowed_source_refs。逐日文案必须带action_refs数组，只能引用报告行动并遵守每日时间预算与频率。校准MAJOR/BLOCK必须给出field_path和observed_text逐字引用实际交付文案；只评文案，不重排或质疑固定facts，不把已核验字段说成缺失。不得通过把approved改为true绕过质量问题。"}, validator)
             raise execution_error
         runs.append(log.id)
         return result.output_parsed
@@ -270,14 +283,26 @@ async def produce_calendar(db, request, *, gateway=None):
     base["monthly"] = monthly
     def action_overview(rows):
         return [{k: row.get(k) for k in ("entry_date", "keyword", "suitable", "energy_awareness", "action_refs")} for row in rows]
+    def validate_daily_batch(output, dates):
+        require_dates(output.get("entries"), dates)
+        mismatches = []
+        for entry in output["entries"]:
+            day = entry["entry_date"]
+            expected = practice_schedule[day]
+            actual = entry.get("action_refs")
+            if actual != expected:
+                mismatches.append({"entry_date": day, "expected": expected, "actual": actual})
+            canonical = {**entry, "action_refs": expected}
+            validate_daily(canonical, analysis_by_date[day], fact_by_date[day],
+                practice_rhythm=practice_rhythm, available_minutes_per_day=available_minutes,
+                scheduled_refs=expected, require_action_refs=require_action_refs)
+        if mismatches:
+            raise ValueError("calendar_practice_schedule_mismatch:" + json.dumps(mismatches, ensure_ascii=False, separators=(",", ":")))
+
     entries = []
     for batch_no, dates in enumerate(batches):
         def validate_entries(output):
-            require_dates(output.get("entries"), dates)
-            for entry in output["entries"]:
-                validate_daily(entry, analysis_by_date[entry["entry_date"]], fact_by_date[entry["entry_date"]],
-                    practice_rhythm=practice_rhythm, available_minutes_per_day=available_minutes,
-                    scheduled_refs=practice_schedule[entry["entry_date"]], require_action_refs=require_action_refs)
+            validate_daily_batch(output, dates)
         entries.extend((await run("calendar.daily_authoring", str(batch_no),
             {"requested_dates": dates, "calendar_action_overview": action_overview(entries)}, validate_entries))["entries"])
     original = {e["entry_date"]: e for e in entries}
@@ -349,11 +374,7 @@ async def produce_calendar(db, request, *, gateway=None):
                 base["monthly"] = monthly
             for batch_no, dates in enumerate(batches if daily_feedback else []):
                 def validate_rewrite(output):
-                    require_dates(output.get("entries"), dates)
-                    for entry in output["entries"]:
-                        validate_daily(entry, analysis_by_date[entry["entry_date"]], fact_by_date[entry["entry_date"]],
-                            practice_rhythm=practice_rhythm, available_minutes_per_day=available_minutes,
-                            scheduled_refs=practice_schedule[entry["entry_date"]], require_action_refs=require_action_refs)
+                    validate_daily_batch(output, dates)
                 rewritten = await run("calendar.daily_authoring", f"review:{review_round}:{batch_no}",
                     {"requested_dates": dates, "quality_feedback": daily_feedback,
                      "calendar_action_overview": action_overview(original.values()),

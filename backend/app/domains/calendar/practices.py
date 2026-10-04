@@ -1,6 +1,8 @@
 """Project and schedule practices from a delivered ReportVersion."""
 
 from datetime import date
+from copy import deepcopy
+import json
 
 
 FREQUENCIES = {"daily", "weekly", "monthly", "quarterly"}
@@ -84,6 +86,36 @@ def project_report_practices(semantics, report_version_id):
     }
 
 
+def project_scheduled_actions_for_authoring(source_report, schedule, dates):
+    """Give a daily authoring batch only the report actions scheduled within it."""
+    report = deepcopy(source_report or {})
+    rhythm = report.get("practice_rhythm") or {"actions": [], "unavailable_actions": []}
+    actions = [row for row in rhythm.get("actions", []) if isinstance(row, dict)]
+    by_id = {row.get("action_id"): row for row in actions if isinstance(row.get("action_id"), str)}
+    scheduled_ids = {
+        action_id
+        for day in dates
+        for action_id in (schedule or {}).get(day, [])
+        if isinstance(action_id, str)
+    }
+    rhythm["actions"] = [row for row in actions if row.get("action_id") in scheduled_ids]
+    report["practice_rhythm"] = rhythm
+
+    semantics = report.get("confirmed_semantics") or {}
+    semantics["findings"] = [
+        row for row in semantics.get("findings", [])
+        if not isinstance(row, dict)
+        or str(row.get("semantic_role", "")).upper() != "ACTION"
+        or row.get("finding_key") in scheduled_ids
+    ]
+    report["confirmed_semantics"] = semantics
+    by_date = {
+        day: [by_id[action_id] for action_id in (schedule or {}).get(day, []) if action_id in by_id]
+        for day in dates
+    }
+    return report, by_date
+
+
 def plan_practice_schedule(practices, dates, available_minutes_per_day):
     if (
         not isinstance(available_minutes_per_day, int)
@@ -103,9 +135,18 @@ def plan_practice_schedule(practices, dates, available_minutes_per_day):
     minutes = {key: 0 for key in dates}
     unavailable = []
     rank = {"daily": 0, "weekly": 1, "monthly": 2, "quarterly": 3}
+
+    def action_priority(item):
+        duration = item.get("duration_minutes")
+        if not isinstance(duration, int) or isinstance(duration, bool):
+            duration = 0
+        action_id = item.get("action_id")
+        return rank.get(item.get("frequency"), 4), -duration, str(action_id or "")
+
     actions = sorted(
         (action for action in (practices or {}).get("actions", []) if isinstance(action, dict)),
-        key=lambda item: (rank.get(item.get("frequency"), 4), item.get("duration_minutes", 0), item.get("action_id", "")),
+        # Place longer practices first so small items do not fragment tight end-period capacity.
+        key=action_priority,
     )
     for action in actions:
         key = action.get("action_id")
@@ -164,7 +205,9 @@ def validate_practice_entry(row, practices, available_minutes_per_day, scheduled
     if len(refs) != len(set(refs)) or any(ref not in actions for ref in refs):
         raise ValueError("calendar_action_reference_invalid")
     if scheduled_refs is not None and refs != scheduled_refs:
-        raise ValueError("calendar_practice_schedule_mismatch")
+        detail = json.dumps({"entry_date": row.get("entry_date"), "expected": scheduled_refs, "actual": refs},
+                            ensure_ascii=False, separators=(",", ":"))
+        raise ValueError(f"calendar_practice_schedule_mismatch:{detail}")
     if any(actions[ref].get("duration_minutes", available_minutes_per_day + 1) > available_minutes_per_day for ref in refs):
         raise ValueError("calendar_practice_time_budget_exceeded")
     if sum(actions[ref]["duration_minutes"] for ref in refs) > available_minutes_per_day:

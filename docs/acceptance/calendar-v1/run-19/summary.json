@@ -1,0 +1,185 @@
+{
+  "status": "fulfilled",
+  "request_id": 1,
+  "synthetic": true,
+  "database": "isolated-memory",
+  "source": "C:\\Users\\21815\\Desktop\\Project\\innerseek\\docs\\acceptance\\framework-v1\\full",
+  "generation": {
+    "status": "COMPLETED",
+    "attempt": 1,
+    "completed_runs": 9,
+    "total_runs": 9,
+    "started_at": "2026-10-04T15:08:35.601511",
+    "stage": "calendar.calibration",
+    "heartbeat_at": "2026-10-04T15:10:49.977008",
+    "calendar_id": 1,
+    "completed_at": "2026-10-04T15:11:39.053178"
+  },
+  "calendar_skill_bindings": {
+    "calendar.temporal_analysis": {
+      "id": 2,
+      "version": 1,
+      "sha256": "ef4e584a74df50708bbaea08ea9e1720ebd650256c51b13ee43472bfde24288f"
+    },
+    "calendar.monthly_tone": {
+      "id": 3,
+      "version": 1,
+      "sha256": "8cd0ed9f133d62fa59322b0faab24f8ed3a57fdd6bbc90a136dcd4d0e126998b"
+    },
+    "calendar.daily_authoring": {
+      "id": 4,
+      "version": 1,
+      "sha256": "d77c998f461164a0538ee82e40681933c4bc8635058e525d8c58e3d18e740fa2"
+    },
+    "calendar.calibration": {
+      "id": 5,
+      "version": 1,
+      "sha256": "ced29c57b1a94524ee8ad80ce2ceb077964718573ae56f6375903531e56898b0"
+    }
+  },
+  "fixture_report": {
+    "report_case_id": 1,
+    "report_id": 1,
+    "report_version_id": 1,
+    "frozen": true,
+    "finding_count": 33,
+    "action_ids": [
+      "s4.action.boundary_script",
+      "s4.action.enough_good_delivery",
+      "s4.action.pause_before_yes",
+      "s4.action.weekly_shadow_review"
+    ],
+    "unavailable_actions": []
+  },
+  "practice_schedule": {
+    "2026-10-04": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-05": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-06": [
+      "s4.action.pause_before_yes",
+      "s4.action.enough_good_delivery"
+    ],
+    "2026-10-07": [
+      "s4.action.pause_before_yes",
+      "s4.action.weekly_shadow_review"
+    ],
+    "2026-10-08": [
+      "s4.action.pause_before_yes",
+      "s4.action.boundary_script"
+    ],
+    "2026-10-09": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-10": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-11": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-12": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-13": [
+      "s4.action.pause_before_yes",
+      "s4.action.enough_good_delivery"
+    ],
+    "2026-10-14": [
+      "s4.action.pause_before_yes",
+      "s4.action.weekly_shadow_review"
+    ],
+    "2026-10-15": [
+      "s4.action.pause_before_yes",
+      "s4.action.boundary_script"
+    ],
+    "2026-10-16": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-17": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-18": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-19": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-20": [
+      "s4.action.pause_before_yes",
+      "s4.action.enough_good_delivery"
+    ],
+    "2026-10-21": [
+      "s4.action.pause_before_yes",
+      "s4.action.weekly_shadow_review"
+    ],
+    "2026-10-22": [
+      "s4.action.pause_before_yes",
+      "s4.action.boundary_script"
+    ],
+    "2026-10-23": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-24": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-25": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-26": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-27": [
+      "s4.action.pause_before_yes",
+      "s4.action.enough_good_delivery"
+    ],
+    "2026-10-28": [
+      "s4.action.pause_before_yes",
+      "s4.action.weekly_shadow_review"
+    ],
+    "2026-10-29": [
+      "s4.action.pause_before_yes",
+      "s4.action.boundary_script"
+    ],
+    "2026-10-30": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-10-31": [
+      "s4.action.pause_before_yes"
+    ],
+    "2026-11-01": [
+      "s4.action.pause_before_yes",
+      "s4.action.weekly_shadow_review"
+    ],
+    "2026-11-02": [
+      "s4.action.pause_before_yes",
+      "s4.action.enough_good_delivery",
+      "s4.action.boundary_script"
+    ]
+  },
+  "available_minutes_per_day": 30,
+  "practice_schedule_audit": {
+    "report_action_count": 4,
+    "scheduled_action_ids": [
+      "s4.action.boundary_script",
+      "s4.action.enough_good_delivery",
+      "s4.action.pause_before_yes",
+      "s4.action.weekly_shadow_review"
+    ],
+    "action_placement_counts": {
+      "s4.action.pause_before_yes": 30,
+      "s4.action.enough_good_delivery": 5,
+      "s4.action.weekly_shadow_review": 5,
+      "s4.action.boundary_script": 5
+    },
+    "unavailable_actions": [],
+    "unaccounted_action_ids": [],
+    "scheduled_days": 30,
+    "matching_reference_days": 30,
+    "reference_mismatches": [],
+    "available_minutes_per_day": 30,
+    "max_daily_minutes": 30,
+    "over_budget_days": []
+  }
+}
