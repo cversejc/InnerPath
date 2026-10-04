@@ -760,6 +760,7 @@ async def execute_skill_run_record(
                 "evaluation",
                 "analysis_step_key",
                 "analysis_activation_no",
+                "analysis_feedback_source_run_id",
             )
             if key in prior_context
         }

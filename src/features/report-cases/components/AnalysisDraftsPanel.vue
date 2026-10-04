@@ -3,25 +3,52 @@
     <div class="analysis-drafts-heading">
       <div>
         <p class="eyebrow">本步骤的辅助建议</p>
-        <h3>建议内容与人工审核</h3>
+        <h3>AI 生成建议与人工审核</h3>
       </div>
       <span>{{ stageRuns.length }} 份建议记录</span>
     </div>
-    <p class="analysis-drafts-notice">以下内容仅供参考。只有经过你审核并确认后，才会用于后续报告。</p>
+    <p class="analysis-drafts-notice">以下是 AI 生成的候选判断与分析，不是用户事实，也不是已确认结论。请对照标出的原始资料依据审核；只有你确认后，内容才会用于后续报告。</p>
 
     <div v-if="!stageRuns.length" class="analysis-drafts-empty">
       还没有本步骤的建议。开始处理后，可以生成一份基于用户情境和前序已确认内容的参考意见。
     </div>
 
     <label v-if="stageRuns.length" class="analysis-run-select">技能运行记录<select v-model="activeRunId"><option v-for="(record, index) in stageRuns" :key="record.id" :value="String(record.id)">记录 {{ stageRuns.length - index }} · {{ formatDate(record.created_at) }} · {{ runStatusLabel(record.status) }}</option></select></label>
+    <form v-if="visibleRuns[0]?.status === 'COMPLETED' && !readOnly && currentStep" class="analysis-feedback" @submit.prevent="submitFeedback">
+      <label for="analysis-feedback">本次结果不合适？告诉 AI 哪些地方需要调整</label>
+      <VanField
+        id="analysis-feedback"
+        v-model="feedbackText"
+        class="analysis-feedback-field"
+        type="textarea"
+        rows="3"
+        autosize
+        maxlength="4000"
+        show-word-limit
+        :disabled="feedbackSaving || feedbackDisabled"
+        placeholder="例如：请区分用户原话和推断；这条判断缺少资料依据，请按已有证据重新分析。"
+      />
+      <div class="analysis-feedback-actions">
+        <small>反馈只影响下一次运行，不会修改已发布的技能或自动写入报告。</small>
+        <VanButton class="secondary-button compact-button" plain native-type="submit" :disabled="feedbackSaving || feedbackDisabled || !feedbackText.trim()" :loading="feedbackSaving">
+          {{ feedbackSaving ? '正在重新生成' : '提交反馈并重跑' }}
+        </VanButton>
+      </div>
+    </form>
     <article v-for="run in visibleRuns" :key="run.id" class="analysis-run">
       <header class="analysis-run-header">
         <div>
-          <strong>分析建议</strong>
+          <strong>AI 候选分析</strong>
           <span class="analysis-run-state" :class="`run-${String(run.status).toLowerCase()}`">{{ runStatusLabel(run.status) }}</span>
+          <small v-if="run.context_snapshot?.analysis_feedback_source_run_id">根据运行记录 {{ run.context_snapshot.analysis_feedback_source_run_id }} 的结果重跑</small>
         </div>
         <small v-if="run.created_at">生成于 {{ formatDate(run.created_at) }}</small>
       </header>
+
+      <details v-if="run.runtime_instruction" class="analysis-run-feedback">
+        <summary>本次咨询师反馈</summary>
+        <p>{{ run.runtime_instruction }}</p>
+      </details>
 
       <p v-if="run.status === 'FAILED'" class="analysis-run-error" role="alert">建议暂时无法生成，请稍后重试。{{ friendlyError(run.error) }}</p>
       <div v-else-if="['PENDING', 'RUNNING'].includes(run.status)" class="analysis-run-pending" role="status">
@@ -44,7 +71,7 @@
           <h4>当前判断建议</h4>
           <article v-for="candidate in selectedCandidates(run.output_parsed.findings, 'finding_key')" :key="candidate.finding_key" class="analysis-candidate">
             <div class="analysis-candidate-title">
-              <strong>{{ candidate.kind === 'SIGNAL' ? '待验证线索' : '专业判断建议' }}</strong>
+              <strong>{{ candidate.kind === 'SIGNAL' ? 'AI 提出的待验证线索' : 'AI 专业判断候选' }}</strong>
               <span>{{ candidate.kind === 'SIGNAL' ? '需要更多资料验证' : '需要咨询师审核' }}</span>
             </div>
             <p>{{ consultantText(candidate.claim, '这条建议暂时无法用中文展示，请重新生成后再审核。') }}</p>
@@ -82,7 +109,7 @@
         <div v-if="candidateKind==='fragments' && run.output_parsed.analysis_fragments?.length" class="analysis-candidate-group">
           <h4>当前分析建议</h4>
           <article v-for="candidate in selectedCandidates(run.output_parsed.analysis_fragments, 'fragment_key')" :key="candidate.fragment_key" class="analysis-candidate analysis-fragment-candidate">
-            <div class="analysis-candidate-title"><strong>{{ consultantText(candidate.title, '分析内容建议') }}</strong><span>报告内容</span></div>
+            <div class="analysis-candidate-title"><strong>{{ consultantText(candidate.title, 'AI 分析内容候选') }}</strong><span>AI 生成 · 尚未确认</span></div>
             <p>{{ consultantText(candidate.content, '这段建议暂时无法用中文展示，请重新生成后再审核。') }}</p>
             <small class="analysis-candidate-source">关联 {{ candidate.finding_refs?.length || 0 }} 条专业判断和 {{ candidate.evidence_refs?.length || 0 }} 项资料依据</small>
             <div class="analysis-candidate-action">
@@ -116,15 +143,15 @@
 </template>
 
 <script>
-import { Button as VanButton } from 'vant'
+import { Button as VanButton, Field as VanField } from 'vant'
 import WorkbenchRecordPicker from './WorkbenchRecordPicker.vue'
 import { reportEvidenceTitle } from '../workbench-inputs.js'
 import { formatDate } from '../../service-requests/formatters.js'
 
 export default {
   name: 'AnalysisDraftsPanel',
-  components: { VanButton, WorkbenchRecordPicker },
-  data: () => ({ selectedRunId: '', selectedCandidateKey: '', candidateKind: 'findings' }),
+  components: { VanButton, VanField, WorkbenchRecordPicker },
+  data: () => ({ selectedRunId: '', selectedCandidateKey: '', candidateKind: 'findings', feedbackText: '' }),
   props: {
     readOnly: Boolean,
     runs: { type: Array, default: () => [] },
@@ -133,11 +160,20 @@ export default {
     currentStep: { type: Object, default: null },
     saving: { type: Boolean, default: false },
     savingFindingKey: { type: String, default: '' },
-    savingFragmentKey: { type: String, default: '' }
+    savingFragmentKey: { type: String, default: '' },
+    feedbackSaving: { type: Boolean, default: false },
+    feedbackDisabled: { type: Boolean, default: false }
   },
-  emits: ['apply-finding', 'apply-fragment'],
+  emits: ['apply-finding', 'apply-fragment', 'rerun-with-feedback'],
   methods: {
     formatDate,
+    submitFeedback() {
+      const feedback = this.feedbackText.trim()
+      if (!feedback || this.readOnly || !this.currentStep || this.feedbackSaving) return
+      const sourceRunId = this.visibleRuns[0]?.id
+      if (!sourceRunId) return
+      this.$emit('rerun-with-feedback', { runtimeInstruction: feedback, sourceRunId })
+    },
     appliedStatus(status) { return ({CONFIRMED:'已加入并确认',REJECTED:'已加入并拒绝',STALE:'已加入，需重新审核'})[status] || '已加入，待审核' },
     selectedCandidates(items, field) { const item = (items || []).find(row => row[field] === this.selectedCandidateKey) || items?.[0]; return item ? [item] : [] },
     runStatusLabel(status) {

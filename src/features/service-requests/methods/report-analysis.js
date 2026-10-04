@@ -5,17 +5,32 @@ import {
 } from '../../report-cases/api.js'
 
 export default {
-  async startReportAnalysisDraft() {
+  async startReportAnalysisDraft(feedbackRequest = null) {
     const step = this.currentReportStep
-    if (!this.reportCase || !step || !['S1', 'S2', 'S3', 'S4'].includes(step.step_key) || step.status !== 'IN_REVIEW' || this.reportAnalysisSaving) return
+    if (!this.reportCase || !step || !['S1', 'S2', 'S3', 'S4'].includes(step.step_key) || step.status !== 'IN_REVIEW' || this.reportAnalysisPending) return
+    const runtimeInstruction = typeof feedbackRequest === 'string'
+      ? feedbackRequest
+      : feedbackRequest?.runtimeInstruction || null
+    const sourceRunId = typeof feedbackRequest === 'object'
+      ? Number(feedbackRequest?.sourceRunId) || null
+      : null
+    const feedback = String(runtimeInstruction || '').trim()
+    if (feedback.length > 4000) {
+      this.message = '反馈不能超过 4000 个字符。'
+      return
+    }
     this.reportAnalysisSaving = true
     try {
       const activation = step.activation_no || 1
       await startReportCaseAnalysisDraft(this.reportCase.id, step.step_key, {
-        idempotency_key: `case-${this.reportCase.id}-${step.step_key}-activation-${activation}-${Date.now()}`
+        idempotency_key: `case-${this.reportCase.id}-${step.step_key}-activation-${activation}-${globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`}`,
+        runtime_instruction: feedback || null,
+        source_run_id: feedback ? sourceRunId : null
       })
       await this.loadReportCaseData(this.reportCase.id)
-      this.message = `${this.reportStepLabel(step.step_key)}的分析建议已开始生成。`
+      this.message = feedback
+        ? `${this.reportStepLabel(step.step_key)}已收到反馈，正在按本次要求重新生成建议。`
+        : `${this.reportStepLabel(step.step_key)}的分析建议已开始生成。`
     } catch (error) {
       this.message = this.errorText(error)
     } finally {

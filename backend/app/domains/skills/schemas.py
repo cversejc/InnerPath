@@ -44,6 +44,10 @@ class StepSkillRunCreate(BaseModel):
     runtime_instruction: Optional[str] = Field(None, max_length=4000)
 
 
+class ReportAnalysisDraftCreate(StepSkillRunCreate):
+    source_run_id: Optional[int] = Field(None, ge=1)
+
+
 class SkillRunResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True, protected_namespaces=())
 
@@ -58,6 +62,7 @@ class SkillRunResponse(BaseModel):
     status: str
     input_snapshot: dict[str, Any]
     context_snapshot: dict[str, Any]
+    runtime_instruction: Optional[str] = None
     output_raw: Optional[str] = None
     output_parsed: Optional[dict[str, Any]] = None
     selected_examples: list[Any]
@@ -82,6 +87,7 @@ class ConsultantSkillRunResponse(BaseModel):
     run_type: str
     status: str
     context_snapshot: dict[str, Any]
+    runtime_instruction: Optional[str] = None
     selected_examples: list[Any]
     selected_knowledge: list[Any]
     output_parsed: Optional[dict[str, Any]] = None

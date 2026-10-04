@@ -91,7 +91,11 @@ from app.domains.workflow.models import (
     WorkflowVersion,
 )
 from app.domains.skills.models import SkillRun
-from app.domains.skills.schemas import SkillRunResponse, StepSkillRunCreate
+from app.domains.skills.schemas import (
+    ReportAnalysisDraftCreate,
+    SkillRunResponse,
+    StepSkillRunCreate,
+)
 from app.domains.workflow.schemas import (
     ReportCaseListResponse,
     ReportCaseResponse,
@@ -949,7 +953,7 @@ async def start_report_case_step(
 async def start_report_case_analysis_draft(
     case_id: int,
     step_key: str,
-    data: StepSkillRunCreate,
+    data: ReportAnalysisDraftCreate,
     current_user: User = Depends(require_roles("admin", "consultant")),
     db: AsyncSession = Depends(get_db),
 ):
@@ -961,6 +965,7 @@ async def start_report_case_analysis_draft(
             actor=current_user,
             idempotency_key=data.idempotency_key,
             runtime_instruction=data.runtime_instruction,
+            source_run_id=data.source_run_id,
         )
         return run
     except ValueError as error:

@@ -250,7 +250,7 @@
                 </section>
 
                 <section v-if="workspaceSection === 'suggestions'" class="report-data-panel" aria-label="本节点技能建议">
-                  <AnalysisDraftsPanel :key="selectedReportStepKey" :runs="reportAnalysisRuns" :content="reportCaseContent" :step-key="selectedReportStepKey" :current-step="canEditSelectedReportStep ? currentReportStep : null" :read-only="!canEditSelectedReportStep" :saving="Boolean(reportAnalysisFindingSavingKey || reportAnalysisFragmentSavingKey)" :saving-finding-key="reportAnalysisFindingSavingKey" :saving-fragment-key="reportAnalysisFragmentSavingKey" @apply-finding="applyReportAnalysisFinding" @apply-fragment="applyReportAnalysisFragment" />
+                  <AnalysisDraftsPanel :key="selectedReportStepKey" :runs="reportAnalysisRuns" :content="reportCaseContent" :step-key="selectedReportStepKey" :current-step="canEditSelectedReportStep ? currentReportStep : null" :read-only="!canEditSelectedReportStep" :saving="Boolean(reportAnalysisFindingSavingKey || reportAnalysisFragmentSavingKey)" :saving-finding-key="reportAnalysisFindingSavingKey" :saving-fragment-key="reportAnalysisFragmentSavingKey" :feedback-saving="reportAnalysisSaving" :feedback-disabled="reportAnalysisPending" @apply-finding="applyReportAnalysisFinding" @apply-fragment="applyReportAnalysisFragment" @rerun-with-feedback="startReportAnalysisDraft" />
                 </section>
                 <section id="report-section-findings" v-if="workspaceSection === 'findings'" class="report-data-panel report-asset-panel">
                   <div class="panel-heading"><div><p class="eyebrow">专业判断</p><h3>逐条审核判断</h3></div><span>{{ nodeFindings.length }} 条本节点判断 · 确认后用于后续写作</span></div>

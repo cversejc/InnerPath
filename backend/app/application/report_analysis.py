@@ -358,6 +358,7 @@ async def queue_case_analysis_draft(
     actor: User,
     idempotency_key: str,
     runtime_instruction: str | None = None,
+    source_run_id: int | None = None,
 ) -> tuple[SkillRun, bool]:
     report_case, step = await _authorize_analysis_step(
         db, case_id=case_id, step_key=step_key, actor=actor
@@ -367,6 +368,27 @@ async def queue_case_analysis_draft(
     analysis_context, foundation = await _analysis_context(
         db, report_case=report_case, step=step
     )
+    if source_run_id is not None:
+        previous_run = await db.scalar(
+            select(SkillRun).where(SkillRun.id == source_run_id)
+        )
+        if (
+            previous_run is None
+            or previous_run.report_case_id != report_case.id
+            or previous_run.step_task_id != step.id
+            or previous_run.skill_version_id != skill.id
+            or previous_run.target_type != "REPORT_ANALYSIS_DRAFT"
+            or previous_run.target_key != step_key
+            or previous_run.status != "COMPLETED"
+            or not isinstance(previous_run.output_parsed, dict)
+            or (previous_run.context_snapshot or {}).get("analysis_activation_no")
+            != step.activation_no
+        ):
+            raise ValueError("report_analysis_feedback_source_invalid")
+        analysis_context["previous_analysis"] = {
+            "source_run_id": previous_run.id,
+            "output_parsed": deepcopy(previous_run.output_parsed),
+        }
     profile, application_context = _stage_snapshot(report_case)
     input_data: dict[str, Any] = {
         "profile": profile,
@@ -388,6 +410,7 @@ async def queue_case_analysis_draft(
         context_metadata={
             "analysis_step_key": step_key,
             "analysis_activation_no": step.activation_no,
+            "analysis_feedback_source_run_id": source_run_id,
         },
     )
 
