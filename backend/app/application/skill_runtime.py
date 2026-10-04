@@ -25,6 +25,7 @@ from app.domains.skills.definitions import (
     default_skill_specification,
 )
 from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.skills.bindings import resolve_case_skill
 from app.domains.skills.examples import retrieve_skill_examples
 from app.domains.skills.evaluation import evaluate_regression_output
 from app.domains.skills.runtime import (
@@ -333,6 +334,11 @@ def _project_semantic_model(
         for finding in findings
         for evidence_key in finding.get("evidence_refs", [])
     )
+    if semantic_model.get("reasoning_contract"):
+        for finding in findings:
+            path = (finding.get("structured_data") or {}).get("reasoning_path") or {}
+            if isinstance(path, dict):
+                evidence_refs.update(path.get("evidence_refs") or [])
     for fragment in analysis_fragments:
         evidence_refs.update(
             row.get("evidence_key")
@@ -342,6 +348,7 @@ def _project_semantic_model(
     return {
         "findings": findings,
         "analysis_fragments": analysis_fragments,
+        **({"framework_reference": {k: semantic_model["framework_contract"][k] for k in ("version", "digest", "policies")}} if semantic_model.get("framework_contract") else {}),
         "evidence": [
             item
             for item in semantic_model.get("evidence", [])
@@ -368,17 +375,7 @@ async def queue_allocated_fragment_skill_run(
     fragment_key = allocation.get("fragment_key")
     if not isinstance(fragment_key, str) or not fragment_key:
         raise ValueError("report_fragment_allocation_invalid")
-    skill_version = await db.scalar(
-        select(AISkillVersion)
-        .where(
-            AISkillVersion.skill_key == "report.fragment_authoring",
-            AISkillVersion.status == "PUBLISHED",
-        )
-        .order_by(AISkillVersion.version.desc())
-        .limit(1)
-    )
-    if skill_version is None:
-        raise ValueError("narrative_skill_unavailable")
+    skill_version = await resolve_case_skill(db, report_case, "report.fragment_authoring")
 
     application_snapshot = _safe_input_snapshot(report_case.application_snapshot or {})
     context = dict(application_snapshot.get("context") or {})
@@ -388,7 +385,7 @@ async def queue_allocated_fragment_skill_run(
             "narrative_plan": {
                 key: value
                 for key, value in (plan.plan_json or {}).items()
-                if key not in {"content_plan", "generation"}
+                if key not in {"content_plan", "generation", "framework_contract"}
             },
             "narrative_plan_id": plan.id,
             "fragment_request": {
@@ -541,17 +538,7 @@ async def queue_case_authoring_skill_run(
     if skill_key not in {"report.narrative_plan", "report.fragment_authoring"}:
         raise ValueError("narrative_skill_unavailable")
 
-    skill_version = await db.scalar(
-        select(AISkillVersion)
-        .where(
-            AISkillVersion.skill_key == skill_key,
-            AISkillVersion.status == "PUBLISHED",
-        )
-        .order_by(AISkillVersion.version.desc())
-        .limit(1)
-    )
-    if skill_version is None:
-        raise ValueError("narrative_skill_unavailable")
+    skill_version = await resolve_case_skill(db, report_case, skill_key)
 
     semantic_model = await load_case_semantic_model(db, case_id)
     source_snapshot = semantic_source_snapshot(semantic_model)
@@ -893,6 +880,11 @@ async def _save_authored_report_fragment(db: AsyncSession, run: SkillRun) -> Non
             raise ValueError("report_fragment_unallocated_action")
         if allocated_actions and not (set(used_actions) & allocated_actions):
             raise ValueError("report_fragment_action_support_missing")
+        if allocation.get("requirements") and (
+            not allocated_analysis.issubset(used_fragments) or not allocated_actions.issubset(used_actions)
+            or not set(allocation.get("required_finding_refs") or []).issubset(used_findings)
+        ):
+            raise ValueError("framework_allocated_source_uncovered")
     evidence_refs = {
         key
         for item in semantic_model.get("findings", [])
@@ -915,6 +907,7 @@ async def _save_authored_report_fragment(db: AsyncSession, run: SkillRun) -> Non
             fragment_type="REPORT",
             title=output.get("title") or request.get("title") or None,
             content=output.get("content") or "",
+            requirement_coverage=output.get("requirement_coverage"),
             status="PROPOSED",
             finding_refs=used_findings,
             fragment_refs=used_fragments,

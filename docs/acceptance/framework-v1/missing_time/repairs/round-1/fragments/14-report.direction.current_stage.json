@@ -1,0 +1,61 @@
+{
+  "signature": "65a9f79fbef73b9c8bf5ebeb983626151bdfc4d7b8fc6c5238636b0fd28494c9",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "当下时义",
+    "content": "如果把眼下这段境遇放进一个哲学比喻里，可以借「先承载、再学习止住」来观察：你像大地一样先接住别人的需求，之后才在某个时刻突然撤回。这个比喻之所以可以拿来对照，是因为你自述的循环——同事临时请你代写方案，你本想休息却答应，熬夜后第二天不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会——问题往往不在「承载」本身，而在答应之前缺少一个停顿。「止」在这里不是拒绝一切，而是在回应前给自己留出一个缓冲的位置，让「愿意」和「能承受」同时在场。\n\n一句关键结论：你缺的不是承担的能力，而是承担之前那半拍的停顿。\n\n路径图：外部请求 → 先答应（维持可靠形象）→ 承载超出余量 → 疲惫与不耐烦累积 → 生硬撤回或取消 → 关系与自我感受双重受损 → 若在「答应」前加入停顿，循环才有机会改道。\n\n需要说明的是，这是一则哲学比喻，不是起卦结果，也不证明任何必然走向。它同样有不适用的边界：如果你面对的是必须立即回应的紧急情境，或对方确实需要即时支持，那就不能机械地套用「止」；在那类场景里，先行动本身是合适的。这个比喻只在你拥有选择余地、却习惯性跳过选择时，才更有参考价值。\n\n顺着上一节的方向看，这一段时义并不要求你变成另一个人，而是提醒你：被排除的那一端——休息、拒绝、有余地的表达——需要重新获得在场的机会。具体怎么把这个停顿练成动作，会放在成长实验一节展开。",
+    "used_findings": [
+      "s3.yijing.metaphor"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.yijing"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向已经指出：从反例出发练习缓冲与协商。接下来进入成长实验，把具体动作、频率、耗时、观察点与退出条件落到日常。",
+    "presentation_meta": {
+      "chapter": "direction",
+      "fragment_key": "report.direction.current_stage",
+      "sequence_no": 14,
+      "chapter_opening": true,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_notes": "第二人称、现实语言；比喻以待核对方式引入，不使用收束金句，不展开实验动作。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.timing_wisdom",
+        "status": "FULFILLED",
+        "reason": "已用「先承载、再学习止住」的哲学比喻对照当下境遇，说明匹配理由（问题在缺少停顿而非承载本身），标出不适用边界（紧急情境或对方确实需要即时支持时不机械套用「止」），并声明这是哲学比喻、非起卦结果、不证明必然走向。",
+        "quote": "这个比喻之所以可以拿来对照，是因为你自述的循环——同事临时请你代写方案，你本想休息却答应，熬夜后第二天不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会——问题往往不在「承载」本身，而在答应之前缺少一个停顿。",
+        "follow_up_questions": [
+          "在哪些情境你觉得必须立即回应？",
+          "在哪些情境你可以先停一停？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5540,
+    "output_tokens": 822,
+    "latency_ms": 3324,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "ecadbd8e-277c-494b-8408-dcf063a19e3b",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "9cf30367ef338c94e7ec1181f37e671df7f93cd5a11498cb653ea920bdf169ee",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

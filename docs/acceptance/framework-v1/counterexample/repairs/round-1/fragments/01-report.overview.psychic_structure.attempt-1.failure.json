@@ -1,0 +1,24 @@
+{
+  "error": "report_fragment_unsupported_fragment",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 13291,
+    "output_tokens": 1338,
+    "latency_ms": 5080,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "47333c05-e057-49e5-8b46-78863a92f244",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "36ece33c6fc403c07ff0699d91dffadc070bdc58e299f0ceef973986e19ca49d",
+    "output_validation": "failed",
+    "error_type": "ValueError"
+  },
+  "unvalidated_output": "{\n  \"status\": \"READY_FOR_REVIEW\",\n  \"title\": \"你与自己的关系：一份说明书的主线\",\n  \"content\": \"先给你一句关键结论：你并不缺承担和拒绝的能力，你缺的是让承担与休息同时进入判断的那一刻停顿——在答应之前，把「我也需要休息、也需要有余地」算进账里。\\n\\n**本章路径图**\\n向世界展示的我（能接事、能产出的运营者）→ 以为的自己（答应任务是为换取资源，分工规则不清才不拒绝）→ 潜意识层面的自己（可能存在的承诺—透支—撤退循环，短期帮你避开当场冲突、维持资源通道）→ 整合后的方向（在答应前留出停顿，让休息与余地也参与判断，把已有的拒绝能力扩展到更多场景）。\\n\\n**向世界展示的我**\\n你的自述里有一句很关键：你不担心别人评价，答应任务是为了换取资源。这是你亲口说的事实，不是推断。配合你提到的「项目开头有许多想法，担心做不好反复修改，接近截止才急着交付」，以及下班后常查看消息怕漏事，可以看到一个外在可见的形象：一个能接事、能产出、愿意扛事的人。这个形象在职场里有它的功能——它让你被看见、被需要，也让你获得资源通道。\\n\\n这里要分清两类材料：上面是你自述的事实；而「身宫落官禄、武曲贪狼」这类命盘线索，只是一种解释视角，用来参考你投入精力的方向，不能据此推你「天生就该拼命」。它是解释性判断，不是事实本身。\\n\\n**以为的自己**\\n你对自己有一个清晰的解释：答应任务是为了换取资源；不愿拒绝主要因为分工规则不清。这个解释是你自己给出的，应当被尊重。它指向一个方向——你并非不敢拒绝，而是当规则模糊、责任边界不清时，你选择先接住，再想办法。\\n\\n命盘里月支午火、月干甲木伤官透出，午中藏丁偏财、己七杀，月令是全局气候基调。这也是一条解释性判断，可以理解为：你在意产出、在意把事情做出来，也容易被「有活干、有资源」的场景吸引。但它同样不能推成「你天生讨好」——你自己就给出了反例：你曾明确拒绝领导，并且没有内疚。这条反例必须被认真对待，它说明这个循环并非在所有场景都触发。\\n\\n**潜意识层面的自己**\\n这里要谈的是你可能还没完全意识到的部分，所以我会用「可能」「假如」来说，你可以随时核对。\\n\\n从你描述的场景看，有一条可能的循环在运行：面对临时请求或计划变动、且分工规则不清时，你倾向于先答应，以维持资源关系、避免当场冲突；随后在事后拖延、生硬回应或直接取消。短期看，它确实保护了你——避免了当场的关系紧张，保住了资源通道；长期看，它带来关系摩擦、熬夜透支和不耐烦的累积。这条循环目前是一个待核对的假设，不是定论。\\n\\n还有一条可能的暗线：休息与「有余地的拒绝」或许是被你排斥的一端。你提到独自散步时比较放松，这说明这一端真实存在，只是少被允许。它不是缺点，而是一个待验证的假设——它可能提示你，身体和情绪其实一直在发出信号，只是这些信号在「先答应」的那一刻被略过了。\\n\\n**整合后的方向**\\n这份说明书的主线，可以概括为：让承担与休息两端共同存在。不是让你变得不承担，也不是让你学会拒绝所有人，而是把「休息、有余地的表达、被尊重的需求」也纳入你的判断系统。你已经具备拒绝的能力（反例已经证明），接下来要做的，是把这个能力从少数场景扩展到更多场景。\\n\\n具体怎么练习、频率多少、观察什么、什么时候可以退出，会在成长实验一节里展开，这里只点出方向。\",\n  \"used_findings\": [\n    \"s4.block.overcommit_withdraw_loop\",\n    \"s3.hypothesis.core_tension_productivity_vs_rest\",\n    \"s1.foundation.month_ling_wu_hurt_officer\",\n    \"s2.hypothesis.persona_competent_operator\",\n    \"s2.hypothesis.overcommit_withdraw_cycle\",\n    \"s2.hypothesis.rest_as_excluded_pole\"\n  ],\n  \"used_analysis_fragments\": [\n    \"analysis.s2.persona\",\n    \"analysis.s2.authority\",\n    \"analysis.s2.shadow\",\n    \"analysis.s3.self\"\n  ],\n  \"used_actions\": [],\n  \"transition_hint\": \"从用户能够识别的外在表现开始建立共鸣。\",\n  \"presentation_meta\": {\n    \"chapter\": \"identity\",\n    \"fragment_key\": \"report.overview.psychic_structure\",\n    \"chapter_opening\": true,\n    \"sequence_no\": 1,\n    \"theory_density\": \"medium\",\n    \"action_density\": \"high\",\n    \"metaphor_density\": \"low\",\n    \"tone\": \"第二人称、尊重主体性、假设性表述\"\n  },\n  \"requirement_coverage\": [\n    {\n      \"requirement_id\": \"R.psychic_structure\",\n      \"status\": \"FULFILLED\",\n      \"reason\": \"正文按「向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向」四层展开，并以路径图概括主线；卡点机制只作概览性提及，未展开具体场景、触发链或解法，解法与练习统一指向成长实验节。\",\n      \"quote\": \"向世界展示的我（能接事、能产出的运营者）→ 以为的自己（答应任务是为换取资源，分工规则不清才不拒绝）→ 潜意识层面的自己（可能存在的承诺—透支—撤退循环，短期帮你避开当场冲突、维持资源通道）→ 整合后的方向（在答应前留出停顿，让休息与余地也参与判断，把已有的拒绝能力扩展到更多场景）。\",\n      \"follow_up_questions\": []\n    }\n  ]\n}",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "signature": "1e0c45decd5b58d26822f341e0822a3dcc2b26526462fe1a4431a25647cfa45d"
+}

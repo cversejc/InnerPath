@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .common import now, require_case, require_key, same_json, validate_owner_refs
 from .dependencies import invalidate_narrative_for_source, mark_dependents_stale
 from .evidence import normalize_evidence_refs
-from .models import FindingRevision
+from .models import FindingRevision, CaseEvidenceItem
+from .reasoning_contract import action_source_refs, validate_action_reasoning
 
 
 FINDING_STATUSES = {"PROPOSED", "CONFIRMED", "REJECTED"}
@@ -145,11 +146,33 @@ async def create_finding_revision(
     normalized_evidence = await normalize_evidence_refs(
         db, report_case_id, values["evidence_refs"]
     )
+    relations = list(values["relation_refs"])
+    if (report_case.application_snapshot or {}).get("reasoning_contract") and values["semantic_role"].upper() == "ACTION":
+        action = {"finding_key": key, "semantic_role": "ACTION", "structured_data": values["structured_data_json"]}
+        for ref in action_source_refs(action):
+            pair = {"finding_key": ref, "relation": "DERIVED_FROM"}
+            if pair not in relations:
+                relations.append(pair)
+        if values["status"] == "CONFIRMED":
+            rows = list(await db.scalars(select(FindingRevision).where(
+                FindingRevision.report_case_id == report_case_id, FindingRevision.is_current.is_(True),
+                FindingRevision.status == "CONFIRMED")))
+            sources = [{"finding_key": f.finding_key, "semantic_role": f.semantic_role,
+                        "structured_data": f.structured_data_json} for f in rows if f.finding_key != key and f.semantic_role.upper() != "ACTION"]
+            evidence = set(normalized_evidence)
+            path = values["structured_data_json"].get("reasoning_path") or {}
+            path_evidence = await normalize_evidence_refs(db, report_case_id, path.get("evidence_refs", []) if isinstance(path, dict) else [])
+            evidence.update(path_evidence)
+            reality = set(await db.scalars(select(CaseEvidenceItem.evidence_key).where(
+                CaseEvidenceItem.report_case_id == report_case_id, CaseEvidenceItem.status == "ACTIVE",
+                CaseEvidenceItem.source_type == "USER_PROVIDED")))
+            validate_action_reasoning([*sources, action], evidence, reality_keys=reality, check_count=False)
+            normalized_evidence = list(dict.fromkeys([*normalized_evidence, *path_evidence]))
     normalized_relations = await _normalize_relations(
         db,
         report_case_id=report_case_id,
         finding_key=key,
-        relations=values["relation_refs"],
+        relations=relations,
     )
     owner_step = owner_step_task_id if owner_step_task_id is not None else (current.owner_step_task_id if current else None)
     source_run = source_skill_run_id if source_skill_run_id is not None else (current.source_skill_run_id if current else None)

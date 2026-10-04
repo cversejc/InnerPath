@@ -1,0 +1,123 @@
+{
+  "signature": "41a2927c15ead1e59aa299f25b8d95d6cd886adea58b27b6e421b9b9be57af36",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "命盘旁注：把已审核的结构逻辑，翻译成你能用的参考",
+    "content": "这一节是旁注，不是结论。你出生于1996年6月15日15时15分，山东济南，出生时间精确；命盘由系统按固定规则计算，但流派差异、真太阳时未校正等因素都会影响细节，所以下面每一条都只当\"一种解释视角\"读，而不是关于你这个人的证据。\n\n先看结构。日干为癸水，传统意象是雨露与渗透，可作待验证的自我核心线索：你是否更习惯先感受、再表达。月令午火伤官当令，甲木伤官透干，全局火土偏旺、金水偏弱；由此提出的候选是身弱伤官格，取印比扶身，但也有\"印为用而伤官泄秀\"的分歧，从格依据不足。月支午中藏偏财与七杀，传统上可作待验证的线索：是否倾向以表达与产出换取资源，同时承受内在燥急。时柱庚申正印，提示后期可能更看重被支持与稳定规范，这里只作承接，不再展开。年柱丙子、日支未土，与月令之间见子午六冲、子未六害、午未六合，以及丙癸、丙庚、甲庚三组天干相克；合与合化须分开判断，不能直接当作化格。十神上，透干见正财、伤官、正印各一，藏干偏财二、七杀二，偏印缺失——出现次数不代表旺衰，缺失也不证明任何心理面向缺失。\n\n用神候选为金（正印），喜神候选为水（比劫），忌神候选为火土（财杀），取用理由与分歧都已列明，属解释性判断，待人工确认。大运方面，按2026年10月4日计算，你当前行辛卯大运（2019–2028，偏印，金/木）；后续每十年为庚寅2029–2038正印、己丑2039–2048七杀、戊子2049–2058正官等。这些是时间框架，不是必然预测。\n\n紫微部分：命宫在酉，主星廉贞（陷、生年化忌）与破军（得），辅星天钺，可作人格面具线索；身宫落官禄宫（丑），主星武曲旺、贪狼庙，命身分居，可作后天投入方向的线索；福德宫在亥，主星天府（得）配天魁，无生年化忌与空劫，仅作内在安定线索。生年四化为天同禄、天机权、文昌科、廉贞忌，廉贞忌落命宫；宫干飞化另列，重点忌流向为命宫廉贞忌与交友宫巨门忌。以上都不能据此诊断任何心理状态。\n\n需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。下一节将展开三个卡点的具体运作方式。",
+    "used_findings": [
+      "s1.foundation.day_master_gui_water",
+      "s1.foundation.month_ling_wu_hurt_officer",
+      "s1.foundation.hour_seal_gengshen",
+      "s1.foundation.interactions_core",
+      "s1.foundation.current_dayun_xinmao",
+      "s1.foundation.ziwei_life_lianpo",
+      "s1.foundation.ziwei_body_career",
+      "s1.foundation.ziwei_wellbeing_tianfu"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s1.day_master",
+      "analysis.s1.structure",
+      "analysis.s1.month",
+      "analysis.s1.ten_gods",
+      "analysis.s1.day_branch",
+      "analysis.s1.hour",
+      "analysis.s1.year",
+      "analysis.s1.interactions",
+      "analysis.s1.dayun",
+      "analysis.s1.useful_gods",
+      "analysis.s1.ziwei_life",
+      "analysis.s1.ziwei_body",
+      "analysis.s1.ziwei_wellbeing",
+      "analysis.s1.ziwei_transformations"
+    ],
+    "used_actions": [],
+    "transition_hint": "命盘旁注到此为止；接下来进入三个卡点的具体运作方式，包括先答应后撤退、反复修改与截止急交付、休息少被允许，并保留反例说明并非所有场景都触发。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.foundation_notes",
+      "sequence_no": 3,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "disclaimer": "命盘为解释性视角，非诊断、非必然预测；心理含义均为待验证线索。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "must_cover.foundation_items_or_deferred_boundaries",
+        "status": "FULFILLED",
+        "reason": "八字日主、格局、月令、十神、日支、时支、年柱、刑冲合害、大运、喜忌及紫微命宫/身宫/福德/四化均已转译或明确边界。",
+        "quote": "日干为癸水，传统意象是雨露与渗透，可作待验证的自我核心线索：你是否更习惯先感受、再表达。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_cover.psychological_meaning_as_hypothesis_only",
+        "status": "FULFILLED",
+        "reason": "所有心理含义均以\"待验证线索\"表述，并声明不作诊断、需自述与反证校正。",
+        "quote": "以上都不能据此诊断任何心理状态。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat.future_psych_chapters_no_repeat",
+        "status": "FULFILLED",
+        "reason": "本节仅作命盘旁注，未展开卡点机制，仅以过渡句指向下一节。",
+        "quote": "下一节将展开三个卡点的具体运作方式。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat.no_experiment_actions",
+        "status": "FULFILLED",
+        "reason": "本节未出现任何实验动作、频率或退出条件。",
+        "quote": "需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat.no_quote_library_use",
+        "status": "FULFILLED",
+        "reason": "本节未引用任何金句，金句保留至结尾寄语。",
+        "quote": "这一节是旁注，不是结论。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat.hour_seal_reference_only",
+        "status": "FULFILLED",
+        "reason": "时柱庚申正印仅以一句承接，未重新完整解释。",
+        "quote": "时柱庚申正印，提示后期可能更看重被支持与稳定规范，这里只作承接，不再展开。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "deferred_scope.uncertainty_notes",
+        "status": "DEFERRED",
+        "reason": "格局与喜忌的最终确认、未展开的宫干飞化需结合自述与反证校正，暂缓。",
+        "quote": "需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。",
+        "follow_up_questions": [
+          "你自述更接近\"先感受再表达\"还是\"先表达再感受\"？",
+          "在压力大的时期，你更倾向收敛回避还是加大产出？",
+          "你对\"以表达与产出换取资源\"这一描述有共鸣还是觉得不符？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 18350,
+    "output_tokens": 1967,
+    "latency_ms": 8445,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "4bebcef2-1dee-45dd-b568-cd24026783e4",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "6e4cdb9be6d425b437456ad1a3b643ac01b824cfb237925ac77e9937cf47a09b",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -136,6 +136,8 @@ def _workflow_error(error: ValueError) -> None:
         "report_analysis_candidate_owned_by_another_step",
         "report_analysis_output_required",
         "report_analysis_sop_coverage_required",
+        "report_analysis_framework_coverage_required",
+        "report_analysis_reasoning_required",
         "report_analysis_findings_unreviewed",
         "report_analysis_fragments_unreviewed",
         "report_analysis_fragments_stale",
@@ -169,7 +171,7 @@ def _workflow_error(error: ValueError) -> None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
-    if code.startswith(("workflow_", "step_", "narrative_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_authoring_", "report_coherence_", "fragment_narrative_", "final_qa_", "qa_")):
+    if code.startswith(("workflow_", "step_", "narrative_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_authoring_", "report_coherence_", "fragment_narrative_", "final_qa_", "qa_", "framework_", "product_framework_", "reasoning_", "case_skill_")):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
         )

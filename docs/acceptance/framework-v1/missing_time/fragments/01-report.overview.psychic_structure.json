@@ -1,0 +1,63 @@
+{
+  "signature": "f20fa3026bc826e4bcf174ff3f7672388c1d402dbd8b8d2830f36a290b8c1682",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "整体主线：一条从“先答应”到“再撤回”的边界循环",
+    "content": "这份说明书的主线，可以先用一句话概括：你可能在用“先答应”维持一个靠谱、不让人失望的形象，再用“延迟、生硬回应或取消”把被压缩的休息和真实需求放回关系里，代价是熬夜、透支和关系摩擦。\n\n第一层，是向世界展示的你。你自述“我认为自己要靠谱、不能让人失望”，这让“靠谱”成为你意识层认同的角色。它带来信任，也可能让你在临时请求面前先站到承接的位置。\n\n第二层，是你以为的自己。你可能把“靠谱、负责”当成全部自我认同，而休息、拒绝和真实需求表达，可能被暂时放在自我认同之外。这里只是假设：你说本想休息却答应代写方案，熬夜后第二天不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。这些场景提示，休息与拒绝的面向在当下不易被允许直接出现，不等于你有缺点。至于“要靠谱”这条应该规则从何而来，你没有提供童年或家庭经历，来源待访谈验证，不作家庭归因。\n\n第三层，是潜意识层面的自己。当临时请求或关系变动出现，你可能先答应，短期保住关系与形象、避免当下冲突；随后以延迟、生硬回应或撤回表达边界。长期看，这会累积熬夜、透支与关系摩擦。它的保护功能是让你被需要、被认可，也让你避开当下的冲突；代价是恢复不足、需求不被看见。需要说明的是，你并非每次都迁就：面对熟悉同事且有明确截止时，你能够协商任务边界，这是你的反例资源。\n\n第四层，是整合后的方向。核心张力的一端是维持“靠谱、不让人失望”的承接型自我，另一端是被排除的休息、拒绝与真实需求表达。两端不是好坏之分，而是当前偏重一端、另一端转入阴影。整合的邀请是：在答应前留出停顿，让关系与自身节奏同时在场，把休息视为节律的一部分，而非懒惰或失职。\n\n本章简短系统路径图：\n向世界展示的我（靠谱、不让人失望）→ 以为的自己（承接需求、维持形象）→ 潜意识层面的自己（休息与拒绝转入阴影，以延迟、不耐烦或撤回间接出现）→ 整合后的方向（答应前留停顿，关系与自身节奏同时在场）。\n\n关于人生时序，需要暂缓：系统计算的大运为空数组，出生时间未知导致起运无法确定，因此无法按分析日期选择当前运，也不能给出后续每十年起止年份与阶段基调。这部分需要你补充出生钟表时间与起运信息后再核对。\n\n接下来，这份说明书会按“你是谁—卡在哪—往哪去”展开：先看承接型自我的形成线索，再看卡点循环如何在休息与项目场景中延伸，最后把反例作为练习缓冲与协商的起点。具体行动步骤、频率、耗时、观察与退出条件，统一放在成长实验部分。",
+    "used_findings": [
+      "s3.timeline.deferred",
+      "s4.block.boundary_cycle",
+      "s4.block.rest_shadow",
+      "s2.mapping.mask_reliable",
+      "s2.authority.should_rules",
+      "s2.shadow.rest_excluded",
+      "s3.self.pole_tension"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "本章概览已建立主线；下一节进入“你是谁”，从日主癸水与透干伤官、正财作为待验证的自我核心线索，结合自述“要靠谱、不能让人失望”，呈现承接型自我。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.overview.psychic_structure",
+      "sequence_no": 1,
+      "chapter_opening": true,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "status": "FULFILLED",
+        "reason": "已按“向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向”四层结构组织概览，并说明暗线为“先答应、后撤回”的边界循环；卡点只作概览性提及，未展开具体解法。人生时序因出生时间未知已明确暂缓，并给出补问方向。",
+        "quote": "向世界展示的我（靠谱、不让人失望）→ 以为的自己（承接需求、维持形象）→ 潜意识层面的自己（休息与拒绝转入阴影，以延迟、不耐烦或撤回间接出现）→ 整合后的方向（答应前留停顿，关系与自身节奏同时在场）。",
+        "follow_up_questions": [
+          "你能否提供出生钟表时间（尽量精确到小时与分钟）？",
+          "如果出生时间无法确定，是否愿意先以现有信息阅读“你是谁—卡在哪—往哪去”，待补充后再核对人生时序？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 6655,
+    "output_tokens": 1174,
+    "latency_ms": 6052,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "4fe8553d-23e3-4b0e-823c-14c7c2c1b8bb",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "f43f800083298feddbd959c12f20ff93c3379b8a5bae2076e298d2473e05ab01",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -1,0 +1,63 @@
+{
+  "signature": "9c5f6cdb9c1c12fe27ee0727242a373223d08f7a7d64619d69c933bdf2c5909e",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你的能量与做事节奏：从想法涌出到交付落地",
+    "content": "如果把注意力放在你如何启动一件事、又如何把它做完，会看到一条比较清楚的路径。它有资源，也有反复出现的张力。以下描述都来自你自述的场景和已确认的符号线索，属于可能贴合的观察视角，需要你用自己的经验核对。\n\n先说资源。命盘里透出伤官与正财两条线：一条偏向表达、想法、创造，另一条偏向务实、求成、把事情落到实处。这两条线同时外显，本身不是人格定论，只是一个待验证的线索——你在项目开头常常有很多想法，说明表达和探索这一端是活跃的；你也在意“要靠谱、不能让人失望”，说明务实求成这一端同样在场。两条线都在工作，这是你的资源，不是问题。此外，藏干里还见到比肩、偏财、七杀与食神：传统上，七杀与偏财藏而两见，可作为待验证信号，提示你对压力与机会的敏感度可能较高；食神藏于日支，或与自我照顾、慢节奏表达相关。这些同样是解释视角，不是定论。\n\n再看能量。充电的线索比较具体：你提到独自散步时比较放松，这可以当作低刺激恢复的一个观察点。符号层面提示的整理、独处、写作类活动，可以当成试验建议去试，但不承诺效果。耗电的线索同样清楚：下班后常查看消息怕漏事、答应额外任务后熬夜、反复修改到接近截止才急着交付，这些和你自述的透支反馈是一致的。这里有一个反例值得记住：面对熟悉同事且有明确截止时，你能够协商任务边界，说明这种耗电并不是不可改变的固定模式。哪些活动后精力回升、哪些活动后明显下降，还需要你用一周左右的记录去核对。\n\n把这两端放在一起，可以看到一条加工路径。探索的入口是项目开头涌出的许多想法；价值的入口是“要靠谱、不能让人失望”，外部期待在这里权重较高；执行的入口是反复修改、接近截止才交付，推进力主要来自截止压力；反馈的入口偏向外部监控，例如下班后查看消息怕漏事，而独自散步时放松则是少见的向内反馈。这是一条基于你的问卷与行为描述画出的倾向假设，需要你用自己的实际场景校正。假如这条假设贴合，那么张力可能出现在探索与执行之间：中间缺少一个价值核对与停顿的环节，想法直接滑向承接，承接又直接滑向透支。如果后续记录显示你在某些项目里并不如此，那正好说明这条路径有边界，值得保留反证。\n\n关于类型工具，你没有提供 MBTI 或八维自报，所以这里不推断你的类型，也不伪造任何功能分数。如果你有自报结果，可以提供，我们再对照这条路径看看哪些贴合。\n\n这一节先呈现你的能量与做事节奏长什么样。至于怎么在这个节奏里练习有余地的表达、减少透支，具体动作、频率和边界会放在后面的成长实验一节统一展开。",
+    "used_findings": [
+      "s1.ten_gods.visible",
+      "s1.ten_gods.hidden",
+      "s4.action.rest_permission",
+      "s4.block.perfection_delay",
+      "s4.action.early_draft"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.energy",
+      "analysis.s4.functions"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看到自己在想法涌出与交付落地之间的节奏，也看到这条路径目前只是一个待核对的假设。下一节会进入关系循环，看这个节奏在人与人的场景里如何继续。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.energy_pattern",
+      "sequence_no": 7,
+      "reading_density": "medium",
+      "metaphor_density": "low",
+      "action_density": "reference_only",
+      "tone": "second_person_non_judgmental"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.energy",
+        "status": "FULFILLED",
+        "reason": "已按 analysis.s4.energy 与 analysis.s4.functions 转译充电/耗电线索、实际反馈与探索→价值→执行→反馈路径及张力，并明确无自报不推 MBTI 或八维分数。",
+        "quote": "这是一条基于你的问卷与行为描述画出的倾向假设，需要你用自己的实际场景校正。",
+        "follow_up_questions": [
+          "哪些活动后你感到精力回升？",
+          "哪些活动后你明显感到被抽空？",
+          "在探索与执行之间，你通常如何做取舍？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 10465,
+    "output_tokens": 1075,
+    "latency_ms": 5519,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "d53c21f6-56bb-4acc-9d1f-1cd912e73ffe",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "5a61753489aab82aa965b37cd884f1935edf4f2ee7f0fdeef35b5bd9631eb191",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

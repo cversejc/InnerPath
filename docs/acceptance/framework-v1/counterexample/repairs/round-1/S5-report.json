@@ -1,0 +1,1469 @@
+{
+  "fragments": [
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "你与自己的关系：一份说明书的主线",
+      "content": "关键结论：你不缺承担和拒绝的能力，缺的是在答应之前，让休息与余地也进入判断的那一刻停顿。\n\n**本章路径图**\n向世界展示的我（能接事、能产出的运营者形象）→ 以为的自己（答应任务是为换取资源，分工规则不清才不拒绝）→ 可能存在的循环（先答应、后拖延或生硬回应，短期避开冲突、保住资源通道）→ 整合方向（在答应前留出停顿，把已有的拒绝能力扩展到更多场景）。\n\n**向世界展示的我**\n你的自述里有一条关键事实：你不担心别人评价，答应任务是为了换取资源。配合「项目开头有许多想法，担心做不好反复修改，接近截止才急着交付」和下班后常查看消息怕漏事，可以看到一个外在形象：一个能接事、能产出、愿意扛事的人。这个形象有它的功能——它让你被看见、被需要，也让你获得资源通道。\n\n需要区分的是：命盘里「身宫落官禄、武曲贪狼」只是解释视角下你投入方向的一条线索，不是事实本身，也不能据此推断你天生就该拼命。\n\n**以为的自己**\n你对自己有一个清晰的解释：答应任务是为了换取资源；不愿拒绝主要因为分工规则不清。这是你自己给出的说法，应被尊重。它指向一个方向——你并非不敢拒绝，而是当规则模糊、责任边界不清时，你选择先接住，再想办法。\n\n命盘里月支午火、月干甲木伤官透出，午中藏丁偏财、己七杀，月令为全局气候基调，这同样是解释性判断。它可以理解为你在意产出、容易被「有活干、有资源」的场景吸引，但不能推成「你天生讨好」——你自己给出了反例：你曾明确拒绝领导，并且没有内疚。这条反例必须被认真对待，它说明这个循环并非在所有场景都触发。\n\n**可能存在的循环**\n这里谈的是你可能还没完全意识到的部分，所以用「可能」「假如」来说，你可以随时核对。\n\n从你描述的场景看，有一条可能的循环：面对临时请求或计划变动、且分工规则不清时，你倾向于先答应，以维持资源关系、避免当场冲突；随后在事后拖延、生硬回应或直接取消。短期看，它确实保护了你——避免当场的关系紧张，保住资源通道；长期看，它带来关系摩擦、熬夜透支和不耐烦的累积。这是一条待核对的假设，不是定论。\n\n还有一条可能的暗线：休息与「有余地的拒绝」或许是被你排斥的一端。你提到独自散步时比较放松，这说明这一端真实存在，只是少被允许。它不是缺点，而是一个待验证的假设——它可能提示你，身体和情绪一直在发出信号，只是在「先答应」的那一刻被略过了。\n\n**整合后的方向**\n这份说明书的主线可以概括为：让承担与休息两端共同存在。不是让你变得不承担，也不是让你学会拒绝所有人，而是把休息、有余地的表达、被尊重的需求也纳入判断系统。你已经具备拒绝的能力（反例已经证明），接下来要做的是把这个能力从少数场景扩展到更多场景。\n\n具体怎么练习、频率多少、观察什么、什么时候可以退出，会在成长实验一节展开，这里只点出方向。",
+      "used_findings": [
+        "s4.block.overcommit_withdraw_loop",
+        "s3.hypothesis.core_tension_productivity_vs_rest",
+        "s1.foundation.month_ling_wu_hurt_officer",
+        "s2.hypothesis.persona_competent_operator",
+        "s2.hypothesis.overcommit_withdraw_cycle",
+        "s2.hypothesis.rest_as_excluded_pole"
+      ],
+      "used_analysis_fragments": [],
+      "used_actions": [],
+      "transition_hint": "从用户能够识别的外在表现开始建立共鸣。",
+      "presentation_meta": {
+        "fragment_key": "report.overview.psychic_structure",
+        "chapter": "identity",
+        "sequence_no": 1,
+        "chapter_opening": true,
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        }
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.psychic_structure",
+          "status": "FULFILLED",
+          "reason": "正文按「向世界展示的我→以为的自己→可能存在的循环→整合后的方向」四层展开，仅概述主线，未展开卡点的场景、运作、保护、代价与解法，具体实践留给成长实验节。",
+          "quote": "这份说明书的主线可以概括为：让承担与休息两端共同存在。",
+          "follow_up_questions": []
+        }
+      ],
+      "fragment_key": "report.overview.psychic_structure",
+      "chapter": "identity",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s4.block.overcommit_withdraw_loop"
+          },
+          {
+            "finding_key": "s3.hypothesis.core_tension_productivity_vs_rest"
+          },
+          {
+            "finding_key": "s1.foundation.month_ling_wu_hurt_officer"
+          },
+          {
+            "finding_key": "s2.hypothesis.persona_competent_operator"
+          },
+          {
+            "finding_key": "s2.hypothesis.overcommit_withdraw_cycle"
+          },
+          {
+            "finding_key": "s2.hypothesis.rest_as_excluded_pole"
+          }
+        ],
+        "fragments": [],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.psychic_structure",
+            "status": "FULFILLED",
+            "reason": "正文按「向世界展示的我→以为的自己→可能存在的循环→整合后的方向」四层展开，仅概述主线，未展开卡点的场景、运作、保护、代价与解法，具体实践留给成长实验节。",
+            "quote": "这份说明书的主线可以概括为：让承担与休息两端共同存在。",
+            "follow_up_questions": []
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "别人眼中的你，和你自己知道的那一面",
+      "content": "在具体场景里，你呈现出来的样子其实很清晰：事情来了能接住，项目开头想法多，交付前会反复检查；同事临时请你代写方案，你会先把任务揽下来，哪怕那天本来打算休息；下班后你还会不时查看消息，怕漏掉什么。这些都是你自述的事实，不需要额外解释就能辨认。\n\n你自述\"不担心别人评价，答应任务是为了换取资源\"，也提到不愿拒绝主要是因为分工规则不清楚。这是你对自己的说明，我先原样保留，不替你改写。\n\n在符号层面，有几条线索可以和这些表现对照着看，但它们只是理解角度，不是对你的判定。时柱庚申正印，可作价值排序的参考：正印常与\"被需要、被认可为可靠\"这类安全感来源相关，也就是说，承担本身可能不只是负担，也可能在为你提供某种位置感——这只是解释方向之一，需要你用实际体验来校正。身宫落在官禄宫，主星武曲、贪狼，方向偏向务实投入与想要更多，这与\"能接事、能产出\"的外在形象方向一致，同样属于待核对的线索。命宫廉贞化忌、破军，提示外在呈现的原则感与破旧立新之下，可能仍有内在张力；福德宫天府，则与你说\"独自散步比较放松\"这一条对得上，说明安静独处对你是可用的资源。\n\n需要说清楚的是：以上只是把符号当作理解角度，用来提出可以核对的假设，不是结论。它们和你自述的内容并不冲突，但也不能替代你的实际体验。\n\n有一个待核对的假设：在某些场景中，你可能认同\"能接事、能产出、好商量\"的角色，并且这个角色带来了一定的被需要感。这只是解释方向之一，需要你来校正——比如，在哪些场合你确实感到这个角色被认同、被需要？在哪些场合你又觉得这个角色有些吃力、甚至撑不住？如果你发现自己其实并不在意这种认同，那这条假设就需要被推翻。\n\n还要保留一个反例空间：并非所有场景都会触发这套模式。你说独自散步时比较放松，说明在部分情境里你是可以停下来、不被任务牵着走的。这些不触发的时刻，同样是理解你自己的重要材料。\n\n这一节先到这里。",
+      "used_findings": [
+        "s1.foundation.hour_seal_gengshen",
+        "s2.hypothesis.persona_competent_operator"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s2.persona",
+        "analysis.s2.ten_gods",
+        "analysis.s2.stars"
+      ],
+      "used_actions": [],
+      "transition_hint": "从外在可识别的表现过渡到这些表现背后的共同机制。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.outer_self",
+        "sequence_no": 2,
+        "new_information_role": "INTRODUCE",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low"
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.persona",
+          "status": "FULFILLED",
+          "reason": "已描述用户可识别的外在角色（能接事、能产出、好商量），并将自述事实与符号解释分开陈述，符号部分明确标注为理解角度和待核对假设。",
+          "quote": "在具体场景里，你呈现出来的样子其实很清晰：事情来了能接住，项目开头想法多，交付前会反复检查；同事临时请你代写方案，你会先把任务揽下来，哪怕那天本来打算休息；下班后你还会不时查看消息，怕漏掉什么。",
+          "follow_up_questions": [
+            "在哪些具体场景你感到\"能接事、能产出、好商量\"这个角色被认同、被需要？",
+            "在哪些场景你感到这个角色吃力、甚至撑不住？",
+            "如果你发现自己其实并不在意这种认同，这条假设就需要被推翻——你觉得自己属于哪种情况？"
+          ]
+        }
+      ],
+      "fragment_key": "report.identity.outer_self",
+      "chapter": "identity",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s1.foundation.hour_seal_gengshen"
+          },
+          {
+            "finding_key": "s2.hypothesis.persona_competent_operator"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s2.persona"
+          },
+          {
+            "fragment_key": "analysis.s2.ten_gods"
+          },
+          {
+            "fragment_key": "analysis.s2.stars"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.persona",
+            "status": "FULFILLED",
+            "reason": "已描述用户可识别的外在角色（能接事、能产出、好商量），并将自述事实与符号解释分开陈述，符号部分明确标注为理解角度和待核对假设。",
+            "quote": "在具体场景里，你呈现出来的样子其实很清晰：事情来了能接住，项目开头想法多，交付前会反复检查；同事临时请你代写方案，你会先把任务揽下来，哪怕那天本来打算休息；下班后你还会不时查看消息，怕漏掉什么。",
+            "follow_up_questions": [
+              "在哪些具体场景你感到\"能接事、能产出、好商量\"这个角色被认同、被需要？",
+              "在哪些场景你感到这个角色吃力、甚至撑不住？",
+              "如果你发现自己其实并不在意这种认同，这条假设就需要被推翻——你觉得自己属于哪种情况？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "命盘旁注：把已审核的结构逻辑，翻译成你能用的参考",
+      "content": "这一节是旁注，不是结论。你出生于1996年6月15日15时15分，山东济南，出生时间精确；命盘由系统按固定规则计算，但流派差异、真太阳时未校正等因素都会影响细节，所以下面每一条都只当\"一种解释视角\"读，而不是关于你这个人的证据。\n\n先看结构。日干为癸水，传统意象是雨露与渗透，可作待验证的自我核心线索：你是否更习惯先感受、再表达。月令午火伤官当令，甲木伤官透干，全局火土偏旺、金水偏弱；由此提出的候选是身弱伤官格，取印比扶身，但也有\"印为用而伤官泄秀\"的分歧，从格依据不足。月支午中藏偏财与七杀，传统上可作待验证的线索：是否倾向以表达与产出换取资源，同时承受内在燥急。时柱庚申正印，提示后期可能更看重被支持与稳定规范，这里只作承接，不再展开。年柱丙子、日支未土，与月令之间见子午六冲、子未六害、午未六合，以及丙癸、丙庚、甲庚三组天干相克；合与合化须分开判断，不能直接当作化格。十神上，透干见正财、伤官、正印各一，藏干偏财二、七杀二，偏印缺失——出现次数不代表旺衰，缺失也不证明任何心理面向缺失。\n\n用神候选为金（正印），喜神候选为水（比劫），忌神候选为火土（财杀），取用理由与分歧都已列明，属解释性判断，待人工确认。大运方面，按2026年10月4日计算，你当前行辛卯大运（2019–2028，偏印，金/木）；后续每十年为庚寅2029–2038正印、己丑2039–2048七杀、戊子2049–2058正官等。这些是时间框架，不是必然预测。\n\n紫微部分：命宫在酉，主星廉贞（陷、生年化忌）与破军（得），辅星天钺，可作人格面具线索；身宫落官禄宫（丑），主星武曲旺、贪狼庙，命身分居，可作后天投入方向的线索；福德宫在亥，主星天府（得）配天魁，无生年化忌与空劫，仅作内在安定线索。生年四化为天同禄、天机权、文昌科、廉贞忌，廉贞忌落命宫；宫干飞化另列，重点忌流向为命宫廉贞忌与交友宫巨门忌。以上都不能据此诊断任何心理状态。\n\n需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。下一节将展开三个卡点的具体运作方式。",
+      "used_findings": [
+        "s1.foundation.day_master_gui_water",
+        "s1.foundation.month_ling_wu_hurt_officer",
+        "s1.foundation.hour_seal_gengshen",
+        "s1.foundation.interactions_core",
+        "s1.foundation.current_dayun_xinmao",
+        "s1.foundation.ziwei_life_lianpo",
+        "s1.foundation.ziwei_body_career",
+        "s1.foundation.ziwei_wellbeing_tianfu"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s1.day_master",
+        "analysis.s1.structure",
+        "analysis.s1.month",
+        "analysis.s1.ten_gods",
+        "analysis.s1.day_branch",
+        "analysis.s1.hour",
+        "analysis.s1.year",
+        "analysis.s1.interactions",
+        "analysis.s1.dayun",
+        "analysis.s1.useful_gods",
+        "analysis.s1.ziwei_life",
+        "analysis.s1.ziwei_body",
+        "analysis.s1.ziwei_wellbeing",
+        "analysis.s1.ziwei_transformations"
+      ],
+      "used_actions": [],
+      "transition_hint": "命盘旁注到此为止；接下来进入三个卡点的具体运作方式，包括先答应后撤退、反复修改与截止急交付、休息少被允许，并保留反例说明并非所有场景都触发。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.foundation_notes",
+        "sequence_no": 3,
+        "new_information_role": "DEEPEN",
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "disclaimer": "命盘为解释性视角，非诊断、非必然预测；心理含义均为待验证线索。"
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "must_cover.foundation_items_or_deferred_boundaries",
+          "status": "FULFILLED",
+          "reason": "八字日主、格局、月令、十神、日支、时支、年柱、刑冲合害、大运、喜忌及紫微命宫/身宫/福德/四化均已转译或明确边界。",
+          "quote": "日干为癸水，传统意象是雨露与渗透，可作待验证的自我核心线索：你是否更习惯先感受、再表达。",
+          "follow_up_questions": []
+        },
+        {
+          "requirement_id": "must_cover.psychological_meaning_as_hypothesis_only",
+          "status": "FULFILLED",
+          "reason": "所有心理含义均以\"待验证线索\"表述，并声明不作诊断、需自述与反证校正。",
+          "quote": "以上都不能据此诊断任何心理状态。",
+          "follow_up_questions": []
+        },
+        {
+          "requirement_id": "must_not_repeat.future_psych_chapters_no_repeat",
+          "status": "FULFILLED",
+          "reason": "本节仅作命盘旁注，未展开卡点机制，仅以过渡句指向下一节。",
+          "quote": "下一节将展开三个卡点的具体运作方式。",
+          "follow_up_questions": []
+        },
+        {
+          "requirement_id": "must_not_repeat.no_experiment_actions",
+          "status": "FULFILLED",
+          "reason": "本节未出现任何实验动作、频率或退出条件。",
+          "quote": "需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。",
+          "follow_up_questions": []
+        },
+        {
+          "requirement_id": "must_not_repeat.no_quote_library_use",
+          "status": "FULFILLED",
+          "reason": "本节未引用任何金句，金句保留至结尾寄语。",
+          "quote": "这一节是旁注，不是结论。",
+          "follow_up_questions": []
+        },
+        {
+          "requirement_id": "must_not_repeat.hour_seal_reference_only",
+          "status": "FULFILLED",
+          "reason": "时柱庚申正印仅以一句承接，未重新完整解释。",
+          "quote": "时柱庚申正印，提示后期可能更看重被支持与稳定规范，这里只作承接，不再展开。",
+          "follow_up_questions": []
+        },
+        {
+          "requirement_id": "deferred_scope.uncertainty_notes",
+          "status": "DEFERRED",
+          "reason": "格局与喜忌的最终确认、未展开的宫干飞化需结合自述与反证校正，暂缓。",
+          "quote": "需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。",
+          "follow_up_questions": [
+            "你自述更接近\"先感受再表达\"还是\"先表达再感受\"？",
+            "在压力大的时期，你更倾向收敛回避还是加大产出？",
+            "你对\"以表达与产出换取资源\"这一描述有共鸣还是觉得不符？"
+          ]
+        }
+      ],
+      "fragment_key": "report.identity.foundation_notes",
+      "chapter": "identity",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s1.foundation.day_master_gui_water"
+          },
+          {
+            "finding_key": "s1.foundation.month_ling_wu_hurt_officer"
+          },
+          {
+            "finding_key": "s1.foundation.hour_seal_gengshen"
+          },
+          {
+            "finding_key": "s1.foundation.interactions_core"
+          },
+          {
+            "finding_key": "s1.foundation.current_dayun_xinmao"
+          },
+          {
+            "finding_key": "s1.foundation.ziwei_life_lianpo"
+          },
+          {
+            "finding_key": "s1.foundation.ziwei_body_career"
+          },
+          {
+            "finding_key": "s1.foundation.ziwei_wellbeing_tianfu"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s1.day_master"
+          },
+          {
+            "fragment_key": "analysis.s1.structure"
+          },
+          {
+            "fragment_key": "analysis.s1.month"
+          },
+          {
+            "fragment_key": "analysis.s1.ten_gods"
+          },
+          {
+            "fragment_key": "analysis.s1.day_branch"
+          },
+          {
+            "fragment_key": "analysis.s1.hour"
+          },
+          {
+            "fragment_key": "analysis.s1.year"
+          },
+          {
+            "fragment_key": "analysis.s1.interactions"
+          },
+          {
+            "fragment_key": "analysis.s1.dayun"
+          },
+          {
+            "fragment_key": "analysis.s1.useful_gods"
+          },
+          {
+            "fragment_key": "analysis.s1.ziwei_life"
+          },
+          {
+            "fragment_key": "analysis.s1.ziwei_body"
+          },
+          {
+            "fragment_key": "analysis.s1.ziwei_wellbeing"
+          },
+          {
+            "fragment_key": "analysis.s1.ziwei_transformations"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "must_cover.foundation_items_or_deferred_boundaries",
+            "status": "FULFILLED",
+            "reason": "八字日主、格局、月令、十神、日支、时支、年柱、刑冲合害、大运、喜忌及紫微命宫/身宫/福德/四化均已转译或明确边界。",
+            "quote": "日干为癸水，传统意象是雨露与渗透，可作待验证的自我核心线索：你是否更习惯先感受、再表达。",
+            "follow_up_questions": []
+          },
+          {
+            "requirement_id": "must_cover.psychological_meaning_as_hypothesis_only",
+            "status": "FULFILLED",
+            "reason": "所有心理含义均以\"待验证线索\"表述，并声明不作诊断、需自述与反证校正。",
+            "quote": "以上都不能据此诊断任何心理状态。",
+            "follow_up_questions": []
+          },
+          {
+            "requirement_id": "must_not_repeat.future_psych_chapters_no_repeat",
+            "status": "FULFILLED",
+            "reason": "本节仅作命盘旁注，未展开卡点机制，仅以过渡句指向下一节。",
+            "quote": "下一节将展开三个卡点的具体运作方式。",
+            "follow_up_questions": []
+          },
+          {
+            "requirement_id": "must_not_repeat.no_experiment_actions",
+            "status": "FULFILLED",
+            "reason": "本节未出现任何实验动作、频率或退出条件。",
+            "quote": "需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。",
+            "follow_up_questions": []
+          },
+          {
+            "requirement_id": "must_not_repeat.no_quote_library_use",
+            "status": "FULFILLED",
+            "reason": "本节未引用任何金句，金句保留至结尾寄语。",
+            "quote": "这一节是旁注，不是结论。",
+            "follow_up_questions": []
+          },
+          {
+            "requirement_id": "must_not_repeat.hour_seal_reference_only",
+            "status": "FULFILLED",
+            "reason": "时柱庚申正印仅以一句承接，未重新完整解释。",
+            "quote": "时柱庚申正印，提示后期可能更看重被支持与稳定规范，这里只作承接，不再展开。",
+            "follow_up_questions": []
+          },
+          {
+            "requirement_id": "deferred_scope.uncertainty_notes",
+            "status": "DEFERRED",
+            "reason": "格局与喜忌的最终确认、未展开的宫干飞化需结合自述与反证校正，暂缓。",
+            "quote": "需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。",
+            "follow_up_questions": [
+              "你自述更接近\"先感受再表达\"还是\"先表达再感受\"？",
+              "在压力大的时期，你更倾向收敛回避还是加大产出？",
+              "你对\"以表达与产出换取资源\"这一描述有共鸣还是觉得不符？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "眼中的自己",
+      "content": "前面几节里，你看到的是别人眼中的你，以及命盘旁注能提供的结构参考。这一节换个方向，看看你自己眼中的自己——你如何描述自己，以及这些描述背后，可能还压着一层你未必说出口的默认规则。\n\n先说你自己已经说清楚的部分。你自述不担心别人评价，答应任务是为了换取资源，不愿拒绝主要是因为分工规则不清。这三点是你的原话，也是这一节最重要的锚点：你不是一个“怕被讨厌所以不敢说不”的人，这一点后面还会再核对一次。\n\n再看可能存在的底层信念。把日主癸水与命宫廉贞破军放在一起，可以作一个假设性的线索：你在意识层可能更愿意呈现“能渗透、能接事”的运营者形象，这与你自述“答应任务换取资源”的方向是顺的。而月令午火伤官、日支未土七杀，可以作另一条假设：在更底层，也许有一套“需要以产出与承担来换取位置”的默认规则在运转。请注意，这是假设，不是结论，它需要你用自己真实的场景来核对。\n\n关于“应该、必须、不能”，也可以给出一个待验证的方向。官杀线索（日支未土七杀、年支子水藏干正官、时柱申中戊土正官）与印线索（时柱庚申正印）放在一起，可以假设：你对规则与责任的重视，可能有一部分来自较早期的内化，表现为“应该先把事接下来”“必须做到位”“不能因为自己而拖慢别人”。但这里有一条明确的用户反证：你曾明确拒绝领导，并且没有内疚。这条反证直接说明，把“讨好”或“权威恐惧”套在你身上是不成立的。所以更准确的说法可能是：规则感在，但它不是靠恐惧驱动的，而是和“分工规则不清”这种现实模糊更相关。\n\n还有一处需要暂缓。父母宫主星为空，只有火星、天喜等辅星，依据不足，这一节不展开家庭线索的推断，也不补造任何早年经历。如果你愿意，可以在后续访谈里补充：拒绝领导那次和答应同事那次，情境差异是什么？是对方身份、事情性质、时间压力，还是分工归属的清晰程度不同？这个问题能帮我们把这层“应该”的来源分得更细。\n\n关于“先答应后撤退”的循环，这一节只作承接，不重新完整解释。你已经在概览里看过它的整体路径，下一节会展开三个卡点的具体运作方式。这里只需要记住一点：这个循环的保护功能是避免当场冲突、维持资源关系，代价是透支与关系摩擦；而你的反例提醒我们，它并不是在所有场景都触发。\n\n综合来看，你眼中的自己，大致是这样一个形象：一个愿意用承担换取资源、对规则敏感、但拒绝能力其实存在的人。真正需要核对的，不是“你是不是太软”，而是“在哪些具体情境下，分工规则的模糊会让你先答应，又在什么时候，你其实可以像拒绝领导那次一样，把判断权收回自己手里”。主权交接的方向，是把“是否答应”的判断权从模糊的规则里收回来，而不是去指责谁。",
+      "used_findings": [
+        "s2.hypothesis.persona_competent_operator",
+        "s2.hypothesis.overcommit_withdraw_cycle"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s2.mapping",
+        "analysis.s2.authority"
+      ],
+      "used_actions": [],
+      "transition_hint": "眼中的自己先看到这里。接下来进入三个卡点的具体运作方式：先答应后撤退、反复修改与截止急交付、休息少被允许，并保留反例说明并非所有场景都触发。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.self_perception",
+        "sequence_no": 4,
+        "new_information_role": "DEEPEN",
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "style_notes": "第二人称；命理术语已翻译为日常语言；未自述的情绪与信念均以可能/假设/待核对表达；未引用金句；未展开实验动作。"
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.self_belief",
+          "status": "FULFILLED",
+          "reason": "已覆盖意识自我（能接事、答应任务换取资源的运营者形象假设）、底层信念（以产出与承担换取位置的假设）、应该/必须/不能及权威内化（官杀与印线索的假设，并以拒绝领导无内疚的反证校正权威恐惧假设）、用户自我感受与反证（自述不担心评价、分工规则不清、明确拒绝领导），并给出具体待补问（拒绝领导与答应同事的情境差异）。",
+          "quote": "你自述不担心别人评价，答应任务是为了换取资源，不愿拒绝主要是因为分工规则不清。",
+          "follow_up_questions": [
+            "拒绝领导那次和答应同事那次，情境差异是什么？",
+            "是对方身份、事情性质、时间压力，还是分工归属的清晰程度不同？",
+            "在哪些具体情境下，分工规则的模糊会让你先答应？"
+          ]
+        }
+      ],
+      "fragment_key": "report.identity.self_perception",
+      "chapter": "identity",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s2.hypothesis.persona_competent_operator"
+          },
+          {
+            "finding_key": "s2.hypothesis.overcommit_withdraw_cycle"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s2.mapping"
+          },
+          {
+            "fragment_key": "analysis.s2.authority"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.self_belief",
+            "status": "FULFILLED",
+            "reason": "已覆盖意识自我（能接事、答应任务换取资源的运营者形象假设）、底层信念（以产出与承担换取位置的假设）、应该/必须/不能及权威内化（官杀与印线索的假设，并以拒绝领导无内疚的反证校正权威恐惧假设）、用户自我感受与反证（自述不担心评价、分工规则不清、明确拒绝领导），并给出具体待补问（拒绝领导与答应同事的情境差异）。",
+            "quote": "你自述不担心别人评价，答应任务是为了换取资源，不愿拒绝主要是因为分工规则不清。",
+            "follow_up_questions": [
+              "拒绝领导那次和答应同事那次，情境差异是什么？",
+              "是对方身份、事情性质、时间压力，还是分工归属的清晰程度不同？",
+              "在哪些具体情境下，分工规则的模糊会让你先答应？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "隐藏的自己：情结、阴影与防御如何共同维持你的节奏",
+      "content": "读到这里，你可能已经发现：上一节说的“能接事、能产出”，并不是你的全部。你自己也说过，答应任务是为了换取资源，不愿拒绝主要因为分工规则不清——这句话本身很清醒，但它可能只解释了事情的一半。这一节不新增诊断，只把已有材料里的三层结构摆出来：情结、阴影、防御。它们不是三个缺点，而是同一套保护系统的三个层次。\n\n先说情结。参考线索里，月令伤官、日支七杀，加上子午冲与子未害，这些术语翻译成日常语言，大致是：你对外在压力与规则很敏感，容易在“被挤压”和“要撑住”之间来回。已有材料给出的真实重复情境是：上周同事临时请你代写方案，你本想休息却答应，熬夜后第二天不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。在这些场景里，核心情绪假设是被挤压与不被尊重；自动想法假设是“当场拒绝会破坏关系或资源”。这两个都是假设，不是结论，需要你用自己的感受去核对。\n\n再说阴影。阴影不是“坏的一面”，而是你较少允许自己站过去的那一端。已有材料提示，休息、有余地的拒绝、脆弱与游戏性，可能是被排斥的一端。一个支持线索是：你独自散步时比较放松——这说明那一端真实存在，只是很少被允许。福德天府可作安定资源的线索，但它不证明你“应该”放松，也不证明你“做不到”放松。需要核对的是：你在什么情境能休息而不解释？在什么情境必须持续产出？这两个问题的答案，比任何术语都更接近你真实的分界线。\n\n然后是防御。已有材料列出三类候选。第一类是拖延后生硬回应或直接取消：在同事临时请代写方案、朋友临时改地点时，你先答应，随后以拖延或取消收场。第二类是反复修改：项目开头想法多、担心做不好，以修改替代交付，接近截止才急着交付。第三类是理智化：你用“换取资源”“分工规则不清”来解释答应与拒绝的困难——这个解释可能是真实的，也可能部分替代了对被挤压感的直接表达。三者关系是：情结是底层被触发的情绪与信念，阴影是被排除在判断之外的那一端，防御是当下自动启动的应对方式。它们叠在一起，就形成了“先答应—透支—撤退”的循环。\n\n这里必须保留你的反例：你曾明确拒绝领导，并且没有内疚。这说明讨好信念与权威恐惧的假设不成立，也说明这个循环并不是在所有场景都触发。更贴近材料的说法是：当分工规则清晰、对象是明确的权威时，你的拒绝能力是在线的；当请求临时出现、规则模糊、对方是平级或朋友时，这套能力可能还没被调用起来。这不是“你不够好”，而是同一套保护系统在不同场景下的不同反应。\n\n保护功能也要说清楚。先答应，短期避免的是当场冲突与关系破裂，保住的是资源通道；反复修改，短期避免的是过早交付被评判，保留的是改进空间；拖延与取消，短期让你从超载里退出来。它们都曾起作用。代价是长期的关系摩擦、熬夜透支与不耐烦累积。理解这一点，不是要你立刻改变，而是让你看到：这些反应不是任性，而是有来历的。\n\n如果把这一节收成一句话：你并不是“不会拒绝”，而是你的拒绝能力在规则清晰时已经存在，在规则模糊、请求临时出现时还没被允许上场。下一节会进入三个卡点的具体运作方式，包括先答应后撤退、反复修改与截止急交付、休息少被允许，并继续保留反例。",
+      "used_findings": [
+        "s2.hypothesis.rest_as_excluded_pole",
+        "s2.hypothesis.overcommit_withdraw_cycle",
+        "s4.block.overcommit_withdraw_loop",
+        "s4.block.perfectionist_completion"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s2.shadow",
+        "analysis.s2.complex",
+        "analysis.s4.defense"
+      ],
+      "used_actions": [],
+      "transition_hint": "隐藏的自己先看到这里。下一节进入三个卡点的具体运作方式：先答应后撤退、反复修改与截止急交付、休息少被允许，并继续保留反例。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.hidden_self",
+        "sequence_no": 5,
+        "new_information_role": "DEEPEN",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low",
+        "person": "second",
+        "tone": "描述性、非评判、保留假设语气",
+        "length_chars": 1180
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.hidden_self",
+          "status": "FULFILLED",
+          "reason": "正文分别说明情结、阴影、防御三层结构及其关系，给出情绪与信念假设并标注为假设，说明保护功能，并用用户反例进行现实核对；三个分析来源均已转译使用。",
+          "quote": "情结是底层被触发的情绪与信念，阴影是被排除在判断之外的那一端，防御是当下自动启动的应对方式。",
+          "follow_up_questions": [
+            "你在什么情境能休息而不解释？在什么情境必须持续产出？",
+            "答应同事与拒绝领导这两次，你当时的想法有什么不同？",
+            "每次遇到什么具体信号，会让你决定先答应？"
+          ]
+        }
+      ],
+      "fragment_key": "report.identity.hidden_self",
+      "chapter": "identity",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s2.hypothesis.rest_as_excluded_pole"
+          },
+          {
+            "finding_key": "s2.hypothesis.overcommit_withdraw_cycle"
+          },
+          {
+            "finding_key": "s4.block.overcommit_withdraw_loop"
+          },
+          {
+            "finding_key": "s4.block.perfectionist_completion"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s2.shadow"
+          },
+          {
+            "fragment_key": "analysis.s2.complex"
+          },
+          {
+            "fragment_key": "analysis.s4.defense"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.hidden_self",
+            "status": "FULFILLED",
+            "reason": "正文分别说明情结、阴影、防御三层结构及其关系，给出情绪与信念假设并标注为假设，说明保护功能，并用用户反例进行现实核对；三个分析来源均已转译使用。",
+            "quote": "情结是底层被触发的情绪与信念，阴影是被排除在判断之外的那一端，防御是当下自动启动的应对方式。",
+            "follow_up_questions": [
+              "你在什么情境能休息而不解释？在什么情境必须持续产出？",
+              "答应同事与拒绝领导这两次，你当时的想法有什么不同？",
+              "每次遇到什么具体信号，会让你决定先答应？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "往哪里去：让承担与休息同时在场",
+      "content": "这一节先把方向的地基说清楚，方法留在成长实验那一节。\n\n你目前更常站在的一端，可能是“以产出与承担换取位置”。你自己说，答应任务是为了换取资源；同事临时请你代写方案，你本想休息却答应，熬夜后第二天变得不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。这些不是性格缺陷，而是你已经熟练的一种换取位置的方式——它确实帮你被需要、被看见。\n\n另一端是休息、有余地的表达，以及被尊重的需要。你独自散步时比较放松，也明确提出想减少透支、练习有余地的表达。它并非不存在，只是目前少被允许出场：当请求或截止到来，它常常第一个被让位。\n\n整合的方向，不是变成一个既会承担又懂休息的完美的人，而是在具体情境里让两端共同存在。你已经有过一次反例：曾明确拒绝领导且没有内疚。这说明要扩展的不是“修复讨好”，而是把这份已有的拒绝能力，搬到更多场景里去。\n\n从更长的节奏看，你当前所处的阶段（约2019至2028年）带有收敛与表达之间的张力，像是边走边调整的渐进过程，而不是一次性翻篇。命盘旁注里提到的稳定资源（正印、福德天府）可以理解为：你其实有安定的底子，只是这份安定还没有被正式排进日程。\n\n以上命理与格局的对应，都只是一种解释视角，不是结论。哪些方向真的适合你，仍以你在现实中的自述和反馈为准。至于“最想活出的样子”，目前资料不足，这一节暂缓，等你补充后我们再接上。",
+      "used_findings": [
+        "s3.hypothesis.core_tension_productivity_vs_rest",
+        "s3.hypothesis.quadrant_tension_operator_vs_restrained",
+        "s3.hypothesis.integration_threefold"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s3.self",
+        "analysis.s3.integration"
+      ],
+      "used_actions": [],
+      "transition_hint": "方向的地基先铺到这里，接下来看这套节奏是怎么运作的。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.self_direction",
+        "sequence_no": 6,
+        "new_information_role": "REFERENCE",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low",
+        "person": "second",
+        "source_policy": "confirmed_semantics_only"
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.self_direction",
+          "status": "FULFILLED",
+          "reason": "已写出当前倾向的一端（以产出与承担换取位置）、被排除的另一端（休息、有余地的表达与被尊重），并明确整合不是成为完美的人，而是让两端在具体情境中共同存在；命理对应已限定为解释视角，行动取舍以现实自述与反馈为依据。",
+          "quote": "整合的方向，不是变成一个既会承担又懂休息的完美的人，而是在具体情境里让两端共同存在。",
+          "follow_up_questions": [
+            "在哪些具体场景你曾同时做到既答应又保留余地？",
+            "你如何描述自己最想活出的样子（不依赖外部评价）？"
+          ]
+        }
+      ],
+      "fragment_key": "report.identity.self_direction",
+      "chapter": "identity",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s3.hypothesis.core_tension_productivity_vs_rest"
+          },
+          {
+            "finding_key": "s3.hypothesis.quadrant_tension_operator_vs_restrained"
+          },
+          {
+            "finding_key": "s3.hypothesis.integration_threefold"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s3.self"
+          },
+          {
+            "fragment_key": "analysis.s3.integration"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.self_direction",
+            "status": "FULFILLED",
+            "reason": "已写出当前倾向的一端（以产出与承担换取位置）、被排除的另一端（休息、有余地的表达与被尊重），并明确整合不是成为完美的人，而是让两端在具体情境中共同存在；命理对应已限定为解释视角，行动取舍以现实自述与反馈为依据。",
+            "quote": "整合的方向，不是变成一个既会承担又懂休息的完美的人，而是在具体情境里让两端共同存在。",
+            "follow_up_questions": [
+              "在哪些具体场景你曾同时做到既答应又保留余地？",
+              "你如何描述自己最想活出的样子（不依赖外部评价）？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "能量从哪里来，又从哪里漏掉",
+      "content": "你在工作里呈现出的样子，是一个能接事、能产出、也愿意为资源承担的人。你自己说过，答应任务是为了换取资源，不愿拒绝主要因为分工规则不清。这句话很重要，它说明你的承担不是被动，而是一种有目的的选择。现在要看的是，这份承担在什么条件下会变成透支。\n\n先看你身上已经确认的两处资源线索。时柱庚申正印，可以读作一种被支持、能收敛、愿意把事做扎实的倾向；福德宫天府配天魁，可以读作内在安定与外部助力的线索。这两条都只作为参考，不是结论。它们更接近你身上本来就有的两端：一端是愿意承接、愿意把事做好的力量，另一端是安静、稳定、可以被支持的状态。问题往往不在缺少哪一端，而在两端之间的切换节奏。\n\n耗电的部分有你的自述支持：答应额外任务后熬夜，下班后持续查看消息怕漏事，项目开头想法多、担心做不好反复修改，临近截止才急着交付。这些场景有一个共同点——它们都不是在事情开始时消耗你，而是在事情拖长、反复、无法收尾时消耗你。充电的部分同样有线索：独自散步时你比较放松，这提示休息的通道是存在的，只是它需要被允许、被留出时间，而不是被排在所有事情之后。\n\n从加工路径看，可以这样理解你的模式：探索入口上，你项目开头想法多，倾向先发散再收敛，但收敛环节容易被担心做不好的焦虑拉长；价值判断入口上，你自述答应任务是为换取资源，价值排序可能偏向资源与关系维持，休息与余地较少进入排序；执行入口上，你临近截止才急交付，执行更多依赖外部时间压力，而不是内部节奏；反馈入口上，你下班后持续查看消息怕漏事，反馈敏感度高但缺少过滤。这条路径里最容易被卡住的，是探索与执行之间的收敛环节——想法已经很多，但把它们收成一个可交付版本的动作，被反复修改替代了。\n\n这里需要说明：你没有自报MBTI或八维测评结果，所以本节不推断类型，也不给出功能分数，以上只是可观察的加工路径倾向假设，需要你用自己的行为记录去核对。另外，你还没有描述社交场合对你来说是充电还是耗电，也没有说明睡眠与身体状态，这两点不能由命盘直接推断，需要你以观察记录来核对。\n\n把这几条放在一起看，你的能量模式不是“能不能扛”，而是“什么时候允许自己停”。承担与休息这两端在你身上都真实存在，只是目前承担一端被排得更满。下一节会进入三个卡点的具体运作方式，继续保留反例，看哪些场景会触发、哪些场景不会。",
+      "used_findings": [
+        "s1.foundation.hour_seal_gengshen",
+        "s1.foundation.ziwei_wellbeing_tianfu",
+        "s4.block.rest_as_excluded",
+        "s4.block.perfectionist_completion"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s4.energy",
+        "analysis.s4.functions"
+      ],
+      "used_actions": [],
+      "transition_hint": "能量模式先看到这里。接下来进入三个卡点的具体运作方式：先答应后撤退、反复修改与截止急交付、休息少被允许，并继续保留反例。",
+      "presentation_meta": {
+        "fragment_key": "report.identity.energy_pattern",
+        "chapter": "identity",
+        "sequence_no": 7,
+        "new_information_role": "MANIFEST",
+        "reading_depth": "深入详细",
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low",
+        "second_person": true,
+        "avoids_medical_diagnosis": true,
+        "avoids_mbti_inference": true,
+        "uncertainty_markers_used": [
+          "可能",
+          "可以读作",
+          "倾向假设",
+          "需要核对"
+        ],
+        "contains_growth_experiment_steps": false,
+        "contains_quote_library_citation": false
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.energy",
+          "status": "FULFILLED",
+          "reason": "已覆盖充电/耗电与实际反馈、探索→价值→执行→反馈路径及张力，并明确无自报不推MBTI或八维分数；同时说明社交与睡眠两项待核对。",
+          "quote": "耗电的部分有你的自述支持：答应额外任务后熬夜，下班后持续查看消息怕漏事，项目开头想法多、担心做不好反复修改，临近截止才急着交付。",
+          "follow_up_questions": [
+            "社交场合对你来说是充电还是耗电？",
+            "你是否有过MBTI或八维测评结果可供参考？",
+            "你最近的睡眠与身体状态如何，是否与熬夜频率相关？"
+          ]
+        }
+      ],
+      "fragment_key": "report.identity.energy_pattern",
+      "chapter": "identity",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s1.foundation.hour_seal_gengshen"
+          },
+          {
+            "finding_key": "s1.foundation.ziwei_wellbeing_tianfu"
+          },
+          {
+            "finding_key": "s4.block.rest_as_excluded"
+          },
+          {
+            "finding_key": "s4.block.perfectionist_completion"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s4.energy"
+          },
+          {
+            "fragment_key": "analysis.s4.functions"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.energy",
+            "status": "FULFILLED",
+            "reason": "已覆盖充电/耗电与实际反馈、探索→价值→执行→反馈路径及张力，并明确无自报不推MBTI或八维分数；同时说明社交与睡眠两项待核对。",
+            "quote": "耗电的部分有你的自述支持：答应额外任务后熬夜，下班后持续查看消息怕漏事，项目开头想法多、担心做不好反复修改，临近截止才急着交付。",
+            "follow_up_questions": [
+              "社交场合对你来说是充电还是耗电？",
+              "你是否有过MBTI或八维测评结果可供参考？",
+              "你最近的睡眠与身体状态如何，是否与熬夜频率相关？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "关系循环：先答应，后撤退",
+      "content": "把你在关系里的这个循环单独拿出来看，它有一个相对固定的顺序。第一步是请求出现：上周同事临时请你代写方案，朋友连续两次临时改地点。第二步是你的回应：你本想休息，却先答应了；朋友改地点时你也没有表达意见。第三步是随后的感受：被挤压、不被尊重，熬夜之后变得不耐烦。第四步是反馈：拖延、生硬回应，或者干脆直接取消聚会。对方那边可能感到突然，关系摩擦就此累积，下一次请求出现时，循环又容易重演。\n\n这个顺序之所以能反复跑起来，是因为它在短期内确实解决了一个问题：当场不发生冲突，资源关系得以维持，你换到了继续参与的通道。代价则被推到后面，以熬夜、透支和关系摩擦的形式出现。需要说明的是，这条循环不是在所有场景都成立。你曾明确拒绝领导，并且没有内疚——这说明拒绝的能力你已经具备，只是目前还没有扩展到同事临时请求、朋友临时改约这类场景。因此更贴切的说法是：它是一条在特定条件下容易被触发的路径，而不是你的固定性格。\n\n还有几处需要你核对，而不是由我先下结论。拒绝领导那次和答应同事那次，情境差异是什么，是分工是否清楚、对方是否可协商，还是别的因素？朋友改地点时，你希望对方知道什么？你平时如何判断一次请求是否值得答应？这些问题的答案会决定这条循环的边界画在哪里。至于具体怎么练习有余地的表达、怎么减少透支，放在后面的成长实验一节展开，这里先把循环本身看清楚。",
+      "used_findings": [
+        "s4.block.overcommit_withdraw_loop"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s4.relationships"
+      ],
+      "used_actions": [],
+      "transition_hint": "关系循环先看到这里。接下来进入三个卡点的具体运作方式：先答应后撤退、反复修改与截止急交付、休息少被允许，并继续保留反例。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.relationship_pattern",
+        "sequence_no": 8,
+        "new_information_role": "DEEPEN",
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "must_not_repeat_respected": [
+          "未展开实验动作/频率/退出条件",
+          "未引用收束金句"
+        ]
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.relationships",
+          "status": "FULFILLED",
+          "reason": "以请求/回应/感受/反馈四步呈现循环，引用真实场景（同事代写方案、朋友改地点、熬夜不耐烦、直接取消），并给出反例（明确拒绝领导且无内疚）与三处待核对问题。",
+          "quote": "第一步是请求出现：上周同事临时请你代写方案，朋友连续两次临时改地点。",
+          "follow_up_questions": [
+            "拒绝领导那次和答应同事那次，情境差异是什么？",
+            "朋友改地点时，你希望对方知道什么？",
+            "你平时如何判断一次请求是否值得答应？"
+          ]
+        }
+      ],
+      "fragment_key": "report.identity.relationship_pattern",
+      "chapter": "identity",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s4.block.overcommit_withdraw_loop"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s4.relationships"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.relationships",
+            "status": "FULFILLED",
+            "reason": "以请求/回应/感受/反馈四步呈现循环，引用真实场景（同事代写方案、朋友改地点、熬夜不耐烦、直接取消），并给出反例（明确拒绝领导且无内疚）与三处待核对问题。",
+            "quote": "第一步是请求出现：上周同事临时请你代写方案，朋友连续两次临时改地点。",
+            "follow_up_questions": [
+              "拒绝领导那次和答应同事那次，情境差异是什么？",
+              "朋友改地点时，你希望对方知道什么？",
+              "你平时如何判断一次请求是否值得答应？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "卡点一：先答应，后撤退",
+      "content": "你在压力下常走一条路：先接住，再想办法从里面退出来。\n\n现实里它可能长这样：同事临时请你代写方案，你本想休息，却还是答应了，熬夜做完，第二天变得不耐烦；朋友连续两次临时改地点，你当时没说什么，最后索性取消聚会；需要拒绝时，你拖到最后才给出一句生硬的回应。这里要保留一个反证：你曾明确拒绝领导，而且没有内疚。所以这不是“你不会拒绝”，而是这个循环只在某些场景被触发——通常是临时请求、计划变动、分工规则又不清楚的时刻。\n\n它的运作方式可以拆成一条链：临时请求或计划变动出现（触发）→ 你当场先答应，把关系与资源通道稳住（运作）→ 短期避开了冲突与关系破裂的风险（过去的保护）→ 但答应之后，休息被挤掉，拖延和不耐烦累积，关系里也开始出现摩擦（长期代价）。\n\n关键结论：你并不是在讨好所有人，而是在用“先承担”换取位置和通道；代价是休息与余地被排除在判断之外。\n\n本节路径图：临时请求/计划变动 → 先答应 → 短期无冲突 → 熬夜与不耐烦 → 关系摩擦 → 邀请：在答应前留出一个停顿。\n\n变化所需的下一步理解，不是立刻学会拒绝，而是先看见：你答应时，真正被放到一边的是什么。具体怎么做，留到“往哪去”那一章展开。",
+      "used_findings": [
+        "s4.block.overcommit_withdraw_loop"
+      ],
+      "used_analysis_fragments": [],
+      "used_actions": [],
+      "transition_hint": "先答应后撤退的循环先看到这里。接下来进入第二个卡点：反复修改与截止前的急交付。",
+      "presentation_meta": {
+        "chapter": "challenge",
+        "chapter_opening": true,
+        "sequence_no": 9,
+        "new_information_role": "MANIFEST",
+        "style": {
+          "person": "second",
+          "theory_density": "medium",
+          "action_density": "low",
+          "metaphor_density": "low"
+        },
+        "contains_solution_steps": false,
+        "contains_growth_experiment_actions": false,
+        "contains_quote": false
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.blocks",
+          "status": "FULFILLED",
+          "reason": "已按场景、触发、运作、过去保护、长期代价、整合邀请的顺序展开该卡点，并保留用户自述的反例；本节只解释机制，未展开任何解决步骤或实验动作。",
+          "quote": "它的运作方式可以拆成一条链：临时请求或计划变动出现（触发）→ 你当场先答应，把关系与资源通道稳住（运作）→ 短期避开了冲突与关系破裂的风险（过去的保护）→ 但答应之后，休息被挤掉，拖延和不耐烦累积，关系里也开始出现摩擦（长期代价）。",
+          "follow_up_questions": [
+            "除了临时请求和计划变动，还有哪些具体场景会让你先答应？",
+            "你答应之后，最早出现的身体或情绪信号是什么？",
+            "那次明确拒绝领导且没有内疚，当时和现在的差别在哪里？"
+          ]
+        }
+      ],
+      "fragment_key": "report.blocks.block_01",
+      "chapter": "challenge",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s4.block.overcommit_withdraw_loop"
+          }
+        ],
+        "fragments": [],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.blocks",
+            "status": "FULFILLED",
+            "reason": "已按场景、触发、运作、过去保护、长期代价、整合邀请的顺序展开该卡点，并保留用户自述的反例；本节只解释机制，未展开任何解决步骤或实验动作。",
+            "quote": "它的运作方式可以拆成一条链：临时请求或计划变动出现（触发）→ 你当场先答应，把关系与资源通道稳住（运作）→ 短期避开了冲突与关系破裂的风险（过去的保护）→ 但答应之后，休息被挤掉，拖延和不耐烦累积，关系里也开始出现摩擦（长期代价）。",
+            "follow_up_questions": [
+              "除了临时请求和计划变动，还有哪些具体场景会让你先答应？",
+              "你答应之后，最早出现的身体或情绪信号是什么？",
+              "那次明确拒绝领导且没有内疚，当时和现在的差别在哪里？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "卡点二：反复修改与截止前的急交付",
+      "content": "先答应后撤退的循环先看到这里。接下来进入第二个卡点：反复修改与截止前的急交付。\n\n这个卡点需要先说清楚：它是一条把握程度偏低的线索，属于待核对的假设，和卡点一的确定度不同。下面用的“可能”“往往”不是客套，而是真实的不确定。\n\n你自述过：项目开头你会有许多想法，担心做不好就反复修改，接近截止才急着交付。这条线索的场景在“任务开始”与“截止临近”之间；触发点往往是这两端之间的时间压力；运作方式可能是把“判断”一直往后推，用反复修改代替明确交付。假如这个描述符合你，那么它在短期里避免的是过早交付后被评判，同时保留“还能再改”的空间——这就是它过去保护你的地方，不轻易把自己交出去。\n\n代价出现在长期：节奏失控、熬夜，交付质量和身心状态同时受压。你自述的期待是理解反复出现的机制、练习有余地的表达、减少透支；从这个角度看，反复修改可能不是懒或拖，而是一种把评判风险推迟到最后一刻的自我保护，只是成本落在了你自己的睡眠和节奏上。\n\n需要保留的反证是：它可能只在某些任务上出现，也可能在别的任务上完全不出现。这一点值得你自己核对，而不是接受上面的描述。\n\n变化所需的下一步理解是：允许阶段性交付，把“完成”和“完美”分开。这句话本身不是动作，只是一个可以慢慢接受的前提；具体怎么在现实里练，会放到后面的成长实验一节。\n\n如果你愿意，可以回想一次最近反复修改的任务：当时你在担心谁的评判？那个担心后来真的发生了吗？",
+      "used_findings": [
+        "s4.block.perfectionist_completion"
+      ],
+      "used_analysis_fragments": [],
+      "used_actions": [],
+      "transition_hint": "反复修改与截止前的急交付先看到这里。接下来进入第三个卡点：休息与余地少被允许。",
+      "presentation_meta": {
+        "chapter": "challenge",
+        "fragment_key": "report.blocks.block_02",
+        "sequence_no": 10,
+        "confidence_note": "该卡点证据把握程度偏低，正文以待核对假设表述",
+        "style": {
+          "person": "second",
+          "theory_density": "medium",
+          "action_density": "low",
+          "metaphor_density": "low"
+        }
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.blocks",
+          "status": "FULFILLED",
+          "reason": "按场景→触发→运作→过去保护→长期代价→整合邀请的顺序展开；只呈现一个卡点并说明其把握程度偏低；本节不展开解决步骤，仅指出具体练习在成长实验一节。",
+          "quote": "这条线索的场景在“任务开始”与“截止临近”之间；触发点往往是这两端之间的时间压力；运作方式可能是把“判断”一直往后推，用反复修改代替明确交付。",
+          "follow_up_questions": [
+            "这个卡点是否只在部分任务上出现？哪些任务更容易触发？",
+            "反复修改时，你担心的评判具体来自谁？"
+          ]
+        }
+      ],
+      "fragment_key": "report.blocks.block_02",
+      "chapter": "challenge",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s4.block.perfectionist_completion"
+          }
+        ],
+        "fragments": [],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.blocks",
+            "status": "FULFILLED",
+            "reason": "按场景→触发→运作→过去保护→长期代价→整合邀请的顺序展开；只呈现一个卡点并说明其把握程度偏低；本节不展开解决步骤，仅指出具体练习在成长实验一节。",
+            "quote": "这条线索的场景在“任务开始”与“截止临近”之间；触发点往往是这两端之间的时间压力；运作方式可能是把“判断”一直往后推，用反复修改代替明确交付。",
+            "follow_up_questions": [
+              "这个卡点是否只在部分任务上出现？哪些任务更容易触发？",
+              "反复修改时，你担心的评判具体来自谁？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "卡点三：休息与余地少被允许",
+      "content": "到这里，第三个卡点值得单独看一看：休息与有余地的表达，似乎很少被你允许。\n\n先说现实表现。你提到下班后常查看消息，怕漏事；而独自散步时，你比较放松。这两个画面放在一起，本身就说明：放松这一端在你身上是真实存在的，只是它常常要等到“没有任务在场”时才被放行。\n\n再看触发与运作。触发点可能是持续在线的责任感，以及对遗漏事情的担忧。运作方式，是以持续产出和在线状态去替代休息，休息要先被解释、被证明“有理由”，才允许发生。需要说明的是，这些是基于你自述的机制假设，不是对你的判定；如果你在某些场景里其实能安心休息，那正是需要保留的反例。\n\n它过去保护了什么？可能是维持“可靠、能扛事”的形象，以及你在团队和关系里的资源位置，避免被看作不负责。这份保护有它的功劳，不必急着否定。\n\n长期代价也清楚：休息被压缩，情绪与耐心储备下降。你提到答应代写方案后熬夜、第二天不耐烦，朋友两次临时改地点你没表达、最后直接取消聚会——这些场景里，透支与沉默可能是同一件事的两面。\n\n整合邀请是：允许休息不解释，把散步式的放松纳入日常节奏。具体怎么练习，留到第三章的成长实验里展开，这里先不列步骤。",
+      "used_findings": [
+        "s4.block.rest_as_excluded"
+      ],
+      "used_analysis_fragments": [],
+      "used_actions": [],
+      "transition_hint": "第三个卡点先看到这里。接下来进入第三章：往哪去，让承担与休息同时在场。",
+      "presentation_meta": {
+        "fragment_key": "report.blocks.block_03",
+        "chapter": "challenge",
+        "sequence_no": 11,
+        "new_information_role": "MANIFEST",
+        "style_note": "第二人称、低隐喻、中等理论密度；未自述处均用可能/假设表达。"
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.blocks",
+          "status": "FULFILLED",
+          "reason": "按场景→触发→运作→过去保护→长期代价→整合邀请的链条展开，来源为已确认的 s4.block.rest_as_excluded 及其证据；本节未展开解决步骤，只以一句指向第三章成长实验。",
+          "quote": "触发点可能是持续在线的责任感，以及对遗漏事情的担忧。",
+          "follow_up_questions": []
+        }
+      ],
+      "fragment_key": "report.blocks.block_03",
+      "chapter": "challenge",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s4.block.rest_as_excluded"
+          }
+        ],
+        "fragments": [],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.blocks",
+            "status": "FULFILLED",
+            "reason": "按场景→触发→运作→过去保护→长期代价→整合邀请的链条展开，来源为已确认的 s4.block.rest_as_excluded 及其证据；本节未展开解决步骤，只以一句指向第三章成长实验。",
+            "quote": "触发点可能是持续在线的责任感，以及对遗漏事情的担忧。",
+            "follow_up_questions": []
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "三个卡点共享的同一条路径",
+      "content": "把前面看到的三个卡点放在一起，会发现它们并不是三件互不相干的事，而更像同一条路径在不同场景里的三种走法：先答应后撤退、反复修改到截止前急交付、休息与余地少被允许。它们共享的骨架大致是：某个触发出现，你当场把另一端的需要压下去，用一个能立刻缓解张力的动作顶上去，短期确实换来平静，长期却把透支和关系摩擦一点点累积起来。\n\n先看这条路径在卡点一里的走法。触发是同事临时请你代写方案、朋友连续两次临时改地点这类事情，且分工规则并不清楚。你当场先答应，短期避免的是当场冲突、也维持住资源关系；随后拖延、生硬回应或直接取消，长期累积的是关系摩擦和熬夜透支。这里有一个重要的反证：你曾明确拒绝领导且没有内疚，这说明这条链并不是在所有场景都会启动，至少并非所有权威场景都触发它。所以它更像一种在特定触发下被调用的应对，而不是你身上固定不变的属性。\n\n卡点二走的是同一条骨架，只是把“答应”换成了“再改一版”。触发是任务开始与截止临近的时间压力，你以反复修改替代明确交付，把判断推到最后一刻。短期它保护的是避免过早交付被评判、保留改进空间；长期代价是节奏失控、熬夜，交付质量和身心状态同时受压。这里要说明的是，反复修改与透支同时出现，只能说两者在同一段经历里相伴发生，不能反推成“因为追求完美所以必然透支”的因果链。\n\n卡点三则把这条路径铺到了日常节奏里。触发是持续在线的责任感和对遗漏的担忧，你以持续产出和在线替代休息，休息往往需要先被解释才被允许。短期它维持的是可靠形象和资源位置；长期代价是休息被压缩，情绪与耐心储备下降。独自散步时你比较放松，这个细节提示“休息”这一端在你身上是真实存在的，只是长期被排除在允许范围之外。\n\n把三者叠起来看，它们共享的并不是同一个具体动作，而是同一个方向：先把张力从当下挪走，代价留到之后支付。卡点一挪走的是当场冲突，卡点二挪走的是被评判的风险，卡点三挪走的是“我是不是不够负责”的不安。三者之间也会互相喂养：答应得越多，可用的时间越少，越容易拖到截止前急交付；越是在截止前急交付，越需要靠在线和加班补位，休息就越难被允许；休息越少，下一次面对临时请求时，能调用的余地就越薄。这是一条相互加强的回路，而不是三个孤立的毛病。\n\n需要保留的边界有三条。第一，以上是综合三个卡点后看到的共同运作方式，属于对已确认材料的整理，不是对你人格的定性。第二，卡点一和二都还带着待核对的假设成分，尤其“先答应是为了维持关系”这一层，需要你在具体场景里自行校正；你拒绝领导且无内疚的反例，已经说明它不能一概而论。第三，相关不等于因果：三个卡点常常一起出现，但谁先谁后、谁在具体某次事件里起了主导作用，还需要你在真实场景里辨认。\n\n如果这条共同路径对你成立，那么它指向的整合方向也很一致：让被压下去的那一端重新进入判断。具体在哪些场景先停顿、怎样表达有余地、怎样安排休息，会在后面的成长实验一节里展开，这里只先点出方向。你可以带着一个问题往下读：在最近一次先答应或先修改的时刻，如果当时多留半分钟，你最想放进来的是哪一句话、哪一种需要？",
+      "used_findings": [
+        "s4.block.overcommit_withdraw_loop",
+        "s4.block.perfectionist_completion",
+        "s4.block.rest_as_excluded",
+        "s2.hypothesis.overcommit_withdraw_cycle",
+        "s2.hypothesis.perfectionist_completion_anxiety"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s2.cycle",
+        "analysis.s4.blocks"
+      ],
+      "used_actions": [],
+      "transition_hint": "共同路径先看到这里。接下来进入第三章：往哪去，让承担与休息同时在场，具体做法放在成长实验一节。",
+      "presentation_meta": {
+        "chapter": "challenge",
+        "fragment_key": "report.blocks.common_pattern",
+        "sequence_no": 12,
+        "new_information_role": "SYNTHESIZE",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low",
+        "tone": "第二人称、现实语言、不评判",
+        "contains_golden_quote": false,
+        "contains_experiment_steps": false,
+        "counterexample_preserved": true
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.common_pattern",
+          "status": "FULFILLED",
+          "reason": "本节综合了三个卡点，按触发→情绪/信念→防御→短期保护→长期重复的骨架逐条说明其共同运作方式，并用‘相关不等于因果’和反证明确标注了不能写成因果的部分；两个分析来源（激活路径与卡点理解）均已转译使用，未展开实验步骤，未引用金句。",
+          "quote": "它们共享的骨架大致是：某个触发出现，你当场把另一端的需要压下去，用一个能立刻缓解张力的动作顶上去，短期确实换来平静，长期却把透支和关系摩擦一点点累积起来。",
+          "follow_up_questions": [
+            "在最近一次先答应或先修改的时刻，如果当时多留半分钟，你最想放进来的是哪一句话、哪一种需要？",
+            "三个卡点里，哪一个最贴近你最近两周的真实体验？",
+            "在哪些具体场景里你其实能当场拒绝（像拒绝领导那样），哪些场景里做不到？两者的差别是什么？"
+          ]
+        }
+      ],
+      "fragment_key": "report.blocks.common_pattern",
+      "chapter": "challenge",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s4.block.overcommit_withdraw_loop"
+          },
+          {
+            "finding_key": "s4.block.perfectionist_completion"
+          },
+          {
+            "finding_key": "s4.block.rest_as_excluded"
+          },
+          {
+            "finding_key": "s2.hypothesis.overcommit_withdraw_cycle"
+          },
+          {
+            "finding_key": "s2.hypothesis.perfectionist_completion_anxiety"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s2.cycle"
+          },
+          {
+            "fragment_key": "analysis.s4.blocks"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.common_pattern",
+            "status": "FULFILLED",
+            "reason": "本节综合了三个卡点，按触发→情绪/信念→防御→短期保护→长期重复的骨架逐条说明其共同运作方式，并用‘相关不等于因果’和反证明确标注了不能写成因果的部分；两个分析来源（激活路径与卡点理解）均已转译使用，未展开实验步骤，未引用金句。",
+            "quote": "它们共享的骨架大致是：某个触发出现，你当场把另一端的需要压下去，用一个能立刻缓解张力的动作顶上去，短期确实换来平静，长期却把透支和关系摩擦一点点累积起来。",
+            "follow_up_questions": [
+              "在最近一次先答应或先修改的时刻，如果当时多留半分钟，你最想放进来的是哪一句话、哪一种需要？",
+              "三个卡点里，哪一个最贴近你最近两周的真实体验？",
+              "在哪些具体场景里你其实能当场拒绝（像拒绝领导那样），哪些场景里做不到？两者的差别是什么？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "从卡点到方向：让承担与休息同时在场",
+      "content": "三个卡点共享一条路径：外部请求或截止压力出现，被挤压感和“必须马上承担”的假设升起，你用答应、反复修改或持续在线作为防御，短期避免冲突或被评判，长期累积透支与关系摩擦。这条路径不是你的全部——你曾明确拒绝领导且没有内疚，说明拒绝能力已经存在，只是尚未扩展到分工规则不清的场景。\n\n方向不是把承担换成休息，而是让两端共同存在。这里的资源转译需要说明：时柱庚申正印与福德天府可作被支持与安定的线索，这是一种解释视角，不是关于你的既定结论。若把这条线索转译为调节功能，就是在请求与回应之间留出缓冲、允许休息不解释；由此需要发展的能力是有余地的表达与阶段性交付。现实缺口在于分工规则不清时缺少可用的回应脚本，也缺少阶段交付的约定。工具与卡点的对应关系是：短焦对应卡点一“先答应后撤退”，用来争取一次停顿；CBT对应卡点二“反复修改与截止急交付”，用来练习阶段交付；ACT对应卡点三“休息与余地少被允许”，用来容纳“应该做事”的想法；EFT对应触发链记录，用来给情绪命名。这些工具的具体做法放在第三章的成长实验一节，这里不展开步骤。\n\n中式人物意象可参考“持秤的账房先生”与“山中读书人”：前者精于权衡资源与责任，可学习边界与主权；后者善于沉淀，可学习小步入局。两种意象分别回应“答应后透支”与“思虑替代行动”两类现实议题。这是文化意象比喻，不是史实或人格诊断；当情境需要果断止损时，意象不应被用来合理化拖延。\n\n你行为中同时呈现“角色中的承担者”（财官旺、比劫弱，自述答应任务为换取资源，身宫落官禄武曲贪狼）与“退回内在的探索者”（时柱正印有力、独处散步较放松、项目开头想法多但反复修改）两种倾向，反证是：你曾明确拒绝领导且无内疚，说明外部评价并未完全压过主体；你仍在推进项目并交付，并非以思虑完全替代行动。成长任务相应是建立原则与主权、开始小步行动，具体练习留到第三章。",
+      "used_findings": [
+        "s4.block.overcommit_withdraw_loop",
+        "s4.block.perfectionist_completion",
+        "s3.hypothesis.core_tension_productivity_vs_rest",
+        "s3.hypothesis.quadrant_tension_operator_vs_restrained",
+        "s4.block.rest_as_excluded"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s3.quadrant",
+        "analysis.s4.breakthrough"
+      ],
+      "used_actions": [],
+      "transition_hint": "破局推导先看到这里。接下来进入当下时义，看这套节奏在当下阶段的时间位置与主题。",
+      "presentation_meta": {
+        "chapter": "challenge",
+        "fragment_key": "report.blocks.breakthrough",
+        "sequence_no": 13,
+        "style": {
+          "person": "second",
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "constraints": [
+          "不展开实验动作/频率/退出条件",
+          "不引用收束金句",
+          "不作史实或人格诊断",
+          "符号解释为解释视角，非既定结论"
+        ]
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.breakthrough",
+          "status": "FULFILLED",
+          "reason": "已按资源→调节功能→能力→现实缺口→工具→实验顺序推导，能力回应共性机制，动作只指向第三章成长实验一节，未展开步骤。",
+          "quote": "时柱庚申正印与福德天府可作被支持与安定的线索，这是一种解释视角，不是关于你的既定结论。",
+          "follow_up_questions": []
+        },
+        {
+          "requirement_id": "R.archetype",
+          "status": "FULFILLED",
+          "reason": "已具象化两种中式意象并给出可学习能力与适用边界，明确声明非史实或人格诊断。",
+          "quote": "这是文化意象比喻，不是史实或人格诊断；当情境需要果断止损时，意象不应被用来合理化拖延。",
+          "follow_up_questions": []
+        }
+      ],
+      "fragment_key": "report.blocks.breakthrough",
+      "chapter": "challenge",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s4.block.overcommit_withdraw_loop"
+          },
+          {
+            "finding_key": "s4.block.perfectionist_completion"
+          },
+          {
+            "finding_key": "s3.hypothesis.core_tension_productivity_vs_rest"
+          },
+          {
+            "finding_key": "s3.hypothesis.quadrant_tension_operator_vs_restrained"
+          },
+          {
+            "finding_key": "s4.block.rest_as_excluded"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s3.quadrant"
+          },
+          {
+            "fragment_key": "analysis.s4.breakthrough"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.breakthrough",
+            "status": "FULFILLED",
+            "reason": "已按资源→调节功能→能力→现实缺口→工具→实验顺序推导，能力回应共性机制，动作只指向第三章成长实验一节，未展开步骤。",
+            "quote": "时柱庚申正印与福德天府可作被支持与安定的线索，这是一种解释视角，不是关于你的既定结论。",
+            "follow_up_questions": []
+          },
+          {
+            "requirement_id": "R.archetype",
+            "status": "FULFILLED",
+            "reason": "已具象化两种中式意象并给出可学习能力与适用边界，明确声明非史实或人格诊断。",
+            "quote": "这是文化意象比喻，不是史实或人格诊断；当情境需要果断止损时，意象不应被用来合理化拖延。",
+            "follow_up_questions": []
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "当下时义：以“渐”作一面镜子",
+      "content": "关键结论：你当前最值得借用的时义，是“渐”——按次序推进、不跳步；它对应的不是慢，而是不让节奏失衡继续透支你。\n\n本章路径：请求或截止压力 → 先答应或持续在线 → 短期避开冲突 → 长期透支与关系摩擦 → 把“渐”当作节奏参照 → 在答应前留出停顿。\n\n为什么“渐”与你的当下境遇匹配。你自述的几件事里，有一个反复出现的节奏：项目开头想法多、担心做不好而反复修改，接近截止才急着交付；同事临时请你代写方案，你本想休息却答应了，熬夜后第二天变得不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。这些描述放在一起，呈现的不是“懒”或“不负责”，而更像是推进次序被打乱：前面留了很多修改和反复，后面被迫用透支来补。按次序推进、不越级的“渐”，正好对应这个失衡点——它提示的不是把每件事拖长，而是让每一步在该在的位置上发生。\n\n这里需要说明两点。第一，这是一个哲学比喻，不是起卦结果，也不构成任何预测或证明。它只作为一面镜子，帮你看清自己已经描述过的节奏，而不是替你做判断。第二，它有明确的不适用边界：当情境需要果断止损或明确拒绝时，“渐”不应被用来合理化拖延。你在需要拒绝时拖到最后才生硬回应，这更接近“果断”而非“渐进”；如果拿“渐”来给拖延找理由，就偏离了它的本意。\n\n因此，这一节只做一件事：把“渐”当作当下时义的参照，让你在下一次答应之前，多一个“先看清次序”的停顿。具体怎么练、练多久、什么情况下退出，统一放在后面的成长实验一节。\n\n如果你愿意，可以先带着两个问题往下读：哪些具体情境里，你其实需要的是果断而不是渐进？当“先答应”的冲动出现时，你能否先分辨这是次序问题，还是边界问题？",
+      "used_findings": [
+        "s3.hypothesis.yijing_metaphor_jian"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s3.yijing"
+      ],
+      "used_actions": [],
+      "transition_hint": "当下时义先看到这里。接下来进入成长实验一节，那里会把“先停顿再答应”的具体动作、频率和退出条件写清楚。",
+      "presentation_meta": {
+        "fragment_key": "report.direction.current_stage",
+        "chapter": "direction",
+        "chapter_opening": true,
+        "sequence_no": 14,
+        "new_information_role": "DEEPEN",
+        "metaphor_density": "low",
+        "theory_density": "medium",
+        "action_density": "deferred_to_growth_experiments",
+        "reading_depth": "深入详细",
+        "mbti_inference": "none",
+        "quote_library_used": false
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.timing_wisdom",
+          "status": "FULFILLED",
+          "reason": "正文说明了当下境遇与“渐”卦比喻的匹配理由（节奏失衡、越级推进），给出了不适用边界（需要果断止损或明确拒绝时不适用），并明确声明这是哲学比喻、不是起卦结果、不构成占卜证明。",
+          "quote": "这是一个哲学比喻，不是起卦结果，也不构成任何预测或证明。",
+          "follow_up_questions": [
+            "在哪些具体情境里，你觉得自己需要的是果断而非渐进？",
+            "当“先答应”的冲动出现时，你能否先分辨这是次序问题，还是边界问题？"
+          ]
+        }
+      ],
+      "fragment_key": "report.direction.current_stage",
+      "chapter": "direction",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s3.hypothesis.yijing_metaphor_jian"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s3.yijing"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.timing_wisdom",
+            "status": "FULFILLED",
+            "reason": "正文说明了当下境遇与“渐”卦比喻的匹配理由（节奏失衡、越级推进），给出了不适用边界（需要果断止损或明确拒绝时不适用），并明确声明这是哲学比喻、不是起卦结果、不构成占卜证明。",
+            "quote": "这是一个哲学比喻，不是起卦结果，也不构成任何预测或证明。",
+            "follow_up_questions": [
+              "在哪些具体情境里，你觉得自己需要的是果断而非渐进？",
+              "当“先答应”的冲动出现时，你能否先分辨这是次序问题，还是边界问题？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "人生阶段地图：把承担与休息放回同一条时间线",
+      "content": "前面几节反复出现同一条路径：请求或截止压力出现，你先答应或持续在线，短期避开了冲突，长期却以熬夜、生硬回应或取消聚会收尾；同时，休息与有余地的表达少被允许，而独自散步时比较放松，说明这一端并非不存在，只是长期排在后面。往哪去，不是把承担那一端砍掉，而是让两端同时在场。\n\n可以把这件事理解为一条方向线：资源与承担（你自述愿意用接事换取资源；命盘旁注提到的身宫落在事业位置，属于解释性线索，非事实）→ 短期获得可靠位置与资源感 → 但休息、余地表达与被尊重的需求被压缩 → 现实缺口出现：透支、关系摩擦、交付节奏失衡 → 整合任务是把“先停顿再回应”变成默认动作，让承担与休息都有位置。这不是要你变成另一个人，而是把已经存在的拒绝能力扩展到更多场景。\n\n关于时间线，需要先说明依据与边界：起止年份逐字采用系统计算，阶段主题、能力与旧模式属于解释性候选，需要你核对，也不能用来预测具体事件。当前辛卯大运为2019–2028年（偏印，金/木），阶段基调偏收敛与内省，放大主题是表达冲动与收敛规范之间的张力（原局月令伤官透干、时柱正印并见），可发展的能力是把内省转化为有余地的表达，需要防范的旧模式是以反复修改或拖延替代明确回应。下一运庚寅为2029–2038年（正印，金/木），基调是支持与规范并重，放大主题是被支持与被认可的需求，能力方向是把资源转化为稳定节奏，旧模式是以“知道”回避行动。己丑为2039–2048年（七杀，土/土），基调是压力与承担，放大主题是威胁应对与果断抗压，能力方向是在压力下保留休息与边界，旧模式是过度防御与硬撑。戊子为2049–2058年（正官，土/水），基调是规则与责任，放大主题是规范与主体性的平衡，能力方向是在规则中保有主权，旧模式是把规则当作不可质疑的外部权威。丁亥为2059–2068年（偏财，火/水），基调是体验与资源流动，放大主题是社交敏锐与务实，能力方向是以连接替代掌控，旧模式是以刺激替代连接。丙戌为2069–2078年（正财，火/土），基调是务实与稳定，放大主题是物质安全与责任，能力方向是在稳定中保持弹性，旧模式是以产出定义自我。乙酉为2079–2088年（食神，木/金），基调是表达与享受，放大主题是食神式消化与放松，能力方向是允许享受而不解释，旧模式是以表达替代休息。以上均为条件式表达：如果这些主题在你的实际生活中出现，可以作为观察线索；如果与体验不符，应以你的反馈为准调整解释。\n\n另有一条候选线索需要明确边界：行为上同时能看到“角色中的承担者”（外部评价与规则压过主体）与“退回内在的探索者”（独处放松、思虑替代行动）两种倾向，对应的成长任务分别是建立原则与主权、开始小步行动；这一判断置信度较低，只作为待核对的方向，不作为结论。哲学比喻方面，可以用“渐”（渐进、有序、不越级）作一面镜子，照见“先答应后透支、临近截止急交付”的节奏失衡；它的适用边界是：当情境需要果断止损或明确拒绝时，渐进不应被用来合理化拖延。\n\n练习强度宜顺势调整：以短时、低负担为主，工作日五到十分钟、周末二十分钟即可，不需要增加大量书写；具体动作、频率、观察点与退出条件放在成长实验一节。整合方向不是成为完美的人，而是让承担与休息两端共同被看见。若你反馈休息练习无效、或社交耗电情况与上述不同，应据此调整解释，而不是坚持原有说法。关于“最想活出的样子”“天命之性”这类问题，现有资料不足以给出结论，暂缓，需要你补充自述后再讨论。",
+      "used_findings": [
+        "s3.hypothesis.core_tension_productivity_vs_rest",
+        "s3.hypothesis.quadrant_tension_operator_vs_restrained",
+        "s3.hypothesis.yijing_metaphor_jian",
+        "s3.hypothesis.timeline_current_xinmao_theme",
+        "s4.block.rest_as_excluded"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s3.timeline",
+        "analysis.s4.timing_self"
+      ],
+      "used_actions": [],
+      "transition_hint": "人生阶段地图先看到这里。接下来进入成长实验一节，那里会把“先停顿再答应”的具体动作、频率和退出条件写清楚。",
+      "presentation_meta": {
+        "chapter": "direction",
+        "fragment_key": "report.direction.life_map",
+        "sequence_no": 15,
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "tone": "第二人称、现实语言、条件式表达"
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.life_map",
+          "status": "FULFILLED",
+          "reason": "已逐项给出当前及后续大运的真实起止年份、原局互动依据（辛卯偏印与原局伤官透干、正印时柱并见）、每阶段基调/放大主题/能力/旧模式，并以条件式表达保留积极资源与反馈校正空间。",
+          "quote": "当前辛卯大运为2019–2028年（偏印，金/木），阶段基调偏收敛与内省，放大主题是表达冲动与收敛规范之间的张力（原局月令伤官透干、时柱正印并见），可发展的能力是把内省转化为有余地的表达，需要防范的旧模式是以反复修改或拖延替代明确回应。",
+          "follow_up_questions": [
+            "在辛卯运中你感到最明显的收敛与表达张力出现在哪些场景？",
+            "你如何描述自己最想活出的样子（不依赖外部评价）？"
+          ]
+        }
+      ],
+      "fragment_key": "report.direction.life_map",
+      "chapter": "direction",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s3.hypothesis.core_tension_productivity_vs_rest"
+          },
+          {
+            "finding_key": "s3.hypothesis.quadrant_tension_operator_vs_restrained"
+          },
+          {
+            "finding_key": "s3.hypothesis.yijing_metaphor_jian"
+          },
+          {
+            "finding_key": "s3.hypothesis.timeline_current_xinmao_theme"
+          },
+          {
+            "finding_key": "s4.block.rest_as_excluded"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s3.timeline"
+          },
+          {
+            "fragment_key": "analysis.s4.timing_self"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.life_map",
+            "status": "FULFILLED",
+            "reason": "已逐项给出当前及后续大运的真实起止年份、原局互动依据（辛卯偏印与原局伤官透干、正印时柱并见）、每阶段基调/放大主题/能力/旧模式，并以条件式表达保留积极资源与反馈校正空间。",
+            "quote": "当前辛卯大运为2019–2028年（偏印，金/木），阶段基调偏收敛与内省，放大主题是表达冲动与收敛规范之间的张力（原局月令伤官透干、时柱正印并见），可发展的能力是把内省转化为有余地的表达，需要防范的旧模式是以反复修改或拖延替代明确回应。",
+            "follow_up_questions": [
+              "在辛卯运中你感到最明显的收敛与表达张力出现在哪些场景？",
+              "你如何描述自己最想活出的样子（不依赖外部评价）？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "成长实验：把“先停顿、再决定”练成日常",
+      "content": "这一节把前面看到的卡点落到可执行的动作上。你不需要先解决所有问题，只需要在几个具体场景里，给“休息与余地”留出一点位置。以下四项实验都来自已确认的行动，动作、频率和耗时都保留原样，退出条件也写清楚了。它们是一份菜单，不是清单：如果某一项做起来太吃力，可以暂停，不必勉强。\n\n实验一：答应前先停顿（对应卡点一“先答应后撤退”）。停顿本身不是新结论，而是把已有的拒绝能力扩展到更多场景。时柱庚申正印这条资源线索，在这里只作内在支持的参考：它提示你在请求与回应之间可能留出一段缓冲，而不是替你决定该不该答应。做法：收到临时请求时先不立即回复，做三次呼吸；用一句话争取时间，例如“我看下安排，稍后回复你”；在回复前写下答应与不答应各自的代价；按决定回复，并记录当时的身体感受。频率：每周一次，耗时约五分钟。观察：停顿后是否仍感到被挤压，答应后是否仍熬夜。退出条件：若出现强烈焦虑或场景不适合，可暂停该练习，改为事后记录。\n\n实验二：不解释的休息（对应卡点三“休息与余地少被允许”）。福德宫天府这条线索，只作内在安定的参考视角：你提到独自散步时比较放松，这是已有的现实反馈，说明这一端真实存在，而不是需要被证明的结论。做法：每天固定一段五到十分钟的休息时间；休息时不处理消息，也不向他人解释；若出现“应该做事”的想法，写为“我正在有应该做事的想法”；结束后记录情绪与身体感受。频率：每日一次，耗时约十分钟。观察：休息后是否更能耐受消息与请求，耐心是否回升。退出条件：若休息引发强烈不安，可缩短到三分钟，先做呼吸。\n\n实验三：每月一次触发链记录（对应卡点一）。癸水渗透式理解与“自知”方向，只作观察视角的参考：它帮助你看清循环，而不是立刻改变循环。做法：每月选一次印象较深的请求或变动场景；写下触发事件与当时的情绪名称；写下当时的自动想法与最终回应；标注是否有与以往不同的处理方式。频率：每月一次，耗时约二十分钟。观察：触发链是否出现停顿、表达或拒绝的例外。退出条件：若书写负担过重，可改为口述录音或只写三行。\n\n实验四：阶段交付（对应卡点二“反复修改与截止急交付”）。月令伤官表达这条线索，可作阶段性输出的参考视角；“渐”卦的渐进比喻提示按次序推进，但它有明确边界：当情境需要果断止损或明确拒绝时，不应拿“渐进”来合理化拖延。做法：把任务拆成两到三个可交付阶段；为第一阶段设定一个明确时间点；到点先交可用版本，记录当时的自动想法；收集反馈后再决定修改范围。频率：每周一次，耗时约十分钟。观察：阶段交付后焦虑是否下降，修改次数是否减少。退出条件：若阶段交付在现实中不可行，可改为先交提纲或草稿。\n\n这四项实验与卡点的对应关系是：实验一、实验三回应“先答应后撤退”的循环，实验二回应“休息与余地少被允许”，实验四回应“反复修改与截止急交付”。它们共同指向同一个方向：让承担与休息两端同时进入判断，而不是用产出定义全部自我。\n\n节奏建议与时间适配：你提到工作日每晚五到十分钟、周末二十分钟，且不能增加大量写日记的负担。按这个条件，实验一（每周一次、约五分钟）和实验二（每日一次、约十分钟）可以放在工作日晚上；实验三（每月一次、约二十分钟）适合放在周末；实验四（每周一次、约十分钟）可根据当周项目节奏安排在工作日或周末。日/周/月/季节奏是：每日做一次能量记录，记下休息与耗电；每周回看一次阴影练习与停顿实验；每月做一次触发链记录；每季复盘一次方向是否仍贴合。时间不足时的减量顺序：先保留实验一与实验二，实验三可改为口述录音或只写三行，实验四可暂时搁置，等有余力再捡起来。\n\n四项实验是菜单，不是清单。你可以先选一到两项开始，按自己的节奏推进；如果某一项在现实中不可行，可以调整或暂停，不必勉强。",
+      "used_findings": [
+        "s4.block.overcommit_withdraw_loop",
+        "s4.block.perfectionist_completion",
+        "s4.block.rest_as_excluded",
+        "s3.hypothesis.core_tension_productivity_vs_rest",
+        "s4.action.pause_before_promise",
+        "s4.action.rest_without_explaining",
+        "s4.action.trigger_chain_log",
+        "s4.action.staged_delivery",
+        "s1.foundation.hour_seal_gengshen",
+        "s1.foundation.ziwei_wellbeing_tianfu",
+        "s1.foundation.day_master_gui_water",
+        "s3.hypothesis.bridge_self_knowing_practice",
+        "s1.foundation.month_ling_wu_hurt_officer",
+        "s3.hypothesis.yijing_metaphor_jian"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s4.shadow_practice",
+        "analysis.s4.complex_practice",
+        "analysis.s4.experiments"
+      ],
+      "used_actions": [
+        "s4.action.pause_before_promise",
+        "s4.action.rest_without_explaining",
+        "s4.action.trigger_chain_log",
+        "s4.action.staged_delivery"
+      ],
+      "transition_hint": "成长实验先看到这里。接下来回扣主线，并收束到一个由来源支持的可行动方向。",
+      "presentation_meta": {
+        "fragment_key": "report.direction.growth_experiments",
+        "chapter": "direction",
+        "sequence_no": 16,
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "style_notes": "第二人称、现实语言；命理术语已转译为日常参考视角；未使用署名金句。"
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.experiments",
+          "status": "FULFILLED",
+          "reason": "四项已确认 Action 均写出对应卡点、工具、动作、频率、耗时、观察与退出条件，并说明与用户工作日每晚五到十分钟、周末二十分钟条件的匹配方式。",
+          "quote": "频率：每周一次，耗时约五分钟。观察：停顿后是否仍感到被挤压，答应后是否仍熬夜。退出条件：若出现强烈焦虑或场景不适合，可暂停该练习，改为事后记录。",
+          "follow_up_questions": [
+            "四项实验中哪一项你最愿意先开始？",
+            "工作日晚上哪一段时间最适合安排实验二？"
+          ]
+        },
+        {
+          "requirement_id": "R.practice_rhythm",
+          "status": "FULFILLED",
+          "reason": "已写明日/周/月/季复盘节奏，并给出时间不足时的减量顺序，明确先保留哪两项、其余如何降级或搁置。",
+          "quote": "时间不足时的减量顺序：先保留实验一与实验二，实验三可改为口述录音或只写三行，实验四可暂时搁置，等有余力再捡起来。",
+          "follow_up_questions": [
+            "每季复盘时，你希望用什么标准判断方向是否仍贴合？"
+          ]
+        }
+      ],
+      "fragment_key": "report.direction.growth_experiments",
+      "chapter": "direction",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s4.block.overcommit_withdraw_loop"
+          },
+          {
+            "finding_key": "s4.block.perfectionist_completion"
+          },
+          {
+            "finding_key": "s4.block.rest_as_excluded"
+          },
+          {
+            "finding_key": "s3.hypothesis.core_tension_productivity_vs_rest"
+          },
+          {
+            "finding_key": "s4.action.pause_before_promise"
+          },
+          {
+            "finding_key": "s4.action.rest_without_explaining"
+          },
+          {
+            "finding_key": "s4.action.trigger_chain_log"
+          },
+          {
+            "finding_key": "s4.action.staged_delivery"
+          },
+          {
+            "finding_key": "s1.foundation.hour_seal_gengshen"
+          },
+          {
+            "finding_key": "s1.foundation.ziwei_wellbeing_tianfu"
+          },
+          {
+            "finding_key": "s1.foundation.day_master_gui_water"
+          },
+          {
+            "finding_key": "s3.hypothesis.bridge_self_knowing_practice"
+          },
+          {
+            "finding_key": "s1.foundation.month_ling_wu_hurt_officer"
+          },
+          {
+            "finding_key": "s3.hypothesis.yijing_metaphor_jian"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s4.shadow_practice"
+          },
+          {
+            "fragment_key": "analysis.s4.complex_practice"
+          },
+          {
+            "fragment_key": "analysis.s4.experiments"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.experiments",
+            "status": "FULFILLED",
+            "reason": "四项已确认 Action 均写出对应卡点、工具、动作、频率、耗时、观察与退出条件，并说明与用户工作日每晚五到十分钟、周末二十分钟条件的匹配方式。",
+            "quote": "频率：每周一次，耗时约五分钟。观察：停顿后是否仍感到被挤压，答应后是否仍熬夜。退出条件：若出现强烈焦虑或场景不适合，可暂停该练习，改为事后记录。",
+            "follow_up_questions": [
+              "四项实验中哪一项你最愿意先开始？",
+              "工作日晚上哪一段时间最适合安排实验二？"
+            ]
+          },
+          {
+            "requirement_id": "R.practice_rhythm",
+            "status": "FULFILLED",
+            "reason": "已写明日/周/月/季复盘节奏，并给出时间不足时的减量顺序，明确先保留哪两项、其余如何降级或搁置。",
+            "quote": "时间不足时的减量顺序：先保留实验一与实验二，实验三可改为口述录音或只写三行，实验四可暂时搁置，等有余力再捡起来。",
+            "follow_up_questions": [
+              "每季复盘时，你希望用什么标准判断方向是否仍贴合？"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "status": "READY_FOR_REVIEW",
+      "title": "寄语：让承担与休息，落在同一条时间线上",
+      "content": "这份报告走到收束处，想回扣的其实只有一件事：你自述“答应任务是为了换取资源”，同时你也希望减少透支、练习有余地的表达。这两端不是好与坏的对立，而是当前偏重一端、另一端少被允许。\n\n认识、理解、行动，是三个不同层次的功课，顺序并不总是从前往后。以“自知”为方向的视角，不是要你更聪明地处理关系，而是把目光从“别人怎么看我”移到“我此刻允许自己怎样”——先看见先答应的资源换取逻辑，再让被排除的休息与余地也进入判断。以“主动实践”为方向的视角，则提醒改变来自一次次具体选择，而非一次性领悟。种子发芽有其节律，改变也一样，可往返，可反复，不必因某一次又先答应、又熬夜、又生硬回应而否定自己。\n\n需要说清楚的边界是：这些只是解释视角，不是行动依据本身。行动取舍仍以你的现实自述和实际反馈为准，具体动作、频率与退出条件已在成长实验一节写明，这里不再重复。\n\n“知人者智，自知者明。”（《道德经》第三十三章）愿你慢慢地在承担与休息之间，找到属于自己的那一点余裕。",
+      "used_findings": [
+        "s3.hypothesis.core_tension_productivity_vs_rest",
+        "s3.hypothesis.bridge_self_knowing_practice"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s3.bridge"
+      ],
+      "used_actions": [],
+      "transition_hint": "报告到此收束。若愿意，可回到成长实验一节，从最小动作开始试。",
+      "presentation_meta": {
+        "fragment_key": "report.ending",
+        "chapter": "direction",
+        "sequence_no": 17,
+        "tone": "收束、温暖、第二人称",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low",
+        "quote_used": {
+          "key": "laozi-33-self-knowledge",
+          "text": "知人者智，自知者明。",
+          "attribution": "《道德经》第三十三章",
+          "status": "VERIFIED"
+        }
+      },
+      "requirement_coverage": [
+        {
+          "requirement_id": "R.ending",
+          "status": "FULFILLED",
+          "reason": "以自知与主动实践两个方向贯通认识→理解→行动，并给出个性化温暖寄语；署名引用仅采用核验库中 VERIFIED 条目并补注出处。",
+          "quote": "以“自知”为方向的视角，不是要你更聪明地处理关系，而是把目光从“别人怎么看我”移到“我此刻允许自己怎样”",
+          "follow_up_questions": []
+        }
+      ],
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "source_snapshot": {
+        "findings": [
+          {
+            "finding_key": "s3.hypothesis.core_tension_productivity_vs_rest"
+          },
+          {
+            "finding_key": "s3.hypothesis.bridge_self_knowing_practice"
+          }
+        ],
+        "fragments": [
+          {
+            "fragment_key": "analysis.s3.bridge"
+          }
+        ],
+        "requirement_coverage": [
+          {
+            "requirement_id": "R.ending",
+            "status": "FULFILLED",
+            "reason": "以自知与主动实践两个方向贯通认识→理解→行动，并给出个性化温暖寄语；署名引用仅采用核验库中 VERIFIED 条目并补注出处。",
+            "quote": "以“自知”为方向的视角，不是要你更聪明地处理关系，而是把目光从“别人怎么看我”移到“我此刻允许自己怎样”",
+            "follow_up_questions": []
+          }
+        ]
+      }
+    }
+  ]
+}

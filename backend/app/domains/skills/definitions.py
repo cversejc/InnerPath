@@ -343,6 +343,11 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
     authoring["example_policy"] = {"enabled": True, "max_examples": 3}
     authoring["knowledge_policy"] = {"snapshot": knowledge_for_stage("S5"), "retrieval": "VERSION_SNAPSHOT"}
     authoring["instructions"]["methodology"].extend([
+        "分配中有requirements时，逐项满足checks，并输出requirement_coverage数组。每项含requirement_id、status(FULFILLED/DEFERRED/MISSING)、reason、quote(正文逐字摘录)、follow_up_questions。核心项不得标不适用；资料不足需在正文明确暂缓并补问。引用ID或有小标题不代表内容完成。不得伪造覆盖。",
+        "有requirements时，每个分配的analysis_refs与action_refs都须实际参与表达或说明暂缓边界，并完整列入used_analysis_fragments/used_actions；不能只声明覆盖而漏掉来源。",
+        "required_finding_refs存在时，全部来源都须参与表达并列入used_findings：包括卡点、Action及已确认资源。以reasoning_path解释资源→调节功能→能力→现实缺口→整合任务→工具→实验，不靠笼统建议跳过推导。INTERNAL_ONLY资料只作推导旁证，不作为新的用户心理结论或直接发布内部分析原文。quote只从本输出content中连续摘录一句，不从输入资料或元数据中摘录。",
+        "先区分原始自述、系统计算和解释性假设。原始自述可直接陈述；对保护功能、动机、因果的解释在引入时清楚限定，后续承接保留条件与反证，不能转成断言。不因Finding的解释是假设而否认用户已说出的自我观察。",
+        "概览约250–400字，仅概览四层关系；不展开完整触发链与保护/代价。不要在每节使用相同的卡点预告，不知道实际相邻小节时不要写‘下一节’。原型必须给出可学习能力和适用边界；实验必须逐项说明承接卡点、现实时间预算和减量选择。",
         "使用第二人称，描述模式并说明保护功能，不评判、不诊断；先意识后潜意识，命理术语翻译成日常语言。",
         "章节首页输出一句有依据的关键结论和简短关系路径图（可用箭头文本）。卡点部分只解释场景/运作/保护/代价/整合邀请，具体解法留给往哪去。",
         "阶段地图须保留上游已确认的大运起止年份、阶段主题/能力/旧模式，以条件式表达未来。",
@@ -381,6 +386,7 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
             "used_actions": {"type": "array"},
             "transition_hint": {"type": "string"},
             "presentation_meta": {"type": "object"},
+            "requirement_coverage": {"type": "array"},
         },
     }
     return [validate_skill_specification(candidates), validate_skill_specification(authoring)]
@@ -461,6 +467,13 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "stage_key": step_key,
             "sop_contract": stage_contract(step_key),
         }
+        spec["instructions"]["methodology"].extend([
+            "控制输出预算，保证JSON完整：summary约120字，每个Finding.claim约40–120字，analysis_fragments.content每项约150–300字，结构化details每字段约25–80字。只在reasoning_contract列出的片段返回structured_analysis，其他片段不添加。引用必要Evidence，不复制上游整份总结；不以压缩为由漏掉规定片段或Action字段。",
+            "新案例analysis_context.reasoning_contract存在时，其analysis_structures列出的片段必须提交structured_analysis={status,reason,quote,follow_up_questions,details}。details严格按该key的字段表，逐字段给依据和边界；FULFILLED全部字段齐全，DEFERRED可为空但须在正文明确暂缓并补问，不能用NOT_APPLICABLE删掉核心推导。阶段地图periods.start_year/end_year必须逐字采用已提供SYSTEM_CALCULATED证据内bazi_facts.dayun的起止年份，并在该片段evidence_refs引用计算证据；资料不足用DEFERRED，禁止补造年份。",
+            "新案例S4每项ACTION的structured_data.reasoning_path须有resource_refs(只指已确认RESOURCE/USEFUL_GOD/STRUCTURE/SELF_DIRECTION)、regulation_function、capacity、reality_gap、block_refs(与行动block_refs一致)、integration_task、tool(与method一致)、rationale、evidence_refs(现实自述依据)。逐项说明资源如何转成能力、回应哪些卡点和为何选此工具。真实生活依据不能用单独的命盘计算冒充。关联当前批次BLOCK时使用已有候选key；先列资源/卡点，再列行动便于审核保存。不虚构新的事实或补造心理经历。",
+            "新案例analysis_context.framework_contract存在时，每个analysis_fragments对象须有framework_coverage：status(FULFILLED/DEFERRED/NOT_APPLICABLE/MISSING)、reason、quote、follow_up_questions。quote只能从该对象刚生成的content逐字选择连续一句，不能摘录未出现在本content中的问卷、上游分析或details文字；structured_analysis.quote同样如此。DEFERRED必须说明缺失输入并给补问；NOT_APPLICABLE必须有资料证明的理由。MISSING不能用于完成节点。",
+            "S2 mapping明确产出意识自我/自我信念，并与面具和未被接纳的部分区分；S4 ACTION的block_refs只能引用semantic_role=BLOCK的判断。不得用别的角色代替卡点。",
+        ])
         spec["example_policy"] = {"enabled": True, "max_examples": 3}
         spec["knowledge_policy"] = {"snapshot": knowledge_for_stage(step_key), "retrieval": "VERSION_SNAPSHOT"}
         spec["processor_policy"] = {"processor": "reports.analysis_draft"}
@@ -526,6 +539,8 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
                             "fragment_key": {"type": "string"},
                             "title": {"type": "string"},
                             "content": {"type": "string"},
+                            "framework_coverage": {"type": "object"},
+                            "structured_analysis": {"type": "object"},
                             "finding_refs": {"type": "array", "items": {"type": "string"}},
                             "evidence_refs": {"type": "array", "items": {"type": "string"}},
                         },
@@ -587,6 +602,8 @@ def default_validator_skill_specification() -> dict[str, Any]:
         ],
     }
     spec["instructions"]["methodology"].extend([
+        "最终qa_input.framework_contract存在时，额外输出framework_review：逐项检查全部report_requirements。每项含requirement_id、fragment_keys(其编排归属)、status(FULFILLED/DEFERRED/MISSING)、reason、quote(对应正文逐字摘录)、follow_up_questions。独立核对checks是否实际完成，不接受作者自报覆盖代替阅读。核心缺失标MISSING；暂缓必须在正文说明且有可回答补问。",
+        "confirmed_semantics.reasoning_contract存在时，检查structured_analysis及Action.reasoning_path所记载的依据、反证和适配理由是否成立，并与正文逐项核对。链条字段齐全不代表推导正确；用神到调节功能、能力到现实缺口、整合任务到工具与实验须有具体解释。命盘是解释视角，不能代替现实自述。INTERNAL_ONLY来源仅用于审核推导，不能作为新增用户结论发表。",
         "最终校准核对：与审核命盘和核心机制有无冲突、编造经历、单一信号强人格结论、诊断、确定未来、科学化命理、内部矛盾、卡点重复给解法、第三章是否回应共性模式。",
         "检查同一核心观点换句话重复3次以上，标出应删除的 fragment_key；金句只能用已核验库。",
         "当 qa_input.scorecard_required=true 时必须额外返回 scorecard.dimensions，维度如下，每维度有 score、reason、fragment_keys（本次报告片段ID数组）。程序计算总分；不要用笼统通过代替逐维评分。",
@@ -595,6 +612,8 @@ def default_validator_skill_specification() -> dict[str, Any]:
         "只审核读者实际看到的title/content，transition_hint等生产元数据不属于正文；章节顺序以content_plan.fragments[].sequence_no为准。实验可分别对应不同卡点，不要求每个实验回应所有卡点。",
         "严格区分 report_fragments 正文和 confirmed_semantics 内部分析。仅在正文计重复；不得把内部分析语句说成当前报告的原文。每条evidence必须逐字摘录定位片段的正文，不能转述或拼接。",
         "用户自述以application_context和Evidence为依据，不因缺少单独Finding否定问卷已明确提供的资料。‘没有家庭资料，早期印记暂缓’不是编造早期经历；明确提出可核对假设并保留反证，不因未经测评而报事实错误。",
+        "严格区分用户自述事实与对它的解释：例如用户说独自散步时比较放松，这个自我观察可直接陈述，不能因资源解释Finding为假设而把原始自述也降为假设。明确的可能/或许/假如/可以借此观察，加上适用边界或反证，可构成充分的假设限定；不要求每句叠加‘假设可能’。只在实际越过来源边界时扣分，不能根据表达缺少某个固定词而判定违规。",
+        "核验库署名引用只需实际准确的可识别出处，不要求正文宣告‘来自已核验库’或复述审核元数据。不得将解释性判断写成物理事实，也不得把明确否定确定论的句子误读为确定论。不要要求读者看到内部confidence或角色名称。",
     ])
     spec["instructions"]["scoring_rubric"] = RUBRIC
     spec["knowledge_policy"] = {"snapshot": knowledge_for_stage("S5"), "retrieval": "VERSION_SNAPSHOT"}
@@ -605,7 +624,7 @@ def default_validator_skill_specification() -> dict[str, Any]:
     spec["output_contract"] = {
         "type": "object",
         "required": ["issues"],
-        "properties": {"issues": {"type": "array"}, "scorecard": {"type": "object"}},
+        "properties": {"issues": {"type": "array"}, "scorecard": {"type": "object"}, "framework_review": {"type": "array"}},
     }
     spec["guardrails"]["blocked_phrases"] = []
     spec["evaluation_profile"] = {

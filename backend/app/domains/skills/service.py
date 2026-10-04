@@ -285,6 +285,14 @@ async def create_skill_run(
         raise ValueError("skill_version_not_found")
     if skill.status == "RETIRED":
         raise ValueError("skill_version_retired")
+    if report_case_id is not None:
+        from app.domains.workflow.models import ReportCase
+        from .bindings import resolve_case_skill
+        case = await db.get(ReportCase, report_case_id)
+        if case is not None and (case.application_snapshot or {}).get("skill_bindings") is not None:
+            pinned = await resolve_case_skill(db, case, skill.skill_key)
+            if pinned.id != skill.id:
+                raise ValueError("case_skill_version_mismatch")
     if run_type not in {"INITIAL", "REGENERATE", "REWRITE", "VALIDATE", "EVALUATION"}:
         raise ValueError("skill_run_type_invalid")
     now = _now()

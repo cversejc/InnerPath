@@ -1,0 +1,64 @@
+{
+  "signature": "029d37491063524f525574e0d6c78c810d1b20e759490c3da066efe78cc1bb36",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "回扣主线：把“停一下”带回你的日常",
+    "content": "走到这里，你已经把三个卡点按时间顺序看了一遍：请求来临时先答应，随后透支，再延迟表达；而这三个卡点背后，是同一个缓冲缺口——在被请求与答应之间，缺少一个属于你自己的停顿。你自述“要靠谱、不能让人失望”“拒绝后担心别人觉得我不够好”，也自述面对熟悉同事且有明确截止时能够协商任务边界。这两件事同时成立，说明“停一下”不是从零开始，而是把你在熟悉情境里已经展现过的能力，扩展到稍难一点的情境里。\n\n这条主线可以按认识→理解→行动来收束。认识，是看见“先答应、后透支”的循环；理解，是明白它在短期保护了什么——关系安全与“我还算靠谱”的感觉；行动，是把“应该答应”转化为“我选择如何回应”的小步练习。金花的秘密用种子与节律作比：成长有自身节奏，不能靠透支催熟。道德经讲“自知者明”，自知不是自我批评，而是看见“要靠谱”背后的担心，把被排斥的休息与边界重新纳入自我形象，而不是继续压抑。了凡四训提示主动实践：把“应该”转化为“我选择”的小步实验；你已经在熟悉情境中协商过任务边界，这就是现实的起点。\n\n回到你的现实：工作日每晚5–10分钟、周末20分钟，是你可以承受的练习容量，不必增加大量写日记的负担。你可以先从一个小步开始——在答应前留一个停顿，或在下一次感到“本想休息却答应”时，先记录那个瞬间。具体动作、频率与观察方式，已在成长实验一节列出，这里不再重复；你只需要选一个最顺手的小步，把它放进下一周。\n\n最后想对你说：你已经在熟悉同事、明确截止的情境里展现过协商边界的能力；这不是从零开始，而是把已有的能力扩展到更多情境。愿你尊重自己的节律，把“停一下”练成一种可以随身携带的能力。\n\n知人者智，自知者明。\n——《道德经》第三十三章",
+    "used_findings": [
+      "s3.self.core_tension",
+      "s3.bridge.philosophy"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "报告正文到此收束；你可以选一个小步开始，把“停一下”带回日常。",
+    "presentation_meta": {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "sequence_no": 17,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "quote_used": {
+        "key": "laozi-33-self-knowledge",
+        "text": "知人者智，自知者明。",
+        "attribution": "《道德经》第三十三章",
+        "status": "VERIFIED"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.ending",
+        "status": "FULFILLED",
+        "reason": "以金花种子与节律、道德经自知与反向整合、了凡四训主动实践贯通认识→理解→行动；给出个性化温暖寄语；署名引用使用核验库中 VERIFIED 条目。",
+        "quote": "这条主线可以按认识→理解→行动来收束。",
+        "follow_up_questions": [
+          "你希望把哪一个小步实践带入下周？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 6331,
+    "output_tokens": 836,
+    "latency_ms": 4433,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "992fd4ca-7630-4457-a560-c8e49e821719",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "925773a206e0b0e5fa280f58db0bffbacdf823ef64dad342f604554ebadd58c1",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -1,0 +1,88 @@
+{
+  "signature": "f08b009503d69c1d757e0ad856efd8a6e3317d6b753e8d78e1daabb293737cef",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "成长实验：把“先停顿、再决定”练成日常",
+    "content": "这一节把前面看到的卡点落到可执行的动作上。你不需要先解决所有问题，只需要在几个具体场景里，给“休息与余地”留出一点位置。以下四项实验都来自已确认的行动，动作、频率和耗时都保留原样，退出条件也写清楚了。它们是一份菜单，不是清单：如果某一项做起来太吃力，可以暂停，不必勉强。\n\n实验一：答应前先停顿（对应卡点一“先答应后撤退”）。停顿本身不是新结论，而是把已有的拒绝能力扩展到更多场景。时柱庚申正印这条资源线索，在这里只作内在支持的参考：它提示你在请求与回应之间可能留出一段缓冲，而不是替你决定该不该答应。做法：收到临时请求时先不立即回复，做三次呼吸；用一句话争取时间，例如“我看下安排，稍后回复你”；在回复前写下答应与不答应各自的代价；按决定回复，并记录当时的身体感受。频率：每周一次，耗时约五分钟。观察：停顿后是否仍感到被挤压，答应后是否仍熬夜。退出条件：若出现强烈焦虑或场景不适合，可暂停该练习，改为事后记录。\n\n实验二：不解释的休息（对应卡点三“休息与余地少被允许”）。福德宫天府这条线索，只作内在安定的参考视角：你提到独自散步时比较放松，这是已有的现实反馈，说明这一端真实存在，而不是需要被证明的结论。做法：每天固定一段五到十分钟的休息时间；休息时不处理消息，也不向他人解释；若出现“应该做事”的想法，写为“我正在有应该做事的想法”；结束后记录情绪与身体感受。频率：每日一次，耗时约十分钟。观察：休息后是否更能耐受消息与请求，耐心是否回升。退出条件：若休息引发强烈不安，可缩短到三分钟，先做呼吸。\n\n实验三：每月一次触发链记录（对应卡点一）。癸水渗透式理解与“自知”方向，只作观察视角的参考：它帮助你看清循环，而不是立刻改变循环。做法：每月选一次印象较深的请求或变动场景；写下触发事件与当时的情绪名称；写下当时的自动想法与最终回应；标注是否有与以往不同的处理方式。频率：每月一次，耗时约二十分钟。观察：触发链是否出现停顿、表达或拒绝的例外。退出条件：若书写负担过重，可改为口述录音或只写三行。\n\n实验四：阶段交付（对应卡点二“反复修改与截止急交付”）。月令伤官表达这条线索，可作阶段性输出的参考视角；“渐”卦的渐进比喻提示按次序推进，但它有明确边界：当情境需要果断止损或明确拒绝时，不应拿“渐进”来合理化拖延。做法：把任务拆成两到三个可交付阶段；为第一阶段设定一个明确时间点；到点先交可用版本，记录当时的自动想法；收集反馈后再决定修改范围。频率：每周一次，耗时约十分钟。观察：阶段交付后焦虑是否下降，修改次数是否减少。退出条件：若阶段交付在现实中不可行，可改为先交提纲或草稿。\n\n这四项实验与卡点的对应关系是：实验一、实验三回应“先答应后撤退”的循环，实验二回应“休息与余地少被允许”，实验四回应“反复修改与截止急交付”。它们共同指向同一个方向：让承担与休息两端同时进入判断，而不是用产出定义全部自我。\n\n节奏建议与时间适配：你提到工作日每晚五到十分钟、周末二十分钟，且不能增加大量写日记的负担。按这个条件，实验一（每周一次、约五分钟）和实验二（每日一次、约十分钟）可以放在工作日晚上；实验三（每月一次、约二十分钟）适合放在周末；实验四（每周一次、约十分钟）可根据当周项目节奏安排在工作日或周末。日/周/月/季节奏是：每日做一次能量记录，记下休息与耗电；每周回看一次阴影练习与停顿实验；每月做一次触发链记录；每季复盘一次方向是否仍贴合。时间不足时的减量顺序：先保留实验一与实验二，实验三可改为口述录音或只写三行，实验四可暂时搁置，等有余力再捡起来。\n\n四项实验是菜单，不是清单。你可以先选一到两项开始，按自己的节奏推进；如果某一项在现实中不可行，可以调整或暂停，不必勉强。",
+    "used_findings": [
+      "s4.block.overcommit_withdraw_loop",
+      "s4.block.perfectionist_completion",
+      "s4.block.rest_as_excluded",
+      "s3.hypothesis.core_tension_productivity_vs_rest",
+      "s4.action.pause_before_promise",
+      "s4.action.rest_without_explaining",
+      "s4.action.trigger_chain_log",
+      "s4.action.staged_delivery",
+      "s1.foundation.hour_seal_gengshen",
+      "s1.foundation.ziwei_wellbeing_tianfu",
+      "s1.foundation.day_master_gui_water",
+      "s3.hypothesis.bridge_self_knowing_practice",
+      "s1.foundation.month_ling_wu_hurt_officer",
+      "s3.hypothesis.yijing_metaphor_jian"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.shadow_practice",
+      "analysis.s4.complex_practice",
+      "analysis.s4.experiments"
+    ],
+    "used_actions": [
+      "s4.action.pause_before_promise",
+      "s4.action.rest_without_explaining",
+      "s4.action.trigger_chain_log",
+      "s4.action.staged_delivery"
+    ],
+    "transition_hint": "成长实验先看到这里。接下来回扣主线，并收束到一个由来源支持的可行动方向。",
+    "presentation_meta": {
+      "fragment_key": "report.direction.growth_experiments",
+      "chapter": "direction",
+      "sequence_no": 16,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_notes": "第二人称、现实语言；命理术语已转译为日常参考视角；未使用署名金句。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.experiments",
+        "status": "FULFILLED",
+        "reason": "四项已确认 Action 均写出对应卡点、工具、动作、频率、耗时、观察与退出条件，并说明与用户工作日每晚五到十分钟、周末二十分钟条件的匹配方式。",
+        "quote": "频率：每周一次，耗时约五分钟。观察：停顿后是否仍感到被挤压，答应后是否仍熬夜。退出条件：若出现强烈焦虑或场景不适合，可暂停该练习，改为事后记录。",
+        "follow_up_questions": [
+          "四项实验中哪一项你最愿意先开始？",
+          "工作日晚上哪一段时间最适合安排实验二？"
+        ]
+      },
+      {
+        "requirement_id": "R.practice_rhythm",
+        "status": "FULFILLED",
+        "reason": "已写明日/周/月/季复盘节奏，并给出时间不足时的减量顺序，明确先保留哪两项、其余如何降级或搁置。",
+        "quote": "时间不足时的减量顺序：先保留实验一与实验二，实验三可改为口述录音或只写三行，实验四可暂时搁置，等有余力再捡起来。",
+        "follow_up_questions": [
+          "每季复盘时，你希望用什么标准判断方向是否仍贴合？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 19453,
+    "output_tokens": 1782,
+    "latency_ms": 7304,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "416f97fe-0df1-4b27-b5e9-c4c3080c6bb0",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "5cbcadd92f1ac765a9fc1fb949e3a035231963554ba7474fe5226e61e02903fa",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

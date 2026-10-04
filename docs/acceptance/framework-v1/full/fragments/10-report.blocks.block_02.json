@@ -1,0 +1,57 @@
+{
+  "signature": "35535ebd5b84b7f1e2e49e08e7498b06504bd255a823cb1c573c9d0fadbdd359",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "以别人的评价为坐标：“不够好”的担心如何推动选择",
+    "content": "上一节我们看到，请求来临时，你可能先答应、后透支。这一节把镜头往前推一格：在请求真正开口之前，是什么已经在替你判断“该不该答应”。\n\n一个可能反复出现的场景是：项目交出去之前，你反复修改，总觉得还差一点；拒绝别人之后，你心里反复回放对方的语气，担心对方是不是觉得你不够好。你自述“我认为自己要靠谱、不能让人失望”，也说“拒绝后担心别人觉得我不够好”。这两句话放在一起，指向同一个参照系——你的判断标准，很大一部分是别人眼中的你。\n\n运作上，它可能像这样：触发点不是任务本身有多难，而是“可能被评价、可能让人失望”的情境。一旦这个开关被按下，你调节安全感的办法，是拿到认可——顺从一点、多做一点、再改一遍。反复修改不完全是完美主义，它更像是在用“我做得足够好”来对冲“别人可能觉得我不够好”。\n\n这个模式曾经保护过你。短期里，它确实让你免于被否定，也避免了关系里的紧张——答应下来、做得好一点，冲突就不会发生，别人对你的印象也能维持住。它不是缺点，是你在当时能用的最稳的办法。\n\n代价在长期里慢慢显现。当自我评价的主要参照放在外部，你的情绪就跟着反馈走：一句肯定能让你踏实半天，一个含糊的回复能让你反复琢磨。更隐蔽的代价是，自主选择被推迟了——你并不是不知道自己要什么，而是每次都要先确认“别人会不会不满意”，才敢往下走。\n\n这里需要留一个反证：你提到，面对熟悉的同事、且有明确截止时间时，你能够协商任务边界，并非每次都迁就。这说明这个模式不是全面的让渡，而是有条件的——在关系足够安全、边界足够清楚时，你是能站住的。这个反证很重要，它说明你要练的不是“变得强硬”，而是把这种已经存在的能力，扩展到更多场景里。\n\n所以这一节的变化所需的下一步理解，不是“我要少在意别人”，而是把两件事分开：他人的期待，和你自己选择的原则。它们可以同时存在，不需要用一方消灭另一方。具体怎么在答应之前留出余地，我们放到第三章去谈。",
+    "used_findings": [
+      "s4.block.self_worth_by_others"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "下一节按同一时间顺序继续往下看：当“准备”代替“交付”，反复修改与临近截止的赶工是怎么发生的。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_02",
+      "sequence_no": 10,
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "tone": "第二人称、现实语言、不评判",
+      "contains_action_steps": false,
+      "contains_quote": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "正文依次覆盖了现实场景（反复修改、拒绝后回放对方语气）、触发（可能被评价、可能让人失望）、运作（以被认可为调节，用顺从与反复修改换取安全感）、过去保护（短期免于被否定、避免关系紧张）、长期代价（自我评价随外部反馈波动、自主选择被推迟）、整合邀请（把他人期待与自己选择的原则分开），并明确说明本节不展开解决步骤，行动放到第三章。",
+        "quote": "所以这一节的变化所需的下一步理解，不是“我要少在意别人”，而是把两件事分开：他人的期待，和你自己选择的原则。它们可以同时存在，不需要用一方消灭另一方。具体怎么在答应之前留出余地，我们放到第三章去谈。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4270,
+    "output_tokens": 931,
+    "latency_ms": 5083,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "14e91e70-0493-4fce-a3f3-a71dcbae6a4d",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "7f62fca9a31fcc5b16d8bf270ba8560ea401d8ca0bd96809f5c07303c5d42925",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -14,6 +14,8 @@ from .models import (
     FindingRevision,
     NarrativePlan,
 )
+from .framework_coverage import normalize_coverage, normalize_requirement_coverage
+from .reasoning_contract import normalize_structured_analysis
 
 
 async def _normalize_string_refs(
@@ -165,6 +167,9 @@ async def create_content_fragment_revision(
     owner_step_task_id: Optional[int] = None,
     source_skill_run_id: Optional[int] = None,
     source_narrative_plan_id: Optional[int] = None,
+    framework_coverage: Optional[dict[str, Any]] = None,
+    structured_analysis: Optional[dict[str, Any]] = None,
+    requirement_coverage: Optional[list[dict[str, Any]]] = None,
     created_by: Optional[int] = None,
 ) -> ContentFragmentRevision:
     report_case = await require_case(db, report_case_id)
@@ -191,6 +196,10 @@ async def create_content_fragment_revision(
     if edit_kind == "STYLE" and current is None:
         raise ValueError("fragment_style_edit_requires_current")
     if current and edit_kind == "STYLE":
+        if ((framework_coverage is not None and framework_coverage != (current.source_snapshot or {}).get("framework_coverage"))
+                or (requirement_coverage is not None and requirement_coverage != (current.source_snapshot or {}).get("requirement_coverage"))
+                or (structured_analysis is not None and structured_analysis != (current.source_snapshot or {}).get("structured_analysis"))):
+            raise ValueError("fragment_style_edit_changed_semantics")
         if fragment_type != current.fragment_type:
             raise ValueError("fragment_style_edit_changed_semantics")
         if status is not None and status != current.status and not (
@@ -306,6 +315,19 @@ async def create_content_fragment_revision(
                 "version_no": narrative_plan.version_no,
                 "selected_candidate_key": narrative_plan.selected_candidate_key,
             }
+        if framework_coverage is not None:
+            if fragment_type != "ANALYSIS":
+                raise ValueError("framework_analysis_coverage_invalid")
+            source_snapshot["framework_coverage"] = normalize_coverage(framework_coverage, content_value, allow_not_applicable=True)
+        if structured_analysis is not None:
+            if fragment_type != "ANALYSIS":
+                raise ValueError("reasoning_analysis_key_invalid")
+            source_snapshot["structured_analysis"] = normalize_structured_analysis(key, structured_analysis, content_value)
+        if requirement_coverage is not None:
+            if narrative_plan is None or fragment_type != "REPORT":
+                raise ValueError("framework_report_coverage_invalid")
+            allocation = next((s for s in (narrative_plan.plan_json or {}).get("content_plan", {}).get("fragments", []) if s.get("fragment_key") == key), {})
+            source_snapshot["requirement_coverage"] = normalize_requirement_coverage(requirement_coverage, allocation.get("requirements", []), content_value)
         await _ensure_acyclic_fragment_refs(
             db,
             report_case_id=report_case_id,

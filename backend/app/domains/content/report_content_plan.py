@@ -2,6 +2,8 @@ from collections import Counter
 import re
 from typing import Any
 from .report_sop_plan import enrich_sop_plan
+from .framework_coverage import attach_framework_requirements, validate_framework_plan
+from .reasoning_contract import reasoning_issues, action_source_refs
 
 
 _IMPORTANCE_SCORE = {"LOW": 0, "MEDIUM": 100, "HIGH": 250, "CRITICAL": 400}
@@ -191,13 +193,16 @@ def build_report_content_plan(
     ranked = [
         item["finding_key"]
         for item in sorted(
-            findings,
+            [f for f in findings if f.get("reportability") != "INTERNAL_ONLY"],
             key=lambda item: _rank(item, focus_topics),
             reverse=True,
         )
     ]
     known = set(by_key)
-    must_include = _unique_refs(narrative_plan.get("must_include_findings"), known)
+    must_include = list(dict.fromkeys(
+        _unique_refs(narrative_plan.get("must_include_findings"), known)
+        + [key for key in ranked if by_key[key].get("reportability") == "MUST_INCLUDE"]
+    ))
     if not must_include and ranked:
         must_include = [ranked[0]]
 
@@ -403,7 +408,7 @@ def build_report_content_plan(
         )
     if block_finding_refs and action_refs and direction_refs:
         growth_refs = list(
-            dict.fromkeys(block_finding_refs[:2] + direction_refs[:1] + action_refs[:5])
+            dict.fromkeys((block_finding_refs if semantic_model.get("framework_contract") else block_finding_refs[:2]) + direction_refs[:1] + action_refs[:5])
         )
         add(
             "report.direction.growth_experiments",
@@ -424,7 +429,19 @@ def build_report_content_plan(
         required=False,
     )
 
+    framework = semantic_model.get("framework_contract")
+    framework_plan = attach_framework_requirements(specs, semantic_model, framework) if framework else None
     enrich_sop_plan(specs, semantic_model, by_key, ranked)
+    if semantic_model.get("reasoning_contract"):
+        for spec in specs:
+            for action_key in spec.get("action_refs", []):
+                for ref in action_source_refs(by_key[action_key]):
+                    if ref in by_key and ref not in spec["finding_refs"]:
+                        spec["finding_refs"].append(ref)
+                        spec["finding_roles"][ref] = "REFERENCE"
+                        spec["evidence_refs"] = list(dict.fromkeys(spec["evidence_refs"] + by_key[ref].get("evidence_refs", [])))
+                spec["required_finding_refs"] = list(dict.fromkeys(
+                    spec.get("required_finding_refs", []) + [action_key] + action_source_refs(by_key[action_key])))
 
     high_priority = [
         key
@@ -518,7 +535,7 @@ def build_report_content_plan(
             "full_explanation_count": 0,
             "reference_count": 0,
         }
-        for key in ranked
+        for key in by_key
     }
     for spec in specs:
         for ref in spec["finding_refs"]:
@@ -548,7 +565,7 @@ def build_report_content_plan(
         }
         for index, spec in enumerate(specs, start=1)
     ]
-    gaps = []
+    gaps = (list(framework_plan["issues"]) if framework_plan else []) + reasoning_issues(semantic_model)
     if invalid_explicit_direction:
         gaps.append(
             {
@@ -586,7 +603,7 @@ def build_report_content_plan(
             }
         )
 
-    coverage: dict[str, list[str]] = {key: [] for key in ranked}
+    coverage: dict[str, list[str]] = {key: [] for key in by_key}
     for spec in fragments:
         for ref in spec["finding_refs"]:
             coverage[ref].append(spec["fragment_key"])
@@ -612,6 +629,8 @@ def build_report_content_plan(
         "fragments": fragments,
         "coverage": coverage,
         "analysis_coverage": analysis_coverage,
+        **({"reasoning_contract": semantic_model["reasoning_contract"]} if semantic_model.get("reasoning_contract") else {}),
+        **({"framework": framework_plan} if framework_plan else {}),
         "gaps": gaps,
     }
 
@@ -737,7 +756,10 @@ def validate_report_content_plan(
             {"type": "CONTENT_PLAN_ANALYSIS_COVERAGE_INVALID", "severity": "BLOCK"}
         )
 
-    must_include = set(narrative_plan.get("must_include_findings") or [])
+    must_include = set(narrative_plan.get("must_include_findings") or []) | {
+        item.get("finding_key") for item in semantic_model.get("findings", [])
+        if isinstance(item, dict) and item.get("reportability") == "MUST_INCLUDE"
+    }
     missing = sorted(must_include - assigned)
     if missing:
         issues.append(
@@ -805,4 +827,10 @@ def validate_report_content_plan(
                 **gap,
             }
         )
+    contract = semantic_model.get("framework_contract")
+    if contract:
+        if (content_plan.get("framework") or {}).get("contract") != contract:
+            issues.append({"type": "FRAMEWORK_PLAN_VERSION_MISMATCH", "severity": "BLOCK"})
+        issues.extend(validate_framework_plan(content_plan, semantic_model, contract))
+    issues.extend(reasoning_issues(semantic_model))
     return issues

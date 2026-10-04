@@ -1,0 +1,336 @@
+{
+  "signature": "3fd68d0c4fef2a16d9f6de701c66006f85fa0a6cfdf1005cc269a3d50eb12bbb",
+  "skill_digest": "c6c8ad6a6f0390f2e7e84c1098dafd9499ae0acef683245de1bac680e91642f8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每个规定分析片段都须有framework_coverage；structured_analysis/details严格使用当前reasoning_contract字段。Action的reasoning_path逐项具体，不用通用空话。\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。\n上一轮输出未通过程序校验：reasoning_analysis_details_required。请重新生成完整JSON。reasoning_path.resource_refs只能引用指定角色资源，不能用PERSONA代替。",
+  "output": {
+    "summary": "基于癸水日主、月令伤官、时柱正印与紫微命宫廉破等已确认结构，提出面具、阴影、情结与激活路径的可验证假设；用户反例明确否定讨好与权威恐惧，全部心理结论待现实核对。",
+    "findings": [
+      {
+        "finding_key": "s2.hypothesis.persona_competent_operator",
+        "claim": "假设：用户在外在场景中认同‘能接事、能产出’的运营者角色，自述答应任务是为换取资源，与身宫落官禄、武曲贪狼线索方向一致，但属解释性假设。",
+        "kind": "SIGNAL",
+        "semantic_role": "PERSONA",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.foundation.ziwei_body_career"
+          },
+          {
+            "finding_key": "s1.foundation.day_master_gui_water"
+          }
+        ],
+        "structured_data": {
+          "status": "待核对",
+          "note": "自述为事实，角色解释为假设"
+        }
+      },
+      {
+        "finding_key": "s2.hypothesis.overcommit_withdraw_cycle",
+        "claim": "假设：承诺—透支—撤退循环的短期保护功能是避免当场冲突与维持资源关系，长期代价是关系摩擦与自我耗竭；用户反例提示不能推为讨好信念。",
+        "kind": "SIGNAL",
+        "semantic_role": "BLOCK",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.signal.overcommit_then_withdraw"
+          },
+          {
+            "finding_key": "s1.foundation.interactions_core"
+          }
+        ],
+        "structured_data": {
+          "status": "待S2核对",
+          "counterexample": "曾明确拒绝领导且无内疚"
+        }
+      },
+      {
+        "finding_key": "s2.hypothesis.perfectionist_completion_anxiety",
+        "claim": "假设：反复修改与临近截止急交付，可能对应‘做不好就会被否定’的完成度焦虑，短期保护是避免被评判，长期代价是节奏失控与透支。",
+        "kind": "SIGNAL",
+        "semantic_role": "BLOCK",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.concrete_events"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.signal.perfectionist_revision"
+          },
+          {
+            "finding_key": "s1.foundation.month_ling_wu_hurt_officer"
+          }
+        ],
+        "structured_data": {
+          "status": "待S2核对"
+        }
+      },
+      {
+        "finding_key": "s2.hypothesis.rest_as_excluded_pole",
+        "claim": "假设：休息与‘有余地的拒绝’可能是被排斥的一端，用户独自散步时较放松提示这一端真实存在但少被允许，属待验证的阴影假设而非缺点。",
+        "kind": "SIGNAL",
+        "semantic_role": "SHADOW",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.foundation.ziwei_wellbeing_tianfu"
+          }
+        ],
+        "structured_data": {
+          "status": "待核对"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s2.mapping",
+        "title": "2.1 双层对应",
+        "content": "日主癸水与命宫廉破可作面具线索：意识层或呈现‘能渗透、能接事’的运营者形象，用户自述答应任务是为换取资源。月令午火伤官、日支未土七杀可作底层信念假设：需以产出与承担换取位置。时柱庚申正印与福德天府可作资源线索，独处散步较放松。子午冲、子未害可作情结线索：外部节奏与内在需求反复拉扯。以上均为假设，用户反例提示不能推为讨好或权威恐惧。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "日主/透干、月令/日支、藏干、交战、喜忌与资源耗能均已给出意识与潜意识两层假设。",
+          "quote": "日主癸水与命宫廉破可作面具线索",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "自述、信念假设、权威依据与反证均已覆盖。",
+          "quote": "用户自述答应任务是为换取资源",
+          "follow_up_questions": [],
+          "details": {
+            "self_description": "用户自述不担心评价、答应任务为换取资源、拒绝难因分工规则不清。",
+            "core_belief": "假设底层信念为‘需以产出与承担换取位置’，非用户原话。",
+            "authority_origin": "仅以年柱正财、时柱正印作内化线索，不补造童年经历。",
+            "counterexample": "用户曾明确拒绝领导且无内疚，直接反证讨好与权威恐惧假设。"
+          }
+        },
+        "finding_refs": [
+          "s2.hypothesis.persona_competent_operator",
+          "s2.hypothesis.overcommit_withdraw_cycle"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.ten_gods",
+        "title": "2.2 十神映射",
+        "content": "本案例相关十神为伤官、正印、七杀、偏财、正财。伤官机制为反抗与真实表达，显性为想法多、批判性，阴影假设为靠否定建立自我；正印机制为安全与知识滋养，显性为稳重好学，阴影假设为用知道回避行动；七杀机制为威胁应对，显性为果断抗压，阴影假设为过度防御；偏财与正财机制为体验与物质安全，显性为社交敏锐与务实，阴影假设为以掌控或刺激替代连接。以上为原型假设，不作诊断量表。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "仅分析案例相关十神的机制、原型、显性与阴影，并声明不作诊断。",
+          "quote": "本案例相关十神为伤官、正印、七杀、偏财、正财。",
+          "follow_up_questions": []
+        },
+        "finding_refs": [
+          "s2.hypothesis.perfectionist_completion_anxiety"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.stars",
+        "title": "2.3 星曜原型",
+        "content": "命宫廉贞（陷、生年化忌）与破军可作面具线索：外在呈现原则感与破旧立新并存，廉贞化忌提示内在张力；阴影假设为执着控制或难持续。身宫武曲贪狼可作后天投入线索：务实与欲望并存，阴影假设为忽略情感或持续追求更多。福德天府可作安定资源，与独处散步较放松一致。八字伤官与紫微廉破方向部分呼应，但两者不强行统一，均待现实核对。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "按已确认命/身/福德与四化对照面具、阴影与触发点，未强行统一八字与紫微。",
+          "quote": "命宫廉贞（陷、生年化忌）与破军可作面具线索",
+          "follow_up_questions": []
+        },
+        "finding_refs": [
+          "s2.hypothesis.persona_competent_operator",
+          "s2.hypothesis.rest_as_excluded_pole"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.concrete_events"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.persona",
+        "title": "2.4.1 人格面具",
+        "content": "用户自述：不担心别人评价，答应任务是为换取资源，拒绝难因分工规则不清。解释假设：在职场与朋友场景中，用户可能认同‘能接事、能产出、好商量’的角色，与身宫落官禄、武曲贪狼线索方向一致。命宫廉破提示面具下仍有原则与张力。需核对：在哪些场景用户感到角色被认同，哪些场景感到面具吃力。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "自我核心/透干与命迁线索已用，自述与解释已分开。",
+          "quote": "用户自述：不担心别人评价，答应任务是为换取资源",
+          "follow_up_questions": [
+            "在哪些具体场景你感到角色被认同？哪些场景感到吃力？"
+          ]
+        },
+        "finding_refs": [
+          "s2.hypothesis.persona_competent_operator"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.shadow",
+        "title": "2.4.2 阴影",
+        "content": "假设：休息、有余地的拒绝、脆弱与游戏性可能是被排斥的一端。用户独自散步时较放松，提示这一端真实存在但少被允许；福德天府可作安定资源线索。伤官阴影假设为靠否定建立自我，正印阴影假设为用知道回避行动。需核对：用户在什么情境允许自己休息而不解释，什么情境必须持续产出。阴影不等于缺点，是尚未被接纳的面向。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "缺失/受克/未透资源与福德张力已用，检验边界、休息、脆弱等被排斥面向。",
+          "quote": "用户独自散步时较放松，提示这一端真实存在但少被允许",
+          "follow_up_questions": [
+            "什么情境你能休息而不解释？什么情境必须持续产出？"
+          ]
+        },
+        "finding_refs": [
+          "s2.hypothesis.rest_as_excluded_pole"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.expected_outcomes",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.complex",
+        "title": "2.4.3 情结",
+        "content": "参考线索：月令伤官、日支七杀、子午冲与子未害。真实重复情境：同事临时请代写方案，用户本想休息却答应，熬夜后第二天不耐烦；朋友两次临时改地点，用户未表达意见，最后直接取消聚会。核心情绪假设为被挤压与不被尊重；自动想法假设为‘当场拒绝会破坏关系或资源’。防御为拖延后生硬回应或直接取消。短期保护是避免冲突，长期代价是关系摩擦与透支。反证：用户曾明确拒绝领导且无内疚。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "月令题型、十神交战、刑冲线索已用，并回到真实重复情境描述情绪与信念。",
+          "quote": "同事临时请代写方案，用户本想休息却答应，熬夜后第二天不耐烦",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "触发、情绪、自动想法、防御、保护、代价与反证均已覆盖。",
+          "quote": "朋友两次临时改地点，用户未表达意见，最后直接取消聚会",
+          "follow_up_questions": [
+            "每次遇到什么具体信号会让你决定先答应？"
+          ],
+          "details": {
+            "trigger": "同事临时请代写方案、朋友连续两次临时改地点。",
+            "emotion": "假设核心情绪为被挤压与不被尊重，熬夜后不耐烦。",
+            "automatic_thought": "假设自动想法为‘当场拒绝会破坏关系或资源’。",
+            "defense": "拖延到最后生硬回应，或直接取消聚会。",
+            "protection": "短期避免当场冲突，维持资源关系与和气。",
+            "repetition_cost": "长期关系摩擦、自我透支与不耐烦累积。",
+            "reality_check": "用户曾明确拒绝领导且无内疚，反证讨好与权威恐惧假设。"
+          }
+        },
+        "finding_refs": [
+          "s2.hypothesis.overcommit_withdraw_cycle"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.cycle",
+        "title": "2.4.4 激活路径",
+        "content": "触发（事实）：同事临时请代写方案、朋友临时改地点。阴影浮现（假设）：休息与被尊重需求被压下。核心情绪/情结（假设）：被挤压与不被尊重。防御（事实）：先答应后拖延、生硬回应或取消。短期结果（事实）：避免当场冲突。长期重复（假设）：关系摩擦与透支累积。可能反证：用户曾明确拒绝领导且无内疚，说明并非所有权威场景都触发此链。待补问：每次遇到什么具体信号会让你决定先答应。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "触发→阴影→情绪→防御→短期→长期各环已标事实/假设/待补问，并给出反证。",
+          "quote": "触发（事实）：同事临时请代写方案、朋友临时改地点",
+          "follow_up_questions": [
+            "每次遇到什么具体信号会让你决定先答应？"
+          ]
+        },
+        "finding_refs": [
+          "s2.hypothesis.overcommit_withdraw_cycle",
+          "s2.hypothesis.perfectionist_completion_anxiety"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.authority",
+        "title": "2.4.5 权威与超我",
+        "content": "官杀线索：日支未土七杀、年支子水正官藏干、时柱申中戊正官；印线索：时柱庚申正印。假设‘应该/必须/不能’可能来自对规则与责任的早期内化，但用户反例明确：曾拒绝领导且无内疚，说明权威恐惧假设不成立。父母宫主星为空、辅星火星天喜，依据不足，不展开。主权交接方向：把‘是否答应’的判断权从模糊分工规则收回自己，而非指责家庭。需访谈验证。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "官杀/印与父母宫线索已用，应该/必须来源标注需访谈验证，说明主权交接。",
+          "quote": "用户反例明确：曾拒绝领导且无内疚，说明权威恐惧假设不成立",
+          "follow_up_questions": [
+            "拒绝领导那次与答应同事那次，情境差异是什么？"
+          ]
+        },
+        "finding_refs": [
+          "s2.hypothesis.overcommit_withdraw_cycle"
+        ],
+        "evidence_refs": [
+          "input.context.counterexample",
+          "input.context.self_description",
+          "calculated.foundation"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "用户明确给出反例：曾拒绝领导且无内疚，任何讨好信念或权威恐惧假设必须标注为已被反证，不得写入报告。",
+        "references": [
+          "input.context.counterexample",
+          "s2.hypothesis.overcommit_withdraw_cycle"
+        ]
+      },
+      {
+        "message": "本案例为合成验收数据，不得当作真实客户；心理假设均需以真实事件与自述校正。",
+        "references": [
+          "input.context.synthetic_notice"
+        ]
+      },
+      {
+        "message": "父母宫主星为空、依据不足，权威来源未展开，需访谈验证后再判断。",
+        "references": [
+          "calculated.foundation"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 28129,
+    "output_tokens": 3951,
+    "latency_ms": 15958,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "6722a468-d5f0-411b-b9a0-0cb0722cc0f4",
+    "skill_version_id": 0,
+    "skill_key": "report.s2_psychology_mapping",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "609d1c10029d8d769e17a0cecf5c885b963fd7318e79a2caa6b5c66e7c6c5b63",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

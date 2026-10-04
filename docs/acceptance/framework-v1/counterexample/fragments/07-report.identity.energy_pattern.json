@@ -1,0 +1,74 @@
+{
+  "signature": "ce54ca61ae4805c65d508e3d3222d6563cebcf4e2088d41a12d503d942a3378e",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "能量从哪里来，又从哪里漏掉",
+    "content": "你在工作里呈现出的样子，是一个能接事、能产出、也愿意为资源承担的人。你自己说过，答应任务是为了换取资源，不愿拒绝主要因为分工规则不清。这句话很重要，它说明你的承担不是被动，而是一种有目的的选择。现在要看的是，这份承担在什么条件下会变成透支。\n\n先看你身上已经确认的两处资源线索。时柱庚申正印，可以读作一种被支持、能收敛、愿意把事做扎实的倾向；福德宫天府配天魁，可以读作内在安定与外部助力的线索。这两条都只作为参考，不是结论。它们更接近你身上本来就有的两端：一端是愿意承接、愿意把事做好的力量，另一端是安静、稳定、可以被支持的状态。问题往往不在缺少哪一端，而在两端之间的切换节奏。\n\n耗电的部分有你的自述支持：答应额外任务后熬夜，下班后持续查看消息怕漏事，项目开头想法多、担心做不好反复修改，临近截止才急着交付。这些场景有一个共同点——它们都不是在事情开始时消耗你，而是在事情拖长、反复、无法收尾时消耗你。充电的部分同样有线索：独自散步时你比较放松，这提示休息的通道是存在的，只是它需要被允许、被留出时间，而不是被排在所有事情之后。\n\n从加工路径看，可以这样理解你的模式：探索入口上，你项目开头想法多，倾向先发散再收敛，但收敛环节容易被担心做不好的焦虑拉长；价值判断入口上，你自述答应任务是为换取资源，价值排序可能偏向资源与关系维持，休息与余地较少进入排序；执行入口上，你临近截止才急交付，执行更多依赖外部时间压力，而不是内部节奏；反馈入口上，你下班后持续查看消息怕漏事，反馈敏感度高但缺少过滤。这条路径里最容易被卡住的，是探索与执行之间的收敛环节——想法已经很多，但把它们收成一个可交付版本的动作，被反复修改替代了。\n\n这里需要说明：你没有自报MBTI或八维测评结果，所以本节不推断类型，也不给出功能分数，以上只是可观察的加工路径倾向假设，需要你用自己的行为记录去核对。另外，你还没有描述社交场合对你来说是充电还是耗电，也没有说明睡眠与身体状态，这两点不能由命盘直接推断，需要你以观察记录来核对。\n\n把这几条放在一起看，你的能量模式不是“能不能扛”，而是“什么时候允许自己停”。承担与休息这两端在你身上都真实存在，只是目前承担一端被排得更满。下一节会进入三个卡点的具体运作方式，继续保留反例，看哪些场景会触发、哪些场景不会。",
+    "used_findings": [
+      "s1.foundation.hour_seal_gengshen",
+      "s1.foundation.ziwei_wellbeing_tianfu",
+      "s4.block.rest_as_excluded",
+      "s4.block.perfectionist_completion"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.energy",
+      "analysis.s4.functions"
+    ],
+    "used_actions": [],
+    "transition_hint": "能量模式先看到这里。接下来进入三个卡点的具体运作方式：先答应后撤退、反复修改与截止急交付、休息少被允许，并继续保留反例。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.energy_pattern",
+      "chapter": "identity",
+      "sequence_no": 7,
+      "new_information_role": "MANIFEST",
+      "reading_depth": "深入详细",
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low",
+      "second_person": true,
+      "avoids_medical_diagnosis": true,
+      "avoids_mbti_inference": true,
+      "uncertainty_markers_used": [
+        "可能",
+        "可以读作",
+        "倾向假设",
+        "需要核对"
+      ],
+      "contains_growth_experiment_steps": false,
+      "contains_quote_library_citation": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.energy",
+        "status": "FULFILLED",
+        "reason": "已覆盖充电/耗电与实际反馈、探索→价值→执行→反馈路径及张力，并明确无自报不推MBTI或八维分数；同时说明社交与睡眠两项待核对。",
+        "quote": "耗电的部分有你的自述支持：答应额外任务后熬夜，下班后持续查看消息怕漏事，项目开头想法多、担心做不好反复修改，临近截止才急着交付。",
+        "follow_up_questions": [
+          "社交场合对你来说是充电还是耗电？",
+          "你是否有过MBTI或八维测评结果可供参考？",
+          "你最近的睡眠与身体状态如何，是否与熬夜频率相关？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 14055,
+    "output_tokens": 1139,
+    "latency_ms": 5900,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "54707bf8-1e68-4e27-aa82-a53220883bab",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "2e1caf1ce467764d4cd771d48279e12220dd9ea11c60145772c6371bf82cfa8a",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -1,0 +1,60 @@
+{
+  "signature": "e30cfc151f08020a65efef2895038a1d1ac8706ee169ed7a8f9fda895890960a",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "收束：把「靠谱」从别人的评价里拿回来",
+    "content": "走到这里，那条暗线已经比较清楚了：一端是想维持「靠谱、不让人失望」的承接型自我，另一端是休息、拒绝和真实需求。这两端本身没有好坏，只是你目前更常站在前一端，后一端就容易被挤到看不见的地方。这不是要你把自己改成另一个人，而是让被排除的那一端重新有机会在场。\n\n认识、理解、行动，可以是一条线。认识，是承认「先答应、后撤回」不是意志力的问题，而是一套一直在替你维系关系的旧办法；理解，是看到这套办法确实保护过你，也让你付出了透支的代价；行动，则是从你已经做到过的地方出发——你说过，面对熟悉的同事和明确的截止时间，你是能够协商边界的。这说明余地不是没有，只是还没扩展到更多场景。\n\n种子需要合适的土壤，也需要休耕期；休息和拒绝本来就是节律的一部分，不是偷懒。把「靠谱」从外部评价慢慢转成你自己的选择，这件事不需要一次完成，也不需要在所有关系里同时做到。你愿意从哪一个小练习开始、什么时间做最可行，这些都可以由你来定；具体怎么做，成长实验那一节已经写好了，这里不再重复。\n\n《道德经》第三十三章里有一句：「知人者智，自知者明。」你已经比开始时更清楚自己是怎么运转的。剩下的，是让这份清楚慢慢落到日常里，一次留半拍，一次说一句有余地的话，都算数。",
+    "used_findings": [
+      "s3.self.pole_tension",
+      "s3.bridge.practice"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "报告到此收束：主线回扣、现实落点与哲学寄语已完成，不再引出新内容。",
+    "presentation_meta": {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "sequence_no": 17,
+      "next_fragment": null,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.ending",
+        "status": "FULFILLED",
+        "reason": "以认识→理解→行动的线索贯通，先承认「先答应、后撤回」是维系关系的旧办法（认识），再看到它保护过你也带来透支代价（理解），最后从已确认的反例出发指向可协商的余地（行动）；并以种子与休耕期作比喻完成个性化寄语；署名引用仅使用核验库中的《道德经》第三十三章条目并完整标注章节。",
+        "quote": "认识、理解、行动，可以是一条线。",
+        "follow_up_questions": [
+          "你愿意从哪一个小练习开始？",
+          "在什么时间做最可行？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 6042,
+    "output_tokens": 697,
+    "latency_ms": 2924,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "a9396b27-26c1-4d8c-a1d8-f4909ac923c5",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "890a7afaf5e17c812f7e2cfd2617851261929f8e4fe52305ab55ceb0e7778fe8",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

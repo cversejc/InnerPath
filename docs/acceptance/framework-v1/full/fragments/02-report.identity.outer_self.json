@@ -1,0 +1,63 @@
+{
+  "signature": "3714c000f7b20739599ae83295ee4a286e4fe6646c3bf7bd7c2e0b47dcae080f",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "世界看到的你",
+    "content": "在别人眼里，你大概是一个“靠谱”的人。项目运营的工作里，你习惯把事情接住、把节点守住；同事临时请你代写方案，你原本想休息，还是先答应下来；朋友两次临时改地点，你没有当场表达意见，最后却直接取消了聚会。这些是你在咨询中直接说出的经历，不是我们对你的猜测。你也直接说过：“我认为自己要靠谱、不能让人失望”“拒绝后担心别人觉得我不够好”——这是你对自己的描述，我们把它原样放在这里，而不是替你解释成某种性格结论。\n\n从传统命理的符号视角看，你的八字里正印透干，常被解读为“好学、稳重、以被认可为调节”的资源；伤官透干，常被解读为表达与突破的资源；七杀藏在月支和日支，被看作隐性的压力源。紫微命宫是廉贞与破军，一个偏向原则与情感，一个偏向求变与开创；身宫落在官禄宫，武曲与贪狼的组合，常被解读为“通过工作角色确立自我”。这些都属于解释性假设，不是诊断，也不是对你人格的定论；它们只是提供一种可能的语言，用来描述“外表守规、内在有变动力”的双层张力。你自述的“要靠谱”与这些符号解释放在一起时，更像是一种互相呼应，而不是互相证明。\n\n值得注意的是，这个“靠谱”的角色并不是在所有场景里都启动。你自己说过，面对熟悉同事、且有明确截止时间时，你能够协商任务边界，并非每次都迁就。这说明“先答应”更像是一种情境依赖的反应，而不是固定不变的性格。反过来，当你独自散步时，你说自己比较放松——这可能是你暂时卸下角色、回到自己节奏的时刻。我们把它记为一种可能的恢复资源，而不是结论。\n\n所以这一节想先建立的是：你能够识别的外在表现，是“可靠、不让人失望、把事情做好”；而这份可靠背后，还藏着敏感、求变、以及需要被自己照顾的部分。下一节我们会进入“卡在哪”，按请求来临—顺从答应—透支—延迟表达的时间顺序，看看这个循环是怎么运转的。",
+    "used_findings": [
+      "s1.foundation.ten_gods",
+      "s2.pattern.rest_recovery_resource",
+      "s2.pattern.overcommitment_loop",
+      "s2.pattern.self_worth_external_reference"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.persona",
+      "analysis.s2.ten_gods",
+      "analysis.s2.stars"
+    ],
+    "used_actions": [],
+    "transition_hint": "下一节进入“卡在哪”，按请求来临—顺从答应—透支—延迟表达的时间顺序，拆解三个卡点，并说明即时缓冲的缺口在哪里。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.outer_self",
+      "sequence_no": 2,
+      "reading_density": "medium",
+      "metaphor_density": "low",
+      "action_density": "none",
+      "tone": "第二人称、描述性、不评判",
+      "source_boundary_note": "本片段只使用分配范围内已确认来源；心理假设均以可能/假设表达；未自述经历未补造。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.persona",
+        "status": "FULFILLED",
+        "reason": "已覆盖用户可识别的外在角色（靠谱、不让人失望、把事情做好），并将用户自述与命理符号解释分开呈现，明确符号解释为假设而非诊断。",
+        "quote": "在别人眼里，你大概是一个“靠谱”的人。项目运营的工作里，你习惯把事情接住、把节点守住；同事临时请你代写方案，你原本想休息，还是先答应下来；朋友两次临时改地点，你没有当场表达意见，最后却直接取消了聚会。这些是你在咨询中直接说出的经历，不是我们对你的猜测。",
+        "follow_up_questions": [
+          "你在什么场景下最认同自己“靠谱”的角色？在什么场景下最不认同？",
+          "当别人评价你“靠谱”时，你内心的第一反应是什么？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 16320,
+    "output_tokens": 980,
+    "latency_ms": 5332,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "1fd5272a-f3c9-4306-ad25-16d1756edff6",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "8c0b57934023f9dc4734e38c800e55cb50648734bcd562ffea17cba2f2a40768",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

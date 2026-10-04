@@ -15,6 +15,7 @@ from app.domains.content.models import (
 from app.domains.content.narrative import semantic_source_snapshot
 from app.domains.content.queries import load_case_semantic_model
 from app.domains.content.report_content_plan import validate_report_content_plan
+from app.domains.content.framework_coverage import report_coverage_issues
 from app.domains.workflow.models import ReportCase, WorkflowInstance, WorkflowVersion
 
 
@@ -205,7 +206,7 @@ async def collect_programmatic_issues(
                 )
         must_include = set(
             (content_plan.get("semantic_priorities") or {}).get("must_include") or []
-        )
+        ) | {f["finding_key"] for f in semantic_model["findings"] if f.get("reportability") == "MUST_INCLUDE"}
         covered_must_include = {
             ref.get("finding_key")
             for fragment in current_fragments
@@ -225,6 +226,13 @@ async def collect_programmatic_issues(
                     suggestion="将每个必须纳入的 Finding 写入有来源映射的片段并确认。",
                 )
             )
+        if semantic_model.get("framework_contract"):
+            for issue in report_coverage_issues(content_plan, [
+                {"fragment_key": f.fragment_key, "content": f.content, "source_snapshot": f.source_snapshot}
+                for f in current_fragments if f.status == "CONFIRMED"]):
+                issues.append(_issue(issue["type"], "BLOCK", "产品框架内容覆盖未完成或与当前正文不一致。",
+                    fragment=next((f for f in current_fragments if f.fragment_key == issue.get("target_fragment")), None),
+                    evidence=issue, suggestion="补齐该段要求的内容和覆盖说明，重新审核。"))
         growth = next(
             (
                 item

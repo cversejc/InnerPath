@@ -1,0 +1,54 @@
+{
+  "signature": "5dd7ddad355b0b3cb5080f561de536eeb62726f703e7d2925d488cc4129478fc",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点三：休息与余地少被允许",
+    "content": "前两个卡点里，你已经看到“先答应、后撤退”和“反复修改、截止前急交付”这两条链。第三个卡点换一个入口：休息与有余地的表达，似乎很少被你允许。\n\n现实表现上，你提到下班后常查看消息、怕漏事，而独自散步时比较放松。这两个画面放在一起，本身就说明放松这一端在你身上是真实存在的，只是它常常要等到“没有任务在场”时才被放行。\n\n触发与运作上，触发点可能是持续在线的责任感，以及对遗漏事情的担忧。运作方式，是以持续产出和在线状态替代休息，休息要先被解释、被证明“有理由”，才允许发生。这些是基于你自述的机制假设，不是对你的判定；如果你在某些场景里其实能安心休息，那正是需要保留的反例。\n\n它过去保护了什么？可能是维持“可靠、能扛事”的形象，以及你在团队和关系里的资源位置，避免被看作不负责。这份保护有它的功劳，不必急着否定。\n\n长期代价也清楚：休息被压缩，情绪与耐心储备下降。前文的反例已经说明，透支与沉默可能是同一件事的两面。\n\n整合邀请是：允许休息不解释，把散步式的放松纳入日常节奏。具体怎么练习，留到第三章的成长实验里展开，这里先不列步骤。",
+    "used_findings": [
+      "s4.block.rest_as_excluded"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "到这里，三个卡点已经分别看清；下一节会把它们放在一起，看是否共享同一条运作模式。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "block_key": "block_03",
+      "sequence_no": 11,
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "按场景→触发→运作→过去保护→长期代价→整合邀请的顺序解释了休息与余地少被允许这一卡点；未展开解决步骤，只把实践指向第三章的成长实验节。",
+        "quote": "整合邀请是：允许休息不解释，把散步式的放松纳入日常节奏。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5395,
+    "output_tokens": 603,
+    "latency_ms": 2912,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "49119662-eba8-4d90-b8af-7d92b21e83cc",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "02e72e21a662edeab0a0b318e53a50283b53586c4c3cc5e530d746c88de26616",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

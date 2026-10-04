@@ -618,7 +618,9 @@ async def test_skill_workflow_version_pins_report_authoring_skill(skill_db):
 
     assert result.version == 2
     assert authoring["executor"] == "HYBRID"
-    assert authoring["config"]["skill_version_id"] == 1
+    skill = await skill_db.get(AISkillVersion, authoring["config"]["skill_version_id"])
+    assert skill.skill_key == DEFAULT_SKILL_KEY and skill.version == 1
+    assert result.definition_json["skill_bindings"][DEFAULT_SKILL_KEY]["id"] == skill.id
 
 
 @pytest.mark.asyncio

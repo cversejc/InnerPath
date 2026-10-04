@@ -1,0 +1,66 @@
+{
+  "signature": "5888ea21e7ff0cd7f4199ed4cc0932953e414b033cab126c56833db8eb74488e",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "寄语：让承担与休息，落在同一条时间线上",
+    "content": "走到这里，这份报告想收束的其实只有一件事：你不是需要变成一个更会拒绝的人，而是需要让你身上已经存在的两端——以承担换取位置的运营者姿态，与渴望休息、渴望有余地表达的那一部分——重新落在同一条时间线上。\n\n认识、理解、行动，是三个不同层次的功课，但它们的顺序并不总是从前往后。你自述“答应任务是为了换取资源”，这不是软弱，也不是不懂拒绝，而是一种在现实分工规则不清时，用付出来确认自己位置的方式。它曾经有效，甚至支撑你走到现在。但当这种有效被反复使用到透支，它就从资源变成了代价。理解这一点，不是为了否定那个先答应的自己，而是为了让被排除在判断之外的另一端，也能进入你的决定。\n\n“知人者智，自知者明。”这句话放在这里，不是要你更聪明地处理关系，而是要你把目光从“别人怎么看我”移到“我此刻允许自己怎样”。你不需要一次性完成转变，也不必因为某一次又先答应、又熬夜、又生硬回应而否定自己。种子发芽有其节律，改变也一样，可往返，可反复，不必一次成型。你已有的能力——比如独自散步时的放松、比如在朋友反复改地点后最终选择取消——都不是失败，而是你在用自己目前唯一熟悉的方式，保护那点少被允许的余地。\n\n接下来，方向不是把“答应”这一端消灭，而是让它在做判断之前，先停顿一下。成长实验一节已经把具体动作、频率和退出条件写清楚了，这里不再重复。你只需要记得：每一次在答应前多留出的那几秒，都是在把休息与余地，重新请回你的判断里。这不是要你变得冷漠或推卸，而是让你在承担时，也知道自己站在哪里。\n\n愿你慢慢地在承担与休息之间，找到属于自己的那一点余裕。",
+    "used_findings": [
+      "s3.hypothesis.core_tension_productivity_vs_rest",
+      "s3.hypothesis.bridge_self_knowing_practice"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "寄语先看到这里。整份报告到此收束，具体练习仍以成长实验一节为准。",
+    "presentation_meta": {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "sequence_no": 17,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "quote_used": {
+        "key": "laozi-33-self-knowledge",
+        "text": "知人者智，自知者明。",
+        "attribution": "《道德经》第三十三章",
+        "status": "VERIFIED"
+      },
+      "style_note": "第二人称，现实语言，先意识后潜意识，命理术语已翻译为日常表达；未新增事实或心理结论。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.ending",
+        "status": "FULFILLED",
+        "reason": "以道德经“自知”方向贯通认识（承认先答应是资源换取逻辑）→理解（理解有效与代价的转化）→行动（在答应前多留出几秒，指向成长实验节），并给出不署名原创寄语；署名引用仅使用核验库中 VERIFIED 的《道德经》第三十三章。",
+        "quote": "认识、理解、行动，是三个不同层次的功课，但它们的顺序并不总是从前往后。",
+        "follow_up_questions": [
+          "你希望寄语更偏向理解机制，还是更偏向行动鼓励？",
+          "这份收束里，有没有哪一句让你觉得被说中，或觉得不太贴合？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 12709,
+    "output_tokens": 897,
+    "latency_ms": 5529,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "36e8e09d-1632-4279-b928-34866c2ecf4d",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "8560b97048e09c359c45673b05b0f029875398a90558d2e1361b9628b2865a03",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

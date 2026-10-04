@@ -1,0 +1,112 @@
+{
+  "signature": "4da72bda831278a331afc4f21919f9d4bba2a8e260a2bd5c55dcf7b023ee10ea",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "命盘旁注：把已审核的结构逻辑，翻译成你能用的参考",
+    "content": "这一节是旁注，不是结论。你出生于1996年6月15日15时15分，山东济南，出生时间精确；命盘由系统按固定规则计算，但流派差异、真太阳时未校正等因素都会影响细节，所以下面每一条都只当一种解释视角读，而不是关于你这个人的证据。\n\n先看结构边界。日干为癸水，传统意象是雨露与渗透，可作待验证的自我核心线索：你是否更习惯先感受、再表达。月令午火伤官当令，甲木伤官透干，全局火土偏旺、金水偏弱；由此提出的候选是身弱伤官格，取印比扶身，但也有印为用而伤官泄秀的分歧，从格依据不足。月支午中藏偏财与七杀，传统上可作待验证的线索：是否倾向以表达与产出换取资源，同时承受内在燥急。年柱丙子、日支未土，与月令之间见子午六冲、子未六害、午未六合，以及丙癸、丙庚、甲庚三组天干相克；合与合化须分开判断，不能直接当作化格。十神上，透干见正财、伤官、正印各一，藏干偏财二、七杀二，偏印缺失——出现次数不代表旺衰，缺失也不证明任何心理面向缺失。时柱庚申正印只作承接，不再展开。\n\n用神候选为金（正印），喜神候选为水（比劫），忌神候选为火土（财杀），取用理由与分歧都已列明，属解释性判断，待人工确认。大运方面，按2026年10月4日计算，你当前行辛卯大运（2019–2028，偏印，金/木）；后续每十年为庚寅2029–2038正印、己丑2039–2048七杀、戊子2049–2058正官等。这些是时间框架，不是必然预测。\n\n紫微部分：命宫在酉，主星廉贞（陷、生年化忌）与破军（得），辅星天钺，可作人格面具线索；身宫落官禄宫（丑），主星武曲旺、贪狼庙，命身分居，可作后天投入方向的线索；福德宫在亥，主星天府（得）配天魁，无生年化忌与空劫，仅作内在安定线索。生年四化为天同禄、天机权、文昌科、廉贞忌，廉贞忌落命宫；宫干飞化另列，重点忌流向为命宫廉贞忌与交友宫巨门忌。以上都不能据此诊断任何心理状态。\n\n需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。",
+    "used_findings": [
+      "s1.foundation.month_ling_wu_hurt_officer",
+      "s1.foundation.interactions_core",
+      "s1.foundation.hour_seal_gengshen",
+      "s1.foundation.current_dayun_xinmao",
+      "s1.foundation.ziwei_life_lianpo",
+      "s1.foundation.ziwei_body_career",
+      "s1.foundation.day_master_gui_water",
+      "s1.foundation.ziwei_wellbeing_tianfu"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s1.day_master",
+      "analysis.s1.structure",
+      "analysis.s1.month",
+      "analysis.s1.ten_gods",
+      "analysis.s1.day_branch",
+      "analysis.s1.hour",
+      "analysis.s1.year",
+      "analysis.s1.interactions",
+      "analysis.s1.dayun",
+      "analysis.s1.useful_gods",
+      "analysis.s1.ziwei_life",
+      "analysis.s1.ziwei_body",
+      "analysis.s1.ziwei_wellbeing",
+      "analysis.s1.ziwei_transformations"
+    ],
+    "used_actions": [],
+    "transition_hint": "命盘旁注到此为止，接下来从你日常能观察到的自己开始。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.foundation_notes",
+      "chapter": "identity",
+      "sequence_no": 3,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "notes": "旁注性质：只列已确认结构与暂缓边界，心理含义留待后续章节；不展开实验动作与金句。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "must_cover_1",
+        "status": "FULFILLED",
+        "reason": "已覆盖八字十项与紫微重点的已确认内容，并明确写出需结合自述与反证校正的暂缓边界。",
+        "quote": "需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_cover_2",
+        "status": "FULFILLED",
+        "reason": "正文多次声明符号只作解释视角、待验证线索，不当作心理证据或诊断。",
+        "quote": "所以下面每一条都只当一种解释视角读，而不是关于你这个人的证据。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_1",
+        "status": "FULFILLED",
+        "reason": "本节未展开后续心理章节的逐条命盘解释，心理含义留待后文。",
+        "quote": "心理含义留待后续章节",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_2",
+        "status": "FULFILLED",
+        "reason": "未展开实验动作、频率或退出条件，具体实践统一在成长实验节。",
+        "quote": "需要暂缓的部分：格局与喜忌的最终确认、宫干飞化中未逐一展开的宫位，都需结合你的自述与反证校正，本节不替你下定论。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_3",
+        "status": "FULFILLED",
+        "reason": "未引用任何收束金句，金句仅保留给寄语节。",
+        "quote": "这一节是旁注，不是结论。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_4",
+        "status": "FULFILLED",
+        "reason": "时柱庚申正印仅以承接方式提及，未重新完整解释。",
+        "quote": "时柱庚申正印只作承接，不再展开。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 19687,
+    "output_tokens": 1685,
+    "latency_ms": 5600,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "fa5d4dda-add6-4f82-9c2c-3695cc3411aa",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "b2813e84f8c3330dbb9672deb9aadbabcb6f70a8db659925d828ab79a4ab38ab",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

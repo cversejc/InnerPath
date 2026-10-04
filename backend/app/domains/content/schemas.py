@@ -91,6 +91,9 @@ class ContentFragmentRevisionCreate(BaseModel):
     owner_step_task_id: Optional[int] = Field(None, gt=0)
     source_skill_run_id: Optional[int] = Field(None, gt=0)
     source_narrative_plan_id: Optional[int] = Field(None, gt=0)
+    framework_coverage: Optional[dict[str, Any]] = None
+    structured_analysis: Optional[dict[str, Any]] = None
+    requirement_coverage: Optional[list[dict[str, Any]]] = None
 
 
 class ContentFragmentRevisionResponse(BaseModel):

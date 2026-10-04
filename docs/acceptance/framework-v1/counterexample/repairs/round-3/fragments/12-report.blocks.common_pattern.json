@@ -1,0 +1,60 @@
+{
+  "signature": "27faf5b99c894e1b04a516f11cb744e75ae15f9887263adb8c0cccf93888c091",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "三个卡点共享的同一条路径",
+    "content": "把三个卡点并排放在一起，会看到它们不是三件互不相干的事，而更像同一套应对方式在不同场景里的三种走法。它们共享的骨架是：某个触发出现，你把另一端的需要先压下去，用一个能立刻缓解张力的动作顶上去，短期确实换来平静，长期却把透支和关系摩擦一点点累积起来。\n\n三者的差别在于“被挪走的张力”落在哪里。卡点一挪走的是当场冲突，卡点二挪走的是被评判的风险，卡点三挪走的是“我是不是不够负责”的不安。动作不同、场景不同，方向一致：先把张力从当下移开，代价留到之后支付。\n\n它们之间还会互相喂养。答应得越多，可用的时间越少，越容易拖到截止前急交付；越是在截止前急交付，越需要靠在线和加班补位，休息就越难被允许；休息越少，下一次面对临时请求时能调用的余地就越薄。这是一条相互加强的回路，而不是三个孤立的毛病。\n\n需要保留的边界有三条。第一，以上是综合三个卡点后看到的共同运作方式，属于对已确认材料的整理，不是对你人格的定性。第二，卡点一和二都还带着待核对的假设成分，尤其“先答应是为了维持关系”这一层，需要你在具体场景里自行校正；前文的反例已经说明它不能一概而论。第三，相关不等于因果：三个卡点常常一起出现，但谁先谁后、谁在某次具体事件里起了主导作用，还需要你在真实场景里辨认。\n\n如果这条共同路径对你成立，它指向的整合方向也很一致：让被压下去的那一端重新进入判断。具体在哪些场景先停顿、怎样表达有余地、怎样安排休息，会在后面的成长实验一节里展开，这里只先点出方向。你可以带着一个问题往下读：在最近一次先答应或先修改的时刻，如果当时多留半分钟，你最想放进来的是哪一句话、哪一种需要？",
+    "used_findings": [
+      "s4.block.overcommit_withdraw_loop",
+      "s4.block.perfectionist_completion",
+      "s4.block.rest_as_excluded",
+      "s2.hypothesis.overcommit_withdraw_cycle",
+      "s2.hypothesis.perfectionist_completion_anxiety"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.cycle",
+      "analysis.s4.blocks"
+    ],
+    "used_actions": [],
+    "transition_hint": "共同路径已经看清，接下来进入成长实验，把这条路径上的几个关键位置变成可以练习的动作。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.common_pattern",
+      "sequence_no": 12,
+      "new_information_role": "SYNTHESIZE",
+      "must_not_repeat_checked": true,
+      "action_refs_empty": true
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.common_pattern",
+        "status": "FULFILLED",
+        "reason": "本节综合三个卡点，说明它们共享同一应对骨架，并逐层呈现触发、被压下的需要、防御动作、短期保护与长期重复；同时明确相关不等于因果，保留反例与假设边界。",
+        "quote": "它们共享的骨架是：某个触发出现，你把另一端的需要先压下去，用一个能立刻缓解张力的动作顶上去，短期确实换来平静，长期却把透支和关系摩擦一点点累积起来。",
+        "follow_up_questions": [
+          "在最近一次先答应或先修改的时刻，如果当时多留半分钟，你最想放进来的是哪一句话、哪一种需要？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 8317,
+    "output_tokens": 864,
+    "latency_ms": 4513,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "9da8a58f-2b97-43e8-9c0b-48fe8e32b50d",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "97a8f23e55f07b89b9b6a528ef0126126afb17640fc926614666226d8b27510e",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -1,0 +1,53 @@
+{
+  "signature": "857fbea21fa5c77672610a1199258d0f1af0db605ce99105adcc48457d57e63a",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡在哪：休息与拒绝为何难以被允许",
+    "content": "上一节看清了“先答应、后撤回”在临时请求里怎么跑起来。这一节顺着同一条线，看它在休息与拒绝这两个更靠近你自己的场景里如何延伸。\n\n常见现实场景：你提到过一个很具体的画面——上周同事临时请你代写方案，你本想休息，却还是答应了，熬夜之后第二天变得不耐烦。你也自述过，拒绝之后会担心别人觉得你不够好。这两句放在一起，已经能看出这套反应的大致轮廓。\n\n触发与运作：当“他人的需求”和“你自己的休息需要”同时出现，休息往往先被推迟。你先把事情接下来，维持住那个“靠谱、不让人失望”的位置；等到疲惫积累到某个点，不满才以不耐烦、或者干脆撤回的方式冒出来。这里有一个需要打问号的顺序——假如在你身上，答应的动作常先于不舒服的感受出现，那么它可能不只是这一次的偶然。但这个先后顺序目前仍是假设，你还提到独自散步时会比较放松，这类场景可以作为反证来核对：在哪些时刻，你其实能先听见自己的需要。\n\n过去保护了什么：这套反应不必被当作缺点，它可能曾经有它的用处。先答应、先承接，能让你稳稳待在被需要、被认可的位置上，避免当场冲突，也避免让别人失望带来的那种不安。对把“要靠谱”当作自我要求的你来说，如果这个解释贴合，它可能是一种有效的自我保护。\n\n长期代价：代价也真实存在。休息被一再推迟，恢复就不够；不满没有出口，就会积压，最后以不耐烦或撤回的形式漏出来。而你的真实需求——比如“我今天真的需要休息”——长期没有被表达，也就长期没有被别人看见。这不是你不够好，而是这套保护机制在今天的场景里，可能开始显得不够用了。\n\n整合邀请：所以这里的变化，不是要你立刻学会强硬拒绝，而是先松动一个前提——把休息看作节律的一部分，而不是懒惰或失职。当“需要休息”不再等于“不够靠谱”，你在那个当下的选择空间才可能真正变宽。具体怎么在现实里练习有余地的表达，留到成长实验那一节展开，这里先把机制看清楚就够了。\n\n还有一个边界要说明：这部分目前只有有限的场景支撑，阴影不等于缺点，也需要更多场景来核对。比如在家人面前、在更亲近的朋友面前，这套反应是不是也一样，现在还不好下结论。",
+    "used_findings": [
+      "s4.block.rest_shadow"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "休息与拒绝的场景看清之后，还有第三个场景值得看：项目开头想法多、担心做不好而反复修改，直到接近截止才急着交付。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.block_02",
+      "chapter": "challenge",
+      "sequence_no": 10,
+      "new_information_role": "MANIFEST",
+      "theory_density": "medium",
+      "action_density": "none",
+      "metaphor_density": "low",
+      "word_count": 812
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "本节按场景→触发→运作→过去保护→长期代价→整合邀请六段展开，只写一个卡点；对假设顺序加了条件限定与反证提示，并明确资料边界；未展开任何解决步骤。",
+        "quote": "当“他人的需求”和“你自己的休息需要”同时出现，休息往往先被推迟。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5380,
+    "output_tokens": 840,
+    "latency_ms": 4071,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "1aafdf5e-a0fe-4c9d-9c22-32ca9743c91b",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "646e410bc6030912761a07a4aaae11ea98fd22b98c2724945ef9cca0100002e1",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

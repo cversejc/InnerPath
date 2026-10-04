@@ -10,6 +10,17 @@ import httpx
 
 from app.config import settings
 from app.domains.quality.scorecard import validate_scorecard
+from app.domains.content.framework_coverage import (
+    normalize_coverage, normalize_requirement_coverage, normalize_framework_review,
+)
+from app.domains.content.action_contract import validate_growth_experiments
+from app.domains.content.reasoning_contract import (
+    ANALYSIS_STRUCTURES, normalize_structured_analysis, validate_action_reasoning,
+    validate_reasoning_contract,
+    validate_timeline_source,
+    validate_priority_blocks,
+    RESOURCE_ROLES,
+)
 from app.domains.reports.generation.mingli_foundation import calculate_mingli_foundation
 from app.domains.reports.generation.report_prompt import SYSTEM_PROMPT, build_prompt
 from app.domains.reports.generation.report_response_parser import (
@@ -285,6 +296,30 @@ def _authoring_prompts(
     output_contract = json.dumps(
         specification["output_contract"], ensure_ascii=False, indent=2
     )
+    candidate_note = ""
+    semantics = (context.get("context") or {}).get("semantic_model") or {}
+    if processor == "reports.narrative_candidates" and semantics.get("reasoning_contract"):
+        addressed = {k for f in semantics.get("findings", []) if f.get("semantic_role") == "ACTION"
+                     for k in (f.get("structured_data") or {}).get("block_refs", [])}
+        core_blocks = [{"finding_key": f["finding_key"], "claim": f["claim"]}
+                       for f in semantics.get("findings", []) if f.get("semantic_role") == "BLOCK" and f["finding_key"] in addressed]
+        candidate_note = (
+            "\n【卡点选择契约】priority_blocks是具体卡点，不是三章目录、资源、能力或动作。"
+            f"本案例有{len(core_blocks)}个有行动承接的BLOCK，每个候选都使用这些BLOCK，改变排列和叙事重点即可。"
+            "每个对象finding_refs只放一个以下BLOCK的ID，不添加其他ID；旁证放supporting_findings。"
+            "不要为4–5项凑数：只有3个真实BLOCK就返回3个。三章阅读顺序放在narrative_arc。\n"
+            f"{json.dumps(core_blocks, ensure_ascii=False)}\n"
+            "每个候选的priority_blocks严格采用这个结构，仅修改title为适合主线的读者语言，必要时调整顺序：\n"
+            f"{json.dumps([{'title': '用读者语言写此卡点', 'finding_refs': [b['finding_key']]} for b in core_blocks[:5]], ensure_ascii=False)}\n"
+        )
+    qa_input = (context.get("context") or {}).get("qa_input") or {}
+    if processor == "reports.validator" and qa_input.get("scorecard_required"):
+        candidate_note += (
+            "\n【本次必填评分结构】输出顶层必须有scorecard，不能改名为scores、quality_assessment或total_score。"
+            "scorecard.dimensions必须含以下全部维度；每项为{score:整数, reason:理由, fragment_keys:正文片段ID数组}。"
+            "score不得超出该维度满分，总分由程序计算，不要只返回总分。按真实质量评分，不填默认满分。\n"
+            f"{json.dumps(qa_input.get('scoring_rubric') or {}, ensure_ascii=False)}\n"
+        )
     runtime_note = (
         f"\n\n【本次运行补充要求】\n{runtime_instruction}"
         if runtime_instruction
@@ -296,7 +331,7 @@ def _authoring_prompts(
         "【机器可读输出契约】\n必须返回所有 required 字段，并按 properties 的类型输出；"
         "不要改名或省略字段。\n"
         f"{output_contract}\n\n"
-        f"【Skill Instructions】\n{instructions}{runtime_note}"
+        f"【Skill Instructions】\n{instructions}{candidate_note}{runtime_note}"
         f"{_example_guidance(context.get('few_shot_examples') or [])}"
     )
     user_prompt = json.dumps(context, ensure_ascii=False, indent=2, default=str)
@@ -320,6 +355,28 @@ def _analysis_prompts(
         else ""
     )
     analysis_context = context.get("analysis_context") or {}
+    structure_note = ""
+    if analysis_context.get("reasoning_contract"):
+        validate_reasoning_contract(analysis_context["reasoning_contract"])
+        stage_prefix = f"analysis.{str(analysis_context.get('step_key', '')).lower()}."
+        required_structures = {key: fields for key, fields in ANALYSIS_STRUCTURES.items() if key.startswith(stage_prefix)}
+        structure_note = (
+            "\n【本阶段强制的结构化产物】\n"
+            "以下fragment_key各对象必须有structured_analysis，不能只放framework_coverage。"
+            "structured_analysis的必填字段是status、reason、quote、follow_up_questions、details；"
+            "FULFILLED的details必须且只能使用对应表的所有英文键，值为具体文本（periods为阶段对象数组）。"
+            "不要将details字段平铺到structured_analysis，不添加别名或额外键。DEFERRED可以details={}，必须补问。"
+            "quote必须逐字出现在同一对象的content中。其他fragment_key无需structured_analysis。\n"
+            f"{json.dumps(required_structures, ensure_ascii=False)}\n"
+        )
+        if analysis_context.get("step_key") == "S4":
+            resource_keys = [f["finding_key"] for f in analysis_context.get("upstream_confirmed_findings", [])
+                             if f.get("semantic_role") in RESOURCE_ROLES]
+            structure_note += (
+                "每项ACTION.structured_data.reasoning_path.resource_refs必须从以下已确认资源ID中选择，"
+                "不要引用analysis片段ID、PERSONA、BLOCK或改名ID。block_refs则逐字引用本批次或上游的BLOCK Finding。\n"
+                f"{json.dumps(resource_keys, ensure_ascii=False)}\n"
+            )
     reference_catalog = {
         "evidence_keys": [
             item["evidence_key"]
@@ -332,6 +389,12 @@ def _analysis_prompts(
             if isinstance(item, dict) and isinstance(item.get("finding_key"), str)
         ],
     }
+    relation_rule = (
+        "relation_refs可引用confirmed_finding_keys中的已确认上游Finding；"
+        "reasoning_contract存在时也可引用同一批次候选的key（先审核保存资源/卡点，再保存行动）。"
+        if analysis_context.get("reasoning_contract") else
+        "relation_refs只能引用confirmed_finding_keys中的已确认上游Finding。"
+    )
     system_prompt = (
         f"{GLOBAL_POLICY}\n\n【任务类型】\n"
         "你正在生成咨询师内部审核用的分析候选，不是在写最终报告。"
@@ -341,11 +404,11 @@ def _analysis_prompts(
         f"{output_contract}\n\n"
         "【允许使用的引用 ID】\n"
         "evidence_refs 只能逐字复制 evidence_keys 中的 ID；"
-        "relation_refs 只能引用 confirmed_finding_keys 中的已确认上游 Finding，"
+        f"{relation_rule}"
         "格式为 {\"finding_key\": \"原样 ID\"}。不得根据描述、标签或记忆编造 ID。"
         "analysis_fragments 和 risk_flags 也只能引用本列表、当前候选 Finding 的 ID。\n"
         f"{json.dumps(reference_catalog, ensure_ascii=False)}\n\n"
-        f"【Skill Instructions】\n{instructions}{runtime_note}"
+        f"【Skill Instructions】\n{instructions}{structure_note}{runtime_note}"
         f"{_example_guidance(context.get('few_shot_examples') or [])}"
     )
     user_prompt = json.dumps(context, ensure_ascii=False, indent=2, default=str)
@@ -402,10 +465,21 @@ def _validate_authoring_output(
                     references.update(block.get("finding_refs") or [])
             if any(not isinstance(key, str) or key not in finding_keys for key in references):
                 raise ValueError("narrative_candidate_unsupported_finding")
+            if semantic_model.get("reasoning_contract"):
+                validate_priority_blocks(candidate, semantic_model)
         return
 
     if processor == "reports.validator":
         qa_input = (context.get("context") or {}).get("qa_input") or {}
+        if qa_input.get("framework_contract"):
+            review = normalize_framework_review(output.get("framework_review"), qa_input["framework_contract"],
+                qa_input.get("content_plan") or {}, qa_input.get("report_fragments") or [])
+            output["framework_review"] = review
+            for item in review:
+                if item["status"] == "MISSING":
+                    output.setdefault("issues", []).append({"issue_type": "FRAMEWORK_CONTENT_MISSING", "severity": "BLOCK",
+                        "target_fragment_key": item["fragment_keys"][0], "message": f'{item["requirement_id"]}：{item["reason"]}',
+                        "evidence": item["quote"], "suggestion": "补齐已审核依据与正文内容，或明确暂缓并补问，然后重新校准。"})
         if qa_input.get("scorecard_required"):
             keys = {item["fragment_key"] for item in qa_input.get("report_fragments", [])}
             scorecard = validate_scorecard(output.get("scorecard"), keys)
@@ -440,7 +514,6 @@ def _validate_authoring_output(
     used_findings = output.get("used_findings")
     if (
         not isinstance(used_findings, list)
-        or not used_findings
         or any(not isinstance(key, str) or key not in finding_keys for key in used_findings)
     ):
         raise ValueError("report_fragment_unsupported_finding")
@@ -459,6 +532,12 @@ def _validate_authoring_output(
         output.get("presentation_meta"), dict
     ):
         raise ValueError("report_fragment_output_invalid")
+    if not used_findings and not used_fragments:
+        raise ValueError("report_fragment_unsupported_finding")
+    requirements = (context_data.get("fragment_allocation") or {}).get("requirements") or []
+    if requirements:
+        output["requirement_coverage"] = normalize_requirement_coverage(
+            output.get("requirement_coverage"), requirements, output["content"])
 
 
 def _validate_analysis_draft_output(
@@ -490,6 +569,7 @@ def _validate_analysis_draft_output(
         if isinstance(item, dict) and isinstance(item.get("finding_key"), str)
     }
     finding_keys: set[str] = set()
+    local_relation_keys = {f.get("finding_key") for f in findings if isinstance(f, dict) and isinstance(f.get("finding_key"), str)} if analysis_context.get("reasoning_contract") else set()
     for item in findings:
         if not isinstance(item, dict):
             raise ValueError("report_analysis_finding_invalid")
@@ -526,7 +606,7 @@ def _validate_analysis_draft_output(
             raise ValueError("report_analysis_finding_support_required")
         for relation in relation_refs:
             target = relation.get("finding_key") if isinstance(relation, dict) else relation
-            if not isinstance(target, str) or target not in confirmed_finding_keys:
+            if not isinstance(target, str) or target not in confirmed_finding_keys | local_relation_keys or target == key:
                 raise ValueError("report_analysis_finding_reference_invalid")
         if not isinstance(item.get("structured_data"), dict):
             raise ValueError("report_analysis_finding_invalid")
@@ -557,12 +637,23 @@ def _validate_analysis_draft_output(
         ):
             raise ValueError("report_analysis_fragment_invalid")
         fragment_keys.add(key)
+        if analysis_context.get("framework_contract"):
+            item["framework_coverage"] = normalize_coverage(item.get("framework_coverage"), content, allow_not_applicable=True)
+        if analysis_context.get("reasoning_contract") and key in ANALYSIS_STRUCTURES:
+            validate_reasoning_contract(analysis_context["reasoning_contract"])
+            item["structured_analysis"] = normalize_structured_analysis(key, item.get("structured_analysis"), content)
+            if key == "analysis.s3.timeline":
+                validate_timeline_source(item["structured_analysis"], analysis_context.get("evidence", []), set(evidence_refs))
 
     required_topics = (analysis_context.get("sop_contract") or {}).get("topics") or []
     if any(topic["fragment_key"] not in fragment_keys for topic in required_topics):
         raise ValueError("report_analysis_sop_coverage_required")
     if required_topics and analysis_context.get("step_key") == "S4":
-        validate_growth_experiments(findings, confirmed_finding_keys)
+        validate_growth_experiments(findings, analysis_context.get("upstream_confirmed_findings", []),
+                                    require_actions=bool(analysis_context.get("framework_contract")))
+        if analysis_context.get("reasoning_contract"):
+            validate_action_reasoning([*analysis_context.get("upstream_confirmed_findings", []), *findings], evidence_keys,
+                reality_keys={e.get("evidence_key") for e in analysis_context.get("evidence", []) if isinstance(e, dict) and e.get("source_type") == "USER_PROVIDED"})
 
     for flag in risk_flags:
         if (
@@ -578,22 +669,6 @@ def _validate_analysis_draft_output(
             for ref in references
         ):
             raise ValueError("report_analysis_risk_flag_invalid")
-
-
-def validate_growth_experiments(findings, upstream_keys=()):
-    known = {item["finding_key"] for item in findings} | set(upstream_keys)
-    actions = [item for item in findings if item.get("semantic_role", "").upper() == "ACTION"]
-    if actions and not 3 <= len(actions) <= 5:
-        raise ValueError("report_analysis_experiment_count_invalid")
-    for action in actions:
-        data = action.get("structured_data") or {}
-        refs, steps, duration = data.get("block_refs"), data.get("steps"), data.get("duration_minutes")
-        if (not isinstance(refs, list) or not refs or any(ref not in known for ref in refs)
-                or not isinstance(steps, list) or not steps or any(not isinstance(s, str) or not s.strip() for s in steps)
-                or data.get("frequency") not in {"daily", "weekly", "monthly", "quarterly"}
-                or not isinstance(duration, int) or isinstance(duration, bool) or not 1 <= duration <= 60
-                or any(not isinstance(data.get(key), str) or not data[key].strip() for key in ("method", "observation", "stop_rule"))):
-            raise ValueError("report_analysis_experiment_invalid")
 
 
 def _sanitize_analysis_draft_references(
@@ -612,6 +687,7 @@ def _sanitize_analysis_draft_references(
         if isinstance(item, dict) and isinstance(item.get("finding_key"), str)
     }
     sanitized = deepcopy(output)
+    local_relation_keys = {f.get("finding_key") for f in sanitized.get("findings", []) if isinstance(f, dict) and isinstance(f.get("finding_key"), str)} if analysis_context.get("reasoning_contract") and isinstance(sanitized.get("findings"), list) else set()
     repairs = {
         "invalid_evidence_refs_removed": 0,
         "invalid_finding_refs_removed": 0,
@@ -640,7 +716,7 @@ def _sanitize_analysis_draft_references(
         valid_relation_refs = []
         for ref in relation_refs:
             target = ref.get("finding_key") if isinstance(ref, dict) else ref
-            if isinstance(target, str) and target in confirmed_finding_keys:
+            if isinstance(target, str) and target in confirmed_finding_keys | local_relation_keys:
                 valid_relation_refs.append(ref)
         repairs["invalid_evidence_refs_removed"] += len(evidence_refs) - len(valid_evidence_refs)
         repairs["invalid_finding_refs_removed"] += len(relation_refs) - len(valid_relation_refs)
@@ -823,6 +899,9 @@ async def execute_skill(
         "prompt_sha256": prompt_hash,
         "output_validation": "passed",
     }
+    if completion.trace.get("finish_reason") == "length":
+        trace.update(output_validation="failed", error_type="TruncatedOutput")
+        raise SkillExecutionError("skill_output_truncated", trace)
     try:
         output = (
             parse_ai_response(

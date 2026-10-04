@@ -1,0 +1,72 @@
+{
+  "signature": "be9157ab5d05aee93bc0853df25a9af78c83f13e01354e994d492901e9261fc3",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "阶段地图：方向已经清楚，时间表还需要你补一个信息",
+    "content": "走到这里，方向已经比较清楚了：你不是要把自己改造成另一个人，而是让长期被放在后面的那一端——休息、拒绝、真实需求——重新有机会在场。这一节要做的事，是把这份方向放回时间轴上。\n\n先说能确认的部分。你身上有一条张力：一端是「靠谱、不让人失望」的承接型自我，另一端是休息、拒绝和真实需求的表达；目前重心明显偏在前一端，后一端更多以不耐烦或直接撤回的方式间接露面。与之相配的，是一种「角色中的承担者」的位置感——外部期待先到，你的意愿后到。这只是一个成长隐喻，不是给你贴等级标签。背后可能有一条条件化的信念在运作：被认可，取决于是否满足了别人的期待。这是假设，不是结论，需要你用自己的真实场景去校正。\n\n重要的是，主体性并没有缺席。你提到，面对熟悉同事、且有明确截止的时候，你能够协商任务边界。这条反例说明：协商的能力你已经有了，它缺的不是技能，而是出现的条件——关系够熟、边界够清楚的时候，它就会出来。这正是一个可以扩大的积极资源。\n\n接下来是这一节必须坦白的地方：真实的大运起止年份，目前无法给出。系统计算的大运为空，而你的出生钟表时间未提供，起运无法确定，因此既不能按当前分析日期选定当前运，也无法给出后续每十年的起止年份，更不能补造。原局层面的互动（如年月的子午冲、年日的子未害、月日的午未合）属于结构描述，不能单独用来推断某一段人生的基调，所以这一节不据此写阶段主题。\n\n因此，阶段地图目前只能写成条件式：等你补上尽量准确的出生时间（几点几分，以及是否接近时辰交界），就可以按真实起止年份，逐段补出基调、被放大的主题、需要发展的能力，以及要防范的旧模式——也就是那个「先答应、后撤回」的循环在哪些年份更容易被触发。在拿到这份时间表之前，任何具体的年份段落都只是猜测，我不会替你填上去。\n\n在等待这份信息的同时，方向本身是现在就可以走的：不是等一个「好年份」再开始，而是在每一次临时请求到来时，先给自己留出半拍。具体怎么练，放在下一节。",
+    "used_findings": [
+      "s3.self.pole_tension",
+      "s3.quadrant.carrier",
+      "s2.mapping.core_belief",
+      "s3.timeline.deferred",
+      "s4.block.boundary_cycle",
+      "s4.block.rest_shadow"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.timeline",
+      "analysis.s4.timing_self"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向已经落到时间轴上，只差你补一个出生时间；接下来这一节，把方向变成可以练习的具体动作。",
+    "presentation_meta": {
+      "fragment_key": "report.direction.life_map",
+      "chapter": "direction",
+      "sequence_no": 15,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "deferred_items": [
+        "真实大运起止年份",
+        "每阶段基调/放大主题/能力/旧模式"
+      ],
+      "follow_up_questions": [
+        "请提供尽量准确的出生钟表时间（几点几分）。",
+        "出生时间是否接近整点或时辰交界？"
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.life_map",
+        "status": "DEFERRED",
+        "reason": "真实大运起止年份与每阶段基调无法给出：系统计算的大运为空，出生时间未知导致起运无法确定，不能补造年份。已在正文明确暂缓，并说明原局互动不单独用于推断阶段基调。",
+        "quote": "真实的大运起止年份，目前无法给出。",
+        "follow_up_questions": [
+          "请提供尽量准确的出生钟表时间（几点几分）。",
+          "出生时间是否接近整点或时辰交界？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 8793,
+    "output_tokens": 977,
+    "latency_ms": 5483,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "85db2d76-104a-496c-9513-f0d51f40f6e0",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "19d0f43cf442fa52f5525b07629d951a1da0f65dba5881e3603ff2a254d142b5",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

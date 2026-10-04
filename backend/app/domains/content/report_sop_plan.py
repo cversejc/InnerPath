@@ -1,6 +1,7 @@
 """Route confirmed SOP analyses to their reader-facing purpose."""
 TOPIC_TARGETS = {
     "analysis.s2.persona": "report.identity.outer_self",
+    "analysis.s2.mapping": "report.identity.self_perception",
     "analysis.s2.authority": "report.identity.self_perception",
     "analysis.s2.shadow": "report.identity.hidden_self",
     "analysis.s2.complex": "report.identity.hidden_self",
@@ -47,7 +48,17 @@ def enrich_sop_plan(specs, semantic_model, by_key, ranked):
         if key == "analysis.s3.yijing" and target is None:
             target = by_fragment.get("report.direction.life_map")
         if target is not None:
-            target["analysis_refs"].append(key)
+            if key not in target["analysis_refs"]:
+                target["analysis_refs"].append(key)
+            if semantic_model.get("framework_contract"):
+                # Copy only confirmed source identities, never manufacture a Finding.
+                snapshot = analysis.get("source_snapshot") or {}
+                for ref in snapshot.get("findings", []):
+                    finding_key = ref.get("finding_key")
+                    if finding_key in by_key and finding_key not in target["finding_refs"]:
+                        target["finding_refs"].append(finding_key)
+                        target["finding_roles"][finding_key] = "REFERENCE"
+                target["evidence_refs"] = list(dict.fromkeys(target["evidence_refs"] + [r["evidence_key"] for r in snapshot.get("evidence", [])]))
     first_by_chapter = {}
     for spec in specs:
         chapter = spec["chapter"]
@@ -56,7 +67,7 @@ def enrich_sop_plan(specs, semantic_model, by_key, ranked):
             spec["chapter_opening"] = True
             spec["must_cover"].extend(["一句关键结论", "本章简短系统路径图（箭头文本即可）"])
         if spec["fragment_key"].startswith("report.blocks.block_"):
-            spec["must_cover"] = ["常见现实场景", "运作机制", "过去保护了什么", "长期代价", "整合邀请"]
+            spec["must_cover"] = list(dict.fromkeys(["常见现实场景", "运作机制", "过去保护了什么", "长期代价", "整合邀请", *spec["must_cover"]]))
             spec["must_not_repeat"].append("本段不列解决步骤，行动集中在第三章")
         if spec["fragment_key"] == "report.direction.life_map":
             spec["must_cover"].extend(["已确认的每个大运真实起止年份", "阶段基调/放大主题/能力/旧模式"])

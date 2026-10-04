@@ -1,0 +1,362 @@
+{
+  "signature": "2f9204a1cae3f6a14430524b52155f6c466984d007077c656faec2dc4a39cfa2",
+  "skill_digest": "4c885895161b5fb120536021a18cdf5d3cbe6364fa95adf89a09348fa2eccab2",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每个规定分析片段都须有framework_coverage；structured_analysis/details严格使用当前reasoning_contract字段。Action的reasoning_path逐项具体，不用通用空话。\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。",
+  "output": {
+    "summary": "综合S1/S2已确认判断，提出自性化两端整合、承担者原型、时序暂缓与哲学桥梁候选；出生时间未知，大运与紫微相关条目暂缓待补。",
+    "findings": [
+      {
+        "finding_key": "s3.self.pole_tension",
+        "claim": "核心张力候选：一端是维持『靠谱、不让人失望』的承接型自我，另一端是被排除的休息、拒绝与真实需求表达；两端并非好坏之分，而是当前偏重一端、另一端转入阴影。",
+        "kind": "FINDING",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.mapping.mask_reliable"
+          },
+          {
+            "finding_key": "s2.shadow.rest_excluded"
+          },
+          {
+            "finding_key": "s2.mapping.core_belief"
+          }
+        ],
+        "structured_data": {
+          "dominant_pole": "承接与维持形象",
+          "excluded_pole": "休息、拒绝与真实需求",
+          "boundary": "假设，需以真实场景校正"
+        }
+      },
+      {
+        "finding_key": "s3.quadrant.carrier",
+        "claim": "英雄象限候选：当前更贴近『角色中的承担者』——外部评价与期待压过主体，先承接后撤回；反证是面对熟悉同事且有明确截止时能协商边界，说明主体性并非完全缺席。",
+        "kind": "FINDING",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.counterexample",
+          "input.context.self_description"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.boundary_cycle"
+          },
+          {
+            "finding_key": "s2.authority.should_rules"
+          }
+        ],
+        "structured_data": {
+          "quadrant": "角色中的承担者",
+          "task": "建立原则和主权",
+          "counter_evidence": "熟悉同事且有明确截止时能协商边界",
+          "boundary": "象限为成长隐喻，非人格等级"
+        }
+      },
+      {
+        "finding_key": "s3.timeline.deferred",
+        "claim": "人生时序暂缓：系统计算的 bazi_facts.dayun 为空数组，出生时间未知导致起运无法确定，无法按分析日期选择当前运，也不能给出后续每十年起止年份与阶段基调。",
+        "kind": "SIGNAL",
+        "semantic_role": "STRUCTURE",
+        "confidence": "HIGH",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.profile.birth_time_precision",
+          "input.context.analysis_date",
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          }
+        ],
+        "structured_data": {
+          "status": "DEFERRED",
+          "missing_input": "出生钟表时间与起运",
+          "no_fabrication": true
+        }
+      },
+      {
+        "finding_key": "s3.yijing.metaphor",
+        "claim": "易经时义候选：当下境遇可借『坤』的承载与『艮』的止作为哲学比喻——先承接后撤回提示需要练习在合适处止；此为比喻，非起卦结果，也不证明任何必然走向。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.boundary_cycle"
+          }
+        ],
+        "structured_data": {
+          "hexagram_metaphor": [
+            "坤",
+            "艮"
+          ],
+          "boundary": "哲学比喻，非占卜证明"
+        }
+      },
+      {
+        "finding_key": "s3.bridge.practice",
+        "claim": "个体与集体桥梁候选：以种子与节律比喻承接『先答应后透支』的循环，借道德经自知与反向整合、了凡四训主动实践，把『靠谱』从外部评价转为自主选择；不虚构引文与页码。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.expected_outcomes",
+          "input.context.available_time"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.mapping.core_belief"
+          }
+        ],
+        "structured_data": {
+          "metaphors": [
+            "金花种子与节律",
+            "道德经自知与反向整合",
+            "了凡四训主动实践"
+          ],
+          "boundary": "不虚构引文与页码"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s3.self",
+        "title": "3.1 自性化方向",
+        "content": "你目前偏重的一端，是维持『靠谱、不让人失望』的承接型自我；被排除的另一端，是休息、拒绝与真实需求表达。两端并非好坏之分，而是当下你把重心放在被认可上，另一端转入阴影。整合的方向不是变成完美的人，而是在具体情境里让两端同时在场：例如面对临时请求时，先给自己几分钟再回应，既保留关系，也保留自己的节奏。反例显示你在熟悉同事且有明确截止时能协商边界，说明这种能力已经存在，只是尚未扩展到所有场景。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已结合用户自述、具体事件与反例，给出偏重一端、被排除一端与两端整合的具体情境。",
+          "quote": "你目前偏重的一端，是维持『靠谱、不让人失望』的承接型自我；被排除的另一端，是休息、拒绝与真实需求表达。",
+          "follow_up_questions": [
+            "在哪些场景你最容易先答应？",
+            "在哪些场景你已经能协商边界？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "已按 reasoning_contract 的 analysis.s3.self 字段给出偏重一端、被排除一端与整合能力。",
+          "quote": "你目前偏重的一端，是维持『靠谱、不让人失望』的承接型自我；被排除的另一端，是休息、拒绝与真实需求表达。",
+          "follow_up_questions": [
+            "在哪些场景你最容易先答应？",
+            "在哪些场景你已经能协商边界？"
+          ],
+          "details": {
+            "dominant_pole": "维持『靠谱、不让人失望』的承接型自我，先答应后透支。",
+            "excluded_pole": "休息、拒绝与真实需求表达，常以延迟或撤回方式出现。",
+            "integration": "在临时请求时先给自己几分钟再回应，既保留关系也保留节奏。"
+          }
+        },
+        "finding_refs": [
+          "s3.self.pole_tension"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.quadrant",
+        "title": "3.2 英雄四象限",
+        "content": "当前更贴近『角色中的承担者』：外部评价与期待压过主体，先承接后撤回。反证是面对熟悉同事且有明确截止时能协商边界，说明主体性并非完全缺席。可借中式人物意象『持家守成的当家人』作比喻：善于承担、维持关系，但容易把责任全揽在自己身上。可学习的能力是建立原则与主权——先问『这是否是我此刻愿意承担的』，再决定回应方式。此比喻只用于理解承担模式，不适用于所有场景，也不作史实或人格诊断。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已比较承担者象限的依据与反证，给出中式人物意象、可学习能力与不适用边界。",
+          "quote": "当前更贴近『角色中的承担者』：外部评价与期待压过主体，先承接后撤回。",
+          "follow_up_questions": [
+            "在哪些场景你感到责任必须由自己承担？",
+            "在哪些场景你愿意把责任交还？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "已按 reasoning_contract 的 analysis.s3.quadrant 字段给出原型、可学习能力、匹配理由与边界。",
+          "quote": "当前更贴近『角色中的承担者』：外部评价与期待压过主体，先承接后撤回。",
+          "follow_up_questions": [
+            "在哪些场景你感到责任必须由自己承担？",
+            "在哪些场景你愿意把责任交还？"
+          ],
+          "details": {
+            "archetype": "持家守成的当家人，善于承担但易把责任全揽。",
+            "learnable_capacity": "建立原则与主权，先问是否愿意承担再决定回应。",
+            "fit_reason": "回应先承接后撤回的循环，以及外部评价压过主体的议题。",
+            "boundary": "比喻仅用于理解承担模式，不作史实或人格诊断。"
+          }
+        },
+        "finding_refs": [
+          "s3.quadrant.carrier"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.counterexample",
+          "input.context.self_description"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.timeline",
+        "title": "3.3 人生时序",
+        "content": "【暂缓】系统计算的 bazi_facts.dayun 为空数组，且限制说明指出出生时间未知时不计算精确起运，故无法按分析日期（2026-10-04）选择当前运，也无法给出后续每十年地图的起止年份。现有资料不足以推断大运，不能补造年份。补充问题：请提供尽量准确的出生钟表时间（几点几分）及是否接近时辰交界；确认后可按真实起止年份补出各阶段基调、放大主题、发展能力与防范旧模式。",
+        "framework_coverage": {
+          "status": "DEFERRED",
+          "reason": "系统未计算大运，出生时间未知导致起运无法确定，缺少起止年份输入。",
+          "quote": "【暂缓】系统计算的 bazi_facts.dayun 为空数组，且限制说明指出出生时间未知时不计算精确起运，故无法按分析日期（2026-10-04）选择当前运，也无法给出后续每十年地图的起止年份。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "DEFERRED",
+          "reason": "系统未计算大运，出生时间未知导致起运无法确定，缺少起止年份输入，不能补造年份。",
+          "quote": "【暂缓】系统计算的 bazi_facts.dayun 为空数组，且限制说明指出出生时间未知时不计算精确起运，故无法按分析日期（2026-10-04）选择当前运，也无法给出后续每十年地图的起止年份。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ],
+          "details": {
+            "periods": [],
+            "uncertainty": "出生时间未知，起运无法确定，不能补造年份。"
+          }
+        },
+        "finding_refs": [
+          "s3.timeline.deferred"
+        ],
+        "evidence_refs": [
+          "input.profile.birth_time_precision",
+          "input.context.analysis_date",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.yijing",
+        "title": "3.3 易经时义",
+        "content": "当下境遇可借『坤』的承载与『艮』的止作为哲学比喻：你习惯先承接他人需求，像大地承载万物；但承载过度时，需要学习在合适处止。『艮』提示在答应前先停一停，给自己一个缓冲。此比喻匹配你『先答应后撤回』的循环，因为问题不在承载本身，而在缺少停顿。不适用边界：若你面对的是必须立即回应的紧急情境，或对方确实需要即时支持，则不宜机械套用『止』。此为哲学比喻，非起卦结果，也不证明任何必然走向。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已从当下境遇选取坤与艮作哲学比喻，解释匹配理由与不适用边界，并声明非占卜证明。",
+          "quote": "当下境遇可借『坤』的承载与『艮』的止作为哲学比喻：你习惯先承接他人需求，像大地承载万物；但承载过度时，需要学习在合适处止。",
+          "follow_up_questions": [
+            "在哪些情境你觉得必须立即回应？",
+            "在哪些情境你可以先停一停？"
+          ]
+        },
+        "finding_refs": [
+          "s3.yijing.metaphor"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.bridge",
+        "title": "3.4 个体与集体桥梁",
+        "content": "以种子与节律作比喻：种子需要合适的土壤与休耕期才能发芽，你的休息与拒绝也是节律的一部分，而非懒惰。道德经讲自知与反向整合，提示你看见『靠谱』背后的期待，并把被排除的休息重新纳入自我。了凡四训强调主动实践，你可以从每晚5–10分钟的小练习开始，把『靠谱』从外部评价转为自主选择。红书中的自我与自性仅作参考方向，不虚构引文与页码。这些比喻贯通认识、理解与行动，但都需要你在真实场景中验证。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已结合金花种子与节律、道德经自知与反向整合、了凡四训主动实践，并声明红书仅作参考、不虚构引文。",
+          "quote": "以种子与节律作比喻：种子需要合适的土壤与休耕期才能发芽，你的休息与拒绝也是节律的一部分，而非懒惰。",
+          "follow_up_questions": [
+            "你愿意从哪个小练习开始？",
+            "在什么时间做最可行？"
+          ]
+        },
+        "finding_refs": [
+          "s3.bridge.practice"
+        ],
+        "evidence_refs": [
+          "input.context.expected_outcomes",
+          "input.context.available_time"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.integration",
+        "title": "3.5 三重对应",
+        "content": "先天格局↔意识潜意识↔天命之性：日主癸水与透干伤官、正财可作面具线索，藏干食神与比肩可作阴影线索，指向休息与自我边界不易被允许。大运↔阶段↔时义：因出生时间未知，大运暂缓，无法对应阶段。喜用↔资源↔明德：喜用候选金水可作支持性关系与自我照顾的资源线索。忌↔阴影↔反者道之动：忌神火土可作过度承接机会与压力的耗能线索。干支关系↔冲突↔阴阳：子午冲、子未害可作外部机会与自我根基拉扯的线索。藏干透出↔潜能意识化↔静观：食神藏于日支，或与慢节奏表达相关，需以自述核对。以上均为解释视角，来源不足处已注明暂缓。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按三重对应逐项给出先天格局、大运、喜用、忌、干支关系与藏干透出的对应，并注明大运暂缓。",
+          "quote": "先天格局↔意识潜意识↔天命之性：日主癸水与透干伤官、正财可作面具线索，藏干食神与比肩可作阴影线索，指向休息与自我边界不易被允许。",
+          "follow_up_questions": [
+            "在什么情境下你允许自己慢下来？",
+            "哪些支持性关系让你感到被接住？"
+          ]
+        },
+        "finding_refs": [
+          "s3.self.pole_tension",
+          "s3.timeline.deferred"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "出生时间未知，大运与紫微相关条目暂缓，不能补造年份或宫位星曜；需咨询师核对出生时间后再补。",
+        "references": [
+          "input.profile.birth_time_precision",
+          "calculated.foundation",
+          "s3.timeline.deferred"
+        ]
+      },
+      {
+        "message": "喜用神存在分歧：偏弱候选取金水，若判从财杀则取用相反；本阶段资源线索需咨询师确认后再用于行动设计。",
+        "references": [
+          "s1.useful_gods.candidate",
+          "s1.structure.weak_candidate",
+          "s1.structure.cong_candidate"
+        ]
+      },
+      {
+        "message": "心理假设（面具、阴影、情结、超我）均需以自述与反证校正，用户未提供童年经历，不作来源推断。",
+        "references": [
+          "s2.mapping.mask_reliable",
+          "s2.shadow.rest_excluded",
+          "s2.complex.boundary_cycle",
+          "s2.authority.should_rules"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 38513,
+    "output_tokens": 4266,
+    "latency_ms": 16575,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "93ab9147-d5b8-471c-8a20-c22e53391953",
+    "skill_version_id": 0,
+    "skill_key": "report.s3_integration",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "3b916e3787ae7e37b5193458026683a22506bbe84964b47e71f0cb5226b8127e",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

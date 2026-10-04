@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import asynccontextmanager
 from datetime import datetime
 
 import pytest
@@ -46,6 +47,7 @@ from app.domains.workflow.service import (
     start_step,
 )
 from app.models.user import User  # noqa: F401
+from app.domains.skills.models import AISkillVersion, SkillExample
 
 
 def test_default_definition_is_a_valid_sequential_workflow():
@@ -102,6 +104,11 @@ class SyncSessionAdapter:
     def add_all(self, values):
         self.session.add_all(values)
 
+    @asynccontextmanager
+    async def begin_nested(self):
+        with self.session.begin_nested():
+            yield
+
     async def scalar(self, statement):
         return self.session.scalar(statement)
 
@@ -135,6 +142,7 @@ def workflow_db():
         WorkflowInstance.__table__,
         StepTask.__table__,
         WorkflowOutbox.__table__,
+        AISkillVersion.__table__, SkillExample.__table__,
     ]
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine, tables=tables)

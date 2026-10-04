@@ -1,0 +1,61 @@
+{
+  "signature": "f02d3b7c58ec086110ceb0544154452579e17e6b990d827a18516f2bdf9ab1ee",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "当下时义：以“渐”作一面镜子",
+    "content": "关键结论：你当前最值得借用的时义，是“渐”——按次序推进、不跳步；它对应的不是慢，而是不让节奏失衡继续透支你。\n\n本章路径：请求或截止压力 → 先答应或持续在线 → 短期避开冲突 → 长期透支与关系摩擦 → 把“渐”当作节奏参照 → 在答应前留出停顿。\n\n为什么“渐”与你的当下境遇匹配。你自述的几件事里，有一个反复出现的节奏：项目开头想法多、担心做不好而反复修改，接近截止才急着交付；同事临时请你代写方案，你本想休息却答应了，熬夜后第二天变得不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。这些描述放在一起，呈现的不是“懒”或“不负责”，而更像是推进次序被打乱：前面留了很多修改和反复，后面被迫用透支来补。按次序推进、不越级的“渐”，正好对应这个失衡点——它提示的不是把每件事拖长，而是让每一步在该在的位置上发生。\n\n这里需要说明两点。第一，这是一个哲学比喻，不是起卦结果，也不构成任何预测或证明。它只作为一面镜子，帮你看清自己已经描述过的节奏，而不是替你做判断。第二，它有明确的不适用边界：当情境需要果断止损或明确拒绝时，“渐”不应被用来合理化拖延。你在需要拒绝时拖到最后才生硬回应，这更接近“果断”而非“渐进”；如果拿“渐”来给拖延找理由，就偏离了它的本意。\n\n因此，这一节只做一件事：把“渐”当作当下时义的参照，让你在下一次答应之前，多一个“先看清次序”的停顿。具体怎么练、练多久、什么情况下退出，统一放在后面的成长实验一节。\n\n如果你愿意，可以先带着两个问题往下读：哪些具体情境里，你其实需要的是果断而不是渐进？当“先答应”的冲动出现时，你能否先分辨这是次序问题，还是边界问题？",
+    "used_findings": [
+      "s3.hypothesis.yijing_metaphor_jian"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.yijing"
+    ],
+    "used_actions": [],
+    "transition_hint": "当下时义先看到这里。接下来进入成长实验一节，那里会把“先停顿再答应”的具体动作、频率和退出条件写清楚。",
+    "presentation_meta": {
+      "fragment_key": "report.direction.current_stage",
+      "chapter": "direction",
+      "chapter_opening": true,
+      "sequence_no": 14,
+      "new_information_role": "DEEPEN",
+      "metaphor_density": "low",
+      "theory_density": "medium",
+      "action_density": "deferred_to_growth_experiments",
+      "reading_depth": "深入详细",
+      "mbti_inference": "none",
+      "quote_library_used": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.timing_wisdom",
+        "status": "FULFILLED",
+        "reason": "正文说明了当下境遇与“渐”卦比喻的匹配理由（节奏失衡、越级推进），给出了不适用边界（需要果断止损或明确拒绝时不适用），并明确声明这是哲学比喻、不是起卦结果、不构成占卜证明。",
+        "quote": "这是一个哲学比喻，不是起卦结果，也不构成任何预测或证明。",
+        "follow_up_questions": [
+          "在哪些具体情境里，你觉得自己需要的是果断而非渐进？",
+          "当“先答应”的冲动出现时，你能否先分辨这是次序问题，还是边界问题？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5121,
+    "output_tokens": 875,
+    "latency_ms": 4715,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "09d86497-e485-4768-bac8-27177344e9fb",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "094eaf47b42735afd6553c2df6dadcede2e8efcccfa117b514a845a29b88e620",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

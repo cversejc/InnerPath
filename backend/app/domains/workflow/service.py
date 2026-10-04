@@ -3,6 +3,10 @@ from typing import Any, Optional
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from copy import deepcopy
+from app.domains.content.product_framework import framework_snapshot
+from app.domains.content.reasoning_contract import reasoning_snapshot
+from app.domains.skills.bindings import freeze_report_skills
 
 from .definitions import validate_workflow_definition
 from .models import (
@@ -74,6 +78,10 @@ async def publish_workflow_version(
     if version.status != "DRAFT":
         raise ValueError("workflow_version_immutable")
     version.definition_json = validate_workflow_definition(version.definition_json)
+    if version.workflow_key == "report.production":
+        version.definition_json = {**version.definition_json, "skill_bindings":
+            await freeze_report_skills(db, version.definition_json.get("skill_bindings"),
+                                      version.definition_json["steps"])}
     version.status = "PUBLISHED"
     version.published_by = published_by
     version.published_at = _now()
@@ -134,12 +142,19 @@ async def create_report_case(
         raise ValueError("workflow_version_not_published")
 
     now = _now()
+    frozen_application = deepcopy(application_snapshot)
+    if version.workflow_key == "report.production":
+        # Only newly created production cases opt in. Existing cases are never rewritten.
+        frozen_application["framework_contract"] = framework_snapshot()
+        frozen_application["reasoning_contract"] = reasoning_snapshot()
+        frozen_application["skill_bindings"] = await freeze_report_skills(
+            db, version.definition_json.get("skill_bindings"), version.definition_json["steps"])
     report_case = ReportCase(
         user_id=user_id,
         service_request_id=service_request_id,
         source_report_task_id=source_report_task_id,
         status="ACTIVE",
-        application_snapshot=application_snapshot,
+        application_snapshot=frozen_application,
         application_submitted_at=now,
         created_at=now,
         updated_at=now,

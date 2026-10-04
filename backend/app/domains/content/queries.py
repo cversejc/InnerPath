@@ -58,6 +58,7 @@ async def load_confirmed_case_semantics(
                 "reportability": row.reportability,
                 "evidence_refs": row.evidence_refs,
                 "structured_data": row.structured_data_json,
+                "relation_refs": row.relation_refs or [],
             }
             for row in confirmed_findings
         ],
@@ -91,10 +92,12 @@ async def load_case_semantic_model(
 ) -> dict[str, Any]:
     """Build the writer's input from current, confirmed analysis assets only."""
     semantics = await load_confirmed_case_semantics(db, report_case_id)
+    report_case = await require_case(db, report_case_id)
+    reasoning = (report_case.application_snapshot or {}).get("reasoning_contract")
     findings = [
         item
         for item in semantics["findings"]
-        if item["reportability"] != "INTERNAL_ONLY"
+        if item["reportability"] != "INTERNAL_ONLY" or reasoning
     ]
     analysis_fragments = [
         item
@@ -106,6 +109,11 @@ async def load_case_semantic_model(
         for item in findings
         for key in item.get("evidence_refs", [])
     }
+    if reasoning:
+        for finding in findings:
+            path = (finding.get("structured_data") or {}).get("reasoning_path") or {}
+            if isinstance(path, dict):
+                evidence_refs.update(path.get("evidence_refs") or [])
     for item in analysis_fragments:
         evidence_refs.update(
             row.get("evidence_key")
@@ -117,8 +125,17 @@ async def load_case_semantic_model(
     ]
     if not findings:
         raise ValueError("narrative_confirmed_findings_required")
-    return {
+    model = {
         "findings": findings,
         "analysis_fragments": analysis_fragments,
         "evidence": evidence,
     }
+    contract = (report_case.application_snapshot or {}).get("framework_contract")
+    if contract is not None:
+        from .product_framework import validate_framework
+        model["framework_contract"] = validate_framework(contract)
+    if reasoning:
+        from .reasoning_contract import validate_reasoning_contract
+        validate_reasoning_contract(reasoning)
+        model["reasoning_contract"] = reasoning
+    return model

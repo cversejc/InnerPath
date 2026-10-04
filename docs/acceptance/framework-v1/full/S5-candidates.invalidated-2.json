@@ -1,0 +1,295 @@
+{
+  "signature": "a11167c7322cd794e36cff69f4672a198163ce6a632f5d84ad57527c6514ed73",
+  "skill_digest": "32d4cd20c007d179b2e3607ec578d6ae28848576fd38f1e1a9d57717374315ed",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。只用已确认BLOCK，不新增卡点。INTERNAL_ONLY仅为推导依据，不选为核心结论。",
+  "output": {
+    "candidates": [
+      {
+        "candidate_key": "candidate.pause_before_yes",
+        "theme": "在答应之前，把停顿放回来",
+        "rationale": "用户的现实困扰集中在'先答应—透支—延迟表达—生硬回应或取消'的循环上，且明确的自述与反证都指向'缺少即时缓冲'这一现实缺口。该候选以'答应前的停顿'为主线，把结构线索（七杀藏支的敏感、正印透干的以被认可为调节）、卡点（先答应后透支、以思虑替代行动）与已确认行动（答应前停顿、边界脚本）串成一条可练习的路径，同时保留反证（熟悉同事+明确截止时可协商边界），不把模式写成固定人格。",
+        "supporting_findings": [
+          "s4.block.overcommit_then_resent",
+          "s4.block.rumination_over_action",
+          "s4.action.pause_before_yes",
+          "s4.action.boundary_script",
+          "s4.action.enough_good_delivery",
+          "s2.pattern.overcommitment_loop",
+          "s3.self.core_tension",
+          "s3.yijing.metaphor",
+          "s1.foundation.interactions",
+          "s1.foundation.current_dayun",
+          "s1.foundation.useful_gods_candidates"
+        ],
+        "deemphasized_findings": [
+          "s1.ziwei.life_palace",
+          "s1.ziwei.transformations",
+          "s3.timeline.later_periods",
+          "s3.integration.correspondence",
+          "s3.bridge.philosophy",
+          "s1.foundation.year_pillar",
+          "s1.foundation.hour_branch",
+          "s1.ziwei.body_palace"
+        ],
+        "priority_blocks": [
+          {
+            "title": "第一章：你是谁——以外部参照确认安全的自我结构",
+            "finding_refs": [
+              "s1.foundation.day_master",
+              "s1.foundation.structure_candidates",
+              "s1.foundation.ten_gods",
+              "s1.foundation.interactions",
+              "s2.pattern.self_worth_external_reference"
+            ]
+          },
+          {
+            "title": "第二章：卡在哪——先答应后透支的循环与即时缓冲的缺口",
+            "finding_refs": [
+              "s4.block.overcommit_then_resent",
+              "s4.block.rumination_over_action",
+              "s2.pattern.overcommitment_loop",
+              "s3.self.core_tension"
+            ]
+          },
+          {
+            "title": "第三章：往哪去——把停顿、边界与'足够好'变成可练习的小步",
+            "finding_refs": [
+              "s3.yijing.metaphor",
+              "s3.timeline.current_period",
+              "s4.action.pause_before_yes",
+              "s4.action.boundary_script",
+              "s4.action.enough_good_delivery",
+              "s4.action.weekly_shadow_review",
+              "s3.bridge.philosophy"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "癸水日主与偏弱格印为用的结构线索，加上子午冲、子未害的'外部要求与内在需求拉扯'，呈现一个以外部参照确认安全、同时内蓄不外显的自我核心。",
+            "finding_refs": [
+              "s1.foundation.day_master",
+              "s1.foundation.structure_candidates",
+              "s1.foundation.interactions"
+            ]
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "临时请求触发敏感，先顺从答应，事后透支并延迟表达，最终以生硬回应或取消收场；同时以反复修改替代及时行动。反证为熟悉同事且有明确截止时可协商边界，说明模式情境依赖而非固定人格。",
+            "finding_refs": [
+              "s4.block.overcommit_then_resent",
+              "s4.block.rumination_over_action",
+              "s2.pattern.overcommitment_loop"
+            ]
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "以艮止与渐进的比喻承接'及时停下'与'小步协商'，在当前辛卯偏印阶段把内化资源转为小步行动；练习答应前停顿、有余地的边界表达与'足够好'的阶段性交付。",
+            "finding_refs": [
+              "s3.yijing.metaphor",
+              "s3.timeline.current_period",
+              "s4.action.pause_before_yes",
+              "s4.action.boundary_script",
+              "s4.action.enough_good_delivery"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate.self_worth_reference",
+        "theme": "把'他人的期待'与'自己选择的原则'分开",
+        "rationale": "用户自述'我认为自己要靠谱、不能让人失望''拒绝后担心别人觉得我不够好'，指向自我价值感以外部评价为主要参照。该候选以'评价参照'为主线，把月令偏财七杀、正印透干、廉贞化忌在命宫等结构线索与卡点二、卡点一串联，重点呈现'以被认可为调节'如何驱动顺从与反复修改，并以'区分他人期待与自己原则'作为整合方向。所有心理假设均标注为待验证，并保留反证。",
+        "supporting_findings": [
+          "s4.block.self_worth_by_others",
+          "s4.block.overcommit_then_resent",
+          "s2.pattern.self_worth_external_reference",
+          "s3.self.core_tension",
+          "s3.quadrant.cross_tension",
+          "s1.foundation.month_command",
+          "s1.foundation.ten_gods",
+          "s1.ziwei.life_palace",
+          "s1.ziwei.transformations",
+          "s4.action.weekly_shadow_review",
+          "s3.bridge.philosophy"
+        ],
+        "deemphasized_findings": [
+          "s1.foundation.day_branch",
+          "s1.foundation.year_pillar",
+          "s1.foundation.hour_branch",
+          "s3.timeline.next_period",
+          "s3.timeline.later_periods",
+          "s3.integration.correspondence",
+          "s1.ziwei.body_palace",
+          "s1.ziwei.wellbeing_palace"
+        ],
+        "priority_blocks": [
+          {
+            "title": "第一章：你是谁——以外部评价为参照的自我结构与'靠谱'面具",
+            "finding_refs": [
+              "s1.foundation.month_command",
+              "s1.foundation.ten_gods",
+              "s1.ziwei.life_palace",
+              "s2.pattern.self_worth_external_reference",
+              "s3.quadrant.cross_tension"
+            ]
+          },
+          {
+            "title": "第二章：卡在哪——以被认可为调节，用顺从与反复修改换取安全",
+            "finding_refs": [
+              "s4.block.self_worth_by_others",
+              "s4.block.overcommit_then_resent",
+              "s4.block.rumination_over_action",
+              "s1.ziwei.transformations"
+            ]
+          },
+          {
+            "title": "第三章：往哪去——把'应该'转化为'我选择'，让外部认可与自身节奏同时在场",
+            "finding_refs": [
+              "s3.self.core_tension",
+              "s4.action.weekly_shadow_review",
+              "s4.action.boundary_script",
+              "s3.bridge.philosophy"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "月令偏财七杀与正印透干的结构线索，加上廉贞化忌在命宫的解释视角，呈现'以外部成果与他人评价为参照'的世界观线索，以及'外表守规、内在求变'的面具假设。",
+            "finding_refs": [
+              "s1.foundation.month_command",
+              "s1.foundation.ten_gods",
+              "s1.ziwei.life_palace"
+            ]
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "自我价值感以外部评价为主要参照，触发于可能被评价或让人失望的情境；运作是以被认可为调节、用顺从与反复修改换取安全感，长期代价是自我评价随外部反馈波动。",
+            "finding_refs": [
+              "s4.block.self_worth_by_others",
+              "s4.block.overcommit_then_resent",
+              "s1.ziwei.transformations"
+            ]
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "在具体情境中同时保留关系关照与自我主权，把'他人的期待'与'自己选择的原则'分开，通过每周复盘与边界表达练习，让外部认可参照与自身节奏同时被看见。",
+            "finding_refs": [
+              "s3.self.core_tension",
+              "s4.action.weekly_shadow_review",
+              "s4.action.boundary_script"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate.rumination_to_action",
+        "theme": "从反复修改到允许'足够好'的阶段性交付",
+        "rationale": "用户自述'项目开头有许多想法，担心做不好反复修改，接近截止才急着交付'，与当前辛卯偏印大运'内化与准备被放大'的阶段基调相呼应。该候选以'准备与行动的节奏'为主线，把卡点三、卡点一与行动三、行动四串联，重点呈现'以思虑替代行动'如何打乱节奏并造成透支，同时保留反证（最终仍能交付，说明行动未被思虑完全替代）。",
+        "supporting_findings": [
+          "s4.block.rumination_over_action",
+          "s4.block.overcommit_then_resent",
+          "s4.action.enough_good_delivery",
+          "s4.action.pause_before_yes",
+          "s4.action.weekly_shadow_review",
+          "s3.timeline.current_period",
+          "s3.timeline.next_period",
+          "s2.pattern.overcommitment_loop",
+          "s1.foundation.useful_gods_candidates",
+          "s1.foundation.current_dayun",
+          "s3.yijing.metaphor"
+        ],
+        "deemphasized_findings": [
+          "s1.ziwei.life_palace",
+          "s1.ziwei.transformations",
+          "s3.timeline.later_periods",
+          "s3.integration.correspondence",
+          "s3.bridge.philosophy",
+          "s1.foundation.year_pillar",
+          "s1.foundation.month_command",
+          "s1.ziwei.wellbeing_palace"
+        ],
+        "priority_blocks": [
+          {
+            "title": "第一章：你是谁——内化与准备被放大的当前阶段",
+            "finding_refs": [
+              "s3.timeline.current_period",
+              "s1.foundation.current_dayun",
+              "s1.foundation.useful_gods_candidates",
+              "s1.foundation.ten_gods",
+              "s2.pattern.rest_recovery_resource"
+            ]
+          },
+          {
+            "title": "第二章：卡在哪——以思虑替代行动，节奏被打乱",
+            "finding_refs": [
+              "s4.block.rumination_over_action",
+              "s4.block.overcommit_then_resent",
+              "s2.pattern.overcommitment_loop"
+            ]
+          },
+          {
+            "title": "第三章：往哪去——把准备资源转为小步行动与'足够好'的交付",
+            "finding_refs": [
+              "s3.yijing.metaphor",
+              "s3.timeline.next_period",
+              "s4.action.enough_good_delivery",
+              "s4.action.pause_before_yes",
+              "s4.action.weekly_shadow_review"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "当前辛卯大运偏印叠加，'内化与准备'被放大；印星为用的解释视角提示学习、被支持与内化规范是调节资源，但同一资源也可能表现为反复修改与担心做不好。",
+            "finding_refs": [
+              "s3.timeline.current_period",
+              "s1.foundation.current_dayun",
+              "s1.foundation.useful_gods_candidates"
+            ]
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "任务开始或需要交付时，以反复修改与准备替代及时行动，把'还不够好'作为推迟交付的理由；长期代价是节奏被打乱、临近截止透支。反证为最终仍能交付，说明行动未被思虑完全替代。",
+            "finding_refs": [
+              "s4.block.rumination_over_action",
+              "s4.block.overcommit_then_resent",
+              "s2.pattern.overcommitment_loop"
+            ]
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "以艮止与渐进的比喻承接'及时停下'与'小步推进'，设定可交付的最小版本先交付再迭代，并把准备资源转为及时的小步行动。",
+            "finding_refs": [
+              "s3.yijing.metaphor",
+              "s3.timeline.next_period",
+              "s4.action.enough_good_delivery",
+              "s4.action.pause_before_yes"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 67795,
+    "output_tokens": 3142,
+    "latency_ms": 12545,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "26266705-527a-4097-b756-72ca66184b1c",
+    "skill_version_id": 0,
+    "skill_key": "report.narrative_plan",
+    "skill_version": 1,
+    "processor": "reports.narrative_candidates",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "055d6cac18a7e641f75be82ab62187dd7c75bb1894ff9071d5a570e1ca364177",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending",
+  "invalidated_reason": "reasoning_priority_block_invalid"
+}

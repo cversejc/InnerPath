@@ -1,0 +1,76 @@
+{
+  "signature": "d5bc064cbd8547d2354eac83e602ae2911f49a07d9ac48e8322897434f146ff9",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "从卡点到方向：把缓冲练成能力",
+    "content": "三个卡点已经按同一条链展开，现在把这条链翻到另一面看：它同时指出了你需要发展的能力，也指出了可以借力的资源。\n\n先看共性机制。三个卡点共享一条路径——以外部参照确认安全，于是顺从或准备，短期换来保护，长期付出透支。答应额外任务后熬夜、担心“不够好”而反复修改、临近截止才急着交付，都是这条路径在不同场景里的样子。对应的能力缺口也很具体：在请求来临与答应之间缺少一个即时缓冲，在关系里缺少温和而及时的边界表达，在交付上缺少一个中间节点。\n\n资源可以这样转译。你自述独自散步时比较放松，这是一处已确认的恢复资源，它可以转为稳定的充电节奏；命理层面的正印与印星调节功能，翻译成日常语言就是“先了解再决定”的缓冲能力，而不是立刻表态——这是一种解释视角，取舍仍以你的现实体验和反馈为准；同类陪伴的资源，可以转为“有人可商量”的支持。这些不是新结论，而是把已有的资源换一个用法。\n\n中式人物意象可以帮你把两端具象化。一端像诸葛亮式的谨慎准备：谋定后动，把想法整理清楚再出手，这是你已经很熟练的能力；另一端像陶渊明式的归隐自守：守拙归园，知道什么时候收回来照顾自己的节奏。你需要学的，是把前者的准备能力用在“先停一下”上，把后者的边界能力用在“我可以做A，B需要另约”上。这里的人物只是成长隐喻，不是史实判断，也不是人格诊断，当代情境里是否适用，仍要以你的实际体验为准。\n\n需要说明的是，你面对熟悉同事且有明确截止时能够协商边界，这个反例很重要——它说明承担者角色并非全面启动，缓冲能力不是从零开始，而是已经在某些条件下存在，只是还没有覆盖到临时请求和临时邀约的场景。\n\n具体怎么练，放在下一章“往哪去”的成长实验里，那里会给出动作、频率、耗时、观察点和退出条件；这一节只把方向连起来：资源转为调节功能，调节功能补上能力缺口，能力回应共性机制。",
+    "used_findings": [
+      "s4.block.overcommit_then_resent",
+      "s4.block.self_worth_by_others",
+      "s3.self.core_tension",
+      "s3.quadrant.cross_tension",
+      "s4.block.rumination_over_action",
+      "s4.action.pause_before_yes",
+      "s4.action.boundary_script",
+      "s4.action.enough_good_delivery"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.quadrant",
+      "analysis.s4.breakthrough"
+    ],
+    "used_actions": [],
+    "transition_hint": "卡点与方向已经连起来：资源转成调节功能，调节功能补上缓冲、边界表达与中间交付三个能力缺口；下一章“往哪去”从答应前的停顿开始，把方向落成可练习的小步。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.breakthrough",
+      "sequence_no": 13,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low",
+        "depth": "深入详细"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.breakthrough",
+        "status": "FULFILLED",
+        "reason": "按用神/资源→调节功能→能力→现实缺口→工具→实验的顺序推导，能力回应共性机制，动作只指向第三章不写步骤。",
+        "quote": "这一节只把方向连起来：资源转为调节功能，调节功能补上能力缺口，能力回应共性机制。",
+        "follow_up_questions": [
+          "你希望把哪一个小步实践带入下周？"
+        ]
+      },
+      {
+        "requirement_id": "R.archetype",
+        "status": "FULFILLED",
+        "reason": "给出诸葛亮与陶渊明两端中式人物意象，说明各自可学习能力与当代适用边界，并明确不作史实或人格诊断。",
+        "quote": "这里的人物只是成长隐喻，不是史实判断，也不是人格诊断，当代情境里是否适用，仍要以你的实际体验为准。",
+        "follow_up_questions": [
+          "你在工作中更认同'可靠执行者'还是'有想法推动改变的人'？",
+          "当事情需要改变时，你的第一反应是什么？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 18209,
+    "output_tokens": 1070,
+    "latency_ms": 4116,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "f1de1817-1654-413d-8ed0-cb45f1160a3a",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "76b4077725ea3648dbd3671d4fe054b8a4bf17116d97c0e7e8695bbcf4cdecfe",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

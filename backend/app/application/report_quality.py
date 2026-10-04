@@ -15,8 +15,10 @@ from app.domains.quality.service import (
 )
 from app.domains.quality.models import QAIssue
 from app.domains.quality.scorecard import RUBRIC
+from app.domains.content.framework_coverage import normalize_framework_review
 from app.domains.skills.models import SkillRun
 from app.domains.skills.service import create_skill_run, ensure_default_validator_skill_version
+from app.domains.skills.bindings import resolve_case_skill
 from app.domains.workflow.models import ReportCase, WorkflowOutbox
 
 
@@ -46,7 +48,7 @@ async def queue_case_quality_run(
             "qa_fingerprint": fingerprint,
         }
 
-    skill = await ensure_default_validator_skill_version(db)
+    skill = await resolve_case_skill(db, report_case, "report.final_validator")
     active_run = await db.scalar(
         select(SkillRun)
         .where(
@@ -125,6 +127,8 @@ async def queue_case_quality_run(
             for row in snapshot["fragments"]
         ],
     }
+    if snapshot["semantic_model"].get("framework_contract"):
+        qa_input["framework_contract"] = snapshot["semantic_model"]["framework_contract"]
     profile = request_snapshot.get("profile") or {}
     input_data = {"profile": {"name": profile.get("name")}, "context": {"qa_input": qa_input}}
     safe_input = {
@@ -192,6 +196,17 @@ async def quality_state(
     open_issues = [issue for issue in issues if issue.status == "OPEN"]
     scorecard_required = bool(run and ((run.context_snapshot or {}).get("context") or {}).get("qa_input", {}).get("scorecard_required"))
     scorecard_ready = not scorecard_required or bool(run and (run.output_parsed or {}).get("scorecard", {}).get("passes_threshold"))
+    framework_ready = True
+    if (report_case.application_snapshot or {}).get("framework_contract"):
+        framework_ready = False
+        if run and fingerprint_matches:
+            qa_input = ((run.context_snapshot or {}).get("context") or {}).get("qa_input", {})
+            try:
+                review = normalize_framework_review((run.output_parsed or {}).get("framework_review"),
+                    qa_input.get("framework_contract"), qa_input.get("content_plan") or {}, qa_input.get("report_fragments") or [])
+                framework_ready = all(item["status"] != "MISSING" for item in review)
+            except ValueError:
+                pass
     return ReportQualityResponse(
         report_case_id=report_case.id,
         quality_status=(
@@ -212,12 +227,13 @@ async def quality_state(
                 "model_trace": run.model_trace,
                 "completed_at": run.completed_at,
                 "scorecard": (run.output_parsed or {}).get("scorecard") if fingerprint_matches else None,
+                "framework_review": (run.output_parsed or {}).get("framework_review") if fingerprint_matches else None,
             }
             if run
             else None
         ),
         issues=issues,
-        can_approve=fingerprint_matches and not open_issues and scorecard_ready,
+        can_approve=fingerprint_matches and not open_issues and scorecard_ready and framework_ready,
         blocking_count=sum(issue.severity == "BLOCK" for issue in open_issues),
         open_count=len(open_issues),
         qa_fingerprint_current=current_fingerprint,
@@ -248,6 +264,7 @@ async def delivery_quality_snapshot(
         ],
         "validator_run_id": (state.latest_validator_run or {}).get("id"),
         "scorecard": (state.latest_validator_run or {}).get("scorecard"),
+        "framework_review": (state.latest_validator_run or {}).get("framework_review") or [],
     }
 
 

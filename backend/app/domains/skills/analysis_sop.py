@@ -1,5 +1,6 @@
 """Versioned analytical coverage used by skills and workflow completion gates."""
-SOP_VERSION = "product-analysis-2026-10-04-v1"
+from app.domains.content.product_framework import FRAMEWORK_VERSION, framework_snapshot
+SOP_VERSION = FRAMEWORK_VERSION
 
 SOP_STAGES = {
     "S1": {
@@ -78,7 +79,8 @@ def stage_contract(step_key):
     return {
         "version": SOP_VERSION,
         "responsibilities": {key: stage[key] for key in ("program", "ai", "human")},
-        "topics": [{"fragment_key": f"analysis.{step_key.lower()}.{key}", "title": title, "task": task} for key, title, task in stage["topics"]],
+        "topics": [{"requirement_id": f"A.{step_key}.{key}", "fragment_key": f"analysis.{step_key.lower()}.{key}", "title": title, "task": task} for key, title, task in stage["topics"]],
+        "report_requirements": [r for r in framework_snapshot()["report_requirements"] if any(k.startswith(f"analysis.{step_key.lower()}.") for k in r["analysis_sources"])],
         "missing_information_policy": "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。",
     }
 

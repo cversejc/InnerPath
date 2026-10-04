@@ -153,6 +153,8 @@ async def confirm_narrative_plan(
         "rationale": candidate.get("rationale", ""),
         "deemphasized_findings": candidate.get("deemphasized_findings") or [],
     }
+    if semantic_model.get("framework_contract"):
+        plan_json["framework_contract"] = semantic_model["framework_contract"]
     plan_json["priority_blocks"] = priority_blocks
     if not isinstance(plan_json["reader_profile"], dict) or not isinstance(
         plan_json["chapter_strategy"], dict

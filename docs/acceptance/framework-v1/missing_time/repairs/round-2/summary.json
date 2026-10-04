@@ -1,0 +1,356 @@
+{
+  "scenario": "missing_time",
+  "round": 2,
+  "analysis_count": 38,
+  "report_count": 17,
+  "scorecard": {
+    "dimensions": {
+      "fact_fidelity": {
+        "score": 17,
+        "reason": "正文基本忠实于已确认 Finding 与用户自述，未编造经历；但关系循环中因果解释的假设边界提示不足，且部分命理术语转译可更谨慎。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.identity.outer_self",
+          "report.identity.foundation_notes",
+          "report.identity.self_perception",
+          "report.identity.hidden_self",
+          "report.identity.self_direction",
+          "report.identity.energy_pattern",
+          "report.identity.relationship_pattern",
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough",
+          "report.direction.current_stage",
+          "report.direction.life_map",
+          "report.direction.growth_experiments",
+          "report.ending"
+        ],
+        "max_score": 20,
+        "label": "案例事实忠实度"
+      },
+      "personalization": {
+        "score": 18,
+        "reason": "大量使用用户自述的具体场景与反例，第二人称贯穿，个性化程度高；仅个别术语段落稍显通用。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.identity.outer_self",
+          "report.identity.self_perception",
+          "report.identity.hidden_self",
+          "report.identity.self_direction",
+          "report.identity.energy_pattern",
+          "report.identity.relationship_pattern",
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough",
+          "report.direction.current_stage",
+          "report.direction.life_map",
+          "report.direction.growth_experiments",
+          "report.ending"
+        ],
+        "max_score": 20,
+        "label": "个性化"
+      },
+      "psychological_logic": {
+        "score": 13,
+        "reason": "阴影、情结、防御的区分与关系解释清楚，保护功能与长期代价逻辑连贯；但部分因果链仍以假设形式呈现，核对问题不够具体。",
+        "fragment_keys": [
+          "report.identity.hidden_self",
+          "report.identity.relationship_pattern",
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough"
+        ],
+        "max_score": 15,
+        "label": "心理逻辑"
+      },
+      "structure_coherence": {
+        "score": 13,
+        "reason": "三章结构清晰，暗线贯穿；但“先答应、后撤回”循环在多个章节重复完整解释，命盘旁注与前后风格略有断裂。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.identity.foundation_notes",
+          "report.identity.relationship_pattern",
+          "report.blocks.block_01",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough",
+          "report.direction.current_stage",
+          "report.direction.life_map",
+          "report.direction.growth_experiments",
+          "report.ending"
+        ],
+        "max_score": 15,
+        "label": "三章连贯性"
+      },
+      "reading_experience": {
+        "score": 8,
+        "reason": "语言温暖、第二人称流畅，但重复解释和命盘旁注的术语密度影响阅读节奏。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.identity.foundation_notes",
+          "report.identity.relationship_pattern",
+          "report.blocks.common_pattern",
+          "report.direction.growth_experiments"
+        ],
+        "max_score": 10,
+        "label": "阅读体验"
+      },
+      "action_value": {
+        "score": 9,
+        "reason": "三项实验具体、低负担、适配用户时间条件，并含观察与退出条件；仅“咨询督导”一处与用户身份不完全匹配。",
+        "fragment_keys": [
+          "report.direction.growth_experiments"
+        ],
+        "max_score": 10,
+        "label": "行动价值"
+      },
+      "uncertainty_safety": {
+        "score": 9,
+        "reason": "多处明确暂缓、保留反证、不作诊断与确定未来；仅个别术语未在首次出现时充分通俗化。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.identity.foundation_notes",
+          "report.identity.hidden_self",
+          "report.identity.self_direction",
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough",
+          "report.direction.current_stage",
+          "report.direction.life_map",
+          "report.direction.growth_experiments",
+          "report.ending"
+        ],
+        "max_score": 10,
+        "label": "不确定性与安全"
+      }
+    },
+    "total": 87,
+    "max_score": 100,
+    "passes_threshold": true
+  },
+  "framework_review": [
+    {
+      "requirement_id": "R.psychic_structure",
+      "fragment_keys": [
+        "report.overview.psychic_structure"
+      ],
+      "status": "FULFILLED",
+      "reason": "已按向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向展开，并说明概览暗线，未展开卡点细节。",
+      "quote": "第一层，是向世界展示的你。你自述“我认为自己要靠谱、不能让人失望”，这让“靠谱”成为你意识层认同的角色。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.persona",
+      "fragment_keys": [
+        "report.identity.outer_self"
+      ],
+      "status": "FULFILLED",
+      "reason": "给出可识别的外在角色，并明确区分用户自报与符号解释。",
+      "quote": "你自述“我认为自己要靠谱、不能让人失望”，也自述拒绝后担心别人觉得你不够好——这是你的自报，不是我对你的解释。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.self_belief",
+      "fragment_keys": [
+        "report.identity.self_perception"
+      ],
+      "status": "FULFILLED",
+      "reason": "区分意识自我与底层信念，列出应该规则，并保留反证与待核对问题。",
+      "quote": "有一种假设是：你承接他人需求，除了责任感之外，也可能在维持一个“被需要、被认可”的位置。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.hidden_self",
+      "fragment_keys": [
+        "report.identity.hidden_self"
+      ],
+      "status": "FULFILLED",
+      "reason": "区分阴影、情结、防御，给出情绪与信念假设，并说明保护功能与现实核对。",
+      "quote": "阴影，指的是你可能没把它算进“我是谁”的那些面向；情结，指的是在特定情境下被触发、然后自动跑起来的一套反应；防御，是这套反应里具体用的办法。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.self_direction",
+      "fragment_keys": [
+        "report.identity.self_direction"
+      ],
+      "status": "FULFILLED",
+      "reason": "给出当前倾向的一端、被排除的另一端，并强调两端整合而非完美人格。",
+      "quote": "所谓整合，不是变成完美的人，而是让两端在具体情境里同时在场：既保留关系，也保留自己的节奏。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.energy",
+      "fragment_keys": [
+        "report.identity.energy_pattern"
+      ],
+      "status": "FULFILLED",
+      "reason": "列出充电/耗电与实际反馈，画出探索→价值→执行→反馈路径及张力，并声明无自报不推MBTI或八维分数。",
+      "quote": "关于类型工具，你没有提供 MBTI 或八维自报，所以这里不推断你的类型，也不伪造任何功能分数。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.relationships",
+      "fragment_keys": [
+        "report.identity.relationship_pattern"
+      ],
+      "status": "FULFILLED",
+      "reason": "按请求/回应/感受/反馈描述循环，使用真实场景，并列出反例与待核对部分。",
+      "quote": "一个假设的循环大致是这样：请求或关系变动出现——比如上周同事临时请你代写方案，你本想休息却答应了；或朋友连续两次临时改地点；你的回应是先答应下来",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.blocks",
+      "fragment_keys": [
+        "report.blocks.block_01",
+        "report.blocks.block_02",
+        "report.blocks.block_03"
+      ],
+      "status": "FULFILLED",
+      "reason": "三个卡点均按场景→触发→运作→过去保护→长期代价→整合邀请展开，本节未展开解决步骤。",
+      "quote": "路径图：临时请求出现 → 先答应，关系与形象暂时安全 → 自己的时间与精力被挤压 → 累积熬夜、透支和摩擦 → 事后延迟、生硬回应或取消 → 关系出现新的紧张。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.common_pattern",
+      "fragment_keys": [
+        "report.blocks.common_pattern"
+      ],
+      "status": "FULFILLED",
+      "reason": "综合多个卡点，按触发→情绪/信念→防御→短期保护→长期重复展开，并声明不是因果定论。",
+      "quote": "需要说明的是，这只是一种可能的运作模式，不是因果定论。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.breakthrough",
+      "fragment_keys": [
+        "report.blocks.breakthrough"
+      ],
+      "status": "FULFILLED",
+      "reason": "按用神/资源→调节功能→能力→现实缺口→工具→实验展开，能力回应共性机制，动作指向第三章。",
+      "quote": "工具选择上，短焦找例外用于承接边界卡点，ACT解离用于承接休息卡点，CBT记录自动想法用于承接完美化卡点，三者分别对应你在临时请求、休息与反复修改中反复出现的场景，具体理由见各行动条目。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.archetype",
+      "fragment_keys": [
+        "report.blocks.breakthrough"
+      ],
+      "status": "FULFILLED",
+      "reason": "给出中式人物意象具象化、可学习能力及适用边界，并声明不作史实或人格诊断。",
+      "quote": "用一个中式人物意象来具象化这种承担模式：像一位「持家守成的当家人」，善于维持关系、把责任揽在身上，家里的事先应下来再说。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.life_map",
+      "fragment_keys": [
+        "report.direction.life_map"
+      ],
+      "status": "DEFERRED",
+      "reason": "因出生时间未知，大运起止无法确定，正文明确暂缓并说明原局互动依据，未补造年份。",
+      "quote": "系统计算的大运为空，而你的出生钟表时间未提供，起运无法确定，因此既不能按当前分析日期选定当前运，也无法给出后续每十年的起止年份，更不能补造。",
+      "follow_up_questions": [
+        "请提供尽量准确的出生钟表时间（几点几分）。",
+        "出生时间是否接近整点或时辰交界？"
+      ]
+    },
+    {
+      "requirement_id": "R.timing_wisdom",
+      "fragment_keys": [
+        "report.direction.current_stage"
+      ],
+      "status": "FULFILLED",
+      "reason": "解释当下境遇与卦象比喻为何匹配，给出不适用边界，并声明不是起卦证明。",
+      "quote": "需要说明的是，这是一则哲学比喻，不是起卦结果，也不证明任何必然走向。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.experiments",
+      "fragment_keys": [
+        "report.direction.growth_experiments"
+      ],
+      "status": "FULFILLED",
+      "reason": "列出3项已确认Action，对应卡点/能力/工具，含动作/频率/耗时/观察/退出，并适配现实条件。",
+      "quote": "第一件，暂停后回应。对应卡点：临时请求下先答应、后撤回。能力：在压力下识别自身意愿并延后回应。工具：短焦加依恋沟通。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.practice_rhythm",
+      "fragment_keys": [
+        "report.direction.growth_experiments"
+      ],
+      "status": "FULFILLED",
+      "reason": "给出每日能量/每周阴影/每月触发链/每季方向复盘节奏，并说明可选菜单与时间不足减量。",
+      "quote": "每日1分钟做能量记录；每周5分钟做一次阴影观察，也就是留意那些「想休息、想拒绝」的时刻；每月10分钟做一次触发链复盘，回看一次「请求→担心让人失望→先答应→透支→延迟或撤回」的完整过程；每季20分钟做一次方向复盘，看这三件事是否还贴合你现在的处境。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.ending",
+      "fragment_keys": [
+        "report.ending"
+      ],
+      "status": "FULFILLED",
+      "reason": "以哲学贯通认识→理解→行动，给出个性化温暖寄语，并引用已核验金句。",
+      "quote": "《道德经》第三十三章里有一句：「知人者智，自知者明。」",
+      "follow_up_questions": []
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "正文将“先答应是为了保住形象、避免当下冲突”作为待核对假设，但未说明该因果解释在已确认来源中仅为假设，且未提供可核对的具体问题，读者可能误读为已确认机制。",
+      "evidence": "而“先答应是为了保住形象、避免当下冲突，再想办法收场”这条因果解释，只是待核对的假设，不是已经证实的固定机制。",
+      "suggestion": "补充一个可回答的核对问题，例如“当时你最先感到的是担心、内疚还是烦躁”，并明确该解释仅为假设。",
+      "target_fragment_key": "report.identity.relationship_pattern"
+    },
+    {
+      "issue_type": "repetition",
+      "severity": "MAJOR",
+      "message": "“先答应、后撤回”循环在概览、关系循环、卡点一、共性机制、破局、当下时义、阶段地图、成长实验、收束中反复完整解释，超过3次，应合并定位。",
+      "evidence": "你反复遇到的，可能不是“不会拒绝”，而是一条从“先答应”到“再撤回”的循环",
+      "suggestion": "保留概览与卡点一的完整解释，其余章节改为引用或一句话承接，删除重复展开。",
+      "target_fragment_key": "report.overview.psychic_structure"
+    },
+    {
+      "issue_type": "repetition",
+      "severity": "MINOR",
+      "message": "“面对熟悉同事且有明确截止时能协商边界”这一反例在多个章节重复出现，部分章节仅作重复陈述，未增加新信息。",
+      "evidence": "面对熟悉同事且有明确截止时，你能够协商任务边界，并非每次都迁就。",
+      "suggestion": "在首次出现后，后续章节以“前文反例”引用，不再重复完整表述。",
+      "target_fragment_key": "report.identity.self_direction"
+    },
+    {
+      "issue_type": "structure_coherence",
+      "severity": "MINOR",
+      "message": "“命盘旁注”一节集中列出大量命理术语与暂缓项，与前后章节的第二人称、现实语言风格不一致，可能影响阅读流畅度。",
+      "evidence": "日主为癸水，阴水，传统意象是雨露、溪涧、暗流之水，倾向以渗透、观察、顺势的方式回应环境，而非正面冲撞。",
+      "suggestion": "将命盘旁注拆分为更短段落，或把暂缓项统一放到文末资料边界说明，减少术语堆叠。",
+      "target_fragment_key": "report.identity.foundation_notes"
+    },
+    {
+      "issue_type": "action_value",
+      "severity": "MINOR",
+      "message": "成长实验中的“早期草稿交付”退出条件提到“咨询督导”，但用户为项目运营，非咨询从业者，该退出条件可能不适用。",
+      "evidence": "如果草稿交付引发强烈焦虑或存在实际质量风险，恢复原流程并咨询督导。",
+      "suggestion": "改为“恢复原流程并寻求可信任的同事或专业人士支持”，以适配用户现实身份。",
+      "target_fragment_key": "report.direction.growth_experiments"
+    },
+    {
+      "issue_type": "safety",
+      "severity": "MINOR",
+      "message": "“阴影”“情结”等术语在正文中使用，虽已声明非诊断，但未在首次出现时给出通俗解释，可能被读者理解为临床概念。",
+      "evidence": "阴影，指的是你可能没把它算进“我是谁”的那些面向；情结，指的是在特定情境下被触发、然后自动跑起来的一套反应；防御，是这套反应里具体用的办法。",
+      "suggestion": "在首次出现时补充一句“这些是心理成长中的比喻说法，不是医学诊断”，并保持后续使用一致。",
+      "target_fragment_key": "report.identity.hidden_self"
+    }
+  ],
+  "consultant_review": "PENDING"
+}

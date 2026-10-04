@@ -1,0 +1,62 @@
+{
+  "signature": "f6abe288b33d88b1da86cbcaac28bb16a5fd303af04487ad5071368ae1876de8",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "通往完整的方向：让两端同时在场",
+    "content": "如果说“靠谱、不让人失望”是你目前站在的那一端，那么另一端的休息、拒绝与真实需求表达，并不是要被消灭的敌人，而是暂时退到幕后的另一半。你自述“我认为自己要靠谱、不能让人失望”，也提到拒绝后会担心别人觉得你不够好——这更像是一个假设：你当前的重心偏向被认可的一端，另一端转入阴影，需要以真实场景来校正。\n\n从日主癸水与透干伤官、正财这些符号线索看，可以把它当作“面具”的旁证：外面呈现的是能承接、能表达的承担者形象；而藏干食神与比肩，则可作为“阴影”的线索——休息、慢节奏与自我边界不太容易被允许。这些只是解释视角，不是定论。\n\n有一个反例值得注意：面对熟悉同事且有明确截止时，你能够协商任务边界，并非每次都迁就。这说明“协商边界”的能力已经存在，只是尚未扩展到所有场景。所谓整合，不是变成完美的人，而是让两端在具体情境里同时在场：既保留关系，也保留自己的节奏。\n\n关于人生时序，需要明确暂缓：由于出生时间未知，起运无法确定，系统计算的大运为空数组，因此无法按分析日期选择当前运，也不能给出后续每十年起止年份与阶段基调。这一部分不补造，待你补充出生钟表时间后再核对。",
+    "used_findings": [
+      "s3.self.pole_tension",
+      "s3.quadrant.carrier",
+      "s3.timeline.deferred"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.self",
+      "analysis.s3.integration"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看到方向不是把自己改成另一个人，而是让被排除的一端重新有机会在场。下一节会顺着这条线，看这个循环在真实场景里是怎么一步步跑起来的。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_direction",
+      "sequence_no": 6,
+      "tone": "第二人称、描述模式、不评判",
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_direction",
+        "status": "FULFILLED",
+        "reason": "已按 analysis.s3.self 与 analysis.s3.integration 转译：当前倾向的一端是维持“靠谱、不让人失望”的承接型自我；被排除的另一端是休息、拒绝与真实需求表达；整合方向是在具体情境里让两端同时在场，而非变成完美人格。同时使用了 s3.quadrant.carrier 的角色承担者隐喻与反例，以及 s3.timeline.deferred 的大运暂缓边界。",
+        "quote": "所谓整合，不是变成完美的人，而是让两端在具体情境里同时在场：既保留关系，也保留自己的节奏。",
+        "follow_up_questions": [
+          "在哪些场景你最容易先答应？",
+          "在哪些场景你已经能协商边界？",
+          "在什么情境下你允许自己慢下来？",
+          "哪些支持性关系让你感到被接住？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7759,
+    "output_tokens": 778,
+    "latency_ms": 3721,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "d066a7f2-e0bc-423c-9416-a7a1844520da",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "842405c2bcf79b216528e9dda9244a89ea60599478944c8ceb138eae54b332a8",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

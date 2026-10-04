@@ -18,8 +18,10 @@ from app.domains.reports.generation.mingli_foundation import (
 from app.domains.skills.definitions import ANALYSIS_STEPS
 from app.domains.skills.analysis_sop import stage_contract
 from app.domains.skills.models import SkillRun
-from app.domains.skills.service import ensure_default_analysis_skill_versions
+from app.domains.skills.bindings import resolve_case_skill
 from app.domains.workflow.models import StepTask
+from app.domains.content.framework_coverage import analysis_coverage_issues
+from app.domains.content.reasoning_contract import reasoning_issues
 from app.models.user import User
 
 
@@ -122,15 +124,42 @@ async def get_analysis_step_completion_gate(
     )
     finding_rows, fragment_rows = list(finding_rows), list(fragment_rows)
     contract = stage_contract(step_key)
+    framework = (report_case.application_snapshot or {}).get("framework_contract")
+    coverage_issues = analysis_coverage_issues(framework, [
+        {"fragment_key": row.fragment_key, "content": row.content, "source_snapshot": row.source_snapshot}
+        for row in fragment_rows if row.status == "CONFIRMED"], stage=step_key) if framework else []
+    gate = build_analysis_completion_gate(
+        finding_statuses=[row.status for row in finding_rows],
+        fragment_statuses=[row.status for row in fragment_rows],
+        required_topics=contract["topics"] if contract else [],
+        confirmed_fragment_keys=[row.fragment_key for row in fragment_rows if row.status == "CONFIRMED"],
+    )
+    if coverage_issues:
+        gate["can_complete"] = False
+        gate["blockers"].append("report_analysis_framework_coverage_required")
+    reasoning_contract = (report_case.application_snapshot or {}).get("reasoning_contract")
+    chain_issues = []
+    if reasoning_contract:
+        confirmed_findings = list(await db.scalars(select(FindingRevision).where(
+            FindingRevision.report_case_id == case_id, FindingRevision.is_current.is_(True),
+            FindingRevision.status == "CONFIRMED")))
+        evidence = list(await db.scalars(select(CaseEvidenceItem).where(
+            CaseEvidenceItem.report_case_id == case_id, CaseEvidenceItem.status == "ACTIVE")))
+        chain_issues = reasoning_issues({"reasoning_contract": reasoning_contract,
+            "findings": [{"finding_key": f.finding_key, "semantic_role": f.semantic_role,
+                          "structured_data": f.structured_data_json} for f in confirmed_findings],
+            "evidence": [{"evidence_key": e.evidence_key, "source_type": e.source_type, "value": e.value_json} for e in evidence],
+            "analysis_fragments": [{"fragment_key": f.fragment_key, "content": f.content,
+                                    "source_snapshot": f.source_snapshot} for f in fragment_rows if f.status == "CONFIRMED"]}, stage=step_key)
+        if chain_issues:
+            gate["can_complete"] = False
+            gate["blockers"].append("report_analysis_reasoning_required")
     return {
         "step_key": step_key,
         "sop_contract": contract,
-        **build_analysis_completion_gate(
-            finding_statuses=[row.status for row in finding_rows],
-            fragment_statuses=[row.status for row in fragment_rows],
-            required_topics=contract["topics"] if contract else [],
-            confirmed_fragment_keys=[row.fragment_key for row in fragment_rows if row.status == "CONFIRMED"],
-        ),
+        "framework_coverage_issues": coverage_issues,
+        "reasoning_issues": chain_issues,
+        **gate,
     }
 
 
@@ -269,6 +298,8 @@ async def _analysis_context(
         "step_key": step.step_key,
         "activation_no": step.activation_no,
         "sop_contract": stage_contract(step.step_key),
+        "framework_contract": (report_case.application_snapshot or {}).get("framework_contract"),
+        "reasoning_contract": (report_case.application_snapshot or {}).get("reasoning_contract"),
         "application_snapshot": report_case.application_snapshot or {},
         "evidence": evidence,
         "upstream_confirmed_findings": [
@@ -280,6 +311,7 @@ async def _analysis_context(
                 "importance": item.importance,
                 "evidence_refs": item.evidence_refs or [],
                 "structured_data": item.structured_data_json or {},
+                "relation_refs": item.relation_refs or [],
             }
             for item in upstream_findings
         ],
@@ -330,9 +362,8 @@ async def queue_case_analysis_draft(
     report_case, step = await _authorize_analysis_step(
         db, case_id=case_id, step_key=step_key, actor=actor
     )
-    versions = await ensure_default_analysis_skill_versions(db)
     stage = ANALYSIS_STEPS[step_key]
-    skill = next(item for item in versions if item.skill_key == stage["skill_key"])
+    skill = await resolve_case_skill(db, report_case, stage["skill_key"])
     analysis_context, foundation = await _analysis_context(
         db, report_case=report_case, step=step
     )
@@ -489,6 +520,8 @@ async def apply_analysis_fragment_candidate(
         fragment_type="ANALYSIS",
         title=candidate.get("title"),
         content=candidate["content"],
+        framework_coverage=candidate.get("framework_coverage"),
+        structured_analysis=candidate.get("structured_analysis"),
         status="PROPOSED",
         finding_refs=candidate.get("finding_refs") or [],
         fragment_refs=[],
