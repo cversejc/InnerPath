@@ -152,7 +152,7 @@
                 咨询师可查看已发布示例，并从本报告的运行结果推荐经验；管理员负责脱敏审核、版本维护和发布。
               </p>
               <p v-else>
-                管理员可在“咨询师反馈”查看节点反馈，从对应版本创建草稿，用原节点输入预览，再按现有质量评估流程发布。
+                管理员可查看报告节点反馈，也可从报告或日历运行记录载入真实输入；用草稿预览和评估后再发布技能版本。
               </p>
               <details>
                 <summary>技术标识</summary>
@@ -208,18 +208,23 @@
             >
               <h3>试运行技能</h3>
               <p>
-                验证当前版本的输出。试运行结果须经过咨询师审核，才能用于实际报告。
+                试运行只用于验证草稿效果，不会写入报告或日历。发布技能版本前请先完成质量评估。
               </p>
-              <div v-if="feedbackSourceRun" class="feedback-preview-source">
-                <strong>反馈来源：报告案例 {{ feedbackSourceRun.report_case_id }} · {{ feedbackTargetLabel(feedbackSourceRun) }} · 运行 {{ feedbackSourceRun.id }}</strong>
-                <p><b>咨询师反馈</b>：{{ feedbackSourceRun.runtime_instruction || "本次运行没有补充反馈。" }}</p>
-                <p>输入框已载入该节点实际使用的资料；试运行只生成预览，不会写入原报告。</p>
+              <div v-if="inputPreviewSourceRun" class="feedback-preview-source">
+                <strong>实际输入来源：{{ feedbackTargetLabel(inputPreviewSourceRun) }} · 运行 {{ inputPreviewSourceRun.id }}</strong>
+                <p v-if="feedbackSourceRun"><b>咨询师反馈</b>：{{ feedbackSourceRun.runtime_instruction || "本次运行没有补充反馈。" }}</p>
+                <p>输入框已载入该次运行的实际资料；试运行只生成预览，不会改写报告或已交付日历。</p>
                 <details>
-                  <summary>查看被反馈的原始 AI 结果</summary>
-                  <RunDetail :run="feedbackSourceRun" :admin="true" :case-id="feedbackSourceRun.report_case_id" />
+                  <summary>查看来源运行的 AI 结果</summary>
+                  <RunDetail
+                    :run="inputPreviewSourceRun"
+                    :admin="true"
+                    :case-id="inputPreviewSourceRun.report_case_id"
+                    @preview-input="prepareRunInputPreview"
+                  />
                 </details>
                 <VanButton
-                  v-if="!editable"
+                  v-if="feedbackSourceRun && !editable"
                   plain
                   native-type="button"
                   :disabled="saving || !selectedVersion"
@@ -270,6 +275,7 @@
                 :run="previewRun"
                 :admin="true"
                 :case-id="feedbackSourceRun?.report_case_id"
+                @preview-input="prepareRunInputPreview"
               />
             </section>
             <EvaluationPanel
@@ -334,6 +340,7 @@
                 :run="selectedRun"
                 :admin="isAdmin"
                 :case-id="caseId"
+                @preview-input="prepareRunInputPreview"
               />
               <p v-else>
                 {{
@@ -375,7 +382,12 @@
                 </div>
                 <details class="feedback-run-details">
                   <summary>查看原始 AI 结果与节点实际输入</summary>
-                  <RunDetail :run="run" :admin="true" :case-id="run.report_case_id" />
+                  <RunDetail
+                    :run="run"
+                    :admin="true"
+                    :case-id="run.report_case_id"
+                    @preview-input="prepareRunInputPreview"
+                  />
                   <details>
                     <summary>查看送入节点技能的输入快照</summary>
                     <pre class="output-block">{{ JSON.stringify(run.input_snapshot, null, 2) }}</pre>

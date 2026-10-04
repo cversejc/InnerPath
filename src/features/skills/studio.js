@@ -51,6 +51,22 @@ export function feedbackPreviewFromRun(run) {
   };
 }
 
+export function runInputPreviewFromRun(run) {
+  const input = run?.input_snapshot;
+  if (
+    run?.status !== "COMPLETED" ||
+    !run.skill_version_id ||
+    !input ||
+    typeof input !== "object" ||
+    Array.isArray(input)
+  )
+    return null;
+  return {
+    inputText: JSON.stringify(input, null, 2),
+    runtimeInstruction: String(run.runtime_instruction || "").trim(),
+  };
+}
+
 export function formatTrace(trace = {}) {
   return [
     ['模型服务', trace.provider],

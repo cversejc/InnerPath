@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { feedbackPreviewFromRun, formatTrace, isReportAnalysisFeedbackRun, isReportSkillFeedbackRun, parseSpecification, sampleInput } from './studio.js'
+import { feedbackPreviewFromRun, formatTrace, isReportAnalysisFeedbackRun, isReportSkillFeedbackRun, parseSpecification, runInputPreviewFromRun, sampleInput } from './studio.js'
 
 test('specification editor reports malformed and non-object JSON', () => {
   assert.match(parseSpecification('{').error, /JSON 格式错误/)
@@ -80,4 +80,23 @@ test('authoring and final-check feedback runs can be routed into the skill edito
   assert.equal(isReportAnalysisFeedbackRun(sourceRuns[0]), false)
   assert.equal(isReportSkillFeedbackRun({ ...sourceRuns[0], runtime_instruction: '' }), false)
   assert.equal(isReportSkillFeedbackRun({ ...sourceRuns[0], target_type: 'REPORT_COHERENCE' }), false)
+})
+
+test('a completed skill run can be replayed from its exact structured input snapshot', () => {
+  const run = {
+    id: 88,
+    skill_version_id: 14,
+    status: 'COMPLETED',
+    target_type: 'CALENDAR_PRODUCTION',
+    input_snapshot: { current_request: { goal: '谨慎推进' }, report: { sections: ['confirmed'] } },
+    runtime_instruction: '避免重复使用同一行动。'
+  }
+
+  assert.deepEqual(runInputPreviewFromRun(run), {
+    inputText: JSON.stringify(run.input_snapshot, null, 2),
+    runtimeInstruction: run.runtime_instruction
+  })
+  assert.equal(runInputPreviewFromRun({ ...run, input_snapshot: [] }), null)
+  assert.equal(runInputPreviewFromRun({ ...run, skill_version_id: null }), null)
+  assert.equal(runInputPreviewFromRun({ ...run, status: 'RUNNING' }), null)
 })

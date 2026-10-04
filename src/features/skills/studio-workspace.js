@@ -14,6 +14,7 @@ import {
   parseSpecification,
   feedbackPreviewFromRun,
   isReportSkillFeedbackRun,
+  runInputPreviewFromRun,
   RUN_STATUS_LABELS,
   sampleInput,
   VERSION_STATUS_LABELS,
@@ -64,6 +65,7 @@ export default {
         ? Number(this.$route.query.run_id)
         : null,
       feedbackSourceRun: null,
+      inputPreviewSourceRun: null,
       previewRunId: null,
       loading: false,
       saving: false,
@@ -241,6 +243,8 @@ export default {
     selectSkill(key) {
       this.selectedSkillKey = key;
       this.selectedRun = null;
+      this.feedbackSourceRun = null;
+      this.inputPreviewSourceRun = null;
       this.changeTab("overview");
       if (this.isAdmin) {
         const version =
@@ -392,10 +396,36 @@ export default {
       )
         return false;
       this.feedbackSourceRun = run;
+      this.inputPreviewSourceRun = run;
       this.sourceRunId = run.id;
       this.inputText = preview.inputText;
       this.runtimeInstruction = preview.runtimeInstruction;
       return true;
+    },
+    async prepareRunInputPreview(run) {
+      if (!this.isAdmin) return;
+      const preview = runInputPreviewFromRun(run);
+      const sourceVersion = this.versions.find(
+        (version) =>
+          version.id === run?.skill_version_id &&
+          version.skill_key === this.selectedSkillKey,
+      );
+      if (!preview || !sourceVersion) {
+        this.showMessage("运行记录没有可复用的输入，或与当前技能不匹配。", "error");
+        return;
+      }
+      this.inputPreviewSourceRun = run;
+      this.feedbackSourceRun = isReportSkillFeedbackRun(run) ? run : null;
+      this.sourceRunId = run.id;
+      this.inputText = preview.inputText;
+      this.runtimeInstruction = preview.runtimeInstruction;
+      if (this.selectedVersion?.status !== "DRAFT") {
+        if (!this.selectedVersion) this.selectVersion(sourceVersion);
+        const draft = await this.createDraft();
+        if (!draft) return;
+      }
+      this.changeTab("debug");
+      this.showMessage("已载入这次运行的实际输入，可修改草稿后重新预览。", "");
     },
     async prepareFeedbackPreview(run = this.feedbackSourceRun) {
       if (!this.loadFeedbackSource(run)) return;
@@ -517,6 +547,7 @@ export default {
         NARRATIVE_CANDIDATES: "S5 报告主线候选",
         REPORT_FRAGMENT: `S5 报告段落 · ${run.target_key || "内容片段"}`,
         REPORT_QA: "S6 交付前检查",
+        CALENDAR_PRODUCTION: `日历生产 · 请求 ${run.target_key || "当前"}`,
       }[run.target_type] || run.target_key || "节点运行";
       return skill ? `${skill.node} · ${target}` : target;
     },

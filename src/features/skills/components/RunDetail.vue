@@ -14,6 +14,15 @@
         </h3>
       </div>
     </div>
+    <div v-if="canPreviewInput" class="run-input-preview-action">
+      <VanButton
+        plain
+        native-type="button"
+        @click="$emit('preview-input', run)"
+        >用本次实际输入预览技能</VanButton
+      >
+      <p>管理员可将这次运行的输入载入技能草稿；预览不会改写报告或日历。</p>
+    </div>
     <div v-if="run.runtime_instruction" class="run-consultant-feedback">
       <strong>本次咨询师反馈</strong>
       <p>{{ run.runtime_instruction }}</p>
@@ -140,6 +149,7 @@ export default {
     admin: { type: Boolean, default: false },
     caseId: { type: [String, Number], default: null },
   },
+  emits: ["preview-input"],
   data() {
     return {
       exampleType: "POSITIVE",
@@ -163,6 +173,17 @@ export default {
     },
     traceRows() {
       return formatTrace(this.run.model_trace);
+    },
+    canPreviewInput() {
+      const input = this.run.input_snapshot;
+      return Boolean(
+        this.admin &&
+          this.run.status === "COMPLETED" &&
+          this.run.skill_version_id &&
+          input &&
+          typeof input === "object" &&
+          !Array.isArray(input),
+      );
     },
     canRecommend() {
       if (this.admin && this.run.target_type === 'CALENDAR_PRODUCTION') return this.run.status === 'COMPLETED'
