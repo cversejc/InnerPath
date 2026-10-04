@@ -5,6 +5,7 @@ import ProfileSettingsPanel from './components/ProfileSettingsPanel.vue'
 import ReportsPanel from './components/ReportsPanel.vue'
 import RequestsPanel from './components/RequestsPanel.vue'
 import { createEmptyProfile } from '../users/profile.js'
+import { buildCalendarCover } from '../calendar/cover.js'
 import accountMethods from './methods/account.js'
 import dashboardMethods from './methods/dashboard.js'
 import navigationMethods from './methods/navigation.js'
@@ -33,6 +34,7 @@ export default {
         { id: 'settings', icon: 'settings', label: '账号设置' }
       ],
       reports: [],
+      calendarCover: buildCalendarCover(null),
       requests: [],
       settings: createEmptyProfile(),
       optionalProfileExpanded: false,

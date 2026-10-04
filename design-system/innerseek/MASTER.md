@@ -186,7 +186,10 @@ shapes for statuses, seals, tags and compact metadata.
 - **Assessment:** progress indicator, one step at a time, field-level feedback and
   clear recovery on generation failure.
 - **Calendar:** overview first, selected-day detail second, records alongside guidance;
-  mobile detail opens as a sheet above the bottom navigation.
+  mobile detail opens as a sheet above the bottom navigation. The personal-space calendar
+  access card may use four seasonal cover variants selected from the calendar start date;
+  keep its copy readable on the left and size its action like the report-card action,
+  expanding it to full width on mobile.
 - **Reports:** content-first reading layout with a single next action into the decision
   calendar. Report-list covers may use five subdued landscape variants selected by the
   report's day-pillar Nayin element; keep the day pillar visible and use a warm scrim so

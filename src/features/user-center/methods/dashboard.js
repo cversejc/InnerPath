@@ -1,6 +1,8 @@
 import { getCurrentUser } from '../../users/service.js'
 import { getUserReports } from '../../reports/api.js'
 import { getMyServiceRequests } from '../../service-requests/api.js'
+import { getMyCalendars } from '../../calendar/api.js'
+import { buildCalendarCover, selectPublishedCalendar } from '../../calendar/cover.js'
 import { mapUserToProfile } from '../../users/profile.js'
 import { getReportCoverTheme } from '../../reports/day-pillar-visual.js'
 import { REPORT_COVER_MOCKS } from '../../reports/report-cover-mock.js'
@@ -11,9 +13,10 @@ export default {
   async loadDashboard() {
     this.loading = true
     try {
-      const [user, reportResponse] = await Promise.all([
+      const [user, reportResponse, calendarResponse] = await Promise.all([
         getCurrentUser(),
-        getUserReports()
+        getUserReports(),
+        getMyCalendars().catch(() => ({ items: [] }))
       ])
       let requestResponse = { items: [] }
       try {
@@ -23,6 +26,7 @@ export default {
         this.message = this.message || '申请记录暂时无法同步，请稍后重试'
       }
       this.userName = user.name
+      this.calendarCover = buildCalendarCover(selectPublishedCalendar(calendarResponse))
       this.userType = user.role === 'admin' ? '管理员' : user.role === 'consultant' ? '咨询师' : '成长探索者'
       this.accountPhone = user.phone || ''
       this.settings = mapUserToProfile(user)

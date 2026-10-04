@@ -53,7 +53,13 @@
               @request-report="goToAssessment"
               @view-report="viewReport"
             />
-            <DecisionCalendarPanel v-else-if="activeTab === 'calendar'" @open-calendar="goToCalendar" />
+            <DecisionCalendarPanel
+              v-else-if="activeTab === 'calendar'"
+              :title="calendarCover.title"
+              :quote="calendarCover.quote"
+              :season="calendarCover.season"
+              @open-calendar="goToCalendar"
+            />
             <RequestsPanel v-else-if="activeTab === 'requests'" :requests="requests" />
             <ProfileSettingsPanel
               v-else-if="activeTab === 'profile'"
