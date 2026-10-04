@@ -3,6 +3,7 @@ import LegalDocumentDialog from './components/LegalDocumentDialog.vue'
 import authModeMethods from './methods/mode.js'
 import authSessionMethods from './methods/session.js'
 import authVerificationMethods from './methods/verification.js'
+import { mobilePhonePattern, phoneIdentifierPattern } from './validation.js'
 import {
   authSubmitLabel,
   authSubtitle,
@@ -44,7 +45,10 @@ export default {
     phoneRules() {
       return [
         { required: true, message: '请输入手机号' },
-        { pattern: /^[0-9]{11}$/, message: '请输入 11 位手机号' }
+        {
+          pattern: this.requiresCode ? mobilePhonePattern : phoneIdentifierPattern,
+          message: this.requiresCode ? '请输入有效的 11 位手机号' : '请输入 11 位手机号'
+        }
       ]
     },
     tokenRules() {

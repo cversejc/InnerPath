@@ -1,4 +1,5 @@
 import { sendVerificationCode } from '../session.js'
+import { isValidMobilePhone } from '../validation.js'
 
 export default {
   startCodeCooldown(seconds = 60) {
@@ -16,8 +17,8 @@ export default {
   async sendCode() {
     this.errorMessage = ''
     this.successMessage = ''
-    if (!/^\d{11}$/.test(this.form.phone)) {
-      this.errorMessage = '请输入正确的 11 位手机号'
+    if (!isValidMobilePhone(this.form.phone)) {
+      this.errorMessage = '请输入有效的 11 位手机号'
       return
     }
 
@@ -41,7 +42,7 @@ export default {
     const messages = {
       'Password setup required': '该账号尚未设置密码，请联系管理员完成首次密码设置',
       'Phone already registered': '该手机号已注册，请直接登录',
-      'Invalid phone or password': '手机号或密码错误，请检查后重试',
+      'Invalid phone or password': '账号或密码不正确，请核对后重试',
       'Registration temporarily limited': '注册请求过于频繁，请稍后再试',
       'Too many code requests': '验证码请求过于频繁，请稍后再试',
       'Please wait before requesting another code': '请稍后再重新获取验证码',
