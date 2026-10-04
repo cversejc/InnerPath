@@ -181,6 +181,10 @@ def _workflow_error(error: ValueError) -> None:
         "qa_block_cannot_be_accepted",
         "qa_issue_already_closed",
         "validator_run_in_progress",
+        "authoring_feedback_source_required",
+        "authoring_feedback_source_invalid",
+        "quality_feedback_source_required",
+        "quality_feedback_source_invalid",
         "report_content_plan_required",
         "report_content_plan_blocked",
         "report_generation_semantic_gap",
@@ -515,16 +519,18 @@ async def run_report_case_quality(
     current_user: User = Depends(require_roles("admin", "consultant")),
     db: AsyncSession = Depends(get_db),
 ):
-    await _authorize_step_action(
+    report_case, quality_step = await _authorize_step_action(
         db, case_id, "S6", current_user, require_current_review=True
     )
-    report_case = await _case_for_read_or_action(db, case_id, current_user, action=True)
     try:
         await queue_case_quality_run(
             db,
             report_case=report_case,
             actor_id=current_user.id,
             idempotency_key=data.idempotency_key,
+            runtime_instruction=data.runtime_instruction,
+            source_run_id=data.source_run_id,
+            step_task=quality_step,
         )
         await db.commit()
         return await quality_state(db, report_case)
@@ -676,6 +682,7 @@ async def create_narrative_candidates(
             skill_key="report.narrative_plan",
             idempotency_key=data.idempotency_key,
             runtime_instruction=data.runtime_instruction,
+            source_run_id=data.source_run_id,
         )
         return run
     except ValueError as error:
@@ -751,6 +758,7 @@ async def generate_report_case_fragment(
             skill_key="report.fragment_authoring",
             idempotency_key=data.idempotency_key,
             runtime_instruction=data.runtime_instruction,
+            source_run_id=data.source_run_id,
             fragment_key=data.fragment_key,
             fragment_title=data.title,
         )

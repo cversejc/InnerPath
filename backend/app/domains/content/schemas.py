@@ -153,6 +153,7 @@ class NarrativeStateResponse(BaseModel):
 class NarrativeCandidatesCreate(BaseModel):
     idempotency_key: str = Field(..., min_length=1, max_length=200)
     runtime_instruction: Optional[str] = Field(None, max_length=4000)
+    source_run_id: Optional[int] = Field(None, ge=1)
 
 
 class NarrativePlanConfirm(BaseModel):
@@ -170,6 +171,7 @@ class ReportFragmentGenerate(BaseModel):
     fragment_key: str = Field(..., min_length=1, max_length=200)
     title: Optional[str] = Field(None, max_length=240)
     runtime_instruction: Optional[str] = Field(None, max_length=4000)
+    source_run_id: Optional[int] = Field(None, ge=1)
 
 
 class ReportGenerationCreate(BaseModel):

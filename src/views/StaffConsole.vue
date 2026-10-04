@@ -143,6 +143,7 @@
                   </div>
                   <div v-for="run in visibleNarrativeCandidateRuns" :key="run.id" class="narrative-run">
                     <div class="asset-item-heading"><div><strong>报告主线建议</strong><span class="asset-status">{{ assetStatusLabel(run.status) }}</span></div></div>
+                    <p class="ai-source-label">AI 生成的主线候选，属于待审核建议；主线引用仍以已确认判断为准。</p>
                     <p v-if="run.status === 'FAILED'" class="task-error">报告主线建议暂时无法生成，请稍后重试。</p>
                     <article v-for="candidate in run.output_parsed?.candidates || []" :key="candidate.candidate_key" class="narrative-candidate">
                       <div class="asset-item-heading"><div><strong>{{ consultantText(candidate.theme, '报告主线建议') }}</strong></div></div>
@@ -155,6 +156,11 @@
                         <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportNarrativeSaving || run.status !== 'COMPLETED'" :loading="reportNarrativeSaving" @click="confirmNarrativeCandidate(run, candidate)">选择并确认这条主线</VanButton>
                       </div>
                     </article>
+                    <div v-if="canEditSelectedReportStep && selectedReportStepKey === 'S5' && run.status === 'COMPLETED'" class="ai-feedback-form">
+                      <label>针对这次主线建议的反馈<textarea v-model="narrativeFeedbackDrafts[run.id]" rows="3" maxlength="4000" placeholder="指出需要调整的重点；反馈作为改进线索，不会替代已确认判断。"></textarea></label>
+                      <small v-if="run.context_snapshot?.authoring_feedback_source_run_id">本次结果基于运行 #{{ run.context_snapshot.authoring_feedback_source_run_id }} 的反馈生成。</small>
+                      <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportNarrativeSaving || !narrativeFeedbackDrafts[run.id]?.trim()" :loading="reportNarrativeSaving" @click="rerunNarrativeWithFeedback(run)">按反馈重跑主线建议</VanButton>
+                    </div>
                   </div>
                   <div v-if="reportNarrative.current_plan?.status === 'CONFIRMED' && !reportContentPlan" class="stale-note">这条报告主线还没有逐段内容安排。请重新生成并确认主线后继续。</div>
                   </template>
@@ -206,8 +212,14 @@
                   <div v-if="nodeWritingMode === 'progress'" class="narrative-progress">{{ reportGenerationStatusLabel }} · 已完成 {{ reportGeneration.completed_fragment_keys?.length || 0 }} / {{ reportContentPlan?.fragments?.length || 0 }} 段</div>
                   <div v-for="run in nodeWritingMode === 'progress' ? reportNarrative.fragment_runs : []" :key="run.id" class="narrative-run">
                     <div class="asset-item-heading"><div><strong>{{ fragmentTitle(run.target_key) }}</strong><span class="asset-status">{{ assetStatusLabel(run.status) }}</span></div></div>
+                    <p v-if="run.output_parsed" class="ai-source-label">AI 生成的报告草稿；请基于原始资料和已确认判断审核后再采用。</p>
                     <p v-if="run.status === 'FAILED'" class="task-error">这段内容暂时无法生成，请稍后重试。</p>
                     <p v-else-if="run.output_parsed?.status === 'MISSING_SEMANTIC_SUPPORT'" class="stale-note">当前内容缺少已确认的判断依据，暂未补写相关结论。请先回到判断审核页面处理。</p>
+                    <div v-if="canEditSelectedReportStep && selectedReportStepKey === 'S5' && run.status === 'COMPLETED'" class="ai-feedback-form">
+                      <label>针对这段草稿的反馈<textarea v-model="narrativeFeedbackDrafts[run.id]" rows="3" maxlength="4000" placeholder="说明需要改进的表达或报告重点，不要填写未经确认的用户事实。"></textarea></label>
+                      <small v-if="run.context_snapshot?.authoring_feedback_source_run_id">本次结果基于运行 #{{ run.context_snapshot.authoring_feedback_source_run_id }} 的反馈生成。</small>
+                      <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportNarrativeSaving || !narrativeFeedbackDrafts[run.id]?.trim()" :loading="reportNarrativeSaving" @click="rerunReportFragmentWithFeedback(run)">按反馈重新生成本段</VanButton>
+                    </div>
                   </div>
                 </section>
 
@@ -223,6 +235,12 @@
                   </div>
                   <p v-if="reportQuality.latest_validator_run?.status === 'FAILED'" class="task-error">交付前检查暂时无法完成，请稍后重试。</p>
                   <p v-if="reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'" class="stale-note">检查发现必须处理的问题；修订报告内容后重新检查。</p>
+                  <p v-if="reportQuality.latest_validator_run" class="ai-source-label">AI 检查结果是复核线索；评分、问题和最终交付仍受完整检查项及人工门禁约束。</p>
+                  <div v-if="canEditSelectedReportStep && selectedReportStepKey === 'S6' && reportQuality.latest_validator_run?.status === 'COMPLETED' && reportQuality.latest_validator_run?.current" class="ai-feedback-form">
+                    <label>针对这次检查结果的反馈<textarea v-model="qualityFeedbackDraft" rows="3" maxlength="4000" placeholder="指出漏检、误报或需要重新核对的内容；系统会重新检查完整报告。"></textarea></label>
+                    <small v-if="reportQuality.latest_validator_run.feedback_source_run_id">本次结果基于运行 #{{ reportQuality.latest_validator_run.feedback_source_run_id }} 的反馈生成。</small>
+                    <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="reportQualitySaving || !qualityFeedbackDraft.trim()" :loading="reportQualitySaving" @click="rerunReportQualityWithFeedback">按反馈重新检查完整报告</VanButton>
+                  </div>
                   <QualityScorecard :scorecard="reportQuality.latest_validator_run?.scorecard" />
                   <WorkbenchRecordPicker v-model="nodeRecordKeys.quality" :items="nodeQualityItems" label="选择检查问题" />
                   <article v-for="issue in visibleNodeQualityIssues" :key="issue.id" class="quality-issue" :class="{ 'quality-issue-open': issue.status === 'OPEN' }">

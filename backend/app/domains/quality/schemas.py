@@ -32,6 +32,8 @@ class QAIssueResolution(BaseModel):
 
 class QualityRunRequest(BaseModel):
     idempotency_key: str = Field(..., min_length=1, max_length=200)
+    runtime_instruction: Optional[str] = Field(None, max_length=4000)
+    source_run_id: Optional[int] = Field(None, ge=1)
 
 
 class FinalGateApproval(BaseModel):

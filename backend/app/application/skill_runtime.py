@@ -247,6 +247,11 @@ async def _queue_run(
         },
         specification,
     )
+    feedback_rerun = (input_data.get("context") or {}).get("feedback_rerun")
+    if isinstance(feedback_rerun, dict):
+        input_snapshot.setdefault("context", {})["feedback_rerun"] = deepcopy(
+            feedback_rerun
+        )
     context_snapshot = deepcopy(input_snapshot)
     context_snapshot.update(context_metadata or {})
     semantic_sources = input_data.get("semantic_source_snapshot")
@@ -381,6 +386,7 @@ async def queue_allocated_fragment_skill_run(
     allocation: dict[str, Any],
     idempotency_key: str,
     runtime_instruction: str | None = None,
+    feedback_source_run: SkillRun | None = None,
     continuity: dict[str, Any] | None = None,
     generation_metadata: dict[str, Any] | None = None,
     run_type: str = "INITIAL",
@@ -410,6 +416,11 @@ async def queue_allocated_fragment_skill_run(
             "continuity": continuity or {},
         }
     )
+    if feedback_source_run is not None:
+        context["feedback_rerun"] = {
+            "source_run_id": feedback_source_run.id,
+            "previous_ai_output": deepcopy(feedback_source_run.output_parsed),
+        }
     input_data = {
         **application_snapshot,
         "context": context,
@@ -418,11 +429,13 @@ async def queue_allocated_fragment_skill_run(
         ),
         "source_narrative_plan_id": plan.id,
     }
-    context_metadata = (
-        {"report_generation": generation_metadata}
-        if generation_metadata is not None
-        else None
-    )
+    context_metadata = {}
+    if generation_metadata is not None:
+        context_metadata["report_generation"] = generation_metadata
+    context_metadata["authoring_step_key"] = step.step_key
+    context_metadata["authoring_activation_no"] = step.activation_no
+    if feedback_source_run is not None:
+        context_metadata["authoring_feedback_source_run_id"] = feedback_source_run.id
     return await _queue_run(
         db,
         version_id=skill_version.id,
@@ -433,7 +446,7 @@ async def queue_allocated_fragment_skill_run(
         target_key=fragment_key,
         report_case=report_case,
         step=step,
-        context_metadata=context_metadata,
+        context_metadata=context_metadata or None,
         run_type=run_type,
         commit=commit,
     )
@@ -521,6 +534,40 @@ async def queue_case_step_skill_run(
     )
 
 
+async def _authoring_feedback_source_run(
+    db: AsyncSession,
+    *,
+    source_run_id: int | None,
+    report_case: ReportCase,
+    step: StepTask,
+    skill_version_id: int,
+    target_type: str,
+    target_key: str,
+) -> SkillRun | None:
+    if source_run_id is None:
+        return None
+    source = await db.scalar(select(SkillRun).where(SkillRun.id == source_run_id))
+    source_context = (source.context_snapshot or {}) if source is not None else {}
+    source_activation = source_context.get("authoring_activation_no")
+    if (
+        source is None
+        or source.report_case_id != report_case.id
+        or source.workflow_instance_id != report_case.workflow_instance_id
+        or source.step_task_id != step.id
+        or source.skill_version_id != skill_version_id
+        or source.target_type != target_type
+        or source.target_key != target_key
+        or source.status != "COMPLETED"
+        or not isinstance(source.output_parsed, dict)
+        or (
+            source_activation is not None
+            and source_activation != step.activation_no
+        )
+    ):
+        raise ValueError("authoring_feedback_source_invalid")
+    return source
+
+
 async def queue_case_authoring_skill_run(
     db: AsyncSession,
     *,
@@ -530,6 +577,7 @@ async def queue_case_authoring_skill_run(
     skill_key: str,
     idempotency_key: str,
     runtime_instruction: str | None = None,
+    source_run_id: int | None = None,
     fragment_key: str | None = None,
     fragment_title: str | None = None,
 ) -> tuple[SkillRun, bool]:
@@ -553,6 +601,9 @@ async def queue_case_authoring_skill_run(
         raise ValueError("narrative_skill_unavailable")
 
     skill_version = await resolve_case_skill(db, report_case, skill_key)
+    feedback = (runtime_instruction or "").strip()
+    if feedback and source_run_id is None:
+        raise ValueError("authoring_feedback_source_required")
 
     semantic_model = await load_case_semantic_model(db, case_id)
     source_snapshot = semantic_source_snapshot(semantic_model)
@@ -567,6 +618,21 @@ async def queue_case_authoring_skill_run(
     if skill_key == "report.narrative_plan":
         target_type = "NARRATIVE_CANDIDATES"
         target_key = step_key
+        previous_run = await _authoring_feedback_source_run(
+            db,
+            source_run_id=source_run_id,
+            report_case=report_case,
+            step=step,
+            skill_version_id=skill_version.id,
+            target_type=target_type,
+            target_key=target_key,
+        )
+        if previous_run is not None:
+            context["feedback_rerun"] = {
+                "source_run_id": previous_run.id,
+                "previous_ai_output": deepcopy(previous_run.output_parsed),
+            }
+            input_data["context"] = context
     else:
         plan = await get_current_narrative_plan(db, case_id)
         if plan is None or plan.status != "CONFIRMED":
@@ -593,6 +659,15 @@ async def queue_case_authoring_skill_run(
                 raise ValueError("report_fragment_not_in_content_plan")
             if (plan.plan_json.get("generation") or {}).get("status") == "IN_PROGRESS":
                 raise ValueError("report_generation_in_progress")
+            previous_run = await _authoring_feedback_source_run(
+                db,
+                source_run_id=source_run_id,
+                report_case=report_case,
+                step=step,
+                skill_version_id=skill_version.id,
+                target_type="REPORT_FRAGMENT",
+                target_key=fragment_key.strip(),
+            )
             return await queue_allocated_fragment_skill_run(
                 db,
                 report_case=report_case,
@@ -601,7 +676,8 @@ async def queue_case_authoring_skill_run(
                 semantic_model=semantic_model,
                 allocation=allocation,
                 idempotency_key=idempotency_key,
-                runtime_instruction=runtime_instruction,
+                runtime_instruction=feedback or None,
+                feedback_source_run=previous_run,
                 continuity=(plan.plan_json.get("generation") or {}).get("continuity"),
                 run_type="REGENERATE",
             )
@@ -614,17 +690,42 @@ async def queue_case_authoring_skill_run(
         input_data["source_narrative_plan_id"] = plan.id
         target_type = "REPORT_FRAGMENT"
         target_key = fragment_key.strip()
+        previous_run = await _authoring_feedback_source_run(
+            db,
+            source_run_id=source_run_id,
+            report_case=report_case,
+            step=step,
+            skill_version_id=skill_version.id,
+            target_type=target_type,
+            target_key=target_key,
+        )
+        if previous_run is not None:
+            context["feedback_rerun"] = {
+                "source_run_id": previous_run.id,
+                "previous_ai_output": deepcopy(previous_run.output_parsed),
+            }
+            input_data["context"] = context
 
     return await _queue_run(
         db,
         version_id=skill_version.id,
         idempotency_key=idempotency_key,
         input_data=input_data,
-        runtime_instruction=runtime_instruction,
+        runtime_instruction=feedback or None,
         target_type=target_type,
         target_key=target_key,
         report_case=report_case,
         step=step,
+        run_type="REGENERATE" if source_run_id is not None else "INITIAL",
+        context_metadata={
+            "authoring_step_key": step.step_key,
+            "authoring_activation_no": step.activation_no,
+            **(
+                {"authoring_feedback_source_run_id": source_run_id}
+                if source_run_id is not None
+                else {}
+            ),
+        },
     )
 
 
@@ -761,6 +862,11 @@ async def execute_skill_run_record(
                 "analysis_step_key",
                 "analysis_activation_no",
                 "analysis_feedback_source_run_id",
+                "authoring_step_key",
+                "authoring_activation_no",
+                "authoring_feedback_source_run_id",
+                "quality_feedback_source_run_id",
+                "quality_activation_no",
             )
             if key in prior_context
         }

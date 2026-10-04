@@ -19,7 +19,7 @@ from app.domains.content.framework_coverage import normalize_framework_review
 from app.domains.skills.models import SkillRun
 from app.domains.skills.service import create_skill_run, ensure_default_validator_skill_version
 from app.domains.skills.bindings import resolve_case_skill
-from app.domains.workflow.models import ReportCase, WorkflowOutbox
+from app.domains.workflow.models import ReportCase, StepTask, WorkflowOutbox
 
 
 async def queue_case_quality_run(
@@ -28,6 +28,9 @@ async def queue_case_quality_run(
     report_case: ReportCase,
     actor_id: int,
     idempotency_key: str,
+    runtime_instruction: str | None = None,
+    source_run_id: int | None = None,
+    step_task: StepTask | None = None,
 ) -> dict:
     locked_case = await db.scalar(
         select(ReportCase)
@@ -49,6 +52,38 @@ async def queue_case_quality_run(
         }
 
     skill = await resolve_case_skill(db, report_case, "report.final_validator")
+    feedback = (runtime_instruction or "").strip()
+    if feedback and source_run_id is None:
+        raise ValueError("quality_feedback_source_required")
+    previous_run = None
+    if source_run_id is not None:
+        previous_run = await db.scalar(
+            select(SkillRun).where(SkillRun.id == source_run_id)
+        )
+        if (
+            previous_run is None
+            or previous_run.report_case_id != report_case.id
+            or previous_run.workflow_instance_id != report_case.workflow_instance_id
+            or previous_run.skill_version_id != skill.id
+            or previous_run.target_type != "REPORT_QA"
+            or previous_run.target_key != "report.final"
+            or previous_run.run_type != "VALIDATE"
+            or (
+                step_task is not None
+                and previous_run.step_task_id not in {None, step_task.id}
+            )
+            or (
+                step_task is not None
+                and (previous_run.context_snapshot or {}).get(
+                    "quality_activation_no"
+                )
+                not in {None, step_task.activation_no}
+            )
+            or previous_run.status != "COMPLETED"
+            or not isinstance(previous_run.output_parsed, dict)
+            or (previous_run.context_snapshot or {}).get("qa_fingerprint") != fingerprint
+        ):
+            raise ValueError("quality_feedback_source_invalid")
     active_run = await db.scalar(
         select(SkillRun)
         .where(
@@ -60,6 +95,8 @@ async def queue_case_quality_run(
         .limit(1)
     )
     if active_run is not None:
+        if feedback or source_run_id is not None:
+            raise ValueError("validator_run_in_progress")
         if (active_run.context_snapshot or {}).get("qa_fingerprint") != fingerprint:
             raise ValueError("validator_run_in_progress")
         return {
@@ -130,7 +167,13 @@ async def queue_case_quality_run(
     if snapshot["semantic_model"].get("framework_contract"):
         qa_input["framework_contract"] = snapshot["semantic_model"]["framework_contract"]
     profile = request_snapshot.get("profile") or {}
-    input_data = {"profile": {"name": profile.get("name")}, "context": {"qa_input": qa_input}}
+    quality_context = {"qa_input": qa_input}
+    if previous_run is not None:
+        quality_context["feedback_rerun"] = {
+            "source_run_id": previous_run.id,
+            "previous_ai_output": deepcopy(previous_run.output_parsed),
+        }
+    input_data = {"profile": {"name": profile.get("name")}, "context": quality_context}
     safe_input = {
         "profile": {"name": profile.get("name")},
         "context": deepcopy(input_data["context"]),
@@ -140,12 +183,26 @@ async def queue_case_quality_run(
         skill_version_id=skill.id,
         idempotency_key=idempotency_key,
         input_snapshot=safe_input,
-        context_snapshot={"qa_fingerprint": fingerprint},
+        context_snapshot={
+            "qa_fingerprint": fingerprint,
+            **(
+                {"quality_activation_no": step_task.activation_no}
+                if step_task is not None
+                else {}
+            ),
+            **(
+                {"quality_feedback_source_run_id": previous_run.id}
+                if previous_run is not None
+                else {}
+            ),
+        },
         run_type="VALIDATE",
         target_type="REPORT_QA",
         target_key="report.final",
         report_case_id=report_case.id,
         workflow_instance_id=report_case.workflow_instance_id,
+        step_task_id=step_task.id if step_task is not None else None,
+        runtime_instruction=feedback or None,
     )
     if created:
         db.add(
@@ -223,7 +280,12 @@ async def quality_state(
             {
                 "id": run.id,
                 "status": run.status,
+                "current": fingerprint_matches,
                 "error": run.error,
+                "runtime_instruction": run.runtime_instruction,
+                "feedback_source_run_id": (run.context_snapshot or {}).get(
+                    "quality_feedback_source_run_id"
+                ),
                 "model_trace": run.model_trace,
                 "completed_at": run.completed_at,
                 "scorecard": (run.output_parsed or {}).get("scorecard") if fingerprint_matches else None,

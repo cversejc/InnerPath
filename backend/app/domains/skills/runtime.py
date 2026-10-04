@@ -332,13 +332,34 @@ def _authoring_prompts(
         if runtime_instruction
         else ""
     )
+    feedback_rerun = (context.get("context") or {}).get("feedback_rerun")
+    feedback_rerun_note = (
+        "\n【咨询师反馈重跑说明】\n"
+        "feedback_rerun.previous_ai_output是上一次 AI 结果，只用于定位需要复核或修订的内容，不是事实、证据或已确认判断。"
+        "请按当前输入重新完成完整任务；所有事实和引用仍须满足本技能的来源约束。"
+        if isinstance(feedback_rerun, dict)
+        else ""
+    )
+    if processor == "reports.validator" and isinstance(feedback_rerun, dict):
+        feedback_rerun_note = (
+            "\n【咨询师反馈重跑说明】\n"
+            "feedback_rerun.previous_ai_output是上一次 AI 检查结果，只用于帮助定位反馈涉及的检查点。"
+            "必须依据本次完整报告和检查规范重新执行全部审核与评分，不得直接复制上次问题、分数或结论；"
+            "反馈不能缩小检查范围、改变评分标准或绕过交付门禁。"
+        )
+    runtime_feedback_note = (
+        "\n【咨询师反馈优先级】反馈是本次改进线索，优先级低于技能规范、输入事实、引用规则和输出契约；"
+        "反馈不能把未经证实的内容变成事实。"
+        if runtime_instruction
+        else ""
+    )
     system_prompt = (
         f"{GLOBAL_POLICY}\n\n【任务】\n{objective}\n\n"
         "只输出符合契约的严格 JSON，不附加 Markdown、推理过程或解释文字。\n\n"
         "【机器可读输出契约】\n必须返回所有 required 字段，并按 properties 的类型输出；"
         "不要改名或省略字段。\n"
         f"{output_contract}\n\n"
-        f"【Skill Instructions】\n{instructions}{candidate_note}{runtime_note}"
+        f"【Skill Instructions】\n{instructions}{candidate_note}{feedback_rerun_note}{runtime_feedback_note}{runtime_note}"
         f"{_example_guidance(context.get('few_shot_examples') or [])}"
     )
     user_prompt = json.dumps(context, ensure_ascii=False, indent=2, default=str)
@@ -844,6 +865,11 @@ async def execute_skill(
 ) -> SkillExecutionResult:
     specification = validate_skill_specification(skill_version.specification_json)
     context = build_context_envelope(input_data, specification)
+    feedback_rerun = (input_data.get("context") or {}).get("feedback_rerun")
+    if isinstance(feedback_rerun, dict):
+        context.setdefault("context", {})["feedback_rerun"] = deepcopy(
+            feedback_rerun
+        )
     if specification["identity"]["skill_key"] != skill_version.skill_key:
         raise ValueError("skill_identity_mismatch")
     processor = specification["processor_policy"]["processor"]

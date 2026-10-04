@@ -72,6 +72,7 @@ export default {
         open_count: 0
       },
       reportQualityIssueDrafts: {},
+      qualityFeedbackDraft: '',
       reportQualitySaving: false,
       reportCaseDelivering: false,
       finalGateAttested: false,
@@ -82,6 +83,7 @@ export default {
       reportNarrativeSaving: false,
       reportNarrativePollTimer: null,
       narrativeCandidateDrafts: {},
+      narrativeFeedbackDrafts: {},
       newReportWritingFragment: { fragment_key: '', title: '' },
       reportStepSaving: false,
       reportStepReturn: { visible: false, targetStepKey: '', reason: '' },
@@ -383,6 +385,8 @@ export default {
         quality_status: 'NOT_RUN', latest_validator_run: null, issues: [],
         can_approve: false, blocking_count: 0, open_count: 0
       }
+      this.qualityFeedbackDraft = ''
+      this.narrativeFeedbackDrafts = {}
       this.workspaceSection = 'overview'
       this.selectedReportStepKey = ''
       this.scrollWorkspaceToTop()

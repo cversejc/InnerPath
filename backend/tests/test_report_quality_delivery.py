@@ -480,10 +480,55 @@ async def test_block_rework_and_qa_rerun_reaches_pass_with_stub_gateway(
     assert completed.status == "COMPLETED"
     assert gateway.calls == 1
     assert state.quality_status == "COMPLETED"
+    assert state.latest_validator_run["current"] is True
     assert state.open_count == 0
     assert state.issues == []
     assert state.can_approve is True
     assert await case_can_be_delivered(quality_db, report_case) is True
+
+    with pytest.raises(ValueError, match="quality_feedback_source_required"):
+        await queue_case_quality_run(
+            quality_db,
+            report_case=report_case,
+            actor_id=8,
+            idempotency_key="qa-cycle-feedback-without-source",
+            runtime_instruction="请重新核对全文。",
+        )
+
+    feedback_queued = await queue_case_quality_run(
+        quality_db,
+        report_case=report_case,
+        actor_id=8,
+        idempotency_key="qa-cycle-feedback",
+        runtime_instruction="请复核全文是否把解释性假设写成确定事实。",
+        source_run_id=completed.id,
+    )
+    feedback_run = feedback_queued["validator_run"]
+    assert feedback_run.status == "PENDING"
+    assert feedback_run.runtime_instruction == "请复核全文是否把解释性假设写成确定事实。"
+    assert feedback_run.context_snapshot["quality_feedback_source_run_id"] == completed.id
+    assert feedback_run.input_snapshot["context"]["feedback_rerun"]["source_run_id"] == completed.id
+    assert feedback_run.input_snapshot["context"]["feedback_rerun"]["previous_ai_output"] == completed.output_parsed
+
+    with pytest.raises(ValueError, match="quality_feedback_source_invalid"):
+        await queue_case_quality_run(
+            quality_db,
+            report_case=report_case,
+            actor_id=8,
+            idempotency_key="qa-cycle-invalid-feedback",
+            runtime_instruction="来源不匹配的反馈。",
+            source_run_id=candidate_run.id,
+        )
+
+    feedback_completed = await skill_runtime.execute_skill_run_record(
+        quality_db, feedback_run.id
+    )
+    state = await quality_state(quality_db, report_case)
+    assert feedback_completed.status == "COMPLETED"
+    assert gateway.calls == 2
+    assert state.latest_validator_run["feedback_source_run_id"] == completed.id
+    assert state.latest_validator_run["runtime_instruction"] == feedback_run.runtime_instruction
+    assert state.can_approve is True
 
     workflow_version = WorkflowVersion(
         workflow_key="report.production",
@@ -511,7 +556,7 @@ async def test_block_rework_and_qa_rerun_reaches_pass_with_stub_gateway(
     report_case.status = "READY_TO_DELIVER"
     gate_result = {
         "final_gate_approved": True,
-        "validator_run_id": completed.id,
+        "validator_run_id": feedback_completed.id,
         "qa_fingerprint": state.qa_fingerprint_current,
         "attested_by": 8,
         "attested_at": now.isoformat(),
@@ -575,6 +620,11 @@ async def test_block_rework_and_qa_rerun_reaches_pass_with_stub_gateway(
         item["id"] == completed.id
         and item["target_type"] == "REPORT_QA"
         and item["model_trace"]["model"] == "stub"
+        for item in delivered_version.semantic_snapshot["skill_runs"]
+    )
+    assert any(
+        item["id"] == feedback_completed.id
+        and item["target_type"] == "REPORT_QA"
         for item in delivered_version.semantic_snapshot["skill_runs"]
     )
 

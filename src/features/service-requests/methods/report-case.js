@@ -34,6 +34,10 @@ function splitReferences(value) {
 export default {
   async loadReportCaseData(caseId) {
     this.reportCaseLoading = true
+    if (this.reportCase?.id !== Number(caseId)) {
+      this.narrativeFeedbackDrafts = {}
+      this.qualityFeedbackDraft = ''
+    }
     if (this.reportNarrativePollTimer) {
       clearTimeout(this.reportNarrativePollTimer)
       this.reportNarrativePollTimer = null
@@ -186,22 +190,49 @@ export default {
       }
     }, 1800)
   },
-  async runReportQuality() {
+  async runReportQuality(feedbackRequest = null) {
     if (!this.reportCase || this.reportQualitySaving) return
+    const feedback = String(feedbackRequest?.runtimeInstruction || '').trim()
+    const sourceRunId = Number(feedbackRequest?.sourceRunId) || null
+    if (feedback.length > 4000) {
+      this.message = '反馈不能超过 4000 个字符。'
+      return
+    }
+    if (feedback && !sourceRunId) {
+      this.message = '请选择一条已完成的检查结果，再提交反馈。'
+      return
+    }
     this.reportQualitySaving = true
     try {
       this.reportQuality = await runReportCaseQuality(this.reportCase.id, {
-        idempotency_key: `case-${this.reportCase.id}-qa-${Date.now()}`
+        idempotency_key: `case-${this.reportCase.id}-qa-${Date.now()}`,
+        runtime_instruction: feedback || null,
+        source_run_id: feedback ? sourceRunId : null
       })
+      if (
+        feedback
+        && this.reportQuality.quality_status !== 'PROGRAMMATIC_BLOCKED'
+        && this.reportQuality.latest_validator_run?.id !== sourceRunId
+      ) this.qualityFeedbackDraft = ''
       this.scheduleNarrativePoll(this.reportCase.id)
       this.message = this.reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'
         ? '交付前检查发现必须处理的问题，请先修订报告内容。'
-        : '交付前检查已开始。'
+        : feedback
+          ? '已收到检查反馈，正在依据完整报告重新复核。'
+          : '交付前检查已开始。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
       this.reportQualitySaving = false
     }
+  },
+  async rerunReportQualityWithFeedback() {
+    const run = this.reportQuality.latest_validator_run
+    if (!run || run.status !== 'COMPLETED' || !run.current) return
+    await this.runReportQuality({
+      runtimeInstruction: this.qualityFeedbackDraft,
+      sourceRunId: run.id
+    })
   },
   async resolveReportQualityIssue(issue) {
     const draft = this.reportQualityIssueDrafts[issue.id]
@@ -272,6 +303,31 @@ export default {
       })
       await this.loadReportCaseData(this.reportCase.id)
       this.message = '报告主线建议已开始生成。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportNarrativeSaving = false
+    }
+  },
+  async rerunNarrativeWithFeedback(run) {
+    const step = this.currentReportStep
+    const feedback = String(this.narrativeFeedbackDrafts[run?.id] || '').trim()
+    if (!this.reportCase || !step || step.step_key !== 'S5' || step.status !== 'IN_REVIEW' || this.reportNarrativeSaving) return
+    if (!run || run.status !== 'COMPLETED' || !feedback) return
+    if (feedback.length > 4000) {
+      this.message = '反馈不能超过 4000 个字符。'
+      return
+    }
+    this.reportNarrativeSaving = true
+    try {
+      await generateReportNarrativeCandidates(this.reportCase.id, step.step_key, {
+        idempotency_key: `case-${this.reportCase.id}-narrative-feedback-${run.id}-${Date.now()}`,
+        runtime_instruction: feedback,
+        source_run_id: run.id
+      })
+      this.narrativeFeedbackDrafts[run.id] = ''
+      await this.loadReportCaseData(this.reportCase.id)
+      this.message = '已收到主线建议反馈，正在生成新的 AI 候选；旧结果仍保留用于对照。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -357,6 +413,32 @@ export default {
       this.newReportWritingFragment = { fragment_key: '', title: '' }
       await this.loadReportCaseData(this.reportCase.id)
       this.message = '报告内容已开始生成。'
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.reportNarrativeSaving = false
+    }
+  },
+  async rerunReportFragmentWithFeedback(run) {
+    const step = this.currentReportStep
+    const feedback = String(this.narrativeFeedbackDrafts[run?.id] || '').trim()
+    if (!this.reportCase || !step || step.step_key !== 'S5' || step.status !== 'IN_REVIEW' || this.reportNarrativeSaving) return
+    if (!run || run.status !== 'COMPLETED' || !run.target_key || !feedback) return
+    if (feedback.length > 4000) {
+      this.message = '反馈不能超过 4000 个字符。'
+      return
+    }
+    this.reportNarrativeSaving = true
+    try {
+      await generateReportCaseFragment(this.reportCase.id, step.step_key, {
+        idempotency_key: `case-${this.reportCase.id}-fragment-feedback-${run.id}-${Date.now()}`,
+        fragment_key: run.target_key,
+        runtime_instruction: feedback,
+        source_run_id: run.id
+      })
+      this.narrativeFeedbackDrafts[run.id] = ''
+      await this.loadReportCaseData(this.reportCase.id)
+      this.message = '已收到本段写作反馈，新版本正在生成并会进入人工审核。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
