@@ -166,6 +166,8 @@ shapes for statuses, seals, tags and compact metadata.
 - About remains a standalone page at `/pages/about/about`. Desktop navigation includes
   “关于”; the mobile secondary menu includes “关于辰鉴”. Keep its full brand introduction
   separate from the homepage until the product structure is reassessed.
+- Its introduction uses `BrandPageHeader` with the homepage landscape; the page uses
+  `--paper-scene` beneath readable `surface-strong` content cards.
 - Menu, sheet, drawer and modal surfaces must provide dialog semantics, Escape close,
   focus entry, focus containment and focus restoration.
 - Fixed navigation must be compensated by page padding and safe-area variables.

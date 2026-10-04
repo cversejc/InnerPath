@@ -1,25 +1,15 @@
-.about-header {
-  padding: 96px 0 78px;
-  text-align: center;
+.about {
+  background-color: var(--paper);
+  background-image: var(--paper-scene);
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
-.about-header .header-inner {
-  max-width: 780px;
-}
-
-.about-header h1 {
-  font-family: var(--font-display);
-  font-size: var(--text-display-xl);
-  font-weight: var(--weight-medium);
-  line-height: var(--leading-display);
-}
-
-.about-header p:not(.section-kicker) {
-  max-width: 680px;
-  margin: 22px auto 0;
-  color: var(--ink-soft);
-  font-size: 18px;
-  line-height: 1.85;
+.about .paper-card {
+  background: var(--surface-strong);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 .about-story-grid {
