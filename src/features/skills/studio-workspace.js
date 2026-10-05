@@ -22,6 +22,11 @@ import {
 
 const POLL_INTERVAL = 2500;
 const S1_FOUNDATION_SKILL_KEY = REPORT_SKILLS.find((item) => item.step === "S1")?.key;
+const REASONING_GUIDANCE_SKILL_KEYS = new Set(
+  REPORT_SKILLS.filter((item) => ["S1", "S2"].includes(item.step)).map(
+    (item) => item.key,
+  ),
+);
 
 function reasoningGuidanceFromVersion(version) {
   const guidance = version?.reasoning_guidance;
@@ -55,7 +60,7 @@ export default {
       ? this.$route.query.panel
       : "overview";
     const activeAdminTab =
-      isAdmin && selectedSkillKey === S1_FOUNDATION_SKILL_KEY
+      isAdmin && REASONING_GUIDANCE_SKILL_KEYS.has(selectedSkillKey)
         ? requestedPanel === "overview"
           ? "skills"
           : requestedPanel === "evaluation"
@@ -102,6 +107,11 @@ export default {
     isS1Admin() {
       return this.isAdmin && this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY;
     },
+    isReasoningGuidanceAdmin() {
+      return (
+        this.isAdmin && REASONING_GUIDANCE_SKILL_KEYS.has(this.selectedSkillKey)
+      );
+    },
     catalog() {
       return buildSkillCatalog(this.versions);
     },
@@ -146,7 +156,7 @@ export default {
       );
     },
     studioTabs() {
-      if (this.isS1Admin)
+      if (this.isReasoningGuidanceAdmin)
         return [
           { id: "skills", label: "维护思路" },
           { id: "debug", label: "试用与评估" },
@@ -183,7 +193,7 @@ export default {
     specError() {
       if (!this.editable) return "";
       let instructions;
-      if (this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY) {
+      if (REASONING_GUIDANCE_SKILL_KEYS.has(this.selectedSkillKey)) {
         instructions = this.reasoningGuidance || {};
       } else {
         const parsed = parseSpecification(this.specificationText);
@@ -282,7 +292,7 @@ export default {
       this.previewRunId = null;
       this.reasoningGuidance = reasoningGuidanceFromVersion(version);
       this.specificationText =
-        version.skill_key === S1_FOUNDATION_SKILL_KEY
+        REASONING_GUIDANCE_SKILL_KEYS.has(version.skill_key)
           ? ""
           : JSON.stringify(version.specification_json, null, 2);
       this.selectedRun = null;
@@ -293,7 +303,7 @@ export default {
       this.selectedRun = null;
       this.feedbackSourceRun = null;
       this.inputPreviewSourceRun = null;
-      this.changeTab(this.isS1Admin ? "skills" : "overview");
+      this.changeTab(this.isReasoningGuidanceAdmin ? "skills" : "overview");
       if (this.isAdmin) {
         const version = this.preferredVersion();
         if (version) this.selectVersion(version);
@@ -309,7 +319,7 @@ export default {
     },
     preferredVersion() {
       return (
-        (this.isS1Admin &&
+        (this.isReasoningGuidanceAdmin &&
           this.skillVersions.find((item) => item.status === "DRAFT")) ||
         this.skillVersions.find((item) => item.status === "PUBLISHED") ||
         this.skillVersions[0]
@@ -331,7 +341,7 @@ export default {
       this.$nextTick(() => this.$refs.workBody?.scrollTo({ top: 0 }));
     },
     studioTabIsActive(tab) {
-      if (this.isS1Admin && tab === "examples")
+      if (this.isReasoningGuidanceAdmin && tab === "examples")
         return ["examples", "runs", "feedback"].includes(this.activeAdminTab);
       return this.activeAdminTab === tab;
     },
@@ -340,7 +350,7 @@ export default {
       this.saving = true;
       try {
         const created =
-          this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY
+          REASONING_GUIDANCE_SKILL_KEYS.has(this.selectedSkillKey)
             ? await api.createSkillDraft(this.selectedVersion.id)
             : await api.createSkillVersion({
                 skill_key: this.selectedVersion.skill_key,
@@ -364,8 +374,12 @@ export default {
       }
     },
     async saveDraft(options = {}) {
-      const isS1 = this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY;
-      const parsed = isS1 ? null : parseSpecification(this.specificationText);
+      const isReasoningGuidanceSkill = REASONING_GUIDANCE_SKILL_KEYS.has(
+        this.selectedSkillKey,
+      );
+      const parsed = isReasoningGuidanceSkill
+        ? null
+        : parseSpecification(this.specificationText);
       if (this.specError) {
         this.showMessage(this.specError, "error");
         if (options.rethrow) throw new Error(this.specError);
@@ -374,7 +388,7 @@ export default {
       this.saving = true;
       try {
         const updated =
-          isS1
+          isReasoningGuidanceSkill
             ? await api.updateSkillReasoningGuidance(this.selectedVersion.id, {
                 objective: this.reasoningGuidance.objective,
                 methodology: this.reasoningGuidance.methodology,
@@ -399,7 +413,7 @@ export default {
     },
     async publish() {
       if (
-        this.selectedSkillKey !== S1_FOUNDATION_SKILL_KEY &&
+        !REASONING_GUIDANCE_SKILL_KEYS.has(this.selectedSkillKey) &&
         parseSpecification(this.specificationText).error
       )
         return;
@@ -427,7 +441,7 @@ export default {
       this.selectedVersion = version;
       this.reasoningGuidance = reasoningGuidanceFromVersion(version);
       this.specificationText =
-        version.skill_key === S1_FOUNDATION_SKILL_KEY
+        REASONING_GUIDANCE_SKILL_KEYS.has(version.skill_key)
           ? ""
           : JSON.stringify(version.specification_json, null, 2);
     },

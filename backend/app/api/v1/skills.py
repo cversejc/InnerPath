@@ -11,7 +11,7 @@ from app.application.skill_evaluation import ensure_evaluation_passed_before_pub
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.skills.models import AISkillVersion, SkillRun
-from app.domains.skills.definitions import s1_reasoning_guidance
+from app.domains.skills.definitions import reasoning_guidance_for_skill
 from app.domains.skills.schemas import (
     SkillRunCreate,
     SkillRunResponse,
@@ -26,7 +26,7 @@ from app.domains.skills.schemas import (
 from app.domains.skills.service import (
     create_skill_draft,
     publish_skill_version,
-    update_s1_reasoning_guidance,
+    update_reasoning_guidance,
     update_skill_draft,
 )
 from app.models.user import User
@@ -38,7 +38,7 @@ staff_router = APIRouter()
 
 def _skill_version_response(version: AISkillVersion) -> SkillVersionResponse:
     response = SkillVersionResponse.model_validate(version)
-    reasoning_guidance = s1_reasoning_guidance(
+    reasoning_guidance = reasoning_guidance_for_skill(
         version.skill_key, version.specification_json
     )
     if reasoning_guidance is None:
@@ -188,7 +188,7 @@ async def update_skill_reasoning_guidance(
     _actor: User = Depends(require_roles("admin")),
 ):
     try:
-        version = await update_s1_reasoning_guidance(
+        version = await update_reasoning_guidance(
             db,
             version_id,
             objective=payload.objective,

@@ -31,7 +31,7 @@ from app.domains.skills.analysis_sop import display_topic_title
 from .definitions import (
     GLOBAL_POLICY,
     GLOBAL_POLICY_VERSION,
-    compile_s1_runtime_specification,
+    compile_reasoning_guidance_specification,
     validate_skill_specification,
 )
 
@@ -897,7 +897,7 @@ async def execute_skill(
     gateway: ModelGateway | None = None,
 ) -> SkillExecutionResult:
     specification = validate_skill_specification(
-        compile_s1_runtime_specification(
+        compile_reasoning_guidance_specification(
             validate_skill_specification(skill_version.specification_json)
         )
     )

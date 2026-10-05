@@ -151,20 +151,20 @@
               <p v-if="!isAdmin">
                 咨询师可查看已发布示例，并从本报告的运行结果推荐经验；管理员负责脱敏审核、版本维护和发布。
               </p>
-              <p v-else-if="isS1Admin">
-                S1 管理页只维护 AI 的分析目标和思路。试用使用系统提供的固定案例；输入资料、输出结构与发布校验由系统维护。
+              <p v-else-if="isReasoningGuidanceAdmin">
+                {{ selectedSkill.step }} 只维护 AI 的分析目标和思路。输入资料、输出结构与发布校验由系统维护。
               </p>
               <p v-else>
                 管理员可查看报告节点反馈，也可从报告或日历运行记录载入真实输入；用草稿预览和评估后再发布技能版本。
               </p>
-              <details v-if="!isS1Admin">
+              <details v-if="!isReasoningGuidanceAdmin">
                 <summary>技术标识</summary>
                 <code>{{ selectedSkill.key }}</code>
               </details>
             </section>
             <template v-else-if="activeAdminTab === 'skills' && isAdmin">
               <div class="panel-heading">
-                <h3>{{ isS1Admin ? "维护 AI 分析思路" : "技能维护" }}</h3>
+                <h3>{{ isReasoningGuidanceAdmin ? "维护 AI 分析思路" : "技能维护" }}</h3>
                 <VanButton
                   class="primary-button compact-button"
                   type="primary"
@@ -172,7 +172,7 @@
                   :disabled="saving || !selectedVersion"
                   :loading="saving"
                   @click="createDraft"
-                  >{{ isS1Admin ? "创建思路草稿" : "从当前版本创建草稿" }}</VanButton
+                  >{{ isReasoningGuidanceAdmin ? "创建思路草稿" : "从当前版本创建草稿" }}</VanButton
                 >
               </div>
               <SkillInstructions
@@ -180,7 +180,7 @@
                 v-model:text="specificationText"
                 v-model:guidance="reasoningGuidance"
                 :editable="editable"
-                :intent-only="selectedSkill.step === 'S1'"
+                :intent-only="isReasoningGuidanceAdmin"
                 :error="specError"
                 ><VanButton
                   v-if="editable"
@@ -204,7 +204,7 @@
             </template>
             <template v-else-if="activeAdminTab === 'examples'">
               <nav
-                v-if="isS1Admin"
+                v-if="isReasoningGuidanceAdmin"
                 class="studio-tabs studio-subtabs"
                 aria-label="参考与运行记录"
               >
@@ -224,10 +224,13 @@
               v-else-if="activeAdminTab === 'debug' && isAdmin"
               class="studio-run-panel"
             >
-              <template v-if="isS1Admin">
+              <template v-if="isReasoningGuidanceAdmin">
                 <h3>试用与质量评估</h3>
-                <p>
+                <p v-if="isS1Admin">
                   选择程序维护的固定案例，预览草稿效果并检查结构、依据和安全要求。评估通过后才能发布。
+                </p>
+                <p v-else>
+                  选择与本节点相关的固定案例，检查分析依据、解释边界和框架覆盖。评估通过后才能发布。
                 </p>
                 <EvaluationPanel
                   :version="selectedVersion"
@@ -316,7 +319,7 @@
             />
             <section v-else-if="activeAdminTab === 'runs'" class="runs-section">
               <nav
-                v-if="isS1Admin"
+                v-if="isReasoningGuidanceAdmin"
                 class="studio-tabs studio-subtabs"
                 aria-label="参考与运行记录"
               >
@@ -398,7 +401,7 @@
               class="skill-feedback-inbox"
             >
               <nav
-                v-if="isS1Admin"
+                v-if="isReasoningGuidanceAdmin"
                 class="studio-tabs studio-subtabs"
                 aria-label="参考与运行记录"
               >

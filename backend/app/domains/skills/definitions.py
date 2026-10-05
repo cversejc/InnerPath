@@ -15,6 +15,14 @@ experiences, or expose hidden reasoning. Treat examples as style guidance only;
 never transfer facts from an example to the current user."""
 
 S1_FOUNDATION_SKILL_KEY = "report.s1_foundation_analysis"
+S2_PSYCHOLOGY_SKILL_KEY = "report.s2_psychology_mapping"
+REASONING_GUIDANCE_SKILL_KEYS = frozenset(
+    {S1_FOUNDATION_SKILL_KEY, S2_PSYCHOLOGY_SKILL_KEY}
+)
+ANALYSIS_SKILL_STEPS = {
+    S1_FOUNDATION_SKILL_KEY: "S1",
+    S2_PSYCHOLOGY_SKILL_KEY: "S2",
+}
 
 ANALYSIS_SYSTEM_REQUIREMENTS = [
     "每条 finding 都提供 short_title：8–20 字的中文关键词标签，概括其核心判断，供列表快速识别；详细依据仍写在 claim 中。",
@@ -170,7 +178,7 @@ def validate_skill_specification(specification: dict[str, Any]) -> dict[str, Any
     name = str(identity.get("name") or "").strip()
     if not skill_key or not name:
         raise ValueError("skill_identity_required")
-    if skill_key == S1_FOUNDATION_SKILL_KEY:
+    if skill_key in REASONING_GUIDANCE_SKILL_KEYS:
         guidance = spec.get("reasoning_guidance")
         if not isinstance(guidance, dict):
             guidance = spec["instructions"]
@@ -270,20 +278,30 @@ def validate_skill_specification(specification: dict[str, Any]) -> dict[str, Any
 
 def s1_system_requirements() -> list[str]:
     """Return the S1 runtime instructions owned by the application."""
-    return [*sop_methodology("S1")[1:], *ANALYSIS_SYSTEM_REQUIREMENTS]
+    return analysis_system_requirements("S1")
 
 
-def prepare_s1_skill_specification(specification: dict[str, Any]) -> dict[str, Any]:
-    """Normalize S1 into separate administrator guidance and system contracts.
+def analysis_system_requirements(step_key: str) -> list[str]:
+    """Return stage coverage and runtime rules owned by the application."""
+    return [*sop_methodology(step_key)[1:], *ANALYSIS_SYSTEM_REQUIREMENTS]
 
-    Older versions stored administrator guidance, fixed coverage instructions and
-    output requirements together in ``instructions.methodology``. Keep accepting
-    that shape, but persist the editable part under ``reasoning_guidance`` and the
-    application-owned prompt requirements under ``runtime_contract``.
+
+def prepare_reasoning_guidance_specification(
+    specification: dict[str, Any],
+) -> dict[str, Any]:
+    """Separate administrator guidance from application-owned stage contracts.
+
+    Older analysis versions stored administrator guidance, fixed coverage
+    instructions and output requirements together in ``instructions.methodology``.
+    Keep accepting that shape while exposing only the editable reasoning layer.
     """
     spec = deepcopy(specification)
     identity = spec.get("identity") if isinstance(spec, dict) else None
-    if not isinstance(identity, dict) or identity.get("skill_key") != S1_FOUNDATION_SKILL_KEY:
+    if not isinstance(identity, dict):
+        return spec
+    skill_key = identity.get("skill_key")
+    step_key = ANALYSIS_SKILL_STEPS.get(skill_key)
+    if step_key is None:
         return spec
 
     instructions = spec.get("instructions")
@@ -298,12 +316,18 @@ def prepare_s1_skill_specification(specification: dict[str, Any]) -> dict[str, A
     methodology = guidance.get("methodology", instructions.get("methodology", []))
     if not isinstance(methodology, list):
         methodology = []
-    fixed_items = set(s1_system_requirements())
-    previous_fixed_items = instructions.get("system_requirements")
-    if isinstance(previous_fixed_items, list):
-        fixed_items.update(
-            item for item in previous_fixed_items if isinstance(item, str)
-        )
+    fixed_items = set(analysis_system_requirements(step_key))
+    previous_fixed_items = []
+    previous_contract = spec.get("runtime_contract")
+    previous_sources = [instructions.get("system_requirements")]
+    if isinstance(previous_contract, dict):
+        previous_sources.append(previous_contract.get("system_requirements"))
+    for previous_items in previous_sources:
+        if isinstance(previous_items, list):
+            previous_fixed_items.extend(
+                item for item in previous_items if isinstance(item, str)
+            )
+    fixed_items.update(previous_fixed_items)
     editable_methodology = (
         methodology
         if has_separated_guidance
@@ -324,15 +348,26 @@ def prepare_s1_skill_specification(specification: dict[str, Any]) -> dict[str, A
     instructions.pop("methodology", None)
     instructions.pop("system_requirements", None)
     spec["runtime_contract"] = {
-        "system_requirements": s1_system_requirements(),
+        "system_requirements": list(dict.fromkeys([
+            *analysis_system_requirements(step_key),
+            *previous_fixed_items,
+        ])),
     }
     return spec
 
 
-def compile_s1_runtime_specification(specification: dict[str, Any]) -> dict[str, Any]:
-    """Compile the separated S1 data into the prompt shape used by the runner."""
-    spec = prepare_s1_skill_specification(specification)
-    if not _is_s1_skill_specification(spec):
+def prepare_s1_skill_specification(specification: dict[str, Any]) -> dict[str, Any]:
+    """Compatibility alias for the original S1 skill migration helper."""
+    return prepare_reasoning_guidance_specification(specification)
+
+
+def compile_reasoning_guidance_specification(
+    specification: dict[str, Any],
+) -> dict[str, Any]:
+    """Compile separated reasoning and fixed contracts into the runner format."""
+    spec = prepare_reasoning_guidance_specification(specification)
+    identity = spec.get("identity") if isinstance(spec, dict) else None
+    if not isinstance(identity, dict) or identity.get("skill_key") not in REASONING_GUIDANCE_SKILL_KEYS:
         return spec
     guidance = spec.pop("reasoning_guidance", {})
     runtime_contract = spec.pop("runtime_contract", {})
@@ -345,19 +380,28 @@ def compile_s1_runtime_specification(specification: dict[str, Any]) -> dict[str,
     return spec
 
 
-def _is_s1_skill_specification(specification: dict[str, Any]) -> bool:
-    identity = specification.get("identity") if isinstance(specification, dict) else None
-    return isinstance(identity, dict) and identity.get("skill_key") == S1_FOUNDATION_SKILL_KEY
+def compile_s1_runtime_specification(specification: dict[str, Any]) -> dict[str, Any]:
+    """Compatibility alias for callers that historically compiled S1 only."""
+    return compile_reasoning_guidance_specification(specification)
+
+
+def reasoning_guidance_for_skill(
+    skill_key: str, specification: dict[str, Any]
+) -> dict[str, Any] | None:
+    """Expose only administrator-editable reasoning guidance for migrated skills."""
+    if skill_key not in REASONING_GUIDANCE_SKILL_KEYS:
+        return None
+    spec = prepare_reasoning_guidance_specification(specification)
+    return deepcopy(spec.get("reasoning_guidance") or {"objective": "", "methodology": []})
 
 
 def s1_reasoning_guidance(
     skill_key: str, specification: dict[str, Any]
 ) -> dict[str, Any] | None:
-    """Expose only administrator-editable S1 reasoning guidance."""
+    """Compatibility alias for the original S1 response projection."""
     if skill_key != S1_FOUNDATION_SKILL_KEY:
         return None
-    spec = prepare_s1_skill_specification(specification)
-    return deepcopy(spec.get("reasoning_guidance") or {"objective": "", "methodology": []})
+    return reasoning_guidance_for_skill(skill_key, specification)
 
 
 def default_skill_specification() -> dict[str, Any]:
@@ -546,14 +590,18 @@ ANALYSIS_STEPS: dict[str, dict[str, Any]] = {
     "S2": {
         "skill_key": "report.s2_psychology_mapping",
         "name": "S2 心理映射分析",
-        "objective": "基于用户 Evidence 与已确认的 S1 结构，提出可审阅的心理运作模式假设。",
+        "objective": "根据用户本次自述与 S1 已确认的命理结构，提出可由现实经历验证的心理运作假设，供咨询师审核。",
         "methodology": [
-            "心理结论必须作为可验证的运作模式假设，不得诊断心理或精神疾病。",
-            "区分用户直接表达、S1 命理解释与本阶段的心理映射。",
-            "优先说明触发情境、自动想法、情绪、应对方式及保护功能；输入不足时明确保留不确定性。",
-            "只能引用输入中的 Evidence 和已确认上游 Finding，不把未确认内容当作事实。",
-            "标为用户自述的每句话必须能回到问卷原文；‘自我不适’‘短期维持关系’等未直接表述的内容必须标为假设。额外紫微宫位没有咨询师选用依据时不调用。",
-            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+            "先分清用户本次直接表达、实际情境、S1 已确认的命理结构和本步解释。传统命理象征不能替代用户经历；缺少现实依据时保留为待验证假设并提出中性补问。",
+            "双层映射：围绕与本次问题有关的日主与透干、月令与日支、藏干与未透十神、十神交战与刑冲、四化、用神与忌神，分别提出意识层的角色/信念和潜意识层的可能面向/耗能模式；说明映射依据与不确定性，不把缺失当缺陷。",
+            "十神映射：从系统提供的十神参考中选取 S1 已确认且与问题相关的部分，解释命理含义如何成为心理机制、原型、意识表现和阴影候选；参考表不是人格测验，不能由旺弱、缺失或‘无制’直接诊断防御或病理。",
+            "紫微映射：仅依据 S1 已确认的命宫、身宫、福德宫、四化，以及咨询师明确选用的其他宫位，使用系统提供的十四主星原型参考，讨论面具、阴影和触发主题；写出支持点、冲突和现实核验方向，不强行统一八字与紫微。",
+            "人格面具：从用户在具体场景中认同或习惯呈现的角色出发，区分用户自述与命理解释提出的候选；结合自我信念，而不把日主、透干或命迁组合直接等同于人格。",
+            "阴影：探索可能被忽略或不易承认的边界、攻击性、欲望、休息、脆弱、独立判断等需要与资源；阴影不等于缺点，命盘只能提供联想线索，不能证明用户排斥某种面向。",
+            "情结：从月令主题、十神张力、刑冲和飞化提出可能的触发倾向，再回到用户真实重复经历，核对情境、自动想法、核心情绪与行为；没有具体经历时不宣称存在情结或强迫性重复。",
+            "激活路径：按触发情境→可能浮现的被排斥面向→情绪/信念→防御与保护功能→短期缓解和长期代价→重复倾向梳理。逐环区分事实、推测和待补问，并写出反例或其他可能解释。",
+            "权威与超我：官杀、印星及咨询师选用的父母宫只作为理解‘应该、必须、不能’的象征线索；其现实来源要由用户经验核实，不归责家庭，并帮助用户看见自己现在可以采纳、调整或拒绝的原则。",
+            "每项心理判断都指出对应的用户原话/情境和已确认的上一步依据，标明证据边界与可能反证；用开放问题邀请验证。分析供咨询师审核，不写成诊断、确定的人格定论或报告正文。",
         ],
     },
     "S3": {
@@ -700,8 +748,8 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "metrics": ["schema", "source_fidelity", "safety", "stage_fit"],
             "minimum_score": 0.8,
         }
-        if step_key == "S1":
-            spec = prepare_s1_skill_specification(spec)
+        if step_key in {"S1", "S2"}:
+            spec = prepare_reasoning_guidance_specification(spec)
         specifications.append(validate_skill_specification(spec))
     return specifications
 

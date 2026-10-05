@@ -13,11 +13,14 @@ from app.api.v1.skills import _skill_version_response
 from app.db.base import Base
 from app.domains.skills.definitions import (
     DEFAULT_SKILL_KEY,
+    S2_PSYCHOLOGY_SKILL_KEY,
     compile_s1_runtime_specification,
+    compile_reasoning_guidance_specification,
     default_analysis_skill_specifications,
     default_narrative_skill_specifications,
     default_skill_specification,
     default_validator_skill_specification,
+    reasoning_guidance_for_skill,
     s1_reasoning_guidance,
     validate_skill_specification,
 )
@@ -42,6 +45,7 @@ from app.domains.skills.service import (
     ensure_default_skill_version,
     ensure_default_validator_skill_version,
     publish_skill_version,
+    update_reasoning_guidance,
     update_s1_reasoning_guidance,
     update_skill_draft,
 )
@@ -254,6 +258,50 @@ def test_s1_guidance_covers_all_fourteen_step_one_framework_topics():
     assert all("analysis.s1." not in item for item in guidance["methodology"])
 
 
+def test_s2_guidance_covers_framework_thought_without_exposing_contract_fields():
+    specification = default_analysis_skill_specifications()[1]
+    guidance = specification["reasoning_guidance"]
+
+    assert specification["identity"]["skill_key"] == S2_PSYCHOLOGY_SKILL_KEY
+    assert len(guidance["methodology"]) == 11
+    assert any(item.startswith("命理为表") for item in guidance["methodology"])
+    assert all(
+        phrase in "\n".join(guidance["methodology"])
+        for phrase in (
+            "双层映射", "十神映射", "十四主星", "人格面具", "阴影", "情结",
+            "激活路径", "权威与超我", "可能反证", "开放问题",
+        )
+    )
+    assert all(
+        topic["fragment_key"] not in "\n".join(guidance["methodology"])
+        for topic in specification["instructions"]["sop_contract"]["topics"]
+    )
+
+
+def test_s2_legacy_instructions_project_as_guidance_and_compile_to_same_runtime():
+    current = default_analysis_skill_specifications()[1]
+    guidance = deepcopy(current["reasoning_guidance"])
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = guidance["objective"]
+    legacy["instructions"]["methodology"] = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy["instructions"]["system_requirements"] = ["旧版固定运行要求"]
+    legacy["instructions"]["methodology"].append("旧版固定运行要求")
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    exposed_guidance = reasoning_guidance_for_skill(
+        current["identity"]["skill_key"], legacy
+    )
+
+    assert exposed_guidance == guidance
+    expected_runtime = compile_reasoning_guidance_specification(current)
+    expected_runtime["instructions"]["methodology"].append("旧版固定运行要求")
+    assert compile_reasoning_guidance_specification(legacy) == expected_runtime
+
+
 @pytest.mark.asyncio
 async def test_s1_reasoning_guidance_draft_publishes_and_compiles_for_runtime(skill_db):
     versions = await ensure_default_analysis_skill_versions(skill_db)
@@ -302,6 +350,52 @@ async def test_s1_skill_api_returns_guidance_without_technical_specification(ski
         "reasoning_guidance"
     ]
     assert response.specification_json is None
+
+
+@pytest.mark.asyncio
+async def test_s2_reasoning_guidance_draft_preserves_contract_and_compiles(skill_db):
+    published = (await ensure_default_analysis_skill_versions(skill_db))[1]
+    current_guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    objective = "依据用户经历检验心理映射假设，并明确保留不确定性。"
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=objective,
+        methodology=current_guidance["methodology"],
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+    response = _skill_version_response(updated)
+
+    assert updated.status == "DRAFT"
+    assert updated.specification_json["reasoning_guidance"]["objective"] == objective
+    assert "objective" not in updated.specification_json["instructions"]
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert runtime["instructions"]["objective"] == objective
+    assert "双层映射" in "\n".join(runtime["instructions"]["methodology"])
+    assert len(runtime["instructions"]["sop_contract"]["topics"]) == 8
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["output_contract"]["properties"]["summary"]["type"] = "number"
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            draft.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
 
 
 @pytest.mark.asyncio
@@ -372,6 +466,9 @@ async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
     assert "【机器可读输出契约】" in gateway.last_request[0]
     assert '"analysis_fragments"' in gateway.last_request[0]
     assert '"relation_refs"' in gateway.last_request[0]
+    assert "双层映射：" in gateway.last_request[0]
+    assert "激活路径：" in gateway.last_request[0]
+    assert "analysis.s2.mapping" in gateway.last_request[0]
     assert '"evidence_keys": ["input.context.current_challenge"]' in gateway.last_request[0]
     assert '"confirmed_finding_keys": ["foundation.balance"]' in gateway.last_request[0]
 

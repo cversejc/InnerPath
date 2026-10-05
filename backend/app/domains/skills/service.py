@@ -8,12 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .definitions import (
     DEFAULT_SKILL_KEY,
-    S1_FOUNDATION_SKILL_KEY,
+    REASONING_GUIDANCE_SKILL_KEYS,
     default_analysis_skill_specifications,
     default_validator_skill_specification,
     default_narrative_skill_specifications,
     default_skill_specification,
-    prepare_s1_skill_specification,
+    prepare_reasoning_guidance_specification,
     validate_skill_specification,
 )
 from .models import AISkillVersion, SkillRun
@@ -24,7 +24,7 @@ def _now() -> datetime:
     return datetime.utcnow()
 
 
-def _s1_system_managed_projection(specification: dict[str, Any]) -> dict[str, Any]:
+def _system_managed_projection(specification: dict[str, Any]) -> dict[str, Any]:
     projection = deepcopy(specification)
     projection.pop("reasoning_guidance", None)
     instructions = projection.get("instructions")
@@ -34,11 +34,11 @@ def _s1_system_managed_projection(specification: dict[str, Any]) -> dict[str, An
     return projection
 
 
-def _is_s1_specification(specification: Any) -> bool:
+def _is_reasoning_guidance_specification(specification: Any) -> bool:
     identity = specification.get("identity") if isinstance(specification, dict) else None
     return (
         isinstance(identity, dict)
-        and identity.get("skill_key") == S1_FOUNDATION_SKILL_KEY
+        and identity.get("skill_key") in REASONING_GUIDANCE_SKILL_KEYS
     )
 
 
@@ -59,9 +59,9 @@ async def _ensure_published_builtin_version(
         .order_by(AISkillVersion.version.desc())
         .limit(1)
     )
-    if skill_key == S1_FOUNDATION_SKILL_KEY and latest_published is not None:
-        # S1 reasoning is administrator-maintained. A code default change must
-        # not silently publish a new version over an existing reviewed skill.
+    if skill_key in REASONING_GUIDANCE_SKILL_KEYS and latest_published is not None:
+        # Administrator-maintained reasoning must not be overwritten by a code
+        # default update after a reviewed version already exists.
         return latest_published
     if (
         latest_published is not None
@@ -122,8 +122,8 @@ async def create_skill_draft(
     specification: dict[str, Any],
     created_by: int | None,
 ) -> AISkillVersion:
-    if _is_s1_specification(specification):
-        specification = prepare_s1_skill_specification(specification)
+    if _is_reasoning_guidance_specification(specification):
+        specification = prepare_reasoning_guidance_specification(specification)
     spec = validate_skill_specification(specification)
     if spec["identity"]["skill_key"] != skill_key or spec["identity"]["name"] != name:
         raise ValueError("skill_identity_mismatch")
@@ -135,14 +135,14 @@ async def create_skill_draft(
         .order_by(AISkillVersion.version.desc())
         .limit(1)
     )
-    if skill_key == S1_FOUNDATION_SKILL_KEY and latest is not None:
+    if skill_key in REASONING_GUIDANCE_SKILL_KEYS and latest is not None:
         latest_spec = validate_skill_specification(
-            prepare_s1_skill_specification(latest.specification_json)
+            prepare_reasoning_guidance_specification(latest.specification_json)
         )
         if (
             category != latest.category
-            or _s1_system_managed_projection(spec)
-            != _s1_system_managed_projection(latest_spec)
+            or _system_managed_projection(spec)
+            != _system_managed_projection(latest_spec)
         ):
             raise ValueError("skill_system_managed_fields_immutable")
     version = AISkillVersion(
@@ -175,8 +175,8 @@ async def update_skill_draft(
         raise ValueError("skill_version_not_found")
     if version.status != "DRAFT":
         raise ValueError("skill_version_immutable")
-    if _is_s1_specification(specification):
-        specification = prepare_s1_skill_specification(specification)
+    if _is_reasoning_guidance_specification(specification):
+        specification = prepare_reasoning_guidance_specification(specification)
     spec = validate_skill_specification(specification)
     if (
         spec["identity"]["skill_key"] != version.skill_key
@@ -185,14 +185,14 @@ async def update_skill_draft(
         raise ValueError("skill_identity_mismatch")
     if category not in {"ANALYSIS", "ACTION", "AUTHORING", "VALIDATOR"}:
         raise ValueError("skill_category_invalid")
-    if version.skill_key == S1_FOUNDATION_SKILL_KEY:
+    if version.skill_key in REASONING_GUIDANCE_SKILL_KEYS:
         current_spec = validate_skill_specification(
-            prepare_s1_skill_specification(version.specification_json)
+            prepare_reasoning_guidance_specification(version.specification_json)
         )
         if (
             category != version.category
-            or _s1_system_managed_projection(spec)
-            != _s1_system_managed_projection(current_spec)
+            or _system_managed_projection(spec)
+            != _system_managed_projection(current_spec)
         ):
             raise ValueError("skill_system_managed_fields_immutable")
     version.name = name
@@ -202,7 +202,7 @@ async def update_skill_draft(
     return version
 
 
-async def update_s1_reasoning_guidance(
+async def update_reasoning_guidance(
     db: AsyncSession,
     version_id: int,
     *,
@@ -216,7 +216,7 @@ async def update_s1_reasoning_guidance(
         raise ValueError("skill_version_not_found")
     if version.status != "DRAFT":
         raise ValueError("skill_version_immutable")
-    if version.skill_key != S1_FOUNDATION_SKILL_KEY:
+    if version.skill_key not in REASONING_GUIDANCE_SKILL_KEYS:
         raise ValueError("skill_instruction_edit_not_supported")
 
     objective = objective.strip()
@@ -228,7 +228,7 @@ async def update_s1_reasoning_guidance(
     ):
         raise ValueError("skill_instruction_methodology_invalid")
 
-    specification = prepare_s1_skill_specification(version.specification_json)
+    specification = prepare_reasoning_guidance_specification(version.specification_json)
     specification["reasoning_guidance"] = {
         "objective": objective,
         "methodology": methodology,
@@ -236,6 +236,22 @@ async def update_s1_reasoning_guidance(
     version.specification_json = validate_skill_specification(specification)
     await db.flush()
     return version
+
+
+async def update_s1_reasoning_guidance(
+    db: AsyncSession,
+    version_id: int,
+    *,
+    objective: str,
+    methodology: list[str],
+) -> AISkillVersion:
+    """Compatibility alias for callers that historically edited S1 only."""
+    return await update_reasoning_guidance(
+        db,
+        version_id,
+        objective=objective,
+        methodology=methodology,
+    )
 
 
 async def publish_skill_version(
