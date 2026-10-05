@@ -1,4 +1,16 @@
 export function buildReportApplication(profile, context, profileVersion) {
+  const contextSnapshot = {
+    focus_topics: [...context.focus_topics],
+    current_challenge: context.current_challenge,
+    expected_outcomes: [...context.expected_outcomes],
+    issue_duration: context.issue_duration,
+    impact_level: context.impact_level,
+    decision_status: context.decision_status,
+    decision_description: context.decision_description,
+    decision_style: [...context.decision_style],
+    additional_info: context.additional_info
+  }
+
   return {
     service_type: 'report',
     profile: {
@@ -15,7 +27,7 @@ export function buildReportApplication(profile, context, profileVersion) {
       time_accuracy: profile.birth_time_precision
     },
     profile_version: profileVersion,
-    context: structuredClone(context),
+    context: contextSnapshot,
     selected_topics: [...context.focus_topics],
     additional_info: [context.current_challenge, context.additional_info]
       .map(value => String(value || '').trim())
