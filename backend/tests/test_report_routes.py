@@ -3,6 +3,7 @@ from datetime import date, datetime
 from types import SimpleNamespace
 
 import httpx
+import app.api.v1.reports as reports_api
 
 from app.dependencies import get_current_active_user
 from app.main import app
@@ -26,6 +27,7 @@ def test_report_router_keeps_task_and_report_endpoints_registered():
         ("/api/v1/reports/staff/users/{user_id}", "GET"),
         ("/api/v1/reports/admin/users/{user_id}", "GET"),
         ("/api/v1/reports/latest/context", "GET"),
+        ("/api/v1/reports/{report_id}/pdf", "GET"),
         ("/api/v1/reports/{report_id}", "GET"),
         ("/api/v1/reports/{report_id}", "DELETE"),
     }.issubset(routes)
@@ -109,3 +111,71 @@ def test_report_response_normalizes_decision_style_from_application_snapshot():
 
     assert response.context is not None
     assert response.context.decision_style == ["先收集信息，再小步验证"]
+
+
+def test_pdf_export_passes_delivered_structured_sections_to_renderer(monkeypatch):
+    now = datetime(2026, 10, 4)
+    structured_sections = [
+        {
+            "section_key": "identity",
+            "section_title": "你是谁",
+            "fragment_key": "report.identity.psychic_structure",
+            "title": "内在驱动力",
+            "content": "你会先理解全局，再确认自己的立场。",
+            "revision_no": 3,
+        }
+    ]
+    report = SimpleNamespace(
+        id=17,
+        title="辰鉴·人生说明书",
+        input_snapshot={
+            "profile": {
+                "name": "青鸟",
+                "birth_year": 1992,
+                "birth_month": 3,
+                "birth_day": 9,
+                "calendar_type": "solar",
+            }
+        },
+        birth_date=date(1992, 3, 9),
+        birth_calendar_type="solar",
+        created_at=now,
+        energy_profile={},
+        career_guidance={},
+        relationship_pattern={},
+        personal_growth={},
+        summary="从一个可完成的小步开始。",
+        content_payload={
+            "structured_sections": structured_sections,
+            "summary": "从一个可完成的小步开始。",
+        },
+        ai_raw_content=None,
+        reviewed_at=now,
+    )
+    actor = SimpleNamespace(id=3, name="咨询师", role="admin")
+    captured = {}
+
+    async def report_for_read(db, report_id, current_user):
+        assert report_id == report.id
+        assert current_user is actor
+        return report
+
+    async def render_pdf(report_id, report_payload, user_payload, *, preview=False):
+        captured["report_id"] = report_id
+        captured["report_payload"] = report_payload
+        captured["user_payload"] = user_payload
+        captured["preview"] = preview
+        return b"%PDF-test"
+
+    monkeypatch.setattr(reports_api, "_report_for_read", report_for_read)
+    monkeypatch.setattr(reports_api, "render_report_pdf", render_pdf)
+
+    response = asyncio.run(reports_api.export_report_pdf(report.id, actor, None))
+
+    assert response.media_type == "application/pdf"
+    assert response.body == b"%PDF-test"
+    assert captured["report_id"] == report.id
+    assert captured["report_payload"]["content_payload"]["structured_sections"] == structured_sections
+    assert captured["report_payload"]["ai_generated_content"] is None
+    assert captured["user_payload"] == {"id": actor.id, "name": actor.name, "role": actor.role}
+    assert captured["preview"] is False

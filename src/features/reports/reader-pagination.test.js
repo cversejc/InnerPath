@@ -235,3 +235,27 @@ test('formats nested headings, lists, quotes and explicit arrow flows safely', (
   assert.match(html, /&lt;script&gt;/)
   assert.doesNotMatch(html, /<script>/)
 })
+
+test('renders Markdown tables and repeats their headers when pagination splits rows', () => {
+  const markdown = [
+    '# 阶段地图',
+    '',
+    '|阶段|行动|观察信号|',
+    '|:---|---:|:---:|',
+    '|起步|完成一页|收到一次反馈|',
+    '|尝试|记录\\|调整|愿意继续|',
+    '|回看|整理变化|看见稳定节奏|',
+    '|延伸|<script>alert(1)</script>|开始自主选择|'
+  ].join('\n')
+  const pages = paginateMarkdownForReader(markdown, 74)
+  const html = pages.map(page => formatReportMarkdown(page)).join('')
+
+  assert.ok(pages.length > 1)
+  assert.ok(pages.every(page => page.includes('|阶段|行动|观察信号|')))
+  assert.match(html, /<table class="report-table">/)
+  assert.match(html, /<th style="text-align:left">阶段<\/th>/)
+  assert.match(html, /<th style="text-align:right">行动<\/th>/)
+  assert.match(html, /记录\|调整/)
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/)
+  assert.doesNotMatch(html, /<script>/)
+})

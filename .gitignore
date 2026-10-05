@@ -62,6 +62,10 @@ backend/htmlcov/
 .tmp-review-2/
 docs/product/.qa_docx/word-render/
 
+# Locally generated report files and PDF page renders
+/output/pdf/
+/tmp/pdfs/
+
 # Local design source already distilled into the tracked design system
 docs/chenjian_typography_design_v1.0.docx
 

@@ -17,6 +17,26 @@ const tocOpen = ref(false)
 const readerMode = ref('paged')
 const isContinuous = computed(() => readerMode.value === 'continuous')
 let pageObserver = null
+const CHAPTER_COVERS = Object.freeze({
+  identity: {
+    title: '你是谁',
+    number: '01',
+    subtitle: '世界看见的你 · 你的心理底色',
+    excerpt: '先看见稳定的特质，也看见它如何在不同情境中展开。'
+  },
+  challenge: {
+    title: '卡在哪',
+    number: '02',
+    subtitle: '那些反复出现的模式',
+    excerpt: '把反复出现的困难，放回同一套运行机制里理解。'
+  },
+  direction: {
+    title: '往哪去',
+    number: '03',
+    subtitle: '人生方向 · 节奏 · 实验',
+    excerpt: '把理解带向选择、节奏与可以尝试的下一步。'
+  }
+})
 const displayName = computed(() => props.document.recipient || '')
 const displayTitle = computed(() => props.document.title || '人生说明书')
 const reportDate = computed(() => props.document.reportDate || '')
@@ -27,29 +47,46 @@ const hasSummary = computed(() => Boolean(
 ))
 const hasDocumentContent = computed(() => documentModel.value.sections.length > 0 || hasSummary.value)
 const firstContentPageIndex = computed(() => 2 + (hasDocumentContent.value ? 1 : 0))
-const sectionPageEntries = computed(() => {
+const chapterCoverForSection = section => CHAPTER_COVERS[section.id]
+  || Object.values(CHAPTER_COVERS).find(cover => cover.title === section.title)
+const reportBodyPageEntries = computed(() => {
   let pageIndex = firstContentPageIndex.value
   return documentModel.value.sections.flatMap((section, sectionIndex) => {
     const pages = section.readerPages?.length
       ? section.readerPages
       : [{ content: section.content || '', blocks: section.blocks || [] }]
-    return pages.map((page, pageInSection) => ({
+    const entries = []
+    const chapterCover = chapterCoverForSection(section)
+    if (chapterCover) {
+      entries.push({
+        type: 'chapter-cover',
+        section,
+        sectionIndex,
+        chapterCover,
+        pageIndex: pageIndex++
+      })
+    }
+    entries.push(...pages.map((page, pageInSection) => ({
+      type: 'section',
       section,
       sectionIndex,
       content: page.content || '',
       blocks: page.blocks || [],
       pageInSection,
       pageIndex: pageIndex++
-    }))
+    })))
+    return entries
   })
 })
+const sectionPageEntries = computed(() => reportBodyPageEntries.value.filter(page => page.type === 'section'))
+const chapterCoverEntries = computed(() => reportBodyPageEntries.value.filter(page => page.type === 'chapter-cover'))
 const summaryPageEntries = computed(() => {
   if (!hasSummary.value) return []
   const summary = documentModel.value.summary
   const pages = summary.readerPages?.length
     ? summary.readerPages
     : [{ content: summary.content || '', blocks: summary.blocks || [] }]
-  const firstPageIndex = firstContentPageIndex.value + sectionPageEntries.value.length
+  const firstPageIndex = firstContentPageIndex.value + reportBodyPageEntries.value.length
   return pages.map((page, pageInSection) => ({
     content: page.content || '',
     blocks: page.blocks || [],
@@ -58,7 +95,7 @@ const summaryPageEntries = computed(() => {
   }))
 })
 const pageCount = computed(() => firstContentPageIndex.value
-  + sectionPageEntries.value.length
+  + reportBodyPageEntries.value.length
   + summaryPageEntries.value.length
   + (hasDocumentContent.value ? 0 : 1))
 function tocChildren(blocks, pages, pageOffset, depth = 1) {
@@ -91,10 +128,12 @@ function flattenToc(items, depth = 0) {
 }
 
 const chapterItems = computed(() => {
-  let pageIndex = firstContentPageIndex.value
   const chapters = documentModel.value.sections.map((section, sectionIndex) => {
     const pages = section.readerPages?.length ? section.readerPages : [{ blocks: [] }]
     const pageCount = pages.length || 1
+    const firstSectionPage = sectionPageEntries.value.find(page => page.sectionIndex === sectionIndex && page.pageInSection === 0)
+    const chapterCover = chapterCoverEntries.value.find(page => page.sectionIndex === sectionIndex)
+    const pageIndex = chapterCover?.pageIndex ?? firstSectionPage?.pageIndex ?? firstContentPageIndex.value
     const item = {
       id: section.id,
       title: section.title,
@@ -102,16 +141,16 @@ const chapterItems = computed(() => {
       chapterIndex: sectionIndex,
       pageIndex,
       pageNumber: pageIndex + 1,
-      endPageIndex: pageIndex + pageCount,
-      anchorId: `report-section-title-${pageIndex}`,
-      children: tocChildren(section.blocks, pages, pageIndex)
+      endPageIndex: (firstSectionPage?.pageIndex ?? pageIndex) + pageCount,
+      anchorId: chapterCover ? '' : `report-section-title-${firstSectionPage?.pageIndex ?? pageIndex}`,
+      children: tocChildren(section.blocks, pages, firstSectionPage?.pageIndex ?? pageIndex)
     }
-    pageIndex += pageCount
     return item
   })
   if (hasSummary.value) {
     const summary = documentModel.value.summary
     const pages = summary.readerPages?.length ? summary.readerPages : [{ blocks: [] }]
+    const pageIndex = firstContentPageIndex.value + reportBodyPageEntries.value.length
     chapters.push({
       id: 'summary',
       title: summary.title || '总结与寄语',
@@ -425,70 +464,89 @@ onBeforeUnmount(() => pageObserver?.disconnect())
             <span v-else class="report-toc__index report-toc__index--nested" aria-hidden="true">·</span>
             <span class="report-toc__copy"><strong>{{ chapter.title }}</strong></span>
             <span class="report-toc__leader" aria-hidden="true"></span>
+            <span class="report-toc__page">{{ String(chapter.pageNumber).padStart(2, '0') }}</span>
           </li>
         </ol>
       </div>
       <div class="report-page__footer"><span>辰鉴 · 个人报告</span></div>
     </section>
 
-    <section
-      v-for="page in sectionPageEntries"
-      :key="`${page.section.id}-reader-${page.pageInSection}`"
-      class="report-page report-page--content"
-      :class="{
-        'report-page--foundation': page.section.kind === 'foundation',
-        'report-page--markdown': page.section.kind === 'markdown',
-        'report-page--reader-hidden': !isContinuous && currentPage !== page.pageIndex
-      }"
-      :data-reader-page="page.pageIndex + 1"
-      :aria-labelledby="`report-section-title-${page.pageIndex}`"
-    >
-      <div class="report-page__running">
-        <span>{{ chapterNumber(page.sectionIndex) }} · {{ page.section.title }}<template v-if="page.pageInSection"> · 续页 {{ page.pageInSection + 1 }}</template></span>
-        <span>{{ reportIdentity }}</span>
-      </div>
-      <div class="report-page__body">
-        <div class="report-heading">
-          <span class="report-heading__prefix">{{ chapterNumber(page.sectionIndex) }}</span>
-          <h2 :id="`report-section-title-${page.pageIndex}`">{{ page.section.title }}<template v-if="page.pageInSection">（续页 {{ page.pageInSection + 1 }}）</template></h2>
+    <template v-for="page in reportBodyPageEntries" :key="`${page.section.id}-${page.type}-${page.pageInSection ?? page.pageIndex}`">
+      <section
+        v-if="page.type === 'chapter-cover'"
+        class="report-page report-page--chapter-cover report-page--dark"
+        :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== page.pageIndex }"
+        :data-reader-page="page.pageIndex + 1"
+        :aria-labelledby="`report-chapter-cover-${page.pageIndex}`"
+      >
+        <div class="report-chapter-cover">
+          <p class="report-chapter-cover__number">{{ page.chapterCover.number }}</p>
+          <h2 :id="`report-chapter-cover-${page.pageIndex}`" class="report-chapter-cover__title">{{ page.section.title }}</h2>
+          <p class="report-chapter-cover__subtitle">{{ page.chapterCover.subtitle }}</p>
+          <div class="report-chapter-cover__rule" aria-hidden="true"></div>
+          <p class="report-chapter-cover__excerpt">{{ page.chapterCover.excerpt }}</p>
         </div>
+        <div class="report-page__footer"><span>{{ reportIdentity }}</span><span>{{ String(page.pageIndex + 1).padStart(2, '0') }}</span></div>
+      </section>
 
-        <p v-if="page.pageInSection === 0 && page.section.subtitle" class="report-lead">{{ page.section.subtitle }}</p>
-        <div v-if="page.content" class="report-section-intro report-markdown-content" v-html="formatReportMarkdown(page.content)"></div>
-
-        <div v-if="page.section.kind === 'foundation'" class="report-foundation-content">
-          <div v-if="baziPillars.length" class="report-grid report-grid--four">
-            <div v-for="([label, pillar]) in baziPillars" :key="label" class="report-card report-card--center">
-              <span class="report-card__label">{{ label }}</span>
-              <strong class="report-card__value">{{ pillarText(pillar) }}</strong>
-              <small v-if="pillar.ten_god">{{ pillar.ten_god }}</small>
-            </div>
-          </div>
-          <div v-if="foundationData.bazi?.day_master" class="report-callout">
-            <span class="report-callout__label">日主</span>
-            <p>{{ foundationData.bazi.day_master }}</p>
-          </div>
-          <div v-if="foundationData.ziwei?.patterns?.length" class="report-callout">
-            <span class="report-callout__label">格局</span>
-            <p>{{ foundationData.ziwei.patterns.join(' · ') }}</p>
-          </div>
-          <div v-if="ziweiPalaces.length" class="report-card-stack">
-            <div v-for="([label, palace]) in ziweiPalaces" :key="label" class="report-card">
-              <span class="report-card__label">{{ label }}</span>
-              <p>{{ joinStars(palace) }}</p>
-            </div>
-          </div>
-          <ReportContentBlock v-if="additionalFoundation" :block="additionalFoundation" />
+      <section
+        v-else
+        class="report-page report-page--content"
+        :class="{
+          'report-page--foundation': page.section.kind === 'foundation',
+          'report-page--markdown': page.section.kind === 'markdown',
+          'report-page--reader-hidden': !isContinuous && currentPage !== page.pageIndex
+        }"
+        :data-reader-page="page.pageIndex + 1"
+        :aria-labelledby="`report-section-title-${page.pageIndex}`"
+      >
+        <div class="report-page__running">
+          <span>{{ chapterNumber(page.sectionIndex) }} · {{ page.section.title }}</span>
+          <span>{{ reportIdentity }}</span>
         </div>
+        <div class="report-page__body">
+          <div class="report-heading">
+            <span class="report-heading__prefix">{{ chapterNumber(page.sectionIndex) }}</span>
+            <h2 :id="`report-section-title-${page.pageIndex}`">{{ page.section.title }}</h2>
+          </div>
 
-        <ReportContentBlock
-          v-for="(block, blockIndex) in page.blocks"
-          :key="`${block.id}-${block.fragmentIndex ?? blockIndex}`"
-          :block="block"
-        />
-      </div>
-      <div class="report-page__footer"><span>{{ chapterNumber(page.sectionIndex) }} · {{ page.section.title }}<template v-if="page.pageInSection"> · 续页 {{ page.pageInSection + 1 }}</template></span></div>
-    </section>
+          <p v-if="page.pageInSection === 0 && page.section.subtitle" class="report-lead">{{ page.section.subtitle }}</p>
+          <div v-if="page.content" class="report-section-intro report-markdown-content" v-html="formatReportMarkdown(page.content)"></div>
+
+          <div v-if="page.section.kind === 'foundation'" class="report-foundation-content">
+            <div v-if="baziPillars.length" class="report-grid report-grid--four">
+              <div v-for="([label, pillar]) in baziPillars" :key="label" class="report-card report-card--center">
+                <span class="report-card__label">{{ label }}</span>
+                <strong class="report-card__value">{{ pillarText(pillar) }}</strong>
+                <small v-if="pillar.ten_god">{{ pillar.ten_god }}</small>
+              </div>
+            </div>
+            <div v-if="foundationData.bazi?.day_master" class="report-callout">
+              <span class="report-callout__label">日主</span>
+              <p>{{ foundationData.bazi.day_master }}</p>
+            </div>
+            <div v-if="foundationData.ziwei?.patterns?.length" class="report-callout">
+              <span class="report-callout__label">格局</span>
+              <p>{{ foundationData.ziwei.patterns.join(' · ') }}</p>
+            </div>
+            <div v-if="ziweiPalaces.length" class="report-card-stack">
+              <div v-for="([label, palace]) in ziweiPalaces" :key="label" class="report-card">
+                <span class="report-card__label">{{ label }}</span>
+                <p>{{ joinStars(palace) }}</p>
+              </div>
+            </div>
+            <ReportContentBlock v-if="additionalFoundation" :block="additionalFoundation" />
+          </div>
+
+          <ReportContentBlock
+            v-for="(block, blockIndex) in page.blocks"
+            :key="`${block.id}-${block.fragmentIndex ?? blockIndex}`"
+            :block="block"
+          />
+        </div>
+        <div class="report-page__footer"><span>{{ chapterNumber(page.sectionIndex) }} · {{ page.section.title }}</span></div>
+      </section>
+    </template>
 
     <section
       v-for="page in summaryPageEntries"
@@ -500,7 +558,7 @@ onBeforeUnmount(() => pageObserver?.disconnect())
     >
       <div class="report-ending">
         <p class="report-divider__number">{{ chapterNumber(documentModel.sections.length) }}</p>
-        <h2 :id="`report-summary-title-${page.pageIndex}`">{{ documentModel.summary.title || '总结与寄语' }}<template v-if="page.pageInSection">（续页 {{ page.pageInSection + 1 }}）</template></h2>
+        <h2 :id="`report-summary-title-${page.pageIndex}`">{{ documentModel.summary.title || '总结与寄语' }}</h2>
         <div class="report-rule" aria-hidden="true"></div>
         <ReportContentBlock
           v-for="(block, blockIndex) in page.blocks"

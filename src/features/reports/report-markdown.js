@@ -8,6 +8,35 @@ export function formatReportMarkdown(content) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
   const formatInline = value => escapeHtml(value).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  const splitTableCells = line => {
+    const source = line.trim().replace(/^\|/, '').replace(/\|$/, '')
+    const cells = []
+    let cell = ''
+    for (let index = 0; index < source.length; index += 1) {
+      const character = source[index]
+      if (character === '\\' && source[index + 1] === '|') {
+        cell += '|'
+        index += 1
+      } else if (character === '|') {
+        cells.push(cell.trim())
+        cell = ''
+      } else {
+        cell += character
+      }
+    }
+    cells.push(cell.trim())
+    return cells
+  }
+  const tableAlignment = cell => {
+    const value = cell.trim()
+    if (value.startsWith(':') && value.endsWith(':')) return 'center'
+    if (value.endsWith(':')) return 'right'
+    return value.startsWith(':') ? 'left' : ''
+  }
+  const isTableRow = line => line.includes('|')
+  const isTableDelimiter = line => isTableRow(line)
+    && splitTableCells(line).length > 0
+    && splitTableCells(line).every(cell => /^:?-{3,}:?$/.test(cell))
   const blocks = []
   let paragraph = []
   let list = []
@@ -49,12 +78,38 @@ export function formatReportMarkdown(content) {
     quote = []
   }
 
-  for (const line of content.replace(/\r\n?/g, '\n').split('\n')) {
+  const lines = content.replace(/\r\n?/g, '\n').split('\n')
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+    const line = lines[lineIndex]
     const heading = line.match(/^(#{1,5})\s+(.+)$/)
     const item = line.match(/^\s*(?:(\d+)[.)、]|[-*+])\s+(.+)$/)
     const quoted = line.match(/^\s*>\s?(.*)$/)
+    const startsTable = isTableRow(line) && isTableDelimiter(lines[lineIndex + 1] || '')
 
-    if (heading) {
+    if (startsTable) {
+      flushParagraph()
+      flushList()
+      flushQuote()
+      const headers = splitTableCells(line)
+      const alignments = splitTableCells(lines[lineIndex + 1]).map(tableAlignment)
+      const rows = []
+      lineIndex += 2
+      while (lineIndex < lines.length && isTableRow(lines[lineIndex]) && !isTableDelimiter(lines[lineIndex])) {
+        rows.push(splitTableCells(lines[lineIndex]))
+        lineIndex += 1
+      }
+      lineIndex -= 1
+      const renderCells = (cells, tag) => headers.map((_, index) => {
+        const alignment = alignments[index]
+        const style = alignment ? ` style="text-align:${alignment}"` : ''
+        return `<${tag}${style}>${formatInline(cells[index] || '')}</${tag}>`
+      }).join('')
+      const head = `<thead><tr>${renderCells(headers, 'th')}</tr></thead>`
+      const body = rows.length
+        ? `<tbody>${rows.map(row => `<tr>${renderCells(row, 'td')}</tr>`).join('')}</tbody>`
+        : ''
+      blocks.push(`<div class="report-table-wrap" role="region" aria-label="报告表格" tabindex="0"><table class="report-table">${head}${body}</table></div>`)
+    } else if (heading) {
       flushParagraph()
       flushList()
       flushQuote()

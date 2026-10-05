@@ -44,7 +44,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - REPORT_EXPORT_FRONTEND_URL=http://frontend:8080
+      - REPORT_EXPORT_FRONTEND_URL=${REPORT_EXPORT_FRONTEND_URL:-http://frontend}
     volumes:
       - ./backend/logs:/app/logs
     command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]

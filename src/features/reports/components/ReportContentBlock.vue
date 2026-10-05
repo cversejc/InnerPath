@@ -20,7 +20,7 @@ const depthClass = computed(() => `report-content-block--depth-${Math.min(3, Mat
     :id="block.anchorId"
   >
     <component :is="headingTag" v-if="block.title" class="report-content-block__title" :class="`report-content-block__title--${headingTag}`">
-      {{ block.title }}<span v-if="block.continued" class="report-content-block__continued-label">（续）</span>
+      {{ block.title }}
     </component>
     <p v-if="block.subtitle" class="report-content-block__subtitle">{{ block.subtitle }}</p>
     <div v-if="block.comparison?.from || block.comparison?.to" class="report-comparison">

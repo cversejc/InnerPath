@@ -106,7 +106,9 @@ const BLOCK_META_KEYS = new Set([
   'display_type', 'displaytype', 'presentation_type', 'presentationtype', 'render_type', 'rendertype',
   'content', 'text', 'body', 'description', 'action', 'items', 'actions', 'points', 'highlights',
   'sections', 'subsections', 'children', 'stages', 'from', 'to', 'before', 'after',
-  'from_label', 'to_label', 'before_label', 'after_label'
+  'from_label', 'to_label', 'before_label', 'after_label', 'chapter', 'content_revision',
+  'fragment_key', 'revision_no', 'section_key', 'section_title', 'semantic_revision',
+  'sequence_no', 'source_narrative_plan_id', 'source_skill_run_id', 'source_snapshot'
 ])
 
 const DISPLAY_TYPE_ALIASES = {
@@ -314,6 +316,47 @@ function structuredEntries(value) {
   return []
 }
 
+const DELIVERY_SECTION_TITLES = {
+  identity: '你是谁',
+  challenge: '卡在哪',
+  direction: '往哪去',
+  ending: '带回日常'
+}
+
+function deliverySections(value) {
+  if (!Array.isArray(value) || !value.some(item => (
+    item && typeof item === 'object'
+    && (item.section_key || item.section_title || item.fragment_key)
+  ))) return null
+
+  const groups = new Map()
+  for (const item of value) {
+    if (!item || typeof item !== 'object') continue
+    const fragmentKey = textValue(item.fragment_key)
+    const sectionKey = textValue(item.section_key) || 'additional'
+    const groupKey = fragmentKey === 'report.ending' ? 'ending' : sectionKey
+    const groupTitle = DELIVERY_SECTION_TITLES[groupKey]
+      || textValue(item.section_title)
+      || '补充内容'
+    let group = groups.get(groupKey)
+    if (!group) {
+      group = { key: groupKey, title: groupTitle, fragments: [] }
+      groups.set(groupKey, group)
+    }
+    group.fragments.push({
+      title: textValue(item.title || item.heading || item.label),
+      content: textValue(item.content ?? item.text ?? item.body ?? item.description)
+    })
+  }
+
+  return [...groups.values()]
+    .map((group, index) => sectionFromNode(group.key, {
+      title: group.title,
+      subsections: group.fragments
+    }, index))
+    .filter(Boolean)
+}
+
 function summaryFrom(value) {
   const block = normalizeReportBlock(value, '总结', 'summary')
   if (!block) return null
@@ -373,33 +416,38 @@ export function buildReportDocument(report, { foundationData = null, markdown = 
       : contentPayload.foundation_data || null
   let hasFoundationSection = false
 
-  for (const [key, value] of structuredEntries(structured)) {
-    const nodeType = String(value?.type || '').toLowerCase()
-    const normalizedKey = String(key).replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()
+  const deliveredSections = deliverySections(structured)
+  if (deliveredSections) {
+    sections.push(...deliveredSections)
+  } else {
+    for (const [key, value] of structuredEntries(structured)) {
+      const nodeType = String(value?.type || '').toLowerCase()
+      const normalizedKey = String(key).replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()
 
-    if (normalizedKey === 'summary' || nodeType === 'summary') {
-      summaryValue = value
-      continue
-    }
+      if (normalizedKey === 'summary' || nodeType === 'summary') {
+        summaryValue = value
+        continue
+      }
 
-    if (normalizedKey === 'foundation' || nodeType === 'foundation') {
-      resolvedFoundation = value?.data ?? value?.foundation_data ?? value?.content ?? value
-      const section = foundationSection(resolvedFoundation, sections.length)
-      if (section) sections.push(section)
-      hasFoundationSection = Boolean(section)
-      continue
-    }
-
-    if (['topics', 'user_issues', 'user_topics'].includes(normalizedKey) && Array.isArray(value)) {
-      value.forEach((topic, index) => {
-        const section = sectionFromNode(topic?.title || `topic-${index}`, topic, sections.length)
+      if (normalizedKey === 'foundation' || nodeType === 'foundation') {
+        resolvedFoundation = value?.data ?? value?.foundation_data ?? value?.content ?? value
+        const section = foundationSection(resolvedFoundation, sections.length)
         if (section) sections.push(section)
-      })
-      continue
-    }
+        hasFoundationSection = Boolean(section)
+        continue
+      }
 
-    const section = sectionFromNode(key, value, sections.length)
-    if (section) sections.push(section)
+      if (['topics', 'user_issues', 'user_topics'].includes(normalizedKey) && Array.isArray(value)) {
+        value.forEach((topic, index) => {
+          const section = sectionFromNode(topic?.title || `topic-${index}`, topic, sections.length)
+          if (section) sections.push(section)
+        })
+        continue
+      }
+
+      const section = sectionFromNode(key, value, sections.length)
+      if (section) sections.push(section)
+    }
   }
 
   if (hasReportValue(resolvedFoundation) && !hasFoundationSection && sections.length) {

@@ -62,6 +62,63 @@ function isStandaloneSectionLabel(line) {
   return /^(?:[①-⑳]|\d+(?:\.\d+)*[、.)）])/.test(text) || /[：:]$/.test(text)
 }
 
+function splitMarkdownTableCells(line) {
+  const source = line.trim().replace(/^\|/, '').replace(/\|$/, '')
+  const cells = []
+  let cell = ''
+  for (let index = 0; index < source.length; index += 1) {
+    if (source[index] === '\\' && source[index + 1] === '|') {
+      cell += '|'
+      index += 1
+    } else if (source[index] === '|') {
+      cells.push(cell.trim())
+      cell = ''
+    } else {
+      cell += source[index]
+    }
+  }
+  cells.push(cell.trim())
+  return cells
+}
+
+function isMarkdownTableDelimiter(line) {
+  return Boolean(line?.includes('|'))
+    && splitMarkdownTableCells(line).every(cell => /^:?-{3,}:?$/.test(cell))
+}
+
+function isMarkdownTableStart(lines, index) {
+  return Boolean(lines[index]?.includes('|')) && isMarkdownTableDelimiter(lines[index + 1])
+}
+
+function splitMarkdownTable(markdown, limit) {
+  const lines = markdown.split('\n')
+  if (!isMarkdownTableStart(lines, 0)) return null
+
+  const header = lines.slice(0, 2)
+  const rows = lines.slice(2)
+  if (!rows.length) return [markdown]
+
+  const headerLength = characterLength(header.join('\n'))
+  const pages = []
+  let pageRows = []
+  let pageLength = headerLength
+  const flushRows = () => {
+    if (!pageRows.length) return
+    pages.push([...header, ...pageRows].join('\n'))
+    pageRows = []
+    pageLength = headerLength
+  }
+
+  for (const row of rows) {
+    const rowLength = characterLength(row) + 1
+    if (pageRows.length && pageLength + rowLength > limit) flushRows()
+    pageRows.push(row)
+    pageLength += rowLength
+  }
+  flushRows()
+  return pages
+}
+
 function parseMarkdownBlocks(markdown) {
   const blocks = []
   let pendingHeadings = []
@@ -93,7 +150,22 @@ function parseMarkdownBlocks(markdown) {
     listLines = []
   }
 
-  for (const line of markdown.split('\n')) {
+  const lines = markdown.split('\n')
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+    const line = lines[lineIndex]
+    if (isMarkdownTableStart(lines, lineIndex)) {
+      flushParagraph()
+      flushList()
+      const tableLines = [line, lines[lineIndex + 1]]
+      lineIndex += 2
+      while (lineIndex < lines.length && lines[lineIndex].includes('|') && !isMarkdownTableDelimiter(lines[lineIndex])) {
+        tableLines.push(lines[lineIndex])
+        lineIndex += 1
+      }
+      lineIndex -= 1
+      emit(tableLines.join('\n'), 'table')
+      continue
+    }
     const heading = /^#{1,5}\s+/.test(line)
     const listItem = /^\s*[-*]\s+/.test(line)
     const horizontalRule = /^\s*---\s*$/.test(line)
@@ -128,12 +200,24 @@ function parseMarkdownBlocks(markdown) {
 function splitMarkdownBlock(block, limit) {
   if (characterLength(block.text) <= limit) return [block]
 
+  if (block.type === 'table') {
+    const tablePages = splitMarkdownTable(block.text, limit)
+    if (tablePages) return tablePages.map(text => ({ text, type: 'table' }))
+  }
+
   if (block.type === 'heading-content') {
     const headingEnd = block.text.indexOf('\n\n')
     if (headingEnd >= 0) {
       const heading = block.text.slice(0, headingEnd)
       const body = block.text.slice(headingEnd + 2)
       const bodyLimit = Math.max(1, limit - characterLength(heading) - 2)
+      const tablePages = splitMarkdownTable(body, bodyLimit)
+      if (tablePages) {
+        return tablePages.map((content, index) => ({
+          text: index === 0 ? `${heading}\n\n${content}` : content,
+          type: index === 0 ? 'heading-content' : 'table'
+        }))
+      }
       return splitLongText(body, bodyLimit).map((content, index) => ({
         text: index === 0 ? `${heading}\n\n${content}` : content,
         type: index === 0 ? 'heading-content' : block.type
