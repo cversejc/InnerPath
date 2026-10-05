@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { Button as VanButton } from 'vant'
 import IconMark from '../../../components/IconMark.vue'
 import ProfileSummary from '../../../components/ProfileSummary.vue'
+import AssessmentDisclosureToggle from './AssessmentDisclosureToggle.vue'
 
 const props = defineProps({
   contextDraft: { type: Object, required: true },
@@ -160,11 +161,15 @@ defineExpose({ focusStepHeading })
         <p v-if="contextErrors.expected_outcomes" id="assessment-expected-outcomes-error" class="field-error" role="alert">{{ contextErrors.expected_outcomes }}</p>
       </fieldset>
 
-      <details class="context-details" :open="showAdvancedContext">
-        <summary @click.prevent="emit('toggle-advanced-context')">
-          <span>补充背景（选填，能让建议更贴近你）</span><span aria-hidden="true">{{ showAdvancedContext ? '−' : '+' }}</span>
-        </summary>
-        <div v-if="showAdvancedContext" class="advanced-context-grid">
+      <div class="context-details">
+        <AssessmentDisclosureToggle
+          title="补充背景"
+          description="选填，能让建议更贴近你"
+          :expanded="showAdvancedContext"
+          controls="assessment-advanced-context"
+          @toggle="emit('toggle-advanced-context')"
+        />
+        <div id="assessment-advanced-context" v-show="showAdvancedContext" class="advanced-context-grid">
           <div class="form-group">
             <label class="form-label" for="assessment-issue-duration">这个困惑持续多久了</label>
             <select id="assessment-issue-duration" :value="contextDraft.issue_duration" @change="updateField('issue_duration', $event.target.value)">
@@ -222,7 +227,7 @@ defineExpose({ focusStepHeading })
             </div>
           </div>
         </div>
-      </details>
+      </div>
 
       <div v-if="contextErrorSummary.length" class="error-summary" role="alert" aria-live="assertive">
         <strong>请先补充本次申请信息</strong>

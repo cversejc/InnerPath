@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { Button as VanButton } from 'vant'
 import ProfileFields from '../../../components/ProfileFields.vue'
+import AssessmentDisclosureToggle from './AssessmentDisclosureToggle.vue'
 
 defineProps({
   draftRestored: { type: Boolean, default: false },
@@ -44,23 +45,17 @@ defineExpose({ focusStepHeading })
         :show-optional="showOptionalProfile"
         :errors="profileErrors"
         @update:model-value="emit('update:profile-draft', $event)"
-      />
-
-      <VanButton
-        native-type="button"
-        type="default"
-        plain
-        class="fold-toggle"
-        :aria-expanded="showOptionalProfile"
-        @click="emit('update:show-optional-profile', !showOptionalProfile)"
       >
-        <span class="fold-toggle-copy">
-          <strong>完善个人画像</strong>
-          <small>选填，提供的信息越丰富，人生地图越清晰</small>
-        </span>
-        <span class="fold-toggle-action">{{ showOptionalProfile ? '收起' : '开始填写' }}</span>
-        <span aria-hidden="true">{{ showOptionalProfile ? '−' : '+' }}</span>
-      </VanButton>
+        <template #optional-toggle>
+          <AssessmentDisclosureToggle
+            title="完善个人画像"
+            description="选填，提供的信息越丰富，人生地图越清晰"
+            :expanded="showOptionalProfile"
+            :action-label="showOptionalProfile ? '收起' : '开始填写'"
+            @toggle="emit('update:show-optional-profile', !showOptionalProfile)"
+          />
+        </template>
+      </ProfileFields>
 
       <div class="privacy-note">
         <span class="privacy-mark" aria-hidden="true">私</span>

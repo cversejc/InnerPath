@@ -13,6 +13,8 @@
       @select-time-precision="selectTimePrecision"
     />
 
+    <slot name="optional-toggle" />
+
     <VanButton
       v-if="showOptional && optionalCollapsible"
       native-type="button"
