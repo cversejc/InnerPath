@@ -22,55 +22,111 @@ const displayTitle = computed(() => props.document.title || '人生说明书')
 const reportDate = computed(() => props.document.reportDate || '')
 const reportIdentity = computed(() => displayName.value ? `人生说明书 · ${displayName.value}` : '人生说明书')
 const documentModel = computed(() => props.document)
-const chapterItems = computed(() => {
-  const chapters = documentModel.value.sections.map(section => ({
-    id: section.id,
-    title: section.title
-  }))
-  if (documentModel.value.summary?.content || documentModel.value.summary?.blocks.length) {
-    chapters.push({ id: 'summary', title: '总结与寄语' })
-  }
-  return chapters
-})
 const hasSummary = computed(() => Boolean(
-  documentModel.value.summary?.content || documentModel.value.summary?.blocks.length
+  documentModel.value.summary?.content || documentModel.value.summary?.items?.length || documentModel.value.summary?.blocks?.length
 ))
-const hasDocumentContent = computed(() => documentModel.value.sections.length > 0 || chapterItems.value.length > 0)
-const firstContentPageIndex = computed(() => 2 + (chapterItems.value.length ? 1 : 0))
+const hasDocumentContent = computed(() => documentModel.value.sections.length > 0 || hasSummary.value)
+const firstContentPageIndex = computed(() => 2 + (hasDocumentContent.value ? 1 : 0))
 const sectionPageEntries = computed(() => {
   let pageIndex = firstContentPageIndex.value
   return documentModel.value.sections.flatMap((section, sectionIndex) => {
-    const contents = section.readerPages?.length ? section.readerPages : [section.content || '']
-    return contents.map((content, pageInSection) => ({
+    const pages = section.readerPages?.length
+      ? section.readerPages
+      : [{ content: section.content || '', blocks: section.blocks || [] }]
+    return pages.map((page, pageInSection) => ({
       section,
       sectionIndex,
-      content,
+      content: page.content || '',
+      blocks: page.blocks || [],
       pageInSection,
       pageIndex: pageIndex++
     }))
   })
 })
-const summaryPageIndex = computed(() => firstContentPageIndex.value + sectionPageEntries.value.length)
+const summaryPageEntries = computed(() => {
+  if (!hasSummary.value) return []
+  const summary = documentModel.value.summary
+  const pages = summary.readerPages?.length
+    ? summary.readerPages
+    : [{ content: summary.content || '', blocks: summary.blocks || [] }]
+  const firstPageIndex = firstContentPageIndex.value + sectionPageEntries.value.length
+  return pages.map((page, pageInSection) => ({
+    content: page.content || '',
+    blocks: page.blocks || [],
+    pageInSection,
+    pageIndex: firstPageIndex + pageInSection
+  }))
+})
 const pageCount = computed(() => firstContentPageIndex.value
   + sectionPageEntries.value.length
-  + (hasSummary.value ? 1 : 0)
+  + summaryPageEntries.value.length
   + (hasDocumentContent.value ? 0 : 1))
-const readerTocItems = computed(() => {
+function tocChildren(blocks, pages, pageOffset, depth = 1) {
+  return (blocks || []).flatMap(block => {
+    const children = tocChildren(block.children, pages, pageOffset, depth + 1)
+    if (!block.title) return children
+    const matches = pages.flatMap((page, index) => (page.blocks || [])
+      .filter(fragment => fragment.id === block.id)
+      .map(fragment => ({ pageOffset: index, anchorId: fragment.anchorId })))
+    const first = matches[0]
+    const last = matches[matches.length - 1]
+    return [{
+      id: block.id,
+      title: block.title,
+      depth,
+      anchorId: first?.anchorId || '',
+      pageIndex: pageOffset + (first?.pageOffset || 0),
+      pageNumber: pageOffset + (first?.pageOffset || 0) + 1,
+      endPageIndex: pageOffset + (last?.pageOffset ?? first?.pageOffset ?? 0) + 1,
+      children
+    }]
+  })
+}
+
+function flattenToc(items, depth = 0) {
+  return (items || []).flatMap(item => [
+    { ...item, depth },
+    ...flattenToc(item.children, depth + 1)
+  ])
+}
+
+const chapterItems = computed(() => {
   let pageIndex = firstContentPageIndex.value
-  return chapterItems.value.map((chapter, index) => {
-    const chapterPageCount = index < documentModel.value.sections.length
-      ? (documentModel.value.sections[index].readerPages?.length || 1)
-      : 1
+  const chapters = documentModel.value.sections.map((section, sectionIndex) => {
+    const pages = section.readerPages?.length ? section.readerPages : [{ blocks: [] }]
+    const pageCount = pages.length || 1
     const item = {
-      ...chapter,
+      id: section.id,
+      title: section.title,
+      depth: 0,
+      chapterIndex: sectionIndex,
       pageIndex,
       pageNumber: pageIndex + 1,
-      endPageIndex: pageIndex + chapterPageCount
+      endPageIndex: pageIndex + pageCount,
+      anchorId: `report-section-title-${pageIndex}`,
+      children: tocChildren(section.blocks, pages, pageIndex)
     }
-    pageIndex += chapterPageCount
+    pageIndex += pageCount
     return item
   })
+  if (hasSummary.value) {
+    const summary = documentModel.value.summary
+    const pages = summary.readerPages?.length ? summary.readerPages : [{ blocks: [] }]
+    chapters.push({
+      id: 'summary',
+      title: summary.title || '总结与寄语',
+      depth: 0,
+      chapterIndex: chapters.length,
+      pageIndex,
+      pageNumber: pageIndex + 1,
+      endPageIndex: pageIndex + pages.length,
+      anchorId: `report-summary-title-${pageIndex}`,
+      children: tocChildren(summary.blocks, pages, pageIndex)
+    })
+  }
+  return chapters
 })
+const readerTocItems = computed(() => flattenToc(chapterItems.value))
 const foundationSection = computed(() => documentModel.value.sections.find(section => section.kind === 'foundation'))
 const foundationData = computed(() => foundationSection.value?.foundationData || {})
 const baziPillars = computed(() => {
@@ -112,12 +168,13 @@ function joinStars(palace) {
   return [...(palace?.main_stars || []), ...(palace?.aux_stars || [])].filter(Boolean).join(' · ')
 }
 
-function scrollToPage(pageIndex, mode = readerMode.value, requestedBehavior = 'smooth', afterScroll, waitForLayout = false) {
+function scrollToPage(pageIndex, mode = readerMode.value, requestedBehavior = 'smooth', afterScroll, waitForLayout = false, anchorId = '') {
   const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
   const behavior = requestedBehavior === 'smooth' && !reducedMotion ? 'smooth' : 'instant'
   const scroll = () => {
     const target = mode === 'continuous'
-      ? readerRef.value?.querySelector(`[data-reader-page="${pageIndex + 1}"]`)
+      ? (anchorId ? readerRef.value?.querySelector(`[id="${anchorId}"]`) : null)
+        || readerRef.value?.querySelector(`[data-reader-page="${pageIndex + 1}"]`)
       : pageStageRef.value
     target?.scrollIntoView({ behavior, block: 'start' })
     afterScroll?.()
@@ -126,7 +183,7 @@ function scrollToPage(pageIndex, mode = readerMode.value, requestedBehavior = 's
   else scroll()
 }
 
-function goToPage(index, focusStage = false) {
+function goToPage(index, focusStage = false, anchorId = '') {
   const nextPage = Math.min(Math.max(Number(index) || 0, 0), pageCount.value - 1)
   currentPage.value = nextPage
   pageInput.value = String(nextPage + 1).padStart(2, '0')
@@ -134,7 +191,11 @@ function goToPage(index, focusStage = false) {
   if (focusStage) {
     nextTick(() => pageStageRef.value?.focus({ preventScroll: true }))
   }
-  scrollToPage(nextPage, readerMode.value, isContinuous.value ? 'auto' : 'smooth')
+  scrollToPage(nextPage, readerMode.value, isContinuous.value ? 'auto' : 'smooth', undefined, false, anchorId)
+}
+
+function goToTocItem(item) {
+  goToPage(item.pageIndex, !isContinuous.value, item.anchorId)
 }
 
 function jumpToPage() {
@@ -185,7 +246,7 @@ function pageAtReadingPosition() {
 function setReaderMode(mode) {
   if (!['paged', 'continuous'].includes(mode) || mode === readerMode.value) return
 
-  const pageToKeep = isContinuous.value ? pageAtReadingPosition() : currentPage.value
+  const pageToKeep = currentPage.value
   pageObserver?.disconnect()
   currentPage.value = pageToKeep
   readerMode.value = mode
@@ -300,8 +361,11 @@ onBeforeUnmount(() => pageObserver?.disconnect())
               <button
                 type="button"
                 class="report-reader__toc-item"
+                :class="{ 'report-reader__toc-item--nested': item.depth > 0 }"
+                :style="{ '--report-toc-depth': item.depth }"
+                :aria-level="item.depth + 1"
                 :aria-current="currentPage >= item.pageIndex && currentPage < item.endPageIndex ? 'page' : undefined"
-                @click="goToPage(item.pageIndex, true)"
+                @click="goToTocItem(item)"
               >
                 <span class="report-reader__toc-title">{{ item.title }}</span>
                 <span class="report-reader__toc-leader" aria-hidden="true"></span>
@@ -356,8 +420,9 @@ onBeforeUnmount(() => pageObserver?.disconnect())
           <h2 id="report-toc-title">阅读路径</h2>
         </div>
         <ol class="report-toc">
-          <li v-for="(chapter, index) in chapterItems" :key="chapter.id">
-            <span class="report-toc__index">{{ chapterNumber(index) }}</span>
+          <li v-for="chapter in readerTocItems" :key="chapter.id" :class="{ 'report-toc__item--nested': chapter.depth > 0 }" :style="{ '--report-toc-depth': chapter.depth }">
+            <span v-if="chapter.depth === 0" class="report-toc__index">{{ chapterNumber(chapter.chapterIndex) }}</span>
+            <span v-else class="report-toc__index report-toc__index--nested" aria-hidden="true">·</span>
             <span class="report-toc__copy"><strong>{{ chapter.title }}</strong></span>
             <span class="report-toc__leader" aria-hidden="true"></span>
           </li>
@@ -389,8 +454,7 @@ onBeforeUnmount(() => pageObserver?.disconnect())
         </div>
 
         <p v-if="page.pageInSection === 0 && page.section.subtitle" class="report-lead">{{ page.section.subtitle }}</p>
-        <div v-if="page.section.kind === 'markdown' && page.content" class="report-markdown-content" v-html="formatReportMarkdown(page.content)"></div>
-        <div v-else-if="page.pageInSection === 0 && page.section.content" class="report-section-intro report-markdown-content" v-html="formatReportMarkdown(page.section.content)"></div>
+        <div v-if="page.content" class="report-section-intro report-markdown-content" v-html="formatReportMarkdown(page.content)"></div>
 
         <div v-if="page.section.kind === 'foundation'" class="report-foundation-content">
           <div v-if="baziPillars.length" class="report-grid report-grid--four">
@@ -417,31 +481,34 @@ onBeforeUnmount(() => pageObserver?.disconnect())
           <ReportContentBlock v-if="additionalFoundation" :block="additionalFoundation" />
         </div>
 
-        <ul v-if="page.pageInSection === 0 && page.section.items?.length" class="report-list report-list--spaced">
-          <li v-for="(item, itemIndex) in page.section.items" :key="`${page.section.id}-item-${itemIndex}`">{{ item }}</li>
-        </ul>
         <ReportContentBlock
-          v-for="block in page.pageInSection === 0 ? page.section.blocks : []"
-          :key="block.id"
+          v-for="(block, blockIndex) in page.blocks"
+          :key="`${block.id}-${block.fragmentIndex ?? blockIndex}`"
           :block="block"
         />
       </div>
       <div class="report-page__footer"><span>{{ chapterNumber(page.sectionIndex) }} · {{ page.section.title }}<template v-if="page.pageInSection"> · 续页 {{ page.pageInSection + 1 }}</template></span></div>
     </section>
 
-    <section v-if="hasSummary" class="report-page report-page--ending report-page--dark" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== summaryPageIndex }" :data-reader-page="summaryPageIndex + 1" aria-labelledby="report-summary-title">
+    <section
+      v-for="page in summaryPageEntries"
+      :key="`summary-reader-${page.pageInSection}`"
+      class="report-page report-page--ending report-page--dark"
+      :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== page.pageIndex }"
+      :data-reader-page="page.pageIndex + 1"
+      :aria-labelledby="`report-summary-title-${page.pageIndex}`"
+    >
       <div class="report-ending">
         <p class="report-divider__number">{{ chapterNumber(documentModel.sections.length) }}</p>
-        <h2 id="report-summary-title">总结与寄语</h2>
+        <h2 :id="`report-summary-title-${page.pageIndex}`">{{ documentModel.summary.title || '总结与寄语' }}<template v-if="page.pageInSection">（续页 {{ page.pageInSection + 1 }}）</template></h2>
         <div class="report-rule" aria-hidden="true"></div>
-        <blockquote v-if="documentModel.summary.content" class="report-markdown-content" v-html="formatReportMarkdown(documentModel.summary.content)"></blockquote>
         <ReportContentBlock
-          v-for="block in documentModel.summary.blocks"
-          :key="block.id"
+          v-for="(block, blockIndex) in page.blocks"
+          :key="`${block.id}-${block.fragmentIndex ?? blockIndex}`"
           :block="block"
           class="report-ending__block"
         />
-        <p class="report-ending__signature">辰鉴 · 星辰引路，镜子照见</p>
+        <p v-if="page.pageInSection === summaryPageEntries.length - 1" class="report-ending__signature">辰鉴 · 星辰引路，镜子照见</p>
       </div>
     </section>
 

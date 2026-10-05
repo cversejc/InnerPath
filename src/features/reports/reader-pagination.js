@@ -169,3 +169,168 @@ export function paginateMarkdownForReader(markdown, maxCharacters = DEFAULT_PAGE
   if (current) pages.push(current)
   return pages
 }
+
+function plainCharacterLength(value) {
+  return characterLength(String(value || '').replace(/[#>*_`~-]/g, ''))
+}
+
+function fragmentSize(block) {
+  return Math.max(1, plainCharacterLength(block.title)
+    + plainCharacterLength(block.subtitle)
+    + plainCharacterLength(block.content)
+    + (block.items || []).reduce((total, item) => total + plainCharacterLength(item), 0)
+    + plainCharacterLength(block.comparison?.from)
+    + plainCharacterLength(block.comparison?.to)
+    + (block.metadata || []).reduce((total, item) => total + plainCharacterLength(item.value), 0)
+    + (block.title ? 18 : 0))
+}
+
+function splitBlockContent(block, depth, limit) {
+  const titleCost = plainCharacterLength(block.title) + plainCharacterLength(block.subtitle)
+    + (block.title ? 18 : 0)
+    + (block.metadata || []).reduce((total, item) => total + plainCharacterLength(item.value), 0)
+  const contentLimit = Math.max(1, limit - titleCost)
+  const contentParts = block.content
+    ? paginateMarkdownForReader(block.content, contentLimit)
+    : []
+  const fragments = contentParts.map((content, index) => ({
+    ...block,
+    depth,
+    content,
+    items: [],
+    continued: index > 0,
+    children: []
+  }))
+
+  if (block.comparison && !block.content && !block.items?.length) {
+    const fromParts = paginateMarkdownForReader(block.comparison.from || '', contentLimit)
+    const toParts = paginateMarkdownForReader(block.comparison.to || '', contentLimit)
+    const partCount = Math.max(fromParts.length, toParts.length, 1)
+    for (let index = 0; index < partCount; index += 1) {
+      fragments.push({
+        ...block,
+        title: index ? '' : block.title,
+        subtitle: index ? '' : block.subtitle,
+        comparison: {
+          ...block.comparison,
+          from: fromParts[index] || (fromParts.length === 1 ? fromParts[0] : ''),
+          to: toParts[index] || (toParts.length === 1 ? toParts[0] : '')
+        },
+        depth,
+        content: '',
+        items: [],
+        continued: index > 0,
+        children: []
+      })
+    }
+  }
+
+  if (block.items?.length) {
+    let items = []
+    let itemsLength = 0
+    const flushItems = () => {
+      if (!items.length) return
+      fragments.push({
+        ...block,
+        title: fragments.length ? '' : block.title,
+        subtitle: '',
+        content: '',
+        items,
+        depth,
+        continued: fragments.length > 0,
+        children: []
+      })
+      items = []
+      itemsLength = 0
+    }
+    for (const item of block.items) {
+      const chunks = characterLength(String(item)) > contentLimit
+        ? paginateMarkdownForReader(String(item), contentLimit)
+        : [String(item)]
+      for (const chunk of chunks) {
+        const itemLength = plainCharacterLength(chunk)
+        if (items.length && itemsLength + itemLength > contentLimit) flushItems()
+        items.push(chunk)
+        itemsLength += itemLength
+      }
+    }
+    flushItems()
+  }
+
+  if (!fragments.length && block.title) {
+    fragments.push({ ...block, depth, content: '', items: [], children: [] })
+  }
+  return fragments
+}
+
+function flattenReportBlocks(blocks, limit, depth = 0) {
+  return (blocks || []).flatMap(block => {
+    if (!block || typeof block !== 'object') return []
+    const blockDepth = Number.isInteger(block.depth) ? block.depth : depth
+    const ownFragments = splitBlockContent(block, blockDepth, limit)
+    return [...ownFragments, ...flattenReportBlocks(block.children, limit, blockDepth + 1)]
+  })
+}
+
+function safeAnchorPart(value) {
+  return String(value || 'block').replace(/[^a-z\d_-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'block'
+}
+
+/** Paginate a normalized section while retaining a flat, depth-aware block list per page. */
+export function paginateReportSection(section, maxCharacters = DEFAULT_PAGE_CHARACTER_LIMIT) {
+  const limit = Math.max(1, Math.floor(Number(maxCharacters) || DEFAULT_PAGE_CHARACTER_LIMIT))
+  const rootBlocks = [...(section.blocks || [])]
+  if (section.content || section.items?.length || section.comparison || section.metadata?.length) {
+    rootBlocks.unshift({
+      id: `${section.id}-lead`,
+      title: '',
+      subtitle: '',
+      content: section.content || '',
+      items: section.items || [],
+      children: [],
+      depth: 0,
+      displayType: section.displayType || (section.items?.length ? 'list' : 'prose'),
+      comparison: section.comparison || null,
+      metadata: section.metadata || []
+    })
+  }
+
+  const fragments = flattenReportBlocks(rootBlocks, limit)
+  if (!fragments.length) return [{ content: '', blocks: [] }]
+
+  const pages = []
+  let current = []
+  let currentLength = 0
+  const pushPage = () => {
+    if (!current.length) return
+    pages.push({ content: '', blocks: current })
+    current = []
+    currentLength = 0
+  }
+
+  fragments.forEach((fragment, index) => {
+    const size = fragmentSize(fragment)
+    const isHeadingOnly = Boolean(fragment.title && !fragment.content && !fragment.items?.length && !fragment.comparison && !fragment.metadata?.length)
+    const nextSize = isHeadingOnly && fragments[index + 1] ? fragmentSize(fragments[index + 1]) : 0
+    if (current.length && currentLength + size + nextSize > limit) pushPage()
+    if (current.length && currentLength + size > limit) pushPage()
+    current.push(fragment)
+    currentLength += size
+  })
+  pushPage()
+
+  const fragmentCounts = new Map()
+  pages.forEach((page, pageIndex) => {
+    page.blocks = page.blocks.map(block => {
+      const fragmentIndex = fragmentCounts.get(block.id) || 0
+      fragmentCounts.set(block.id, fragmentIndex + 1)
+      return {
+        ...block,
+        anchorId: `report-${safeAnchorPart(section.id)}-${safeAnchorPart(block.id)}-${fragmentIndex + 1}`,
+        fragmentIndex
+      }
+    })
+    page.pageInSection = pageIndex
+  })
+  return pages
+}
