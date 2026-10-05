@@ -23,7 +23,7 @@ import {
 const POLL_INTERVAL = 2500;
 const S1_FOUNDATION_SKILL_KEY = REPORT_SKILLS.find((item) => item.step === "S1")?.key;
 const REASONING_GUIDANCE_SKILL_KEYS = new Set(
-  REPORT_SKILLS.filter((item) => ["S1", "S2"].includes(item.step)).map(
+  REPORT_SKILLS.filter((item) => ["S1", "S2", "S3"].includes(item.step)).map(
     (item) => item.key,
   ),
 );

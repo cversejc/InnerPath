@@ -60,3 +60,20 @@ async def test_s2_default_thought_changes_do_not_publish_over_existing_version(s
     assert again[1].specification_json["reasoning_guidance"]["methodology"] == [
         "已审核的旧版心理映射思路"
     ]
+
+
+@pytest.mark.asyncio
+async def test_s3_default_thought_changes_do_not_publish_over_existing_version(skill_db):
+    versions = await ensure_default_analysis_skill_versions(skill_db)
+    published = versions[2]
+    previous = deepcopy(published.specification_json)
+    previous["reasoning_guidance"]["methodology"] = ["已审核的旧版整合思路"]
+    published.specification_json = previous
+    await skill_db.flush()
+
+    again = await ensure_default_analysis_skill_versions(skill_db)
+
+    assert again[2].id == published.id
+    assert again[2].specification_json["reasoning_guidance"]["methodology"] == [
+        "已审核的旧版整合思路"
+    ]

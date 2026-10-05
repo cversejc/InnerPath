@@ -16,12 +16,14 @@ never transfer facts from an example to the current user."""
 
 S1_FOUNDATION_SKILL_KEY = "report.s1_foundation_analysis"
 S2_PSYCHOLOGY_SKILL_KEY = "report.s2_psychology_mapping"
+S3_INTEGRATION_SKILL_KEY = "report.s3_integration"
 REASONING_GUIDANCE_SKILL_KEYS = frozenset(
-    {S1_FOUNDATION_SKILL_KEY, S2_PSYCHOLOGY_SKILL_KEY}
+    {S1_FOUNDATION_SKILL_KEY, S2_PSYCHOLOGY_SKILL_KEY, S3_INTEGRATION_SKILL_KEY}
 )
 ANALYSIS_SKILL_STEPS = {
     S1_FOUNDATION_SKILL_KEY: "S1",
     S2_PSYCHOLOGY_SKILL_KEY: "S2",
+    S3_INTEGRATION_SKILL_KEY: "S3",
 }
 
 ANALYSIS_SYSTEM_REQUIREMENTS = [
@@ -607,13 +609,17 @@ ANALYSIS_STEPS: dict[str, dict[str, Any]] = {
     "S3": {
         "skill_key": "report.s3_integration",
         "name": "S3 命理心理哲学整合",
-        "objective": "综合已确认的命理与心理判断，提出中心张力、自我方向和整合任务候选。",
+        "objective": "将已确认的命理时序与心理线索放入哲学视角，形成尊重用户选择、可由现实经历修正的成长路线候选。",
         "methodology": [
-            "整合已确认的上游 Finding，不重复执行 S1 命理分析或 S2 心理映射。",
-            "明确指出整合判断引用的上游 Finding 与 Evidence。",
-            "描述需要发展的能力与两端张力，不塑造完美人格，也不预测必然结果。",
-            "输入不足或上游判断冲突时，将其列为待咨询师核查的风险，不自行消解冲突。",
-            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+            "只使用 S1/S2 已确认的命理与心理判断及本次现实资料，不重新排盘、重做心理映射或把未确认候选写成事实；上游冲突并列呈现，留给咨询师核查。",
+            "自性化指更完整、自由、真实的两端整合，可用螺旋成长作比喻；不是变得完美、顺从或更强，也不把人生分成高低等级。",
+            "英雄四象限只作理解张力与成长任务的原型地图。比较相关象限的依据、反证与可发展的能力，可保留跨象限特征；不把象限当作人格诊断或固定身份，不用贬义标签称呼用户。",
+            "人生时序以系统已经计算的当前及后续大运年份和 S1/S2 现实线索为基础，描述每段可能放大的主题、资源、旧模式和发展能力；顺逆运不等于好坏人生或某个自性化阶段，冲合也不直接证明具体事件。",
+            "易经时义作为贴合当下处境的哲学比喻，说明它如何帮助观察时机、进退或变化，以及比喻不适用的边界；不自行起卦，不声称卦象证明人生走向。",
+            "用金花种子与周期、道德经的自知与反向整合、了凡四训的主动实践等视角搭建个体经验与集体意象的桥梁；只转述有把握的观点，不虚构原文、引文、页码或作者结论。",
+            "三重整合时，把命理结构、心理两端张力和哲学意义并置比较：先天配置与意识/潜意识、阶段节律与时义、可用资源与明德、耗能张力与反向整合、干支互动与阴阳、隐藏可能与觉察；映射不成立或资料不足时明确暂缓。",
+            "路线图呈现可尝试的方向、能力和选择，不替用户规定使命、阶段或重大决定；让问卷中的现实经验能够改变整合结论，并保留不同解释。",
+            "每项整合判断指出支持它的已确认上游依据和用户现实资料，也写出冲突、反例或还需核实之处。分析仅供咨询师审核，不作为报告定论或必然预言。",
         ],
     },
     "S4": {
@@ -748,7 +754,7 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "metrics": ["schema", "source_fidelity", "safety", "stage_fit"],
             "minimum_score": 0.8,
         }
-        if step_key in {"S1", "S2"}:
+        if step_key in {"S1", "S2", "S3"}:
             spec = prepare_reasoning_guidance_specification(spec)
         specifications.append(validate_skill_specification(spec))
     return specifications

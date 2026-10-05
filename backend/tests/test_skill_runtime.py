@@ -14,6 +14,7 @@ from app.db.base import Base
 from app.domains.skills.definitions import (
     DEFAULT_SKILL_KEY,
     S2_PSYCHOLOGY_SKILL_KEY,
+    S3_INTEGRATION_SKILL_KEY,
     compile_s1_runtime_specification,
     compile_reasoning_guidance_specification,
     default_analysis_skill_specifications,
@@ -302,6 +303,46 @@ def test_s2_legacy_instructions_project_as_guidance_and_compile_to_same_runtime(
     assert compile_reasoning_guidance_specification(legacy) == expected_runtime
 
 
+def test_s3_guidance_covers_framework_integration_without_contract_fields():
+    specification = default_analysis_skill_specifications()[2]
+    guidance = specification["reasoning_guidance"]
+    method_text = "\n".join(guidance["methodology"])
+
+    assert specification["identity"]["skill_key"] == S3_INTEGRATION_SKILL_KEY
+    assert len(guidance["methodology"]) == 10
+    assert all(
+        phrase in method_text
+        for phrase in (
+            "自性化", "英雄四象限", "后续大运", "顺逆运不等于", "易经时义",
+            "金花", "道德经", "了凡四训", "三重", "保留不同解释",
+        )
+    )
+    assert all(
+        topic["fragment_key"] not in method_text
+        for topic in specification["instructions"]["sop_contract"]["topics"]
+    )
+
+
+def test_s3_legacy_instructions_project_as_guidance_and_compile_to_same_runtime():
+    current = default_analysis_skill_specifications()[2]
+    guidance = deepcopy(current["reasoning_guidance"])
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = guidance["objective"]
+    legacy["instructions"]["methodology"] = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    assert reasoning_guidance_for_skill(
+        current["identity"]["skill_key"], legacy
+    ) == guidance
+    assert compile_reasoning_guidance_specification(legacy) == (
+        compile_reasoning_guidance_specification(current)
+    )
+
+
 @pytest.mark.asyncio
 async def test_s1_reasoning_guidance_draft_publishes_and_compiles_for_runtime(skill_db):
     versions = await ensure_default_analysis_skill_versions(skill_db)
@@ -399,6 +440,39 @@ async def test_s2_reasoning_guidance_draft_preserves_contract_and_compiles(skill
 
 
 @pytest.mark.asyncio
+async def test_s3_reasoning_guidance_draft_preserves_contract_and_compiles(skill_db):
+    published = (await ensure_default_analysis_skill_versions(skill_db))[2]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    objective = "整合已确认的命理、心理与现实经验，保留多种可能。"
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=objective,
+        methodology=guidance["methodology"],
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+    response = _skill_version_response(updated)
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert runtime["instructions"]["objective"] == objective
+    assert "英雄四象限" in "\n".join(runtime["instructions"]["methodology"])
+    assert len(runtime["instructions"]["sop_contract"]["topics"]) == 6
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+
+
+@pytest.mark.asyncio
 async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
     specification = next(
         item
@@ -479,6 +553,76 @@ async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
             input_data=context,
             gateway=StubGateway(json.dumps(output, ensure_ascii=False)),
         )
+
+
+@pytest.mark.asyncio
+async def test_s3_runtime_prompt_compiles_reasoning_and_fixed_framework_topics():
+    specification = default_analysis_skill_specifications()[2]
+    skill = SimpleNamespace(
+        id=73,
+        skill_key=specification["identity"]["skill_key"],
+        version=1,
+        specification_json=specification,
+    )
+    output = {
+        "summary": "围绕稳定与探索的张力，提出可继续核对的整合方向。",
+        "findings": [
+            {
+                "finding_key": "s3.integration.stability-exploration",
+                "claim": "用户可能希望在保持稳定的同时，为探索留下空间。",
+                "kind": "FINDING",
+                "semantic_role": "CENTRAL_TENSION",
+                "confidence": "MEDIUM",
+                "importance": "HIGH",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": ["input.context.current_challenge"],
+                "relation_refs": [
+                    {"finding_key": "foundation.balance", "relation": "INTEGRATES"},
+                    {"finding_key": "s2.psychology.autonomy", "relation": "INTEGRATES"},
+                ],
+                "structured_data": {},
+            }
+        ],
+        "analysis_fragments": [
+            {
+                "fragment_key": "analysis.s3.self",
+                "title": "整合方向候选",
+                "content": "可以尝试在可预期的节奏中安排小范围探索。",
+                "finding_refs": ["s3.integration.stability-exploration"],
+                "evidence_refs": ["input.context.current_challenge"],
+            }
+        ],
+        "risk_flags": [],
+    }
+    gateway = StubGateway(json.dumps(output, ensure_ascii=False))
+    result = await execute_skill(
+        skill_version=skill,
+        input_data={
+            "profile": {},
+            "context": {"current_challenge": "在稳定岗位与新方向间权衡"},
+            "analysis_context": {
+                "step_key": "S3",
+                "evidence": [
+                    {
+                        "evidence_key": "input.context.current_challenge",
+                        "source_type": "USER_PROVIDED",
+                    }
+                ],
+                "upstream_confirmed_findings": [
+                    {"finding_key": "foundation.balance", "claim": "重视稳定。"},
+                    {"finding_key": "s2.psychology.autonomy", "claim": "重视自主。"},
+                ],
+            },
+        },
+        gateway=gateway,
+    )
+
+    assert result.output_parsed["findings"][0]["finding_key"] == (
+        "s3.integration.stability-exploration"
+    )
+    assert "英雄四象限" in gateway.last_request[0]
+    assert "自性化" in gateway.last_request[0]
+    assert "analysis.s3.quadrant" in gateway.last_request[0]
 
 
 @pytest.mark.asyncio
