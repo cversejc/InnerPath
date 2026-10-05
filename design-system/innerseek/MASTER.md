@@ -204,13 +204,17 @@ shapes for statuses, seals, tags and compact metadata.
 - **Skill and example workbench:** organize skills by the six consultant report nodes,
   using Chinese names and descriptions. A compact header, skill catalog and function
   navigation remain visible while only the active work content scrolls. On mobile,
-  replace the catalog with a native skill selector. Use separate views for usage,
-  examples, runs, maintenance, trial runs and evaluation; show only role-appropriate
+  replace the catalog with a native skill selector. Use role-appropriate views for
+  usage, examples, runs, maintenance and trial/evaluation; show only role-appropriate
   actions. Read examples and run output as labeled Chinese content, one selected
   record at a time. Fold stable technical keys and original JSON behind explicit
   disclosures. Common maintenance edits use labeled goal/method fields while
-  preserving the complete configuration. Keep the originating consultant node
-  and report in the return link. See `docs/consultant-analysis-implementation.md`.
+  preserving the complete configuration. For the S1 administrator pilot, make the
+  primary flow intent maintenance, fixed-case trial/evaluation, and secondary
+  references/history. Let the administrator edit only the AI objective and reasoning
+  guidance; the program owns input/output contracts and release checks. Keep the
+  originating consultant node and report in the return link. See
+  `docs/consultant-analysis-implementation.md`.
 
 ## Anti-patterns
 

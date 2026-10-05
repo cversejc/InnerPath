@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 import json
 from types import SimpleNamespace
@@ -8,13 +9,16 @@ from fastapi import HTTPException
 from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
+from app.api.v1.skills import _skill_version_response
 from app.db.base import Base
 from app.domains.skills.definitions import (
     DEFAULT_SKILL_KEY,
+    compile_s1_runtime_specification,
     default_analysis_skill_specifications,
     default_narrative_skill_specifications,
     default_skill_specification,
     default_validator_skill_specification,
+    s1_reasoning_guidance,
     validate_skill_specification,
 )
 from app.domains.skills.models import AISkillVersion, SkillExample, SkillRun
@@ -34,9 +38,11 @@ from app.domains.skills.runtime import (
 from app.domains.skills.service import (
     create_skill_run,
     create_skill_draft,
+    ensure_default_analysis_skill_versions,
     ensure_default_skill_version,
     ensure_default_validator_skill_version,
     publish_skill_version,
+    update_s1_reasoning_guidance,
     update_skill_draft,
 )
 from app.domains.skills.examples import (
@@ -204,6 +210,98 @@ def _report_text(extra=""):
         "## 三、我往哪去\n下周可以先完成一个小实验。\n\n"
         "## 五、总结与寄语\n你可以保留自己的节奏。\n" + extra
     )
+
+
+def test_s1_legacy_instructions_project_as_guidance_and_compile_to_same_runtime():
+    current = default_analysis_skill_specifications()[0]
+    guidance = deepcopy(current["reasoning_guidance"])
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = guidance["objective"]
+    legacy["instructions"]["methodology"] = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    exposed_guidance = s1_reasoning_guidance(
+        current["identity"]["skill_key"], legacy
+    )
+    legacy_runtime = compile_s1_runtime_specification(legacy)
+    current_runtime = compile_s1_runtime_specification(current)
+
+    assert exposed_guidance == guidance
+    assert not set(current["runtime_contract"]["system_requirements"]) & set(
+        exposed_guidance["methodology"]
+    )
+    assert legacy_runtime == current_runtime
+    assert "reasoning_guidance" not in legacy_runtime
+    assert "runtime_contract" not in legacy_runtime
+
+
+def test_s1_guidance_covers_all_fourteen_step_one_framework_topics():
+    guidance = default_analysis_skill_specifications()[0]["reasoning_guidance"]
+    topic_names = [
+        item.split("：", 1)[0]
+        for item in guidance["methodology"]
+        if "：" in item
+    ]
+
+    assert topic_names == [
+        "日主", "格局", "月令", "十神", "日支", "时支", "年柱",
+        "刑冲合害", "大运", "用神与喜忌", "命宫", "身宫", "福德宫", "四化",
+    ]
+    assert all("analysis.s1." not in item for item in guidance["methodology"])
+
+
+@pytest.mark.asyncio
+async def test_s1_reasoning_guidance_draft_publishes_and_compiles_for_runtime(skill_db):
+    versions = await ensure_default_analysis_skill_versions(skill_db)
+    published = versions[0]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+
+    updated = await update_s1_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective="从命理基础资料提出可复核的结构线索。",
+        methodology=guidance["methodology"],
+    )
+    runtime_before_publish = compile_s1_runtime_specification(
+        updated.specification_json
+    )
+    result = await publish_skill_version(skill_db, updated.id, published_by=17)
+    runtime_after_publish = compile_s1_runtime_specification(
+        result.specification_json
+    )
+
+    assert result.status == "PUBLISHED"
+    assert result.specification_json["reasoning_guidance"]["objective"] == (
+        "从命理基础资料提出可复核的结构线索。"
+    )
+    assert "objective" not in result.specification_json["instructions"]
+    assert runtime_before_publish == runtime_after_publish
+    assert runtime_after_publish["instructions"]["objective"] == (
+        "从命理基础资料提出可复核的结构线索。"
+    )
+
+
+@pytest.mark.asyncio
+async def test_s1_skill_api_returns_guidance_without_technical_specification(skill_db):
+    published = (await ensure_default_analysis_skill_versions(skill_db))[0]
+    response = _skill_version_response(published)
+
+    assert response.reasoning_guidance.model_dump() == published.specification_json[
+        "reasoning_guidance"
+    ]
+    assert response.specification_json is None
 
 
 @pytest.mark.asyncio

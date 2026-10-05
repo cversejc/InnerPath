@@ -14,6 +14,17 @@ interpretations as clinical facts, predict certain future outcomes, invent user
 experiences, or expose hidden reasoning. Treat examples as style guidance only;
 never transfer facts from an example to the current user."""
 
+S1_FOUNDATION_SKILL_KEY = "report.s1_foundation_analysis"
+
+ANALYSIS_SYSTEM_REQUIREMENTS = [
+    "每条 finding 都提供 short_title：8–20 字的中文关键词标签，概括其核心判断，供列表快速识别；详细依据仍写在 claim 中。",
+    "控制输出预算，保证JSON完整：summary约120字，每个Finding.claim约40–120字，analysis_fragments.content每项约150–300字，结构化details每字段约25–80字。只在reasoning_contract列出的片段返回structured_analysis，其他片段不添加。引用必要Evidence，不复制上游整份总结；不以压缩为由漏掉规定片段或Action字段。",
+    "新案例analysis_context.reasoning_contract存在时，其analysis_structures列出的片段必须提交structured_analysis={status,reason,quote,follow_up_questions,details}。details严格按该key的字段表，逐字段给依据和边界；FULFILLED全部字段齐全，DEFERRED可为空但须在正文明确暂缓并补问，不能用NOT_APPLICABLE删掉核心推导。阶段地图periods.start_year/end_year必须逐字采用已提供程序测算证据内bazi_facts.dayun的起止年份，并在该片段evidence_refs引用当前测算版本；资料不足用DEFERRED，禁止补造年份。",
+    "新案例S4每项ACTION的structured_data.reasoning_path须有resource_refs(只指已确认RESOURCE/USEFUL_GOD/STRUCTURE/SELF_DIRECTION)、regulation_function、capacity、reality_gap、block_refs(与行动block_refs一致)、integration_task、tool(与method一致)、rationale、evidence_refs(现实自述依据)。逐项说明资源如何转成能力、回应哪些卡点和为何选此工具。真实生活依据不能用单独的命盘计算冒充。关联当前批次BLOCK时使用已有候选key；先列资源/卡点，再列行动便于审核保存。不虚构新的事实或补造心理经历。",
+    "新案例analysis_context.framework_contract存在时，每个analysis_fragments对象须有framework_coverage：status(FULFILLED/DEFERRED/NOT_APPLICABLE/MISSING)、reason、quote、follow_up_questions。quote只能从该对象刚生成的content逐字选择连续一句，不能摘录未出现在本content中的问卷、上游分析或details文字；structured_analysis.quote同样如此。DEFERRED必须说明缺失输入并给补问；NOT_APPLICABLE必须有资料证明的理由。MISSING不能用于完成节点。",
+    "S2 mapping明确产出意识自我/自我信念，并与面具和未被接纳的部分区分；S4 ACTION的block_refs只能引用semantic_role=BLOCK的判断。不得用别的角色代替卡点。",
+]
+
 ALLOWED_PROCESSORS = {
     "calendar.production",
     "reports.single_step",
@@ -159,6 +170,25 @@ def validate_skill_specification(specification: dict[str, Any]) -> dict[str, Any
     name = str(identity.get("name") or "").strip()
     if not skill_key or not name:
         raise ValueError("skill_identity_required")
+    if skill_key == S1_FOUNDATION_SKILL_KEY:
+        guidance = spec.get("reasoning_guidance")
+        if not isinstance(guidance, dict):
+            guidance = spec["instructions"]
+        objective = guidance.get("objective")
+        methodology = guidance.get("methodology")
+        if (
+            not isinstance(objective, str)
+            or not objective.strip()
+            or len(objective) > 1200
+            or not isinstance(methodology, list)
+            or not methodology
+            or len(methodology) > 40
+            or any(
+                not isinstance(item, str) or not item.strip() or len(item) > 1000
+                for item in methodology
+            )
+        ):
+            raise ValueError("skill_reasoning_guidance_invalid")
     processor = spec["processor_policy"].get("processor")
     if processor not in ALLOWED_PROCESSORS:
         raise ValueError("skill_processor_required")
@@ -236,6 +266,98 @@ def validate_skill_specification(specification: dict[str, Any]) -> dict[str, Any
     identity["skill_key"] = skill_key
     identity["name"] = name
     return spec
+
+
+def s1_system_requirements() -> list[str]:
+    """Return the S1 runtime instructions owned by the application."""
+    return [*sop_methodology("S1")[1:], *ANALYSIS_SYSTEM_REQUIREMENTS]
+
+
+def prepare_s1_skill_specification(specification: dict[str, Any]) -> dict[str, Any]:
+    """Normalize S1 into separate administrator guidance and system contracts.
+
+    Older versions stored administrator guidance, fixed coverage instructions and
+    output requirements together in ``instructions.methodology``. Keep accepting
+    that shape, but persist the editable part under ``reasoning_guidance`` and the
+    application-owned prompt requirements under ``runtime_contract``.
+    """
+    spec = deepcopy(specification)
+    identity = spec.get("identity") if isinstance(spec, dict) else None
+    if not isinstance(identity, dict) or identity.get("skill_key") != S1_FOUNDATION_SKILL_KEY:
+        return spec
+
+    instructions = spec.get("instructions")
+    if not isinstance(instructions, dict):
+        return spec
+
+    guidance = spec.get("reasoning_guidance")
+    has_separated_guidance = isinstance(guidance, dict)
+    if not has_separated_guidance:
+        guidance = {}
+    objective = guidance.get("objective", instructions.get("objective", ""))
+    methodology = guidance.get("methodology", instructions.get("methodology", []))
+    if not isinstance(methodology, list):
+        methodology = []
+    fixed_items = set(s1_system_requirements())
+    previous_fixed_items = instructions.get("system_requirements")
+    if isinstance(previous_fixed_items, list):
+        fixed_items.update(
+            item for item in previous_fixed_items if isinstance(item, str)
+        )
+    editable_methodology = (
+        methodology
+        if has_separated_guidance
+        else [
+            item
+            for item in methodology
+            if isinstance(item, str) and item not in fixed_items
+        ]
+    )
+    spec["reasoning_guidance"] = {
+        "objective": objective,
+        "methodology": editable_methodology,
+    }
+
+    # These details remain available to the program, but no longer share the
+    # administrator-editable field or the general-purpose instructions object.
+    instructions.pop("objective", None)
+    instructions.pop("methodology", None)
+    instructions.pop("system_requirements", None)
+    spec["runtime_contract"] = {
+        "system_requirements": s1_system_requirements(),
+    }
+    return spec
+
+
+def compile_s1_runtime_specification(specification: dict[str, Any]) -> dict[str, Any]:
+    """Compile the separated S1 data into the prompt shape used by the runner."""
+    spec = prepare_s1_skill_specification(specification)
+    if not _is_s1_skill_specification(spec):
+        return spec
+    guidance = spec.pop("reasoning_guidance", {})
+    runtime_contract = spec.pop("runtime_contract", {})
+    instructions = spec["instructions"]
+    instructions["objective"] = guidance.get("objective", "")
+    instructions["methodology"] = [
+        *(guidance.get("methodology") or []),
+        *(runtime_contract.get("system_requirements") or s1_system_requirements()),
+    ]
+    return spec
+
+
+def _is_s1_skill_specification(specification: dict[str, Any]) -> bool:
+    identity = specification.get("identity") if isinstance(specification, dict) else None
+    return isinstance(identity, dict) and identity.get("skill_key") == S1_FOUNDATION_SKILL_KEY
+
+
+def s1_reasoning_guidance(
+    skill_key: str, specification: dict[str, Any]
+) -> dict[str, Any] | None:
+    """Expose only administrator-editable S1 reasoning guidance."""
+    if skill_key != S1_FOUNDATION_SKILL_KEY:
+        return None
+    spec = prepare_s1_skill_specification(specification)
+    return deepcopy(spec.get("reasoning_guidance") or {"objective": "", "methodology": []})
 
 
 def default_skill_specification() -> dict[str, Any]:
@@ -402,11 +524,23 @@ ANALYSIS_STEPS: dict[str, dict[str, Any]] = {
         "name": "S1 命理基础结构分析",
         "objective": "整理系统计算的命理基础，形成可供咨询师审核的结构判断与待验证信号。",
         "methodology": [
-            "只解释输入中的确定性命理计算结果，不自行排盘或补充缺失数据。",
-            "将传统命理解释明确标为解释视角，不写成客观事实或确定性预测。",
-            "可以提出待 S2 验证的心理 Signal，但不得在 S1 将其写成心理诊断或定论。",
-            "每项判断至少引用一条输入 Evidence；无证据时不生成该判断。",
-            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+            "先核对出生资料与系统计算范围，分清可靠、待核和缺失的部分；只使用已给计算结果，不自行排盘或补造数据。",
+            "日主：从日干、五行、阴阳和意象说明命盘的自我核心线索；象征意义只作为待验证视角，不直接断定人格。",
+            "格局：以月令和全局生扶、克泄耗为主轴，比较身强、身弱、从格和化格的成立条件；给出首选候选、反证和分歧，不以元素出现次数判断旺衰。",
+            "月令：看月支、本气、藏干十神及与日主的生克，解释季节气候和能量基调；有关世界观的延伸只留作访谈线索。",
+            "十神：区分天干透出与地支藏干，结合旺衰、缺失及十神间关系寻找显性资源、隐性可能和张力；缺失不等于人格缺陷。",
+            "日支：结合日支与日主的生克和藏干十神，提出内在需求与存在方式的候选理解，并标明还缺少哪些现实资料验证。",
+            "时支：根据已知时支的五行和十神提出价值排序及后续发展线索；出生时间不明或不可靠时明确暂缓。",
+            "年柱：依据年干支和十神讨论早期印记与内在权威的象征线索；不得由年柱编造祖辈或家庭经历。",
+            "刑冲合害：先辨明干支中的冲、刑、合、害及合化是否成立，再讨论可能的内部张力；不从单一关系直接推断事件或心理冲突。",
+            "大运：按系统计算的起止年份和分析日期定位当前运，比较其五行、十神与原局关系；顺逆只说明阶段条件和可能放大的主题，不预测必然事件。",
+            "用神与喜忌：从格局候选推导用神、喜神和忌神，解释各自调节什么、为何适用；若格局候选变化，也说明取用可能如何改变。",
+            "命宫：结合主星组合、亮度、吉煞和三方四正解释自我认同的象征线索；人格面具只是待现实经验核对的假设。",
+            "身宫：查看身宫位置、主星组合及与命宫的一致或背离，提出后天方向与转型张力的候选，不将阶段变化写成既定命运。",
+            "福德宫：结合主星、化忌、空劫与煞曜，对照命宫探索外在角色和内在感受的可能张力；不得据此诊断心理状态。",
+            "四化：区分生年四化与宫干飞化，沿禄、权、科、忌的源头和去向追踪主题，特别核对化忌流向；扩展宫位须有问卷依据并经咨询师选用。",
+            "参考古典分析中的五行气象、体用、格局变化、取用和行运思路来比较解释，不直接抄书、虚构引文或把流派解释当作计算事实。",
+            "综合八字与紫微的相互支持和冲突，将重要判断写成计算依据、解释路径、可能反证与待核问题；心理线索交下一步访谈，内部分析交咨询师审核，不直接当作报告正文。",
         ],
     },
     "S2": {
@@ -471,14 +605,7 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "stage_key": step_key,
             "sop_contract": stage_contract(step_key),
         }
-        spec["instructions"]["methodology"].extend([
-            "每条 finding 都提供 short_title：8–20 字的中文关键词标签，概括其核心判断，供列表快速识别；详细依据仍写在 claim 中。",
-            "控制输出预算，保证JSON完整：summary约120字，每个Finding.claim约40–120字，analysis_fragments.content每项约150–300字，结构化details每字段约25–80字。只在reasoning_contract列出的片段返回structured_analysis，其他片段不添加。引用必要Evidence，不复制上游整份总结；不以压缩为由漏掉规定片段或Action字段。",
-            "新案例analysis_context.reasoning_contract存在时，其analysis_structures列出的片段必须提交structured_analysis={status,reason,quote,follow_up_questions,details}。details严格按该key的字段表，逐字段给依据和边界；FULFILLED全部字段齐全，DEFERRED可为空但须在正文明确暂缓并补问，不能用NOT_APPLICABLE删掉核心推导。阶段地图periods.start_year/end_year必须逐字采用已提供程序测算证据内bazi_facts.dayun的起止年份，并在该片段evidence_refs引用当前测算版本；资料不足用DEFERRED，禁止补造年份。",
-            "新案例S4每项ACTION的structured_data.reasoning_path须有resource_refs(只指已确认RESOURCE/USEFUL_GOD/STRUCTURE/SELF_DIRECTION)、regulation_function、capacity、reality_gap、block_refs(与行动block_refs一致)、integration_task、tool(与method一致)、rationale、evidence_refs(现实自述依据)。逐项说明资源如何转成能力、回应哪些卡点和为何选此工具。真实生活依据不能用单独的命盘计算冒充。关联当前批次BLOCK时使用已有候选key；先列资源/卡点，再列行动便于审核保存。不虚构新的事实或补造心理经历。",
-            "新案例analysis_context.framework_contract存在时，每个analysis_fragments对象须有framework_coverage：status(FULFILLED/DEFERRED/NOT_APPLICABLE/MISSING)、reason、quote、follow_up_questions。quote只能从该对象刚生成的content逐字选择连续一句，不能摘录未出现在本content中的问卷、上游分析或details文字；structured_analysis.quote同样如此。DEFERRED必须说明缺失输入并给补问；NOT_APPLICABLE必须有资料证明的理由。MISSING不能用于完成节点。",
-            "S2 mapping明确产出意识自我/自我信念，并与面具和未被接纳的部分区分；S4 ACTION的block_refs只能引用semantic_role=BLOCK的判断。不得用别的角色代替卡点。",
-        ])
+        spec["instructions"]["methodology"].extend(ANALYSIS_SYSTEM_REQUIREMENTS)
         spec["example_policy"] = {"enabled": True, "max_examples": 3}
         spec["knowledge_policy"] = {"snapshot": knowledge_for_stage(step_key), "retrieval": "VERSION_SNAPSHOT"}
         spec["processor_policy"] = {"processor": "reports.analysis_draft"}
@@ -573,6 +700,8 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "metrics": ["schema", "source_fidelity", "safety", "stage_fit"],
             "minimum_score": 0.8,
         }
+        if step_key == "S1":
+            spec = prepare_s1_skill_specification(spec)
         specifications.append(validate_skill_specification(spec))
     return specifications
 

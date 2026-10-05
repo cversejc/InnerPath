@@ -148,6 +148,7 @@ export default {
     run: { type: Object, required: true },
     admin: { type: Boolean, default: false },
     caseId: { type: [String, Number], default: null },
+    allowInputPreview: { type: Boolean, default: true },
   },
   emits: ["preview-input"],
   data() {
@@ -177,7 +178,8 @@ export default {
     canPreviewInput() {
       const input = this.run.input_snapshot;
       return Boolean(
-        this.admin &&
+        this.allowInputPreview &&
+          this.admin &&
           this.run.status === "COMPLETED" &&
           this.run.skill_version_id &&
           input &&

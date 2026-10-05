@@ -21,6 +21,14 @@ import {
 } from "./studio.js";
 
 const POLL_INTERVAL = 2500;
+const S1_FOUNDATION_SKILL_KEY = REPORT_SKILLS.find((item) => item.step === "S1")?.key;
+
+function reasoningGuidanceFromVersion(version) {
+  const guidance = version?.reasoning_guidance;
+  if (guidance && typeof guidance === "object")
+    return JSON.parse(JSON.stringify(guidance));
+  return { objective: "", methodology: [] };
+}
 
 export default {
   name: "SkillStudio",
@@ -32,25 +40,36 @@ export default {
     VanButton,
   },
   data() {
+    const isAdmin = hasRole("admin");
+    const selectedSkillKey =
+      REPORT_SKILLS.find((item) => item.key === this.$route.query.skill)?.key ||
+      REPORT_SKILLS.find((item) => item.step === this.$route.query.step)?.key ||
+      REPORT_SKILLS[0].key;
+    const validPanels = [
+      "overview",
+      "examples",
+      "runs",
+      ...(isAdmin ? ["skills", "feedback", "debug", "evaluation"] : []),
+    ];
+    const requestedPanel = validPanels.includes(this.$route.query.panel)
+      ? this.$route.query.panel
+      : "overview";
+    const activeAdminTab =
+      isAdmin && selectedSkillKey === S1_FOUNDATION_SKILL_KEY
+        ? requestedPanel === "overview"
+          ? "skills"
+          : requestedPanel === "evaluation"
+            ? "debug"
+            : requestedPanel
+        : requestedPanel;
     return {
-      isAdmin: hasRole("admin"),
+      isAdmin,
       versions: [],
       selectedVersion: null,
-      selectedSkillKey:
-        REPORT_SKILLS.find((item) => item.key === this.$route.query.skill)
-          ?.key ||
-        REPORT_SKILLS.find((item) => item.step === this.$route.query.step)
-          ?.key ||
-        REPORT_SKILLS[0].key,
-      activeAdminTab: [
-        "overview",
-        "examples",
-        "runs",
-        ...(hasRole("admin") ? ["skills", "feedback", "debug", "evaluation"] : []),
-      ].includes(this.$route.query.panel)
-        ? this.$route.query.panel
-        : "overview",
+      selectedSkillKey,
+      activeAdminTab,
       specificationText: "",
+      reasoningGuidance: { objective: "", methodology: [] },
       inputText: JSON.stringify(sampleInput(), null, 2),
       runtimeInstruction: "",
       runs: [],
@@ -80,6 +99,9 @@ export default {
     };
   },
   computed: {
+    isS1Admin() {
+      return this.isAdmin && this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY;
+    },
     catalog() {
       return buildSkillCatalog(this.versions);
     },
@@ -124,6 +146,12 @@ export default {
       );
     },
     studioTabs() {
+      if (this.isS1Admin)
+        return [
+          { id: "skills", label: "维护思路" },
+          { id: "debug", label: "试用与评估" },
+          { id: "examples", label: "参考与记录" },
+        ];
       return [
         { id: "overview", label: "使用说明" },
         ...(this.isAdmin ? [{ id: "skills", label: "技能维护" }] : []),
@@ -153,9 +181,30 @@ export default {
       return this.isAdmin && this.selectedVersion?.status === "DRAFT";
     },
     specError() {
-      return this.editable
-        ? parseSpecification(this.specificationText).error
-        : "";
+      if (!this.editable) return "";
+      let instructions;
+      if (this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY) {
+        instructions = this.reasoningGuidance || {};
+      } else {
+        const parsed = parseSpecification(this.specificationText);
+        if (parsed.error) return parsed.error;
+        return "";
+      }
+      if (!String(instructions.objective || "").trim())
+        return "请填写 AI 分析目标。";
+      if (String(instructions.objective).length > 1200)
+        return "AI 分析目标不超过 1200 字。";
+      if (
+        !Array.isArray(instructions.methodology) ||
+        !instructions.methodology.some((item) => String(item).trim())
+      )
+        return "请填写分析目标，并至少保留一条分析思路。";
+      if (
+        instructions.methodology.length > 40 ||
+        instructions.methodology.some((item) => String(item).length > 1000)
+      )
+        return "分析思路最多 40 条，每条不超过 1000 字。";
+      return "";
     },
     inputError() {
       if (!this.isAdmin) return "";
@@ -217,8 +266,7 @@ export default {
           this.skillVersions.find(
             (item) => item.id === this.selectedVersion?.id,
           ) ||
-          this.skillVersions.find((item) => item.status === "PUBLISHED") ||
-          this.skillVersions[0];
+          this.preferredVersion();
         if (current) this.selectVersion(current);
       } catch (error) {
         this.showMessage(
@@ -232,11 +280,11 @@ export default {
     selectVersion(version) {
       this.selectedVersion = version;
       this.previewRunId = null;
-      this.specificationText = JSON.stringify(
-        version.specification_json,
-        null,
-        2,
-      );
+      this.reasoningGuidance = reasoningGuidanceFromVersion(version);
+      this.specificationText =
+        version.skill_key === S1_FOUNDATION_SKILL_KEY
+          ? ""
+          : JSON.stringify(version.specification_json, null, 2);
       this.selectedRun = null;
       this.loadRuns();
     },
@@ -245,11 +293,9 @@ export default {
       this.selectedRun = null;
       this.feedbackSourceRun = null;
       this.inputPreviewSourceRun = null;
-      this.changeTab("overview");
+      this.changeTab(this.isS1Admin ? "skills" : "overview");
       if (this.isAdmin) {
-        const version =
-          this.skillVersions.find((item) => item.status === "PUBLISHED") ||
-          this.skillVersions[0];
+        const version = this.preferredVersion();
         if (version) this.selectVersion(version);
         else {
           this.selectedVersion = null;
@@ -260,6 +306,14 @@ export default {
     selectVersionById(id) {
       const version = this.skillVersions.find((item) => item.id === Number(id));
       if (version) this.selectVersion(version);
+    },
+    preferredVersion() {
+      return (
+        (this.isS1Admin &&
+          this.skillVersions.find((item) => item.status === "DRAFT")) ||
+        this.skillVersions.find((item) => item.status === "PUBLISHED") ||
+        this.skillVersions[0]
+      );
     },
     selectRunById(id) {
       this.selectedRun =
@@ -276,16 +330,24 @@ export default {
       });
       this.$nextTick(() => this.$refs.workBody?.scrollTo({ top: 0 }));
     },
+    studioTabIsActive(tab) {
+      if (this.isS1Admin && tab === "examples")
+        return ["examples", "runs", "feedback"].includes(this.activeAdminTab);
+      return this.activeAdminTab === tab;
+    },
     async createDraft() {
       if (!this.selectedVersion) return;
       this.saving = true;
       try {
-        const created = await api.createSkillVersion({
-          skill_key: this.selectedVersion.skill_key,
-          name: this.selectedVersion.name,
-          category: this.selectedVersion.category,
-          specification_json: this.selectedVersion.specification_json,
-        });
+        const created =
+          this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY
+            ? await api.createSkillDraft(this.selectedVersion.id)
+            : await api.createSkillVersion({
+                skill_key: this.selectedVersion.skill_key,
+                name: this.selectedVersion.name,
+                category: this.selectedVersion.category,
+                specification_json: this.selectedVersion.specification_json,
+              });
         this.versions.unshift(created);
         this.selectVersion(created);
         this.showMessage(
@@ -302,19 +364,26 @@ export default {
       }
     },
     async saveDraft(options = {}) {
-      const parsed = parseSpecification(this.specificationText);
-      if (parsed.error) {
-        this.showMessage(parsed.error, "error");
-        if (options.rethrow) throw new Error(parsed.error);
+      const isS1 = this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY;
+      const parsed = isS1 ? null : parseSpecification(this.specificationText);
+      if (this.specError) {
+        this.showMessage(this.specError, "error");
+        if (options.rethrow) throw new Error(this.specError);
         return;
       }
       this.saving = true;
       try {
-        const updated = await api.updateSkillVersion(this.selectedVersion.id, {
-          name: parsed.value.identity?.name || this.selectedVersion.name,
-          category: this.selectedVersion.category,
-          specification_json: parsed.value,
-        });
+        const updated =
+          isS1
+            ? await api.updateSkillReasoningGuidance(this.selectedVersion.id, {
+                objective: this.reasoningGuidance.objective,
+                methodology: this.reasoningGuidance.methodology,
+              })
+            : await api.updateSkillVersion(this.selectedVersion.id, {
+                name: parsed.value.identity?.name || this.selectedVersion.name,
+                category: this.selectedVersion.category,
+                specification_json: parsed.value,
+              });
         this.replaceVersion(updated);
         this.showMessage("草稿已保存。");
         return updated;
@@ -329,8 +398,11 @@ export default {
       }
     },
     async publish() {
-      const parsed = parseSpecification(this.specificationText);
-      if (parsed.error) return;
+      if (
+        this.selectedSkillKey !== S1_FOUNDATION_SKILL_KEY &&
+        parseSpecification(this.specificationText).error
+      )
+        return;
       this.publishing = true;
       try {
         if (this.selectedVersion.status === "DRAFT")
@@ -353,11 +425,11 @@ export default {
         item.id === version.id ? version : item,
       );
       this.selectedVersion = version;
-      this.specificationText = JSON.stringify(
-        version.specification_json,
-        null,
-        2,
-      );
+      this.reasoningGuidance = reasoningGuidanceFromVersion(version);
+      this.specificationText =
+        version.skill_key === S1_FOUNDATION_SKILL_KEY
+          ? ""
+          : JSON.stringify(version.specification_json, null, 2);
     },
     async startRun() {
       if (this.inputError || !this.selectedVersion) return;

@@ -151,6 +151,14 @@
   border-color: var(--cinnabar);
   color: var(--cinnabar-deep);
 }
+.studio-subtabs {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+.examples-workspace {
+  min-width: 0;
+}
 .studio-work-body {
   flex: 1;
   min-height: 0;

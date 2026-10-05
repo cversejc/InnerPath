@@ -31,6 +31,7 @@ from app.domains.skills.analysis_sop import display_topic_title
 from .definitions import (
     GLOBAL_POLICY,
     GLOBAL_POLICY_VERSION,
+    compile_s1_runtime_specification,
     validate_skill_specification,
 )
 
@@ -895,7 +896,11 @@ async def execute_skill(
     runtime_instruction: str | None = None,
     gateway: ModelGateway | None = None,
 ) -> SkillExecutionResult:
-    specification = validate_skill_specification(skill_version.specification_json)
+    specification = validate_skill_specification(
+        compile_s1_runtime_specification(
+            validate_skill_specification(skill_version.specification_json)
+        )
+    )
     context = build_context_envelope(input_data, specification)
     feedback_rerun = (input_data.get("context") or {}).get("feedback_rerun")
     if isinstance(feedback_rerun, dict):

@@ -11,18 +11,22 @@ from app.application.skill_evaluation import ensure_evaluation_passed_before_pub
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.skills.definitions import s1_reasoning_guidance
 from app.domains.skills.schemas import (
     SkillRunCreate,
     SkillRunResponse,
     ConsultantSkillRunResponse,
+    SkillReasoningGuidance,
     SkillVersionCreate,
     SkillVersionResponse,
     SkillVersionUpdate,
+    SkillReasoningGuidanceUpdate,
     StepSkillRunCreate,
 )
 from app.domains.skills.service import (
     create_skill_draft,
     publish_skill_version,
+    update_s1_reasoning_guidance,
     update_skill_draft,
 )
 from app.models.user import User
@@ -30,6 +34,23 @@ from app.models.user import User
 
 admin_router = APIRouter()
 staff_router = APIRouter()
+
+
+def _skill_version_response(version: AISkillVersion) -> SkillVersionResponse:
+    response = SkillVersionResponse.model_validate(version)
+    reasoning_guidance = s1_reasoning_guidance(
+        version.skill_key, version.specification_json
+    )
+    if reasoning_guidance is None:
+        return response
+    return response.model_copy(
+        update={
+            "specification_json": None,
+            "reasoning_guidance": SkillReasoningGuidance.model_validate(
+                reasoning_guidance
+            )
+        }
+    )
 
 
 def _skill_error(error: ValueError) -> None:
@@ -75,7 +96,7 @@ async def list_skills(
             AISkillVersion.skill_key, AISkillVersion.version.desc()
         )
     )
-    return list(rows.all())
+    return [_skill_version_response(row) for row in rows.all()]
 
 
 @admin_router.post(
@@ -97,7 +118,37 @@ async def create_skill(
         )
         await db.commit()
         await db.refresh(version)
-        return version
+        return _skill_version_response(version)
+    except ValueError as error:
+        await db.rollback()
+        _skill_error(error)
+
+
+@admin_router.post(
+    "/skills/{version_id}/draft",
+    response_model=SkillVersionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_skill_draft_from_version(
+    version_id: int,
+    db: AsyncSession = Depends(get_db),
+    actor: User = Depends(require_roles("admin")),
+):
+    source = await db.get(AISkillVersion, version_id)
+    if source is None:
+        raise HTTPException(status_code=404, detail="skill_version_not_found")
+    try:
+        version = await create_skill_draft(
+            db,
+            skill_key=source.skill_key,
+            name=source.name,
+            category=source.category,
+            specification=source.specification_json,
+            created_by=actor.id,
+        )
+        await db.commit()
+        await db.refresh(version)
+        return _skill_version_response(version)
     except ValueError as error:
         await db.rollback()
         _skill_error(error)
@@ -120,7 +171,32 @@ async def update_skill(
         )
         await db.commit()
         await db.refresh(version)
-        return version
+        return _skill_version_response(version)
+    except ValueError as error:
+        await db.rollback()
+        _skill_error(error)
+
+
+@admin_router.put(
+    "/skills/{version_id}/reasoning-guidance",
+    response_model=SkillVersionResponse,
+)
+async def update_skill_reasoning_guidance(
+    version_id: int,
+    payload: SkillReasoningGuidanceUpdate,
+    db: AsyncSession = Depends(get_db),
+    _actor: User = Depends(require_roles("admin")),
+):
+    try:
+        version = await update_s1_reasoning_guidance(
+            db,
+            version_id,
+            objective=payload.objective,
+            methodology=payload.methodology,
+        )
+        await db.commit()
+        await db.refresh(version)
+        return _skill_version_response(version)
     except ValueError as error:
         await db.rollback()
         _skill_error(error)
@@ -137,7 +213,7 @@ async def publish_skill(
         version = await publish_skill_version(db, version_id, published_by=actor.id)
         await db.commit()
         await db.refresh(version)
-        return version
+        return _skill_version_response(version)
     except ValueError as error:
         await db.rollback()
         _skill_error(error)

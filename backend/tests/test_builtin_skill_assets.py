@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pytest
 from tests.test_skill_runtime import skill_db
 from app.domains.skills.service import ensure_default_analysis_skill_versions
@@ -24,3 +26,20 @@ async def test_studio_published_skill_is_used_instead_of_reset(skill_db):
     again = await ensure_default_analysis_skill_versions(skill_db)
     assert again[1].id == version.id
     assert again[1].specification_json["instructions"]["objective"] == "人工维护的目标"
+
+
+@pytest.mark.asyncio
+async def test_s1_default_thought_changes_do_not_publish_over_existing_version(skill_db):
+    versions = await ensure_default_analysis_skill_versions(skill_db)
+    published = versions[0]
+    previous = deepcopy(published.specification_json)
+    previous["reasoning_guidance"]["methodology"] = ["已发布的旧版思路"]
+    published.specification_json = previous
+    await skill_db.flush()
+
+    again = await ensure_default_analysis_skill_versions(skill_db)
+
+    assert again[0].id == published.id
+    assert again[0].specification_json["reasoning_guidance"]["methodology"] == [
+        "已发布的旧版思路"
+    ]
