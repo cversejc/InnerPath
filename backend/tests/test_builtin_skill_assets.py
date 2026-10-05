@@ -111,3 +111,21 @@ async def test_narrative_plan_default_thought_changes_do_not_publish_over_existi
     assert again[0].specification_json["reasoning_guidance"]["methodology"] == [
         "已审核的旧版报告主线思路"
     ]
+
+
+@pytest.mark.asyncio
+async def test_fragment_authoring_default_thought_changes_do_not_publish_over_existing_version(skill_db):
+    versions = await ensure_default_narrative_skill_versions(skill_db)
+    published = versions[1]
+    previous = deepcopy(published.specification_json)
+    previous["reasoning_guidance"]["methodology"] = ["已审核的旧版逐段写作思路"]
+    published.specification_json = previous
+    await skill_db.flush()
+
+    again = await ensure_default_narrative_skill_versions(skill_db)
+
+    assert again[1].id == published.id
+    assert again[1].status == "PUBLISHED"
+    assert again[1].specification_json["reasoning_guidance"]["methodology"] == [
+        "已审核的旧版逐段写作思路"
+    ]

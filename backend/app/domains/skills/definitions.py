@@ -19,6 +19,7 @@ S2_PSYCHOLOGY_SKILL_KEY = "report.s2_psychology_mapping"
 S3_INTEGRATION_SKILL_KEY = "report.s3_integration"
 S4_MECHANISM_SKILL_KEY = "report.s4_mechanism_block_action"
 NARRATIVE_PLAN_SKILL_KEY = "report.narrative_plan"
+FRAGMENT_AUTHORING_SKILL_KEY = "report.fragment_authoring"
 REASONING_GUIDANCE_SKILL_KEYS = frozenset(
     {
         S1_FOUNDATION_SKILL_KEY,
@@ -26,6 +27,7 @@ REASONING_GUIDANCE_SKILL_KEYS = frozenset(
         S3_INTEGRATION_SKILL_KEY,
         S4_MECHANISM_SKILL_KEY,
         NARRATIVE_PLAN_SKILL_KEY,
+        FRAGMENT_AUTHORING_SKILL_KEY,
     }
 )
 ANALYSIS_SKILL_STEPS = {
@@ -40,6 +42,31 @@ REASONING_GUIDANCE_RUNTIME_REQUIREMENTS = {
         "supporting_findings、deemphasized_findings 和 priority_blocks[].finding_refs 都必须逐字复制当前输入的 finding_key，不引用样例、分析片段编号或自行缩写。",
         "不得创建事实、Finding、置信度或覆盖人工确认。",
         "输出严格 JSON，不附加 Markdown 或解释文字。",
+    ],
+    FRAGMENT_AUTHORING_SKILL_KEY: [
+        "严格遵循 fragment_allocation 中的 finding_refs、analysis_refs、action_refs、must_cover 和 new_information_role。",
+        "不得读取或推测分配范围外的 Case 内容；must_not_repeat 是硬性约束。",
+        "只将 continuity 视为写作衔接提示，不把它当成新的语义来源。",
+        "不得创建事实、Finding、心理结论、行动建议或改变专业判断。",
+        "若缺少语义支撑，返回 MISSING_SEMANTIC_SUPPORT 且不补写结论。",
+        "列出 used_findings 与 used_analysis_fragments 的稳定标识。",
+        "输出严格 JSON，不附加 Markdown 或解释文字。",
+        "使用第二人称，描述模式并说明保护功能，不评判、不诊断；先意识后潜意识，命理术语翻译成日常语言。",
+        "分配中有requirements时，逐项满足checks，并输出requirement_coverage数组。每项含requirement_id、status(FULFILLED/DEFERRED/MISSING)、reason、quote(正文逐字摘录)、follow_up_questions。核心项不得标不适用；资料不足需在正文明确暂缓并补问。引用ID或有小标题不代表内容完成。不得伪造覆盖。",
+        "有requirements时，每个分配的analysis_refs与action_refs都须实际参与表达或说明暂缓边界，并完整列入used_analysis_fragments/used_actions；不能只声明覆盖而漏掉来源。",
+        "required_finding_refs存在时，全部来源都须参与表达并列入used_findings：包括卡点、Action及已确认资源。以reasoning_path解释资源→调节功能→能力→现实缺口→整合任务→工具→实验，不靠笼统建议跳过推导。INTERNAL_ONLY资料只作推导旁证，不作为新的用户心理结论或直接发布内部分析原文。quote只从本输出content中连续摘录一句，不从输入资料或元数据中摘录。",
+        "先区分原始自述、系统计算和解释性假设。原始自述可直接陈述；对保护功能、动机、因果的解释在引入时清楚限定，后续承接保留条件与反证，不能转成断言。不因Finding的解释是假设而否认用户已说出的自我观察。",
+        "概览约250–400字，仅概览四层关系；不展开完整触发链与保护/代价。不要在每节使用相同的卡点预告，不知道实际相邻小节时不要写‘下一节’。原型必须给出可学习能力和适用边界；实验必须逐项说明承接卡点、现实时间预算和减量选择。",
+        "章节首页输出一句有依据的关键结论和简短关系路径图（可用箭头文本）。卡点部分只解释场景/运作/保护/代价/整合邀请，具体解法留给往哪去。",
+        "阶段地图须保留上游已确认的大运起止年份、阶段主题/能力/旧模式，以条件式表达未来。",
+        "成长实验只转述已确认ACTION的动作、频率、耗时、观察、退出条件，3–5个即可。",
+        "参考用户自报MBTI与明确的深入/简洁偏好调整理论密度、篇幅和隐喻量，不推断八维分数，不改变事实。",
+        "结尾简短回扣哲学方向和用户现实，不堆安慰；署名金句只能逐字来自 skill_knowledge.quote_library 中 VERIFIED 条目，否则用不署名原创寄语。",
+        "每个分配的分析来源都须转译或明确指出资料边界，不暴露SOP编号、内部ID或审核过程。",
+        "按片段职责取用来源，不把来源中的整份总结、实验、金句都复制进每节。标题用读者语言，不能照抄purpose或‘语义线索’等内部说明。",
+        "只有 report.direction.growth_experiments 完整写行动步骤/频率/耗时/观察/退出条件；其他片段至多一句指向该节。只有 report.ending 使用金句，其他节不引用金句。",
+        "overview只概览主线，self_direction只点出方向，common_pattern只综合差异机制；三处均不重新展开卡点保护/代价。life_map只写时序、阶段和时义，不重复实验。ending简短收束，不重复卡点机制或动作。",
+        "未自述的情绪、自动想法、惯常场景和保护功能必须持续用可能/假如/待核对表达；尤其不把不适、内疚、先答应、女贵人出现的频率当作已证实事实。",
     ],
 }
 
@@ -452,6 +479,14 @@ def reasoning_guidance_for_skill(
             legacy_wording.get(item, item)
             for item in guidance.get("methodology", [])
         ]
+    elif skill_key == FRAGMENT_AUTHORING_SKILL_KEY:
+        legacy_objectives = {
+            "仅根据确认语义与已确认 NarrativePlan 写作一个完整、可审校的报告小节。":
+                "根据已确认的报告方向与本段主题，写出贴合用户经历、自然连贯且便于审核的文字。",
+        }
+        guidance["objective"] = legacy_objectives.get(
+            guidance["objective"], guidance["objective"]
+        )
     return guidance
 
 
@@ -527,9 +562,9 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
 
     authoring = deepcopy(base)
     authoring["identity"] = {
-        "skill_key": "report.fragment_authoring",
+        "skill_key": FRAGMENT_AUTHORING_SKILL_KEY,
         "name": "报告片段写作",
-        "description": "根据已确认语义与咨询师确认的 NarrativePlan 撰写单个报告片段。",
+        "description": "根据咨询师确认的报告方向和本段主题撰写报告文字。",
     }
     authoring["input_contract"] = {"required": [], "type": "object"}
     authoring["context_policy"]["required"] = [
@@ -552,16 +587,16 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         )
     )
     authoring["instructions"] = {
-        "objective": "仅根据确认语义与已确认 NarrativePlan 写作一个完整、可审校的报告小节。",
+        "objective": "根据已确认的报告方向与本段主题，写出贴合用户经历、自然连贯且便于审核的文字。",
         "methodology": [
-            "只允许选择、组织、转译和表达输入中的已确认内容。",
-            "严格遵循 fragment_allocation 中的 finding_refs、analysis_refs、action_refs、must_cover 和 new_information_role。",
-            "不得读取或推测分配范围外的 Case 内容；must_not_repeat 是硬性约束。",
-            "只将 continuity 视为写作衔接提示，不把它当成新的语义来源。",
-            "不得创建事实、Finding、心理结论、行动建议或改变专业判断。",
-            "若缺少语义支撑，返回 MISSING_SEMANTIC_SUPPORT 且不补写结论。",
-            "列出 used_findings 与 used_analysis_fragments 的稳定标识。",
-            "输出严格 JSON，不附加 Markdown 或解释文字。",
+            "以咨询师确认过的报告主线和本段主题为起点，只表达与本段有关的已确认内容，不在写作时重新推演命理、心理或用户经历。",
+            "分清用户亲述、系统计算和解释性理解：用户明确表达的感受可以如实呈现；对动机、保护功能或因果的解释用可能、假如或待核实等方式表达，并保留不同可能。",
+            "先明确本段要帮助读者看见什么，再选择必要内容支撑它；让各段共同服务主线，避免重复前文、堆叠所有资料，或在解释卡点时提前写成解决方案。",
+            "使用第二人称和生活化语言，把命理与心理学概念转成读者能理解的真实经验；表达清楚、有洞察、有画面，不过分学术、煽情或故作神秘。",
+            "根据用户的具体特点选择标题、比喻和表达次序，使内容贴近本案；章节各有职责但自然衔接，不展示分析框架或内部工作过程。",
+            "参考用户主动说明的阅读偏好和自我观察调整解释深浅、篇幅与隐喻，不根据这些信息推断未说过的性格。",
+            "结尾把哲学方向轻轻连回用户现实，用简短、温暖而克制的语言收束，避免空泛安慰、说教和堆砌金句。",
+            "资料不足时如实保留边界并提出待核问题，不用流畅叙事掩盖依据缺口。",
         ],
     }
     authoring["tool_policy"] = {"allowed": []}
@@ -615,6 +650,7 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         },
     }
     candidates = prepare_reasoning_guidance_specification(candidates)
+    authoring = prepare_reasoning_guidance_specification(authoring)
     return [validate_skill_specification(candidates), validate_skill_specification(authoring)]
 
 

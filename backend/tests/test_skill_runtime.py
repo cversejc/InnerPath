@@ -17,6 +17,7 @@ from app.domains.skills.definitions import (
     S3_INTEGRATION_SKILL_KEY,
     S4_MECHANISM_SKILL_KEY,
     NARRATIVE_PLAN_SKILL_KEY,
+    FRAGMENT_AUTHORING_SKILL_KEY,
     compile_s1_runtime_specification,
     compile_reasoning_guidance_specification,
     default_analysis_skill_specifications,
@@ -612,6 +613,137 @@ def test_narrative_plan_legacy_instructions_project_as_guidance_and_compile_same
         item in runtime["instructions"]["methodology"]
         for item in legacy["instructions"]["methodology"]
     )
+
+
+def test_fragment_authoring_guidance_is_human_facing_and_legacy_contract_is_preserved():
+    current = default_narrative_skill_specifications()[1]
+    guidance = current["reasoning_guidance"]
+    guidance_text = "\n".join([guidance["objective"], *guidance["methodology"]])
+
+    assert current["identity"]["skill_key"] == FRAGMENT_AUTHORING_SKILL_KEY
+    assert len(guidance["methodology"]) == 8
+    assert all(
+        phrase in guidance_text
+        for phrase in ("已确认", "本段", "用户经历", "不同可能", "自然连贯", "资料不足")
+    )
+    assert not any(
+        technical_name in guidance_text
+        for technical_name in (
+            "NarrativePlan", "fragment_allocation", "finding_refs", "action_refs",
+            "must_cover", "must_not_repeat", "continuity", "Case",
+            "MISSING_SEMANTIC_SUPPORT", "used_findings", "used_analysis_fragments",
+            "requirement_coverage", "required_finding_refs", "reasoning_path",
+            "INTERNAL_ONLY", "quote_library", "report.direction", "MBTI", "Finding",
+        )
+    )
+
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = (
+        "仅根据确认语义与已确认 NarrativePlan 写作一个完整、可审校的报告小节。"
+    )
+    legacy_methods = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy["instructions"]["methodology"] = legacy_methods
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    exposed = reasoning_guidance_for_skill(FRAGMENT_AUTHORING_SKILL_KEY, legacy)
+    runtime = compile_reasoning_guidance_specification(legacy)
+    exposed_text = "\n".join([exposed["objective"], *exposed["methodology"]])
+
+    assert "NarrativePlan" not in exposed_text
+    assert not any(
+        technical_name in exposed_text
+        for technical_name in (
+            "fragment_allocation", "finding_refs", "action_refs", "used_findings",
+            "requirement_coverage", "reasoning_path", "quote_library", "report.direction",
+        )
+    )
+    assert all(item in runtime["instructions"]["methodology"] for item in legacy_methods)
+    assert runtime["instructions"]["objective"] == legacy["instructions"]["objective"]
+
+
+@pytest.mark.asyncio
+async def test_fragment_authoring_reasoning_draft_preserves_contract_and_runs_in_generator(skill_db):
+    published = (await ensure_default_narrative_skill_versions(skill_db))[1]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=guidance["objective"],
+        methodology=guidance["methodology"],
+    )
+    response = _skill_version_response(updated)
+    output = {
+        "status": "READY_FOR_REVIEW",
+        "title": "留一点回应的空间",
+        "content": "你提到，面对请求时有时会很快答应。",
+        "used_findings": ["finding.response"],
+        "used_analysis_fragments": [],
+        "used_actions": [],
+        "transition_hint": "",
+        "presentation_meta": {},
+    }
+    gateway = StubGateway(json.dumps(output, ensure_ascii=False))
+    result = await execute_skill(
+        skill_version=updated,
+        input_data={
+            "profile": {},
+            "context": {
+                "semantic_model": {
+                    "findings": [
+                        {"finding_key": "finding.response", "claim": "用户说自己有时很快答应请求。"}
+                    ],
+                    "analysis_fragments": [],
+                },
+                "narrative_plan": {"core_theme": "在回应请求前留出自己的空间"},
+                "fragment_request": {"fragment_key": "report.overview", "purpose": "呈现本案主线"},
+                "fragment_allocation": {
+                    "finding_refs": ["finding.response"],
+                    "analysis_refs": [],
+                    "action_refs": [],
+                    "requirements": [],
+                    "must_cover": [],
+                    "must_not_repeat": [],
+                    "new_information_role": "OVERVIEW",
+                },
+                "continuity": {},
+            },
+        },
+        gateway=gateway,
+    )
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert result.output_parsed["status"] == "READY_FOR_REVIEW"
+    assert result.output_parsed["used_findings"] == ["finding.response"]
+    assert result.model_trace["processor"] == "reports.fragment_authoring"
+    assert "【机器可读输出契约】" in gateway.last_request[0]
+    assert "NarrativePlan" not in response.reasoning_guidance.model_dump_json()
+
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["output_contract"]["properties"]["title"]["type"] = "array"
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            draft.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
 
 
 @pytest.mark.asyncio

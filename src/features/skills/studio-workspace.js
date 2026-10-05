@@ -25,7 +25,7 @@ const S1_FOUNDATION_SKILL_KEY = REPORT_SKILLS.find((item) => item.step === "S1")
 const REASONING_GUIDANCE_SKILL_KEYS = new Set(
   REPORT_SKILLS.filter((item) =>
     ["S1", "S2", "S3", "S4"].includes(item.step) ||
-    item.key === "report.narrative_plan",
+    ["report.narrative_plan", "report.fragment_authoring"].includes(item.key),
   ).map((item) => item.key),
 );
 
