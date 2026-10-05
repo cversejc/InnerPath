@@ -20,6 +20,7 @@ S3_INTEGRATION_SKILL_KEY = "report.s3_integration"
 S4_MECHANISM_SKILL_KEY = "report.s4_mechanism_block_action"
 NARRATIVE_PLAN_SKILL_KEY = "report.narrative_plan"
 FRAGMENT_AUTHORING_SKILL_KEY = "report.fragment_authoring"
+FINAL_VALIDATOR_SKILL_KEY = "report.final_validator"
 REASONING_GUIDANCE_SKILL_KEYS = frozenset(
     {
         S1_FOUNDATION_SKILL_KEY,
@@ -28,6 +29,7 @@ REASONING_GUIDANCE_SKILL_KEYS = frozenset(
         S4_MECHANISM_SKILL_KEY,
         NARRATIVE_PLAN_SKILL_KEY,
         FRAGMENT_AUTHORING_SKILL_KEY,
+        FINAL_VALIDATOR_SKILL_KEY,
     }
 )
 ANALYSIS_SKILL_STEPS = {
@@ -67,6 +69,26 @@ REASONING_GUIDANCE_RUNTIME_REQUIREMENTS = {
         "只有 report.direction.growth_experiments 完整写行动步骤/频率/耗时/观察/退出条件；其他片段至多一句指向该节。只有 report.ending 使用金句，其他节不引用金句。",
         "overview只概览主线，self_direction只点出方向，common_pattern只综合差异机制；三处均不重新展开卡点保护/代价。life_map只写时序、阶段和时义，不重复实验。ending简短收束，不重复卡点机制或动作。",
         "未自述的情绪、自动想法、惯常场景和保护功能必须持续用可能/假如/待核对表达；尤其不把不适、内疚、先答应、女贵人出现的频率当作已证实事实。",
+    ],
+    FINAL_VALIDATOR_SKILL_KEY: [
+        "严格只执行 qa_input.validation_scope 明确列出的检查；chapter_key 存在时只检查该章已提供的片段。",
+        "章节检查关注本章的阅读顺序、段落衔接、重复、章节职责和来源覆盖。全文检查关注核心暗线、跨章一致性、Finding 覆盖、卡点到行动关系及开头结尾呼应。",
+        "将问题定位到具体 fragment_key；不要把全篇问题自动改写成正文。",
+        "问题必须包含 issue_type、severity、message、evidence 和 suggestion；片段无法定位时 target_fragment_key 返回 null。",
+        "severity 只能为 BLOCK、MAJOR 或 MINOR。无问题时返回空 issues。",
+        "只输出严格 JSON。",
+        "最终qa_input.framework_contract存在时，额外输出framework_review：逐项检查全部report_requirements。每项含requirement_id、fragment_keys(其编排归属)、status(FULFILLED/DEFERRED/MISSING)、reason、quote(对应正文逐字摘录)、follow_up_questions。独立核对checks是否实际完成，不接受作者自报覆盖代替阅读。核心缺失标MISSING；暂缓必须在正文说明且有可回答补问。",
+        "confirmed_semantics.reasoning_contract存在时，检查structured_analysis及Action.reasoning_path所记载的依据、反证和适配理由是否成立，并与正文逐项核对。链条字段齐全不代表推导正确；用神到调节功能、能力到现实缺口、整合任务到工具与实验须有具体解释。命盘是解释视角，不能代替现实自述。INTERNAL_ONLY来源仅用于审核推导，不能作为新增用户结论发表。",
+        "最终校准核对：与审核命盘和核心机制有无冲突、编造经历、单一信号强人格结论、诊断、确定未来、科学化命理、内部矛盾、卡点重复给解法、第三章是否回应共性模式。",
+        "检查同一核心观点换句话重复3次以上，标出应删除的 fragment_key；金句只能用已核验库。",
+        "当 qa_input.scorecard_required=true 时必须额外返回 scorecard.dimensions，维度如下，每维度有 score、reason、fragment_keys（本次报告片段ID数组）。程序计算总分；不要用笼统通过代替逐维评分。",
+        "最多返回15条确有证据的问题，每个message/evidence/suggestion控制在150字内，同类问题合并定位。转译允许合理意译，不要求每节重复全部来源信息；某项已在合适章节覆盖时不在其他节报缺失。",
+        "VERIFIED金句条目允许署名引用，不要求额外授权；引号外标点不构成事实问题。不假设未列出的许可要求，不报告‘如果…才可能…’的假想缺陷。",
+        "只审核读者实际看到的title/content，transition_hint等生产元数据不属于正文；章节顺序以content_plan.fragments[].sequence_no为准。实验可分别对应不同卡点，不要求每个实验回应所有卡点。",
+        "严格区分 report_fragments 正文和 confirmed_semantics 内部分析。仅在正文计重复；不得把内部分析语句说成当前报告的原文。每条evidence必须逐字摘录定位片段的正文，不能转述或拼接。",
+        "用户自述以application_context和Evidence为依据，不因缺少单独Finding否定问卷已明确提供的资料。‘没有家庭资料，早期印记暂缓’不是编造早期经历；明确提出可核对假设并保留反证，不因未经测评而报事实错误。",
+        "严格区分用户自述事实与对它的解释：例如用户说独自散步时比较放松，这个自我观察可直接陈述，不能因资源解释Finding为假设而把原始自述也降为假设。明确的可能/或许/假如/可以借此观察，加上适用边界或反证，可构成充分的假设限定；不要求每句叠加‘假设可能’。只在实际越过来源边界时扣分，不能根据表达缺少某个固定词而判定违规。",
+        "核验库署名引用只需实际准确的可识别出处，不要求正文宣告‘来自已核验库’或复述审核元数据。不得将解释性判断写成物理事实，也不得把明确否定确定论的句子误读为确定论。不要要求读者看到内部confidence或角色名称。",
     ],
 }
 
@@ -487,6 +509,24 @@ def reasoning_guidance_for_skill(
         guidance["objective"] = legacy_objectives.get(
             guidance["objective"], guidance["objective"]
         )
+    elif skill_key == FINAL_VALIDATOR_SKILL_KEY:
+        legacy_objectives = {
+            "检查报告内容是否忠实于已确认的 Finding 和用户提供情境，并评估安全、跨章节一致性、叙事质量、行动质量和个性化。":
+                "审视报告是否忠实于已确认内容和用户经历，判断安全边界、前后连贯、叙事与行动是否合适。",
+        }
+        guidance["objective"] = legacy_objectives.get(
+            guidance["objective"], guidance["objective"]
+        )
+        legacy_wording = {
+            "只报告有明确片段和证据的可修复问题，不重写报告。":
+                "只指出有依据、可核实并值得修订的问题，给出方向，不替作者重写整篇报告。",
+            "不得根据命理或心理内容作诊断或确定性预测。":
+                "检查传统解释和心理理解是否保留边界，不把它们写成诊断或确定预言。",
+        }
+        guidance["methodology"] = [
+            legacy_wording.get(item, item)
+            for item in guidance.get("methodology", [])
+        ]
     return guidance
 
 
@@ -859,7 +899,7 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
 def default_validator_skill_specification() -> dict[str, Any]:
     spec = deepcopy(DEFAULT_SKILL_SPECIFICATION)
     spec["identity"] = {
-        "skill_key": "report.final_validator",
+        "skill_key": FINAL_VALIDATOR_SKILL_KEY,
         "name": "报告语义质量审核",
         "description": "检查已组装报告的事实忠实度、安全、语义一致性、叙事和行动质量，并给出可定位的问题。",
     }
@@ -874,31 +914,20 @@ def default_validator_skill_specification() -> dict[str, Any]:
         "context_fields": ["qa_input"],
     }
     spec["instructions"] = {
-        "objective": "检查报告内容是否忠实于已确认的 Finding 和用户提供情境，并评估安全、跨章节一致性、叙事质量、行动质量和个性化。",
+        "objective": "审视报告是否忠实于已确认内容和用户经历，判断安全边界、前后连贯、叙事与行动是否合适。",
         "methodology": [
-            "严格只执行 qa_input.validation_scope 明确列出的检查；chapter_key 存在时只检查该章已提供的片段。",
-            "只报告有明确片段和证据的可修复问题，不重写报告。",
-            "章节检查关注本章的阅读顺序、段落衔接、重复、章节职责和来源覆盖。全文检查关注核心暗线、跨章一致性、Finding 覆盖、卡点到行动关系及开头结尾呼应。",
-            "将问题定位到具体 fragment_key；不要把全篇问题自动改写成正文。",
-            "不得根据命理或心理内容作诊断或确定性预测。",
-            "问题必须包含 issue_type、severity、message、evidence 和 suggestion；片段无法定位时 target_fragment_key 返回 null。",
-            "severity 只能为 BLOCK、MAJOR 或 MINOR。无问题时返回空 issues。",
-            "只输出严格 JSON。",
+            "从用户自述、咨询师确认的分析和本次审核目的出发，核对重要判断与行动是否有真实依据；不把格式齐全当作内容可信。",
+            "区分用户亲述事实和分析解释：亲述可以如实表达；解释要保留适用边界、其他可能和可核实的反证。",
+            "检查各部分是否共同服务报告主线，章节职责、前后衔接和重点是否清楚；也看卡点、资源与行动能否彼此说得通。",
+            "优先识别会误导或伤害用户的越界内容，例如编造经历、诊断、确定预言，或把传统解释写成科学事实。",
+            "核对关键解释的推导是否站得住脚，尤其是传统视角如何连接现实经验、资源如何回应实际困难、成长方向如何落实为可行尝试。",
+            "只指出有依据、可核实并值得修订的问题，给出准确证据和可执行方向，不替作者重写整篇报告。",
+            "尊重用户明确表达的自我观察，允许忠实转译；不因缺少某个固定说法或内部标签机械判错。资料不足时保留边界并提出核实方向，不把审慎表达当成事实错误。",
+            "检查整篇是否重复、矛盾或失衡，并按实际质量给出判断；既不漏掉有影响的问题，也不为了形式凑问题或默认通过。",
         ],
     }
     spec["instructions"]["methodology"].extend([
-        "最终qa_input.framework_contract存在时，额外输出framework_review：逐项检查全部report_requirements。每项含requirement_id、fragment_keys(其编排归属)、status(FULFILLED/DEFERRED/MISSING)、reason、quote(对应正文逐字摘录)、follow_up_questions。独立核对checks是否实际完成，不接受作者自报覆盖代替阅读。核心缺失标MISSING；暂缓必须在正文说明且有可回答补问。",
-        "confirmed_semantics.reasoning_contract存在时，检查structured_analysis及Action.reasoning_path所记载的依据、反证和适配理由是否成立，并与正文逐项核对。链条字段齐全不代表推导正确；用神到调节功能、能力到现实缺口、整合任务到工具与实验须有具体解释。命盘是解释视角，不能代替现实自述。INTERNAL_ONLY来源仅用于审核推导，不能作为新增用户结论发表。",
-        "最终校准核对：与审核命盘和核心机制有无冲突、编造经历、单一信号强人格结论、诊断、确定未来、科学化命理、内部矛盾、卡点重复给解法、第三章是否回应共性模式。",
-        "检查同一核心观点换句话重复3次以上，标出应删除的 fragment_key；金句只能用已核验库。",
-        "当 qa_input.scorecard_required=true 时必须额外返回 scorecard.dimensions，维度如下，每维度有 score、reason、fragment_keys（本次报告片段ID数组）。程序计算总分；不要用笼统通过代替逐维评分。",
-        "最多返回15条确有证据的问题，每个message/evidence/suggestion控制在150字内，同类问题合并定位。转译允许合理意译，不要求每节重复全部来源信息；某项已在合适章节覆盖时不在其他节报缺失。",
-        "VERIFIED金句条目允许署名引用，不要求额外授权；引号外标点不构成事实问题。不假设未列出的许可要求，不报告‘如果…才可能…’的假想缺陷。",
-        "只审核读者实际看到的title/content，transition_hint等生产元数据不属于正文；章节顺序以content_plan.fragments[].sequence_no为准。实验可分别对应不同卡点，不要求每个实验回应所有卡点。",
-        "严格区分 report_fragments 正文和 confirmed_semantics 内部分析。仅在正文计重复；不得把内部分析语句说成当前报告的原文。每条evidence必须逐字摘录定位片段的正文，不能转述或拼接。",
-        "用户自述以application_context和Evidence为依据，不因缺少单独Finding否定问卷已明确提供的资料。‘没有家庭资料，早期印记暂缓’不是编造早期经历；明确提出可核对假设并保留反证，不因未经测评而报事实错误。",
-        "严格区分用户自述事实与对它的解释：例如用户说独自散步时比较放松，这个自我观察可直接陈述，不能因资源解释Finding为假设而把原始自述也降为假设。明确的可能/或许/假如/可以借此观察，加上适用边界或反证，可构成充分的假设限定；不要求每句叠加‘假设可能’。只在实际越过来源边界时扣分，不能根据表达缺少某个固定词而判定违规。",
-        "核验库署名引用只需实际准确的可识别出处，不要求正文宣告‘来自已核验库’或复述审核元数据。不得将解释性判断写成物理事实，也不得把明确否定确定论的句子误读为确定论。不要要求读者看到内部confidence或角色名称。",
+        *reasoning_guidance_runtime_requirements(FINAL_VALIDATOR_SKILL_KEY),
     ])
     spec["instructions"]["scoring_rubric"] = RUBRIC
     spec["knowledge_policy"] = {"snapshot": knowledge_for_stage("S5"), "retrieval": "VERSION_SNAPSHOT"}
@@ -916,4 +945,6 @@ def default_validator_skill_specification() -> dict[str, Any]:
         "metrics": ["fact_fidelity", "semantic_consistency", "safety", "narrative", "action", "personalization"],
         "minimum_score": 0.8,
     }
-    return validate_skill_specification(spec)
+    return validate_skill_specification(
+        prepare_reasoning_guidance_specification(spec)
+    )

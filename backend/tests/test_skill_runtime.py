@@ -18,6 +18,7 @@ from app.domains.skills.definitions import (
     S4_MECHANISM_SKILL_KEY,
     NARRATIVE_PLAN_SKILL_KEY,
     FRAGMENT_AUTHORING_SKILL_KEY,
+    FINAL_VALIDATOR_SKILL_KEY,
     compile_s1_runtime_specification,
     compile_reasoning_guidance_specification,
     default_analysis_skill_specifications,
@@ -736,6 +737,107 @@ async def test_fragment_authoring_reasoning_draft_preserves_contract_and_runs_in
 
     changed_contract = deepcopy(updated.specification_json)
     changed_contract["output_contract"]["properties"]["title"]["type"] = "array"
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            draft.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
+
+
+def test_validator_guidance_is_human_facing_and_legacy_contract_is_preserved():
+    current = default_validator_skill_specification()
+    guidance = current["reasoning_guidance"]
+    guidance_text = "\n".join([guidance["objective"], *guidance["methodology"]])
+
+    assert current["identity"]["skill_key"] == FINAL_VALIDATOR_SKILL_KEY
+    assert len(guidance["methodology"]) == 8
+    assert all(
+        phrase in guidance_text
+        for phrase in ("真实依据", "用户亲述", "报告主线", "误导或伤害", "反证", "可执行方向")
+    )
+    assert not any(
+        technical_name in guidance_text
+        for technical_name in (
+            "qa_input", "validation_scope", "chapter_key", "Finding", "fragment_key",
+            "issue_type", "severity", "target_fragment_key", "framework_contract",
+            "framework_review", "requirement_id", "follow_up_questions", "reasoning_contract",
+            "reasoning_path", "INTERNAL_ONLY", "scorecard_required", "scorecard.dimensions",
+            "VERIFIED", "report_fragments", "confirmed_semantics", "application_context",
+            "Evidence", "transition_hint", "fragment_keys", "strict JSON",
+        )
+    )
+
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = (
+        "检查报告内容是否忠实于已确认的 Finding 和用户提供情境，并评估安全、跨章节一致性、叙事质量、行动质量和个性化。"
+    )
+    legacy_methods = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+        "只报告有明确片段和证据的可修复问题，不重写报告。",
+        "不得根据命理或心理内容作诊断或确定性预测。",
+    ]
+    legacy["instructions"]["methodology"] = legacy_methods
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    exposed = reasoning_guidance_for_skill(FINAL_VALIDATOR_SKILL_KEY, legacy)
+    runtime = compile_reasoning_guidance_specification(legacy)
+    exposed_text = "\n".join([exposed["objective"], *exposed["methodology"]])
+
+    assert "Finding" not in exposed_text
+    assert "qa_input" not in exposed_text
+    assert all(item in runtime["instructions"]["methodology"] for item in legacy_methods)
+    assert "issue_type" in "\n".join(runtime["instructions"]["methodology"])
+    assert runtime["instructions"]["objective"] == legacy["instructions"]["objective"]
+
+
+@pytest.mark.asyncio
+async def test_validator_reasoning_draft_preserves_contract_and_runs_in_generator(skill_db):
+    published = await ensure_default_validator_skill_version(skill_db)
+    guidance = default_validator_skill_specification()["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=guidance["objective"],
+        methodology=guidance["methodology"],
+    )
+    response = _skill_version_response(updated)
+    gateway = StubGateway(json.dumps({"issues": []}, ensure_ascii=False))
+    result = await execute_skill(
+        skill_version=updated,
+        input_data={"profile": {}, "context": {"qa_input": {"validation_scope": "full"}}},
+        gateway=gateway,
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert result.output_parsed == {"issues": []}
+    assert result.model_trace["processor"] == "reports.validator"
+    assert runtime["instructions"]["scoring_rubric"] == updated.specification_json[
+        "instructions"
+    ]["scoring_rubric"]
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+    assert "【机器可读输出契约】" in gateway.last_request[0]
+    assert "scorecard_required" not in response.reasoning_guidance.model_dump_json()
+
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["output_contract"]["required"] = ["scorecard"]
     with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
         await update_skill_draft(
             skill_db,
@@ -2389,7 +2491,8 @@ async def test_builtin_validator_update_keeps_unpublished_skill_studio_draft(ski
 
     updated = await ensure_default_validator_skill_version(skill_db)
 
-    assert updated.version == 3
+    assert updated.id == published.id
+    assert updated.version == 1
     assert updated.status == "PUBLISHED"
     assert draft.status == "DRAFT"
     assert draft.specification_json == draft_specification
