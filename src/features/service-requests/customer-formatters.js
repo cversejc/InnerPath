@@ -9,6 +9,7 @@ export const CUSTOMER_SERVICE_REQUEST_STATUS_LABELS = {
   needs_info: '需要补充资料',
   failed: '分析暂时失败',
   delivered: '已完成',
+  workflow_complete: '内容审核完成',
   withdrawn: '已撤回',
   rejected: '暂未受理'
 }
@@ -32,9 +33,12 @@ export function canWithdrawServiceRequest(status) {
 }
 
 export function serviceRequestEditPath(item) {
-  return item.service_type === 'report'
-    ? '/pages/assessment/assessment?requestId=' + item.id
-    : '/pages/requests/new?type=calendar&requestId=' + item.id
+  if (item.service_type === 'report') {
+    return item.report_case_id
+      ? `/pages/requests/requests#request-${item.id}-supplement`
+      : '/pages/assessment/assessment?requestId=' + item.id
+  }
+  return '/pages/user/user?tab=reports'
 }
 
 export { topicLabel }

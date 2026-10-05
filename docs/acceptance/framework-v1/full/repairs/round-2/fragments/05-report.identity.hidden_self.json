@@ -1,0 +1,68 @@
+{
+  "signature": "3edcc6280509a5bddadb6acf2346bd0310384ade57be5286bedc6eeebc1d8840",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "藏在“靠谱”后面的自己",
+    "content": "前面几节里，“先答应、后透支”的循环已经出现过几次。这一节把它放慢，看看在请求来临和你的回应之间，可能还藏着哪些没被说出口的部分。\n\n先分清三个层次，它们常被混在一起谈，但功能并不相同。情结更像一段反复上演的剧本：某个情境一出现，熟悉的情绪、念头和应对就成套启动。阴影更接近被你自己排除在“我是谁”之外的面向——比如及时拒绝、直接表达不满、坦然地休息。防御则是当下用来降低不适的具体动作：先答应下来、把话拖到最后、用“还不够好”推迟交付。三者的关系是：情结提供剧本，阴影说明哪些台词被你划掉，防御负责在台上把戏演下去。\n\n回到你的材料。触发点通常是他人临时提出的请求或邀约，且没有留下可协商的余地。假设此时升起的核心情绪是担心让人失望，核心信念假设是“如果我拒绝或表达不满，别人会觉得我不够好，关系会受损”。于是第一反应是顺从答应，把“其实想休息”的念头压到后面；压力积到一定程度，才以生硬回应或直接取消收场。上周同事临时请你代写方案、你本想休息却答应、熬夜后第二天不耐烦，朋友连续两次临时改地点、你没有表达意见最后取消聚会，都是这条链路的现实版本。\n\n这里有一个容易被忽略的细节：被推迟的不只是拒绝，还有不满本身。你自述需要拒绝时会拖到最后才生硬回应，说明“温和而及时地说不”这类表达，可能不在你熟悉的选项里；而“熬夜后第二天不耐烦”与“直接取消聚会”，更像是积压之后的延迟爆发或撤退。换句话说，攻击性未必消失，只是换了一个更晚、更重的时间点出现。同样被排在后面的还有休息——本想休息却答应，说明休息需求常常让位于他人的需求。至于脆弱和游戏性，你目前没有直接提到，这两块先留作待核对，不替你下结论。\n\n这些模式并不是缺点，它们曾经有明确的保护功能：短期维持了“靠谱、不让人失望”的关系安全与形象，也让你免于当场被否定或让气氛紧张。代价则出现在更长的尺度上——熬夜透支、关系中突然的冷淡或取消，以及自我评价持续随外部反馈起伏。值得留意的是，这套模式并非在所有情境下都启动：你提到面对熟悉同事且有明确截止时能够协商任务边界，这说明边界能力本身是在的，只是目前对情境比较敏感，熟悉度和规则清晰度可能是两个关键变量。\n\n再看一层更安静的部分。你自述独自散步时比较放松，这提示独处和稳定节奏可能是你回血的方式，但这一点的具体形态还需要你自己核对。而当“下班后常查看消息怕漏事”占住休息时间，放松的通道就容易被焦虑挤窄。这里不是要你立刻改变什么，只是先把两件事分开看：一边是你在关系中维护的可靠形象，一边是你自己需要的那点余地和节奏。\n\n把时间尺度拉长一点看，来源把当前阶段（2019–2028）描述为“内化与准备”的解释性候选，并非对你心理状态的判定，是否对应你的体验，需要你自己核对。至于具体怎么在答应前留出停顿、怎么把拒绝说得有余地，会放在后面的成长实验一节展开，这里先不铺开。\n\n如果你愿意核对，可以从两个问题开始：每次最容易答应的，是哪种情境、哪种关系？答应之后，你对自己说的第一句话是什么？这两问的答案，会比任何解释都更能校准上面的假设。",
+    "used_findings": [
+      "s4.block.overcommit_then_resent",
+      "s1.foundation.current_dayun",
+      "s2.pattern.overcommitment_loop",
+      "s2.pattern.rest_recovery_resource",
+      "s2.pattern.self_worth_external_reference",
+      "s4.block.self_worth_by_others"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.shadow",
+      "analysis.s2.complex",
+      "analysis.s4.defense"
+    ],
+    "used_actions": [],
+    "transition_hint": "下一节进入“卡在哪”，按请求来临—顺从答应—透支—延迟表达的时间顺序，拆解三个卡点，并说明即时缓冲的缺口在哪里。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.hidden_self",
+      "sequence_no": 5,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "word_count": 1180,
+      "tone": "第二人称、描述模式、不评判"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.hidden_self",
+        "status": "FULFILLED",
+        "reason": "已区分情结、阴影、防御并说明三者关系；给出情绪与信念假设并限定为假设；说明保护功能与现实核对，并保留反证。",
+        "quote": "情结更像一段反复上演的剧本：某个情境一出现，熟悉的情绪、念头和应对就成套启动。阴影更接近被你自己排除在“我是谁”之外的面向——比如及时拒绝、直接表达不满、坦然地休息。防御则是当下用来降低不适的具体动作：先答应下来、把话拖到最后、用“还不够好”推迟交付。",
+        "follow_up_questions": [
+          "每次最容易答应的，是哪种情境、哪种关系？",
+          "答应之后，你对自己说的第一句话是什么？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 17694,
+    "output_tokens": 1299,
+    "latency_ms": 5361,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "be3fbdba-dc47-469d-9f7d-1be41651a641",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "3845e3a65374b23ed8f83b3d9cae896beb5fa478fe17140ed31209344596fcde",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

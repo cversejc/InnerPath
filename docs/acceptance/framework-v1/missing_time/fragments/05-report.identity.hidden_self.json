@@ -1,0 +1,68 @@
+{
+  "signature": "af02f2b3b874bb3cf5ea5ad6e116f1571ff915722d6e69d5e516dec43e2e9375",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "还没被允许出声的那部分你",
+    "content": "前面几节，你已经看见“靠谱、不让人失望”这个角色是怎么被你自己认下来的。这一节换一个角度：看看在这个角色背后，还有哪些部分暂时没有位置说话。\n\n先分清三个容易混在一起的东西。阴影，指的是你可能没把它算进“我是谁”的那些面向；情结，指的是在特定情境下被触发、然后自动跑起来的一套反应；防御，是这套反应里具体用的办法。它们不是三个毛病，而是同一件事的三个层次：某些面向没被允许出场（阴影），于是在特定场景里形成固定反应（情结），反应里又用了具体的挡法（防御）。\n\n从已有材料看，最可能被挡在门外的，是休息、拒绝、以及不满的直接表达。你自述上周同事临时请你代写方案，你本想休息却答应了，熬夜之后第二天变得不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消了聚会。这两件事放在一起，指向一个假设：想休息、想说“不”、想表达不满，这些面向在当下可能不太容易被你允许直接出现——它们要么被压下去，要么换成别的方式冒出来。这是假设，不是缺点判断，也需要更多场景来核对。\n\n情结这一层，材料给的线索比较集中。触发点像是“临时请求”或“关系里的变动”：同事临时加活、朋友临时改约。假设的核心情绪是担心让人失望、担心被认为不够好；假设的自动想法是“拒绝后别人会觉得我不够好”。于是防御启动：先答应下来，之后再用延迟、生硬回应或取消来表达那条没能当场说出的边界。\n\n这套防御不是没用的。它的保护功能很实在：在当下避免冲突，短期维持住关系和“靠谱”的形象。代价也同样实在——熬夜、透支、事后生硬、取消聚会，关系反而可能受损。也就是说，它保护的是眼前，透支的是后面。\n\n但这里有一个重要的反证，值得你留意：面对熟悉的同事、并且有明确截止时间时，你是能够协商边界的，并不是每次都迁就。这说明这套反应不是你的固定属性，而是会被场景激活的——熟悉度和时间是否清楚，可能是两个关键开关。\n\n类似的结构也出现在项目里。你提到项目开头想法很多，但担心做不好而反复修改，接近截止才急着交付。这可以看作同一机制的另一个出口：用反复修改推迟“被评价”的那一刻，再用截止压力逼自己交付。短期避开了“不够好”的评价，长期压缩了质量和休息空间。这一条同样是假设，需要在真实项目场景里核对。\n\n还有一处需要如实说明：由于你的出生钟表时间未知，起运无法确定，因此这一节以及后续章节都不会给出大运的起止年份和阶段基调。这不是遗漏，是资料边界——没有可靠输入，就不做推测。\n\n如果这些描述有贴合的部分，可以先带着两个问题往下走：在什么情境下，你是允许自己休息的？不满通常是怎么表达的？这两个问题的答案，会决定上面哪些是假设、哪些已经被你的经验确认。至于具体怎么练、练多久、什么时候停，统一放在后面的成长实验一节，这里不展开。",
+    "used_findings": [
+      "s3.timeline.deferred",
+      "s4.block.boundary_cycle",
+      "s2.shadow.rest_excluded",
+      "s2.complex.boundary_cycle",
+      "s4.block.perfection_delay"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.shadow",
+      "analysis.s2.complex",
+      "analysis.s4.defense"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看到角色背后哪些部分还没被允许出声，也看到这套反应会在什么场景被激活。下一节会顺着这条线，看这个循环在真实场景里是怎么一步步跑起来的。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.hidden_self",
+      "sequence_no": 5,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_notes": "第二人称；命理术语未使用，仅以日常语言呈现；未自述内容均以可能/假设/待核对表达；未使用金句；未展开实验动作。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.hidden_self",
+        "status": "FULFILLED",
+        "reason": "已区分阴影、情结、防御三层并说明其关系；给出情绪假设（担心让人失望、担心被认为不够好）与信念假设（拒绝后别人会觉得我不够好）；说明保护功能（短期维持关系与形象、避免冲突）并给出反证与现实核对方向（熟悉同事且有明确截止时能协商边界，需核对成功与失败场景差异）。",
+        "quote": "阴影，指的是你可能没把它算进“我是谁”的那些面向；情结，指的是在特定情境下被触发、然后自动跑起来的一套反应；防御，是这套反应里具体用的办法。",
+        "follow_up_questions": [
+          "在什么情境下，你是允许自己休息的？",
+          "不满通常是怎么表达的？",
+          "最近一次成功协商和一次失败撤回，具体差异在哪里？",
+          "在哪些场景里，这套防御最容易被激活？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 9558,
+    "output_tokens": 1236,
+    "latency_ms": 6726,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b830cbfd-1718-48c7-8c07-b5bc0fc4973c",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "0b2dce31a96f84c0891fecf21a8e8427e922c0eacd6fa1eb10043f6f52e53c3c",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

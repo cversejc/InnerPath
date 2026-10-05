@@ -1,0 +1,56 @@
+{
+  "signature": "3983b4ecc058a1a49a117c74f9eee90a9baf592e853d78bfbf9246a41eaeb68a",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点三：先答应请求，再补协商",
+    "content": "这一节看第三个卡点：面对临时请求，你可能先答应下来，之后才把条件说清楚。\n\n现实里它长这样：姐姐临时请你替她陪诊，你先应下，后来才把轮班表摊开，和她改成轮流陪诊。这个顺序本身不是问题，你也明确说过不觉得拒绝有错；事情一多时，你会先等规则和时间表更清楚。\n\n触发点通常是“请求来得突然、时间表还没对上”。你的第一反应是先把家庭的运转接住，别让谁的计划当场落空。保护功能也在这里：当场答应避免了即时冲突，让陪诊和轮班不至于停摆，把关系里的紧张压到最低。\n\n代价出现在滞后上。需求表达被排到答应之后，负担先落到你身上一段时间；如果协商一直没补上，休息和转岗准备就会被挤。需要说明的是，这不是一个已经坐实的性格结论——你曾与姐姐协商陪诊分工并达成轮换，说明协商能力是存在的，只是常常启动得晚。\n\n整合的邀请是：把协商提前到答应之前。具体怎么练、什么频率、何时退出，留到成长实验一节展开。",
+    "used_findings": [
+      "s4.block.accept_then_negotiate"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这个卡点先看到这里：先答应保护了家庭运转和当场的关系，代价落在表达滞后和负担先由自己承担上。接下来会把这些卡点放回更完整的保护功能与共性模式里看。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_03",
+      "sequence_no": 11,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、现实语言、低比喻量；按简洁清楚偏好控制篇幅。",
+      "safety_note": "解释性内容以可能/通常等条件式表达，保留用户自述与反证校正；不含诊断、必然未来或未自述事实。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "本节按场景→触发→运作→过去保护→长期代价→整合邀请的顺序解释卡点 s4.block.accept_then_negotiate，仅呈现一个具证据支撑的卡点并说明证据边界，且未展开任何解决步骤，行动统一留给成长实验节。",
+        "quote": "触发点通常是“请求来得突然、时间表还没对上”。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4903,
+    "output_tokens": 660,
+    "latency_ms": 3634,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "1ca0282f-e00b-44b4-9dc3-103ea2664522",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "e1841cff931b6224ccd70b56929d60c64542682859cc330b7d9d57a698d8c45e",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

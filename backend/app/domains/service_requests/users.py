@@ -21,6 +21,8 @@ async def create_service_request(
     user: User,
     data: ServiceRequestCreate,
     audit_context: Optional[AuditContext] = None,
+    *,
+    commit: bool = True,
 ) -> ServiceRequest:
     payload, idempotency_key = payload_from_create(data, user)
     if idempotency_key:
@@ -53,7 +55,8 @@ async def create_service_request(
             details={"service_type": data.service_type},
             audit_context=audit_context,
         )
-        await db.commit()
+        if commit:
+            await db.commit()
     except IntegrityError:
         # A double submit can race the lookup above.  The unique constraint is
         # the final idempotency guard; return the request created by the other

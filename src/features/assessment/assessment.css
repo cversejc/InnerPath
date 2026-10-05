@@ -171,6 +171,7 @@
 :deep(.result-preview div) { display: grid; gap: 4px; min-width: 0; }
 :deep(.result-preview span) { color: var(--muted); font-size: 11px; }
 :deep(.result-preview strong) { color: var(--ink); font-size: 13px; line-height: 1.5; }
+:deep(.request-confirmation) { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 520px; }
 
 @media (max-width: 700px) {
   :deep(.progress-card) { gap: var(--space-3); padding: var(--space-4); }

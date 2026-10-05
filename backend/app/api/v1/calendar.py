@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
+from app.application.calendar_production import queue_calendar_from_report, retry_calendar_production
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.user import User
@@ -23,11 +24,7 @@ from app.domains.calendar.decision_logs import (
     get_user_decision_logs,
 )
 from app.application.staff_calendar_access import get_calendar_for_staff
-from app.domains.calendar.requests import (
-    create_calendar_request,
-    get_user_calendar_requests,
-    serialize_calendar_request,
-)
+from app.domains.calendar.requests import get_user_calendar_requests, serialize_calendar_request
 
 router = APIRouter()
 
@@ -46,7 +43,7 @@ async def get_my_calendars(
     return CalendarListResponse(items=calendars)
 
 
-@router.post("/requests", response_model=CalendarRequestResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/requests", response_model=CalendarRequestResponse, status_code=status.HTTP_202_ACCEPTED)
 async def create_my_calendar_request(
     data: CalendarRequestCreate,
     request: Request,
@@ -54,7 +51,7 @@ async def create_my_calendar_request(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        calendar_request = await create_calendar_request(
+        calendar_request = await queue_calendar_from_report(
             db,
             current_user,
             data,
@@ -66,15 +63,32 @@ async def create_my_calendar_request(
             "calendar_request_profile_incomplete": "请先完成个人档案中的性别和完整出生日期",
             "calendar_request_requires_date_range": "请选择完整的日历周期",
             "invalid_calendar_range": "日历开始日期不能晚于结束日期",
+            "calendar_request_requires_30_days": "请选择连续 30 天的日历周期",
             "calendar_request_requires_focus_topics": "至少选择一个关注领域",
             "calendar_request_requires_usage_scenario": "请选择日历用途",
             "calendar_request_requires_goal": "请填写当前决策目标",
             "calendar_request_requires_expected_outcomes": "至少选择一个期望输出",
-            "calendar_request_source_report_mismatch": "来源报告不存在或不属于当前账号",
+            "calendar_request_requires_source_report": "请先从一份已交付报告进入日历生成",
+            "calendar_request_source_report_mismatch": "来源报告不存在、尚未交付或不属于当前账号",
+            "calendar_ai_generation_failed": "AI 生成失败，请稍后重试；本次日历未交付",
         }
-        code = status.HTTP_409_CONFLICT if str(error) == "profile_version_conflict" else status.HTTP_422_UNPROCESSABLE_ENTITY
+        code = (
+            status.HTTP_409_CONFLICT
+            if str(error) == "profile_version_conflict"
+            else status.HTTP_502_BAD_GATEWAY
+            if str(error) == "calendar_ai_generation_failed"
+            else status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
         raise HTTPException(status_code=code, detail=message_map.get(str(error), str(error)))
     return await serialize_calendar_request(db, calendar_request)
+
+
+@router.post("/requests/{request_id}/retry", response_model=CalendarRequestResponse, status_code=202)
+async def retry_my_calendar_request(request_id: int, current_user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
+    try:
+        return await serialize_calendar_request(db, await retry_calendar_production(db, current_user, request_id))
+    except ValueError as error:
+        raise HTTPException(status_code=404 if str(error) == "calendar_request_not_found" else 409, detail=str(error))
 
 
 @router.get("/requests", response_model=CalendarRequestListResponse)

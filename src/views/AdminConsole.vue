@@ -6,6 +6,7 @@
         <template #actions>
           <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
           <router-link class="secondary-button compact-button" to="/staff">申请工作台</router-link>
+          <router-link class="secondary-button compact-button" to="/skills">技能与示例工作台</router-link>
           <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="activeLoading" :loading="activeLoading" loading-text="刷新中…" :aria-busy="activeLoading" @click="refreshActive">
             <template #icon><IconMark name="refresh" /></template>
             刷新
@@ -77,7 +78,6 @@
         :loading="calendarRequestsLoading"
         :status-filter="calendarRequestStatusFilter"
         @refresh="loadCalendarRequests"
-        @review="reviewCalendarRequest"
         @update-status-filter="setCalendarRequestStatusFilter"
       />
 
@@ -117,6 +117,7 @@
         :staff-loading="staffLoading"
         :staff-users="staffUsers"
         @invite="inviteStaff"
+        @specialty="updateStaffSpecialty"
       />
 
       <AdminReportsSection
@@ -124,7 +125,6 @@
         :page-size="reportPageSize"
         :report-filters="reportFilters"
         :report-page="reportPage"
-        :report-retry-limit="reportRetryLimit"
         :report-section="reportSection"
         :reports="reports"
         :reports-loading="reportsLoading"
@@ -137,7 +137,6 @@
         @change-task-page="changeTaskPage"
         @export="exportResource"
         @open-report="openReport"
-        @retry-task="retryTask"
         @search-reports="searchReports"
         @search-tasks="searchReportTasks"
         @select-section="setReportSection"

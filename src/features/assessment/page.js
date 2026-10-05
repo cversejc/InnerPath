@@ -1,4 +1,5 @@
-import { getLatestReportContext, getLatestReportTask, getUserReports } from '../reports/api.js'
+import { getLatestReportContext } from '../reports/api.js'
+import { getMyServiceRequests } from '../service-requests/api.js'
 import { getCurrentUser } from '../users/service.js'
 import AssessmentProfileStep from './components/AssessmentProfileStep.vue'
 import AssessmentContextStep from './components/AssessmentContextStep.vue'
@@ -43,13 +44,9 @@ export default {
       draftSavedAt: null,
       lastContext: null,
       lastContextReportId: null,
-      reportPreview: { energyType: '综合型', coreTraits: '独特的个人特质', talents: '多元发展' },
-      generatedReport: null,
-      currentReportId: null,
-      latestReportStatus: 'none',
-      latestReportTaskId: '',
-      latestReportId: null,
-      latestReportProgress: 0,
+      currentRequestId: null,
+      submissionFingerprint: null,
+      submissionIdempotencyKey: null,
       topics: assessmentTopics,
       expectedOutcomeOptions,
       decisionStyleOptions
@@ -63,7 +60,7 @@ export default {
       return Object.values(this.contextErrors)
     },
     currentStepLabel() {
-      return ['个人档案', '本次问题', '生成说明书'][this.currentStep - 1] || '申请'
+      return ['个人档案', '本次问题', '申请已提交'][this.currentStep - 1] || '申请'
     },
     stepProgress() {
       return Math.round((this.currentStep / 3) * 100)
@@ -80,53 +77,29 @@ export default {
       this.profileVersion = user.profile_version || 1
       this.profileLastConfirmedAt = user.profile_last_confirmed_at || null
       this.hasExistingProfile = Number(user.profile_completion || 0) >= 100
-      this.currentStep = this.hasExistingProfile ? 2 : 1
       this.restoreDraft()
     } catch (error) {
       this.formMessage = error.response?.data?.detail || '暂时无法读取个人档案，请刷新后重试。'
     }
-    const [contextResult, taskResult, reportsResult] = await Promise.allSettled([
-      getLatestReportContext(),
-      getLatestReportTask(),
-      getUserReports(1, 1)
-    ])
-    if (contextResult.status === 'fulfilled') {
-      const latest = contextResult.value
-      if (latest?.context) {
-        this.lastContext = latest.context
-        this.lastContextReportId = latest.report_id
+    try {
+      const requests = await getMyServiceRequests({ service_type: 'report' })
+      const latestRequest = requests.items?.[0]
+      if (latestRequest?.request_payload?.context) {
+        this.lastContext = latestRequest.request_payload.context
+        this.lastContextReportId = latestRequest.id
+      } else {
+        const latest = await getLatestReportContext()
+        if (latest?.context) {
+          this.lastContext = latest.context
+          this.lastContextReportId = latest.report_id
+        }
       }
-    } else {
-      console.warn('读取上次申请背景失败', contextResult.reason)
+    } catch (error) {
+      // The report form remains usable if a legacy deployment has no context endpoint yet.
+      console.warn('读取上次申请背景失败', error)
+    } finally {
+      this.loadingProfile = false
     }
-
-    const latestTask = taskResult.status === 'fulfilled' ? taskResult.value : null
-    const latestReport = reportsResult.status === 'fulfilled'
-      ? reportsResult.value?.items?.[0]
-      : null
-    this.latestReportTaskId = latestTask?.task_id || ''
-    this.latestReportProgress = Number(latestTask?.progress) || 0
-
-    if (latestTask?.status === 'processing' && latestTask.task_id) {
-      this.latestReportStatus = 'processing'
-    } else {
-      this.latestReportId = latestTask?.status === 'completed' && latestTask.report_id
-        ? latestTask.report_id
-        : latestReport?.id || null
-      if (this.latestReportId) {
-        this.latestReportStatus = 'completed'
-        this.currentReportId = this.latestReportId
-      } else if (latestTask?.status === 'failed') {
-        this.latestReportStatus = 'failed'
-      }
-    }
-    if (taskResult.status === 'rejected') {
-      console.warn('读取最近报告任务失败', taskResult.reason)
-    }
-    if (reportsResult.status === 'rejected') {
-      console.warn('读取最近报告失败', reportsResult.reason)
-    }
-    this.loadingProfile = false
   },
   methods: {
     ...draftMethods,

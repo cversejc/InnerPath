@@ -1,0 +1,92 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "乐观、权衡与急迫，如何同时出现在你身上",
+    "content": "你用“无知的乐观主义、权衡利弊、急迫”描述自己，也说愿意听别人对性格的建议。这几句话展示了不同面向：对可能性保持开放，同时希望把选择想清楚，却又觉得自己太着急。它们可以同时存在，不必选一个当作你的全部。\n\n你目前全职做会计，但问卷没有说你喜欢或不喜欢这份工作，也没有描述职场冲突。因此，“靠谱、不出错是否成了你的重要角色期待”只能作为核对问题，不能由职业直接推断人格。\n\n在演示命盘的传统意象中，乙木的柔韧、天府的守成、身宫天相的角色意识，可作为观察面具的比喻。若你并不认同“稳重协调”，自报的乐观和急迫就是反证。请优先相信现实经验，而非迎合这幅描述。",
+    "used_findings": [
+      "s4.energy.charge_drain",
+      "s2.persona.self_report_vs_interpretation"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.persona",
+      "analysis.s2.mapping",
+      "analysis.s2.ten_gods",
+      "analysis.s2.stars",
+      "analysis.s2.authority"
+    ],
+    "used_actions": [],
+    "transition_hint": "读者已看见“先照顾场面、再照顾自己”的外在顺序，下一节可进入这套顺序如何在具体场景里运作、保护了什么、又付出了什么。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.outer_self",
+      "sequence_no": 2,
+      "reading_level": "深入但紧凑",
+      "tone": "第二人称、描述模式、不评判",
+      "theory_density": "medium",
+      "metaphor_density": "low",
+      "length_note": "正文约480汉字，符合250–500区间",
+      "boundary_notes": [
+        "出生日期2004-06-15为演示假设，命盘内容仅条件式表达",
+        "未自述的感受与自动想法均用可能/待核对表达",
+        "本节未展开实验动作，未引用金句",
+        "未暴露内部来源编号与审核过程"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7327,
+    "output_tokens": 758,
+    "latency_ms": 4033,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "9d36e760-5ed5-4f5f-a8c6-29148fc8af6d",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "4a76c23b445f2e554ffef148a73ab410b2814435c22b503ead6495c787c72e7d",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你是谁：那个先照顾场面、再照顾自己的人",
+    "content": "先说你自己讲过的那一面：你形容自己是“无知的乐观主义、权衡利弊、急迫”，也说“太着急”，同时你愿意听别人对自身性格的建议。这些是你自报的，不是我的判断。它们拼出一个可以识别的外在表现——你常常一边快速权衡，一边先接住别人的期待，再回头处理自己的感受。\n\n传统命理的视角可以给一点参照，但只是假设：乙木日主配天府命宫，常被解释为“柔韧协调、稳重可靠”的自我认同；身宫天相，则可能对应“助人、在意形象”的面具。你自报的“愿意听建议”和“权衡利弊”，可能与这层面具呼应；而你自报的“急迫”，又和“稳重”之间有一点张力。这是待核对的解释，不是结论。\n\n把这两层放在一起看：你可能在职场（全职会计）更认同“靠谱、不出错”的角色，在关系里更认同“好说话、能听劝”的角色。这里值得留意的是——当你说“我太着急”时，急的究竟是什么？是怕错过机会，还是怕让对方失望？这个问题不用现在回答，可以先记下来。\n\n从能量角度看，还有一个可试验的假设：对你而言，独处写作、静观，或接触自然、学习、规划，可能是相对充电的方向；而规则压力、过度输出、务实消耗，可能是相对耗电的方向。这只是候选，不承诺效果，若前提改变，映射也会反过来。\n\n所以这一节的结论很短：你外在的“稳”和内在的“急”，可能不是矛盾，而是一套先照顾场面、再照顾自己的顺序。这个顺序保护过你，也让你累。它是怎么运作的，下一页再说。\n\n（命盘相关内容基于出生信息为演示假设，待你提供真实出生信息后重算。）",
+    "used_findings": [
+      "s2.persona.self_report_vs_interpretation",
+      "s4.energy.charge_drain"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.persona",
+      "analysis.s2.mapping",
+      "analysis.s2.ten_gods",
+      "analysis.s2.stars",
+      "analysis.s2.authority"
+    ],
+    "used_actions": [],
+    "transition_hint": "读者已看见“先照顾场面、再照顾自己”的外在顺序，下一节可进入这套顺序如何在具体场景里运作、保护了什么、又付出了什么。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.outer_self",
+      "sequence_no": 2,
+      "reading_level": "深入但紧凑",
+      "tone": "第二人称、描述模式、不评判",
+      "theory_density": "medium",
+      "metaphor_density": "low",
+      "length_note": "正文约480汉字，符合250–500区间",
+      "boundary_notes": [
+        "出生日期2004-06-15为演示假设，命盘内容仅条件式表达",
+        "未自述的感受与自动想法均用可能/待核对表达",
+        "本节未展开实验动作，未引用金句",
+        "未暴露内部来源编号与审核过程"
+      ]
+    }
+  }
+}

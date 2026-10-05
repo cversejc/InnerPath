@@ -51,7 +51,8 @@ class TestBaziCalculator:
         )
 
         assert result["year"]["pillar"] == "辛巳"
-        assert result["month"]["pillar"] == "壬寅"
+        # 2002-02-04 00:00 is before the exact Li Chun instant.
+        assert result["month"]["pillar"] == "辛丑"
         assert result["day"]["pillar"] == "癸卯"
         assert result["hour"]["pillar"] == "壬子"
         assert result["day_master"] == "癸"
@@ -105,8 +106,8 @@ class TestBaziCalculator:
         assert result["day_master"] == "癸"
         # 年干为辛，癸见辛为偏印
         assert result["year"]["ten_god"] == "偏印"
-        # 月干为壬，癸见壬为劫财
-        assert result["month"]["ten_god"] == "劫财"
+        # 立春交节前月干为辛，癸见辛为偏印
+        assert result["month"]["ten_god"] == "偏印"
         # 时干为壬，癸见壬为劫财
         assert result["hour"]["ten_god"] == "劫财"
 

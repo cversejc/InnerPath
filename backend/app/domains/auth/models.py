@@ -21,6 +21,7 @@ class StaffInvite(Base, TimestampMixin):
     id = Column(Integer, primary_key=True)
     phone = Column(String(20), nullable=False, index=True)
     role = Column(String(20), nullable=False)
+    consultant_type = Column(String(20), nullable=True)
     token_hash = Column(String(128), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime, nullable=False, index=True)
     invited_by = Column(Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)

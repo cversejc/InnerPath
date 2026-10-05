@@ -1,0 +1,65 @@
+{
+  "signature": "3e9f0adbbb1408890764785ca0b389855482efe91592120ecce9bd138fad5b29",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你的能量与工作模式：先稳住，再往前",
+    "content": "把“先稳住”当成底色，你的能量流向其实有迹可循。\n\n充电线索：与姐姐说清轮班表、改成轮流陪诊之后，负担减轻；夜班后把手机交给同事保管半小时，你能睡着。这两件事说明，可信任的分担和外部结构，是你能真正回血的条件——放松的能力在你身上是存在的，只是需要外部支点。耗电线索：轮班加照护挤压休息，夜班后继续查群，事务性输出叠加。命盘上透出两位正印、一位食神，藏干里伤官、偏印偏多，正官不透；出现次数不代表旺衰，缺失也不等于人格缺陷，只当线索看。学习、同伴支持、适量社交可作试验方向，不承诺效果。需要你自己核对：哪些活动结束后确实感觉恢复，哪些只是暂时缓解紧绷。\n\n工作模式上，你自报MBTI为ISTJ，仅作锚点，不推断八维分数。探索入口：先问清课程时间与报名条件，用具体事实降低不确定；价值入口：家庭责任与自主并重，需核对是否把“先做完该做的”当成唯一标准；执行入口：轮班表与清单是既有优势，可把协商提前写进流程；反馈入口：以入睡情况、协商结果作为现实反馈。张力在探索与执行之间——信息未齐时执行容易停摆，需要允许自己带着部分信息先动。以上是倾向假设，待后续核对。\n\n一条关系路径：可信任的分担与外部结构 → 恢复精力 → 支撑协商与推进 → 在不确定中先走一小步。",
+    "used_findings": [
+      "s2.resource.negotiation_capacity",
+      "s1.ten_gods.visible_hidden",
+      "s4.block.control_rest",
+      "s4.action.ask_course_first"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.energy",
+      "analysis.s4.functions"
+    ],
+    "used_actions": [],
+    "transition_hint": "能量和工作模式先放在这里：可信任的分担与外部结构是你的充电条件，探索与执行之间的张力还需带着部分信息先动。具体动作、频率和退出条件，统一放到成长实验节展开。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.energy_pattern",
+      "sequence_no": 7,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、简洁清楚；命理术语译为日常语言；未自报内容不补推。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.energy",
+        "status": "FULFILLED",
+        "reason": "已写充电/耗电与实际反馈（协商轮换、交出手机后能睡着；查群、事务叠加），给出探索→价值→执行→反馈路径与探索-执行张力，并明确MBTI仅作锚点、不推八维分数；同时声明五行活动为可试验建议、不承诺效果。",
+        "quote": "充电线索：与姐姐说清轮班表、改成轮流陪诊之后，负担减轻；夜班后把手机交给同事保管半小时，你能睡着。",
+        "follow_up_questions": [
+          "哪些活动结束后你确实感觉恢复？",
+          "查群之后是更放松还是更紧绷？",
+          "你通常收集到多少信息才觉得可以行动？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15123,
+    "output_tokens": 840,
+    "latency_ms": 4672,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "60d15df4-15bd-4b59-8fd1-4a9036b8ae8f",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "caa409b9507b9dd4f04d4e293bbd281ffd541a4ab97ed7dc780d38a16d06ff73",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

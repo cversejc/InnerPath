@@ -98,6 +98,7 @@
 
 .calendar-page .date-cell.tone-yellow { color: var(--calendar-yellow); background: linear-gradient(145deg, rgba(255, 251, 235, 0.92), rgba(246, 232, 190, 0.42)); }
 .calendar-page .date-cell.tone-green { color: var(--calendar-green); background: linear-gradient(145deg, rgba(241, 249, 239, 0.88), rgba(205, 229, 215, 0.42)); }
+.calendar-page .date-cell.tone-blue { color: var(--calendar-blue); background: color-mix(in srgb, var(--calendar-blue) 12%, var(--paper-soft)); }
 .calendar-page .date-cell.tone-red { color: var(--calendar-red); background: linear-gradient(145deg, rgba(255, 244, 238, 0.9), rgba(237, 204, 196, 0.42)); }
 .calendar-page .date-cell.tone-yellow-green { color: var(--calendar-green); background: linear-gradient(135deg, rgba(247, 235, 195, 0.76) 0 51%, rgba(211, 231, 215, 0.68) 52%); }
 .calendar-page .date-cell.tone-red-yellow { color: var(--calendar-yellow); background: linear-gradient(135deg, rgba(239, 207, 199, 0.76) 0 51%, rgba(247, 235, 195, 0.68) 52%); }

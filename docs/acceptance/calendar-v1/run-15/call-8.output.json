@@ -1,0 +1,14 @@
+{
+  "raw": "{\"approved\": true, \"issues\": [], \"patches\": []}",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 47943,
+    "output_tokens": 9113,
+    "latency_ms": 34283,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "28b582f1-4c68-416e-8eeb-8abedee10153",
+    "thinking_enabled": true
+  }
+}

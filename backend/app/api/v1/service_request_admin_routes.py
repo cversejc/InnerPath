@@ -19,7 +19,11 @@ from app.domains.service_requests.schemas import (
 )
 from app.domains.audit.service import record_audit
 from app.domains.service_requests.service import get_service_request, list_staff_service_requests
-from app.api.v1.service_request_api_support import _serialize_public
+from app.api.v1.service_request_api_support import (
+    _serialize_public,
+    report_case_progress_for_requests,
+)
+from app.application.report_cases import cancel_report_case_for_service_request
 
 admin_router = APIRouter()
 @admin_router.get("", response_model=StaffServiceRequestListResponse)
@@ -31,6 +35,9 @@ async def list_admin_requests(
 ):
     rows = await list_staff_service_requests(db, current_user, request_status, service_type, "all")
     items = []
+    progress_by_request = await report_case_progress_for_requests(
+        db, [item.id for item, _target_user in rows]
+    )
     for item, target_user in rows:
         assigned_name = None
         if item.assigned_consultant_id:
@@ -44,9 +51,12 @@ async def list_admin_requests(
                 status=item.status,
                 request_preview=item.request_payload or {},
                 assigned_consultant_id=item.assigned_consultant_id,
+                assigned_mingli_consultant_id=item.assigned_mingli_consultant_id,
+                assigned_psychology_consultant_id=item.assigned_psychology_consultant_id,
                 assigned_consultant_name=assigned_name,
                 needs_info_reason=item.needs_info_reason,
                 last_error=item.last_error,
+                **progress_by_request.get(item.id, {}),
                 created_at=item.created_at,
                 updated_at=item.updated_at,
             )
@@ -75,11 +85,24 @@ async def update_request_assignment(
         consultant = await db.get(User, data.consultant_id)
         if not consultant or consultant.role != "consultant" or not consultant.is_active:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Consultant not found")
-    service_request.assigned_consultant_id = data.consultant_id
+    from app.domains.workflow.models import ReportCase
+    from app.domains.workflow.service import assign_step
+    case = await db.scalar(select(ReportCase).where(ReportCase.service_request_id == request_id))
+    if case and (case.application_snapshot or {}).get("collaboration_contract"):
+        specialty = data.consultant_type or (consultant.consultant_type if consultant else None)
+        if specialty not in {"mingli", "psychology"}:
+            raise HTTPException(status_code=422, detail="consultant_specialty_required")
+        try:
+            await assign_step(db, case.id, "S1" if specialty == "mingli" else "S2", data.consultant_id)
+        except ValueError as error:
+            await db.rollback()
+            raise HTTPException(status_code=409 if str(error) == "step_assignment_locked" else 422, detail=str(error))
+    else:
+        service_request.assigned_consultant_id = data.consultant_id
     if consultant and service_request.status == "submitted":
         service_request.status = "accepted"
         service_request.accepted_at = datetime.utcnow()
-    elif consultant is None and service_request.status == "accepted":
+    elif consultant is None and service_request.assigned_consultant_id is None and service_request.status == "accepted":
         service_request.status = "submitted"
     service_request.updated_by = current_user.id
     await record_audit(
@@ -110,6 +133,10 @@ async def reject_request(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     if service_request.status not in {"submitted", "accepted", "needs_info", "failed"}:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Request cannot be rejected")
+    if service_request.service_type == "report":
+        await cancel_report_case_for_service_request(
+            db, service_request.id, reason="admin_rejected_request"
+        )
     service_request.status = "rejected"
     service_request.rejection_reason = data.reason
     service_request.rejected_at = datetime.utcnow()

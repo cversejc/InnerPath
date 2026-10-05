@@ -1,0 +1,63 @@
+{
+  "signature": "d982b0d27f424ec5b07d27c10df167a434e8c980234b5c737c9db8fa04af465c",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你与自己的关系：一份说明书的主线",
+    "content": "先给你一句关键结论：你并不缺承担和拒绝的能力，你缺的是让承担与休息同时进入判断的那一刻停顿——在答应之前，把「我也需要休息、也需要有余地」算进账里。\n\n**本章路径图**\n向世界展示的我（能接事、能产出的运营者）→ 以为的自己（答应任务是为换取资源，分工规则不清才不拒绝）→ 潜意识层面的自己（承诺—透支—撤退的循环在自动运行，保护你免于当场冲突、维持资源通道）→ 整合后的方向（在答应前留出停顿，让休息与余地也参与判断，把已有的拒绝能力扩展到更多场景）。\n\n**向世界展示的我**\n你的自述里有一句很关键：你不担心别人评价，答应任务是为了换取资源。这是一条已确认的事实，不是推断。配合你提到的「项目开头有许多想法，担心做不好反复修改，接近截止才急着交付」，以及下班后常查看消息怕漏事，可以看到一个外在可见的形象：一个能接事、能产出、愿意扛事的人。这个形象在职场里是有功能的——它让你被看见、被需要，也让你获得资源通道。\n\n需要说明的是，命盘里「身宫落官禄、武曲贪狼」这类线索，只能作为你投入方向的参考，不能据此推你「天生就该拼命」。它是解释性判断，不是事实本身。\n\n**以为的自己**\n你对自己有一个清晰的解释：答应任务是为了换取资源；不愿拒绝主要因为分工规则不清。这个解释是你自己给出的，应当被尊重。它指向一个方向——你并非不敢拒绝，而是当规则模糊、责任边界不清时，你选择先接住，再想办法。\n\n命盘里月支午火、月干甲木伤官透出，午中藏丁偏财、己七杀，月令是全局气候基调。这是一条解释性判断，可以理解为：你在意产出、在意把事情做出来，也容易被「有活干、有资源」的场景吸引。但它同样不能推成「你天生讨好」——你自己就给出了反例：你曾明确拒绝领导，并且没有内疚。这条反例必须被认真对待，它说明这个循环并非在所有场景都触发。\n\n**潜意识层面的自己**\n这里要谈的是你可能还没完全意识到的部分，所以我会用「可能」「假如」来说，你可以随时核对。\n\n从你描述的场景看，有一条可能的循环在自动运行：面对临时请求或计划变动、且分工规则不清时，你倾向于先答应，以维持资源关系、避免当场冲突；随后在事后拖延、生硬回应或直接取消。短期看，它确实保护了你——避免了当场的关系紧张，保住了资源通道；长期看，它带来关系摩擦、熬夜透支和不耐烦的累积。这条循环有一个待核对的假设成分，不是定论。\n\n还有一条可能的暗线：休息与「有余地的拒绝」或许是被你排斥的一端。你提到独自散步时比较放松，这说明这一端真实存在，只是少被允许。它不是缺点，而是一个待验证的假设——它可能提示你，身体和情绪其实一直在发出信号，只是这些信号在「先答应」的那一刻被略过了。\n\n**整合后的方向**\n这份说明书的主线，可以概括为：让承担与休息两端共同存在。不是让你变得不承担，也不是让你学会拒绝所有人，而是把「休息、有余地的表达、被尊重的需求」也纳入你的判断系统。你已经具备拒绝的能力（反例已经证明），接下来要做的，是把这个能力从少数场景扩展到更多场景。\n\n具体怎么练习、频率多少、观察什么、什么时候可以退出，会在成长实验一节里展开，这里只点出方向。",
+    "used_findings": [
+      "s4.block.overcommit_withdraw_loop",
+      "s3.hypothesis.core_tension_productivity_vs_rest",
+      "s1.foundation.month_ling_wu_hurt_officer",
+      "s2.hypothesis.persona_competent_operator",
+      "s2.hypothesis.overcommit_withdraw_cycle",
+      "s2.hypothesis.rest_as_excluded_pole"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "下一节将展开三个卡点的具体运作方式，包括先答应后撤退、反复修改与截止急交付、休息少被允许，并保留反例说明并非所有场景都触发。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.overview.psychic_structure",
+      "chapter_opening": true,
+      "sequence_no": 1,
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low",
+      "tone": "第二人称，描述模式并说明保护功能，不评判、不诊断",
+      "style_note": "用户偏好深入详细，因此保留推导路径；未自述MBTI，不补推类型。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "status": "FULFILLED",
+        "reason": "正文按「向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向」四层展开，并明确标注概览暗线、不展开卡点具体解法；关键结论与路径图已在开头给出。",
+        "quote": "向世界展示的我（能接事、能产出的运营者）→ 以为的自己（答应任务是为换取资源，分工规则不清才不拒绝）→ 潜意识层面的自己（承诺—透支—撤退的循环在自动运行，保护你免于当场冲突、维持资源通道）→ 整合后的方向（在答应前留出停顿，让休息与余地也参与判断，把已有的拒绝能力扩展到更多场景）。",
+        "follow_up_questions": [
+          "你提到的「答应任务是为了换取资源」，具体想换取的是哪一类资源（项目机会、领导信任、同事配合、还是其他）？",
+          "你曾明确拒绝领导且没有内疚，那次和「先答应后撤退」的场景相比，最大的不同是什么？",
+          "独自散步时比较放松，这个放松具体来自什么——是没人打扰、身体在动、还是不用回应任何人？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 11961,
+    "output_tokens": 1439,
+    "latency_ms": 7312,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b9ec73e4-a08f-4ff8-a2a8-491768ed05f4",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "13f9c6070cba19f9968ccbabec30aca683035cf04aeb96943d1ec600b040d13e",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

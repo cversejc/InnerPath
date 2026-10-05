@@ -13,6 +13,9 @@ export default {
       messageType: 'info',
       activeFilter: 'all',
       withdrawnId: null,
+      followUpAnswers: {},
+      followUpResponseKeys: {},
+      supplementSubmittingId: null,
       filters: [
         { id: 'all', label: '全部' },
         { id: 'report', label: '报告' },

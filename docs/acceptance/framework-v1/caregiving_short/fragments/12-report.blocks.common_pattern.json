@@ -1,0 +1,66 @@
+{
+  "signature": "fe507f60d395ffcbd96886bc3192ff25d4f2d5e1dccce83662e2901b319fe558",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "共性模式：不确定时，你先稳住秩序，再考虑自己",
+    "content": "把三个卡点放在一起看，会出现一条共同的运作路径：触发、情绪或信念、防御、短期保护、长期重复。它更像一条反复出现的模式，而不是三个互不相干的问题；相关不等于因果，下面每一环都需要你用真实经历继续核对。\n\n触发通常是外部安排出现不确定：父亲复诊时间可能变化，或姐姐临时请你替班。此时浮现的，可能是“所有家庭安排确定后，我才能安全地推进自己的事”这类信念，也可能是担心安排变动带来失控感。这两个说法都还是假设，不是结论。\n\n防御随之出现，且各有分工：等确定再推进，表现为想报名内部培训却两周没问清课程安排；控制式休息，表现为夜班后继续查工作群、把手机交给同事保管半小时后才能睡着；先承接后协商，表现为先答应替班，之后才说清轮班表改成轮流。\n\n短期看，这三者都在保护交接安全与家庭运转：避免出错、避免当场冲突、维持协作。长期看，代价也集中在一处——你的转岗准备被推迟、休息被挤压、需求表达滞后，负担先落到自己身上。\n\n值得注意的是反证：你已与姐姐协商达成轮换，也能在交出手机后入睡。这说明“责任与自主”的拉扯并非固定结局，自主与放松的能力已经出现过。本节只综合模式，不展开具体练习；动作、频率与退出条件统一放在成长实验节。",
+    "used_findings": [
+      "s4.block.delay_until_certain",
+      "s4.block.control_rest",
+      "s4.block.accept_then_negotiate",
+      "s2.complex.responsibility_autonomy",
+      "s2.shadow.rest_and_letting_go",
+      "s2.belief.wait_for_clarity"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.cycle",
+      "analysis.s4.blocks"
+    ],
+    "used_actions": [],
+    "transition_hint": "三个卡点已放回同一条模式里看：不确定时先稳住秩序与责任，再考虑自己的推进与休息。接下来会看这些模式背后共同保护的东西，以及你已经出现过的整合能力。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.common_pattern",
+      "new_information_role": "SYNTHESIZE",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "sequence_no": 12,
+      "previous_fragment_key": "report.blocks.block_03"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.common_pattern",
+        "status": "FULFILLED",
+        "reason": "已综合三个卡点，给出触发→情绪/信念→防御→短期保护→长期重复的路径，并用假设与待核对语气避免把相关写成因果。",
+        "quote": "把三个卡点放在一起看，会出现一条共同的运作路径：触发、情绪或信念、防御、短期保护、长期重复。",
+        "follow_up_questions": [
+          "这三条路径里，哪一条最常在你身上出现？",
+          "有没有一次安排不确定，你仍然先推进了自己的事？",
+          "当父亲安排变化时，你的第一反应更接近查群、等待，还是先协商？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7633,
+    "output_tokens": 794,
+    "latency_ms": 4085,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "f424412b-c4c2-4f26-a15f-12906a3b59dc",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "c5e8f5ee4fc16fbaf0c4f9d1188d9b4ca8bc9d35a963fbbf64d8601dc69bb3c4",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

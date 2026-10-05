@@ -1,0 +1,67 @@
+{
+  "signature": "b1235e535059df10e51677e7f596f54f61d669c4b73c96b62e8a5507fdc3e69a",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "三个卡点共享的同一条路径",
+    "content": "把前面看到的三个卡点放在一起，会发现它们并不是三件互不相干的事，而更像同一条路径在不同场景里的三种走法：先答应后撤退、反复修改到截止前急交付、休息与余地少被允许。它们共享的骨架大致是：某个触发出现，你当场把另一端的需要压下去，用一个能立刻缓解张力的动作顶上去，短期确实换来平静，长期却把透支和关系摩擦一点点累积起来。\n\n先看这条路径在卡点一里的走法。触发是同事临时请你代写方案、朋友连续两次临时改地点这类事情，且分工规则并不清楚。你当场先答应，短期避免的是当场冲突、也维持住资源关系；随后拖延、生硬回应或直接取消，长期累积的是关系摩擦和熬夜透支。这里有一个重要的反证：你曾明确拒绝领导且没有内疚，这说明这条链并不是在所有场景都会启动，至少并非所有权威场景都触发它。所以它更像一种在特定触发下被调用的应对，而不是你身上固定不变的属性。\n\n卡点二走的是同一条骨架，只是把“答应”换成了“再改一版”。触发是任务开始与截止临近的时间压力，你以反复修改替代明确交付，把判断推到最后一刻。短期它保护的是避免过早交付被评判、保留改进空间；长期代价是节奏失控、熬夜，交付质量和身心状态同时受压。这里要说明的是，反复修改与透支同时出现，只能说两者在同一段经历里相伴发生，不能反推成“因为追求完美所以必然透支”的因果链。\n\n卡点三则把这条路径铺到了日常节奏里。触发是持续在线的责任感和对遗漏的担忧，你以持续产出和在线替代休息，休息往往需要先被解释才被允许。短期它维持的是可靠形象和资源位置；长期代价是休息被压缩，情绪与耐心储备下降。独自散步时你比较放松，这个细节提示“休息”这一端在你身上是真实存在的，只是长期被排除在允许范围之外。\n\n把三者叠起来看，它们共享的并不是同一个具体动作，而是同一个方向：先把张力从当下挪走，代价留到之后支付。卡点一挪走的是当场冲突，卡点二挪走的是被评判的风险，卡点三挪走的是“我是不是不够负责”的不安。三者之间也会互相喂养：答应得越多，可用的时间越少，越容易拖到截止前急交付；越是在截止前急交付，越需要靠在线和加班补位，休息就越难被允许；休息越少，下一次面对临时请求时，能调用的余地就越薄。这是一条相互加强的回路，而不是三个孤立的毛病。\n\n需要保留的边界有三条。第一，以上是综合三个卡点后看到的共同运作方式，属于对已确认材料的整理，不是对你人格的定性。第二，卡点一和二都还带着待核对的假设成分，尤其“先答应是为了维持关系”这一层，需要你在具体场景里自行校正；你拒绝领导且无内疚的反例，已经说明它不能一概而论。第三，相关不等于因果：三个卡点常常一起出现，但谁先谁后、谁在具体某次事件里起了主导作用，还需要你在真实场景里辨认。\n\n如果这条共同路径对你成立，那么它指向的整合方向也很一致：让被压下去的那一端重新进入判断。具体在哪些场景先停顿、怎样表达有余地、怎样安排休息，会在后面的成长实验一节里展开，这里只先点出方向。你可以带着一个问题往下读：在最近一次先答应或先修改的时刻，如果当时多留半分钟，你最想放进来的是哪一句话、哪一种需要？",
+    "used_findings": [
+      "s4.block.overcommit_withdraw_loop",
+      "s4.block.perfectionist_completion",
+      "s4.block.rest_as_excluded",
+      "s2.hypothesis.overcommit_withdraw_cycle",
+      "s2.hypothesis.perfectionist_completion_anxiety"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.cycle",
+      "analysis.s4.blocks"
+    ],
+    "used_actions": [],
+    "transition_hint": "共同路径先看到这里。接下来进入第三章：往哪去，让承担与休息同时在场，具体做法放在成长实验一节。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.common_pattern",
+      "sequence_no": 12,
+      "new_information_role": "SYNTHESIZE",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "tone": "第二人称、现实语言、不评判",
+      "contains_golden_quote": false,
+      "contains_experiment_steps": false,
+      "counterexample_preserved": true
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.common_pattern",
+        "status": "FULFILLED",
+        "reason": "本节综合了三个卡点，按触发→情绪/信念→防御→短期保护→长期重复的骨架逐条说明其共同运作方式，并用‘相关不等于因果’和反证明确标注了不能写成因果的部分；两个分析来源（激活路径与卡点理解）均已转译使用，未展开实验步骤，未引用金句。",
+        "quote": "它们共享的骨架大致是：某个触发出现，你当场把另一端的需要压下去，用一个能立刻缓解张力的动作顶上去，短期确实换来平静，长期却把透支和关系摩擦一点点累积起来。",
+        "follow_up_questions": [
+          "在最近一次先答应或先修改的时刻，如果当时多留半分钟，你最想放进来的是哪一句话、哪一种需要？",
+          "三个卡点里，哪一个最贴近你最近两周的真实体验？",
+          "在哪些具体场景里你其实能当场拒绝（像拒绝领导那样），哪些场景里做不到？两者的差别是什么？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 6991,
+    "output_tokens": 1367,
+    "latency_ms": 7489,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "16c340bf-92ff-4e94-aa68-a4984c4e3cb8",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "6ec555744dfc9af2333d6e86be204e087f20f795fefad69c2ad2009c6e65e1d5",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

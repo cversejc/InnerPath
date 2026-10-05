@@ -1,0 +1,180 @@
+{
+  "signature": "a11167c7322cd794e36cff69f4672a198163ce6a632f5d84ad57527c6514ed73",
+  "skill_digest": "32d4cd20c007d179b2e3607ec578d6ae28848576fd38f1e1a9d57717374315ed",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。只用已确认BLOCK，不新增卡点。INTERNAL_ONLY仅为推导依据，不选为核心结论。\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。",
+  "output": {
+    "candidates": [
+      {
+        "candidate_key": "candidate.pause_before_yes",
+        "theme": "先停一下：在答应与透支之间插入一个缓冲",
+        "rationale": "以'答应前缺少停顿'为主线，把三个卡点串成一条可观察的时间线：请求到来→即时顺从→事后透支→延迟表达。该主线直接回应用户'理解反复出现的机制''减少透支'的期待，且行动承接最具体。",
+        "supporting_findings": [
+          "s2.pattern.overcommitment_loop",
+          "s2.pattern.self_worth_external_reference",
+          "s3.self.core_tension",
+          "s4.action.pause_before_yes",
+          "s4.action.boundary_script"
+        ],
+        "deemphasized_findings": [
+          "s3.timeline.later_periods",
+          "s3.yijing.metaphor",
+          "s3.bridge.philosophy"
+        ],
+        "priority_blocks": [
+          {
+            "title": "先答应、后透支：请求来临时的自动顺从",
+            "finding_refs": [
+              "s4.block.overcommit_then_resent"
+            ]
+          },
+          {
+            "title": "以别人的评价为坐标：'不够好'的担心如何推动选择",
+            "finding_refs": [
+              "s4.block.self_worth_by_others"
+            ]
+          },
+          {
+            "title": "用准备代替交付：反复修改与临近截止的赶工",
+            "finding_refs": [
+              "s4.block.rumination_over_action"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "外在的可靠角色与内在的敏感、求变线索；自述'要靠谱、不能让人失望'与命理解释视角分开呈现。"
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "三个卡点按'请求—顺从—透支—延迟表达'的时间顺序排列，突出即时缓冲的缺口。"
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "以答应前的停顿为起点，配合边界表达脚本与'足够好'交付，落到短焦+ACT、依恋沟通+EFT情绪命名、CBT的日常小步。"
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate.own_ruler",
+        "theme": "把评价权收回来：从'别人觉得够好'到'我选择的原则'",
+        "rationale": "以'自我价值感以外部评价为主要参照'为主线，先解释外部参照如何生成，再说明它如何同时驱动顺从与拖延交付。该主线回应用户'理解反复出现的机制'与'练习有余地的表达'，并把整合方向落在'他人的期待'与'自己选择的原则'分开。",
+        "supporting_findings": [
+          "s2.pattern.self_worth_external_reference",
+          "s3.self.core_tension",
+          "s2.pattern.overcommitment_loop",
+          "s4.action.boundary_script",
+          "s4.action.weekly_shadow_review"
+        ],
+        "deemphasized_findings": [
+          "s3.timeline.later_periods",
+          "s3.integration.correspondence",
+          "s3.yijing.metaphor"
+        ],
+        "priority_blocks": [
+          {
+            "title": "以别人的评价为坐标：'不够好'的担心如何推动选择",
+            "finding_refs": [
+              "s4.block.self_worth_by_others"
+            ]
+          },
+          {
+            "title": "先答应、后透支：请求来临时的自动顺从",
+            "finding_refs": [
+              "s4.block.overcommit_then_resent"
+            ]
+          },
+          {
+            "title": "用准备代替交付：反复修改与临近截止的赶工",
+            "finding_refs": [
+              "s4.block.rumination_over_action"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "外部认可参照与自身节奏两端同时在场；自述为直接表达，命理对应为解释视角。"
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "先呈现'评价权在外'的卡点，再呈现它如何外化为先答应后透支、以及用准备替代交付。"
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "以边界表达脚本与每周阴影复盘为主，练习把'应该'转化为'我选择'，并保留独处恢复节奏。"
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate.enough_good",
+        "theme": "允许'足够好'：把准备资源转成小步行动",
+        "rationale": "以'以思虑与准备替代及时行动'为主线，先说明准备倾向的短期保护功能，再回看它如何与顺从答应叠加造成透支。该主线直接回应'减少透支'，并把行动落在可交付的最小版本与节奏记录上。",
+        "supporting_findings": [
+          "s3.timeline.current_period",
+          "s4.action.enough_good_delivery",
+          "s2.pattern.overcommitment_loop",
+          "s4.action.pause_before_yes",
+          "s4.action.weekly_shadow_review"
+        ],
+        "deemphasized_findings": [
+          "s3.yijing.metaphor",
+          "s3.bridge.philosophy",
+          "s3.integration.correspondence"
+        ],
+        "priority_blocks": [
+          {
+            "title": "用准备代替交付：反复修改与临近截止的赶工",
+            "finding_refs": [
+              "s4.block.rumination_over_action"
+            ]
+          },
+          {
+            "title": "先答应、后透支：请求来临时的自动顺从",
+            "finding_refs": [
+              "s4.block.overcommit_then_resent"
+            ]
+          },
+          {
+            "title": "以别人的评价为坐标：'不够好'的担心如何推动选择",
+            "finding_refs": [
+              "s4.block.self_worth_by_others"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "重视学习、规范与被认可的专业性的价值排序线索，与'内化与准备'的阶段基调并列呈现。"
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "先呈现思虑替代行动的卡点，再回到它如何与先答应后透支、外部评价参照相互加重。"
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "以'足够好'的阶段性交付为主，配合答应前停顿与每周复盘，用CBT记录自动想法与证据反证。"
+          }
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 68375,
+    "output_tokens": 1555,
+    "latency_ms": 7508,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "c0d5ac35-455b-427f-9001-a7824e91040b",
+    "skill_version_id": 0,
+    "skill_key": "report.narrative_plan",
+    "skill_version": 1,
+    "processor": "reports.narrative_candidates",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "585977214317d598ee678e59ad199ac9013de8f0488a7de577978b2ff52051e2",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

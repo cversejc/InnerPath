@@ -1,0 +1,209 @@
+.run-detail .panel-heading {
+  margin-bottom: 16px;
+}
+
+.run-detail .run-input-preview-action {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.run-detail .run-input-preview-action p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body);
+}
+
+.run-detail .eyebrow {
+  color: var(--gold-deep);
+  font-size: var(--text-body-sm);
+}
+.run-detail .run-consultant-feedback {
+  margin: 12px 0;
+  padding: 12px;
+  border-left: 2px solid var(--jade);
+  background: rgba(237, 246, 242, 0.72);
+}
+.run-detail .run-consultant-feedback strong {
+  color: var(--jade);
+  font-size: var(--text-body-sm);
+}
+.run-detail .run-consultant-feedback p,
+.run-detail .run-feedback-source {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.run-detail .run-feedback-source { margin-bottom: 12px; }
+.run-detail summary { display: flex; align-items: center; min-height: var(--touch-target); color: var(--cinnabar-deep); cursor: pointer; }
+@media (max-width: 600px) { .run-detail input, .run-detail select, .run-detail textarea { font-size: var(--text-body); } }
+
+.run-detail h3 {
+  margin-top: 3px;
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semibold);
+}
+
+.run-detail h4 {
+  margin: 14px 0 8px;
+  font-size: var(--text-body-sm);
+}
+
+.run-detail .output-block {
+  max-height: 560px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #fffdf8;
+  color: var(--ink-soft);
+  font: 12px/1.55 var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.run-detail .raw-output {
+  margin-top: 12px;
+}
+
+.run-detail .raw-output summary,
+.run-detail .context-reference summary {
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: var(--text-body-sm);
+}
+
+.run-detail .context-reference {
+  margin: 12px 0;
+}
+
+.run-detail .context-reference .output-block {
+  margin-top: 8px;
+}
+
+.run-detail .selected-examples {
+  display: grid;
+  gap: 10px;
+}
+
+.run-detail .selected-example {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface-strong);
+}
+
+.run-detail .selected-example > strong,
+.run-detail .selected-example > span,
+.run-detail .selected-example > small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.run-detail .selected-example > strong {
+  font-size: var(--text-body-sm);
+}
+
+.run-detail .selected-example > span,
+.run-detail .selected-example > small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.run-detail .example-recommend-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--surface);
+}
+
+.run-detail .example-recommend-form h4 {
+  margin: 0 0 3px;
+}
+
+.run-detail .example-recommend-form label {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+}
+
+.run-detail .example-recommend-form input,
+.run-detail .example-recommend-form select,
+.run-detail .example-recommend-form textarea {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--ink);
+  background: #fffdf8;
+  font: 14px/1.45 var(--font-ui);
+}
+
+.run-detail .example-recommend-form textarea {
+  resize: vertical;
+}
+
+.run-detail .recommendation-notice {
+  color: var(--jade-deep);
+  font-size: 12px;
+}
+
+.run-detail .empty-reference {
+  color: var(--muted);
+  font-size: var(--text-body-sm);
+}
+
+.run-detail .trace-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 14px;
+  margin-top: 14px;
+}
+
+.run-detail .trace-list div {
+  min-width: 0;
+}
+
+.run-detail .trace-list dt {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.run-detail .trace-list dd {
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+  font: 11px/1.45 var(--font-mono);
+}
+
+.run-detail .run-error {
+  margin-top: 8px;
+  color: var(--cinnabar-deep);
+  font-size: var(--text-body-sm);
+}
+
+.run-detail .run-hint {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .run-detail .trace-list {
+    grid-template-columns: 1fr;
+  }
+}

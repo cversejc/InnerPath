@@ -1,0 +1,1475 @@
+{
+  "version": "calendar-regression-v1",
+  "cases": [
+    {
+      "skill_key": "calendar.temporal_analysis",
+      "case_key": "calendar.temporal_analysis.synthetic-v1",
+      "title": "资料不足时不得补排或强断",
+      "description": "合成回归样本，不是真实客户记录。",
+      "input_data": {
+        "profile": {
+          "name": "合成回归用户"
+        },
+        "source_report": {
+          "summary": "在临时任务中练习边界",
+          "structured_sections": [
+            {
+              "fragment_key": "report.boundary",
+              "content": "用户希望在回应前确认可用时间。"
+            }
+          ]
+        },
+        "questionnaire": {
+          "current_challenge": "答应临时任务后透支"
+        },
+        "current_request": {
+          "focus_topics": [
+            "career"
+          ],
+          "usage_scenario": "daily",
+          "goal": "练习边界"
+        },
+        "temporal_facts": {
+          "version": "calendar-facts-v1",
+          "timezone": "Asia/Shanghai",
+          "day_boundary": "sect-2",
+          "limitations": [
+            "缺少已审核大运；时序强弱与行动色块暂缓，仅依据报告提供成长节奏参考"
+          ],
+          "natal_foundation": {},
+          "days": [
+            {
+              "entry_date": "2026-10-04",
+              "year_pillar": "丙午",
+              "month_pillar": "丁酉",
+              "day_pillar": "辛亥",
+              "current_dayun": null,
+              "windows": [
+                {
+                  "period": "06:00–07:00",
+                  "time_pillar": "辛卯",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "07:00–09:00",
+                  "time_pillar": "壬辰",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "09:00–11:00",
+                  "time_pillar": "癸巳",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "11:00–13:00",
+                  "time_pillar": "甲午",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "13:00–15:00",
+                  "time_pillar": "乙未",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "15:00–17:00",
+                  "time_pillar": "丙申",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "17:00–19:00",
+                  "time_pillar": "丁酉",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "19:00–21:00",
+                  "time_pillar": "戊戌",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "21:00–23:00",
+                  "time_pillar": "己亥",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "23:00–24:00",
+                  "time_pillar": "庚子",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                }
+              ]
+            },
+            {
+              "entry_date": "2026-10-05",
+              "year_pillar": "丙午",
+              "month_pillar": "丁酉",
+              "day_pillar": "壬子",
+              "current_dayun": null,
+              "windows": [
+                {
+                  "period": "06:00–07:00",
+                  "time_pillar": "癸卯",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "07:00–09:00",
+                  "time_pillar": "甲辰",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "09:00–11:00",
+                  "time_pillar": "乙巳",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "11:00–13:00",
+                  "time_pillar": "丙午",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "13:00–15:00",
+                  "time_pillar": "丁未",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "15:00–17:00",
+                  "time_pillar": "戊申",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "17:00–19:00",
+                  "time_pillar": "己酉",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "19:00–21:00",
+                  "time_pillar": "庚戌",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "21:00–23:00",
+                  "time_pillar": "辛亥",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "23:00–24:00",
+                  "time_pillar": "壬子",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                }
+              ]
+            }
+          ]
+        },
+        "requested_dates": [
+          "2026-10-04",
+          "2026-10-05"
+        ],
+        "allowed_source_refs": [
+          "report.boundary"
+        ]
+      },
+      "expectation": {
+        "minimum_score": 1.0,
+        "required_fields": [
+          "days"
+        ],
+        "minimum_array_length": [
+          {
+            "path": [
+              "days"
+            ],
+            "value": 2
+          }
+        ],
+        "allowed_finding_refs": [
+          "report.boundary"
+        ],
+        "path_equals": [
+          {
+            "path": [
+              "days",
+              0,
+              "dimensions",
+              "useful_support",
+              "score"
+            ],
+            "value": 0
+          },
+          {
+            "path": [
+              "days",
+              0,
+              "dimensions",
+              "flow",
+              "score"
+            ],
+            "value": 0
+          },
+          {
+            "path": [
+              "days",
+              0,
+              "dimensions",
+              "interaction_stability",
+              "score"
+            ],
+            "value": 0
+          },
+          {
+            "path": [
+              "days",
+              0,
+              "dimensions",
+              "pattern_regulation",
+              "score"
+            ],
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "skill_key": "calendar.monthly_tone",
+      "case_key": "calendar.monthly_tone.synthetic-v1",
+      "title": "月度基调保留资料限制并回应真实议题",
+      "description": "合成回归样本，不是真实客户记录。",
+      "input_data": {
+        "profile": {
+          "name": "合成回归用户"
+        },
+        "source_report": {
+          "summary": "在临时任务中练习边界",
+          "structured_sections": [
+            {
+              "fragment_key": "report.boundary",
+              "content": "用户希望在回应前确认可用时间。"
+            }
+          ]
+        },
+        "questionnaire": {
+          "current_challenge": "答应临时任务后透支"
+        },
+        "current_request": {
+          "focus_topics": [
+            "career"
+          ],
+          "usage_scenario": "daily",
+          "goal": "练习边界"
+        },
+        "temporal_facts": {
+          "version": "calendar-facts-v1",
+          "timezone": "Asia/Shanghai",
+          "day_boundary": "sect-2",
+          "limitations": [
+            "缺少已审核大运；时序强弱与行动色块暂缓，仅依据报告提供成长节奏参考"
+          ],
+          "natal_foundation": {},
+          "days": [
+            {
+              "entry_date": "2026-10-04",
+              "year_pillar": "丙午",
+              "month_pillar": "丁酉",
+              "day_pillar": "辛亥",
+              "current_dayun": null,
+              "windows": [
+                {
+                  "period": "06:00–07:00",
+                  "time_pillar": "辛卯",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "07:00–09:00",
+                  "time_pillar": "壬辰",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "09:00–11:00",
+                  "time_pillar": "癸巳",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "11:00–13:00",
+                  "time_pillar": "甲午",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "13:00–15:00",
+                  "time_pillar": "乙未",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "15:00–17:00",
+                  "time_pillar": "丙申",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "17:00–19:00",
+                  "time_pillar": "丁酉",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "19:00–21:00",
+                  "time_pillar": "戊戌",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "21:00–23:00",
+                  "time_pillar": "己亥",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "23:00–24:00",
+                  "time_pillar": "庚子",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                }
+              ]
+            },
+            {
+              "entry_date": "2026-10-05",
+              "year_pillar": "丙午",
+              "month_pillar": "丁酉",
+              "day_pillar": "壬子",
+              "current_dayun": null,
+              "windows": [
+                {
+                  "period": "06:00–07:00",
+                  "time_pillar": "癸卯",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "07:00–09:00",
+                  "time_pillar": "甲辰",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "09:00–11:00",
+                  "time_pillar": "乙巳",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "11:00–13:00",
+                  "time_pillar": "丙午",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "13:00–15:00",
+                  "time_pillar": "丁未",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "15:00–17:00",
+                  "time_pillar": "戊申",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "17:00–19:00",
+                  "time_pillar": "己酉",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "19:00–21:00",
+                  "time_pillar": "庚戌",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "21:00–23:00",
+                  "time_pillar": "辛亥",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "23:00–24:00",
+                  "time_pillar": "壬子",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                }
+              ]
+            }
+          ]
+        },
+        "temporal_analysis": [
+          {
+            "entry_date": "2026-10-04",
+            "primary_theme": "关系边界",
+            "secondary_theme": "内观恢复",
+            "psychological_theme": "先确认时间再回应",
+            "source_refs": [
+              "report.boundary"
+            ],
+            "dimensions": {
+              "useful_support": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "flow": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "interaction_stability": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "pattern_regulation": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              }
+            },
+            "tone": "yellow",
+            "degraded": true,
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-05",
+            "primary_theme": "关系边界",
+            "secondary_theme": "内观恢复",
+            "psychological_theme": "先确认时间再回应",
+            "source_refs": [
+              "report.boundary"
+            ],
+            "dimensions": {
+              "useful_support": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "flow": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "interaction_stability": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "pattern_regulation": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              }
+            },
+            "tone": "yellow",
+            "degraded": true,
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          }
+        ]
+      },
+      "expectation": {
+        "minimum_score": 1.0,
+        "required_fields": [
+          "monthly"
+        ],
+        "nonempty_paths": [
+          [
+            "monthly",
+            "direction"
+          ],
+          [
+            "monthly",
+            "growth_task"
+          ],
+          [
+            "monthly",
+            "resource"
+          ],
+          [
+            "monthly",
+            "old_pattern"
+          ],
+          [
+            "monthly",
+            "decision_principle"
+          ],
+          [
+            "monthly",
+            "rhythm_changes"
+          ]
+        ]
+      }
+    },
+    {
+      "skill_key": "calendar.daily_authoring",
+      "case_key": "calendar.daily_authoring.synthetic-v1",
+      "title": "缺失时序依据只提供成长行动参考",
+      "description": "合成回归样本，不是真实客户记录。",
+      "input_data": {
+        "profile": {
+          "name": "合成回归用户"
+        },
+        "source_report": {
+          "summary": "在临时任务中练习边界",
+          "structured_sections": [
+            {
+              "fragment_key": "report.boundary",
+              "content": "用户希望在回应前确认可用时间。"
+            }
+          ]
+        },
+        "questionnaire": {
+          "current_challenge": "答应临时任务后透支"
+        },
+        "current_request": {
+          "focus_topics": [
+            "career"
+          ],
+          "usage_scenario": "daily",
+          "goal": "练习边界"
+        },
+        "temporal_facts": {
+          "version": "calendar-facts-v1",
+          "timezone": "Asia/Shanghai",
+          "day_boundary": "sect-2",
+          "limitations": [
+            "缺少已审核大运；时序强弱与行动色块暂缓，仅依据报告提供成长节奏参考"
+          ],
+          "natal_foundation": {},
+          "days": [
+            {
+              "entry_date": "2026-10-04",
+              "year_pillar": "丙午",
+              "month_pillar": "丁酉",
+              "day_pillar": "辛亥",
+              "current_dayun": null,
+              "windows": [
+                {
+                  "period": "06:00–07:00",
+                  "time_pillar": "辛卯",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "07:00–09:00",
+                  "time_pillar": "壬辰",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "09:00–11:00",
+                  "time_pillar": "癸巳",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "11:00–13:00",
+                  "time_pillar": "甲午",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "13:00–15:00",
+                  "time_pillar": "乙未",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "15:00–17:00",
+                  "time_pillar": "丙申",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "17:00–19:00",
+                  "time_pillar": "丁酉",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "19:00–21:00",
+                  "time_pillar": "戊戌",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "21:00–23:00",
+                  "time_pillar": "己亥",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "23:00–24:00",
+                  "time_pillar": "庚子",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                }
+              ]
+            },
+            {
+              "entry_date": "2026-10-05",
+              "year_pillar": "丙午",
+              "month_pillar": "丁酉",
+              "day_pillar": "壬子",
+              "current_dayun": null,
+              "windows": [
+                {
+                  "period": "06:00–07:00",
+                  "time_pillar": "癸卯",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "07:00–09:00",
+                  "time_pillar": "甲辰",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "09:00–11:00",
+                  "time_pillar": "乙巳",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "11:00–13:00",
+                  "time_pillar": "丙午",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "13:00–15:00",
+                  "time_pillar": "丁未",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "15:00–17:00",
+                  "time_pillar": "戊申",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "17:00–19:00",
+                  "time_pillar": "己酉",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "19:00–21:00",
+                  "time_pillar": "庚戌",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "21:00–23:00",
+                  "time_pillar": "辛亥",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "23:00–24:00",
+                  "time_pillar": "壬子",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                }
+              ]
+            }
+          ]
+        },
+        "requested_dates": [
+          "2026-10-04",
+          "2026-10-05"
+        ],
+        "temporal_analysis": [
+          {
+            "entry_date": "2026-10-04",
+            "primary_theme": "关系边界",
+            "secondary_theme": "内观恢复",
+            "psychological_theme": "先确认时间再回应",
+            "source_refs": [
+              "report.boundary"
+            ],
+            "dimensions": {
+              "useful_support": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "flow": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "interaction_stability": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "pattern_regulation": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              }
+            },
+            "tone": "yellow",
+            "degraded": true,
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-05",
+            "primary_theme": "关系边界",
+            "secondary_theme": "内观恢复",
+            "psychological_theme": "先确认时间再回应",
+            "source_refs": [
+              "report.boundary"
+            ],
+            "dimensions": {
+              "useful_support": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "flow": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "interaction_stability": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "pattern_regulation": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              }
+            },
+            "tone": "yellow",
+            "degraded": true,
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          }
+        ],
+        "monthly": {
+          "direction": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "growth_task": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "resource": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "old_pattern": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "decision_principle": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "rhythm_changes": "时序依据不足，先依据报告练习小步行动并观察实际反馈。"
+        }
+      },
+      "expectation": {
+        "minimum_score": 1.0,
+        "required_fields": [
+          "entries"
+        ],
+        "minimum_array_length": [
+          {
+            "path": [
+              "entries"
+            ],
+            "value": 2
+          }
+        ],
+        "nonempty_paths": [
+          [
+            "entries",
+            0,
+            "keyword"
+          ],
+          [
+            "entries",
+            0,
+            "summary"
+          ],
+          [
+            "entries",
+            0,
+            "energy_awareness"
+          ],
+          [
+            "entries",
+            0,
+            "tone_explanation"
+          ]
+        ],
+        "path_equals": [
+          {
+            "path": [
+              "entries",
+              0,
+              "windows",
+              0,
+              "period"
+            ],
+            "value": "06:00–07:00"
+          }
+        ]
+      }
+    },
+    {
+      "skill_key": "calendar.calibration",
+      "case_key": "calendar.calibration.synthetic-v1",
+      "title": "重复建议与确定性预测必须阻止发布",
+      "description": "合成回归样本，不是真实客户记录。",
+      "input_data": {
+        "profile": {
+          "name": "合成回归用户"
+        },
+        "source_report": {
+          "summary": "在临时任务中练习边界",
+          "structured_sections": [
+            {
+              "fragment_key": "report.boundary",
+              "content": "用户希望在回应前确认可用时间。"
+            }
+          ]
+        },
+        "questionnaire": {
+          "current_challenge": "答应临时任务后透支"
+        },
+        "current_request": {
+          "focus_topics": [
+            "career"
+          ],
+          "usage_scenario": "daily",
+          "goal": "练习边界"
+        },
+        "temporal_facts": {
+          "version": "calendar-facts-v1",
+          "timezone": "Asia/Shanghai",
+          "day_boundary": "sect-2",
+          "limitations": [
+            "缺少已审核大运；时序强弱与行动色块暂缓，仅依据报告提供成长节奏参考"
+          ],
+          "natal_foundation": {},
+          "days": [
+            {
+              "entry_date": "2026-10-04",
+              "year_pillar": "丙午",
+              "month_pillar": "丁酉",
+              "day_pillar": "辛亥",
+              "current_dayun": null,
+              "windows": [
+                {
+                  "period": "06:00–07:00",
+                  "time_pillar": "辛卯",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "07:00–09:00",
+                  "time_pillar": "壬辰",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "09:00–11:00",
+                  "time_pillar": "癸巳",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "11:00–13:00",
+                  "time_pillar": "甲午",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "13:00–15:00",
+                  "time_pillar": "乙未",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "15:00–17:00",
+                  "time_pillar": "丙申",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "17:00–19:00",
+                  "time_pillar": "丁酉",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "19:00–21:00",
+                  "time_pillar": "戊戌",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "21:00–23:00",
+                  "time_pillar": "己亥",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                },
+                {
+                  "period": "23:00–24:00",
+                  "time_pillar": "庚子",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "辛亥"
+                }
+              ]
+            },
+            {
+              "entry_date": "2026-10-05",
+              "year_pillar": "丙午",
+              "month_pillar": "丁酉",
+              "day_pillar": "壬子",
+              "current_dayun": null,
+              "windows": [
+                {
+                  "period": "06:00–07:00",
+                  "time_pillar": "癸卯",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "07:00–09:00",
+                  "time_pillar": "甲辰",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "09:00–11:00",
+                  "time_pillar": "乙巳",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "11:00–13:00",
+                  "time_pillar": "丙午",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "13:00–15:00",
+                  "time_pillar": "丁未",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "15:00–17:00",
+                  "time_pillar": "戊申",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "17:00–19:00",
+                  "time_pillar": "己酉",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "19:00–21:00",
+                  "time_pillar": "庚戌",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "21:00–23:00",
+                  "time_pillar": "辛亥",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                },
+                {
+                  "period": "23:00–24:00",
+                  "time_pillar": "壬子",
+                  "year_pillar": "丙午",
+                  "month_pillar": "丁酉",
+                  "day_pillar": "壬子"
+                }
+              ]
+            }
+          ]
+        },
+        "temporal_analysis": [
+          {
+            "entry_date": "2026-10-04",
+            "primary_theme": "关系边界",
+            "secondary_theme": "内观恢复",
+            "psychological_theme": "先确认时间再回应",
+            "source_refs": [
+              "report.boundary"
+            ],
+            "dimensions": {
+              "useful_support": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "flow": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "interaction_stability": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "pattern_regulation": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              }
+            },
+            "tone": "yellow",
+            "degraded": true,
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-05",
+            "primary_theme": "关系边界",
+            "secondary_theme": "内观恢复",
+            "psychological_theme": "先确认时间再回应",
+            "source_refs": [
+              "report.boundary"
+            ],
+            "dimensions": {
+              "useful_support": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "flow": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "interaction_stability": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              },
+              "pattern_regulation": {
+                "score": 0,
+                "reason": "缺少已审核命盘及大运，暂缓时序评价"
+              }
+            },
+            "tone": "yellow",
+            "degraded": true,
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          }
+        ],
+        "monthly": {
+          "direction": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "growth_task": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "resource": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "old_pattern": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "decision_principle": "时序依据不足，先依据报告练习小步行动并观察实际反馈。",
+          "rhythm_changes": "时序依据不足，先依据报告练习小步行动并观察实际反馈。"
+        },
+        "entries": [
+          {
+            "entry_date": "2026-10-04",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-05",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-06",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-07",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-08",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-09",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-10",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-11",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-12",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          },
+          {
+            "entry_date": "2026-10-13",
+            "keyword": "边界、沟通",
+            "summary": "我担心让别人失望，因此需要每天不断努力，今天你注定收获好运并且一定获得升职。",
+            "suitable": [
+              "每天加班直到完成全部临时任务",
+              "保证全部任务都成功"
+            ],
+            "energy_awareness": "为什么你总是不够努力？",
+            "tone_explanation": "没有任何依据，但一定是好日子。",
+            "windows": [
+              {
+                "period": "06:00–07:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              },
+              {
+                "period": "07:00–09:00",
+                "label": "行动安排参考",
+                "suggestion": "确认可用时间"
+              }
+            ]
+          }
+        ]
+      },
+      "expectation": {
+        "minimum_score": 1.0,
+        "required_fields": [
+          "approved",
+          "issues",
+          "patches"
+        ],
+        "path_equals": [
+          {
+            "path": [
+              "approved"
+            ],
+            "value": false
+          }
+        ],
+        "minimum_array_length": [
+          {
+            "path": [
+              "issues"
+            ],
+            "value": 1
+          }
+        ]
+      }
+    }
+  ]
+}

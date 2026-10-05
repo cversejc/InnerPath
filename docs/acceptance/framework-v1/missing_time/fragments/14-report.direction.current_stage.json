@@ -1,0 +1,61 @@
+{
+  "signature": "262591f201c42e4704046c0b8677dfaf84e771d40424a9ee86638ced7100c837",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "当下时义",
+    "content": "如果把眼下这段境遇放进一个哲学比喻里，它更接近「先承载、再学习止住」：你像大地一样先接住别人的需求，之后才在某个时刻突然撤回。这个比喻之所以匹配，是因为你自述的循环——同事临时请你代写方案，你本想休息却答应，熬夜后第二天不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会——问题往往不在「承载」本身，而在答应之前缺少一个停顿。「止」在这里不是拒绝一切，而是在回应前给自己留出一个缓冲的位置，让「愿意」和「能承受」同时在场。\n\n一句关键结论：你缺的不是承担的能力，而是承担之前那半拍的停顿。\n\n路径图：外部请求 → 先答应（维持可靠形象）→ 承载超出余量 → 疲惫与不耐烦累积 → 生硬撤回或取消 → 关系与自我感受双重受损 → 若在「答应」前加入停顿，循环才有机会改道。\n\n需要说明的是，这是一则哲学比喻，不是起卦结果，也不证明任何必然走向。它同样有不适用的边界：如果你面对的是必须立即回应的紧急情境，或对方确实需要即时支持，那就不能机械地套用「止」；在那类场景里，先行动本身是合适的。这个比喻只在你拥有选择余地、却习惯性跳过选择时，才更有参考价值。\n\n顺着上一节的方向看，这一段时义并不要求你变成另一个人，而是提醒你：被排除的那一端——休息、拒绝、有余地的表达——需要重新获得在场的机会。具体怎么把这个停顿练成动作，会放在成长实验一节展开。",
+    "used_findings": [
+      "s3.yijing.metaphor"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.yijing"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看到当下时义指向的不是改变本性，而是在答应之前留出半拍停顿；下一节会把这份方向落成可以练习的具体动作。",
+    "presentation_meta": {
+      "fragment_key": "report.direction.current_stage",
+      "chapter": "direction",
+      "sequence_no": 14,
+      "chapter_opening": true,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、现实语言；比喻密度低，未引用金句，未展开实验动作。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.timing_wisdom",
+        "status": "FULFILLED",
+        "reason": "正文说明了坤的承载与艮的止为何匹配自述的先答应后撤回循环，给出了不适用边界（紧急情境或对方确实需要即时支持时不宜机械套用），并明确声明此为哲学比喻、非起卦结果、不证明必然走向；同时输出了一句关键结论与本章简短系统路径图。",
+        "quote": "这个比喻之所以匹配，是因为你自述的循环——同事临时请你代写方案，你本想休息却答应，熬夜后第二天不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会——问题往往不在「承载」本身，而在答应之前缺少一个停顿。",
+        "follow_up_questions": [
+          "在哪些具体情境里，你觉得自己必须立即回应、几乎没有停顿空间？",
+          "在哪些情境里，你其实可以先停一停再答复，却习惯性直接答应了？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4803,
+    "output_tokens": 829,
+    "latency_ms": 4425,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "0b9b804b-73b7-401d-a774-25885f4035f1",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "8876bc122032dd43d5465ccb33f4d9a2d4b2dbecdb46f1b02c6272b2dadd0684",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

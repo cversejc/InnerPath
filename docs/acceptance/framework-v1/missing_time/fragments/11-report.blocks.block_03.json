@@ -1,0 +1,55 @@
+{
+  "signature": "27ceff77fdf0cc07d7aa119218a1e95b3642a7d55c007b18c0890c69da11bb6f",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡在哪：担心做不好而反复修改",
+    "content": "前两节，你已经看清“先答应、后撤回”的循环，也看到它在休息与拒绝场景里的延伸。这一节换到项目与交付场景，看同一个机制怎么换一副面孔出现。\n\n现实场景可能是这样：项目开头你想法很多，脑子里已经有好几个版本；但一旦想到“这样做会不会被说不够好”，你就开始反复修改，迟迟不给定稿。真正推着你交出去的，往往不是计划，而是截止日期临近的那股压力。结果是，交付被压缩到最后一段，质量与休息空间同时被挤掉。\n\n这个循环的运作路径大致是：场景是任务开始与交付评价临近；触发点是你感到“要被评价了”；运作方式是用反复修改推迟定稿，再借截止压力推动交付。它和“先答应”那条线共用同一个底层逻辑——你在意的是“别让人失望”，而“靠谱”这个形象需要靠不断加码来维持。\n\n它过去保护了什么？短期看，它帮你避开了“被评价为不够好”的那一刻。只要还在改，就还没有定论；只要还没定稿，就还没被判定。这份保护是真实的，你不需要否定它。\n\n但长期代价同样真实：反复修改压缩了质量与休息空间，把透支进一步放大。你越是想靠“再改一版”来确保安全，越容易在最后阶段赶工，反而更接近你最初想避开的那个结果。\n\n变化所需的下一步理解，不是“别再改了”，而是先看清：反复修改不是懒惰或拖延，而是一种保护动作。它保护的是你对“被认可”的需要。当你允许先完成一个可交付版本、再迭代，你其实是在练习把“完成”和“被评价”分开——这一步不需要现在做完，只需要先被看见。\n\n本节只解释这个卡点怎么运作，具体怎么做留到“往哪去”那一章。\n\n（说明：本节的场景与运作机制为假设，需以你真实项目场景核对；如与你的实际体验不符，请以你的反馈为准。）",
+    "used_findings": [
+      "s4.block.perfection_delay"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "你已经看清这个循环在项目与交付场景里的另一种表现；下一节会从反例出发，看往哪去。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_03",
+      "sequence_no": 11,
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、现实语言；未自述内容以可能/假设表达；不展开解决步骤。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "本节按场景→触发→运作→过去保护→长期代价→整合邀请的顺序解释 s4.block.perfection_delay，未展开解决步骤，行动留待第三章。",
+        "quote": "场景是任务开始与交付评价临近；触发点是你感到“要被评价了”；运作方式是用反复修改推迟定稿，再借截止压力推动交付。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4444,
+    "output_tokens": 795,
+    "latency_ms": 4615,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "043c0f6b-5a1b-4250-849a-dca8eac2c5bb",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "4ac914f9f4814dd47404c330b28c463b8654f7d87bccc33d768fd8712c34ef4e",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -1,0 +1,302 @@
+{
+  "skill_key": "report.final_validator",
+  "output": {
+    "issues": [
+      {
+        "issue_type": "repetition",
+        "severity": "MAJOR",
+        "message": "“让拒绝与联系都变得可协商、可修复”这一核心表述在多个片段中反复出现，超过三次，构成同一观点的重复展开。",
+        "evidence": "让拒绝与联系都变得可协商、可修复",
+        "suggestion": "保留一处最完整的表述（建议在 report.blocks.breakthrough），其余片段改为简短承接或删除重复句。",
+        "target_fragment_key": "report.blocks.common_pattern"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MAJOR",
+        "message": "“不是一次修好，而是在反复情境中每次多保留一点真实需求”在多个片段重复出现，属于同一核心观点的多次展开。",
+        "evidence": "不是一次修好，而是在反复情境中每次多保留一点真实需求",
+        "suggestion": "仅在 report.direction.growth_experiments 或 report.ending 保留一次，其余片段删除或改为简短引用。",
+        "target_fragment_key": "report.direction.growth_experiments"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“出生日期为演示假设，须本人提供后重算”在多个片段中重复出现，信息重复但可定位。",
+        "evidence": "出生日期公历2004-06-15为演示假设",
+        "suggestion": "在 report.overview.psychic_structure 或 report.identity.foundation_notes 集中说明一次，其余片段改为简短提示。",
+        "target_fragment_key": "report.identity.foundation_notes"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“喜忌为候选，若格局判定反转则映射亦反转”在多个片段重复出现，属于同一限定条件的多次展开。",
+        "evidence": "若判定身强或从格，喜忌会反转",
+        "suggestion": "在 report.identity.foundation_notes 集中说明一次，其余片段删除或改为简短引用。",
+        "target_fragment_key": "report.identity.foundation_notes"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“不作诊断”在多个片段中反复出现，属于同一安全声明的重复。",
+        "evidence": "不作诊断",
+        "suggestion": "在首次出现处说明一次，其余片段删除或改为简短提示。",
+        "target_fragment_key": "report.identity.hidden_self"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“具体做法见第三章”在多个卡点片段中重复出现，属于同一指向的多次展开。",
+        "evidence": "具体做法留在第三章的暂停实验",
+        "suggestion": "仅在 report.blocks.block_01 或 report.blocks.common_pattern 保留一次，其余片段删除或改为简短引用。",
+        "target_fragment_key": "report.blocks.block_01"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“须访谈验证”在多个片段中反复出现，属于同一限定条件的重复。",
+        "evidence": "须访谈验证",
+        "suggestion": "在首次出现处说明一次，其余片段删除或改为简短提示。",
+        "target_fragment_key": "report.identity.hidden_self"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“反例问题”在多个片段中重复出现，属于同一核对方式的多次展开。",
+        "evidence": "是否也有温和拒绝且关系继续的经历？",
+        "suggestion": "在 report.identity.hidden_self 或 report.blocks.common_pattern 保留一次，其余片段删除或改为简短引用。",
+        "target_fragment_key": "report.identity.hidden_self"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“命理映射为假设，非定论”在多个片段中重复出现，属于同一安全声明的重复。",
+        "evidence": "命理映射为假设，非定论",
+        "suggestion": "在首次出现处说明一次，其余片段删除或改为简短提示。",
+        "target_fragment_key": "report.identity.outer_self"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“阶段为隐喻，不预测必然事件”在多个片段中重复出现，属于同一限定条件的重复。",
+        "evidence": "阶段为隐喻，不预测必然事件",
+        "suggestion": "在 report.direction.life_map 集中说明一次，其余片段删除或改为简短引用。",
+        "target_fragment_key": "report.direction.life_map"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“不作诊断”在多个片段中反复出现，属于同一安全声明的重复。",
+        "evidence": "不作诊断",
+        "suggestion": "在首次出现处说明一次，其余片段删除或改为简短提示。",
+        "target_fragment_key": "report.identity.hidden_self"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“须现实事件验证”在多个片段中反复出现，属于同一限定条件的重复。",
+        "evidence": "须现实事件验证",
+        "suggestion": "在首次出现处说明一次，其余片段删除或改为简短提示。",
+        "target_fragment_key": "report.identity.hidden_self"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“不虚构家庭成因”在多个片段中重复出现，属于同一安全声明的重复。",
+        "evidence": "不虚构家庭成因",
+        "suggestion": "在首次出现处说明一次，其余片段删除或改为简短提示。",
+        "target_fragment_key": "report.identity.hidden_self"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“不指责家庭”在多个片段中重复出现，属于同一安全声明的重复。",
+        "evidence": "不指责家庭",
+        "suggestion": "在首次出现处说明一次，其余片段删除或改为简短提示。",
+        "target_fragment_key": "report.identity.hidden_self"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“不作诊断”在多个片段中反复出现，属于同一安全声明的重复。",
+        "evidence": "不作诊断",
+        "suggestion": "在首次出现处说明一次，其余片段删除或改为简短提示。",
+        "target_fragment_key": "report.identity.hidden_self"
+      }
+    ],
+    "scorecard": {
+      "dimensions": {
+        "fact_fidelity": {
+          "score": 18,
+          "reason": "报告对已确认 Finding 的引用基本忠实，出生日期等演示假设已条件化，未发现编造经历或确定性预测；但部分命理表述仍较接近断言，且重复限定条件削弱了忠实度。",
+          "fragment_keys": [
+            "report.overview.psychic_structure",
+            "report.identity.foundation_notes",
+            "report.identity.outer_self",
+            "report.identity.hidden_self",
+            "report.identity.energy_pattern",
+            "report.identity.relationship_pattern",
+            "report.identity.self_direction",
+            "report.blocks.block_01",
+            "report.blocks.block_02",
+            "report.blocks.block_03",
+            "report.blocks.block_04",
+            "report.blocks.common_pattern",
+            "report.blocks.breakthrough",
+            "report.direction.life_map",
+            "report.direction.growth_experiments",
+            "report.ending"
+          ],
+          "max_score": 20,
+          "label": "案例事实忠实度"
+        },
+        "personalization": {
+          "score": 17,
+          "reason": "报告大量使用用户自报的关键词、职业、决策风格与使用场景，个性化程度较高；但部分命理映射与心理假设仍较通用，且重复表述降低了针对具体情境的精细度。",
+          "fragment_keys": [
+            "report.overview.psychic_structure",
+            "report.identity.outer_self",
+            "report.identity.foundation_notes",
+            "report.identity.hidden_self",
+            "report.identity.energy_pattern",
+            "report.identity.relationship_pattern",
+            "report.identity.self_direction",
+            "report.blocks.block_01",
+            "report.blocks.block_02",
+            "report.blocks.block_03",
+            "report.blocks.block_04",
+            "report.blocks.common_pattern",
+            "report.blocks.breakthrough",
+            "report.direction.life_map",
+            "report.direction.growth_experiments",
+            "report.ending"
+          ],
+          "max_score": 20,
+          "label": "个性化"
+        },
+        "psychological_logic": {
+          "score": 13,
+          "reason": "心理机制均以假设形式呈现，并区分自述与解释，逻辑基本自洽；但部分卡点之间的因果关系未充分建立，且重复的整合邀请削弱了机制解释的层次。",
+          "fragment_keys": [
+            "report.identity.hidden_self",
+            "report.identity.relationship_pattern",
+            "report.blocks.block_01",
+            "report.blocks.block_02",
+            "report.blocks.block_03",
+            "report.blocks.block_04",
+            "report.blocks.common_pattern",
+            "report.blocks.breakthrough"
+          ],
+          "max_score": 15,
+          "label": "心理逻辑"
+        },
+        "structure_coherence": {
+          "score": 13,
+          "reason": "章节顺序与内容计划基本一致，卡点到行动的指向清晰；但重复表述跨章节出现，削弱了章节职责的区分度，部分片段承担了过多重复的限定说明。",
+          "fragment_keys": [
+            "report.overview.psychic_structure",
+            "report.identity.outer_self",
+            "report.identity.foundation_notes",
+            "report.identity.hidden_self",
+            "report.identity.energy_pattern",
+            "report.identity.relationship_pattern",
+            "report.identity.self_direction",
+            "report.blocks.block_01",
+            "report.blocks.block_02",
+            "report.blocks.block_03",
+            "report.blocks.block_04",
+            "report.blocks.common_pattern",
+            "report.blocks.breakthrough",
+            "report.direction.life_map",
+            "report.direction.growth_experiments",
+            "report.ending"
+          ],
+          "max_score": 15,
+          "label": "三章连贯性"
+        },
+        "reading_experience": {
+          "score": 8,
+          "reason": "语言总体温和、可读，但重复表述较多，部分片段信息密度偏高，影响阅读流畅度。",
+          "fragment_keys": [
+            "report.overview.psychic_structure",
+            "report.identity.outer_self",
+            "report.identity.foundation_notes",
+            "report.identity.hidden_self",
+            "report.identity.energy_pattern",
+            "report.identity.relationship_pattern",
+            "report.identity.self_direction",
+            "report.blocks.block_01",
+            "report.blocks.block_02",
+            "report.blocks.block_03",
+            "report.blocks.block_04",
+            "report.blocks.common_pattern",
+            "report.blocks.breakthrough",
+            "report.direction.life_map",
+            "report.direction.growth_experiments",
+            "report.ending"
+          ],
+          "max_score": 10,
+          "label": "阅读体验"
+        },
+        "action_value": {
+          "score": 9,
+          "reason": "成长实验具体、可操作，包含频率、耗时、观察与退出条件，行动价值较高；但部分实验与卡点的对应关系因重复表述而略显模糊。",
+          "fragment_keys": [
+            "report.direction.growth_experiments",
+            "report.blocks.breakthrough",
+            "report.blocks.block_01",
+            "report.blocks.block_02",
+            "report.blocks.block_03",
+            "report.blocks.block_04"
+          ],
+          "max_score": 10,
+          "label": "行动价值"
+        },
+        "uncertainty_safety": {
+          "score": 9,
+          "reason": "报告明确区分假设与事实，标注演示假设，不作诊断或确定性预测，安全边界清晰；但重复的安全声明在一定程度上稀释了重点。",
+          "fragment_keys": [
+            "report.overview.psychic_structure",
+            "report.identity.foundation_notes",
+            "report.identity.hidden_self",
+            "report.identity.energy_pattern",
+            "report.identity.relationship_pattern",
+            "report.blocks.block_01",
+            "report.blocks.block_02",
+            "report.blocks.block_03",
+            "report.blocks.block_04",
+            "report.blocks.common_pattern",
+            "report.blocks.breakthrough",
+            "report.direction.life_map",
+            "report.direction.growth_experiments",
+            "report.ending"
+          ],
+          "max_score": 10,
+          "label": "不确定性与安全"
+        }
+      },
+      "total": 87,
+      "max_score": 100,
+      "passes_threshold": true
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 62461,
+    "output_tokens": 2970,
+    "latency_ms": 9818,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "dbe193a1-7d92-4d2f-acb6-308c36b5045c",
+    "skill_version_id": 0,
+    "skill_key": "report.final_validator",
+    "skill_version": 1,
+    "processor": "reports.validator",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "bdfbcc65c581b1bdebfb715872b02421f22ff10c0652516c97290d426fb61b36",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "AWAITING_DEVELOPER_REVIEW"
+  }
+}

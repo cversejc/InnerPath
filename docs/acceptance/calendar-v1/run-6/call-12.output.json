@@ -1,0 +1,13 @@
+{
+  "raw": "{\"approved\": false, \"issues\": [{\"code\": \"DUPLICATE_DAILY_COPY\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-14\", \"message\": \"10-14至10-31多日文案高度同质：均以“先回复我需要看一下时间/先深呼吸/先写草稿”开头，动作与情境重复，缺乏逐日区分度。\"}, {\"code\": \"REPEATED_SAME_ADVICE\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-24\", \"message\": \"10-24至10-31连续八天建议几乎同一动作（答应前停顿+记录紧张度），未按流日差异调整行动大小与情境。\"}, {\"code\": \"MISSING_SOURCE_REFS\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-14\", \"message\": \"10-14至11-02各日analysis.source_refs仅引用报告片段，未覆盖当月总基调与成长任务所依据的direction.growth_experiments之外的支撑，来源关联不完整。\"}, {\"code\": \"TONE_MISMATCH\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-16\", \"message\": \"10-16标为绿色推进，但当日建议以“不急着行动、散步休息”为主，与推进语义不符；10-28同类问题。\"}, {\"code\": \"MISSING_DIMENSION_REASON\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-24\", \"message\": \"10-24至10-31多日四维分数以“暂不判定/中性”代替具体依据，pattern_regulation多次为0却无明确理由，削弱色块可追溯性。\"}, {\"code\": \"REPEATED_DEFICIT_FOCUS\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-21\", \"message\": \"10-21至10-31反复强调“先答应后透支”同一缺点，未同步呈现已确认的反例（熟悉同事可协商边界），易形成单面叙事。\"}, {\"code\": \"MONTHLY_DAILY_INCONSISTENCY\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-08\", \"message\": \"月基调称本月练习容量为每晚5–10分钟，但10-08、10-21等日建议“重要决定推迟”“减少承接”，与月度节奏描述不完全一致。\"}], \"patches\": []}",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 48608,
+    "output_tokens": 562,
+    "latency_ms": 3187,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "f2c5ebd0-4d92-4509-aa4e-bfa7e4937aef"
+  }
+}

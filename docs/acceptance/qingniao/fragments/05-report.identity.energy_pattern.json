@@ -1,0 +1,86 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "找到自己的补给入口",
+    "content": "会计的工作角色、你自报的权衡习惯与急迫，提示可以观察规则压力和持续思考的耗能，但不能证明你实际耗竭。先以过去一周真实的精神与身体感受为准。\n\n在演示命盘的喜忌候选下，写作、静观、自然、学习、规划及同辈支持，被整理为可能的补给选项；规则压力、过度输出和持续务实消耗，是可能的耗能情境。这不是你已经自述的偏好，也不保证某类活动有效。候选格局变化后，符号映射也可能变化。\n\n你自报ENFP，未提供八维测评。这里不生成八功能分数或强弱结论，只保留探索新可能、核对自身价值、安排执行、回看反馈四个观察入口。请用具体事件验证它们，不能把类型名称当作能力证明。\n\n你希望晚上复盘，这尚不是已建立的习惯。无需新增一套复杂记录，后面的情绪命名与刻度复盘，可以同时帮助你观察什么真的让自己恢复。",
+    "used_findings": [
+      "s4.energy.charge_drain",
+      "s2.mapping.resource_drain"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.energy",
+      "analysis.s4.functions"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看见自己的能量从哪里来、往哪里去。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.energy_pattern",
+      "sequence_no": 5,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "boundary_notes": [
+        "五行喜忌映射为候选假设，格局反转则映射反转",
+        "MBTI 为自报，八维未测，仅作倾向假设",
+        "未自述的情绪与自动想法以可能/可核对表达",
+        "实验动作统一放在成长实验节，本节不展开"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5797,
+    "output_tokens": 623,
+    "latency_ms": 3332,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "0b1b09e9-7476-4be5-a5af-c6b61544b98f",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "e769056ca20ff106a2062cca07d27cb70bab3b6b0dc74354315fd2f0a682573f",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你的能量模式：什么在充电，什么在耗电",
+    "content": "你说自己“太着急”，喜欢“权衡利弊”，日常角色是全职会计。把这三点放在一起看，一个可能的模式是：白天在规则与数字里保持准确，晚上还带着“要快点想清楚”的节奏，能量可能长期处在被消耗的一侧。这不等于你不够好，而是说明你的资源入口和消耗出口需要分开辨认。\n\n按目前候选的五行映射（待核）：水与木方向可作为“资源”线索——独处写作、静观、接触自然、学习与规划、同辈支持；金、火、土方向可作为“耗能”线索——规则压力、过度输出、务实消耗。这里要标一个边界：格局归类仍是候选，若判定反转，映射也会反转，所以请把它当作可试验的假设，而不是结论。\n\n你自报 ENFP、未测八维，因此只能谈倾向假设：主动寻求建议、对性格反馈开放，可能对应探索与价值取向；全职会计的准确要求与“急迫”，可能对应执行取向；而“每天晚上复盘”的使用场景，可能对应反馈取向。这些都需要你自评或测评核对，不作定论。\n\n一个可留意的对照：你说影响“有些影响”“感觉一直存在”。如果耗电方向长期偏重，充电方向就容易被挤到角落。可以核对的是——过去一周里，哪几段时间你感觉回血？那段时间你在做什么、和谁在一起？先记录，不急着改。具体的充电实验放到“成长实验”一节。",
+    "used_findings": [
+      "s4.energy.charge_drain",
+      "s2.mapping.resource_drain"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.energy",
+      "analysis.s4.functions"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看见自己的能量从哪里来、往哪里去。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.energy_pattern",
+      "sequence_no": 5,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "boundary_notes": [
+        "五行喜忌映射为候选假设，格局反转则映射反转",
+        "MBTI 为自报，八维未测，仅作倾向假设",
+        "未自述的情绪与自动想法以可能/可核对表达",
+        "实验动作统一放在成长实验节，本节不展开"
+      ]
+    }
+  }
+}

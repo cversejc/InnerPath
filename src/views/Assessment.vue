@@ -97,9 +97,9 @@
           ref="stepContent"
           :gen-step="genStep"
           :is-generating="isGenerating"
-          :report-preview="reportPreview"
-          @go-to-calendar="goToCalendar"
-          @view-report="viewFullReport"
+          :request-id="currentRequestId"
+          @view-requests="viewMyRequests"
+          @new-application="startAnotherApplication"
         />
       </div>
     </section>

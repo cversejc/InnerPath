@@ -1,0 +1,72 @@
+{
+  "signature": "88640dc2fa9bf3d9726161aee79fbbf822cb93307b4899b5d9f342b6ff00b317",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "从卡点到方向：让承担与休息同时在场",
+    "content": "三个卡点共享一条路径：外部请求或截止压力出现，被挤压感和“必须马上承担”的假设升起，你用答应、反复修改或持续在线作为防御，短期避免冲突或被评判，长期累积透支与关系摩擦。这条路径不是你的全部——你曾明确拒绝领导且没有内疚，说明拒绝能力已经存在，只是尚未扩展到分工规则不清的场景。\n\n方向不是把承担换成休息，而是让两端共同存在。资源→调节功能→能力→现实缺口→整合任务→工具→实验，这条推导可以这样理解：时柱庚申正印与福德天府可作被支持与安定的线索，转译为在请求与回应之间留出缓冲、允许休息不解释的调节功能；由此需要发展的能力是有余地的表达与阶段性交付；现实缺口在于分工规则不清时缺少可用的回应脚本，也缺少阶段交付的约定；短焦、CBT、ACT、EFT分别承接停顿、阶段交付、容纳“应该做事”的想法与情绪命名，具体做法放在第三章的成长实验一节，这里不展开步骤。\n\n中式人物意象可参考“持秤的账房先生”与“山中读书人”：前者精于权衡资源与责任，可学习边界与主权；后者善于沉淀，可学习小步入局。两种意象分别回应“答应后透支”与“思虑替代行动”两类现实议题。这是文化意象比喻，不是史实或人格诊断；当情境需要果断止损时，意象不应被用来合理化拖延。\n\n你行为中同时呈现“角色中的承担者”（财官旺、比劫弱，自述答应任务为换取资源，身宫落官禄武曲贪狼）与“退回内在的探索者”（时柱正印有力、独处散步较放松、项目开头想法多但反复修改）两种倾向，反证是：你曾明确拒绝领导且无内疚，说明外部评价并未完全压过主体；你仍在推进项目并交付，并非以思虑完全替代行动。成长任务相应是建立原则与主权、开始小步行动，具体练习留到第三章。",
+    "used_findings": [
+      "s4.block.overcommit_withdraw_loop",
+      "s4.block.perfectionist_completion",
+      "s3.hypothesis.core_tension_productivity_vs_rest",
+      "s3.hypothesis.quadrant_tension_operator_vs_restrained",
+      "s4.block.rest_as_excluded"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.quadrant",
+      "analysis.s4.breakthrough"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向先看到这里。接下来进入第三章：往哪去，让承担与休息同时在场，具体做法放在成长实验一节。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.breakthrough",
+      "sequence_no": 13,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、现实语言；命理术语已转译为日常表达；未使用收束金句。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.breakthrough",
+        "status": "FULFILLED",
+        "reason": "已按用神/资源→调节功能→能力→现实缺口→工具→实验的顺序转译，能力回应共性机制，动作只指向第三章成长实验节，未写具体步骤。",
+        "quote": "时柱庚申正印与福德天府可作被支持与安定的线索，转译为在请求与回应之间留出缓冲、允许休息不解释的调节功能",
+        "follow_up_questions": [
+          "在哪个场景你最愿意先尝试一次停顿？"
+        ]
+      },
+      {
+        "requirement_id": "R.archetype",
+        "status": "FULFILLED",
+        "reason": "已具象化“持秤的账房先生”与“山中读书人”两种文化意象，说明可学习能力与适用边界，并明确不作史实或人格诊断。",
+        "quote": "这是文化意象比喻，不是史实或人格诊断；当情境需要果断止损时，意象不应被用来合理化拖延。",
+        "follow_up_questions": [
+          "在哪些场景你更像“持秤的账房先生”，哪些场景更像“山中读书人”？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15157,
+    "output_tokens": 1032,
+    "latency_ms": 4839,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b03d5ae7-7e77-452d-8d3e-f85d3f9502f1",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "7ce7ebcd6a9e6c7101b08c72bd7df8ad407920a48d5cbdb19219f206703a9ed9",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

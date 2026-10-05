@@ -13,6 +13,7 @@ async def test_start_dispatches_new_ai_task(monkeypatch):
     create_task = AsyncMock(return_value=(task, True))
     dispatch_task = Mock()
     monkeypatch.setattr(service_request_ai, "create_ai_draft_task", create_task)
+    monkeypatch.setattr(service_request_ai, "ensure_legacy_service_request_allowed", Mock())
 
     result = await service_request_ai.start_service_request_ai_draft(
         None,
@@ -31,6 +32,7 @@ async def test_start_does_not_redispatch_active_ai_task(monkeypatch):
     create_task = AsyncMock(return_value=(task, False))
     dispatch_task = Mock()
     monkeypatch.setattr(service_request_ai, "create_ai_draft_task", create_task)
+    monkeypatch.setattr(service_request_ai, "ensure_legacy_service_request_allowed", Mock())
 
     result = await service_request_ai.start_service_request_ai_draft(
         None,

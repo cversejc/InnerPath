@@ -85,8 +85,9 @@ defineExpose({ focusCloseButton, focusContainer, focusTrigger, getFocusableItems
           </div>
           <div class="legend" aria-label="时区颜色图例">
             <span><i class="legend-dot legend-dot-green"></i>推进</span>
-            <span><i class="legend-dot legend-dot-yellow"></i>准备</span>
-            <span><i class="legend-dot legend-dot-red"></i>休整</span>
+            <span><i class="legend-dot legend-dot-blue"></i>探索</span>
+            <span><i class="legend-dot legend-dot-yellow"></i>校准</span>
+            <span><i class="legend-dot legend-dot-red"></i>收束</span>
             <span><i class="legend-dot legend-dot-record"></i>已记录</span>
           </div>
         </div>
@@ -99,6 +100,7 @@ defineExpose({ focusCloseButton, focusContainer, focusTrigger, getFocusableItems
               <span class="month-eyebrow">PERSONAL TIMEZONE</span>
               <h3>{{ calendarLabel }}</h3>
               <p>{{ meta.dateLabel }}</p>
+              <p v-for="limitation in meta.limitations" :key="limitation">{{ limitation }}</p>
             </div>
             <VanButton class="today-button" type="default" plain round native-type="button" @click="$emit('show-current-date')">
               回到当前聚焦 <IconMark name="arrow" />
@@ -186,7 +188,7 @@ defineExpose({ focusCloseButton, focusContainer, focusTrigger, getFocusableItems
           :aria-pressed="selectedEntry.phaseId === phase.id"
           @click="$emit('select-date', phase.startDate)"
         >
-          <span class="phase-card-index">0{{ index + 1 }}</span>
+          <span class="phase-card-index">{{ String(index + 1).padStart(2, '0') }}</span>
           <span class="phase-card-copy"><strong>{{ phase.label }}</strong><small>{{ phase.dateRange }}</small></span>
           <IconMark name="arrow" class="phase-card-arrow" />
         </button>

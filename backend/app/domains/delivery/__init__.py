@@ -1,0 +1,1 @@
+"""Immutable report delivery snapshots."""

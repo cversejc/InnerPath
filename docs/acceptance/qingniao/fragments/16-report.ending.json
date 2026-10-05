@@ -1,0 +1,94 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "不催促自己成为另一个人",
+    "content": "边界像需要季节的种子，不能靠催促一次长成。你愿意听反馈，也可以让自己的经验参与判断：一次回应是否更清楚，一次联系是否更自在，一次等待是否多了理解。\n\n不必同时完成全部练习，先选择最贴近实际的一项。改变后的反馈会告诉你，哪些解释适用，哪些需要放下。\n\n“知人者智，自知者明。”——《道德经》第三十三章。[核验原文](https://ctext.org/dao-de-jing/zh)。",
+    "used_findings": [
+      "s3.individuation.direction"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "报告到此收束：主线回扣、现实落点与哲学寄语已齐，具体实践见成长实验节。",
+    "presentation_meta": {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "sequence_no": 16,
+      "word_count": 428,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low"
+      },
+      "quote_used": {
+        "key": "laozi-33-self-knowledge",
+        "text": "知人者智，自知者明。",
+        "attribution": "《道德经》第三十三章",
+        "status": "VERIFIED"
+      },
+      "boundary_notes": [
+        "出生日期等为演示假设，命盘与阶段内容须本人提供后重算",
+        "方向为探索假设，可由现实经验修正",
+        "未自述的感受、自动想法与保护功能均以可能/待核对表达"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5237,
+    "output_tokens": 602,
+    "latency_ms": 3266,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "ab988435-0896-4204-b10c-d4cbff1e9475",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "80c36159af21979d849bb179961641551f35863f52b6e160928ea879b21ae293",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "回到最初的问题：让拒绝有温度，让联系有节奏",
+    "content": "你带着一个很具体的问题来：不太会拒绝，拒绝时语言生硬，习惯迁就；有事才联系朋友，关系逐渐疏远。一路看下来，主线其实只有一句——你并不是不重视关系，而是长期用「先保住关系、再顾自己」的顺序在维系它。这个顺序曾经保护过你，也让你在关系里少了一些自己的位置。\n\n方向不是把自己改成另一个人。它更像是：把「迁就」这一极，慢慢扩成「能温和拒绝、也能主动联系」的两极能力。这不是一次修好的事，而是在反复出现的情境里，每次多保留一点真实需求。你自述「太着急」，这恰好是减速的提示；你自述「愿意听别人对自身性格的建议」，这是可用的资源。\n\n至于怎么落成日常，成长实验那一节已经给了具体的动作，这里不再重复。\n\n《道德经》第三十三章说：「知人者智，自知者明。」你愿意每天晚上复盘、遇到困惑时查询，本身就是「自知」的练习。方向已经有了轮廓，剩下的交给时间和你的节奏——不必急着一次到位。\n\n（说明：出生日期等为演示假设，命盘与阶段内容须本人提供后重算；以上方向为探索假设，可由你的现实经验修正。）",
+    "used_findings": [
+      "s3.individuation.direction"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "报告到此收束：主线回扣、现实落点与哲学寄语已齐，具体实践见成长实验节。",
+    "presentation_meta": {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "sequence_no": 16,
+      "word_count": 428,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low"
+      },
+      "quote_used": {
+        "key": "laozi-33-self-knowledge",
+        "text": "知人者智，自知者明。",
+        "attribution": "《道德经》第三十三章",
+        "status": "VERIFIED"
+      },
+      "boundary_notes": [
+        "出生日期等为演示假设，命盘与阶段内容须本人提供后重算",
+        "方向为探索假设，可由现实经验修正",
+        "未自述的感受、自动想法与保护功能均以可能/待核对表达"
+      ]
+    }
+  }
+}

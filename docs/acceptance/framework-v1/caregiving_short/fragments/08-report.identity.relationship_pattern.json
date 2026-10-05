@@ -1,0 +1,62 @@
+{
+  "signature": "37684edd72abfb37fd0add5ab9a614e6534dd0c4c134e4e52ec4b31020c69c1a",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "关系循环：你怎么回应请求，关系就怎么回应你",
+    "content": "把关系看成一个循环：请求出现→你怎么回应→你感受到什么→对方接收到什么并反馈。你在家庭里最常跑的那一圈，大致是这样的：姐姐临时请你替她陪诊，你先答应下来；答应之后，负担先落到你身上；等轮班表说清楚了，你们才改成轮流陪诊。\n\n这一圈里，先答应不是软弱，也不是讨好。它的保护作用很实际：当场不冲突，家里的运转不断档，你也不必在姐姐着急的时候同时处理“去不去”和“怎么排班”两件事。代价则出现在后半段——你的时间安排、你的疲劳、你原本想推进的事，都被放到协商之后才被看见。表达滞后，负担就先由你扛着。\n\n但这不是固定剧本。你曾和姐姐协商陪诊分工，最后达成轮换，说明这个循环可以被改写，而且改写它的人就是你。所以不必把所有延迟都解释成怕得罪人或怕权威——你自己说过，你不觉得拒绝本身有错，只是事情一多时，会先等规则和时间表更清楚。这句话很重要：你的延迟更像是在等信息齐全，而不是在回避关系。\n\n另一个可以对照的循环来自夜班之后：独自反复查工作群，越查越难放下；把手机交给同事保管半小时，反而能睡着。两个循环的共同点是，一旦有第三方结构接手（轮班表、同事代管），你就不必靠一个人硬撑。\n\n还有几处待核对：请求出现的那一刻，你的第一反应具体是什么？从答应到开始协商，中间通常隔多久？如果你在答应之前就把时间说清楚，对方一般会怎么回应？这些答案会决定下一圈是继续“先答应、后协商”，还是变成“先说清、再答应”。",
+    "used_findings": [
+      "s4.block.accept_then_negotiate"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.relationships"
+    ],
+    "used_actions": [],
+    "transition_hint": "关系里的这一圈先看到这里：请求、回应、感受、反馈，以及那个已经出现过的反例。接下来会把这些循环放回更完整的卡点与保护功能里看。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.relationship_pattern",
+      "chapter": "identity",
+      "sequence_no": 8,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_notes": "第二人称、简洁清楚；未自述的情绪与动机均以可能/待核对表达；不展开实验动作、频率与退出条件；不引用金句。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.relationships",
+        "status": "FULFILLED",
+        "reason": "已写出请求→回应→感受→反馈的完整循环，使用真实场景（姐姐临时请替班、先答应后改成轮流陪诊），并给出反例（曾协商达成轮换）与待核对问题（第一反应、协商间隔、对方回应）。",
+        "quote": "你在家庭里最常跑的那一圈，大致是这样的：姐姐临时请你替她陪诊，你先答应下来；答应之后，负担先落到你身上；等轮班表说清楚了，你们才改成轮流陪诊。",
+        "follow_up_questions": [
+          "请求出现的那一刻，你的第一反应具体是什么？",
+          "从答应到开始协商，中间通常隔多久？",
+          "如果你在答应之前就把时间说清楚，对方一般会怎么回应？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5492,
+    "output_tokens": 849,
+    "latency_ms": 4633,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "298471b4-a5e0-4643-803d-a273edd403ba",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "34bc9288b2ee0cac884550d9c6d405f99f04783e2a3ee224ff3b5655628815d6",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

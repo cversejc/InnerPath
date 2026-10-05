@@ -71,7 +71,6 @@ async def render_report_pdf(
                         if parsed.path == report_path and request.method == "GET":
                             await fulfill_json(route, json.loads(report_json))
                             return
-                        # Keep the renderer limited to the page assets and these two mocked reads.
                         if parsed.path.startswith("/api/"):
                             await route.abort("blockedbyclient")
                             return

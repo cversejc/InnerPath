@@ -1,0 +1,1174 @@
+{
+  "step": "S3",
+  "skill_key": "report.s3_integration",
+  "specification": {
+    "identity": {
+      "skill_key": "report.s3_integration",
+      "name": "S3 命理心理哲学整合",
+      "description": "综合已确认的命理与心理判断，提出中心张力、自我方向和整合任务候选。"
+    },
+    "input_contract": {
+      "required": [],
+      "type": "object"
+    },
+    "context_policy": {
+      "required": [],
+      "optional": [],
+      "forbidden": [
+        "other_users",
+        "internal_chain_of_thought"
+      ],
+      "projection": "FULL"
+    },
+    "instructions": {
+      "objective": "综合已确认的命理与心理判断，提出中心张力、自我方向和整合任务候选。",
+      "methodology": [
+        "整合已确认的上游 Finding，不重复执行 S1 命理分析或 S2 心理映射。",
+        "明确指出整合判断引用的上游 Finding 与 Evidence。",
+        "描述需要发展的能力与两端张力，不塑造完美人格，也不预测必然结果。",
+        "输入不足或上游判断冲突时，将其列为待咨询师核查的风险，不自行消解冲突。",
+        "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+        "命理为表，心理为里，哲学为根；帮助用户看见模式并保留选择权。",
+        "必须为每个覆盖条目输出一个 analysis_fragments 对象，fragment_key 原样使用；资料不足也不可跳项。",
+        "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。",
+        "analysis.s3.self｜3.1 自性化方向：描述更完整/自由/真实的两端整合与 z 轴螺旋成长，避免完美人格；必须结合现实自述。",
+        "analysis.s3.quadrant｜3.2 英雄四象限：比较战神征服者、孤独普罗米修斯、消极避世者、异化服从者的依据/反证与成长任务；可呈现跨象限张力，不用贬义标签称呼用户；选择可理解的中式文化人物意象（非史实诊断）。",
+        "analysis.s3.timeline｜3.3 人生时序：结合库计算的大运十神/原局作用、易经时义、面具/阴影遭遇/整合/完整四阶段，描述当前运及转换期。当前及每个后续大运都必须有起止年份+阶段基调+放大主题+发展能力+防范旧模式，不能只列干支表。不预测必然事件或由顺逆运直接断定阶段。",
+        "analysis.s3.yijing｜3.3 易经时义：从当下境遇选适合的卦象作哲学比喻，解释为何匹配、何时不适用；不声称起卦结果或占卜证明。",
+        "analysis.s3.bridge｜3.4 个体与集体桥梁：结合金花种子/周期隐喻、道德经自知与反向整合、了凡四训主动实践；红书/自我与自性仅作参考方向，不虚构引文或页码。",
+        "analysis.s3.integration｜3.5 三重对应：先天格局↔意识潜意识↔天命之性；大运↔阶段↔时义；喜用↔资源↔明德；忌↔阴影↔反者道之动；干支关系↔冲突↔阴阳；藏干透出↔潜能意识化↔静观。来源不足注明暂缓。"
+      ],
+      "stage_key": "S3",
+      "sop_contract": {
+        "version": "product-analysis-2026-10-04-v1",
+        "responsibilities": {
+          "program": "投影 S1/S2 已确认内容和分析日期，保留库计算的大运起止；不按整十岁重编大运。",
+          "ai": "识别核心对立面、英雄四象限、时序与哲学隐喻，形成可由现实经验修正的成长路线。",
+          "human": "核对象限/阶段依据及多系统冲突；选用中式原型与哲学意象，不把成长阶段写成命运或人格等级。"
+        },
+        "topics": [
+          {
+            "fragment_key": "analysis.s3.self",
+            "title": "3.1 自性化方向",
+            "task": "描述更完整/自由/真实的两端整合与 z 轴螺旋成长，避免完美人格；必须结合现实自述。"
+          },
+          {
+            "fragment_key": "analysis.s3.quadrant",
+            "title": "3.2 英雄四象限",
+            "task": "比较战神征服者、孤独普罗米修斯、消极避世者、异化服从者的依据/反证与成长任务；可呈现跨象限张力，不用贬义标签称呼用户；选择可理解的中式文化人物意象（非史实诊断）。"
+          },
+          {
+            "fragment_key": "analysis.s3.timeline",
+            "title": "3.3 人生时序",
+            "task": "结合库计算的大运十神/原局作用、易经时义、面具/阴影遭遇/整合/完整四阶段，描述当前运及转换期。当前及每个后续大运都必须有起止年份+阶段基调+放大主题+发展能力+防范旧模式，不能只列干支表。不预测必然事件或由顺逆运直接断定阶段。"
+          },
+          {
+            "fragment_key": "analysis.s3.yijing",
+            "title": "3.3 易经时义",
+            "task": "从当下境遇选适合的卦象作哲学比喻，解释为何匹配、何时不适用；不声称起卦结果或占卜证明。"
+          },
+          {
+            "fragment_key": "analysis.s3.bridge",
+            "title": "3.4 个体与集体桥梁",
+            "task": "结合金花种子/周期隐喻、道德经自知与反向整合、了凡四训主动实践；红书/自我与自性仅作参考方向，不虚构引文或页码。"
+          },
+          {
+            "fragment_key": "analysis.s3.integration",
+            "title": "3.5 三重对应",
+            "task": "先天格局↔意识潜意识↔天命之性；大运↔阶段↔时义；喜用↔资源↔明德；忌↔阴影↔反者道之动；干支关系↔冲突↔阴阳；藏干透出↔潜能意识化↔静观。来源不足注明暂缓。"
+          }
+        ],
+        "missing_information_policy": "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。"
+      }
+    },
+    "knowledge_policy": {
+      "snapshot": [
+        {
+          "key": "individuation-map-v1",
+          "source": "docs/产品分析框架.md §3.1–3.5",
+          "quadrants": [
+            {
+              "name": "战神与征服者",
+              "symbols": "官杀旺/比劫强/食伤制杀",
+              "risk": "过度行动和征服",
+              "task": "收剑入鞘，允许休息"
+            },
+            {
+              "name": "孤独普罗米修斯",
+              "symbols": "印/食伤旺，财弱",
+              "risk": "洞见变成隔离",
+              "task": "以身入局，持续实践"
+            },
+            {
+              "name": "退回内在的探索者",
+              "symbols": "印枭旺/食伤受制",
+              "risk": "思虑替代行动",
+              "task": "开始小步行动"
+            },
+            {
+              "name": "角色中的承担者",
+              "symbols": "财官旺/比劫弱",
+              "risk": "外部评价压过主体",
+              "task": "建立原则和主权"
+            }
+          ],
+          "phase_limits": "面具期/阴影遭遇期/对立整合期/完整体验期是成长隐喻，可往返；不能仅用顺逆大运判定心理阶段。",
+          "philosophy": {
+            "金花的秘密": "种子与节律的比喻",
+            "道德经": "自知和反向整合",
+            "了凡四训": "自主实践",
+            "周易": "知时进退",
+            "中庸/大学": "性与潜能资源"
+          }
+        }
+      ],
+      "retrieval": "VERSION_SNAPSHOT"
+    },
+    "example_policy": {
+      "enabled": true,
+      "max_examples": 3
+    },
+    "processor_policy": {
+      "processor": "reports.analysis_draft"
+    },
+    "tool_policy": {
+      "allowed": []
+    },
+    "model_policy": {
+      "provider": "deepseek",
+      "model": null,
+      "temperature": 0.35,
+      "max_tokens": 12000,
+      "timeout_seconds": 120.0
+    },
+    "output_contract": {
+      "type": "object",
+      "required": [
+        "summary",
+        "findings",
+        "analysis_fragments",
+        "risk_flags"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "finding_key",
+              "claim",
+              "kind",
+              "semantic_role",
+              "confidence",
+              "importance",
+              "reportability",
+              "evidence_refs",
+              "relation_refs",
+              "structured_data"
+            ],
+            "properties": {
+              "finding_key": {
+                "type": "string"
+              },
+              "claim": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "FINDING",
+                  "SIGNAL"
+                ]
+              },
+              "semantic_role": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH"
+                ]
+              },
+              "importance": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "CRITICAL"
+                ]
+              },
+              "reportability": {
+                "type": "string",
+                "enum": [
+                  "INTERNAL_ONLY",
+                  "OPTIONAL",
+                  "RECOMMENDED",
+                  "MUST_INCLUDE"
+                ]
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "relation_refs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "finding_key"
+                  ],
+                  "properties": {
+                    "finding_key": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "structured_data": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "analysis_fragments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "fragment_key",
+              "title",
+              "content",
+              "finding_refs",
+              "evidence_refs"
+            ],
+            "properties": {
+              "fragment_key": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "finding_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "risk_flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "message",
+              "references"
+            ],
+            "properties": {
+              "message": {
+                "type": "string"
+              },
+              "references": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "guardrails": {
+      "global_policy_version": "global-policy-v1",
+      "blocked_phrases": [
+        "注定发财",
+        "必然离婚",
+        "保证治愈"
+      ]
+    },
+    "evaluation_profile": {
+      "metrics": [
+        "schema",
+        "source_fidelity",
+        "safety",
+        "stage_fit"
+      ],
+      "minimum_score": 0.8
+    }
+  },
+  "output": {
+    "summary": "S3 综合候选：以已确认的 S1 命理候选与 S2 心理映射假设为上游，提出中心张力（在关系中维持连接 vs 保有自我边界与主权）、自性化方向、英雄四象限比较、人生时序（含库计算大运起止）、易经时义、个体与集体桥梁及三重对应。所有命理内容均条件化于演示假设出生日期（公历2004-06-15，山东济南），非用户真实命盘；心理内容仅来自真实问卷。所有阶段与象限均为可被现实经验修正的探索假设，不作命运预测或人格等级判定。",
+    "findings": [
+      {
+        "finding_key": "s3.tension.core",
+        "claim": "中心张力候选：'维持关系连接'与'保有自我边界与主权'之间的对立统一。依据：用户自述不会拒绝、拒绝时语言生硬、习惯迁就、有事才联系朋友导致关系疏远（事实）；S2 假设核心信念为'表达需求可能破坏关系'。两端都有真实价值：连接是资源，边界是主权；整合方向不是二选一，而是让拒绝与联系都变得可协商、可修复。",
+        "kind": "FINDING",
+        "semantic_role": "core_tension",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.signal.boundary_urgency"
+          },
+          {
+            "finding_key": "s2.complex.authority_expression"
+          },
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          },
+          {
+            "finding_key": "s2.authority.sovereignty_handover"
+          }
+        ],
+        "structured_data": {
+          "pole_a": "连接与迁就",
+          "pole_b": "边界与主权",
+          "note": "两端均为资源，非优劣；须现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s3.individuation.direction",
+        "claim": "自性化方向候选：从'以迁就换取关系安全'的单极策略，走向'能温和拒绝、也能主动联系'的双向能力。z 轴螺旋含义：不是一次修好，而是在反复情境中每次多保留一点真实需求。结合现实自述：'愿意听别人对自身性格的建议'是可用资源（开放度），'太着急'是需要减速的提示。方向为假设，非成熟度判定。",
+        "kind": "FINDING",
+        "semantic_role": "individuation_direction",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.limitations",
+          "input.profile.personality_keywords",
+          "input.context.current_challenge",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.persona.self_report_vs_interpretation"
+          },
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          },
+          {
+            "finding_key": "s2.authority.sovereignty_handover"
+          }
+        ],
+        "structured_data": {
+          "avoid": "完美人格叙事",
+          "note": "探索假设，可由现实经验修正"
+        }
+      },
+      {
+        "finding_key": "s3.quadrant.candidates",
+        "claim": "英雄四象限候选：主候选为'角色中的承担者'（依据：身宫落官禄宫天相、正官透干、全职会计角色、自述习惯迁就；反证：自报 ENFP 与'无知的乐观主义'提示也有探索与表达面向）。次候选为'退回内在的探索者'（依据：偏印藏干、自述有事才联系朋友；反证：用户主动寻求建议与咨询，非完全退回）。'战神与征服者'与'孤独普罗米修斯'依据较弱，仅作对照。象限为探索隐喻，不是人格等级。",
+        "kind": "FINDING",
+        "semantic_role": "hero_quadrant_comparison",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.profile.mbti",
+          "input.profile.personality_keywords",
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.body_palace"
+          },
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          },
+          {
+            "finding_key": "s2.stars.tianxiang_shengong"
+          },
+          {
+            "finding_key": "s2.ten_gods.zhengguan"
+          }
+        ],
+        "structured_data": {
+          "primary_candidate": "角色中的承担者",
+          "secondary_candidate": "退回内在的探索者",
+          "note": "象限为隐喻，非诊断或等级"
+        }
+      },
+      {
+        "finding_key": "s3.timeline.current",
+        "claim": "当前大运为戊辰（2017-2026，正财，土），按库计算起止，不按整十岁重编。阶段基调候选：务实承担与资源积累（正财），与用户全职会计角色及'权衡利弊'自述方向一致（假设）。放大主题：责任、务实消耗。发展能力：在承担中练习边界与协商。防范旧模式：以迁就维持关系、以急迫推进。分析日期2026-10-04处于戊辰末段，接近转换期。",
+        "kind": "FINDING",
+        "semantic_role": "timeline_current",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.analysis_date",
+          "input.profile.occupation_status",
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.dayun.current_wuchen"
+          },
+          {
+            "finding_key": "s2.mapping.resource_drain"
+          }
+        ],
+        "structured_data": {
+          "pillar": "戊辰",
+          "start_year": 2017,
+          "end_year": 2026,
+          "ten_god": "正财",
+          "note": "阶段为隐喻，不由顺逆运直接断定"
+        }
+      },
+      {
+        "finding_key": "s3.timeline.subsequent",
+        "claim": "后续大运地图（库计算起止，逐段给出基调/放大主题/发展能力/防范旧模式）：丁卯2027-2036（食神，火/木）——基调表达与滋养，放大创造与输出，发展温和表达需求的能力，防范以享受回避责任；丙寅2037-2046（伤官，火/木）——基调突破与自我主张，放大表达与边界，发展有分寸的拒绝，防范冲动与关系损耗；乙丑2047-2056（比肩，木/土）——基调同辈支持与自我确立，放大主体性，发展平等协作，防范固执；甲子2057-2066（劫财，木/水）——基调行动与竞争，放大争取与资源，发展有边界地行动，防范争夺与边界模糊；癸亥2067-2076（偏印，水/水）——基调内省与独特视角，放大学习与独立判断，发展静观与连接并重，防范疏离；壬戌2077-2086（正印，水/土）——基调学习与涵养，放大传承与整合，发展给予与接受，防范依赖外部认可；辛酉2087-2096（七杀，金/金）——基调压力与勇气，放大果断与抗压，发展把勇气用于保护边界，防范过度防御。以上均为可被现实修正的阶段隐喻，不预测必然事件。",
+        "kind": "FINDING",
+        "semantic_role": "timeline_subsequent",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.analysis_date"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.dayun.current_wuchen"
+          },
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          }
+        ],
+        "structured_data": {
+          "segments": [
+            {
+              "pillar": "丁卯",
+              "start_year": 2027,
+              "end_year": 2036,
+              "ten_god": "食神"
+            },
+            {
+              "pillar": "丙寅",
+              "start_year": 2037,
+              "end_year": 2046,
+              "ten_god": "伤官"
+            },
+            {
+              "pillar": "乙丑",
+              "start_year": 2047,
+              "end_year": 2056,
+              "ten_god": "比肩"
+            },
+            {
+              "pillar": "甲子",
+              "start_year": 2057,
+              "end_year": 2066,
+              "ten_god": "劫财"
+            },
+            {
+              "pillar": "癸亥",
+              "start_year": 2067,
+              "end_year": 2076,
+              "ten_god": "偏印"
+            },
+            {
+              "pillar": "壬戌",
+              "start_year": 2077,
+              "end_year": 2086,
+              "ten_god": "正印"
+            },
+            {
+              "pillar": "辛酉",
+              "start_year": 2087,
+              "end_year": 2096,
+              "ten_god": "七杀"
+            }
+          ],
+          "note": "阶段为隐喻，不由顺逆运直接断定"
+        }
+      },
+      {
+        "finding_key": "s3.yijing.metaphor",
+        "claim": "易经时义候选：以'谦'卦（地山谦）作当下境遇的哲学比喻——山藏于地，提示力量可以含蓄而不必以生硬方式表达，与用户'拒绝时语言生硬'的困境形成对照；同时'谦'不等于一味退让，其义在'有原则的柔'。适用条件：当用户需要在关系中既保持尊重又表达立场时。不适用条件：当对方持续越界、需要明确强硬边界时，'谦'可能被误用为继续迁就。此为哲学比喻，非起卦结果或占卜证明。",
+        "kind": "SIGNAL",
+        "semantic_role": "yijing_metaphor",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.authority_expression"
+          }
+        ],
+        "structured_data": {
+          "hexagram_metaphor": "谦",
+          "note": "哲学比喻，非占卜结论"
+        }
+      },
+      {
+        "finding_key": "s3.bridge.individual_collective",
+        "claim": "个体与集体桥梁候选：以'金花的秘密'种子与节律为隐喻——边界能力如种子，需要季节而非催促，呼应用户'太着急'的自述；以《道德经》'自知者明'与'反者道之动'为方向——把'习惯迁就'视为可反向整合的入口，而非缺点；以《了凡四训》主动实践为方法——通过小步可重复的拒绝与主动联系练习，把方向落到日常。荣格'自我与自性'仅作参考方向，不虚构引文或页码。",
+        "kind": "SIGNAL",
+        "semantic_role": "individual_collective_bridge",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.context.current_challenge",
+          "input.context.usage_scenario",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.shadow.rest_and_play"
+          },
+          {
+            "finding_key": "s2.authority.sovereignty_handover"
+          }
+        ],
+        "structured_data": {
+          "note": "哲学隐喻，不虚构引文或页码"
+        }
+      },
+      {
+        "finding_key": "s3.integration.threefold",
+        "claim": "三重对应候选：先天格局（乙木日主+天府命宫）↔意识潜意识（柔韧协调面具与边界阴影）↔天命之性（可发展的真实表达）；大运（戊辰→丁卯）↔阶段（承担→表达）↔时义（谦：有原则的柔）；喜用（水/木）↔资源（自我关怀、同辈支持）↔明德；忌（金/火/土）↔阴影（规则压力、过度输出、务实消耗）↔反者道之动；干支关系（庚乙合兼克、午丑六害）↔冲突（权威期待与自我表达）↔阴阳；藏干透出（丑中癸偏印、辛七杀）↔潜能意识化↔静观。喜忌与格局均为候选，若咨询师判定反转则对应亦反转。",
+        "kind": "FINDING",
+        "semantic_role": "threefold_correspondence",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.current_challenge"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.day_master.b_yi"
+          },
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          },
+          {
+            "finding_key": "s1.interactions.relations"
+          },
+          {
+            "finding_key": "s1.dayun.current_wuchen"
+          },
+          {
+            "finding_key": "s2.mapping.resource_drain"
+          }
+        ],
+        "structured_data": {
+          "caveat": "喜忌与格局为候选，反转则对应反转"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s3.self",
+        "title": "3.1 自性化方向",
+        "content": "【自性化方向假设，非成熟度判定】\n\n中心张力：'维持关系连接'与'保有自我边界与主权'。两端都是真实价值——连接带来归属，边界带来主权；整合不是二选一，而是让拒绝与联系都变得可协商、可修复。\n\nz 轴螺旋：不是一次修好，而是在反复情境中每次多保留一点真实需求。用户自述'愿意听别人对自身性格的建议'是可用的开放度资源；'太着急'是提示减速的信号，而非缺陷。\n\n结合现实自述：不会拒绝、拒绝时语言生硬、习惯迁就、有事才联系朋友导致关系疏远（事实）。方向候选：练习'温和而清晰'的拒绝语言，以及'无事也可联系'的低强度维护。\n\n注意：出生日期为演示假设（2004-06-15），命理映射须本人提供真实信息后重算；本方向为探索假设，可由现实经验修正。",
+        "finding_refs": [
+          "s3.tension.core",
+          "s3.individuation.direction"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.strengths",
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.quadrant",
+        "title": "3.2 英雄四象限",
+        "content": "【四象限为探索隐喻，不是人格等级或诊断】\n\n主候选——角色中的承担者：依据为身宫落官禄宫天相、正官透干、全职会计角色、自述习惯迁就；反证为自报 ENFP 与'无知的乐观主义'提示也有探索与表达面向。成长任务：建立原则与主权，练习'哪些规则是自己的、哪些是继承的'。\n\n次候选——退回内在的探索者：依据为偏印藏干、自述有事才联系朋友；反证为用户主动寻求建议与咨询，并非完全退回。成长任务：开始小步行动，把洞见落到关系维护。\n\n对照——战神与征服者：依据较弱（劫财透干可作微弱线索）；反证为自述习惯迁就。成长任务若适用：收剑入鞘，允许休息。\n\n对照——孤独普罗米修斯：依据较弱（印星藏干）；反证为用户主动连接他人。成长任务若适用：以身入局，持续实践。\n\n中式文化人物意象（非史实诊断）：可参考'蔺相如'式的以柔持正——柔韧而不失立场；或'张良'式的谋定后动——把急迫转为节奏。意象仅作理解工具，不指认用户为某人。\n\n注意：象限为隐喻，须咨询师核对依据与反证。",
+        "finding_refs": [
+          "s3.quadrant.candidates"
+        ],
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.profile.mbti",
+          "input.profile.personality_keywords",
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.timeline",
+        "title": "3.3 人生时序",
+        "content": "【时序为阶段隐喻，不预测必然事件，不由顺逆运直接断定心理阶段】\n\n当前大运：戊辰（2017-2026，正财，土），按库计算起止。阶段基调：务实承担与资源积累。放大主题：责任、务实消耗。发展能力：在承担中练习边界与协商。防范旧模式：以迁就维持关系、以急迫推进。分析日期2026-10-04处于戊辰末段，接近转换期。\n\n后续大运（库计算起止）：\n丁卯 2027-2036（食神，火/木）——基调表达与滋养；放大创造与输出；发展温和表达需求；防范以享受回避责任。\n丙寅 2037-2046（伤官，火/木）——基调突破与自我主张；放大表达与边界；发展有分寸的拒绝；防范冲动与关系损耗。\n乙丑 2047-2056（比肩，木/土）——基调同辈支持与自我确立；放大主体性；发展平等协作；防范固执。\n甲子 2057-2066（劫财，木/水）——基调行动与竞争；放大争取与资源；发展有边界地行动；防范争夺与边界模糊。\n癸亥 2067-2076（偏印，水/水）——基调内省与独特视角；放大学习与独立判断；发展静观与连接并重；防范疏离。\n壬戌 2077-2086（正印，水/土）——基调学习与涵养；放大传承与整合；发展给予与接受；防范依赖外部认可。\n辛酉 2087-2096（七杀，金/金）——基调压力与勇气；放大果断与抗压；发展把勇气用于保护边界；防范过度防御。\n\n面具/阴影遭遇/整合/完整四阶段为成长隐喻，可往返，不能仅用顺逆大运判定。\n\n注意：出生日期为演示假设，大运随真实出生信息可能变化，须本人提供后重算并由咨询师核对。",
+        "finding_refs": [
+          "s3.timeline.current",
+          "s3.timeline.subsequent"
+        ],
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.analysis_date",
+          "input.profile.occupation_status"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.yijing",
+        "title": "3.3 易经时义",
+        "content": "【哲学比喻，非起卦结果或占卜证明】\n\n选用'谦'卦（地山谦）作当下境遇的比喻：山藏于地，提示力量可以含蓄而不必以生硬方式表达，与用户'拒绝时语言生硬'的困境形成对照；同时'谦'不等于一味退让，其义在'有原则的柔'。\n\n为何匹配：用户自述习惯迁就（一端）与拒绝生硬（另一端），'谦'正好落在两端之间——既非攻击，也非消失。\n\n何时不适用：当对方持续越界、需要明确强硬边界时，'谦'可能被误用为继续迁就；此时应转向更直接的表达。\n\n注意：此为哲学比喻，不声称起卦结果或占卜证明；须结合用户真实情境判断。",
+        "finding_refs": [
+          "s3.yijing.metaphor"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.bridge",
+        "title": "3.4 个体与集体桥梁",
+        "content": "【哲学隐喻，不虚构引文或页码】\n\n金花的秘密——种子与节律：边界能力如种子，需要季节而非催促，呼应用户'太着急'的自述。\n\n道德经——自知与反向整合：'自知者明'提示先看清自己的模式；'反者道之动'提示把'习惯迁就'视为可反向整合的入口，而非缺点。\n\n了凡四训——主动实践：通过小步、可重复的拒绝与主动联系练习，把方向落到日常，呼应用户'每天晚上复盘'的使用场景。\n\n荣格'自我与自性'仅作参考方向，不虚构引文或页码。\n\n注意：以上为哲学隐喻，不替代用户现实证据；须结合真实情境验证。",
+        "finding_refs": [
+          "s3.bridge.individual_collective"
+        ],
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.context.current_challenge",
+          "input.context.usage_scenario",
+          "input.context.expected_outcomes"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.integration",
+        "title": "3.5 三重对应",
+        "content": "【三重对应候选，喜忌与格局为候选，反转则对应反转】\n\n先天格局↔意识潜意识↔天命之性：乙木日主+天府命宫（柔韧协调面具）↔边界阴影↔可发展的真实表达。\n\n大运↔阶段↔时义：戊辰→丁卯（承担→表达）↔面具期→阴影遭遇期↔'谦'（有原则的柔）。\n\n喜用↔资源↔明德：水（印）/木（比劫）↔自我关怀、同辈支持↔明德。\n\n忌↔阴影↔反者道之动：金（官杀）/火（食伤）/土（财）↔规则压力、过度输出、务实消耗↔反向整合入口。\n\n干支关系↔冲突↔阴阳：庚乙合兼克、午丑六害↔权威期待与自我表达↔阴阳张力。\n\n藏干透出↔潜能意识化↔静观：丑中癸偏印、辛七杀↔压力应对与内省潜能↔静观。\n\n暂缓项：喜忌与格局均为候选（身偏弱候选），若咨询师判定身强或从格，喜忌与对应将反转；须人工确认后再定稿。\n\n注意：出生日期为演示假设，命理对应须本人提供真实信息后重算。",
+        "finding_refs": [
+          "s3.integration.threefold"
+        ],
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.current_challenge"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "出生日期（2004-06-15）与出生城市（山东济南）为演示假设，非用户真实信息；所有命理结论（日主、格局、喜忌、大运、紫微宫位）均条件化于此，须用户提供真实出生信息后重算，不得作为用户真实命盘使用。",
+        "references": [
+          "input.profile.demo_assumptions",
+          "input.context.demo_assumptions",
+          "calculated.mingli_foundation.v2"
+        ]
+      },
+      {
+        "message": "格局候选（身偏弱）与喜忌候选（水/木为用，金/火/土为忌）均为解释性判断，未经咨询师确认；若判定反转，S2 资源/耗能映射与 S3 三重对应亦须同步反转。",
+        "references": [
+          "s1.structure.candidate_weak_officer",
+          "s1.useful_gods.candidate",
+          "s2.mapping.resource_drain",
+          "s3.integration.threefold"
+        ]
+      },
+      {
+        "message": "时柱未校正真太阳时（出生时刻15:15为用户自报精确），时柱相关解读须咨询师核对。",
+        "references": [
+          "s1.hour.shen_metal",
+          "input.profile.birth_time_precision"
+        ]
+      },
+      {
+        "message": "英雄四象限与人生时序均为成长隐喻，不能作为人格等级、成熟度或命运预测使用；须由咨询师核对依据与反证，并允许用户以现实经验修正。",
+        "references": [
+          "s3.quadrant.candidates",
+          "s3.timeline.current",
+          "s3.timeline.subsequent"
+        ]
+      },
+      {
+        "message": "S2 心理映射（面具、阴影、情结、激活路径、权威与超我）均为低置信度假设，须回到用户真实重复情境验证；不得据此作心理诊断或推断家庭成因。",
+        "references": [
+          "s2.shadow.boundary_need",
+          "s2.complex.authority_expression",
+          "s2.cycle.activation_path",
+          "s2.authority.superego_source"
+        ]
+      },
+      {
+        "message": "用户自述'每次困境会有女贵人出现'为个人经验陈述，S3 未据此推断命理必然性或外部依赖，须咨询师在访谈中核实其现实含义。",
+        "references": [
+          "input.context.additional_info"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 28520,
+    "output_tokens": 6188,
+    "latency_ms": 22941,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "9fe8480d-1126-4bd2-84e4-e05f858eb606",
+    "skill_version_id": 0,
+    "skill_key": "report.s3_integration",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "1dfa8020d04d97bd9e1cc60210726274bbd9ed84304057248284f151f9f7ba81",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "开发者核查演示覆盖/来源/边界，非真实咨询师审核，不写入生产或对客户交付"
+  },
+  "original_model_output": {
+    "summary": "S3 综合候选：以已确认的 S1 命理候选与 S2 心理映射假设为上游，提出中心张力（在关系中维持连接 vs 保有自我边界与主权）、自性化方向、英雄四象限比较、人生时序（含库计算大运起止）、易经时义、个体与集体桥梁及三重对应。所有命理内容均条件化于演示假设出生日期（公历2004-06-15，山东济南），非用户真实命盘；心理内容仅来自真实问卷。所有阶段与象限均为可被现实经验修正的探索假设，不作命运预测或人格等级判定。",
+    "findings": [
+      {
+        "finding_key": "s3.tension.core",
+        "claim": "中心张力候选：'维持关系连接'与'保有自我边界与主权'之间的对立统一。依据：用户自述不会拒绝、拒绝时语言生硬、习惯迁就、有事才联系朋友导致关系疏远（事实）；S2 假设核心信念为'表达需求可能破坏关系'。两端都有真实价值：连接是资源，边界是主权；整合方向不是二选一，而是让拒绝与联系都变得可协商、可修复。",
+        "kind": "FINDING",
+        "semantic_role": "core_tension",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.issue_duration",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.signal.boundary_urgency"
+          },
+          {
+            "finding_key": "s2.complex.authority_expression"
+          },
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          },
+          {
+            "finding_key": "s2.authority.sovereignty_handover"
+          }
+        ],
+        "structured_data": {
+          "pole_a": "连接与迁就",
+          "pole_b": "边界与主权",
+          "note": "两端均为资源，非优劣；须现实事件验证"
+        }
+      },
+      {
+        "finding_key": "s3.individuation.direction",
+        "claim": "自性化方向候选：从'以迁就换取关系安全'的单极策略，走向'能温和拒绝、也能主动联系'的双向能力。z 轴螺旋含义：不是一次修好，而是在反复情境中每次多保留一点真实需求。结合现实自述：'愿意听别人对自身性格的建议'是可用资源（开放度），'太着急'是需要减速的提示。方向为假设，非成熟度判定。",
+        "kind": "FINDING",
+        "semantic_role": "individuation_direction",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.profile.strengths",
+          "input.profile.limitations",
+          "input.profile.personality_keywords",
+          "input.context.current_challenge",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.persona.self_report_vs_interpretation"
+          },
+          {
+            "finding_key": "s2.shadow.boundary_need"
+          },
+          {
+            "finding_key": "s2.authority.sovereignty_handover"
+          }
+        ],
+        "structured_data": {
+          "avoid": "完美人格叙事",
+          "note": "探索假设，可由现实经验修正"
+        }
+      },
+      {
+        "finding_key": "s3.quadrant.candidates",
+        "claim": "英雄四象限候选：主候选为'角色中的承担者'（依据：身宫落官禄宫天相、正官透干、全职会计角色、自述习惯迁就；反证：自报 ENFP 与'无知的乐观主义'提示也有探索与表达面向）。次候选为'退回内在的探索者'（依据：偏印藏干、自述有事才联系朋友；反证：用户主动寻求建议与咨询，非完全退回）。'战神与征服者'与'孤独普罗米修斯'依据较弱，仅作对照。象限为探索隐喻，不是人格等级。",
+        "kind": "FINDING",
+        "semantic_role": "hero_quadrant_comparison",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.profile.mbti",
+          "input.profile.personality_keywords",
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.body_palace"
+          },
+          {
+            "finding_key": "s1.ten_gods.visible_hidden"
+          },
+          {
+            "finding_key": "s2.stars.tianxiang_shengong"
+          },
+          {
+            "finding_key": "s2.ten_gods.zhengguan"
+          }
+        ],
+        "structured_data": {
+          "primary_candidate": "角色中的承担者",
+          "secondary_candidate": "退回内在的探索者",
+          "note": "象限为隐喻，非诊断或等级"
+        }
+      },
+      {
+        "finding_key": "s3.timeline.current",
+        "claim": "当前大运为戊辰（2017-2026，正财，土），按库计算起止，不按整十岁重编。阶段基调候选：务实承担与资源积累（正财），与用户全职会计角色及'权衡利弊'自述方向一致（假设）。放大主题：责任、务实消耗。发展能力：在承担中练习边界与协商。防范旧模式：以迁就维持关系、以急迫推进。分析日期2026-10-04处于戊辰末段，接近转换期。",
+        "kind": "FINDING",
+        "semantic_role": "timeline_current",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.analysis_date",
+          "input.profile.occupation_status",
+          "input.profile.personality_keywords"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.dayun.current_wuchen"
+          },
+          {
+            "finding_key": "s2.mapping.resource_drain"
+          }
+        ],
+        "structured_data": {
+          "pillar": "戊辰",
+          "start_year": 2017,
+          "end_year": 2026,
+          "ten_god": "正财",
+          "note": "阶段为隐喻，不由顺逆运直接断定"
+        }
+      },
+      {
+        "finding_key": "s3.timeline.subsequent",
+        "claim": "后续大运地图（库计算起止，逐段给出基调/放大主题/发展能力/防范旧模式）：丁卯2027-2036（食神，火/木）——基调表达与滋养，放大创造与输出，发展温和表达需求的能力，防范以享受回避责任；丙寅2037-2046（伤官，火/木）——基调突破与自我主张，放大表达与边界，发展有分寸的拒绝，防范冲动与关系损耗；乙丑2047-2056（比肩，木/土）——基调同辈支持与自我确立，放大主体性，发展平等协作，防范固执；甲子2057-2066（劫财，木/水）——基调行动与竞争，放大争取与资源，发展有边界地行动，防范争夺与边界模糊；癸亥2067-2076（偏印，水/水）——基调内省与独特视角，放大学习与独立判断，发展静观与连接并重，防范疏离；壬戌2077-2086（正印，水/土）——基调学习与涵养，放大传承与整合，发展给予与接受，防范依赖外部认可；辛酉2087-2096（七杀，金/金）——基调压力与勇气，放大果断与抗压，发展把勇气用于保护边界，防范过度防御。以上均为可被现实修正的阶段隐喻，不预测必然事件。",
+        "kind": "FINDING",
+        "semantic_role": "timeline_subsequent",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.analysis_date"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.dayun.current_wuchen"
+          },
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          }
+        ],
+        "structured_data": {
+          "segments": [
+            {
+              "pillar": "丁卯",
+              "start_year": 2027,
+              "end_year": 2036,
+              "ten_god": "食神"
+            },
+            {
+              "pillar": "丙寅",
+              "start_year": 2037,
+              "end_year": 2046,
+              "ten_god": "伤官"
+            },
+            {
+              "pillar": "乙丑",
+              "start_year": 2047,
+              "end_year": 2056,
+              "ten_god": "比肩"
+            },
+            {
+              "pillar": "甲子",
+              "start_year": 2057,
+              "end_year": 2066,
+              "ten_god": "劫财"
+            },
+            {
+              "pillar": "癸亥",
+              "start_year": 2067,
+              "end_year": 2076,
+              "ten_god": "偏印"
+            },
+            {
+              "pillar": "壬戌",
+              "start_year": 2077,
+              "end_year": 2086,
+              "ten_god": "正印"
+            },
+            {
+              "pillar": "辛酉",
+              "start_year": 2087,
+              "end_year": 2096,
+              "ten_god": "七杀"
+            }
+          ],
+          "note": "阶段为隐喻，不由顺逆运直接断定"
+        }
+      },
+      {
+        "finding_key": "s3.yijing.metaphor",
+        "claim": "易经时义候选：以'谦'卦（地山谦）作当下境遇的哲学比喻——山藏于地，提示力量可以含蓄而不必以生硬方式表达，与用户'拒绝时语言生硬'的困境形成对照；同时'谦'不等于一味退让，其义在'有原则的柔'。适用条件：当用户需要在关系中既保持尊重又表达立场时。不适用条件：当对方持续越界、需要明确强硬边界时，'谦'可能被误用为继续迁就。此为哲学比喻，非起卦结果或占卜证明。",
+        "kind": "SIGNAL",
+        "semantic_role": "yijing_metaphor",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.limitations"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.authority_expression"
+          }
+        ],
+        "structured_data": {
+          "hexagram_metaphor": "谦",
+          "note": "哲学比喻，非占卜结论"
+        }
+      },
+      {
+        "finding_key": "s3.bridge.individual_collective",
+        "claim": "个体与集体桥梁候选：以'金花的秘密'种子与节律为隐喻——边界能力如种子，需要季节而非催促，呼应用户'太着急'的自述；以《道德经》'自知者明'与'反者道之动'为方向——把'习惯迁就'视为可反向整合的入口，而非缺点；以《了凡四训》主动实践为方法——通过小步可重复的拒绝与主动联系练习，把方向落到日常。荣格'自我与自性'仅作参考方向，不虚构引文或页码。",
+        "kind": "SIGNAL",
+        "semantic_role": "individual_collective_bridge",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.context.current_challenge",
+          "input.context.usage_scenario",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.shadow.rest_and_play"
+          },
+          {
+            "finding_key": "s2.authority.sovereignty_handover"
+          }
+        ],
+        "structured_data": {
+          "note": "哲学隐喻，不虚构引文或页码"
+        }
+      },
+      {
+        "finding_key": "s3.integration.threefold",
+        "claim": "三重对应候选：先天格局（乙木日主+天府命宫）↔意识潜意识（柔韧协调面具与边界阴影）↔天命之性（可发展的真实表达）；大运（戊辰→丁卯）↔阶段（承担→表达）↔时义（谦：有原则的柔）；喜用（水/木）↔资源（自我关怀、同辈支持）↔明德；忌（金/火/土）↔阴影（规则压力、过度输出、务实消耗）↔反者道之动；干支关系（庚乙合兼克、午丑六害）↔冲突（权威期待与自我表达）↔阴阳；藏干透出（丑中癸偏印、辛七杀）↔潜能意识化↔静观。喜忌与格局均为候选，若咨询师判定反转则对应亦反转。",
+        "kind": "FINDING",
+        "semantic_role": "threefold_correspondence",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.current_challenge"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.day_master.b_yi"
+          },
+          {
+            "finding_key": "s1.useful_gods.candidate"
+          },
+          {
+            "finding_key": "s1.interactions.relations"
+          },
+          {
+            "finding_key": "s1.dayun.current_wuchen"
+          },
+          {
+            "finding_key": "s2.mapping.resource_drain"
+          }
+        ],
+        "structured_data": {
+          "caveat": "喜忌与格局为候选，反转则对应反转"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s3.self",
+        "title": "3.1 自性化方向",
+        "content": "【自性化方向假设，非成熟度判定】\n\n中心张力：'维持关系连接'与'保有自我边界与主权'。两端都是真实价值——连接带来归属，边界带来主权；整合不是二选一，而是让拒绝与联系都变得可协商、可修复。\n\nz 轴螺旋：不是一次修好，而是在反复情境中每次多保留一点真实需求。用户自述'愿意听别人对自身性格的建议'是可用的开放度资源；'太着急'是提示减速的信号，而非缺陷。\n\n结合现实自述：不会拒绝、拒绝时语言生硬、习惯迁就、有事才联系朋友导致关系疏远（事实）。方向候选：练习'温和而清晰'的拒绝语言，以及'无事也可联系'的低强度维护。\n\n注意：出生日期为演示假设（2004-06-15），命理映射须本人提供真实信息后重算；本方向为探索假设，可由现实经验修正。",
+        "finding_refs": [
+          "s3.tension.core",
+          "s3.individuation.direction"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.strengths",
+          "input.profile.limitations",
+          "input.profile.personality_keywords"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.quadrant",
+        "title": "3.2 英雄四象限",
+        "content": "【四象限为探索隐喻，不是人格等级或诊断】\n\n主候选——角色中的承担者：依据为身宫落官禄宫天相、正官透干、全职会计角色、自述习惯迁就；反证为自报 ENFP 与'无知的乐观主义'提示也有探索与表达面向。成长任务：建立原则与主权，练习'哪些规则是自己的、哪些是继承的'。\n\n次候选——退回内在的探索者：依据为偏印藏干、自述有事才联系朋友；反证为用户主动寻求建议与咨询，并非完全退回。成长任务：开始小步行动，把洞见落到关系维护。\n\n对照——战神与征服者：依据较弱（劫财透干可作微弱线索）；反证为自述习惯迁就。成长任务若适用：收剑入鞘，允许休息。\n\n对照——孤独普罗米修斯：依据较弱（印星藏干）；反证为用户主动连接他人。成长任务若适用：以身入局，持续实践。\n\n中式文化人物意象（非史实诊断）：可参考'蔺相如'式的以柔持正——柔韧而不失立场；或'张良'式的谋定后动——把急迫转为节奏。意象仅作理解工具，不指认用户为某人。\n\n注意：象限为隐喻，须咨询师核对依据与反证。",
+        "finding_refs": [
+          "s3.quadrant.candidates"
+        ],
+        "evidence_refs": [
+          "input.profile.occupation_status",
+          "input.profile.mbti",
+          "input.profile.personality_keywords",
+          "input.context.current_challenge",
+          "input.context.decision_style"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.timeline",
+        "title": "3.3 人生时序",
+        "content": "【时序为阶段隐喻，不预测必然事件，不由顺逆运直接断定心理阶段】\n\n当前大运：戊辰（2017-2026，正财，土），按库计算起止。阶段基调：务实承担与资源积累。放大主题：责任、务实消耗。发展能力：在承担中练习边界与协商。防范旧模式：以迁就维持关系、以急迫推进。分析日期2026-10-04处于戊辰末段，接近转换期。\n\n后续大运（库计算起止）：\n丁卯 2027-2036（食神，火/木）——基调表达与滋养；放大创造与输出；发展温和表达需求；防范以享受回避责任。\n丙寅 2037-2046（伤官，火/木）——基调突破与自我主张；放大表达与边界；发展有分寸的拒绝；防范冲动与关系损耗。\n乙丑 2047-2056（比肩，木/土）——基调同辈支持与自我确立；放大主体性；发展平等协作；防范固执。\n甲子 2057-2066（劫财，木/水）——基调行动与竞争；放大争取与资源；发展有边界地行动；防范争夺与边界模糊。\n癸亥 2067-2076（偏印，水/水）——基调内省与独特视角；放大学习与独立判断；发展静观与连接并重；防范疏离。\n壬戌 2077-2086（正印，水/土）——基调学习与涵养；放大传承与整合；发展给予与接受；防范依赖外部认可。\n辛酉 2087-2096（七杀，金/金）——基调压力与勇气；放大果断与抗压；发展把勇气用于保护边界；防范过度防御。\n\n面具/阴影遭遇/整合/完整四阶段为成长隐喻，可往返，不能仅用顺逆大运判定。\n\n注意：出生日期为演示假设，大运随真实出生信息可能变化，须本人提供后重算并由咨询师核对。",
+        "finding_refs": [
+          "s3.timeline.current",
+          "s3.timeline.subsequent"
+        ],
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.analysis_date",
+          "input.profile.occupation_status"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.yijing",
+        "title": "3.3 易经时义",
+        "content": "【哲学比喻，非起卦结果或占卜证明】\n\n选用'谦'卦（地山谦）作当下境遇的比喻：山藏于地，提示力量可以含蓄而不必以生硬方式表达，与用户'拒绝时语言生硬'的困境形成对照；同时'谦'不等于一味退让，其义在'有原则的柔'。\n\n为何匹配：用户自述习惯迁就（一端）与拒绝生硬（另一端），'谦'正好落在两端之间——既非攻击，也非消失。\n\n何时不适用：当对方持续越界、需要明确强硬边界时，'谦'可能被误用为继续迁就；此时应转向更直接的表达。\n\n注意：此为哲学比喻，不声称起卦结果或占卜证明；须结合用户真实情境判断。",
+        "finding_refs": [
+          "s3.yijing.metaphor"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.profile.limitations"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.bridge",
+        "title": "3.4 个体与集体桥梁",
+        "content": "【哲学隐喻，不虚构引文或页码】\n\n金花的秘密——种子与节律：边界能力如种子，需要季节而非催促，呼应用户'太着急'的自述。\n\n道德经——自知与反向整合：'自知者明'提示先看清自己的模式；'反者道之动'提示把'习惯迁就'视为可反向整合的入口，而非缺点。\n\n了凡四训——主动实践：通过小步、可重复的拒绝与主动联系练习，把方向落到日常，呼应用户'每天晚上复盘'的使用场景。\n\n荣格'自我与自性'仅作参考方向，不虚构引文或页码。\n\n注意：以上为哲学隐喻，不替代用户现实证据；须结合真实情境验证。",
+        "finding_refs": [
+          "s3.bridge.individual_collective"
+        ],
+        "evidence_refs": [
+          "input.profile.limitations",
+          "input.context.current_challenge",
+          "input.context.usage_scenario",
+          "input.context.expected_outcomes"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.integration",
+        "title": "3.5 三重对应",
+        "content": "【三重对应候选，喜忌与格局为候选，反转则对应反转】\n\n先天格局↔意识潜意识↔天命之性：乙木日主+天府命宫（柔韧协调面具）↔边界阴影↔可发展的真实表达。\n\n大运↔阶段↔时义：戊辰→丁卯（承担→表达）↔面具期→阴影遭遇期↔'谦'（有原则的柔）。\n\n喜用↔资源↔明德：水（印）/木（比劫）↔自我关怀、同辈支持↔明德。\n\n忌↔阴影↔反者道之动：金（官杀）/火（食伤）/土（财）↔规则压力、过度输出、务实消耗↔反向整合入口。\n\n干支关系↔冲突↔阴阳：庚乙合兼克、午丑六害↔权威期待与自我表达↔阴阳张力。\n\n藏干透出↔潜能意识化↔静观：丑中癸偏印、辛七杀↔压力应对与内省潜能↔静观。\n\n暂缓项：喜忌与格局均为候选（身偏弱候选），若咨询师判定身强或从格，喜忌与对应将反转；须人工确认后再定稿。\n\n注意：出生日期为演示假设，命理对应须本人提供真实信息后重算。",
+        "finding_refs": [
+          "s3.integration.threefold"
+        ],
+        "evidence_refs": [
+          "calculated.mingli_foundation.v2",
+          "input.context.current_challenge"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "出生日期（2004-06-15）与出生城市（山东济南）为演示假设，非用户真实信息；所有命理结论（日主、格局、喜忌、大运、紫微宫位）均条件化于此，须用户提供真实出生信息后重算，不得作为用户真实命盘使用。",
+        "references": [
+          "input.profile.demo_assumptions",
+          "input.context.demo_assumptions",
+          "calculated.mingli_foundation.v2"
+        ]
+      },
+      {
+        "message": "格局候选（身偏弱）与喜忌候选（水/木为用，金/火/土为忌）均为解释性判断，未经咨询师确认；若判定反转，S2 资源/耗能映射与 S3 三重对应亦须同步反转。",
+        "references": [
+          "s1.structure.candidate_weak_officer",
+          "s1.useful_gods.candidate",
+          "s2.mapping.resource_drain",
+          "s3.integration.threefold"
+        ]
+      },
+      {
+        "message": "时柱未校正真太阳时（出生时刻15:15为用户自报精确），时柱相关解读须咨询师核对。",
+        "references": [
+          "s1.hour.shen_metal",
+          "input.profile.birth_time_precision"
+        ]
+      },
+      {
+        "message": "英雄四象限与人生时序均为成长隐喻，不能作为人格等级、成熟度或命运预测使用；须由咨询师核对依据与反证，并允许用户以现实经验修正。",
+        "references": [
+          "s3.quadrant.candidates",
+          "s3.timeline.current",
+          "s3.timeline.subsequent"
+        ]
+      },
+      {
+        "message": "S2 心理映射（面具、阴影、情结、激活路径、权威与超我）均为低置信度假设，须回到用户真实重复情境验证；不得据此作心理诊断或推断家庭成因。",
+        "references": [
+          "s2.shadow.boundary_need",
+          "s2.complex.authority_expression",
+          "s2.cycle.activation_path",
+          "s2.authority.superego_source"
+        ]
+      },
+      {
+        "message": "用户自述'每次困境会有女贵人出现'为个人经验陈述，S3 未据此推断命理必然性或外部依赖，须咨询师在访谈中核实其现实含义。",
+        "references": [
+          "input.context.additional_info"
+        ]
+      }
+    ]
+  },
+  "developer_review_notes": [
+    "迁就是问卷自述；先答应与短期不适是待核对假设，修正混合标记。"
+  ]
+}

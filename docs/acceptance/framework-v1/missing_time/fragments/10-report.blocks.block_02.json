@@ -1,0 +1,64 @@
+{
+  "signature": "fa6fecf8c199cb4d828d54205080d92c9b2c229b8a4ec7d55843d69cf99282c7",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡在哪：休息与拒绝为何难以被允许",
+    "content": "上一节我们看到，“先答应、后撤回”的循环在真实场景里是怎么跑起来的。这一节顺着同一条线，看它在休息与拒绝这两个更靠近你自己的场景里，如何延伸。\n\n常见现实场景：你提到过一个很具体的画面——上周同事临时请你代写方案，你本想休息，却还是答应了，熬夜之后第二天变得不耐烦。你也说过，拒绝之后会担心别人觉得你不够好。这两句放在一起，已经能看出这套反应的大致轮廓。\n\n触发与运作：当“他人的需求”和“你自己的休息需要”同时出现，休息往往先被推迟。你先把事情接下来，维持住那个“靠谱、不让人失望”的位置；等到疲惫积累到某个点，不满才以不耐烦、或者干脆撤回的方式冒出来。这里有一个值得留意的顺序——不是你先感到不想做，再决定勉强答应；更像是答应的动作先发生，不舒服的感受被留到后面才浮上来。如果这个顺序在你身上反复出现，它可能不只是这一次的偶然。\n\n过去保护了什么：这套反应不是缺点，它曾经有它的用处。先答应、先承接，能让你稳稳待在被需要、被认可的位置上，避免当场冲突，也避免让别人失望带来的那种不安。对当时那个把“要靠谱”当作自我要求的你来说，这大概是一种有效的自我保护。\n\n长期代价：代价也真实存在。休息被一再推迟，恢复就不够；不满没有出口，就会积压，最后以不耐烦或撤回的形式漏出来。而你的真实需求——比如“我今天真的需要休息”——长期没有被表达，也就长期没有被别人看见。这不是你不够好，而是这套保护机制在今天的场景里，开始显得不够用了。\n\n整合邀请：所以这里的变化，不是要你立刻学会强硬拒绝，而是先松动一个前提——把休息看作节律的一部分，而不是懒惰或失职。当“需要休息”不再等于“不够靠谱”，你在那个当下的选择空间才可能真正变宽。具体怎么在现实里练习有余地的表达，我们留到第三章的成长实验里展开，这里先把机制看清楚就够了。\n\n还有一个边界要说明：这部分目前只有有限的场景支撑，阴影不等于缺点，也需要更多场景来核对。比如在家人面前、在更亲近的朋友面前，这套反应是不是也一样，现在还不好下结论。",
+    "used_findings": [
+      "s4.block.rest_shadow"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "你已经看清这个循环在休息与拒绝场景里的延伸；下一节会继续看它在项目与交付场景中的另一种表现。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.block_02",
+      "chapter": "challenge",
+      "sequence_no": 10,
+      "block_key": "block_02",
+      "new_information_role": "MANIFEST",
+      "finding_roles": {
+        "s4.block.rest_shadow": "MANIFEST"
+      },
+      "reader_profile_applied": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "action_steps_deferred_to": "report.direction.growth_experiments",
+      "quote_used": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "正文按“场景→触发→运作→过去保护→长期代价→整合邀请”的顺序展开，覆盖6项核心要素；证据仅来自用户自述的两条场景与感受，未补造经历；本节只解释机制，把解决步骤明确留给第三章。",
+        "quote": "当“他人的需求”和“你自己的休息需要”同时出现，休息往往先被推迟。",
+        "follow_up_questions": [
+          "在家人或更亲近的朋友面前，你答应前会不会也先停顿一下，还是反应更直接？",
+          "有没有哪一次，你在答应之前就意识到自己其实想休息，并且当场说了出来？那次发生了什么？",
+          "熬夜之后的“不耐烦”，通常是对别人，还是对自己？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4482,
+    "output_tokens": 951,
+    "latency_ms": 5608,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "32505020-2905-433c-921f-b4574c5ca268",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "d650fedf482bdf6808191a026880367d42aeb9eb4dbaa63e4118d1e7f2f23690",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

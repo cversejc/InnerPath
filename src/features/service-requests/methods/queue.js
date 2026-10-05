@@ -3,6 +3,7 @@ import {
   getStaffServiceRequestWorkspace,
   getStaffServiceRequests
 } from '../api.js'
+import { ownsRequest } from '../../report-cases/professional-ownership.js'
 import { calendarEditorFromPayload, reportEditorFromPayload } from '../payloads.js'
 
 export default {
@@ -16,7 +17,17 @@ export default {
       })
       if (this.selectedRequest) {
         const refreshed = this.requests.items.find(item => item.id === this.selectedRequest.id)
-        if (refreshed) this.selectedRequest = refreshed
+        if (refreshed) {
+          this.selectedRequest = refreshed
+        } else {
+          this.selectedRequest = null
+          this.workspace = null
+          this.reportCase = null
+          this.reportCaseCompletionGate = null
+          this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
+          this.syncWorkspaceRoute(null)
+          this.stopPolling()
+        }
       }
     } catch (error) {
       this.message = this.errorText(error)
@@ -26,17 +37,34 @@ export default {
   },
   async changeScope(scope) {
     this.scope = scope
+    this.syncWorkspaceRoute(null)
     this.selectedRequest = null
     this.workspace = null
+    this.reportCase = null
+    this.reportCaseCompletionGate = null
+    this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
     this.stopPolling()
     await this.loadRequests()
   },
-  async selectRequest(item) {
+  async selectRequest(item, { updateRoute = true } = {}) {
     this.stopPolling()
     this.selectedRequest = item
+    this.showInfoPanel = false
+    this.infoReason = ''
+    this.infoStepKey = ''
+    this.workspaceSection = 'overview'
+    this.selectedReportStepKey = ''
+    if (updateRoute) this.syncWorkspaceRoute(item.id, 'overview', { history: 'push' })
     this.workspace = null
+    this.reportCase = null
+    this.reportCaseCompletionGate = null
+    this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
+    this.reportAnalysisRuns = []
     this.message = ''
-    if (item.assigned_consultant_id || this.admin) await this.loadWorkspace(item.id)
+    this.$nextTick(() => {
+      if (this.selectedRequest?.id === item.id) this.$el?.scrollTo?.(0, 0)
+    })
+    if (ownsRequest(item, this.staffActor)) await this.loadWorkspace(item.id)
   },
   async loadWorkspace(requestId) {
     this.loading = true
@@ -50,6 +78,12 @@ export default {
           this.calendarEditor = calendarEditorFromPayload(this.workspace.draft.editable_payload)
         }
       }
+      if (this.workspace.request.service_type === 'report' && this.workspace.request.report_case_id) {
+        await this.loadReportCaseData(this.workspace.request.report_case_id)
+      } else {
+        this.reportCase = null
+        this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
+      }
       if (this.workspace.task?.status === 'processing') this.startPolling(this.workspace.task)
     } catch (error) {
       this.workspace = null
@@ -60,12 +94,17 @@ export default {
   },
   async acceptRequest() {
     if (!this.selectedRequest || this.accepting) return
+    const requestId = this.selectedRequest.id
     this.accepting = true
     try {
-      await acceptStaffServiceRequest(this.selectedRequest.id)
+      await acceptStaffServiceRequest(requestId)
+      if (this.scope === 'available') {
+        this.scope = this.admin ? 'all' : 'mine'
+        this.syncWorkspaceRoute(requestId, this.workspaceSection)
+      }
       this.message = '申请已接收，完整资料已开放。'
       await this.loadRequests()
-      await this.loadWorkspace(this.selectedRequest.id)
+      await this.loadWorkspace(requestId)
     } catch (error) {
       this.message = this.errorText(error)
       await this.loadRequests()

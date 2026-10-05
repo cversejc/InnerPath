@@ -1,0 +1,59 @@
+{
+  "signature": "4fb47926c34122c99d1069a614d669ef34eb64db7d235395105f2efede1c8bd9",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。\n上一轮输出未通过程序校验：report_fragment_unsupported_fragment。请重新生成完整JSON。reasoning_path.resource_refs只能引用指定角色资源，不能用PERSONA代替。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你是谁：一份说明书的主线",
+    "content": "这份说明书想带你走一条线：先看见你在关系与工作里反复出现的反应，再理解它曾经如何保护你，最后把选择权慢慢收回自己手里。\n\n一句关键结论：你并不缺能力，缺的是在“答应”与“透支”之间那一个短短的停顿。\n\n向世界展示的你，是靠谱、不让人失望的人。同事临时请你代写方案，你本想休息却答应；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。这些场景里，你的第一反应往往是先接住别人的需要。\n\n你以为的自己，是“拒绝后别人会觉得我不够好”。这句话是你亲口说的，它像一个内部坐标，把“我做得够不够”交给外部来打分。需要说明的是，这目前是一个待验证的假设，不是结论：面对熟悉的同事、且有明确截止时，你能够协商任务边界，说明这个模式是情境依赖的，并非每次都迁就。\n\n潜意识层面的自己，可能是一套更自动的运作：请求来临时先顺从，事后积压不满，延迟表达，最终以生硬回应或取消收场。它曾经的功能是维持关系安全与“靠谱”形象；长期代价是熬夜透支、关系里的突然冷淡，以及自我评价持续依赖外部反馈。另一条线索是，你提到独自散步时比较放松，这提示独处与稳定节奏可能是你的恢复资源——同样属于待核对的方向，而非定论。\n\n整合后的方向，不是变得强硬或冷漠，而是让两端同时在场：一端是以外部认可与关系安全为参照，另一端是以自身节奏与真实需求为主权。它们不是好坏之分，而是需要一起被照顾的两个部分。\n\n本章路径图：请求来临 → 自动答应 → 熬夜透支 → 延迟表达 → 生硬回应/取消 →（插入停顿）→ 关系关照与自身节奏同时在场。\n\n接下来的章节会按“卡在哪”和“往哪去”展开：前者把这条时间线拆开看，后者落到具体的停顿练习与表达脚本。这一章只负责把主线交到你手上。",
+    "used_findings": [
+      "s4.block.overcommit_then_resent",
+      "s1.foundation.current_dayun",
+      "s4.block.self_worth_by_others",
+      "s2.pattern.overcommitment_loop",
+      "s2.pattern.self_worth_external_reference",
+      "s2.pattern.rest_recovery_resource",
+      "s3.self.core_tension"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "下一节进入“卡在哪”，按请求—顺从—透支—延迟表达的时间顺序拆解三个卡点。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "chapter_opening": true,
+      "sequence_no": 1,
+      "tone": "第二人称、现实语言、低隐喻",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "length_note": "约600汉字，符合深入详细偏好"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "status": "FULFILLED",
+        "reason": "正文按“向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向”四层依次展开，并在结尾以路径图概览暗线；未展开具体卡点机制，也未涉及实验动作或金句，符合概览定位。",
+        "quote": "向世界展示的你，是靠谱、不让人失望的人。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 12882,
+    "output_tokens": 849,
+    "latency_ms": 4612,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "3dc8e864-2818-45aa-b812-26fd63d122ef",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "2927b0a159f9cfa533245ceecc821ac5d080916c31f3999049c60dc539638aa6",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

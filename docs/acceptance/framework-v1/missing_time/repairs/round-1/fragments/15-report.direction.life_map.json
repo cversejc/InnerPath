@@ -1,0 +1,69 @@
+{
+  "signature": "40f7dcd9000e4632a70adf4e31685d44873ce6bd92dc6dac7a2ccae4b152de1a",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "阶段地图：方向已经清楚，时间表还需要你补一个信息",
+    "content": "走到这里，方向已经比较清楚了：你不是要把自己改造成另一个人，而是让长期被放在后面的那一端——休息、拒绝、真实需求——重新有机会在场。这一节要做的事，是把这份方向放回时间轴上。\n\n先说能确认的部分。你身上有一条张力：一端是「靠谱、不让人失望」的承接型自我，另一端是休息、拒绝和真实需求的表达；目前重心明显偏在前一端，后一端更多以不耐烦或直接撤回的方式间接露面。与之相配的，是一种「角色中的承担者」的位置感——外部期待先到，你的意愿后到。这只是一个成长隐喻，不是给你贴等级标签。背后可能有一条条件化的信念在运作：被认可，取决于是否满足了别人的期待。这是假设，不是结论，需要你用自己的真实场景去校正。\n\n关于反例：你提到，面对熟悉同事、且有明确截止的时候，你能够协商任务边界。这说明协商的能力你已经有了，它缺的不是技能，而是出现的条件——关系够熟、边界够清楚的时候，它就会出来。不过，把这条反例看成「可以扩大的积极资源」，同样是一个待核对的假设：它需要在更多真实场景里被验证，而不是现在就当成定论。\n\n接下来是这一节必须坦白的地方：真实的大运起止年份，目前无法给出。系统计算的大运为空，而你的出生钟表时间未提供，起运无法确定，因此既不能按当前分析日期选定当前运，也无法给出后续每十年的起止年份，更不能补造。原局层面的互动（如年月的子午冲、年日的子未害、月日的午未合）属于结构描述，不能单独用来推断某一段人生的基调，所以这一节不据此写阶段主题。\n\n因此，阶段地图目前只能写成条件式：等你补上尽量准确的出生时间（几点几分，以及是否接近时辰交界），就可以按真实起止年份，逐段补出基调、被放大的主题、需要发展的能力，以及要防范的旧模式——也就是那个「先答应、后撤回」的循环在哪些年份更容易被触发。在拿到这份时间表之前，任何具体的年份段落都只是猜测，我不会替你填上去。\n\n在等待这份信息的同时，方向本身是现在就可以走的：不是等一个「好年份」再开始，而是在每一次临时请求到来时，先给自己留出半拍。具体怎么练，放在成长实验一节。",
+    "used_findings": [
+      "s3.self.pole_tension",
+      "s3.quadrant.carrier",
+      "s2.mapping.core_belief",
+      "s3.timeline.deferred",
+      "s4.block.boundary_cycle",
+      "s4.block.rest_shadow"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.timeline",
+      "analysis.s4.timing_self"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向已经指出：从反例出发练习缓冲与协商。接下来进入成长实验，把具体动作、频率、耗时、观察点与退出条件落到日常。",
+    "presentation_meta": {
+      "fragment_key": "report.direction.life_map",
+      "chapter": "direction",
+      "sequence_no": 15,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "source_fidelity_notes": [
+        "s2.mapping.core_belief 以假设语气表达，未作为结论。",
+        "反例资源判断已补充为待核对假设，保留补问。",
+        "s3.timeline.deferred 以暂缓方式呈现，未补造年份。"
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.life_map",
+        "status": "DEFERRED",
+        "reason": "真实大运起止年份因出生时间未知、系统大运为空而无法给出；已按条件式说明补问后可补出阶段基调、放大主题、能力与旧模式。",
+        "quote": "等你补上尽量准确的出生时间（几点几分，以及是否接近时辰交界），就可以按真实起止年份，逐段补出基调、被放大的主题、需要发展的能力，以及要防范的旧模式",
+        "follow_up_questions": [
+          "请提供尽量准确的出生钟表时间（几点几分）。",
+          "出生时间是否接近整点或时辰交界？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 9693,
+    "output_tokens": 1031,
+    "latency_ms": 4369,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "30fd3408-ad04-4bf9-8953-f97f50e842f5",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "db7c95c5b55c58c0a9ac36b0effb537a47f11d14fe38a7de76b7c515c5d3e9c7",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

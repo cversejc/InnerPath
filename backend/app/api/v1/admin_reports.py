@@ -1,27 +1,19 @@
 from datetime import date
 from typing import Optional
-from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.audit_context import audit_context_from_request
-from app.api.v1.admin_report_support import _load_admin_reports, _load_admin_tasks, _serialize_task
-from app.config import settings
+from app.api.v1.admin_report_support import _load_admin_reports, _load_admin_tasks
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.domains.reports.models import ReportTask
 from app.models.user import User
 from app.schemas.admin import (
     AdminReportListResponse,
     AdminReportResponse,
     AdminReportTaskListResponse,
-    AdminReportTaskResponse,
 )
-from app.domains.audit.service import record_audit
 from app.domains.reports.service import format_report_response, get_report_by_id
-from app.domains.reports.task_service import create_report_task
 
 router = APIRouter()
 
@@ -73,52 +65,17 @@ async def list_admin_report_tasks(
     items, total = await _load_admin_tasks(db, task_status=task_status, user_id=user_id, search=search, date_from=date_from, date_to=date_to, page=page, size=size)
     return AdminReportTaskListResponse(total=total, page=page, size=size, items=items)
 
-@router.post("/report-tasks/{task_id}/retry", response_model=AdminReportTaskResponse, status_code=status.HTTP_202_ACCEPTED)
+@router.post(
+    "/report-tasks/{task_id}/retry",
+    status_code=status.HTTP_410_GONE,
+    deprecated=True,
+)
 async def retry_admin_report_task(
     task_id: str,
-    request: Request,
     current_user: User = Depends(require_roles("admin")),
-    db: AsyncSession = Depends(get_db),
 ):
-    task = (await db.execute(
-        select(ReportTask).where(ReportTask.task_id == task_id).with_for_update()
-    )).scalar_one_or_none()
-    if not task:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
-    if task.status != "failed":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only failed tasks can be retried")
-    if not task.input_snapshot:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Task input is unavailable")
-    existing_retry = await db.scalar(
-        select(ReportTask.task_id).where(ReportTask.retry_of_task_id == task.task_id).limit(1)
+    """Retired legacy retry; reports must be handled through a service request case."""
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail="旧版报告任务不可重试，请在对应的服务申请工作流中继续处理。",
     )
-    if existing_retry:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Task already has a retry")
-    if task.retry_count >= settings.REPORT_MAX_RETRIES:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Retry limit reached")
-
-    new_task_id = str(uuid4())
-    new_task = await create_report_task(db, new_task_id, task.user_id, input_snapshot=task.input_snapshot, retry_count=task.retry_count + 1, retry_of_task_id=task.task_id)
-    from app.tasks.report_tasks import generate_report_task
-
-    try:
-        generate_report_task.apply_async(args=[task.user_id, task.input_snapshot], task_id=new_task_id)
-    except Exception as error:
-        new_task.status = "failed"
-        new_task.error = str(error)
-        await db.commit()
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Unable to queue retry")
-    await record_audit(
-        db,
-        current_user.id,
-        "report.task.retry",
-        "report_task",
-        new_task_id,
-        target_user_id=task.user_id,
-        details={"retry_of_task_id": task.task_id, "retry_count": new_task.retry_count},
-        audit_context=audit_context_from_request(request),
-    )
-    await db.commit()
-    await db.refresh(new_task)
-    user = await db.get(User, task.user_id)
-    return _serialize_task(new_task, user)

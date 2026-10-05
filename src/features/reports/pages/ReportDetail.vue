@@ -13,6 +13,8 @@
       </template>
       <template v-if="report" #default>
         <div class="report-meta">
+          <span v-if="staffView">已交付最终报告 · 与用户收到的正文一致</span>
+          <span v-if="staffView" class="divider">|</span>
           <span>生成日期：{{ report.basicInfo?.reportDate || '今天' }}</span>
           <span class="divider">|</span>
           <span>{{ report.basicInfo?.name || '用户' }}</span>
@@ -42,7 +44,7 @@
       <div class="container">
         <ReportContent v-if="reportDocument" :document="reportDocument" />
 
-        <div v-if="report" class="report-actions paper-card">
+        <div v-if="report && !staffView" class="report-actions paper-card">
           <div class="report-next-copy"><p class="section-kicker">FROM INSIGHT TO ACTION</p><h2>把看见的，带回生活里</h2><p>用决策日历照看日常节奏，留下自己的行动与选择。</p></div>
           <VanButton type="primary" native-type="button" class="btn-action primary" @click="goToCalendar">
             <template #icon><IconMark class="icon" name="calendar" /></template>
@@ -64,6 +66,7 @@ import ReportContent from '../components/ReportContent.vue'
 import { normalizeReportData } from '../report-content.js'
 import { createReportDocument } from '../report-document-model.js'
 import { createReportPreview } from '../preview.js'
+import { hasRole } from '../../../stores/auth'
 
 export default {
   name: 'ReportDetail',
@@ -81,6 +84,9 @@ export default {
   computed: {
     isPreviewReport() {
       return import.meta.env.DEV && this.$route.query.preview === '1'
+    },
+    staffView() {
+      return hasRole('admin', 'consultant')
     }
   },
   async mounted() {
@@ -106,10 +112,19 @@ export default {
       }
     },
     goBack() {
-      this.$router.go(-1)
+      const requestId = Number(this.$route.query.request_id)
+      if (this.staffView && Number.isSafeInteger(requestId) && requestId > 0) {
+        this.$router.push({ path: '/staff', query: { request_id: String(requestId), section: 'overview' } })
+      } else this.$router.go(-1)
     },
     goToCalendar() {
-      this.$router.push('/pages/calendar/calendar')
+      const reportId = Number(this.$route.query.id)
+      this.$router.push({
+        path: '/pages/calendar/calendar',
+        query: Number.isSafeInteger(reportId) && reportId > 0
+          ? { source_report_id: String(reportId) }
+          : {}
+      })
     },
     async downloadPdf() {
       if (!this.report || this.downloadingPdf) return

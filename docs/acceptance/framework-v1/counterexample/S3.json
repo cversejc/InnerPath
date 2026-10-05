@@ -1,0 +1,504 @@
+{
+  "signature": "929d44fa0084bdc72e325cf26429eb9bd934db6da69d035ef49e4b1998d4f843",
+  "skill_digest": "4c885895161b5fb120536021a18cdf5d3cbe6364fa95adf89a09348fa2eccab2",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每个规定分析片段都须有framework_coverage；structured_analysis/details严格使用当前reasoning_contract字段。Action的reasoning_path逐项具体，不用通用空话。",
+  "output": {
+    "summary": "本批次为S3整合候选：基于已确认的S1命理结构与S2心理假设，提出自性化两端整合、英雄四象限张力、大运时序与易经时义、个体与集体桥梁、三重对应五类候选。核心候选张力为‘以产出与承担换取位置’的一端与‘休息、有余地表达、被尊重需求’另一端；用户反例（曾明确拒绝领导且无内疚）已用于校正讨好与权威恐惧假设。大运起止年份逐字采用系统计算证据。所有判断为待咨询师核查的假设，不预测必然结果。",
+    "findings": [
+      {
+        "finding_key": "s3.hypothesis.core_tension_productivity_vs_rest",
+        "claim": "候选核心张力：一端是‘以产出与承担换取位置’的运营者姿态（自述答应任务为换取资源、身宫落官禄武曲贪狼、月令伤官透干），另一端是‘休息、有余地表达与被尊重需求’（独自散步较放松、福德天府、期望减少透支）。两端并非好坏对立，而是当前偏重一端、另一端少被允许。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "input.context.expected_outcomes",
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.hypothesis.persona_competent_operator"
+          },
+          {
+            "finding_key": "s2.hypothesis.rest_as_excluded_pole"
+          },
+          {
+            "finding_key": "s1.foundation.ziwei_body_career"
+          },
+          {
+            "finding_key": "s1.foundation.ziwei_wellbeing_tianfu"
+          }
+        ],
+        "structured_data": {
+          "dominant_pole": "产出与承担换取位置",
+          "excluded_pole": "休息、有余地表达与被尊重需求",
+          "status": "待咨询师核查"
+        }
+      },
+      {
+        "finding_key": "s3.hypothesis.quadrant_tension_operator_vs_restrained",
+        "claim": "候选象限张力：用户行为同时呈现‘角色中的承担者’（财官旺、比劫弱、外部评价与规则压过主体）与‘退回内在的探索者’（印星有力、独处放松、思虑替代行动）两种倾向，而非单一象限。成长任务分别为建立原则与主权、开始小步行动。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.foundation.month_ling_wu_hurt_officer"
+          },
+          {
+            "finding_key": "s1.foundation.hour_seal_gengshen"
+          },
+          {
+            "finding_key": "s2.hypothesis.persona_competent_operator"
+          }
+        ],
+        "structured_data": {
+          "primary_quadrant": "角色中的承担者",
+          "secondary_quadrant": "退回内在的探索者",
+          "status": "待咨询师核查"
+        }
+      },
+      {
+        "finding_key": "s3.hypothesis.timeline_current_xinmao_theme",
+        "claim": "候选时序主题：当前辛卯大运（2019–2028，偏印，金/木）与原局伤官、正印并见，可作收敛与表达张力的放大期线索；下一运庚寅（2029–2038，正印）延续印星主题。起止年份逐字采用系统计算，不作必然事件预测。",
+        "kind": "SIGNAL",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.analysis_date"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.foundation.current_dayun_xinmao"
+          },
+          {
+            "finding_key": "s1.foundation.month_ling_wu_hurt_officer"
+          },
+          {
+            "finding_key": "s1.foundation.hour_seal_gengshen"
+          }
+        ],
+        "structured_data": {
+          "current_dayun": "辛卯",
+          "start_year": 2019,
+          "end_year": 2028,
+          "status": "待咨询师核查"
+        }
+      },
+      {
+        "finding_key": "s3.hypothesis.yijing_metaphor_jian",
+        "claim": "候选易经时义比喻：以‘渐’卦（渐进、有序、不越级）作当下境遇的哲学比喻，匹配用户‘先答应后透支、临近截止急交付’的节奏失衡；不适用边界为：当情境需要果断止损或明确拒绝时，渐进比喻不应被用来合理化拖延。此为哲学比喻，非起卦结果。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.hypothesis.overcommit_withdraw_cycle"
+          },
+          {
+            "finding_key": "s2.hypothesis.perfectionist_completion_anxiety"
+          }
+        ],
+        "structured_data": {
+          "metaphor": "渐卦渐进有序",
+          "status": "待咨询师核查"
+        }
+      },
+      {
+        "finding_key": "s3.hypothesis.bridge_self_knowing_practice",
+        "claim": "候选桥梁方向：以‘自知’与‘反向整合’（道德经方向）承接用户‘理解反复出现的机制’的期望，以‘主动实践’（了凡四训方向）承接‘练习有余地的表达’；种子与节律比喻用于说明改变非一次性完成。仅作参考方向，不虚构引文或页码。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.expected_outcomes",
+          "input.context.available_time"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.hypothesis.rest_as_excluded_pole"
+          }
+        ],
+        "structured_data": {
+          "philosophy_sources": [
+            "道德经自知与反向整合方向",
+            "了凡四训主动实践方向",
+            "金花种子与节律比喻"
+          ],
+          "status": "待咨询师核查"
+        }
+      },
+      {
+        "finding_key": "s3.hypothesis.integration_threefold",
+        "claim": "候选三重对应：先天格局（癸水日主、伤官透干、正印时柱）↔意识潜意识（运营者面具与休息被排斥）↔天命之性（待用户自述补充）；大运（辛卯偏印）↔阶段（收敛与表达张力）↔时义（渐进）；喜用（金水）↔资源（正印、福德天府）↔明德；忌（火土财杀）↔阴影（透支与硬撑）↔反者道之动；干支关系（子午冲、子未害、午未合）↔冲突↔阴阳；藏干透出↔潜能意识化↔静观。天命之性来源不足，暂缓。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.foundation.day_master_gui_water"
+          },
+          {
+            "finding_key": "s1.foundation.interactions_core"
+          },
+          {
+            "finding_key": "s1.foundation.current_dayun_xinmao"
+          }
+        ],
+        "structured_data": {
+          "deferred_part": "天命之性来源不足",
+          "status": "待咨询师核查"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s3.self",
+        "title": "3.1 自性化方向",
+        "content": "【候选，待咨询师核查】当前偏重的一端是‘以产出与承担换取位置’：用户自述答应任务是为换取资源，身宫落官禄武曲贪狼、月令伤官透干与此方向一致。被排除的另一端是休息、有余地表达与被尊重需求：用户独自散步时较放松，福德天府可作安定资源线索，期望减少透支。两端整合不是成为完美的人，而是在具体情境中让两端共同存在——例如在答应前留出一次停顿，把‘是否答应’与‘如何有余地表达’同时纳入判断。z轴螺旋成长意味着这一整合会反复出现，而非一次完成。用户反例（曾明确拒绝领导且无内疚）提示：整合方向不是修复讨好，而是把已有的拒绝能力扩展到更多场景。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "两端、整合能力与具体情境均已结合现实自述给出，并声明非完美人格。",
+          "quote": "当前偏重的一端是‘以产出与承担换取位置’",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "主导端、被排除端与整合能力均已覆盖，并引用现实自述。",
+          "quote": "被排除的另一端是休息、有余地表达与被尊重需求",
+          "follow_up_questions": [
+            "在哪些具体场景你曾同时做到既答应又保留余地？"
+          ],
+          "details": {
+            "dominant_pole": "以产出与承担换取位置（自述答应任务为换取资源、身宫落官禄武曲贪狼、月令伤官透干）。",
+            "excluded_pole": "休息、有余地表达与被尊重需求（独自散步较放松、福德天府、期望减少透支）。",
+            "integration": "在答应前留出停顿，把是否答应与如何有余地表达同时纳入判断；用户已有拒绝领导的反例可作扩展基础。"
+          }
+        },
+        "finding_refs": [
+          "s3.hypothesis.core_tension_productivity_vs_rest"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "input.context.expected_outcomes",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.quadrant",
+        "title": "3.2 英雄四象限",
+        "content": "【候选，待咨询师核查】用户行为同时呈现两种象限倾向，而非单一象限。‘角色中的承担者’依据：财官旺、比劫弱，自述答应任务为换取资源，身宫落官禄武曲贪狼；反证：用户曾明确拒绝领导且无内疚，说明外部评价并未完全压过主体。‘退回内在的探索者’依据：时柱正印有力、独处散步较放松、项目开头想法多但反复修改；反证：用户仍在推进项目并交付，并非以思虑完全替代行动。‘战神与征服者’依据较弱：伤官透干有表达冲劲，但未见持续征服式行动。‘孤独普罗米修斯’依据不足，暂不采用。中式人物意象可参考‘持秤的账房先生’（角色中的承担者：精于权衡资源与责任，学习边界与主权）与‘山中读书人’（退回内在的探索者：善于沉淀，学习小步入局）。此为文化意象比喻，非史实或人格诊断。成长任务：建立原则与主权、开始小步行动。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "四象限依据/反证、跨象限张力、中式意象与成长任务均已给出，并声明非史实诊断。",
+          "quote": "用户行为同时呈现两种象限倾向，而非单一象限",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "意象、可学习能力、适配理由与边界均已覆盖。",
+          "quote": "中式人物意象可参考‘持秤的账房先生’",
+          "follow_up_questions": [
+            "在哪些场景你更像‘持秤的账房先生’，哪些场景更像‘山中读书人’？"
+          ],
+          "details": {
+            "archetype": "持秤的账房先生（角色中的承担者）与山中读书人（退回内在的探索者）。",
+            "learnable_capacity": "从账房先生学习边界与主权，从读书人学习小步入局。",
+            "fit_reason": "回应‘答应后透支’与‘思虑替代行动’两类现实议题。",
+            "boundary": "仅为文化意象比喻，不作史实或人格诊断；不适用边界为：当情境需要果断止损时，意象不应被用来合理化拖延。"
+          }
+        },
+        "finding_refs": [
+          "s3.hypothesis.quadrant_tension_operator_vs_restrained"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.timeline",
+        "title": "3.3 人生时序",
+        "content": "【候选，待咨询师核查】起止年份逐字采用系统计算证据。当前辛卯大运（2019–2028，偏印，金/木）：阶段基调为收敛与内省，放大主题为表达冲动与收敛规范之间的张力（原局伤官透干、正印时柱），发展能力为把内省转化为有余地的表达，防范旧模式为以反复修改或拖延替代明确回应。下一运庚寅（2029–2038，正印，金/木）：阶段基调为支持与规范并重，放大主题为被支持与被认可的需求，发展能力为把资源转化为稳定节奏，防范旧模式为以知道回避行动。己丑（2039–2048，七杀，土/土）：阶段基调为压力与承担，放大主题为威胁应对与果断抗压，发展能力为在压力下保留休息与边界，防范旧模式为过度防御与硬撑。戊子（2049–2058，正官，土/水）：阶段基调为规则与责任，放大主题为规范与主体性的平衡，发展能力为在规则中保有主权，防范旧模式为把规则当作不可质疑的外部权威。丁亥（2059–2068，偏财，火/水）：阶段基调为体验与资源流动，放大主题为社交敏锐与务实，发展能力为以连接替代掌控，防范旧模式为以刺激替代连接。丙戌（2069–2078，正财，火/土）：阶段基调为务实与稳定，放大主题为物质安全与责任，发展能力为在稳定中保持弹性，防范旧模式为以产出定义自我。乙酉（2079–2088，食神，木/金）：阶段基调为表达与享受，放大主题为食神式消化与放松，发展能力为允许享受而不解释，防范旧模式为以表达替代休息。面具/阴影遭遇/整合/完整四阶段为成长隐喻，可往返，不能仅用顺逆大运判定心理阶段。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "当前及每个后续大运均有起止年份、阶段基调、放大主题、发展能力与防范旧模式，起止年份逐字采用计算证据。",
+          "quote": "当前辛卯大运（2019–2028，偏印，金/木）：阶段基调为收敛与内省",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "各阶段对象列表与不确定性边界均已覆盖。",
+          "quote": "面具/阴影遭遇/整合/完整四阶段为成长隐喻，可往返",
+          "follow_up_questions": [
+            "在辛卯运中你感到最明显的收敛与表达张力出现在哪些场景？"
+          ],
+          "details": {
+            "periods": [
+              {
+                "start_year": 2019,
+                "end_year": 2028,
+                "interaction": "辛卯偏印与原局伤官、正印并见",
+                "theme": "收敛与内省，表达冲动与收敛规范的张力",
+                "capacity": "把内省转化为有余地的表达",
+                "old_pattern": "以反复修改或拖延替代明确回应"
+              },
+              {
+                "start_year": 2029,
+                "end_year": 2038,
+                "interaction": "庚寅正印，延续印星主题",
+                "theme": "支持与规范并重，被支持与被认可的需求",
+                "capacity": "把资源转化为稳定节奏",
+                "old_pattern": "以知道回避行动"
+              },
+              {
+                "start_year": 2039,
+                "end_year": 2048,
+                "interaction": "己丑七杀，土土加重压力主题",
+                "theme": "压力与承担，威胁应对与果断抗压",
+                "capacity": "在压力下保留休息与边界",
+                "old_pattern": "过度防御与硬撑"
+              },
+              {
+                "start_year": 2049,
+                "end_year": 2058,
+                "interaction": "戊子正官，土水相制",
+                "theme": "规则与责任，规范与主体性的平衡",
+                "capacity": "在规则中保有主权",
+                "old_pattern": "把规则当作不可质疑的外部权威"
+              },
+              {
+                "start_year": 2059,
+                "end_year": 2068,
+                "interaction": "丁亥偏财，火水相济",
+                "theme": "体验与资源流动，社交敏锐与务实",
+                "capacity": "以连接替代掌控",
+                "old_pattern": "以刺激替代连接"
+              },
+              {
+                "start_year": 2069,
+                "end_year": 2078,
+                "interaction": "丙戌正财，火土相生",
+                "theme": "务实与稳定，物质安全与责任",
+                "capacity": "在稳定中保持弹性",
+                "old_pattern": "以产出定义自我"
+              },
+              {
+                "start_year": 2079,
+                "end_year": 2088,
+                "interaction": "乙酉食神，木金相制",
+                "theme": "表达与享受，食神式消化与放松",
+                "capacity": "允许享受而不解释",
+                "old_pattern": "以表达替代休息"
+              }
+            ],
+            "uncertainty": "起止年份为系统计算；阶段基调与心理阶段为解释性候选，不作必然事件预测，不能仅用顺逆大运判定心理阶段。"
+          }
+        },
+        "finding_refs": [
+          "s3.hypothesis.timeline_current_xinmao_theme"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.analysis_date"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.yijing",
+        "title": "3.3 易经时义",
+        "content": "【候选，待咨询师核查】以‘渐’卦（渐进、有序、不越级）作当下境遇的哲学比喻。匹配理由：用户描述‘项目开头想法多、反复修改、临近截止急交付’与‘先答应后透支’，呈现节奏失衡与越级推进的特征，渐卦提示按次序推进、不跳步。不适用边界：当情境需要果断止损或明确拒绝时，渐进比喻不应被用来合理化拖延；此时更接近‘果断’而非‘渐进’。此为哲学比喻，不是起卦结果，也不构成占卜证明。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "卦象比喻、匹配理由与不适用边界均已给出，并声明非起卦证明。",
+          "quote": "以‘渐’卦（渐进、有序、不越级）作当下境遇的哲学比喻",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "比喻、匹配理由与边界均已覆盖。",
+          "quote": "不适用边界：当情境需要果断止损或明确拒绝时，渐进比喻不应被用来合理化拖延",
+          "follow_up_questions": [
+            "在哪些具体情境你觉得需要果断而非渐进？"
+          ],
+          "details": {
+            "metaphor": "渐卦（渐进、有序、不越级）。",
+            "fit_reason": "回应用户节奏失衡与越级推进的现实描述。",
+            "boundary": "需要果断止损或明确拒绝时不适用；非起卦结果。"
+          }
+        },
+        "finding_refs": [
+          "s3.hypothesis.yijing_metaphor_jian"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.bridge",
+        "title": "3.4 个体与集体桥梁",
+        "content": "【候选，待咨询师核查】以‘自知’与‘反向整合’（道德经方向）承接用户‘理解反复出现的机制’的期望：不是消灭‘答应’这一端，而是看见它背后的资源换取逻辑，并让被排除的休息与余地也进入判断。以‘主动实践’（了凡四训方向）承接‘练习有余地的表达’：改变来自一次次具体选择，而非一次性领悟。种子与节律比喻用于说明改变有周期，可往返，不必因一次反复而否定进展。红书/自我与自性仅作参考方向，不虚构引文或页码。用户可用时间有限（工作日每晚5–10分钟），桥梁方向应适配小步实践而非大量书写。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "自知与反向整合、主动实践、种子与节律比喻均已结合用户期望与时间条件给出，未虚构引文。",
+          "quote": "以‘自知’与‘反向整合’（道德经方向）承接用户‘理解反复出现的机制’的期望",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "哲学方向、实践方向与时间适配均已覆盖。",
+          "quote": "以‘主动实践’（了凡四训方向）承接‘练习有余地的表达’",
+          "follow_up_questions": [
+            "你希望寄语更偏向理解机制，还是更偏向行动鼓励？"
+          ],
+          "details": {
+            "philosophy_sources": [
+              "道德经自知与反向整合方向",
+              "了凡四训主动实践方向",
+              "金花种子与节律比喻"
+            ],
+            "application": "自知承接理解机制，主动实践承接有余地表达，种子节律说明改变可往返。",
+            "boundary": "仅作参考方向，不虚构引文或页码；适配用户有限时间。"
+          }
+        },
+        "finding_refs": [
+          "s3.hypothesis.bridge_self_knowing_practice"
+        ],
+        "evidence_refs": [
+          "input.context.expected_outcomes",
+          "input.context.available_time"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s3.integration",
+        "title": "3.5 三重对应",
+        "content": "【候选，待咨询师核查】先天格局↔意识潜意识↔天命之性：癸水日主、伤官透干、正印时柱可作意识层‘能渗透、能接事’与潜意识层‘需以产出与承担换取位置’的对应线索；天命之性来源不足，暂缓，需用户自述补充。大运↔阶段↔时义：辛卯偏印（2019–2028）↔收敛与表达张力阶段↔渐卦渐进比喻。喜用↔资源↔明德：金水（正印、比劫）↔时柱庚申正印与福德天府↔待发展的稳定与边界能力。忌↔阴影↔反者道之动：火土财杀↔透支与硬撑↔反向整合即允许休息与余地。干支关系↔冲突↔阴阳：子午冲、子未害、午未合↔外部节奏与内在需求拉扯↔阴阳两端并存。藏干透出↔潜能意识化↔静观：未中乙食神、申中壬劫财等藏干可作潜能线索，静观即让未显部分被看见。以上为解释性对应，非确定结论。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "六组对应均已给出，来源不足部分（天命之性）明确暂缓并说明补充方向。",
+          "quote": "天命之性来源不足，暂缓，需用户自述补充",
+          "follow_up_questions": [
+            "你如何描述自己最想活出的样子（不依赖外部评价）？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "六组对应均已覆盖，暂缓部分已说明缺失输入与补问。",
+          "quote": "喜用↔资源↔明德：金水（正印、比劫）↔时柱庚申正印与福德天府↔待发展的稳定与边界能力",
+          "follow_up_questions": [
+            "你如何描述自己最想活出的样子（不依赖外部评价）？"
+          ],
+          "details": {
+            "innate_conscious_unconscious_nature": "癸水日主、伤官透干、正印时柱对应意识层运营者形象与潜意识层资源换取信念；天命之性暂缓，需用户自述补充。",
+            "dayun_stage_timing": "辛卯偏印（2019–2028）对应收敛与表达张力阶段，时义取渐卦渐进比喻。",
+            "useful_god_resource_virtue": "金水（正印、比劫）对应时柱庚申正印与福德天府，指向稳定与边界能力。",
+            "taboo_shadow_reversal": "火土财杀对应透支与硬撑，反向整合即允许休息与余地。",
+            "ganzhi_conflict_yinyang": "子午冲、子未害、午未合对应外部节奏与内在需求拉扯，阴阳两端并存。",
+            "hidden_stem_potential_observation": "未中乙食神、申中壬劫财等藏干作潜能线索，静观即让未显部分被看见。"
+          }
+        },
+        "finding_refs": [
+          "s3.hypothesis.integration_threefold"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "用户反例（曾明确拒绝领导且无内疚）直接反证讨好信念与权威恐惧假设；任何将‘先答应后取消’解释为讨好或权威恐惧的表述必须删除或标注为已被反证。",
+        "references": [
+          "input.context.counterexample",
+          "s2.hypothesis.overcommit_withdraw_cycle"
+        ]
+      },
+      {
+        "message": "S2多项心理假设（人格面具、承诺—透支—撤退循环、完成度焦虑、休息被排斥）均为LOW置信度待核对假设，S3整合不得将其当作已确认事实展开。",
+        "references": [
+          "s2.hypothesis.persona_competent_operator",
+          "s2.hypothesis.overcommit_withdraw_cycle",
+          "s2.hypothesis.perfectionist_completion_anxiety",
+          "s2.hypothesis.rest_as_excluded_pole"
+        ]
+      },
+      {
+        "message": "大运起止年份必须逐字采用系统计算证据，不得按整十岁重编；阶段基调与心理阶段为解释性候选，不能仅用顺逆大运判定心理阶段或预测必然事件。",
+        "references": [
+          "calculated.foundation",
+          "s1.foundation.current_dayun_xinmao"
+        ]
+      },
+      {
+        "message": "用户自述‘不愿拒绝主要因为分工规则不清’，与S2假设的‘避免冲突与维持资源关系’存在解释分歧，需咨询师核查，不得自行消解。",
+        "references": [
+          "input.context.self_description",
+          "s2.hypothesis.overcommit_withdraw_cycle"
+        ]
+      },
+      {
+        "message": "本案例为合成验收数据，不得冒充真实客户或专业评估；所有心理判断不得作为诊断输出。",
+        "references": [
+          "input.context.synthetic_notice"
+        ]
+      },
+      {
+        "message": "用户可用时间有限（工作日每晚5–10分钟、周末20分钟），S3桥梁与整合方向不得建议大量书写或高强度练习。",
+        "references": [
+          "input.context.available_time"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 33193,
+    "output_tokens": 6798,
+    "latency_ms": 26307,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "d079feba-55e2-4e76-9ad5-4fa36ddc1abf",
+    "skill_version_id": 0,
+    "skill_key": "report.s3_integration",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "f6341929c844b755007220a09672991094c747da586d288842e17eb2beae28f1",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

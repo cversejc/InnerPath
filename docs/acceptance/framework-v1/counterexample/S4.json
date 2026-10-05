@@ -1,0 +1,621 @@
+{
+  "signature": "c9a8769307aad2dfbe13be2d3c48c154a07977c4804bc785914e0da82bf5e106",
+  "skill_digest": "33e2727cc9e94d93d90311c1195584ce59b3e34a7203bb97756cb63752665dff",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每个规定分析片段都须有framework_coverage；structured_analysis/details严格使用当前reasoning_contract字段。Action的reasoning_path逐项具体，不用通用空话。\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。",
+  "output": {
+    "summary": "基于合成验收样本，S4阶段将已确认的承诺—透支—撤退循环、完成度焦虑与休息被排斥等线索，组织为三个核心卡点、共性机制与四项低负担成长实验，全部引用已确认来源，未补造事实。",
+    "findings": [
+      {
+        "finding_key": "s4.block.overcommit_withdraw_loop",
+        "claim": "卡点一：面对临时请求时先答应、事后拖延或生硬回应，短期避免当场冲突并维持资源关系，长期累积关系摩擦与自我透支。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.hypothesis.overcommit_withdraw_cycle"
+          },
+          {
+            "finding_key": "s3.hypothesis.core_tension_productivity_vs_rest"
+          }
+        ],
+        "structured_data": {
+          "scene": "同事临时请代写方案、朋友连续两次临时改地点",
+          "trigger": "临时请求或计划变动，且分工规则不清",
+          "operation": "先答应以维持资源关系，随后拖延、生硬回应或取消",
+          "past_protection": "避免当场冲突与关系破裂，保住资源换取通道",
+          "long_term_cost": "关系摩擦、熬夜透支、不耐烦累积",
+          "integration_invitation": "在答应前留出停顿，让休息与余地也进入判断",
+          "counterexample": "曾明确拒绝领导且无内疚，说明该循环并非在所有场景触发"
+        }
+      },
+      {
+        "finding_key": "s4.block.perfectionist_completion",
+        "claim": "卡点二：项目开头想法多，因担心做不好反复修改，临近截止才急交付，短期避免被评判，长期导致节奏失控与透支。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.hypothesis.perfectionist_completion_anxiety"
+          },
+          {
+            "finding_key": "s3.hypothesis.yijing_metaphor_jian"
+          }
+        ],
+        "structured_data": {
+          "scene": "项目开头想法多、反复修改、临近截止急交付",
+          "trigger": "任务开始与截止临近的时间压力",
+          "operation": "以反复修改替代明确交付，把判断推迟到最后一刻",
+          "past_protection": "避免过早交付被评判，保留改进空间",
+          "long_term_cost": "节奏失控、熬夜、交付质量与身心状态同时受压",
+          "integration_invitation": "允许阶段性交付，把完成与完美分开"
+        }
+      },
+      {
+        "finding_key": "s4.block.rest_as_excluded",
+        "claim": "卡点三：休息与有余地的表达少被允许，独自散步时较放松提示这一端真实存在，长期被排除会加剧透支与关系中的沉默。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.expected_outcomes",
+          "input.context.available_time"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.hypothesis.rest_as_excluded_pole"
+          },
+          {
+            "finding_key": "s3.hypothesis.core_tension_productivity_vs_rest"
+          }
+        ],
+        "structured_data": {
+          "scene": "下班后常查看消息怕漏事，独自散步时比较放松",
+          "trigger": "持续在线的责任感与对遗漏的担忧",
+          "operation": "以持续产出与在线替代休息，休息需被解释才允许",
+          "past_protection": "维持可靠形象与资源位置，避免被看作不负责",
+          "long_term_cost": "休息被压缩，情绪与耐心储备下降",
+          "integration_invitation": "允许休息不解释，把散步式放松纳入日常节奏"
+        }
+      },
+      {
+        "finding_key": "s4.action.pause_before_promise",
+        "claim": "行动一：在收到临时请求时先做一次短暂停顿，用一句话争取时间，再决定是否答应，观察停顿是否改变答应后的透支感。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.available_time",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s4.block.overcommit_withdraw_loop"
+          }
+        ],
+        "structured_data": {
+          "block_refs": [
+            "s4.block.overcommit_withdraw_loop"
+          ],
+          "method": "短焦",
+          "steps": [
+            "收到临时请求时先不立即回复，做三次呼吸",
+            "用一句话争取时间，例如‘我看下安排，稍后回复你’",
+            "在回复前写下答应与不答应各自的代价",
+            "按决定回复，并记录当时的身体感受"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 5,
+          "observation": "停顿后是否仍感到被挤压，答应后是否仍熬夜",
+          "stop_rule": "若出现强烈焦虑或场景不适合，可暂停该练习并改为事后记录",
+          "reasoning_path": {
+            "resource_refs": [
+              "s1.foundation.hour_seal_gengshen",
+              "s3.hypothesis.core_tension_productivity_vs_rest"
+            ],
+            "regulation_function": "正印资源可作内在支持线索，帮助在请求与回应之间留出缓冲",
+            "capacity": "在压力下保留判断主权与有余地表达",
+            "reality_gap": "分工规则不清时缺少可用的回应脚本",
+            "block_refs": [
+              "s4.block.overcommit_withdraw_loop"
+            ],
+            "integration_task": "让产出与承担的一端和休息与余地的一端同时进入判断",
+            "tool": "短焦",
+            "rationale": "短焦找例外与刻度观察适合低负担、可逆的日常尝试，不承诺效果",
+            "evidence_refs": [
+              "input.context.current_challenge",
+              "input.context.available_time"
+            ]
+          }
+        }
+      },
+      {
+        "finding_key": "s4.action.staged_delivery",
+        "claim": "行动二：把项目拆成阶段交付点，在约定时间先交一版可用稿，再根据反馈修改，观察反复修改是否减少。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.available_time"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s4.block.perfectionist_completion"
+          }
+        ],
+        "structured_data": {
+          "block_refs": [
+            "s4.block.perfectionist_completion"
+          ],
+          "method": "CBT",
+          "steps": [
+            "把任务拆成两到三个可交付阶段",
+            "为第一阶段设定一个明确时间点",
+            "到点先交可用版本，记录当时的自动想法",
+            "收集反馈后再决定修改范围"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 10,
+          "observation": "阶段交付后焦虑是否下降，修改次数是否减少",
+          "stop_rule": "若阶段交付在现实中不可行，可改为先交提纲或草稿",
+          "reasoning_path": {
+            "resource_refs": [
+              "s1.foundation.month_ling_wu_hurt_officer",
+              "s3.hypothesis.yijing_metaphor_jian"
+            ],
+            "regulation_function": "伤官表达资源可转为阶段性输出，渐卦比喻提示按次序推进",
+            "capacity": "把完成与完美分开，按节奏交付",
+            "reality_gap": "缺少阶段交付的约定与反馈通道",
+            "block_refs": [
+              "s4.block.perfectionist_completion"
+            ],
+            "integration_task": "让表达冲动与收敛规范在阶段交付中同时存在",
+            "tool": "CBT",
+            "rationale": "CBT记录自动想法与证据反证，适合处理‘做不好会被否定’的假设，非治疗",
+            "evidence_refs": [
+              "input.context.concrete_events"
+            ]
+          }
+        }
+      },
+      {
+        "finding_key": "s4.action.rest_without_explaining",
+        "claim": "行动三：每天安排一段不解释的休息时间，从散步或静坐开始，观察休息后情绪与耐心是否变化。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.available_time",
+          "input.context.expected_outcomes"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s4.block.rest_as_excluded"
+          }
+        ],
+        "structured_data": {
+          "block_refs": [
+            "s4.block.rest_as_excluded"
+          ],
+          "method": "ACT",
+          "steps": [
+            "每天固定一段五到十分钟的休息时间",
+            "休息时不处理消息，也不向他人解释",
+            "若出现‘应该做事’的想法，写为‘我正在有应该做事的想法’",
+            "结束后记录情绪与身体感受"
+          ],
+          "frequency": "daily",
+          "duration_minutes": 10,
+          "observation": "休息后是否更能耐受消息与请求，耐心是否回升",
+          "stop_rule": "若休息引发强烈不安，可缩短到三分钟并先做呼吸",
+          "reasoning_path": {
+            "resource_refs": [
+              "s1.foundation.ziwei_wellbeing_tianfu",
+              "s3.hypothesis.core_tension_productivity_vs_rest"
+            ],
+            "regulation_function": "福德天府可作内在安定线索，独处散步较放松已有现实反馈",
+            "capacity": "允许休息而不解释，恢复情绪与耐心储备",
+            "reality_gap": "日常缺少被允许的休息时段",
+            "block_refs": [
+              "s4.block.rest_as_excluded"
+            ],
+            "integration_task": "让休息与产出两端共同存在，而非以产出定义自我",
+            "tool": "ACT",
+            "rationale": "ACT的认知解离与价值行动适合低负担地容纳‘应该做事’的想法，非治疗",
+            "evidence_refs": [
+              "input.context.concrete_events",
+              "input.context.available_time"
+            ]
+          }
+        }
+      },
+      {
+        "finding_key": "s4.action.trigger_chain_log",
+        "claim": "行动四：每月记录一次触发链，写下触发事件、当时的想法与感受、以及实际回应，观察循环是否出现变化。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.available_time",
+          "input.context.counterexample"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s4.block.overcommit_withdraw_loop"
+          }
+        ],
+        "structured_data": {
+          "block_refs": [
+            "s4.block.overcommit_withdraw_loop"
+          ],
+          "method": "EFT",
+          "steps": [
+            "每月选一次印象较深的请求或变动场景",
+            "写下触发事件与当时的情绪名称",
+            "写下当时的自动想法与最终回应",
+            "标注是否有与以往不同的处理方式"
+          ],
+          "frequency": "monthly",
+          "duration_minutes": 20,
+          "observation": "触发链是否出现停顿、表达或拒绝的例外",
+          "stop_rule": "若书写负担过重，可改为口述录音或只写三行",
+          "reasoning_path": {
+            "resource_refs": [
+              "s1.foundation.day_master_gui_water",
+              "s3.hypothesis.bridge_self_knowing_practice"
+            ],
+            "regulation_function": "癸水渗透式理解与自知方向可作观察线索，帮助看见循环而非立即改变",
+            "capacity": "命名情绪与需求，识别触发链中的可调整点",
+            "reality_gap": "缺少对循环的持续观察记录",
+            "block_refs": [
+              "s4.block.overcommit_withdraw_loop"
+            ],
+            "integration_task": "把理解机制与主动实践结合，让改变来自一次次具体选择",
+            "tool": "EFT",
+            "rationale": "仅用日常情绪命名与需求表达，不做情绪唤起治疗，适配有限时间",
+            "evidence_refs": [
+              "input.context.concrete_events",
+              "input.context.counterexample"
+            ]
+          }
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s4.defense",
+        "title": "4.1.1 防御机制",
+        "content": "本案例可见的防御候选有三类。其一为拖延后生硬回应或直接取消：在同事临时请代写方案、朋友临时改地点时，用户先答应，随后以拖延或取消收场，短期避免当场冲突，长期累积关系摩擦。其二为反复修改：项目开头想法多、担心做不好，以修改替代交付，短期避免被评判。其三为理智化：用户以‘换取资源’‘分工规则不清’解释答应与拒绝困难，这一解释可能是真实的，也可能部分替代了对被挤压感的直接表达。用户反例明确：曾拒绝领导且无内疚，说明讨好与权威恐惧假设不成立，防御解释需以自述校正。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已给出三类防御候选的情境与保护功能，并引用反例校正。",
+          "quote": "用户反例明确：曾拒绝领导且无内疚",
+          "follow_up_questions": [
+            "答应同事与拒绝领导两次，你当时的想法有什么不同？"
+          ]
+        },
+        "finding_refs": [
+          "s4.block.overcommit_withdraw_loop",
+          "s4.block.perfectionist_completion"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.counterexample"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.energy",
+        "title": "4.1.2 能量管理",
+        "content": "耗电情境：答应额外任务后熬夜、下班后持续查看消息怕漏事、反复修改到临近截止，这些均有用户自述支持，且与火土财杀偏旺、透支硬撑的解释方向一致。充电情境：独自散步时比较放松，福德天府可作内在安定线索；时柱庚申正印可作被支持与收敛的线索。五行活动仅作可试验建议：金对应整理与边界，水对应写作与独处，不承诺效果。反例与未确认部分：用户未描述社交是否耗电，也未说明睡眠与身体状态，需以观察记录核对，不能由命盘直接推断。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "耗电与充电情境均有现实自述依据，五行活动标为可试验建议，并列出未确认部分。",
+          "quote": "独自散步时比较放松，福德天府可作内在安定线索",
+          "follow_up_questions": [
+            "社交场合对你来说是充电还是耗电？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "充电、耗电与现实核对均已覆盖，未确认部分已列。",
+          "quote": "耗电情境：答应额外任务后熬夜、下班后持续查看消息怕漏事",
+          "follow_up_questions": [
+            "社交场合对你来说是充电还是耗电？"
+          ],
+          "details": {
+            "charging": "独自散步较放松，福德天府与正印可作安定与支持线索，五行活动仅作试验建议。",
+            "draining": "答应额外任务后熬夜、持续查看消息怕漏事、反复修改到临近截止，均有自述支持。",
+            "reality_check": "社交与睡眠状态未描述，需以观察记录核对，不能由命盘直接推断。"
+          }
+        },
+        "finding_refs": [
+          "s4.block.rest_as_excluded"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.available_time",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.shadow_practice",
+        "title": "4.1.3 阴影整合",
+        "content": "被排斥的一端是休息、有余地的表达与被尊重需求：用户独自散步时较放松提示这一端真实存在，但日常中常以持续在线与答应任务覆盖。建议采用低负担日记，而非大量书写：每天用三行记录‘今天我在哪里允许了自己休息’‘哪里没有’‘当时身体感受’。接纳的是休息与余地这一面，不是把答应任务判为错误。暂停条件：若记录引发强烈自责或不安，可暂停并改为只记录身体感受，或与咨询师讨论后再继续。用户可用时间有限，工作日每晚五到十分钟，周末二十分钟，练习应适配该节奏。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已选用低负担日记，写明接纳哪一面与暂停条件，并适配用户时间。",
+          "quote": "被排斥的一端是休息、有余地的表达与被尊重需求",
+          "follow_up_questions": [
+            "什么情境你能休息而不解释？"
+          ]
+        },
+        "finding_refs": [
+          "s4.block.rest_as_excluded"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.available_time",
+          "input.context.expected_outcomes"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.complex_practice",
+        "title": "4.1.4 情结松动",
+        "content": "命名：可把反复出现的模式暂称为‘先答应后撤退’情结，命名只是观察工具，不是诊断。触发链记录：同事临时请代写方案、朋友临时改地点为触发；被挤压与不被尊重为情绪假设；‘当场拒绝会破坏关系或资源’为自动想法假设；拖延、生硬回应或取消为防御。证据与反证：用户曾明确拒绝领导且无内疚，说明该链条并非在所有权威场景成立，也提示拒绝能力已存在。重写脚本：把‘必须马上答应’改写为‘我可以先了解范围再回复’。行为实验：用一次低风险请求练习争取时间，观察结果是否与预期一致。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "命名、触发链、证据反证、重写脚本与行为实验均已覆盖，并引用反例。",
+          "quote": "用户曾明确拒绝领导且无内疚，说明该链条并非在所有权威场景成立",
+          "follow_up_questions": [
+            "哪一次低风险请求适合先做争取时间的练习？"
+          ]
+        },
+        "finding_refs": [
+          "s4.block.overcommit_withdraw_loop"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.timing_self",
+        "title": "4.1.5–6 时序与自性",
+        "content": "当前辛卯大运（2019–2028，偏印，金/木）可作收敛与内省主题的放大期线索，与原局伤官透干、正印时柱并见，呈现表达冲动与收敛规范的张力。练习强度宜顺势调整：以短时、低负担为主，工作日五到十分钟，周末二十分钟，不增加大量书写。整合方向不是成为完美的人，而是让意识层的运营者形象、个人情结（先答应后撤退）、集体原型（持秤的账房先生与山中读书人）、阴影（休息与余地）与时序主题共同被看见。问卷必须改变方向：若用户反馈休息练习无效或社交耗电不同，应据此调整而非坚持命盘解释。天命之性来源不足，暂缓，需用户自述补充。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "时序主题、练习强度调整、多层整合与问卷校正方向均已给出，暂缓部分已说明。",
+          "quote": "练习强度宜顺势调整：以短时、低负担为主",
+          "follow_up_questions": [
+            "你如何描述自己最想活出的样子（不依赖外部评价）？"
+          ]
+        },
+        "finding_refs": [
+          "s4.block.rest_as_excluded"
+        ],
+        "evidence_refs": [
+          "input.context.analysis_date",
+          "input.context.available_time",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.blocks",
+        "title": "4.2 卡点理解",
+        "content": "本案例提炼三个核心卡点。卡点一‘先答应后撤退’：场景为同事临时请代写方案、朋友临时改地点；运作是先答应以维持资源关系，随后拖延或取消；曾保护的是避免当场冲突；长期代价是关系摩擦与透支；整合邀请是在答应前留出停顿。卡点二‘反复修改与截止急交付’：场景为项目开头想法多、临近截止急交付；运作是以修改替代交付；曾保护的是避免被评判；长期代价是节奏失控；整合邀请是允许阶段性交付。卡点三‘休息被排除’：场景为下班后持续查看消息、独自散步才放松；运作是以在线替代休息；曾保护的是可靠形象；长期代价是耐心与情绪储备下降；整合邀请是允许休息不解释。本节不给解决步骤。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "三个卡点均含场景、运作、保护、代价与整合邀请，且本节未展开解决步骤。",
+          "quote": "本案例提炼三个核心卡点",
+          "follow_up_questions": [
+            "三个卡点中哪一个最贴近你最近的体验？"
+          ]
+        },
+        "finding_refs": [
+          "s4.block.overcommit_withdraw_loop",
+          "s4.block.perfectionist_completion",
+          "s4.block.rest_as_excluded"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.expected_outcomes"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.breakthrough",
+        "title": "4.2 共性与破局",
+        "content": "共性机制：三个卡点共享一条路径——外部请求或截止压力出现，被挤压感与‘必须马上承担’的假设升起，以答应、修改或持续在线作为防御，短期避免冲突或被评判，长期累积透支与关系摩擦。资源转译：时柱庚申正印与福德天府可作被支持与安定线索，转译为在请求与回应之间留出缓冲、允许休息不解释的能力。现实缺口：分工规则不清时缺少可用的回应脚本，也缺少阶段交付的约定。工具与实验：短焦用于争取时间的停顿，CBT用于阶段交付，ACT用于容纳‘应该做事’的想法，EFT用于情绪命名。整合方向是让承担与休息两端共同存在，而非以产出定义自我。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "共性机制、资源转译、能力缺口、整合任务与工具理由均已覆盖，并关联行动。",
+          "quote": "共性机制：三个卡点共享一条路径",
+          "follow_up_questions": [
+            "在哪个场景你最愿意先尝试一次停顿？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "共性机制、资源转译、能力缺口、整合任务与工具理由均已覆盖。",
+          "quote": "资源转译：时柱庚申正印与福德天府可作被支持与安定线索",
+          "follow_up_questions": [
+            "在哪个场景你最愿意先尝试一次停顿？"
+          ],
+          "details": {
+            "common_mechanism": "外部请求或截止压力→被挤压感与必须承担的假设→答应/修改/在线防御→短期避免冲突→长期透支与摩擦。",
+            "resource_translation": "正印与福德天府转为缓冲与允许休息的能力，独处散步已有现实反馈。",
+            "capacity_gap": "需要发展有余地表达与阶段交付能力，现实缺口为分工规则不清与缺少交付约定。",
+            "integration_task": "让承担与休息两端共同存在，把拒绝能力从领导场景扩展到更多场景。",
+            "tool_rationale": "短焦、CBT、ACT、EFT分别承接停顿、阶段交付、容纳想法与情绪命名，见各Action的reasoning_path。"
+          }
+        },
+        "finding_refs": [
+          "s4.block.overcommit_withdraw_loop",
+          "s4.block.perfectionist_completion",
+          "s4.block.rest_as_excluded"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.functions",
+        "title": "4.3 八维路径",
+        "content": "本案例无MBTI或八维自报，按规则不推断类型，也不伪造功能分数，仅描述可观察的加工路径倾向假设。探索入口：项目开头想法多，倾向先发散再收敛，但反复修改提示收敛环节被焦虑拉长。价值判断入口：用户自述答应任务是为换取资源，价值排序可能偏向资源与关系维持，休息与余地较少进入排序。执行入口：临近截止才急交付，执行依赖外部时间压力而非内部节奏。反馈入口：下班后持续查看消息怕漏事，反馈敏感度高但缺少过滤。张力：探索与执行之间的收敛环节最易卡住，需以阶段交付与停顿练习承接。以上为倾向假设，待用户自报或行为记录核对。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "无自报故未推类型与分数，仅给出探索、价值、执行、反馈路径与张力假设。",
+          "quote": "本案例无MBTI或八维自报，按规则不推断类型",
+          "follow_up_questions": [
+            "你是否有过MBTI或八维测评结果可供参考？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "四个入口与张力均已覆盖，明确未自报不推类型与分数。",
+          "quote": "执行依赖外部时间压力而非内部节奏",
+          "follow_up_questions": [
+            "你是否有过MBTI或八维测评结果可供参考？"
+          ],
+          "details": {
+            "exploration": "项目开头想法多，倾向先发散再收敛，收敛环节被焦虑拉长。",
+            "valuation": "自述答应任务为换取资源，价值排序偏向资源与关系维持。",
+            "execution": "临近截止才急交付，执行依赖外部时间压力而非内部节奏。",
+            "feedback": "下班后持续查看消息怕漏事，反馈敏感度高但缺少过滤。",
+            "tension": "探索与执行之间的收敛环节最易卡住；无自报，不推断类型或功能分数。"
+          }
+        },
+        "finding_refs": [
+          "s4.block.perfectionist_completion"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.relationships",
+        "title": "4.4 关系循环",
+        "content": "关系循环描述：请求出现（同事临时请代写方案、朋友临时改地点）→用户回应（先答应，未表达意见）→感受（被挤压、不被尊重，熬夜后不耐烦）→反馈（拖延、生硬回应或直接取消）→对方可能感到突然，关系摩擦累积，循环再次出现。反例：用户曾明确拒绝领导且无内疚，说明在部分权威场景中循环不成立，拒绝能力已存在。待访谈问题：拒绝领导那次与答应同事那次，情境差异是什么；朋友改地点时你希望对方知道什么；你如何判断一次请求是否值得答应。以上为基于问卷与关系结构的假设，需以访谈核对。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "请求/回应/感受/反馈循环、反例与待访谈问题均已给出。",
+          "quote": "反例：用户曾明确拒绝领导且无内疚",
+          "follow_up_questions": [
+            "拒绝领导那次与答应同事那次，情境差异是什么？"
+          ]
+        },
+        "finding_refs": [
+          "s4.block.overcommit_withdraw_loop"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s4.experiments",
+        "title": "4.5 成长实验与日历",
+        "content": "本案例提出四项低负担实验，均适配工作日每晚五到十分钟、周末二十分钟的时间条件。行动一‘答应前停顿’（短焦，每周，五分钟）：收到临时请求先呼吸并争取时间，观察答应后是否仍透支。行动二‘阶段交付’（CBT，每周，十分钟）：拆阶段、先交可用版本，观察修改次数是否减少。行动三‘不解释的休息’（ACT，每日，十分钟）：固定休息时段，容纳‘应该做事’的想法。行动四‘触发链记录’（EFT，每月，二十分钟）：记录触发、情绪、想法与回应。日历节奏：每日能量记录休息与耗电；每周回看阴影练习与停顿实验；每月做一次触发链记录；每季复盘方向是否仍贴合。时间不足时优先保留行动一与行动三。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "四项实验均含动作、频率、耗时、观察与退出条件，并给出日/周/月/季节奏与减量方案。",
+          "quote": "时间不足时优先保留行动一与行动三",
+          "follow_up_questions": [
+            "四项实验中哪一项你最愿意先开始？"
+          ]
+        },
+        "finding_refs": [
+          "s4.action.pause_before_promise",
+          "s4.action.staged_delivery",
+          "s4.action.rest_without_explaining",
+          "s4.action.trigger_chain_log"
+        ],
+        "evidence_refs": [
+          "input.context.available_time",
+          "input.context.expected_outcomes"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "用户明确反证讨好信念与权威恐惧，任何防御或关系解释不得回推为讨好型人格。",
+        "references": [
+          "input.context.counterexample",
+          "s4.block.overcommit_withdraw_loop"
+        ]
+      },
+      {
+        "message": "全部资料为合成验收数据，不得当作真实客户经历或专业评估结论。",
+        "references": [
+          "input.context.synthetic_notice"
+        ]
+      },
+      {
+        "message": "行动均为可自主停止的低负担练习，不替代临床治疗，不承诺效果。",
+        "references": [
+          "s4.action.pause_before_promise",
+          "s4.action.rest_without_explaining"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 44693,
+    "output_tokens": 7474,
+    "latency_ms": 31826,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b62b476e-5983-438d-a118-468c2ebd7038",
+    "skill_version_id": 0,
+    "skill_key": "report.s4_mechanism_block_action",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "f4bebd951f488575846cc2fed53e6ed7b9ae9dc946b068614ce6b22c1ac7df37",
+    "output_validation": "passed",
+    "reference_repairs": {
+      "invalid_risk_refs_removed": 1,
+      "unsupported_risk_flags_dropped": 1
+    }
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

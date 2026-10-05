@@ -20,5 +20,5 @@ export function requestStatusLabel(status) {
 export function requestEditPath(request) {
   return request.service_type === 'report'
     ? `/pages/assessment/assessment?requestId=${request.id}`
-    : `/pages/requests/new?type=calendar&requestId=${request.id}`
+    : '/pages/user/user?tab=reports'
 }

@@ -1,0 +1,74 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点三：急迫让过程难以停留",
+    "content": "“太着急”是你的自评，具体触发情境尚未提供。可以假想一次需要等待结果或协商的事件，核对自己是否很快想推动它结束。\n\n急迫可能保护你免于停滞或失控的感受，也可能帮助你行动；这两种功能都只是候选。它不必被整体否定。\n\n长期代价可能是没有足够时间辨认情绪与需要，或自己的节奏和别人的节奏碰撞。但问卷没有说你催促过谁，也没有说急迫已经损害工作，因此不把这些可能性写成经历。\n\n整合邀请是区分事情的客观时限与自己对等待的感受。第三章实验三的情绪命名会为这一区分提供观察材料。",
+    "used_findings": [
+      "s4.blocks.urgency"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这是四个卡点中的第三个。下一节看第四类：当“权威期待”与“自我表达”同时在场时，你会怎么摆放自己。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "block_key": "block_03",
+      "sequence_no": 10,
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "person": "second",
+      "boundary_notes": [
+        "未自述的感受与场景触发点均以“可能/值得核对”表达。",
+        "未展开任何实验动作、频率或退出条件，统一留在成长实验节。",
+        "未引用收束金句。"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4518,
+    "output_tokens": 590,
+    "latency_ms": 3563,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "393379df-bf09-47f0-a902-20e1f8529422",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "7f0a558acce31e2ad02d3cbe8584a068ecd786010b3086ded1520faa6071d0b1",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点三：当“太着急”成为推进事情的方式",
+    "content": "这是四个卡点中的第三个。前两节看的是关系里的“先答应”和“有事才联系”，这一节把镜头转向你自己：当事情需要等待、协商，或结果一时看不清时，你可能会用“太着急”来推动自己和别人。\n\n你自述“太着急”，也把“急迫”放在自己的性格关键词里。可以留意的是：在需要等待、需要和别人商量、或者结果还不确定的场景里，这种急迫可能表现得格外明显——你可能会加快语速、反复确认、替对方把话说完，或者干脆自己先动手，把不确定的部分填上。这里说的是一个可能的模式，具体在哪些场景触发，值得你自己核对。\n\n它曾经保护过你。急迫让人不容易停在原地：当停滞或失控的感觉升起来时，“赶紧做点什么”能立刻把注意力从那种悬空感上移开，也让你看起来是那个有主意、能推进的人。对一个愿意听建议、也习惯权衡利弊的人来说，这种推进力本身是有用的。\n\n代价则出现在节奏上。当急迫成为默认档位，等待就变成煎熬，协商就变成拉锯，你会发现自己总在追赶一个只有你知道的时间表；关系里也可能因此多出张力，而你自己更容易累。这不是性格缺陷，而是一种被反复使用过的应对方式，现在到了可以重新看看它的时候。\n\n整合的邀请不是把急迫消灭，而是把它调成节奏：允许事情有它自己的季节，有些环节需要等一等，而不是被催促。具体怎么练、练多久，会放在后面的成长实验一节。",
+    "used_findings": [
+      "s4.blocks.urgency"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这是四个卡点中的第三个。下一节看第四类：当“权威期待”与“自我表达”同时在场时，你会怎么摆放自己。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "block_key": "block_03",
+      "sequence_no": 10,
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "person": "second",
+      "boundary_notes": [
+        "未自述的感受与场景触发点均以“可能/值得核对”表达。",
+        "未展开任何实验动作、频率或退出条件，统一留在成长实验节。",
+        "未引用收束金句。"
+      ]
+    }
+  }
+}

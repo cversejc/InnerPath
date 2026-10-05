@@ -14,6 +14,7 @@ class UserStatusUpdate(BaseModel):
 
 class UserRoleUpdate(BaseModel):
     role: str = Field(..., pattern="^(user|consultant|admin)$")
+    consultant_type: Optional[str] = Field(None, pattern="^(mingli|psychology)$")
 
 
 class AdminPasswordResetRequest(BaseModel):
@@ -54,6 +55,7 @@ class AdminUserListItem(BaseModel):
     name: str
     phone: str
     role: str
+    consultant_type: Optional[str] = None
     user_type: str
     is_active: bool
     created_at: datetime
@@ -175,8 +177,6 @@ class AdminReportTaskResponse(BaseModel):
     error: Optional[str] = None
     retry_count: int = 0
     retry_of_task_id: Optional[str] = None
-    has_input_snapshot: bool = False
-    has_retry: bool = False
     created_at: datetime
     updated_at: datetime
 

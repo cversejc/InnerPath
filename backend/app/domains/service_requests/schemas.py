@@ -37,6 +37,8 @@ class ServiceProfileSnapshot(BaseModel):
 class ServiceRequestCreate(BaseModel):
     service_type: ServiceType
     profile: ServiceProfileSnapshot
+    profile_version: Optional[int] = Field(None, ge=1)
+    context: Optional[Dict[str, Any]] = None
     selected_topics: List[str] = Field(default_factory=list, max_length=12)
     additional_info: Optional[str] = Field(None, max_length=4000)
     calendar_goal: Optional[str] = Field(None, max_length=500)
@@ -60,6 +62,8 @@ class ServiceRequestResponse(BaseModel):
     result_type: Optional[str] = None
     result_id: Optional[int] = None
     assigned_consultant_id: Optional[int] = None
+    assigned_mingli_consultant_id: Optional[int] = None
+    assigned_psychology_consultant_id: Optional[int] = None
     needs_info_reason: Optional[str] = None
     rejection_reason: Optional[str] = None
     last_error: Optional[str] = None
@@ -75,6 +79,9 @@ class ServiceRequestResponse(BaseModel):
     delivered_at: Optional[datetime] = None
     withdrawn_at: Optional[datetime] = None
     rejected_at: Optional[datetime] = None
+    report_case_id: Optional[int] = None
+    report_case_status: Optional[str] = None
+    current_step_key: Optional[str] = None
 
 
 class ServiceRequestListResponse(BaseModel):
@@ -90,9 +97,15 @@ class StaffServiceRequestListItem(BaseModel):
     status: str
     request_preview: Dict[str, Any] = Field(default_factory=dict)
     assigned_consultant_id: Optional[int] = None
+    assigned_mingli_consultant_id: Optional[int] = None
+    assigned_psychology_consultant_id: Optional[int] = None
     assigned_consultant_name: Optional[str] = None
     needs_info_reason: Optional[str] = None
     last_error: Optional[str] = None
+    report_case_id: Optional[int] = None
+    report_case_status: Optional[str] = None
+    current_step_key: Optional[str] = None
+    current_step_status: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -144,6 +157,7 @@ class ServiceRequestInfoInput(BaseModel):
 
 class ServiceRequestAssignmentUpdate(BaseModel):
     consultant_id: Optional[int] = None
+    consultant_type: Optional[Literal["mingli", "psychology"]] = None
 
 
 class ServiceRequestRegenerateInput(BaseModel):

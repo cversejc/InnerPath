@@ -1,0 +1,2972 @@
+{
+  "notice": "真实模型＋合成用户；本地技术验收，无生产写入，无客户交付，待咨询师审核。",
+  "framework_contract": {
+    "version": "product-analysis-2026-10-04-v2",
+    "source": "docs/产品分析框架.md",
+    "analysis_requirements": [
+      {
+        "requirement_id": "A.S1.day_master",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.day_master",
+        "source_section": "1.1.1"
+      },
+      {
+        "requirement_id": "A.S1.structure",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.structure",
+        "source_section": "1.1.2"
+      },
+      {
+        "requirement_id": "A.S1.month",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.month",
+        "source_section": "1.1.3"
+      },
+      {
+        "requirement_id": "A.S1.ten_gods",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.ten_gods",
+        "source_section": "1.1.4"
+      },
+      {
+        "requirement_id": "A.S1.day_branch",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.day_branch",
+        "source_section": "1.1.5"
+      },
+      {
+        "requirement_id": "A.S1.hour",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.hour",
+        "source_section": "1.1.6"
+      },
+      {
+        "requirement_id": "A.S1.year",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.year",
+        "source_section": "1.1.7"
+      },
+      {
+        "requirement_id": "A.S1.interactions",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.interactions",
+        "source_section": "1.1.8"
+      },
+      {
+        "requirement_id": "A.S1.dayun",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.dayun",
+        "source_section": "1.1.9"
+      },
+      {
+        "requirement_id": "A.S1.useful_gods",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.useful_gods",
+        "source_section": "1.1.10"
+      },
+      {
+        "requirement_id": "A.S1.ziwei_life",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.ziwei_life",
+        "source_section": "1.2.1"
+      },
+      {
+        "requirement_id": "A.S1.ziwei_body",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.ziwei_body",
+        "source_section": "1.2.2"
+      },
+      {
+        "requirement_id": "A.S1.ziwei_wellbeing",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.ziwei_wellbeing",
+        "source_section": "1.2.3"
+      },
+      {
+        "requirement_id": "A.S1.ziwei_transformations",
+        "stage": "S1",
+        "fragment_key": "analysis.s1.ziwei_transformations",
+        "source_section": "1.2.4"
+      },
+      {
+        "requirement_id": "A.S2.mapping",
+        "stage": "S2",
+        "fragment_key": "analysis.s2.mapping",
+        "source_section": "2.1"
+      },
+      {
+        "requirement_id": "A.S2.ten_gods",
+        "stage": "S2",
+        "fragment_key": "analysis.s2.ten_gods",
+        "source_section": "2.2"
+      },
+      {
+        "requirement_id": "A.S2.stars",
+        "stage": "S2",
+        "fragment_key": "analysis.s2.stars",
+        "source_section": "2.3"
+      },
+      {
+        "requirement_id": "A.S2.persona",
+        "stage": "S2",
+        "fragment_key": "analysis.s2.persona",
+        "source_section": "2.4.1"
+      },
+      {
+        "requirement_id": "A.S2.shadow",
+        "stage": "S2",
+        "fragment_key": "analysis.s2.shadow",
+        "source_section": "2.4.2"
+      },
+      {
+        "requirement_id": "A.S2.complex",
+        "stage": "S2",
+        "fragment_key": "analysis.s2.complex",
+        "source_section": "2.4.3"
+      },
+      {
+        "requirement_id": "A.S2.cycle",
+        "stage": "S2",
+        "fragment_key": "analysis.s2.cycle",
+        "source_section": "2.4.4"
+      },
+      {
+        "requirement_id": "A.S2.authority",
+        "stage": "S2",
+        "fragment_key": "analysis.s2.authority",
+        "source_section": "2.4.5"
+      },
+      {
+        "requirement_id": "A.S3.self",
+        "stage": "S3",
+        "fragment_key": "analysis.s3.self",
+        "source_section": "3.1"
+      },
+      {
+        "requirement_id": "A.S3.quadrant",
+        "stage": "S3",
+        "fragment_key": "analysis.s3.quadrant",
+        "source_section": "3.2"
+      },
+      {
+        "requirement_id": "A.S3.timeline",
+        "stage": "S3",
+        "fragment_key": "analysis.s3.timeline",
+        "source_section": "3.3"
+      },
+      {
+        "requirement_id": "A.S3.yijing",
+        "stage": "S3",
+        "fragment_key": "analysis.s3.yijing",
+        "source_section": "3.3"
+      },
+      {
+        "requirement_id": "A.S3.bridge",
+        "stage": "S3",
+        "fragment_key": "analysis.s3.bridge",
+        "source_section": "3.4"
+      },
+      {
+        "requirement_id": "A.S3.integration",
+        "stage": "S3",
+        "fragment_key": "analysis.s3.integration",
+        "source_section": "3.5"
+      },
+      {
+        "requirement_id": "A.S4.defense",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.defense",
+        "source_section": "4.1.1"
+      },
+      {
+        "requirement_id": "A.S4.energy",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.energy",
+        "source_section": "4.1.2"
+      },
+      {
+        "requirement_id": "A.S4.shadow_practice",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.shadow_practice",
+        "source_section": "4.1.3"
+      },
+      {
+        "requirement_id": "A.S4.complex_practice",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.complex_practice",
+        "source_section": "4.1.4"
+      },
+      {
+        "requirement_id": "A.S4.timing_self",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.timing_self",
+        "source_section": "4.1.5–6"
+      },
+      {
+        "requirement_id": "A.S4.blocks",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.blocks",
+        "source_section": "4.2"
+      },
+      {
+        "requirement_id": "A.S4.breakthrough",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.breakthrough",
+        "source_section": "4.2"
+      },
+      {
+        "requirement_id": "A.S4.functions",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.functions",
+        "source_section": "4.3"
+      },
+      {
+        "requirement_id": "A.S4.relationships",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.relationships",
+        "source_section": "4.4"
+      },
+      {
+        "requirement_id": "A.S4.experiments",
+        "stage": "S4",
+        "fragment_key": "analysis.s4.experiments",
+        "source_section": "4.5"
+      }
+    ],
+    "report_requirements": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "title": "整体心灵结构",
+        "source_section": "5.4",
+        "target_fragment": "report.overview.psychic_structure",
+        "analysis_sources": [
+          "analysis.s2.persona",
+          "analysis.s2.authority",
+          "analysis.s2.shadow",
+          "analysis.s3.self"
+        ],
+        "checks": [
+          "向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向",
+          "概览暗线，不重复展开卡点"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.persona",
+        "title": "世界看到的你",
+        "source_section": "5.4",
+        "target_fragment": "report.identity.outer_self",
+        "analysis_sources": [
+          "analysis.s2.persona"
+        ],
+        "checks": [
+          "用户可识别的外在角色",
+          "自述与符号解释分开"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.self_belief",
+        "title": "眼中的自己",
+        "source_section": "5.4",
+        "target_fragment": "report.identity.self_perception",
+        "analysis_sources": [
+          "analysis.s2.mapping",
+          "analysis.s2.authority"
+        ],
+        "checks": [
+          "意识自我与底层信念",
+          "应该/必须/不能及权威内化",
+          "用户自我感受、反证或待补问"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.hidden_self",
+        "title": "隐藏的自己",
+        "source_section": "2.4、5.4",
+        "target_fragment": "report.identity.hidden_self",
+        "analysis_sources": [
+          "analysis.s2.shadow",
+          "analysis.s2.complex",
+          "analysis.s4.defense"
+        ],
+        "checks": [
+          "情结、阴影、防御的区别与关系",
+          "情绪和信念假设",
+          "保护功能与现实核对"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.self_direction",
+        "title": "通往完整的方向",
+        "source_section": "3.1、4.1.6、5.4",
+        "target_fragment": "report.identity.self_direction",
+        "analysis_sources": [
+          "analysis.s3.self",
+          "analysis.s3.integration"
+        ],
+        "checks": [
+          "当前倾向的一端",
+          "被排除的另一端",
+          "两端整合而非完美人格"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.energy",
+        "title": "能量与加工路径",
+        "source_section": "4.1.2、4.3、5.4",
+        "target_fragment": "report.identity.energy_pattern",
+        "analysis_sources": [
+          "analysis.s4.energy",
+          "analysis.s4.functions"
+        ],
+        "checks": [
+          "充电/耗电与实际反馈",
+          "探索→价值→执行→反馈路径及张力",
+          "无自报不推MBTI或八维分数"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.relationships",
+        "title": "关系循环",
+        "source_section": "4.4、5.4",
+        "target_fragment": "report.identity.relationship_pattern",
+        "analysis_sources": [
+          "analysis.s4.relationships"
+        ],
+        "checks": [
+          "请求/回应/感受/反馈循环",
+          "真实场景或明确暂缓",
+          "反例与待核对部分"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.blocks",
+        "title": "核心卡点",
+        "source_section": "4.2、5.4",
+        "target_fragment": "report.blocks.block_*",
+        "analysis_sources": [
+          "analysis.s4.blocks"
+        ],
+        "checks": [
+          "场景→触发→运作→过去保护→长期代价→整合邀请",
+          "标准报告优先4–5项，证据不足记录理由",
+          "本节不展开解决步骤"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.common_pattern",
+        "title": "共性机制",
+        "source_section": "2.4.4、4.2、5.4",
+        "target_fragment": "report.blocks.common_pattern",
+        "analysis_sources": [
+          "analysis.s2.cycle",
+          "analysis.s4.blocks"
+        ],
+        "checks": [
+          "综合多个卡点",
+          "触发→情绪/信念→防御→短期保护→长期重复",
+          "不把相关性写成因果"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.breakthrough",
+        "title": "破局推导",
+        "source_section": "4.2、5.4",
+        "target_fragment": "report.blocks.breakthrough",
+        "analysis_sources": [
+          "analysis.s4.breakthrough"
+        ],
+        "checks": [
+          "用神/资源→调节功能→能力→现实缺口→工具→实验",
+          "能力回应共性机制",
+          "动作指向第三章"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.archetype",
+        "title": "中式原型与学习资源",
+        "source_section": "3.2、5.4",
+        "target_fragment": "report.blocks.breakthrough",
+        "analysis_sources": [
+          "analysis.s3.quadrant"
+        ],
+        "checks": [
+          "中式人物意象具象化",
+          "可学习的能力及适用边界",
+          "不作史实或人格诊断"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.life_map",
+        "title": "人生阶段地图",
+        "source_section": "3.3、5.4",
+        "target_fragment": "report.direction.life_map",
+        "analysis_sources": [
+          "analysis.s3.timeline",
+          "analysis.s4.timing_self"
+        ],
+        "checks": [
+          "真实大运起止",
+          "原局互动依据或暂缓",
+          "每阶段基调/放大主题/能力/旧模式",
+          "条件式未来与积极资源"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.timing_wisdom",
+        "title": "当下时义",
+        "source_section": "3.3、5.4",
+        "target_fragment": "report.direction.current_stage",
+        "analysis_sources": [
+          "analysis.s3.yijing"
+        ],
+        "checks": [
+          "当下境遇与卦象比喻为何匹配",
+          "不适用边界",
+          "不是起卦证明"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.experiments",
+        "title": "成长实验",
+        "source_section": "4.1.3–4、5.4",
+        "target_fragment": "report.direction.growth_experiments",
+        "analysis_sources": [
+          "analysis.s4.shadow_practice",
+          "analysis.s4.complex_practice",
+          "analysis.s4.experiments"
+        ],
+        "checks": [
+          "3–5项已确认Action",
+          "对应卡点/能力/工具",
+          "动作/频率/耗时/观察/退出",
+          "适合现实条件"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.practice_rhythm",
+        "title": "实践节奏",
+        "source_section": "4.5",
+        "target_fragment": "report.direction.growth_experiments",
+        "analysis_sources": [
+          "analysis.s4.experiments"
+        ],
+        "checks": [
+          "每日能量/每周阴影/每月触发链/每季方向复盘",
+          "可选菜单与时间不足减量"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      },
+      {
+        "requirement_id": "R.ending",
+        "title": "哲学收束与寄语",
+        "source_section": "3.4、5.4",
+        "target_fragment": "report.ending",
+        "analysis_sources": [
+          "analysis.s3.bridge"
+        ],
+        "checks": [
+          "以哲学贯通认识→理解→行动",
+          "个性化温暖寄语",
+          "署名引用仅用核验库，无匹配可不用"
+        ],
+        "required": true,
+        "allow_not_applicable": false
+      }
+    ],
+    "policies": {
+      "P.narrative": "三章首页关键句与概览路径；一条暗线，理解→整合→行动，避免重复完整解释。",
+      "P.style": "第二人称、现实语言；按明确阅读偏好调节，不改变事实；避免模板、空泛安慰和术语堆叠。",
+      "P.fidelity": "只消费已确认来源，不新增经历、心理判断或行动；问卷反馈校正符号解释。",
+      "P.safety": "无诊断、无单信号强人格结论、无必然未来；保留多系统冲突及用户主体性。"
+    },
+    "digest": "9908d401df141bdbfd2a427ee8b35ad4dcfe9eaf41f2baae260ecaaa568aa244"
+  },
+  "reasoning_contract": {
+    "version": "report-reasoning-2026-10-04-v1",
+    "analysis_structures": {
+      "analysis.s2.mapping": {
+        "self_description": "用户如何看待自己，区分自述与解释",
+        "core_belief": "应该/必须/不能所形成的底层信念假设",
+        "authority_origin": "权威内化的依据，不补造童年经历",
+        "counterexample": "自述反证，或明确列出待核对的问题"
+      },
+      "analysis.s2.complex": {
+        "trigger": "具体或待核对的触发情境",
+        "emotion": "核心情绪假设",
+        "automatic_thought": "自动想法/信念假设",
+        "defense": "防御方式",
+        "protection": "短期保护功能",
+        "repetition_cost": "长期重复和代价",
+        "reality_check": "现实依据、反证和核对方式"
+      },
+      "analysis.s3.self": {
+        "dominant_pole": "目前偏重的一端",
+        "excluded_pole": "被排除的另一端",
+        "integration": "两端共同存在的能力与具体情境"
+      },
+      "analysis.s3.quadrant": {
+        "archetype": "中式人物意象",
+        "learnable_capacity": "可学习能力",
+        "fit_reason": "为何回应本人的议题",
+        "boundary": "比喻与不适用边界"
+      },
+      "analysis.s3.timeline": {
+        "periods": "各阶段对象列表：start_year/end_year/interaction/theme/capacity/old_pattern",
+        "uncertainty": "计算前提与条件式未来边界"
+      },
+      "analysis.s4.energy": {
+        "charging": "充电情境及用户反馈",
+        "draining": "耗电情境及用户反馈",
+        "reality_check": "反例、未确认部分与观察方式"
+      },
+      "analysis.s4.functions": {
+        "exploration": "探索入口",
+        "valuation": "价值判断入口",
+        "execution": "执行入口",
+        "feedback": "反馈入口",
+        "tension": "本人路径及张力，未自报不推断类型/分数"
+      },
+      "analysis.s4.breakthrough": {
+        "common_mechanism": "多个卡点的共性机制",
+        "resource_translation": "资源到调节功能的转译",
+        "capacity_gap": "需发展能力及现实缺口",
+        "integration_task": "整合任务",
+        "tool_rationale": "工具为何承接能力和卡点，关联Action中的reasoning_path"
+      }
+    },
+    "path_fields": {
+      "regulation_function": "资源如何调节",
+      "capacity": "需要发展的能力",
+      "reality_gap": "现实缺口",
+      "integration_task": "两端整合任务",
+      "tool": "采用工具",
+      "rationale": "工具到该实验的适配理由及边界"
+    },
+    "resource_roles": [
+      "RESOURCE",
+      "SELF_DIRECTION",
+      "STRUCTURE",
+      "USEFUL_GOD"
+    ],
+    "digest": "3169408011137d7c0d736fabfc52e65a9882f5438b37f44d8769def49cd72ab6"
+  },
+  "input_digest": "f35d0d0c6334fcda167ec6768912938c7a3215f27253c2d582508fffda681ef9",
+  "skills": {
+    "report.s1_foundation_analysis": {
+      "digest": "d0283cabc94fdef14d530fd6496c7af0c495235ee63e45ae4b1880a4b99b42a2",
+      "specification": {
+        "identity": {
+          "skill_key": "report.s1_foundation_analysis",
+          "name": "S1 命理基础结构分析",
+          "description": "整理系统计算的命理基础，形成可供咨询师审核的结构判断与待验证信号。"
+        },
+        "input_contract": {
+          "required": [],
+          "type": "object"
+        },
+        "context_policy": {
+          "required": [],
+          "optional": [],
+          "forbidden": [
+            "other_users",
+            "internal_chain_of_thought"
+          ],
+          "projection": "FULL"
+        },
+        "instructions": {
+          "objective": "整理系统计算的命理基础，形成可供咨询师审核的结构判断与待验证信号。",
+          "methodology": [
+            "只解释输入中的确定性命理计算结果，不自行排盘或补充缺失数据。",
+            "将传统命理解释明确标为解释视角，不写成客观事实或确定性预测。",
+            "可以提出待 S2 验证的心理 Signal，但不得在 S1 将其写成心理诊断或定论。",
+            "每项判断至少引用一条输入 Evidence；无证据时不生成该判断。",
+            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+            "命理为表，心理为里，哲学为根；帮助用户看见模式并保留选择权。",
+            "必须为每个覆盖条目输出一个 analysis_fragments 对象，fragment_key 原样使用；资料不足也不可跳项。",
+            "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。",
+            "analysis.s1.day_master｜1.1.1 日主：日干、五行、阴阳、意象及待验证的自我核心线索。",
+            "analysis.s1.structure｜1.1.2 格局：月令与全局生扶/克泄耗依据；给出身强弱、从格、化格的明确条件化候选及反证，不用出现次数代替旺衰。已有完整盘时不能只说请人工判定，人工审核不是停止分析的理由。",
+            "analysis.s1.month｜1.1.3 月令：月支、生克、本气及藏干十神、气候基调与待验证世界观。",
+            "analysis.s1.ten_gods｜1.1.4 十神：透干/藏干、旺衰/缺失及十神交战，显隐资源；缺失不能证明人格缺陷。",
+            "analysis.s1.day_branch｜1.1.5 日支：日支与日干生克、藏干十神、内在需求线索。",
+            "analysis.s1.hour｜1.1.6 时支：时支五行/十神与价值排序；时间未知明确暂缓。",
+            "analysis.s1.year｜1.1.7 年柱：年干支十神、集体印记和内在权威线索，不编造家庭经历。",
+            "analysis.s1.interactions｜1.1.8 刑冲合害：六冲/三刑/自刑/六合/三合/三会/六害及干合克；合与合化分开，列出心理冲突线索。",
+            "analysis.s1.dayun｜1.1.9 大运：按分析日期选择当前运，干支十神/五行及原局关系、顺逆势依据；沿真实起止年份保留后续每十年地图。",
+            "analysis.s1.useful_gods｜1.1.10 喜忌：根据本步格局候选给出用神、喜神、忌神及取用理由/分歧；不是确定计算结论，不能只说等待人工取用。",
+            "analysis.s1.ziwei_life｜1.2.1 命宫：主星、吉煞/亮度与三方四正（命/财/官/迁）；人格面具线索。",
+            "analysis.s1.ziwei_body｜1.2.2 身宫：身宫位置与组合，命身一致/背离及后天方向。",
+            "analysis.s1.ziwei_wellbeing｜1.2.3 福德：主星、化忌、空劫、煞与面具张力；不能据此诊断。",
+            "analysis.s1.ziwei_transformations｜1.2.4 四化：区分生年四化与宫干飞化，禄权科忌源宫/目标宫/星曜，重点忌流向；其他宫位须说明问卷依据及人工选择。",
+            "新案例analysis_context.reasoning_contract存在时，其analysis_structures列出的片段必须提交structured_analysis={status,reason,quote,follow_up_questions,details}。details严格按该key的字段表，逐字段给依据和边界；FULFILLED全部字段齐全，DEFERRED可为空但须在正文明确暂缓并补问，不能用NOT_APPLICABLE删掉核心推导。阶段地图periods.start_year/end_year必须逐字采用已提供SYSTEM_CALCULATED证据内bazi_facts.dayun的起止年份，并在该片段evidence_refs引用计算证据；资料不足用DEFERRED，禁止补造年份。",
+            "新案例S4每项ACTION的structured_data.reasoning_path须有resource_refs(只指已确认RESOURCE/USEFUL_GOD/STRUCTURE/SELF_DIRECTION)、regulation_function、capacity、reality_gap、block_refs(与行动block_refs一致)、integration_task、tool(与method一致)、rationale、evidence_refs(现实自述依据)。逐项说明资源如何转成能力、回应哪些卡点和为何选此工具。真实生活依据不能用单独的命盘计算冒充。关联当前批次BLOCK时使用已有候选key；先列资源/卡点，再列行动便于审核保存。不虚构新的事实或补造心理经历。",
+            "新案例analysis_context.framework_contract存在时，每个analysis_fragments对象须有framework_coverage：status(FULFILLED/DEFERRED/NOT_APPLICABLE/MISSING)、reason、quote、follow_up_questions。quote只能从该对象刚生成的content逐字选择连续一句，不能摘录未出现在本content中的问卷、上游分析或details文字；structured_analysis.quote同样如此。DEFERRED必须说明缺失输入并给补问；NOT_APPLICABLE必须有资料证明的理由。MISSING不能用于完成节点。",
+            "S2 mapping明确产出意识自我/自我信念，并与面具和未被接纳的部分区分；S4 ACTION的block_refs只能引用semantic_role=BLOCK的判断。不得用别的角色代替卡点。"
+          ],
+          "stage_key": "S1",
+          "sop_contract": {
+            "version": "product-analysis-2026-10-04-v2",
+            "responsibilities": {
+              "program": "lunar-python 计算节气四柱、藏干十神、干支关系与起运；项目紫微算法计算星曜和四化。次数不等于旺衰。",
+              "ai": "逐项解释结构和待验证心理线索，判断格局与喜忌，列出反证及流派分歧。",
+              "human": "核对历法/时区/时刻/地点、确认格局喜忌；按问卷决定调用其他宫位；审核全部条目。"
+            },
+            "topics": [
+              {
+                "requirement_id": "A.S1.day_master",
+                "fragment_key": "analysis.s1.day_master",
+                "title": "1.1.1 日主",
+                "task": "日干、五行、阴阳、意象及待验证的自我核心线索。"
+              },
+              {
+                "requirement_id": "A.S1.structure",
+                "fragment_key": "analysis.s1.structure",
+                "title": "1.1.2 格局",
+                "task": "月令与全局生扶/克泄耗依据；给出身强弱、从格、化格的明确条件化候选及反证，不用出现次数代替旺衰。已有完整盘时不能只说请人工判定，人工审核不是停止分析的理由。"
+              },
+              {
+                "requirement_id": "A.S1.month",
+                "fragment_key": "analysis.s1.month",
+                "title": "1.1.3 月令",
+                "task": "月支、生克、本气及藏干十神、气候基调与待验证世界观。"
+              },
+              {
+                "requirement_id": "A.S1.ten_gods",
+                "fragment_key": "analysis.s1.ten_gods",
+                "title": "1.1.4 十神",
+                "task": "透干/藏干、旺衰/缺失及十神交战，显隐资源；缺失不能证明人格缺陷。"
+              },
+              {
+                "requirement_id": "A.S1.day_branch",
+                "fragment_key": "analysis.s1.day_branch",
+                "title": "1.1.5 日支",
+                "task": "日支与日干生克、藏干十神、内在需求线索。"
+              },
+              {
+                "requirement_id": "A.S1.hour",
+                "fragment_key": "analysis.s1.hour",
+                "title": "1.1.6 时支",
+                "task": "时支五行/十神与价值排序；时间未知明确暂缓。"
+              },
+              {
+                "requirement_id": "A.S1.year",
+                "fragment_key": "analysis.s1.year",
+                "title": "1.1.7 年柱",
+                "task": "年干支十神、集体印记和内在权威线索，不编造家庭经历。"
+              },
+              {
+                "requirement_id": "A.S1.interactions",
+                "fragment_key": "analysis.s1.interactions",
+                "title": "1.1.8 刑冲合害",
+                "task": "六冲/三刑/自刑/六合/三合/三会/六害及干合克；合与合化分开，列出心理冲突线索。"
+              },
+              {
+                "requirement_id": "A.S1.dayun",
+                "fragment_key": "analysis.s1.dayun",
+                "title": "1.1.9 大运",
+                "task": "按分析日期选择当前运，干支十神/五行及原局关系、顺逆势依据；沿真实起止年份保留后续每十年地图。"
+              },
+              {
+                "requirement_id": "A.S1.useful_gods",
+                "fragment_key": "analysis.s1.useful_gods",
+                "title": "1.1.10 喜忌",
+                "task": "根据本步格局候选给出用神、喜神、忌神及取用理由/分歧；不是确定计算结论，不能只说等待人工取用。"
+              },
+              {
+                "requirement_id": "A.S1.ziwei_life",
+                "fragment_key": "analysis.s1.ziwei_life",
+                "title": "1.2.1 命宫",
+                "task": "主星、吉煞/亮度与三方四正（命/财/官/迁）；人格面具线索。"
+              },
+              {
+                "requirement_id": "A.S1.ziwei_body",
+                "fragment_key": "analysis.s1.ziwei_body",
+                "title": "1.2.2 身宫",
+                "task": "身宫位置与组合，命身一致/背离及后天方向。"
+              },
+              {
+                "requirement_id": "A.S1.ziwei_wellbeing",
+                "fragment_key": "analysis.s1.ziwei_wellbeing",
+                "title": "1.2.3 福德",
+                "task": "主星、化忌、空劫、煞与面具张力；不能据此诊断。"
+              },
+              {
+                "requirement_id": "A.S1.ziwei_transformations",
+                "fragment_key": "analysis.s1.ziwei_transformations",
+                "title": "1.2.4 四化",
+                "task": "区分生年四化与宫干飞化，禄权科忌源宫/目标宫/星曜，重点忌流向；其他宫位须说明问卷依据及人工选择。"
+              }
+            ],
+            "report_requirements": [],
+            "missing_information_policy": "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。"
+          }
+        },
+        "knowledge_policy": {
+          "snapshot": [],
+          "retrieval": "VERSION_SNAPSHOT"
+        },
+        "example_policy": {
+          "enabled": true,
+          "max_examples": 3
+        },
+        "processor_policy": {
+          "processor": "reports.analysis_draft"
+        },
+        "tool_policy": {
+          "allowed": []
+        },
+        "model_policy": {
+          "provider": "deepseek",
+          "model": null,
+          "temperature": 0.35,
+          "max_tokens": 12000,
+          "timeout_seconds": 120.0
+        },
+        "output_contract": {
+          "type": "object",
+          "required": [
+            "summary",
+            "findings",
+            "analysis_fragments",
+            "risk_flags"
+          ],
+          "properties": {
+            "summary": {
+              "type": "string"
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "finding_key",
+                  "claim",
+                  "kind",
+                  "semantic_role",
+                  "confidence",
+                  "importance",
+                  "reportability",
+                  "evidence_refs",
+                  "relation_refs",
+                  "structured_data"
+                ],
+                "properties": {
+                  "finding_key": {
+                    "type": "string"
+                  },
+                  "claim": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "FINDING",
+                      "SIGNAL"
+                    ]
+                  },
+                  "semantic_role": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH"
+                    ]
+                  },
+                  "importance": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH",
+                      "CRITICAL"
+                    ]
+                  },
+                  "reportability": {
+                    "type": "string",
+                    "enum": [
+                      "INTERNAL_ONLY",
+                      "OPTIONAL",
+                      "RECOMMENDED",
+                      "MUST_INCLUDE"
+                    ]
+                  },
+                  "evidence_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "relation_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "finding_key"
+                      ],
+                      "properties": {
+                        "finding_key": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "structured_data": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "analysis_fragments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "fragment_key",
+                  "title",
+                  "content",
+                  "finding_refs",
+                  "evidence_refs"
+                ],
+                "properties": {
+                  "fragment_key": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "framework_coverage": {
+                    "type": "object"
+                  },
+                  "structured_analysis": {
+                    "type": "object"
+                  },
+                  "finding_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "evidence_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "risk_flags": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "message",
+                  "references"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "guardrails": {
+          "global_policy_version": "global-policy-v1",
+          "blocked_phrases": [
+            "注定发财",
+            "必然离婚",
+            "保证治愈"
+          ]
+        },
+        "evaluation_profile": {
+          "metrics": [
+            "schema",
+            "source_fidelity",
+            "safety",
+            "stage_fit"
+          ],
+          "minimum_score": 0.8
+        }
+      }
+    },
+    "report.s2_psychology_mapping": {
+      "digest": "c6c8ad6a6f0390f2e7e84c1098dafd9499ae0acef683245de1bac680e91642f8",
+      "specification": {
+        "identity": {
+          "skill_key": "report.s2_psychology_mapping",
+          "name": "S2 心理映射分析",
+          "description": "基于用户 Evidence 与已确认的 S1 结构，提出可审阅的心理运作模式假设。"
+        },
+        "input_contract": {
+          "required": [],
+          "type": "object"
+        },
+        "context_policy": {
+          "required": [],
+          "optional": [],
+          "forbidden": [
+            "other_users",
+            "internal_chain_of_thought"
+          ],
+          "projection": "FULL"
+        },
+        "instructions": {
+          "objective": "基于用户 Evidence 与已确认的 S1 结构，提出可审阅的心理运作模式假设。",
+          "methodology": [
+            "心理结论必须作为可验证的运作模式假设，不得诊断心理或精神疾病。",
+            "区分用户直接表达、S1 命理解释与本阶段的心理映射。",
+            "优先说明触发情境、自动想法、情绪、应对方式及保护功能；输入不足时明确保留不确定性。",
+            "只能引用输入中的 Evidence 和已确认上游 Finding，不把未确认内容当作事实。",
+            "标为用户自述的每句话必须能回到问卷原文；‘自我不适’‘短期维持关系’等未直接表述的内容必须标为假设。额外紫微宫位没有咨询师选用依据时不调用。",
+            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+            "命理为表，心理为里，哲学为根；帮助用户看见模式并保留选择权。",
+            "必须为每个覆盖条目输出一个 analysis_fragments 对象，fragment_key 原样使用；资料不足也不可跳项。",
+            "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。",
+            "analysis.s2.mapping｜2.1 双层对应：日主/透干→面具；月令/日支→信念；藏干→阴影；交战刑冲→情结；飞忌→投射；喜忌→资源/耗能。每条同时说明意识层和潜意识层，均是假设。",
+            "analysis.s2.ten_gods｜2.2 十神映射：运用技能知识中的全部十神对应表；只分析案例相关十神的机制/原型/显性表现/阴影，不能把对应表当诊断量表。",
+            "analysis.s2.stars｜2.3 星曜原型：运用十四主星对应表，按已确认命/身/福德与四化信息对照面具、阴影及触发点；不强行统一八字与紫微的冲突。",
+            "analysis.s2.persona｜2.4.1 人格面具：自我核心/透干与命迁线索；用户在什么场景认同自己的角色？区分用户自报和解释。",
+            "analysis.s2.shadow｜2.4.2 阴影：缺失/受克/未透资源与福德张力，检验边界、攻击性、欲望、休息、脆弱、游戏性等被排斥面向；不把阴影等同缺点。",
+            "analysis.s2.complex｜2.4.3 情结：月令题型、十神交战、刑冲和飞忌的参考线索；必须回到真实重复情境，描述核心情绪及信念。",
+            "analysis.s2.cycle｜2.4.4 激活路径：触发→阴影浮现→核心情绪/情结→防御→短期结果→长期重复；每一环标事实/假设/待补问，并提供可能反证。",
+            "analysis.s2.authority｜2.4.5 权威与超我：官杀/印与人工选用的父母宫线索，‘应该/必须/不能’来源需访谈验证；说明主权交接而非指责家庭。",
+            "新案例analysis_context.reasoning_contract存在时，其analysis_structures列出的片段必须提交structured_analysis={status,reason,quote,follow_up_questions,details}。details严格按该key的字段表，逐字段给依据和边界；FULFILLED全部字段齐全，DEFERRED可为空但须在正文明确暂缓并补问，不能用NOT_APPLICABLE删掉核心推导。阶段地图periods.start_year/end_year必须逐字采用已提供SYSTEM_CALCULATED证据内bazi_facts.dayun的起止年份，并在该片段evidence_refs引用计算证据；资料不足用DEFERRED，禁止补造年份。",
+            "新案例S4每项ACTION的structured_data.reasoning_path须有resource_refs(只指已确认RESOURCE/USEFUL_GOD/STRUCTURE/SELF_DIRECTION)、regulation_function、capacity、reality_gap、block_refs(与行动block_refs一致)、integration_task、tool(与method一致)、rationale、evidence_refs(现实自述依据)。逐项说明资源如何转成能力、回应哪些卡点和为何选此工具。真实生活依据不能用单独的命盘计算冒充。关联当前批次BLOCK时使用已有候选key；先列资源/卡点，再列行动便于审核保存。不虚构新的事实或补造心理经历。",
+            "新案例analysis_context.framework_contract存在时，每个analysis_fragments对象须有framework_coverage：status(FULFILLED/DEFERRED/NOT_APPLICABLE/MISSING)、reason、quote、follow_up_questions。quote只能从该对象刚生成的content逐字选择连续一句，不能摘录未出现在本content中的问卷、上游分析或details文字；structured_analysis.quote同样如此。DEFERRED必须说明缺失输入并给补问；NOT_APPLICABLE必须有资料证明的理由。MISSING不能用于完成节点。",
+            "S2 mapping明确产出意识自我/自我信念，并与面具和未被接纳的部分区分；S4 ACTION的block_refs只能引用semantic_role=BLOCK的判断。不得用别的角色代替卡点。"
+          ],
+          "stage_key": "S2",
+          "sop_contract": {
+            "version": "product-analysis-2026-10-04-v2",
+            "responsibilities": {
+              "program": "投影用户自述与前序已确认判断，校验引用和完整覆盖，不生成心理结论。",
+              "ai": "双层映射十神/星曜，提出面具、阴影、情结与防御假设，说明保护功能和反证。",
+              "human": "以真实事件验证假设；矛盾时记录冲突，补问‘每次遇到什么会怎样’，决定哪些可写入报告。"
+            },
+            "topics": [
+              {
+                "requirement_id": "A.S2.mapping",
+                "fragment_key": "analysis.s2.mapping",
+                "title": "2.1 双层对应",
+                "task": "日主/透干→面具；月令/日支→信念；藏干→阴影；交战刑冲→情结；飞忌→投射；喜忌→资源/耗能。每条同时说明意识层和潜意识层，均是假设。"
+              },
+              {
+                "requirement_id": "A.S2.ten_gods",
+                "fragment_key": "analysis.s2.ten_gods",
+                "title": "2.2 十神映射",
+                "task": "运用技能知识中的全部十神对应表；只分析案例相关十神的机制/原型/显性表现/阴影，不能把对应表当诊断量表。"
+              },
+              {
+                "requirement_id": "A.S2.stars",
+                "fragment_key": "analysis.s2.stars",
+                "title": "2.3 星曜原型",
+                "task": "运用十四主星对应表，按已确认命/身/福德与四化信息对照面具、阴影及触发点；不强行统一八字与紫微的冲突。"
+              },
+              {
+                "requirement_id": "A.S2.persona",
+                "fragment_key": "analysis.s2.persona",
+                "title": "2.4.1 人格面具",
+                "task": "自我核心/透干与命迁线索；用户在什么场景认同自己的角色？区分用户自报和解释。"
+              },
+              {
+                "requirement_id": "A.S2.shadow",
+                "fragment_key": "analysis.s2.shadow",
+                "title": "2.4.2 阴影",
+                "task": "缺失/受克/未透资源与福德张力，检验边界、攻击性、欲望、休息、脆弱、游戏性等被排斥面向；不把阴影等同缺点。"
+              },
+              {
+                "requirement_id": "A.S2.complex",
+                "fragment_key": "analysis.s2.complex",
+                "title": "2.4.3 情结",
+                "task": "月令题型、十神交战、刑冲和飞忌的参考线索；必须回到真实重复情境，描述核心情绪及信念。"
+              },
+              {
+                "requirement_id": "A.S2.cycle",
+                "fragment_key": "analysis.s2.cycle",
+                "title": "2.4.4 激活路径",
+                "task": "触发→阴影浮现→核心情绪/情结→防御→短期结果→长期重复；每一环标事实/假设/待补问，并提供可能反证。"
+              },
+              {
+                "requirement_id": "A.S2.authority",
+                "fragment_key": "analysis.s2.authority",
+                "title": "2.4.5 权威与超我",
+                "task": "官杀/印与人工选用的父母宫线索，‘应该/必须/不能’来源需访谈验证；说明主权交接而非指责家庭。"
+              }
+            ],
+            "report_requirements": [
+              {
+                "requirement_id": "R.psychic_structure",
+                "title": "整体心灵结构",
+                "source_section": "5.4",
+                "target_fragment": "report.overview.psychic_structure",
+                "analysis_sources": [
+                  "analysis.s2.persona",
+                  "analysis.s2.authority",
+                  "analysis.s2.shadow",
+                  "analysis.s3.self"
+                ],
+                "checks": [
+                  "向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向",
+                  "概览暗线，不重复展开卡点"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.persona",
+                "title": "世界看到的你",
+                "source_section": "5.4",
+                "target_fragment": "report.identity.outer_self",
+                "analysis_sources": [
+                  "analysis.s2.persona"
+                ],
+                "checks": [
+                  "用户可识别的外在角色",
+                  "自述与符号解释分开"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.self_belief",
+                "title": "眼中的自己",
+                "source_section": "5.4",
+                "target_fragment": "report.identity.self_perception",
+                "analysis_sources": [
+                  "analysis.s2.mapping",
+                  "analysis.s2.authority"
+                ],
+                "checks": [
+                  "意识自我与底层信念",
+                  "应该/必须/不能及权威内化",
+                  "用户自我感受、反证或待补问"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.hidden_self",
+                "title": "隐藏的自己",
+                "source_section": "2.4、5.4",
+                "target_fragment": "report.identity.hidden_self",
+                "analysis_sources": [
+                  "analysis.s2.shadow",
+                  "analysis.s2.complex",
+                  "analysis.s4.defense"
+                ],
+                "checks": [
+                  "情结、阴影、防御的区别与关系",
+                  "情绪和信念假设",
+                  "保护功能与现实核对"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.common_pattern",
+                "title": "共性机制",
+                "source_section": "2.4.4、4.2、5.4",
+                "target_fragment": "report.blocks.common_pattern",
+                "analysis_sources": [
+                  "analysis.s2.cycle",
+                  "analysis.s4.blocks"
+                ],
+                "checks": [
+                  "综合多个卡点",
+                  "触发→情绪/信念→防御→短期保护→长期重复",
+                  "不把相关性写成因果"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              }
+            ],
+            "missing_information_policy": "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。"
+          }
+        },
+        "knowledge_policy": {
+          "snapshot": [
+            {
+              "key": "symbolic-psychology-v1",
+              "source": "docs/产品分析框架.md §2.1–2.4",
+              "status": "CURATED_REFERENCE",
+              "limits": "原型语言只用于探索；十神/星曜不能证明心理疾病、童年经历或单一人格。用用户现实反馈校正。",
+              "ten_god_fields": [
+                "机制",
+                "荣格原型",
+                "意识表现",
+                "阴影假设",
+                "正向资源"
+              ],
+              "ten_gods": {
+                "正印": [
+                  "安全与知识滋养",
+                  "母性原型",
+                  "好学稳重",
+                  "可能用知道回避行动",
+                  "自我关怀"
+                ],
+                "偏印": [
+                  "独特视角维持距离",
+                  "智者",
+                  "独立创造",
+                  "可能难信任或疏离",
+                  "独立判断且保持连接"
+                ],
+                "正官": [
+                  "规范内化",
+                  "父性秩序",
+                  "责任自律",
+                  "可能怕错与压抑",
+                  "自主选择原则"
+                ],
+                "七杀": [
+                  "威胁应对",
+                  "攻击性与勇气",
+                  "果断抗压",
+                  "可能过度防御",
+                  "把勇气用在保护边界"
+                ],
+                "正财": [
+                  "物质安全",
+                  "世俗关系原型",
+                  "务实守护",
+                  "可能以掌控替代连接",
+                  "稳定中保留感受"
+                ],
+                "偏财": [
+                  "体验和机会",
+                  "狄奥尼索斯",
+                  "社交敏锐",
+                  "可能用刺激补充匮乏",
+                  "自由中的持续投入"
+                ],
+                "食神": [
+                  "表达与滋养",
+                  "心灵原型",
+                  "温和创造",
+                  "可能以享受回避责任",
+                  "可分享的创造"
+                ],
+                "伤官": [
+                  "反抗与真实表达",
+                  "捣蛋鬼",
+                  "创新批判",
+                  "可能靠否定建立自我",
+                  "表达需求而不伤害关系"
+                ],
+                "比肩": [
+                  "自我边界",
+                  "英雄竞争面",
+                  "独立主见",
+                  "可能固执难合作",
+                  "尊重双方自主性"
+                ],
+                "劫财": [
+                  "竞争与行动",
+                  "生存驱动",
+                  "勇于争取",
+                  "可能冲动争夺",
+                  "有边界地行动"
+                ]
+              },
+              "star_fields": [
+                "面具",
+                "阴影假设",
+                "触发信念"
+              ],
+              "stars": {
+                "紫微": [
+                  "领导自尊",
+                  "难接受批评",
+                  "必须最优秀"
+                ],
+                "天机": [
+                  "思考谋略",
+                  "不确定中反复思虑",
+                  "世界充满变数"
+                ],
+                "太阳": [
+                  "热情付出",
+                  "过度付出后耗竭",
+                  "必须照亮别人"
+                ],
+                "武曲": [
+                  "坚毅成果",
+                  "忽略情感",
+                  "只有成果有价值"
+                ],
+                "天同": [
+                  "随和安逸",
+                  "可能逃避冲突",
+                  "不冲突才安全"
+                ],
+                "廉贞": [
+                  "感情与原则",
+                  "可能执着控制",
+                  "爱需要完全占有"
+                ],
+                "天府": [
+                  "稳重管理",
+                  "可能怕改变",
+                  "改变会失去"
+                ],
+                "太阴": [
+                  "细腻情感",
+                  "可能依赖评价",
+                  "必须被需要"
+                ],
+                "贪狼": [
+                  "体验交际",
+                  "可能持续追求更多",
+                  "永远不够"
+                ],
+                "巨门": [
+                  "分析洞察",
+                  "可能反复怀疑或尖锐表达",
+                  "真相必须说出"
+                ],
+                "天相": [
+                  "助人与形象",
+                  "可能依赖外部评价",
+                  "必须看起来好"
+                ],
+                "天梁": [
+                  "使命助人",
+                  "可能自我牺牲",
+                  "必须拯救别人"
+                ],
+                "七杀": [
+                  "果断开拓",
+                  "可能持续战斗",
+                  "只有战斗才能生存"
+                ],
+                "破军": [
+                  "变革开创",
+                  "可能难持续",
+                  "旧的必须被摧毁"
+                ]
+              }
+            }
+          ],
+          "retrieval": "VERSION_SNAPSHOT"
+        },
+        "example_policy": {
+          "enabled": true,
+          "max_examples": 3
+        },
+        "processor_policy": {
+          "processor": "reports.analysis_draft"
+        },
+        "tool_policy": {
+          "allowed": []
+        },
+        "model_policy": {
+          "provider": "deepseek",
+          "model": null,
+          "temperature": 0.35,
+          "max_tokens": 12000,
+          "timeout_seconds": 120.0
+        },
+        "output_contract": {
+          "type": "object",
+          "required": [
+            "summary",
+            "findings",
+            "analysis_fragments",
+            "risk_flags"
+          ],
+          "properties": {
+            "summary": {
+              "type": "string"
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "finding_key",
+                  "claim",
+                  "kind",
+                  "semantic_role",
+                  "confidence",
+                  "importance",
+                  "reportability",
+                  "evidence_refs",
+                  "relation_refs",
+                  "structured_data"
+                ],
+                "properties": {
+                  "finding_key": {
+                    "type": "string"
+                  },
+                  "claim": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "FINDING",
+                      "SIGNAL"
+                    ]
+                  },
+                  "semantic_role": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH"
+                    ]
+                  },
+                  "importance": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH",
+                      "CRITICAL"
+                    ]
+                  },
+                  "reportability": {
+                    "type": "string",
+                    "enum": [
+                      "INTERNAL_ONLY",
+                      "OPTIONAL",
+                      "RECOMMENDED",
+                      "MUST_INCLUDE"
+                    ]
+                  },
+                  "evidence_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "relation_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "finding_key"
+                      ],
+                      "properties": {
+                        "finding_key": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "structured_data": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "analysis_fragments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "fragment_key",
+                  "title",
+                  "content",
+                  "finding_refs",
+                  "evidence_refs"
+                ],
+                "properties": {
+                  "fragment_key": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "framework_coverage": {
+                    "type": "object"
+                  },
+                  "structured_analysis": {
+                    "type": "object"
+                  },
+                  "finding_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "evidence_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "risk_flags": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "message",
+                  "references"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "guardrails": {
+          "global_policy_version": "global-policy-v1",
+          "blocked_phrases": [
+            "注定发财",
+            "必然离婚",
+            "保证治愈"
+          ]
+        },
+        "evaluation_profile": {
+          "metrics": [
+            "schema",
+            "source_fidelity",
+            "safety",
+            "stage_fit"
+          ],
+          "minimum_score": 0.8
+        }
+      }
+    },
+    "report.s3_integration": {
+      "digest": "4c885895161b5fb120536021a18cdf5d3cbe6364fa95adf89a09348fa2eccab2",
+      "specification": {
+        "identity": {
+          "skill_key": "report.s3_integration",
+          "name": "S3 命理心理哲学整合",
+          "description": "综合已确认的命理与心理判断，提出中心张力、自我方向和整合任务候选。"
+        },
+        "input_contract": {
+          "required": [],
+          "type": "object"
+        },
+        "context_policy": {
+          "required": [],
+          "optional": [],
+          "forbidden": [
+            "other_users",
+            "internal_chain_of_thought"
+          ],
+          "projection": "FULL"
+        },
+        "instructions": {
+          "objective": "综合已确认的命理与心理判断，提出中心张力、自我方向和整合任务候选。",
+          "methodology": [
+            "整合已确认的上游 Finding，不重复执行 S1 命理分析或 S2 心理映射。",
+            "明确指出整合判断引用的上游 Finding 与 Evidence。",
+            "描述需要发展的能力与两端张力，不塑造完美人格，也不预测必然结果。",
+            "输入不足或上游判断冲突时，将其列为待咨询师核查的风险，不自行消解冲突。",
+            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+            "命理为表，心理为里，哲学为根；帮助用户看见模式并保留选择权。",
+            "必须为每个覆盖条目输出一个 analysis_fragments 对象，fragment_key 原样使用；资料不足也不可跳项。",
+            "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。",
+            "analysis.s3.self｜3.1 自性化方向：描述更完整/自由/真实的两端整合与 z 轴螺旋成长，避免完美人格；必须结合现实自述。",
+            "analysis.s3.quadrant｜3.2 英雄四象限：比较战神征服者、孤独普罗米修斯、消极避世者、异化服从者的依据/反证与成长任务；可呈现跨象限张力，不用贬义标签称呼用户；选择可理解的中式文化人物意象（非史实诊断）。",
+            "analysis.s3.timeline｜3.3 人生时序：结合库计算的大运十神/原局作用、易经时义、面具/阴影遭遇/整合/完整四阶段，描述当前运及转换期。当前及每个后续大运都必须有起止年份+阶段基调+放大主题+发展能力+防范旧模式，不能只列干支表。不预测必然事件或由顺逆运直接断定阶段。",
+            "analysis.s3.yijing｜3.3 易经时义：从当下境遇选适合的卦象作哲学比喻，解释为何匹配、何时不适用；不声称起卦结果或占卜证明。",
+            "analysis.s3.bridge｜3.4 个体与集体桥梁：结合金花种子/周期隐喻、道德经自知与反向整合、了凡四训主动实践；红书/自我与自性仅作参考方向，不虚构引文或页码。",
+            "analysis.s3.integration｜3.5 三重对应：先天格局↔意识潜意识↔天命之性；大运↔阶段↔时义；喜用↔资源↔明德；忌↔阴影↔反者道之动；干支关系↔冲突↔阴阳；藏干透出↔潜能意识化↔静观。来源不足注明暂缓。",
+            "新案例analysis_context.reasoning_contract存在时，其analysis_structures列出的片段必须提交structured_analysis={status,reason,quote,follow_up_questions,details}。details严格按该key的字段表，逐字段给依据和边界；FULFILLED全部字段齐全，DEFERRED可为空但须在正文明确暂缓并补问，不能用NOT_APPLICABLE删掉核心推导。阶段地图periods.start_year/end_year必须逐字采用已提供SYSTEM_CALCULATED证据内bazi_facts.dayun的起止年份，并在该片段evidence_refs引用计算证据；资料不足用DEFERRED，禁止补造年份。",
+            "新案例S4每项ACTION的structured_data.reasoning_path须有resource_refs(只指已确认RESOURCE/USEFUL_GOD/STRUCTURE/SELF_DIRECTION)、regulation_function、capacity、reality_gap、block_refs(与行动block_refs一致)、integration_task、tool(与method一致)、rationale、evidence_refs(现实自述依据)。逐项说明资源如何转成能力、回应哪些卡点和为何选此工具。真实生活依据不能用单独的命盘计算冒充。关联当前批次BLOCK时使用已有候选key；先列资源/卡点，再列行动便于审核保存。不虚构新的事实或补造心理经历。",
+            "新案例analysis_context.framework_contract存在时，每个analysis_fragments对象须有framework_coverage：status(FULFILLED/DEFERRED/NOT_APPLICABLE/MISSING)、reason、quote、follow_up_questions。quote只能从该对象刚生成的content逐字选择连续一句，不能摘录未出现在本content中的问卷、上游分析或details文字；structured_analysis.quote同样如此。DEFERRED必须说明缺失输入并给补问；NOT_APPLICABLE必须有资料证明的理由。MISSING不能用于完成节点。",
+            "S2 mapping明确产出意识自我/自我信念，并与面具和未被接纳的部分区分；S4 ACTION的block_refs只能引用semantic_role=BLOCK的判断。不得用别的角色代替卡点。"
+          ],
+          "stage_key": "S3",
+          "sop_contract": {
+            "version": "product-analysis-2026-10-04-v2",
+            "responsibilities": {
+              "program": "投影 S1/S2 已确认内容和分析日期，保留库计算的大运起止；不按整十岁重编大运。",
+              "ai": "识别核心对立面、英雄四象限、时序与哲学隐喻，形成可由现实经验修正的成长路线。",
+              "human": "核对象限/阶段依据及多系统冲突；选用中式原型与哲学意象，不把成长阶段写成命运或人格等级。"
+            },
+            "topics": [
+              {
+                "requirement_id": "A.S3.self",
+                "fragment_key": "analysis.s3.self",
+                "title": "3.1 自性化方向",
+                "task": "描述更完整/自由/真实的两端整合与 z 轴螺旋成长，避免完美人格；必须结合现实自述。"
+              },
+              {
+                "requirement_id": "A.S3.quadrant",
+                "fragment_key": "analysis.s3.quadrant",
+                "title": "3.2 英雄四象限",
+                "task": "比较战神征服者、孤独普罗米修斯、消极避世者、异化服从者的依据/反证与成长任务；可呈现跨象限张力，不用贬义标签称呼用户；选择可理解的中式文化人物意象（非史实诊断）。"
+              },
+              {
+                "requirement_id": "A.S3.timeline",
+                "fragment_key": "analysis.s3.timeline",
+                "title": "3.3 人生时序",
+                "task": "结合库计算的大运十神/原局作用、易经时义、面具/阴影遭遇/整合/完整四阶段，描述当前运及转换期。当前及每个后续大运都必须有起止年份+阶段基调+放大主题+发展能力+防范旧模式，不能只列干支表。不预测必然事件或由顺逆运直接断定阶段。"
+              },
+              {
+                "requirement_id": "A.S3.yijing",
+                "fragment_key": "analysis.s3.yijing",
+                "title": "3.3 易经时义",
+                "task": "从当下境遇选适合的卦象作哲学比喻，解释为何匹配、何时不适用；不声称起卦结果或占卜证明。"
+              },
+              {
+                "requirement_id": "A.S3.bridge",
+                "fragment_key": "analysis.s3.bridge",
+                "title": "3.4 个体与集体桥梁",
+                "task": "结合金花种子/周期隐喻、道德经自知与反向整合、了凡四训主动实践；红书/自我与自性仅作参考方向，不虚构引文或页码。"
+              },
+              {
+                "requirement_id": "A.S3.integration",
+                "fragment_key": "analysis.s3.integration",
+                "title": "3.5 三重对应",
+                "task": "先天格局↔意识潜意识↔天命之性；大运↔阶段↔时义；喜用↔资源↔明德；忌↔阴影↔反者道之动；干支关系↔冲突↔阴阳；藏干透出↔潜能意识化↔静观。来源不足注明暂缓。"
+              }
+            ],
+            "report_requirements": [
+              {
+                "requirement_id": "R.psychic_structure",
+                "title": "整体心灵结构",
+                "source_section": "5.4",
+                "target_fragment": "report.overview.psychic_structure",
+                "analysis_sources": [
+                  "analysis.s2.persona",
+                  "analysis.s2.authority",
+                  "analysis.s2.shadow",
+                  "analysis.s3.self"
+                ],
+                "checks": [
+                  "向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向",
+                  "概览暗线，不重复展开卡点"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.self_direction",
+                "title": "通往完整的方向",
+                "source_section": "3.1、4.1.6、5.4",
+                "target_fragment": "report.identity.self_direction",
+                "analysis_sources": [
+                  "analysis.s3.self",
+                  "analysis.s3.integration"
+                ],
+                "checks": [
+                  "当前倾向的一端",
+                  "被排除的另一端",
+                  "两端整合而非完美人格"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.archetype",
+                "title": "中式原型与学习资源",
+                "source_section": "3.2、5.4",
+                "target_fragment": "report.blocks.breakthrough",
+                "analysis_sources": [
+                  "analysis.s3.quadrant"
+                ],
+                "checks": [
+                  "中式人物意象具象化",
+                  "可学习的能力及适用边界",
+                  "不作史实或人格诊断"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.life_map",
+                "title": "人生阶段地图",
+                "source_section": "3.3、5.4",
+                "target_fragment": "report.direction.life_map",
+                "analysis_sources": [
+                  "analysis.s3.timeline",
+                  "analysis.s4.timing_self"
+                ],
+                "checks": [
+                  "真实大运起止",
+                  "原局互动依据或暂缓",
+                  "每阶段基调/放大主题/能力/旧模式",
+                  "条件式未来与积极资源"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.timing_wisdom",
+                "title": "当下时义",
+                "source_section": "3.3、5.4",
+                "target_fragment": "report.direction.current_stage",
+                "analysis_sources": [
+                  "analysis.s3.yijing"
+                ],
+                "checks": [
+                  "当下境遇与卦象比喻为何匹配",
+                  "不适用边界",
+                  "不是起卦证明"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.ending",
+                "title": "哲学收束与寄语",
+                "source_section": "3.4、5.4",
+                "target_fragment": "report.ending",
+                "analysis_sources": [
+                  "analysis.s3.bridge"
+                ],
+                "checks": [
+                  "以哲学贯通认识→理解→行动",
+                  "个性化温暖寄语",
+                  "署名引用仅用核验库，无匹配可不用"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              }
+            ],
+            "missing_information_policy": "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。"
+          }
+        },
+        "knowledge_policy": {
+          "snapshot": [
+            {
+              "key": "individuation-map-v1",
+              "source": "docs/产品分析框架.md §3.1–3.5",
+              "quadrants": [
+                {
+                  "name": "战神与征服者",
+                  "symbols": "官杀旺/比劫强/食伤制杀",
+                  "risk": "过度行动和征服",
+                  "task": "收剑入鞘，允许休息"
+                },
+                {
+                  "name": "孤独普罗米修斯",
+                  "symbols": "印/食伤旺，财弱",
+                  "risk": "洞见变成隔离",
+                  "task": "以身入局，持续实践"
+                },
+                {
+                  "name": "退回内在的探索者",
+                  "symbols": "印枭旺/食伤受制",
+                  "risk": "思虑替代行动",
+                  "task": "开始小步行动"
+                },
+                {
+                  "name": "角色中的承担者",
+                  "symbols": "财官旺/比劫弱",
+                  "risk": "外部评价压过主体",
+                  "task": "建立原则和主权"
+                }
+              ],
+              "phase_limits": "面具期/阴影遭遇期/对立整合期/完整体验期是成长隐喻，可往返；不能仅用顺逆大运判定心理阶段。",
+              "philosophy": {
+                "金花的秘密": "种子与节律的比喻",
+                "道德经": "自知和反向整合",
+                "了凡四训": "自主实践",
+                "周易": "知时进退",
+                "中庸/大学": "性与潜能资源"
+              }
+            }
+          ],
+          "retrieval": "VERSION_SNAPSHOT"
+        },
+        "example_policy": {
+          "enabled": true,
+          "max_examples": 3
+        },
+        "processor_policy": {
+          "processor": "reports.analysis_draft"
+        },
+        "tool_policy": {
+          "allowed": []
+        },
+        "model_policy": {
+          "provider": "deepseek",
+          "model": null,
+          "temperature": 0.35,
+          "max_tokens": 12000,
+          "timeout_seconds": 120.0
+        },
+        "output_contract": {
+          "type": "object",
+          "required": [
+            "summary",
+            "findings",
+            "analysis_fragments",
+            "risk_flags"
+          ],
+          "properties": {
+            "summary": {
+              "type": "string"
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "finding_key",
+                  "claim",
+                  "kind",
+                  "semantic_role",
+                  "confidence",
+                  "importance",
+                  "reportability",
+                  "evidence_refs",
+                  "relation_refs",
+                  "structured_data"
+                ],
+                "properties": {
+                  "finding_key": {
+                    "type": "string"
+                  },
+                  "claim": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "FINDING",
+                      "SIGNAL"
+                    ]
+                  },
+                  "semantic_role": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH"
+                    ]
+                  },
+                  "importance": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH",
+                      "CRITICAL"
+                    ]
+                  },
+                  "reportability": {
+                    "type": "string",
+                    "enum": [
+                      "INTERNAL_ONLY",
+                      "OPTIONAL",
+                      "RECOMMENDED",
+                      "MUST_INCLUDE"
+                    ]
+                  },
+                  "evidence_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "relation_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "finding_key"
+                      ],
+                      "properties": {
+                        "finding_key": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "structured_data": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "analysis_fragments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "fragment_key",
+                  "title",
+                  "content",
+                  "finding_refs",
+                  "evidence_refs"
+                ],
+                "properties": {
+                  "fragment_key": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "framework_coverage": {
+                    "type": "object"
+                  },
+                  "structured_analysis": {
+                    "type": "object"
+                  },
+                  "finding_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "evidence_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "risk_flags": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "message",
+                  "references"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "guardrails": {
+          "global_policy_version": "global-policy-v1",
+          "blocked_phrases": [
+            "注定发财",
+            "必然离婚",
+            "保证治愈"
+          ]
+        },
+        "evaluation_profile": {
+          "metrics": [
+            "schema",
+            "source_fidelity",
+            "safety",
+            "stage_fit"
+          ],
+          "minimum_score": 0.8
+        }
+      }
+    },
+    "report.s4_mechanism_block_action": {
+      "digest": "33e2727cc9e94d93d90311c1195584ce59b3e34a7203bb97756cb63752665dff",
+      "specification": {
+        "identity": {
+          "skill_key": "report.s4_mechanism_block_action",
+          "name": "S4 机制卡点与行动",
+          "description": "将已确认的上游语义组织为可核查的运作机制、关键卡点与低风险行动候选。"
+        },
+        "input_contract": {
+          "required": [],
+          "type": "object"
+        },
+        "context_policy": {
+          "required": [],
+          "optional": [],
+          "forbidden": [
+            "other_users",
+            "internal_chain_of_thought"
+          ],
+          "projection": "FULL"
+        },
+        "instructions": {
+          "objective": "将已确认的上游语义组织为可核查的运作机制、关键卡点与低风险行动候选。",
+          "methodology": [
+            "解释模式可能发挥的保护功能、触发条件和长期代价，不将其描述成缺陷或诊断。",
+            "优先提出可逆、具体、低成本且可复盘的行动，不替用户作重大决定。",
+            "每项机制、卡点或行动都必须引用已确认的 Finding 或 Evidence。",
+            "行动与专业判断分开表述；不得在本阶段创造缺少来源的新事实。",
+            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+            "命理为表，心理为里，哲学为根；帮助用户看见模式并保留选择权。",
+            "必须为每个覆盖条目输出一个 analysis_fragments 对象，fragment_key 原样使用；资料不足也不可跳项。",
+            "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。",
+            "analysis.s4.defense｜4.1.1 防御机制：合理化/回避/讨好/理智化/完美主义/抽离/自我批评等候选的情境与保护功能；不用星曜诊断妄想或解离。",
+            "analysis.s4.energy｜4.1.2 能量管理：喜用/耗能信号与用户现实反馈对照，给出充电/耗电清单；五行活动是可试验建议，不承诺效果。",
+            "analysis.s4.shadow_practice｜4.1.3 阴影整合：选用日记（21天可调整）、写信、低风险角色扮演或艺术表达；写出接纳哪一面、何时暂停。",
+            "analysis.s4.complex_practice｜4.1.4 情结松动：命名→触发链记录→证据/反证→重写脚本→行为实验；CBT与荣格式工具适配真实问题。",
+            "analysis.s4.timing_self｜4.1.5–6 时序与自性：按顺势/调整/转换主题调整练习强度；整合意识、个人情结、集体原型、阴影与时序，问卷必须改变方向，不补逻辑空白，不写完美人格。",
+            "analysis.s4.blocks｜4.2 卡点理解：3–5个核心卡点（最终报告优先4–5，证据不足宁可暂缓）：场景、运作、曾保护什么、长期代价、整合邀请。这里不要给解决步骤。每个卡点生成 semantic_role=BLOCK 的 Finding。",
+            "analysis.s4.breakthrough｜4.2 共性与破局：共性路径与中式原型可学习资源；用神→本案调节功能→心理能力→现实缺口→工具→实验，不靠命盘替代现实；总结两端整合后的方向。",
+            "analysis.s4.functions｜4.3 八维路径：有MBTI/八维自报作为锚点，没自报不得推类型；MBTI不能伪造功能分数。画探索/价值/执行/反馈路径并标倾向假设。",
+            "analysis.s4.relationships｜4.4 关系循环：问卷+关系结构+加工倾向，描述请求/回应/感受/反馈循环；明确反例与要访谈的问题。",
+            "analysis.s4.experiments｜4.5 成长实验与日历：选择CBT/ACT/短焦/EFT情绪命名/依恋沟通中的3–5个日常练习（非治疗），生成 semantic_role=ACTION 的 Finding。structured_data 必含 block_refs（对应卡点ID数组）、method、steps（动作字符串数组）、frequency（daily/weekly/monthly/quarterly）、duration_minutes（1–60整数）、observation、stop_rule。分析片段包含每日能量/每周阴影/每月触发链/每季方向复盘；时间充裕度不足时减量。",
+            "新案例analysis_context.reasoning_contract存在时，其analysis_structures列出的片段必须提交structured_analysis={status,reason,quote,follow_up_questions,details}。details严格按该key的字段表，逐字段给依据和边界；FULFILLED全部字段齐全，DEFERRED可为空但须在正文明确暂缓并补问，不能用NOT_APPLICABLE删掉核心推导。阶段地图periods.start_year/end_year必须逐字采用已提供SYSTEM_CALCULATED证据内bazi_facts.dayun的起止年份，并在该片段evidence_refs引用计算证据；资料不足用DEFERRED，禁止补造年份。",
+            "新案例S4每项ACTION的structured_data.reasoning_path须有resource_refs(只指已确认RESOURCE/USEFUL_GOD/STRUCTURE/SELF_DIRECTION)、regulation_function、capacity、reality_gap、block_refs(与行动block_refs一致)、integration_task、tool(与method一致)、rationale、evidence_refs(现实自述依据)。逐项说明资源如何转成能力、回应哪些卡点和为何选此工具。真实生活依据不能用单独的命盘计算冒充。关联当前批次BLOCK时使用已有候选key；先列资源/卡点，再列行动便于审核保存。不虚构新的事实或补造心理经历。",
+            "新案例analysis_context.framework_contract存在时，每个analysis_fragments对象须有framework_coverage：status(FULFILLED/DEFERRED/NOT_APPLICABLE/MISSING)、reason、quote、follow_up_questions。quote只能从该对象刚生成的content逐字选择连续一句，不能摘录未出现在本content中的问卷、上游分析或details文字；structured_analysis.quote同样如此。DEFERRED必须说明缺失输入并给补问；NOT_APPLICABLE必须有资料证明的理由。MISSING不能用于完成节点。",
+            "S2 mapping明确产出意识自我/自我信念，并与面具和未被接纳的部分区分；S4 ACTION的block_refs只能引用semantic_role=BLOCK的判断。不得用别的角色代替卡点。"
+          ],
+          "stage_key": "S4",
+          "sop_contract": {
+            "version": "product-analysis-2026-10-04-v2",
+            "responsibilities": {
+              "program": "校验卡点与行动引用、实验必填字段和日/周/月/季节奏；保持已审核来源版本。",
+              "ai": "解释防御的保护功能，提炼3–5个卡点与共性路径，匹配3–5个低成本成长实验和复盘节奏。",
+              "human": "核查场景是否来自问卷、行动是否适合时间与资源；选择或改写实验，确认退出条件与日历节奏。"
+            },
+            "topics": [
+              {
+                "requirement_id": "A.S4.defense",
+                "fragment_key": "analysis.s4.defense",
+                "title": "4.1.1 防御机制",
+                "task": "合理化/回避/讨好/理智化/完美主义/抽离/自我批评等候选的情境与保护功能；不用星曜诊断妄想或解离。"
+              },
+              {
+                "requirement_id": "A.S4.energy",
+                "fragment_key": "analysis.s4.energy",
+                "title": "4.1.2 能量管理",
+                "task": "喜用/耗能信号与用户现实反馈对照，给出充电/耗电清单；五行活动是可试验建议，不承诺效果。"
+              },
+              {
+                "requirement_id": "A.S4.shadow_practice",
+                "fragment_key": "analysis.s4.shadow_practice",
+                "title": "4.1.3 阴影整合",
+                "task": "选用日记（21天可调整）、写信、低风险角色扮演或艺术表达；写出接纳哪一面、何时暂停。"
+              },
+              {
+                "requirement_id": "A.S4.complex_practice",
+                "fragment_key": "analysis.s4.complex_practice",
+                "title": "4.1.4 情结松动",
+                "task": "命名→触发链记录→证据/反证→重写脚本→行为实验；CBT与荣格式工具适配真实问题。"
+              },
+              {
+                "requirement_id": "A.S4.timing_self",
+                "fragment_key": "analysis.s4.timing_self",
+                "title": "4.1.5–6 时序与自性",
+                "task": "按顺势/调整/转换主题调整练习强度；整合意识、个人情结、集体原型、阴影与时序，问卷必须改变方向，不补逻辑空白，不写完美人格。"
+              },
+              {
+                "requirement_id": "A.S4.blocks",
+                "fragment_key": "analysis.s4.blocks",
+                "title": "4.2 卡点理解",
+                "task": "3–5个核心卡点（最终报告优先4–5，证据不足宁可暂缓）：场景、运作、曾保护什么、长期代价、整合邀请。这里不要给解决步骤。每个卡点生成 semantic_role=BLOCK 的 Finding。"
+              },
+              {
+                "requirement_id": "A.S4.breakthrough",
+                "fragment_key": "analysis.s4.breakthrough",
+                "title": "4.2 共性与破局",
+                "task": "共性路径与中式原型可学习资源；用神→本案调节功能→心理能力→现实缺口→工具→实验，不靠命盘替代现实；总结两端整合后的方向。"
+              },
+              {
+                "requirement_id": "A.S4.functions",
+                "fragment_key": "analysis.s4.functions",
+                "title": "4.3 八维路径",
+                "task": "有MBTI/八维自报作为锚点，没自报不得推类型；MBTI不能伪造功能分数。画探索/价值/执行/反馈路径并标倾向假设。"
+              },
+              {
+                "requirement_id": "A.S4.relationships",
+                "fragment_key": "analysis.s4.relationships",
+                "title": "4.4 关系循环",
+                "task": "问卷+关系结构+加工倾向，描述请求/回应/感受/反馈循环；明确反例与要访谈的问题。"
+              },
+              {
+                "requirement_id": "A.S4.experiments",
+                "fragment_key": "analysis.s4.experiments",
+                "title": "4.5 成长实验与日历",
+                "task": "选择CBT/ACT/短焦/EFT情绪命名/依恋沟通中的3–5个日常练习（非治疗），生成 semantic_role=ACTION 的 Finding。structured_data 必含 block_refs（对应卡点ID数组）、method、steps（动作字符串数组）、frequency（daily/weekly/monthly/quarterly）、duration_minutes（1–60整数）、observation、stop_rule。分析片段包含每日能量/每周阴影/每月触发链/每季方向复盘；时间充裕度不足时减量。"
+              }
+            ],
+            "report_requirements": [
+              {
+                "requirement_id": "R.hidden_self",
+                "title": "隐藏的自己",
+                "source_section": "2.4、5.4",
+                "target_fragment": "report.identity.hidden_self",
+                "analysis_sources": [
+                  "analysis.s2.shadow",
+                  "analysis.s2.complex",
+                  "analysis.s4.defense"
+                ],
+                "checks": [
+                  "情结、阴影、防御的区别与关系",
+                  "情绪和信念假设",
+                  "保护功能与现实核对"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.energy",
+                "title": "能量与加工路径",
+                "source_section": "4.1.2、4.3、5.4",
+                "target_fragment": "report.identity.energy_pattern",
+                "analysis_sources": [
+                  "analysis.s4.energy",
+                  "analysis.s4.functions"
+                ],
+                "checks": [
+                  "充电/耗电与实际反馈",
+                  "探索→价值→执行→反馈路径及张力",
+                  "无自报不推MBTI或八维分数"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.relationships",
+                "title": "关系循环",
+                "source_section": "4.4、5.4",
+                "target_fragment": "report.identity.relationship_pattern",
+                "analysis_sources": [
+                  "analysis.s4.relationships"
+                ],
+                "checks": [
+                  "请求/回应/感受/反馈循环",
+                  "真实场景或明确暂缓",
+                  "反例与待核对部分"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.blocks",
+                "title": "核心卡点",
+                "source_section": "4.2、5.4",
+                "target_fragment": "report.blocks.block_*",
+                "analysis_sources": [
+                  "analysis.s4.blocks"
+                ],
+                "checks": [
+                  "场景→触发→运作→过去保护→长期代价→整合邀请",
+                  "标准报告优先4–5项，证据不足记录理由",
+                  "本节不展开解决步骤"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.common_pattern",
+                "title": "共性机制",
+                "source_section": "2.4.4、4.2、5.4",
+                "target_fragment": "report.blocks.common_pattern",
+                "analysis_sources": [
+                  "analysis.s2.cycle",
+                  "analysis.s4.blocks"
+                ],
+                "checks": [
+                  "综合多个卡点",
+                  "触发→情绪/信念→防御→短期保护→长期重复",
+                  "不把相关性写成因果"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.breakthrough",
+                "title": "破局推导",
+                "source_section": "4.2、5.4",
+                "target_fragment": "report.blocks.breakthrough",
+                "analysis_sources": [
+                  "analysis.s4.breakthrough"
+                ],
+                "checks": [
+                  "用神/资源→调节功能→能力→现实缺口→工具→实验",
+                  "能力回应共性机制",
+                  "动作指向第三章"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.life_map",
+                "title": "人生阶段地图",
+                "source_section": "3.3、5.4",
+                "target_fragment": "report.direction.life_map",
+                "analysis_sources": [
+                  "analysis.s3.timeline",
+                  "analysis.s4.timing_self"
+                ],
+                "checks": [
+                  "真实大运起止",
+                  "原局互动依据或暂缓",
+                  "每阶段基调/放大主题/能力/旧模式",
+                  "条件式未来与积极资源"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.experiments",
+                "title": "成长实验",
+                "source_section": "4.1.3–4、5.4",
+                "target_fragment": "report.direction.growth_experiments",
+                "analysis_sources": [
+                  "analysis.s4.shadow_practice",
+                  "analysis.s4.complex_practice",
+                  "analysis.s4.experiments"
+                ],
+                "checks": [
+                  "3–5项已确认Action",
+                  "对应卡点/能力/工具",
+                  "动作/频率/耗时/观察/退出",
+                  "适合现实条件"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              },
+              {
+                "requirement_id": "R.practice_rhythm",
+                "title": "实践节奏",
+                "source_section": "4.5",
+                "target_fragment": "report.direction.growth_experiments",
+                "analysis_sources": [
+                  "analysis.s4.experiments"
+                ],
+                "checks": [
+                  "每日能量/每周阴影/每月触发链/每季方向复盘",
+                  "可选菜单与时间不足减量"
+                ],
+                "required": true,
+                "allow_not_applicable": false
+              }
+            ],
+            "missing_information_policy": "仍输出该条目，写明【暂缓】或【不适用】、缺失输入/理由与补充问题；引用现有资料以证明缺失边界。不得补造用户事实。"
+          }
+        },
+        "knowledge_policy": {
+          "snapshot": [
+            {
+              "key": "everyday-growth-tools-v1",
+              "source": "docs/产品分析框架.md §4、§5.4",
+              "tools": {
+                "CBT": "记录事件/自动想法/感受/证据反证，做可逆的小实验",
+                "ACT": "把想法写成‘我正在有…的想法’，区分价值与讨好，选一个价值行动",
+                "短焦": "找例外、用0–10刻度观察小幅改变",
+                "EFT": "只用日常情绪命名和需求表达，不实施情绪唤起治疗",
+                "依恋沟通": "稳定而低负担的连接邀请，核查双方需要，不判断依恋类型"
+              },
+              "energy_options": {
+                "木": "自然/学习/规划",
+                "火": "表达/创造/适量社交",
+                "土": "规律/身体劳动",
+                "金": "整理/决断/边界",
+                "水": "写作/静观/独处"
+              },
+              "limits": "不得自动推荐临床治疗、断绝关系或辞职。每个练习必须可自主停止，效果以现实观察为准。"
+            }
+          ],
+          "retrieval": "VERSION_SNAPSHOT"
+        },
+        "example_policy": {
+          "enabled": true,
+          "max_examples": 3
+        },
+        "processor_policy": {
+          "processor": "reports.analysis_draft"
+        },
+        "tool_policy": {
+          "allowed": []
+        },
+        "model_policy": {
+          "provider": "deepseek",
+          "model": null,
+          "temperature": 0.35,
+          "max_tokens": 12000,
+          "timeout_seconds": 120.0
+        },
+        "output_contract": {
+          "type": "object",
+          "required": [
+            "summary",
+            "findings",
+            "analysis_fragments",
+            "risk_flags"
+          ],
+          "properties": {
+            "summary": {
+              "type": "string"
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "finding_key",
+                  "claim",
+                  "kind",
+                  "semantic_role",
+                  "confidence",
+                  "importance",
+                  "reportability",
+                  "evidence_refs",
+                  "relation_refs",
+                  "structured_data"
+                ],
+                "properties": {
+                  "finding_key": {
+                    "type": "string"
+                  },
+                  "claim": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "FINDING",
+                      "SIGNAL"
+                    ]
+                  },
+                  "semantic_role": {
+                    "type": "string"
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH"
+                    ]
+                  },
+                  "importance": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH",
+                      "CRITICAL"
+                    ]
+                  },
+                  "reportability": {
+                    "type": "string",
+                    "enum": [
+                      "INTERNAL_ONLY",
+                      "OPTIONAL",
+                      "RECOMMENDED",
+                      "MUST_INCLUDE"
+                    ]
+                  },
+                  "evidence_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "relation_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "finding_key"
+                      ],
+                      "properties": {
+                        "finding_key": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "structured_data": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "analysis_fragments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "fragment_key",
+                  "title",
+                  "content",
+                  "finding_refs",
+                  "evidence_refs"
+                ],
+                "properties": {
+                  "fragment_key": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "framework_coverage": {
+                    "type": "object"
+                  },
+                  "structured_analysis": {
+                    "type": "object"
+                  },
+                  "finding_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "evidence_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "risk_flags": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "message",
+                  "references"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "references": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "guardrails": {
+          "global_policy_version": "global-policy-v1",
+          "blocked_phrases": [
+            "注定发财",
+            "必然离婚",
+            "保证治愈"
+          ]
+        },
+        "evaluation_profile": {
+          "metrics": [
+            "schema",
+            "source_fidelity",
+            "safety",
+            "stage_fit"
+          ],
+          "minimum_score": 0.8
+        }
+      }
+    },
+    "report.narrative_plan": {
+      "digest": "32d4cd20c007d179b2e3607ec578d6ae28848576fd38f1e1a9d57717374315ed",
+      "specification": {
+        "identity": {
+          "skill_key": "report.narrative_plan",
+          "name": "报告叙事方案候选",
+          "description": "只基于已确认语义资产生成供咨询师选择的叙事候选。"
+        },
+        "input_contract": {
+          "required": [],
+          "type": "object"
+        },
+        "context_policy": {
+          "required": [
+            "semantic_model"
+          ],
+          "optional": [
+            "facts",
+            "runtime"
+          ],
+          "forbidden": [
+            "other_users",
+            "internal_chain_of_thought"
+          ],
+          "projection": "SELECT_FIELDS",
+          "fields": [
+            "profile",
+            "context",
+            "foundation_data"
+          ],
+          "profile_fields": [
+            "name",
+            "gender",
+            "birth_year",
+            "birth_month",
+            "birth_day",
+            "birth_hour",
+            "birth_minute",
+            "birth_is_leap_month",
+            "calendar_type",
+            "birth_time_precision",
+            "birth_place",
+            "current_residence",
+            "marital_status",
+            "occupation_status",
+            "highest_education",
+            "mbti",
+            "personality_keywords",
+            "strengths",
+            "limitations",
+            "mingli_experience",
+            "mingli_attitude",
+            "preferred_content_depth",
+            "demo_assumptions"
+          ],
+          "context_fields": [
+            "focus_topics",
+            "current_challenge",
+            "expected_outcomes",
+            "issue_duration",
+            "impact_level",
+            "decision_status",
+            "decision_description",
+            "decision_style",
+            "usage_scenario",
+            "analysis_date",
+            "demo_assumptions",
+            "additional_info",
+            "subject",
+            "request",
+            "semantic_model"
+          ]
+        },
+        "instructions": {
+          "objective": "提出 2 到 3 个彼此有差异、由确认 Finding 支持的报告叙事候选。",
+          "methodology": [
+            "只选择 semantic_model.findings 中的 finding_key，不重新分析用户。",
+            "supporting_findings、deemphasized_findings 和 priority_blocks[].finding_refs 都必须逐字复制当前输入的 finding_key，不引用样例、分析片段编号或自行缩写。",
+            "不得创建事实、Finding、置信度或覆盖人工确认。",
+            "明确列出支持和弱化的 Finding，缺少依据时降低表达强度。",
+            "输出严格 JSON，不附加 Markdown 或解释文字。",
+            "总叙事：心灵结构→认识自己→隐藏部分→卡点→保护功能→共性模式→整合能力→人生方向→成长实验。",
+            "保持你是谁/卡在哪/往哪去三章分工，候选主线和标题必须围绕用户独特矛盾，避免固定模板。",
+            "按S4已审核卡点选择优先4–5项（证据不足可3项），不得为了数量发明卡点。"
+          ]
+        },
+        "knowledge_policy": {
+          "snapshot": [],
+          "retrieval": "NONE"
+        },
+        "example_policy": {
+          "enabled": true,
+          "max_examples": 3
+        },
+        "processor_policy": {
+          "processor": "reports.narrative_candidates"
+        },
+        "tool_policy": {
+          "allowed": []
+        },
+        "model_policy": {
+          "provider": "deepseek",
+          "model": null,
+          "temperature": 0.7,
+          "max_tokens": 8000,
+          "timeout_seconds": 120.0
+        },
+        "output_contract": {
+          "type": "object",
+          "required": [
+            "candidates"
+          ],
+          "properties": {
+            "candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "candidate_key",
+                  "theme",
+                  "rationale",
+                  "supporting_findings",
+                  "deemphasized_findings",
+                  "priority_blocks",
+                  "narrative_arc"
+                ],
+                "properties": {
+                  "candidate_key": {
+                    "type": "string"
+                  },
+                  "theme": {
+                    "type": "string"
+                  },
+                  "rationale": {
+                    "type": "string"
+                  },
+                  "supporting_findings": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "deemphasized_findings": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "priority_blocks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "title",
+                        "finding_refs"
+                      ],
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "finding_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "narrative_arc": {
+                    "type": "array"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "guardrails": {
+          "global_policy_version": "global-policy-v1",
+          "blocked_phrases": [
+            "注定发财",
+            "必然离婚",
+            "保证治愈"
+          ]
+        },
+        "evaluation_profile": {
+          "metrics": [
+            "schema",
+            "source_fidelity",
+            "safety",
+            "style"
+          ],
+          "minimum_score": 0.8
+        }
+      }
+    },
+    "report.fragment_authoring": {
+      "digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+      "specification": {
+        "identity": {
+          "skill_key": "report.fragment_authoring",
+          "name": "报告片段写作",
+          "description": "根据已确认语义与咨询师确认的 NarrativePlan 撰写单个报告片段。"
+        },
+        "input_contract": {
+          "required": [],
+          "type": "object"
+        },
+        "context_policy": {
+          "required": [
+            "semantic_model",
+            "narrative_plan",
+            "fragment_request",
+            "fragment_allocation",
+            "continuity"
+          ],
+          "optional": [
+            "facts",
+            "runtime"
+          ],
+          "forbidden": [
+            "other_users",
+            "internal_chain_of_thought"
+          ],
+          "projection": "SELECT_FIELDS",
+          "fields": [
+            "profile",
+            "context",
+            "foundation_data"
+          ],
+          "profile_fields": [
+            "name",
+            "gender",
+            "birth_year",
+            "birth_month",
+            "birth_day",
+            "birth_hour",
+            "birth_minute",
+            "birth_is_leap_month",
+            "calendar_type",
+            "birth_time_precision",
+            "birth_place",
+            "current_residence",
+            "marital_status",
+            "occupation_status",
+            "highest_education",
+            "mbti",
+            "personality_keywords",
+            "strengths",
+            "limitations",
+            "mingli_experience",
+            "mingli_attitude",
+            "preferred_content_depth",
+            "demo_assumptions"
+          ],
+          "context_fields": [
+            "focus_topics",
+            "current_challenge",
+            "expected_outcomes",
+            "issue_duration",
+            "impact_level",
+            "decision_status",
+            "decision_description",
+            "decision_style",
+            "usage_scenario",
+            "analysis_date",
+            "demo_assumptions",
+            "additional_info",
+            "subject",
+            "request",
+            "semantic_model",
+            "narrative_plan",
+            "fragment_request",
+            "fragment_allocation",
+            "continuity"
+          ]
+        },
+        "instructions": {
+          "objective": "仅根据确认语义与已确认 NarrativePlan 写作一个完整、可审校的报告小节。",
+          "methodology": [
+            "只允许选择、组织、转译和表达输入中的已确认内容。",
+            "严格遵循 fragment_allocation 中的 finding_refs、analysis_refs、action_refs、must_cover 和 new_information_role。",
+            "不得读取或推测分配范围外的 Case 内容；must_not_repeat 是硬性约束。",
+            "只将 continuity 视为写作衔接提示，不把它当成新的语义来源。",
+            "不得创建事实、Finding、心理结论、行动建议或改变专业判断。",
+            "若缺少语义支撑，返回 MISSING_SEMANTIC_SUPPORT 且不补写结论。",
+            "列出 used_findings 与 used_analysis_fragments 的稳定标识。",
+            "输出严格 JSON，不附加 Markdown 或解释文字。",
+            "分配中有requirements时，逐项满足checks，并输出requirement_coverage数组。每项含requirement_id、status(FULFILLED/DEFERRED/MISSING)、reason、quote(正文逐字摘录)、follow_up_questions。核心项不得标不适用；资料不足需在正文明确暂缓并补问。引用ID或有小标题不代表内容完成。不得伪造覆盖。",
+            "有requirements时，每个分配的analysis_refs与action_refs都须实际参与表达或说明暂缓边界，并完整列入used_analysis_fragments/used_actions；不能只声明覆盖而漏掉来源。",
+            "required_finding_refs存在时，全部来源都须参与表达并列入used_findings：包括卡点、Action及已确认资源。以reasoning_path解释资源→调节功能→能力→现实缺口→整合任务→工具→实验，不靠笼统建议跳过推导。INTERNAL_ONLY资料只作推导旁证，不作为新的用户心理结论或直接发布内部分析原文。quote只从本输出content中连续摘录一句，不从输入资料或元数据中摘录。",
+            "使用第二人称，描述模式并说明保护功能，不评判、不诊断；先意识后潜意识，命理术语翻译成日常语言。",
+            "章节首页输出一句有依据的关键结论和简短关系路径图（可用箭头文本）。卡点部分只解释场景/运作/保护/代价/整合邀请，具体解法留给往哪去。",
+            "阶段地图须保留上游已确认的大运起止年份、阶段主题/能力/旧模式，以条件式表达未来。",
+            "成长实验只转述已确认ACTION的动作、频率、耗时、观察、退出条件，3–5个即可。",
+            "参考用户自报MBTI与明确的深入/简洁偏好调整理论密度、篇幅和隐喻量，不推断八维分数，不改变事实。",
+            "结尾简短回扣哲学方向和用户现实，不堆安慰；署名金句只能逐字来自 skill_knowledge.quote_library 中 VERIFIED 条目，否则用不署名原创寄语。",
+            "每个分配的分析来源都须转译或明确指出资料边界，不暴露SOP编号、内部ID或审核过程。",
+            "按片段职责取用来源，不把来源中的整份总结、实验、金句都复制进每节。标题用读者语言，不能照抄purpose或‘语义线索’等内部说明。",
+            "只有 report.direction.growth_experiments 完整写行动步骤/频率/耗时/观察/退出条件；其他片段至多一句指向该节。只有 report.ending 使用金句，其他节不引用金句。",
+            "overview只概览主线，self_direction只点出方向，common_pattern只综合差异机制；三处均不重新展开卡点保护/代价。life_map只写时序、阶段和时义，不重复实验。ending简短收束，不重复卡点机制或动作。",
+            "未自述的情绪、自动想法、惯常场景和保护功能必须持续用可能/假如/待核对表达；尤其不把不适、内疚、先答应、女贵人出现的频率当作已证实事实。"
+          ]
+        },
+        "knowledge_policy": {
+          "snapshot": [
+            {
+              "key": "report-writing-v1",
+              "source": "docs/产品分析框架.md §5.1–5.7",
+              "quote_library": [
+                {
+                  "key": "laozi-33-self-knowledge",
+                  "text": "知人者智，自知者明。",
+                  "attribution": "《道德经》第三十三章",
+                  "source_url": "https://ctext.org/dao-de-jing/zh",
+                  "status": "VERIFIED",
+                  "verified_on": "2026-10-04"
+                }
+              ],
+              "style": "按用户自报偏好调节直接程度、温柔程度、理论/行动密度、篇幅与比喻。没有自报类型时不能补推MBTI。",
+              "scope": "认识→理解→行动，写作不新增判断；资料不足明示，金句非必需。"
+            }
+          ],
+          "retrieval": "VERSION_SNAPSHOT"
+        },
+        "example_policy": {
+          "enabled": true,
+          "max_examples": 3
+        },
+        "processor_policy": {
+          "processor": "reports.fragment_authoring"
+        },
+        "tool_policy": {
+          "allowed": []
+        },
+        "model_policy": {
+          "provider": "deepseek",
+          "model": null,
+          "temperature": 0.7,
+          "max_tokens": 8000,
+          "timeout_seconds": 120.0
+        },
+        "output_contract": {
+          "type": "object",
+          "required": [
+            "status",
+            "title",
+            "content",
+            "used_findings",
+            "used_analysis_fragments",
+            "used_actions",
+            "transition_hint",
+            "presentation_meta"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "READY_FOR_REVIEW",
+                "MISSING_SEMANTIC_SUPPORT"
+              ],
+              "description": "内容可审阅时使用 READY_FOR_REVIEW；缺少来源支持时使用 MISSING_SEMANTIC_SUPPORT。"
+            },
+            "title": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "used_findings": {
+              "type": "array"
+            },
+            "used_analysis_fragments": {
+              "type": "array"
+            },
+            "used_actions": {
+              "type": "array"
+            },
+            "transition_hint": {
+              "type": "string"
+            },
+            "presentation_meta": {
+              "type": "object"
+            },
+            "requirement_coverage": {
+              "type": "array"
+            }
+          }
+        },
+        "guardrails": {
+          "global_policy_version": "global-policy-v1",
+          "blocked_phrases": [
+            "注定发财",
+            "必然离婚",
+            "保证治愈"
+          ]
+        },
+        "evaluation_profile": {
+          "metrics": [
+            "schema",
+            "source_fidelity",
+            "safety",
+            "style"
+          ],
+          "minimum_score": 0.8
+        }
+      }
+    },
+    "report.final_validator": {
+      "digest": "29ea713f1509753ee5010f9b696b44ecadcad06d90f791a2e73c57b2183c06d8",
+      "specification": {
+        "identity": {
+          "skill_key": "report.final_validator",
+          "name": "报告语义质量审核",
+          "description": "检查已组装报告的事实忠实度、安全、语义一致性、叙事和行动质量，并给出可定位的问题。"
+        },
+        "input_contract": {
+          "required": [],
+          "type": "object"
+        },
+        "context_policy": {
+          "required": [
+            "qa_input"
+          ],
+          "optional": [],
+          "forbidden": [
+            "internal_chain_of_thought",
+            "other_users"
+          ],
+          "projection": "SELECT_FIELDS",
+          "fields": [
+            "profile",
+            "context"
+          ],
+          "profile_fields": [
+            "name"
+          ],
+          "context_fields": [
+            "qa_input"
+          ]
+        },
+        "instructions": {
+          "objective": "检查报告内容是否忠实于已确认的 Finding 和用户提供情境，并评估安全、跨章节一致性、叙事质量、行动质量和个性化。",
+          "methodology": [
+            "严格只执行 qa_input.validation_scope 明确列出的检查；chapter_key 存在时只检查该章已提供的片段。",
+            "只报告有明确片段和证据的可修复问题，不重写报告。",
+            "章节检查关注本章的阅读顺序、段落衔接、重复、章节职责和来源覆盖。全文检查关注核心暗线、跨章一致性、Finding 覆盖、卡点到行动关系及开头结尾呼应。",
+            "将问题定位到具体 fragment_key；不要把全篇问题自动改写成正文。",
+            "不得根据命理或心理内容作诊断或确定性预测。",
+            "问题必须包含 issue_type、severity、message、evidence 和 suggestion；片段无法定位时 target_fragment_key 返回 null。",
+            "severity 只能为 BLOCK、MAJOR 或 MINOR。无问题时返回空 issues。",
+            "只输出严格 JSON。",
+            "最终qa_input.framework_contract存在时，额外输出framework_review：逐项检查全部report_requirements。每项含requirement_id、fragment_keys(其编排归属)、status(FULFILLED/DEFERRED/MISSING)、reason、quote(对应正文逐字摘录)、follow_up_questions。独立核对checks是否实际完成，不接受作者自报覆盖代替阅读。核心缺失标MISSING；暂缓必须在正文说明且有可回答补问。",
+            "confirmed_semantics.reasoning_contract存在时，检查structured_analysis及Action.reasoning_path所记载的依据、反证和适配理由是否成立，并与正文逐项核对。链条字段齐全不代表推导正确；用神到调节功能、能力到现实缺口、整合任务到工具与实验须有具体解释。命盘是解释视角，不能代替现实自述。INTERNAL_ONLY来源仅用于审核推导，不能作为新增用户结论发表。",
+            "最终校准核对：与审核命盘和核心机制有无冲突、编造经历、单一信号强人格结论、诊断、确定未来、科学化命理、内部矛盾、卡点重复给解法、第三章是否回应共性模式。",
+            "检查同一核心观点换句话重复3次以上，标出应删除的 fragment_key；金句只能用已核验库。",
+            "当 qa_input.scorecard_required=true 时必须额外返回 scorecard.dimensions，维度如下，每维度有 score、reason、fragment_keys（本次报告片段ID数组）。程序计算总分；不要用笼统通过代替逐维评分。",
+            "最多返回15条确有证据的问题，每个message/evidence/suggestion控制在150字内，同类问题合并定位。转译允许合理意译，不要求每节重复全部来源信息；某项已在合适章节覆盖时不在其他节报缺失。",
+            "VERIFIED金句条目允许署名引用，不要求额外授权；引号外标点不构成事实问题。不假设未列出的许可要求，不报告‘如果…才可能…’的假想缺陷。",
+            "只审核读者实际看到的title/content，transition_hint等生产元数据不属于正文；章节顺序以content_plan.fragments[].sequence_no为准。实验可分别对应不同卡点，不要求每个实验回应所有卡点。",
+            "严格区分 report_fragments 正文和 confirmed_semantics 内部分析。仅在正文计重复；不得把内部分析语句说成当前报告的原文。每条evidence必须逐字摘录定位片段的正文，不能转述或拼接。",
+            "用户自述以application_context和Evidence为依据，不因缺少单独Finding否定问卷已明确提供的资料。‘没有家庭资料，早期印记暂缓’不是编造早期经历；明确提出可核对假设并保留反证，不因未经测评而报事实错误。"
+          ],
+          "scoring_rubric": {
+            "fact_fidelity": 20,
+            "personalization": 20,
+            "psychological_logic": 15,
+            "structure_coherence": 15,
+            "reading_experience": 10,
+            "action_value": 10,
+            "uncertainty_safety": 10
+          }
+        },
+        "knowledge_policy": {
+          "snapshot": [
+            {
+              "key": "report-writing-v1",
+              "source": "docs/产品分析框架.md §5.1–5.7",
+              "quote_library": [
+                {
+                  "key": "laozi-33-self-knowledge",
+                  "text": "知人者智，自知者明。",
+                  "attribution": "《道德经》第三十三章",
+                  "source_url": "https://ctext.org/dao-de-jing/zh",
+                  "status": "VERIFIED",
+                  "verified_on": "2026-10-04"
+                }
+              ],
+              "style": "按用户自报偏好调节直接程度、温柔程度、理论/行动密度、篇幅与比喻。没有自报类型时不能补推MBTI。",
+              "scope": "认识→理解→行动，写作不新增判断；资料不足明示，金句非必需。"
+            }
+          ],
+          "retrieval": "VERSION_SNAPSHOT"
+        },
+        "example_policy": {
+          "enabled": true,
+          "max_examples": 2
+        },
+        "processor_policy": {
+          "processor": "reports.validator"
+        },
+        "tool_policy": {
+          "allowed": []
+        },
+        "model_policy": {
+          "provider": "deepseek",
+          "model": null,
+          "temperature": 0.1,
+          "max_tokens": 8000,
+          "timeout_seconds": 120.0
+        },
+        "output_contract": {
+          "type": "object",
+          "required": [
+            "issues"
+          ],
+          "properties": {
+            "issues": {
+              "type": "array"
+            },
+            "scorecard": {
+              "type": "object"
+            },
+            "framework_review": {
+              "type": "array"
+            }
+          }
+        },
+        "guardrails": {
+          "global_policy_version": "global-policy-v1",
+          "blocked_phrases": []
+        },
+        "evaluation_profile": {
+          "metrics": [
+            "fact_fidelity",
+            "semantic_consistency",
+            "safety",
+            "narrative",
+            "action",
+            "personalization"
+          ],
+          "minimum_score": 0.8
+        }
+      }
+    }
+  }
+}

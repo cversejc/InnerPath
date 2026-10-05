@@ -5,12 +5,28 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.core.cache import init_redis, close_redis
 from app.core.logging_config import setup_logging, get_logger
+from app.db.session import AsyncSessionLocal
+from app.application.report_cases import ensure_default_workflow_version, ensure_collaborative_workflow_version
+from app.application.skill_runtime import (
+    ensure_analysis_workflow_version,
+    ensure_skill_workflow_version,
+)
+from app.domains.skills.service import (
+    ensure_default_analysis_skill_versions,
+    ensure_default_narrative_skill_versions,
+    ensure_default_skill_version,
+    ensure_default_validator_skill_version,
+)
 from app.api.v1 import (
     admin,
     auth,
     calendar,
     report_task_routes,
     reports,
+    report_cases,
+    skills,
+    skill_examples,
+    skill_evaluations,
     service_requests,
     staff,
     users,
@@ -35,6 +51,18 @@ async def lifespan(app: FastAPI):
     logger.info("应用启动中...")
     await init_redis()
     logger.info("Redis 连接已建立")
+    async with AsyncSessionLocal() as db:
+        await ensure_default_workflow_version(db)
+        await ensure_default_skill_version(db)
+        await ensure_default_analysis_skill_versions(db)
+        await ensure_default_narrative_skill_versions(db)
+        await ensure_default_validator_skill_version(db)
+        await ensure_skill_workflow_version(db)
+        await ensure_analysis_workflow_version(db)
+        await ensure_collaborative_workflow_version(db)
+        from app.domains.calendar.production import ensure_calendar_skills
+        await ensure_calendar_skills(db)
+        await db.commit()
     logger.info(f"应用启动完成 | 环境: {settings.ENVIRONMENT} | 调试模式: {settings.DEBUG}")
     yield
     # Shutdown
@@ -135,6 +163,12 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(report_task_routes.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
+app.include_router(report_cases.router, prefix="/api/v1/report-cases", tags=["Report Cases"])
+app.include_router(skills.admin_router, prefix="/api/v1/admin", tags=["Skill Studio"])
+app.include_router(skills.staff_router, prefix="/api/v1/staff", tags=["Skill Runs"])
+app.include_router(skill_examples.admin_router, prefix="/api/v1/admin", tags=["Skill Examples"])
+app.include_router(skill_examples.staff_router, prefix="/api/v1/staff", tags=["Skill Examples"])
+app.include_router(skill_evaluations.router, prefix="/api/v1/admin", tags=["Skill Evaluation"])
 app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["Calendar"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 app.include_router(staff.router, prefix="/api/v1/staff", tags=["Staff"])
@@ -157,6 +191,7 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
         "app.main:app",
         host=settings.HOST,

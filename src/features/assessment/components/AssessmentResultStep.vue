@@ -1,15 +1,14 @@
 <script setup>
 import { ref } from 'vue'
 import { Button as VanButton } from 'vant'
-import IconMark from '../../../components/IconMark.vue'
 
 defineProps({
   genStep: { type: Number, default: 0 },
   isGenerating: { type: Boolean, default: false },
-  reportPreview: { type: Object, required: true }
+  requestId: { type: Number, default: null }
 })
 
-const emit = defineEmits(['go-to-calendar', 'view-report'])
+const emit = defineEmits(['view-requests', 'new-application'])
 const stepHeading = ref(null)
 
 function focusStepHeading() {
@@ -22,29 +21,29 @@ defineExpose({ focusStepHeading })
 <template>
   <div class="step-content form-panel">
     <div v-if="isGenerating" class="generating">
-      <div class="generating-hourglass" aria-hidden="true"><IconMark name="hourglass" /></div>
-      <h2 ref="stepHeading" tabindex="-1">已提交申请，等待生成你的专属人生说明书</h2>
-      <p>你的个人特质、当下处境与关注的议题，正在汇成一张更清晰的自我地图。</p>
+      <div class="loading-compass" aria-hidden="true"></div>
+      <h2 ref="stepHeading" tabindex="-1">正在提交咨询师报告申请</h2>
+      <p>正在保存本次资料与情境快照，并创建咨询师工作流。</p>
       <div class="generating-steps">
-        <div class="gen-step" :class="{ active: genStep >= 1 }">认识你的起点</div>
-        <div class="gen-step" :class="{ active: genStep >= 2 }">看见你的特质</div>
-        <div class="gen-step" :class="{ active: genStep >= 3 }">找到重复模式</div>
-        <div class="gen-step" :class="{ active: genStep >= 4 }">获得下一步提示</div>
+        <div class="gen-step" :class="{ active: genStep >= 1 }">核对本次情境</div>
+        <div class="gen-step" :class="{ active: genStep >= 2 }">创建申请记录</div>
+        <div class="gen-step" :class="{ active: genStep >= 3 }">等待咨询师接单</div>
       </div>
     </div>
 
     <div v-else class="result-success">
-      <span class="seal-badge">已生成</span>
-      <h2 ref="stepHeading" tabindex="-1">你的人生说明书已经完成</h2>
-      <p>这份报告保留了提交时的资料快照。之后更新档案，不会改变这份历史报告。</p>
-      <div class="result-preview paper-card">
-        <div><span>个人属性</span><strong>{{ reportPreview.energyType }}</strong></div>
-        <div><span>核心特质</span><strong>{{ reportPreview.coreTraits }}</strong></div>
-        <div><span>行动提示</span><strong>{{ reportPreview.talents }}</strong></div>
+      <span class="seal-badge">申请已提交</span>
+      <h2 ref="stepHeading" tabindex="-1">等待咨询师接单</h2>
+      <p>本次申请已保存完整情境和档案版本。咨询师接单后会开始审核，你可以在“我的申请”查看进度。</p>
+      <div class="result-preview paper-card request-confirmation">
+        <span>申请编号</span>
+        <strong>#{{ requestId }}</strong>
+        <span>当前状态</span>
+        <strong>等待咨询师接单</strong>
       </div>
       <div class="button-row">
-        <VanButton type="primary" native-type="button" class="primary-button" @click="emit('view-report')">查看报告</VanButton>
-        <VanButton type="default" native-type="button" class="secondary-button" @click="emit('go-to-calendar')">打开决策日历</VanButton>
+        <VanButton type="primary" native-type="button" class="primary-button" @click="emit('view-requests')">我的申请</VanButton>
+        <VanButton type="default" native-type="button" class="secondary-button" @click="emit('new-application')">提交另一份申请</VanButton>
       </div>
     </div>
   </div>

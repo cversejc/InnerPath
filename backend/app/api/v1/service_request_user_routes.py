@@ -14,7 +14,6 @@ from app.domains.service_requests.schemas import (
     ServiceRequestUpdate,
 )
 from app.domains.service_requests.service import (
-    create_service_request,
     get_service_request,
     get_user_service_requests,
     resubmit_service_request,
@@ -22,6 +21,11 @@ from app.domains.service_requests.service import (
     withdraw_service_request,
 )
 from app.api.v1.service_request_api_support import _raise_value_error, _serialize_public
+from app.application.report_cases import (
+    cancel_report_case_for_service_request,
+    create_user_service_request,
+    ensure_legacy_service_request_allowed,
+)
 
 router = APIRouter()
 @router.post("", response_model=ServiceRequestResponse, status_code=status.HTTP_201_CREATED)
@@ -32,7 +36,7 @@ async def create_request(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        service_request = await create_service_request(
+        service_request, _ = await create_user_service_request(
             db,
             current_user,
             data,
@@ -78,6 +82,7 @@ async def update_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
+        ensure_legacy_service_request_allowed(service_request)
         service_request = await update_user_service_request(
             db,
             service_request,
@@ -101,6 +106,7 @@ async def resubmit_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
+        ensure_legacy_service_request_allowed(service_request)
         service_request = await resubmit_service_request(
             db,
             service_request,
@@ -123,6 +129,13 @@ async def withdraw_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
+        if (
+            service_request.service_type == "report"
+            and service_request.status in {"submitted", "needs_info"}
+        ):
+            await cancel_report_case_for_service_request(
+                db, service_request.id, reason="user_withdrew_request"
+            )
         service_request = await withdraw_service_request(
             db,
             service_request,

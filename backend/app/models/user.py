@@ -1,6 +1,9 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, JSON, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from app.db.base import Base, TimestampMixin
+
+
+JsonDocument = JSON().with_variant(JSONB, "postgresql")
 
 
 class User(Base, TimestampMixin):
@@ -28,20 +31,21 @@ class User(Base, TimestampMixin):
     occupation_status = Column(String(30), nullable=True)
     highest_education = Column(String(30), nullable=True)
     mbti = Column(String(10), nullable=True)
-    personality_keywords = Column(JSONB, nullable=False, default=list)
+    personality_keywords = Column(JsonDocument, nullable=False, default=list)
     strengths = Column(Text, nullable=True)
     limitations = Column(Text, nullable=True)
-    mingli_experience = Column(JSONB, nullable=False, default=list)
+    mingli_experience = Column(JsonDocument, nullable=False, default=list)
     mingli_experience_other = Column(Text, nullable=True)
     mingli_attitude = Column(String(30), nullable=True)
     preferred_content_depth = Column(String(30), nullable=True)
-    default_usage_scenarios = Column(JSONB, nullable=False, default=list)
+    default_usage_scenarios = Column(JsonDocument, nullable=False, default=list)
     default_usage_scenarios_other = Column(Text, nullable=True)
     profile_version = Column(Integer, nullable=False, default=1)
     profile_last_confirmed_at = Column(DateTime, nullable=True)
     avatar_url = Column(String(255), nullable=True)
     user_type = Column(String(20), default="explorer", nullable=False)
     role = Column(String(20), default="user", nullable=False, index=True)
+    consultant_type = Column(String(20), nullable=True)
     password_hash = Column(String(255), nullable=True)
     phone_verified_at = Column(DateTime, nullable=True)
     last_login_at = Column(DateTime, nullable=True)

@@ -1,0 +1,180 @@
+{
+  "signature": "785be6dcd54633cc94108438b8fb3f26c69066475665682b5f9a71842017ecaa",
+  "skill_digest": "32d4cd20c007d179b2e3607ec578d6ae28848576fd38f1e1a9d57717374315ed",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。只用已确认BLOCK，不新增卡点。INTERNAL_ONLY仅为推导依据，不选为核心结论。",
+  "output": {
+    "candidates": [
+      {
+        "candidate_key": "candidate.overcommit_withdraw_core",
+        "theme": "先答应后撤退：以承担换取位置，休息与余地被排除",
+        "rationale": "以用户自述的重复场景为主线：同事临时请代写方案、朋友临时改地点时先答应，随后拖延、生硬回应或取消。三个已确认卡点共享同一条路径——外部请求或截止压力出现，先以答应或持续在线维持关系与资源，短期避免当场冲突，长期累积透支与关系摩擦。此候选把'产出与承担换取位置'作为主导端，把休息与有余地表达作为被排除端，并以用户已有反例（曾明确拒绝领导且无内疚）说明拒绝能力已存在、可扩展到更多场景。",
+        "supporting_findings": [
+          "s4.block.overcommit_withdraw_loop",
+          "s4.block.perfectionist_completion",
+          "s4.block.rest_as_excluded",
+          "s3.hypothesis.core_tension_productivity_vs_rest",
+          "s2.hypothesis.overcommit_withdraw_cycle"
+        ],
+        "deemphasized_findings": [
+          "s1.foundation.ziwei_life_lianpo",
+          "s3.hypothesis.yijing_metaphor_jian",
+          "s3.hypothesis.quadrant_tension_operator_vs_restrained"
+        ],
+        "priority_blocks": [
+          {
+            "title": "卡点一：先答应后撤退的循环",
+            "finding_refs": [
+              "s4.block.overcommit_withdraw_loop"
+            ]
+          },
+          {
+            "title": "卡点二：反复修改与截止急交付",
+            "finding_refs": [
+              "s4.block.perfectionist_completion"
+            ]
+          },
+          {
+            "title": "卡点三：休息与余地少被允许",
+            "finding_refs": [
+              "s4.block.rest_as_excluded"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "外在可见的'能接事、能产出'的运营者形象，以及自述'答应任务是为换取资源'；命身分居与身宫落官禄可作投入方向线索。"
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "三个卡点共享的路径：请求或截止压力→先答应或持续在线→短期避免冲突→长期透支与关系摩擦；并保留反例说明并非所有场景都触发。"
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "让承担与休息两端共同存在：在答应前留出停顿、允许阶段性交付、允许休息不解释，把已有的拒绝能力扩展到更多场景。"
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate.rhythm_and_boundary",
+        "theme": "节奏失衡：从反复修改到持续在线，收敛环节最易卡住",
+        "rationale": "以节奏与边界为主线组织报告：项目开头想法多、担心做不好反复修改、临近截止才急交付，与下班后持续查看消息怕漏事、独自散步才放松，构成同一条'以在线与修改替代明确交付与休息'的路径。此候选把收敛与边界能力作为核心发展任务，用渐卦'渐进有序'作当下境遇比喻，并明确其不适用边界（需要果断止损或明确拒绝时不应被用来合理化拖延）。证据强度上，反复修改与完成度焦虑相关Finding置信度较低，报告中相应降低表达强度。",
+        "supporting_findings": [
+          "s4.block.perfectionist_completion",
+          "s4.block.rest_as_excluded",
+          "s4.block.overcommit_withdraw_loop",
+          "s3.hypothesis.yijing_metaphor_jian",
+          "s3.hypothesis.timeline_current_xinmao_theme"
+        ],
+        "deemphasized_findings": [
+          "s1.foundation.ziwei_life_lianpo",
+          "s2.hypothesis.persona_competent_operator",
+          "s3.hypothesis.integration_threefold"
+        ],
+        "priority_blocks": [
+          {
+            "title": "卡点二：反复修改与临近截止急交付",
+            "finding_refs": [
+              "s4.block.perfectionist_completion"
+            ]
+          },
+          {
+            "title": "卡点三：休息被持续在线替代",
+            "finding_refs": [
+              "s4.block.rest_as_excluded"
+            ]
+          },
+          {
+            "title": "卡点一：临时请求下先答应后撤退",
+            "finding_refs": [
+              "s4.block.overcommit_withdraw_loop"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "探索入口先发散、执行依赖外部时间压力的加工路径假设；价值排序中资源与关系维持占先，休息与余地较少进入排序。"
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "收敛环节被焦虑拉长：以修改替代交付、以在线替代休息，短期避免被评判与维持可靠形象，长期节奏失控与耐心储备下降。"
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "按次序推进而非跳步：阶段交付、固定不解释的休息时段、每月触发链记录；渐卦比喻在需要果断处置时不适用。"
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate.existing_refusal_capacity",
+        "theme": "拒绝能力已经存在：把领导场景的例外扩展到同事与朋友场景",
+        "rationale": "以用户明确给出的反例为主线：曾明确拒绝领导且无内疚，直接反证讨好与权威恐惧假设。报告因此不从'修复讨好'入手，而是把已有能力作为起点，追问'拒绝领导那次与答应同事那次，情境差异是什么'。三个已确认卡点被组织为同一能力在不同场景的分布差异：分工规则不清时缺少可用回应脚本，导致以答应、修改或持续在线作为默认防御。此候选强调用户主体性与反证校正，避免把符号解释写成固定人格。",
+        "supporting_findings": [
+          "s4.block.overcommit_withdraw_loop",
+          "s4.block.rest_as_excluded",
+          "s4.block.perfectionist_completion",
+          "s3.hypothesis.core_tension_productivity_vs_rest",
+          "s2.hypothesis.rest_as_excluded_pole"
+        ],
+        "deemphasized_findings": [
+          "s1.foundation.ziwei_life_lianpo",
+          "s1.foundation.interactions_core",
+          "s3.hypothesis.quadrant_tension_operator_vs_restrained"
+        ],
+        "priority_blocks": [
+          {
+            "title": "卡点一：分工规则不清时的先答应后撤退",
+            "finding_refs": [
+              "s4.block.overcommit_withdraw_loop"
+            ]
+          },
+          {
+            "title": "卡点三：休息与有余地表达少被允许",
+            "finding_refs": [
+              "s4.block.rest_as_excluded"
+            ]
+          },
+          {
+            "title": "卡点二：以反复修改替代明确交付",
+            "finding_refs": [
+              "s4.block.perfectionist_completion"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "自述不担心评价、拒绝难因分工规则不清；已存在明确拒绝且无内疚的经验，说明外部评价并未完全压过主体。"
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "能力分布不均：领导场景可拒绝，同事临时请求与朋友临时变动时缺少脚本，于是以答应、拖延、修改或取消收场，短期避免冲突、长期透支与摩擦。"
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "把已有拒绝能力扩展到更多场景：答应前争取时间的停顿、明确阶段性交付约定、允许休息不解释；以自知与主动实践承接理解机制与有余地表达两项期望。"
+          }
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 46814,
+    "output_tokens": 1843,
+    "latency_ms": 8525,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b80e8a21-e516-4dcd-91eb-283c35e4225c",
+    "skill_version_id": 0,
+    "skill_key": "report.narrative_plan",
+    "skill_version": 1,
+    "processor": "reports.narrative_candidates",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "6d15a59ecf7f32157fb52fedb189b9274b13c89014b92f881a4394cadd78602b",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

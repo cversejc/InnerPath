@@ -1,0 +1,34 @@
+"""Synthetic teaching examples, reviewable through the existing skill studio."""
+from datetime import datetime
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from .models import SkillExample
+
+EXAMPLES = {
+    "report.final_validator": ("review-reader-copy-v1", {"report_fragments": [{"fragment_key": "demo.boundaries", "content": "没有家庭资料，早期印记暂缓。"}], "confirmed_analysis": "分析内部多次提醒不作诊断，不指责家庭。"}, {"issues": []}, ["只数读者正文，不把内部分析的重复警示当正文重复", "暂缓缺资料不等于编造经历", "问题证据须逐字来自定位正文；不在正文的引文交人工核查", "必要的资料前提与导航不是同一机制的反复完整解释"]),
+    "report.narrative_plan": ("narrative-thread-v1", {"confirmed": "连接与自主的张力"}, {"theme": "让关心有门，也有停靠的地方", "arc": ["看见协调者", "理解过快承诺的保护与代价", "练习有节奏的连接"]}, ["主线来自确认判断", "标题可变但三章职责稳定"]),
+    "report.fragment_authoring": ("source-faithful-writing-v1", {"confirmed": "用户自述不善拒绝；担心关系变差为假设"}, {"content": "你提到很难拒绝别人。值得观察的是，在准备说不的时候，你最担心的反应是什么？如果你担心关系变远，边界练习可以从一次低风险的暂停开始。"}, ["自述与假设分别表达", "不写你从小被要求听话", "行动只使用已确认内容"]),
+    "report.s4_mechanism_block_action": ("boundary-experiment-v1", {"confirmed_block": "未留思考时间就承诺"}, {"method": "ACT价值澄清+行为实验", "steps": ["收到低风险请求先说：我看看安排，晚些回复你", "稍后选择同意、部分帮忙或拒绝"], "frequency": "weekly", "duration_minutes": 5, "observation": "记录对方实际反应与自己的紧张程度", "stop_rule": "出现权力威胁或明显不适时暂停，先选择安全情境"}, ["行动回应具体卡点", "理解卡点的段落不重复给解法", "有观察与退出条件"]),
+    "report.s3_integration": ("integration-opposites-v1", {"confirmed": "重视友谊，常压下拒绝需要"}, {"tension": "连接与自主", "direction": "保留关心，同时让请求有选择空间", "metaphor": "有门的庭院，能邀请也能休息", "phase": "尝试对立面整合的探索假设，不能据此断定成熟程度"}, ["整合两端", "哲学意象不替代用户证据", "大运按库计算年份"]),
+    "report.s1_foundation_analysis": ("chart-boundaries-v1", {"known": "有四柱但缺少能支持格局的流派判断"}, {"interpretation": "传统结构线索待咨询师判定，不用十神计数给出身强或身弱。", "missing": "核查月令、通根与生扶克泄耗"}, ["程序事实与解释分开", "无证据时明确暂缓"]),
+    "report.s2_psychology_mapping": ("boundary-cycle-v1", {"self_report": "习惯迁就，拒绝时又太生硬"}, {"cycle": "请求（待补问）→可能担心关系变差（假设）→迁就（自述），可能先答应（假设）→不舒服（假设）→急切拒绝（假设）→重复情境（待访谈）", "shadow": "可能被压下的边界需要", "counter_question": "是否也有温和拒绝且关系继续的经历？"}, ["每一环区分事实和假设，不能把迁就扩大成先答应或感到不适的自述", "不虚构家庭成因", "现实反证可推翻解释"]),
+}
+
+
+async def ensure_builtin_examples(db, skill_key):
+    data = EXAMPLES.get(skill_key)
+    if data is None:
+        return
+    key, input_context, expected_output, teaching_points = data
+    # Once edited or retired in the studio, never recreate the bundled version.
+    if await db.scalar(select(SkillExample.id).where(SkillExample.example_key == key)):
+        return
+    now = datetime.utcnow()
+    row = SkillExample(skill_key=skill_key, example_key=key, version_no=1, status="PUBLISHED", example_type="POSITIVE", scenario_tags=[], applicability_json={}, input_context=input_context, expected_output=expected_output, teaching_points=teaching_points, anti_patterns=["复制样例事实到当前用户", "未审核候选当作事实"], quality_score=0.9, deidentified=True, created_at=now, published_at=now)
+    try:
+        async with db.begin_nested():
+            db.add(row)
+            await db.flush()
+    except IntegrityError:
+        if not await db.scalar(select(SkillExample.id).where(SkillExample.example_key == key)):
+            raise

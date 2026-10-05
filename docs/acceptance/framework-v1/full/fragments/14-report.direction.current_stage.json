@@ -1,0 +1,63 @@
+{
+  "signature": "fb3c5616939ede34c3cbb641a006ae66b12c069374b17aa52faaf5765b8b9413",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "当下时义",
+    "content": "如果把你这段时间的处境放在一个更慢的镜头里看，它更像一道关于“停”和“渐”的题：该停的时候停不下来，该一步步商量的时候又容易一步到位。\n\n你提到过，同事临时请你代写方案，你本想休息却答应了，熬夜之后第二天变得不耐烦；朋友两次临时改地点，你没有表达意见，最后直接取消了聚会；项目开头你有很多想法，担心做不好反复修改，接近截止才急着交付。把这些放在一起，会看到两种能力还没有稳定下来：一种是“及时停下、及时表达”的能力——在答应之前给自己一个停顿，在对方改约的当下说出感受；另一种是“小步协商边界”的能力——不追求一次完美的拒绝，而是逐步把余地谈出来。\n\n所以这一节想借两个古老的比喻来照一照当下的境遇：一个偏向“止”，一个偏向“渐”。它们不是给你一个结论，而是提供一个观察角度。\n\n“止”的比喻，对应的是在请求到来和你的回应之间，那一段几乎被跳过的空白。你自述“需要拒绝时拖到最后才生硬回应”，这句话里其实藏着两个时间点：一个是你其实已经不想答应、但还没有说出口的时刻；另一个是你终于开口、但语气已经变得生硬的时刻。中间那段被推迟的时间，可能正是“止”还没有找到落点的地方。\n\n“渐”的比喻，对应的是节奏。你说项目开头想法很多，担心做不好反复修改，接近截止才急着交付。这不像能力不够，更像节奏被打乱：把“准备”拉得很长，把“交付”压得很短。渐的意思是，不追求一次到位，而是允许自己在过程中小步调整、小步确认。\n\n为什么这两个比喻和你当下的处境匹配？因为它们回应的是你已经说出来的现实议题：答应得太快、拒绝得太晚、修改得太久、交付得太赶。它们不是从别处搬来的标签，而是从你自己的描述里长出来的观察角度。\n\n需要说清楚的是：这是一种哲学比喻，不是起卦结果，也不构成任何占卜证明。它不预测未来，也不替你判断对错。你可以把它当作一面镜子，也可以不采用这个视角——这个选择权在你手里。另外，它也有不适用的地方：如果你处在必须快速响应的紧急情境里，比如突发的工作事故，“先停一下”的比喻可能并不合适，那时更需要的是先行动、事后再复盘；如果你已经能比较稳定地表达边界，那么“渐”的比喻可能也不再必要。\n\n一句关键结论：你当下真正要练的，可能不是“更会答应”，而是在答应与透支之间，插入一个可以停一下、可以慢慢商量的缓冲。\n\n本章的路径可以简略地看成这样一条线：\n\n请求到来 → 缓冲缺口 → 自动答应 → 透支与不耐烦 → 延迟表达或生硬回应 → 练习“停一下”与“小步协商” → 有余地的表达\n\n这条线的起点不在“拒绝”本身，而在请求到来之后、你开口之前的那一小段空白。至于具体怎么练、练多久、什么时候可以停，会放在后面的成长实验一节里展开，这里先只把方向指出来。",
+    "used_findings": [
+      "s3.yijing.metaphor"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.yijing"
+    ],
+    "used_actions": [],
+    "transition_hint": "时义已经指出“停”与“渐”的方向；下一节进入成长实验，把答应前的停顿和小步协商边界转成可练习的具体动作。",
+    "presentation_meta": {
+      "fragment_key": "report.direction.current_stage",
+      "chapter": "direction",
+      "chapter_opening": true,
+      "sequence_no": 14,
+      "new_information_role": "DEEPEN",
+      "metaphor_density": "low",
+      "theory_density": "medium",
+      "action_density": "low",
+      "tone": "second_person_nonjudgmental",
+      "contains_chapter_path_map": true,
+      "contains_key_conclusion": true,
+      "defers_action_details_to": "report.direction.growth_experiments",
+      "quote_library_used": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.timing_wisdom",
+        "status": "FULFILLED",
+        "reason": "正文已用你自述的答应额外任务、拖延拒绝、反复修改等情境，说明“止”与“渐”两个哲学比喻为何匹配；同时明确写出不适用边界（紧急快速响应情境、已能稳定表达边界时），并声明这是哲学比喻、不是起卦结果或占卜证明。",
+        "quote": "这是一种哲学比喻，不是起卦结果，也不构成任何占卜证明。",
+        "follow_up_questions": [
+          "在什么情境下你最容易“停不下来”？",
+          "你希望从哪一个小步开始练习？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5565,
+    "output_tokens": 1130,
+    "latency_ms": 6175,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "8d9f77d3-ca44-4b07-8cfc-29c0fe71c23c",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "b5ec504a65b4914d157396b78db53febf6445a71d20ccacb93269c45981a0887",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

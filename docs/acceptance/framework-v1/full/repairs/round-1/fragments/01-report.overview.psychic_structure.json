@@ -1,0 +1,58 @@
+{
+  "signature": "9c2dfff9ec03985a49868495f4c37f02bc389c8210108470f2213a259e455ea4",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你是谁：一份说明书的主线",
+    "content": "这份说明书想带你走一条线：先看见你在关系与工作里反复出现的反应，再理解它曾经如何保护你，最后把选择权慢慢收回自己手里。\n\n一句关键结论：你并不缺能力，缺的是在“答应”与“透支”之间那一个短短的停顿。\n\n向世界展示的你，是靠谱、不让人失望的人。同事临时请你代写方案，你本想休息却答应；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。这些场景里，你的第一反应往往是先接住别人的需要。\n\n你以为的自己，是“拒绝后别人会觉得我不够好”。这句话是你亲口说的，它像一个内部坐标，把“我做得够不够”交给外部来打分。需要说明的是，这目前是一个待验证的假设，不是结论：面对熟悉的同事、且有明确截止时，你能够协商任务边界，说明这个模式是情境依赖的，并非每次都迁就。\n\n潜意识层面的自己，可能是一套更自动的运作：请求来临时先顺从，事后积压不满，延迟表达，最终以生硬回应或取消收场。它曾经的功能是维持关系安全与“靠谱”形象；长期代价是熬夜透支、关系里的突然冷淡，以及自我评价持续依赖外部反馈。另一条线索是，你提到独自散步时比较放松，这提示独处与稳定节奏可能是你的恢复资源——同样属于待核对的方向，而非定论。\n\n整合后的方向，不是变得强硬或冷漠，而是让两端同时在场：一端是以外部认可与关系安全为参照，另一端是以自身节奏与真实需求为主权。它们不是好坏之分，而是需要一起被照顾的两个部分。\n\n本章路径图：请求来临 → 自动答应 → 熬夜透支 → 延迟表达 → 生硬回应/取消 →（插入停顿）→ 关系关照与自身节奏同时在场。\n\n接下来的章节会按“卡在哪”和“往哪去”展开：前者把这条时间线拆开看，后者落到具体的停顿练习与表达脚本。这一章只负责把主线交到你手上。",
+    "used_findings": [
+      "s4.block.overcommit_then_resent",
+      "s1.foundation.current_dayun",
+      "s4.block.self_worth_by_others",
+      "s2.pattern.overcommitment_loop",
+      "s2.pattern.self_worth_external_reference",
+      "s2.pattern.rest_recovery_resource",
+      "s3.self.core_tension"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "从用户能够识别的外在表现开始建立共鸣。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "chapter_opening": true,
+      "sequence_no": 1,
+      "title": "你是谁：一份说明书的主线",
+      "word_count": 638,
+      "style_notes": "第二人称；概览暗线，不展开卡点；不引用金句；不预告实验动作。",
+      "source_fidelity": "仅使用分配来源；未新增事实、诊断或行动建议。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "status": "FULFILLED",
+        "reason": "正文按“向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向”顺序概览，并以路径图与关键结论收束；未展开卡点机制或实验动作。",
+        "quote": "你以为的自己，是“拒绝后别人会觉得我不够好”。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 13515,
+    "output_tokens": 836,
+    "latency_ms": 3634,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "a19bf180-427f-4d4a-b358-8c7f0930a01e",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "7bb103dad8ee8e3952fb7eea1186be786bae6aa3b078eaeb85f42455f02ed328",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

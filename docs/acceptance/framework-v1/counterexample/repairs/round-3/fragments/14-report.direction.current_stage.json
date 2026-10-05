@@ -1,0 +1,61 @@
+{
+  "signature": "833820ff833f8a32b9443a27528cfd3645bd628bb7f7fbb23aaf77229f7f946f",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "当下时义：以“渐”作一面镜子",
+    "content": "关键结论：你当下可以借用的时义，是“渐”——按次序推进、不跳步；它指向的不是慢，而是不让节奏失衡继续透支你。\n\n本章路径：已看清的卡点 → 让承担与休息同时在场 → 以“渐”作节奏参照 → 在答应前留出停顿 → 进入可练习的方向。\n\n为什么“渐”与你的当下境遇匹配。你自述的几件事里有一个反复出现的节奏：项目开头想法多、担心做不好而反复修改，接近截止才急着交付；同事临时请你代写方案，你本想休息却答应了，熬夜后第二天变得不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。这些放在一起，呈现的不是“懒”或“不负责”，而更像推进次序被打乱：前面留了很多修改和反复，后面被迫用透支来补。按次序推进、不越级的“渐”，正好对应这个失衡点——它提示的不是把每件事拖长，而是让每一步在该在的位置上发生。\n\n这里需要说明两点。第一，这是一个比喻性的解释视角，不是起卦结果，也不构成任何预测或证明；它只作为一面镜子，帮你看清自己已经描述过的节奏，而不是替你做判断。第二，它有明确的不适用边界：当情境需要果断止损或明确拒绝时，“渐”不应被用来合理化拖延。你在需要拒绝时拖到最后才生硬回应，这更接近“果断”而非“渐进”；如果拿“渐”来给拖延找理由，就偏离了它的本意。\n\n因此，这一节只做一件事：把“渐”当作当下时义的参照，让你在下一次答应之前，多一个“先看清次序”的停顿。具体怎么练、练多久、什么情况下退出，统一放在成长实验一节。\n\n如果你愿意，可以先带着两个问题往下读：哪些具体情境里，你其实需要的是果断而不是渐进？当“先答应”的冲动出现时，你能否先分辨这是次序问题，还是边界问题？",
+    "used_findings": [
+      "s3.hypothesis.yijing_metaphor_jian"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.yijing"
+    ],
+    "used_actions": [],
+    "transition_hint": "当下时义已经说清楚，接下来进入成长实验，把这条路径上的几个关键位置变成可以练习的动作。",
+    "presentation_meta": {
+      "chapter": "direction",
+      "fragment_key": "report.direction.current_stage",
+      "chapter_opening": true,
+      "sequence_no": 14,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "content_depth": "深入详细",
+      "metaphor_status": "比喻性解释视角，非起卦结果",
+      "boundary_noted": true
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.timing_wisdom",
+        "status": "FULFILLED",
+        "reason": "已说明当下境遇（节奏失衡、越级推进）与“渐”卦比喻为何匹配，给出不适用边界，并声明这是比喻性解释视角、不是起卦结果。",
+        "quote": "按次序推进、不越级的“渐”，正好对应这个失衡点——它提示的不是把每件事拖长，而是让每一步在该在的位置上发生。",
+        "follow_up_questions": [
+          "在哪些具体情境你觉得需要果断而非渐进？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 6114,
+    "output_tokens": 832,
+    "latency_ms": 3589,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "e5b98402-31be-47e7-9533-5876515fce6e",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "a587421b84a81e7af4c1c77b1b434add5567a2cbcd25390a5b66d31022f2d178",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

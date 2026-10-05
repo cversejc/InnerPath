@@ -12,11 +12,13 @@
       <div class="container paper-card">
         <span class="calendar-empty-seal" aria-hidden="true"><IconMark name="calendar" /></span>
         <p class="section-kicker">A NEW RHYTHM</p>
-        <h2>为接下来的三十天，留一点从容</h2>
-        <p>{{ calendarError || '提交申请后，咨询师会基于你的起始日期和关注目标，完成一段 30 天的 AI 初稿与人工审校。' }}</p>
+        <h2>还没有已交付的决策日历</h2>
+        <p v-if="calendarError" role="alert">{{ calendarError }}</p>
+        <p v-else>先申请并收到人生说明书，再从报告详情进入日历生成。AI 会以该报告为依据生成连续 30 天的安排，并自动交付。</p>
         <div class="calendar-empty-actions">
-          <router-link class="primary-button" to="/pages/requests/new?type=calendar">申请决策日历</router-link>
-          <router-link class="secondary-button" to="/pages/requests/requests">查看我的申请</router-link>
+          <VanButton v-if="calendarError" class="secondary-button" type="default" plain native-type="button" @click="retryCalendarLoad">重新加载日历</VanButton>
+          <router-link class="primary-button" to="/pages/user/user?tab=reports">查看已交付报告</router-link>
+          <router-link class="secondary-button" to="/pages/assessment/assessment">申请人生说明书</router-link>
         </div>
       </div>
     </main>
@@ -32,7 +34,7 @@
             <div class="calendar-hero-meta">
               <span class="hero-chip hero-chip-date">{{ meta.dateLabel }}</span>
               <span v-if="meta.pillars" class="hero-chip">{{ meta.pillars }}</span>
-              <span class="hero-chip hero-chip-rhythm">{{ meta.rhythm }}</span>
+              <span v-if="!meta.monthly" class="hero-chip hero-chip-rhythm">{{ meta.rhythm }}</span>
               <span v-if="calendarSource === 'mock'" class="hero-chip hero-chip-demo">参考节奏</span>
             </div>
           </div>
@@ -69,25 +71,34 @@
           <div class="overview-grid">
             <article class="paper-card overview-story">
               <div class="card-ornament">「 {{ calendar.title }} · 总览 」</div>
-              <p v-for="paragraph in meta.overview" :key="paragraph">{{ paragraph }}</p>
-              <p class="overview-emphasis">核心节奏：{{ meta.rhythm }}</p>
+              <template v-if="meta.monthly">
+                <details v-for="section in monthlySections" :key="section.key" class="monthly-reading-section">
+                  <summary>{{ section.label }}</summary>
+                  <p>{{ section.content }}</p>
+                </details>
+              </template>
+              <template v-else>
+                <p v-for="paragraph in meta.overview" :key="paragraph">{{ paragraph }}</p>
+                <p class="overview-emphasis">核心节奏：{{ meta.rhythm }}</p>
+              </template>
             </article>
 
             <div class="overview-side">
               <article class="paper-card focus-card">
-                <span class="mini-label">本月只做三件事</span>
-                <ol>
+                <span class="mini-label">{{ meta.monthly ? '本月的成长任务' : '本月只做三件事' }}</span>
+                <p v-if="meta.monthly">{{ meta.monthly.growth_task }}</p>
+                <ol v-else>
                   <li><span>01</span>把眼下最重要的事情写下来，找到清晰的下一步。</li>
                   <li><span>02</span>记录 3—5 次真实选择，回看自己如何做决定。</li>
                   <li><span>03</span>给重要的人和事情留出沟通与等待的时间。</li>
                 </ol>
               </article>
-              <div class="phase-progress" aria-label="本月四个能量阶段">
-                <div class="phase-progress-head"><span>月度节奏</span><strong>4 个阶段</strong></div>
+              <div class="phase-progress" aria-label="本月连续能量阶段">
+                <div class="phase-progress-head"><span>月度节奏</span><strong>{{ phases.length }} 个阶段</strong></div>
                 <div class="phase-progress-bar">
                   <span v-for="phase in phases" :key="phase.id" :class="`phase-progress-${phase.tone}`"></span>
                 </div>
-                <div class="phase-progress-labels"><span>记录</span><span>表达</span><span>休整</span><span>调整</span></div>
+                <div class="phase-progress-labels"><span>推进</span><span>探索</span><span>校准</span><span>收束</span></div>
               </div>
             </div>
           </div>
@@ -192,7 +203,9 @@
       @open="openCalendarRequest"
       @close="closeCalendarRequest"
       @go-to-profile="goToProfile"
+      @go-to-reports="goToReports"
       @submit="submitCalendarRequest"
+      @retry="retryCalendarGeneration"
       @toggle-topic="toggleCalendarTopic"
       @toggle-outcome="toggleCalendarOutcome"
     />

@@ -1,0 +1,65 @@
+{
+  "signature": "a2182c9e055f1fa8af7ecd4391ff0c31a6f8b853368c68880800beb040eae0ea",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "三个卡点背后的同一个模式：请求来临时的缓冲缺口",
+    "content": "把前面三个卡点放在一起看，你会发现它们并不是三件互不相干的事，而更像同一条链上的三个位置。\n\n这条链可以这样读：**触发 → 情绪与信念 → 防御 → 短期保护 → 长期重复**。\n\n触发环节（你自述的事实）：他人临时请求或邀约——同事临时请你代写方案、朋友连续两次临时改地点。\n\n情绪与信念环节（待核对的假设）：在请求到来的那一刻，可能先浮起的是“担心让人失望”“拒绝后别人会觉得我不够好”。这里要说明的是，这是根据你自述的“我认为自己要靠谱、不能让人失望”“拒绝后担心别人觉得我不够好”提出的假设，不是结论。\n\n防御环节（事实加假设）：你自述的做法是先答应、之后延迟表达，最后生硬回应或直接取消；心理层面可能是回避冲突、维持关系安全。\n\n短期保护：答应下来那一刻，关系表面是稳的，“靠谱”的形象也是稳的。\n\n长期重复：熬夜透支累积、关系里出现突然的冷淡或取消、自我评价持续跟着外部反馈起伏。\n\n三个卡点在这条链上的分工不同。第一个卡点（先答应、后透支、延迟表达）主要落在“防御”这一段，是链上最先被看到的一环。第二个卡点（自我价值以外部评价为主要参照）更像链的“上游”，它在请求还没到之前就已经在影响你怎么看自己，所以它不只是拒绝时的紧张，也可能是反复修改、担心做不好的那股推力。第三个卡点（用准备代替交付）则发生在链的“下游”，当答应已经发生、任务已经落到手上，反复修改和临近截止的赶工就成了另一种形式的透支。\n\n所以三者共享的，不是同一个原因，而是同一个缺口：**在“被请求”和“答应”之间，少了一个停顿**。请求一到，缓冲还没出现，回应就已经出去了；而后面所有的透支、延迟、生硬和取消，都是在补这个缺口留下的账。\n\n这里需要说清楚：以上是模式上的相关性描述，不是因果判定。你自述的反例——面对熟悉同事且有明确截止时，你能够协商任务边界——说明这条链并不是固定的，它在情境中可以被调节。换句话说，缺口不是性格缺陷，而是一个在特定情境下反复出现、也可以被重新练习的位置。\n\n还有两处需要你核对：请求来临时，你的身体第一反应是什么？答应之后，你对自己说了什么？这两个信息目前还没有，会直接影响这条链在你这儿的具体样子。\n\n下一节进入“往哪去”，会从“答应前的停顿”开始，把这个缺口转成可以练习的小步。",
+    "used_findings": [
+      "s4.block.overcommit_then_resent",
+      "s4.block.self_worth_by_others",
+      "s4.block.rumination_over_action",
+      "s2.pattern.overcommitment_loop"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.cycle",
+      "analysis.s4.blocks"
+    ],
+    "used_actions": [],
+    "transition_hint": "三个卡点已综合为同一条“触发→情绪/信念→防御→短期保护→长期重复”的链，并指出共同缺口在“被请求”与“答应”之间；下一节从答应前的停顿开始，把理解转成可练习的小步。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.common_pattern",
+      "chapter": "challenge",
+      "sequence_no": 12,
+      "new_information_role": "SYNTHESIZE",
+      "theory_density": "medium",
+      "action_density": "none",
+      "metaphor_density": "low",
+      "tone": "第二人称、描述模式、不评判、不诊断",
+      "contains_golden_quote": false,
+      "contains_growth_experiment_steps": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.common_pattern",
+        "status": "FULFILLED",
+        "reason": "已综合三个卡点（先答应后透支、以外部评价为参照、用准备代替交付），按“触发→情绪/信念→防御→短期保护→长期重复”五段展开，并明确这是相关性描述而非因果判定，同时保留了用户自述的反例与两处待核对信息。",
+        "quote": "所以三者共享的，不是同一个原因，而是同一个缺口：**在“被请求”和“答应”之间，少了一个停顿**。",
+        "follow_up_questions": [
+          "请求来临时，你的身体第一反应是什么？",
+          "答应之后，你对自己说了什么？",
+          "在什么情境下你最容易答应，什么情境下你较能协商？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7442,
+    "output_tokens": 1104,
+    "latency_ms": 6223,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "161fdfc3-5705-43a6-aca8-986a2a47198f",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "db5b4006210839865327fe7b2bf35c4da41e63dad55c13989d487f896288eeb1",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

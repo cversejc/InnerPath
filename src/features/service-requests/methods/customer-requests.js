@@ -1,4 +1,5 @@
 import { getMyServiceRequests, withdrawServiceRequest } from '../api.js'
+import { submitReportCaseSupplement } from '../../report-cases/api.js'
 import {
   canWithdrawServiceRequest,
   customerServiceRequestStatusLabel,
@@ -50,6 +51,38 @@ export default {
       this.messageType = 'error'
     } finally {
       this.withdrawnId = null
+    }
+  },
+  async submitReportSupplement(item) {
+    const answer = String(this.followUpAnswers[item.id] || '').trim()
+    if (item.service_type !== 'report' || !item.report_case_id || !answer || this.supplementSubmittingId) return
+
+    let pendingKey = this.followUpResponseKeys[item.id]
+    if (!pendingKey || pendingKey.answer !== answer) {
+      pendingKey = {
+        answer,
+        key: `report-follow-up-${item.id}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+      }
+      this.followUpResponseKeys = { ...this.followUpResponseKeys, [item.id]: pendingKey }
+    }
+
+    this.supplementSubmittingId = item.id
+    try {
+      await submitReportCaseSupplement(item.report_case_id, {
+        response_key: pendingKey.key,
+        answer
+      })
+      this.followUpAnswers = { ...this.followUpAnswers, [item.id]: '' }
+      const { [item.id]: _submitted, ...remainingKeys } = this.followUpResponseKeys
+      this.followUpResponseKeys = remainingKeys
+      this.message = '补充资料已提交，咨询师会继续审核当前节点。'
+      this.messageType = 'info'
+      await this.loadRequests()
+    } catch (error) {
+      this.message = this.errorText(error)
+      this.messageType = 'error'
+    } finally {
+      this.supplementSubmittingId = null
     }
   },
   errorText(error) {

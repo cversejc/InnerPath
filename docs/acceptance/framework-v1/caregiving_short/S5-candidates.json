@@ -1,0 +1,175 @@
+{
+  "signature": "a461a341ba5cc465afe3703ada86892f64c4733ffed754a294447869b932b592",
+  "skill_digest": "32d4cd20c007d179b2e3607ec578d6ae28848576fd38f1e1a9d57717374315ed",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。只用已确认BLOCK，不新增卡点。INTERNAL_ONLY仅为推导依据，不选为核心结论。",
+  "output": {
+    "candidates": [
+      {
+        "candidate_key": "candidate.a_steady_fire",
+        "theme": "先稳住，再往前：把“等确定”当作保护，也当作起点",
+        "rationale": "以“稳定承担者”的面具与“等确定才安全”的信念为主线：用户自述事情一多先等规则和时间表更清楚，希望弄清转岗下一步；同时已有与姐姐协商轮换、交出手机入睡的现实资源。本候选把三个已确认卡点按“延迟推进—控制休息—先答应后协商”的顺序排列，突出从保护功能到整合邀请的推进。",
+        "supporting_findings": [
+          "s2.persona.role_holder",
+          "s2.belief.wait_for_clarity",
+          "s2.resource.negotiation_capacity",
+          "s3.self.rule_vs_autonomy",
+          "s4.action.ask_course_first",
+          "s4.action.phone_handover",
+          "s4.action.negotiate_before_yes"
+        ],
+        "deemphasized_findings": [
+          "s1.ziwei.year_sihua",
+          "s3.yijing.qian_zhun"
+        ],
+        "priority_blocks": [
+          {
+            "title": "等安排确定才推进自己的事",
+            "finding_refs": [
+              "s4.block.delay_until_certain"
+            ]
+          },
+          {
+            "title": "夜班后靠反复查群才敢休息",
+            "finding_refs": [
+              "s4.block.control_rest"
+            ]
+          },
+          {
+            "title": "先答应请求，再补协商",
+            "finding_refs": [
+              "s4.block.accept_then_negotiate"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          "心灵结构：以丁火与双印、命宫承担者线索，铺出“持续照护、按规则扛事”的底色。",
+          "认识自己：你在轮班与照护中被识别为可靠执行者，也这样看待自己。",
+          "隐藏部分：休息、把责任交出去、先推进自己的事，常被排在最后。",
+          "卡点一：等安排确定才推进自己的事，短期避免出错，长期推迟转岗准备。",
+          "卡点二：夜班后查群维持交接安全，代价是休息被挤压。",
+          "卡点三：先答应再协商，短期维持关系，长期使表达滞后。",
+          "保护功能：三个卡点都在保护交接安全与家庭运转，不是缺陷。",
+          "共性模式：不确定时先维持秩序与责任，再考虑自己的推进与休息。",
+          "整合能力：已能协商轮换、交出手机入睡，说明自主与放松能力存在。",
+          "人生方向：当前辛未大运偏承担与调整，屯卦意象提示先立根基再图进展。",
+          "成长实验：先问清课程、交出手机、把协商提前到答应之前。"
+        ]
+      },
+      {
+        "candidate_key": "candidate.b_rest_and_handover",
+        "theme": "把休息交出去：从夜班后的检查，到可信任的分担",
+        "rationale": "以“休息与交托”为主线：夜班后继续查群、把手机交给同事才睡着，是用户自述中最具体的控制—放松张力；同时与姐姐协商轮换已成功，说明分担可行。本候选把控制休息放在首位，再连到延迟推进与先答应后协商，突出“外部结构承接休息”这一已验证资源。",
+        "supporting_findings": [
+          "s2.shadow.rest_and_letting_go",
+          "s2.resource.negotiation_capacity",
+          "s4.action.phone_handover",
+          "s3.self.rule_vs_autonomy"
+        ],
+        "deemphasized_findings": [
+          "s1.ziwei.body_palace",
+          "s3.quadrant.holder_learner"
+        ],
+        "priority_blocks": [
+          {
+            "title": "夜班后靠反复查群才敢休息",
+            "finding_refs": [
+              "s4.block.control_rest"
+            ]
+          },
+          {
+            "title": "先答应请求，再补协商",
+            "finding_refs": [
+              "s4.block.accept_then_negotiate"
+            ]
+          },
+          {
+            "title": "等安排确定才推进自己的事",
+            "finding_refs": [
+              "s4.block.delay_until_certain"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          "心灵结构：命宫承担者与福德宫安顿张力的线索，铺出对外扛事、对内不易放松的底色。",
+          "认识自己：你以可靠执行者与照护者身份被识别，也这样要求自己。",
+          "隐藏部分：休息、把责任交出去、允许自己先不管，常被排斥。",
+          "卡点一：夜班后查群维持交接安全，代价是入睡被推迟、休息被挤压。",
+          "卡点二：先答应再协商，短期维持关系，长期使负担先落到自己身上。",
+          "卡点三：等安排确定才推进自己的事，短期避免出错，长期推迟转岗准备。",
+          "保护功能：查群防止交接失误，先答应维持家庭运转，延迟避免冲突。",
+          "共性模式：以持续检查与先承接来应对不确定，短期安全、长期耗能。",
+          "整合能力：把手机交给同事后能睡着，与姐姐协商轮换已成功，分担可行。",
+          "人生方向：当前承担调整期，练习强度宜低，先让外部结构承接休息。",
+          "成长实验：每日交出手机、每周提前协商、每周问清课程。"
+        ]
+      },
+      {
+        "candidate_key": "candidate.c_negotiate_before_yes",
+        "theme": "把协商提前：从先答应后补救，到先说明时间再答复",
+        "rationale": "以“关系中的协商”为主线：姐姐临时请替班时先答应、后说清轮班表改为轮流，是用户自述中既有滞后也有成功协商的事件；反证明确不能全解释为讨好。本候选把先答应后协商放在首位，再连到延迟推进与控制休息，突出把已有协商能力提前到承诺环节。",
+        "supporting_findings": [
+          "s2.complex.responsibility_autonomy",
+          "s2.resource.negotiation_capacity",
+          "s4.action.negotiate_before_yes",
+          "s3.quadrant.holder_learner"
+        ],
+        "deemphasized_findings": [
+          "s1.ziwei.wellbeing",
+          "s3.yijing.qian_zhun"
+        ],
+        "priority_blocks": [
+          {
+            "title": "先答应请求，再补协商",
+            "finding_refs": [
+              "s4.block.accept_then_negotiate"
+            ]
+          },
+          {
+            "title": "等安排确定才推进自己的事",
+            "finding_refs": [
+              "s4.block.delay_until_certain"
+            ]
+          },
+          {
+            "title": "夜班后靠反复查群才敢休息",
+            "finding_refs": [
+              "s4.block.control_rest"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          "心灵结构：丁火与双印、命宫承担者线索，铺出在关系中先稳住局面的底色。",
+          "认识自己：你以能扛事、按规则办事的角色被识别，也这样看待自己。",
+          "隐藏部分：直接表达时间边界、把责任交出去，常被推迟到事后。",
+          "卡点一：先答应再协商，短期避免冲突，长期使表达滞后、负担先落到自己。",
+          "卡点二：等安排确定才推进自己的事，短期避免出错，长期推迟转岗准备。",
+          "卡点三：夜班后查群维持交接安全，代价是休息被挤压。",
+          "保护功能：先承接维持家庭协作，延迟避免影响家人，查群防止交接失误。",
+          "共性模式：不确定时先维持关系与秩序，再考虑自己的推进与休息。",
+          "整合能力：已与姐姐协商达成轮换，说明协商能力存在，只需提前到承诺之前。",
+          "人生方向：当前承担调整期，把协商经验制度化，形成可持续分工。",
+          "成长实验：收到请求先说“我看一下轮班表，稍后回复”，再问课程、交出手机。"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 48043,
+    "output_tokens": 1923,
+    "latency_ms": 8429,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "56304487-4e96-4a92-9104-2e2c2e9717f4",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.narrative_plan",
+    "skill_version": 1,
+    "processor": "reports.narrative_candidates",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "3bc6e9862d44fbbb99eaba04473484c4dd2741ec0edc3de0c777477c8e1e1e84",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

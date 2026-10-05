@@ -1,0 +1,250 @@
+<template>
+  <section class="analysis-drafts-panel" aria-label="分析建议与审核">
+    <div class="analysis-drafts-heading">
+      <div>
+        <p class="eyebrow">本步骤的辅助建议</p>
+        <h3>AI 生成建议与人工审核</h3>
+      </div>
+      <span>{{ stageRuns.length }} 份建议记录</span>
+    </div>
+    <p class="analysis-drafts-notice">以下是 AI 生成的候选判断与分析，不是用户事实，也不是已确认结论。请对照标出的原始资料依据审核；只有你确认后，内容才会用于后续报告。</p>
+
+    <div v-if="!stageRuns.length" class="analysis-drafts-empty">
+      还没有本步骤的建议。开始处理后，可以生成一份基于用户情境和前序已确认内容的参考意见。
+    </div>
+
+    <label v-if="stageRuns.length" class="analysis-run-select">技能运行记录<select v-model="activeRunId"><option v-for="(record, index) in stageRuns" :key="record.id" :value="String(record.id)">记录 {{ stageRuns.length - index }} · {{ formatDate(record.created_at) }} · {{ runStatusLabel(record.status) }}</option></select></label>
+    <form v-if="visibleRuns[0]?.status === 'COMPLETED' && !readOnly && currentStep" class="analysis-feedback" @submit.prevent="submitFeedback">
+      <label for="analysis-feedback">本次结果不合适？告诉 AI 哪些地方需要调整</label>
+      <VanField
+        id="analysis-feedback"
+        v-model="feedbackText"
+        class="analysis-feedback-field"
+        type="textarea"
+        rows="3"
+        autosize
+        maxlength="4000"
+        show-word-limit
+        :disabled="feedbackSaving || feedbackDisabled"
+        placeholder="例如：请区分用户原话和推断；这条判断缺少资料依据，请按已有证据重新分析。"
+      />
+      <div class="analysis-feedback-actions">
+        <small>反馈只影响下一次运行，不会修改已发布的技能或自动写入报告。</small>
+        <VanButton class="secondary-button compact-button" plain native-type="submit" :disabled="feedbackSaving || feedbackDisabled || !feedbackText.trim()" :loading="feedbackSaving">
+          {{ feedbackSaving ? '正在重新生成' : '提交反馈并重跑' }}
+        </VanButton>
+      </div>
+    </form>
+    <article v-for="run in visibleRuns" :key="run.id" class="analysis-run">
+      <header class="analysis-run-header">
+        <div>
+          <strong>AI 候选分析</strong>
+          <span class="analysis-run-state" :class="`run-${String(run.status).toLowerCase()}`">{{ runStatusLabel(run.status) }}</span>
+          <small v-if="run.context_snapshot?.analysis_feedback_source_run_id">根据运行记录 {{ run.context_snapshot.analysis_feedback_source_run_id }} 的结果重跑</small>
+        </div>
+        <small v-if="run.created_at">生成于 {{ formatDate(run.created_at) }}</small>
+      </header>
+
+      <details v-if="run.runtime_instruction" class="analysis-run-feedback">
+        <summary>本次咨询师反馈</summary>
+        <p>{{ run.runtime_instruction }}</p>
+      </details>
+
+      <p v-if="run.status === 'FAILED'" class="analysis-run-error" role="alert">建议暂时无法生成，请稍后重试。{{ friendlyError(run.error) }}</p>
+      <div v-else-if="['PENDING', 'RUNNING'].includes(run.status)" class="analysis-run-pending" role="status">
+        {{ run.status === 'PENDING' ? '正在准备分析建议…' : '正在生成分析建议…' }}
+      </div>
+      <template v-else-if="run.status === 'COMPLETED' && run.output_parsed">
+        <details class="analysis-run-context"><summary>生成摘要与注意事项 · {{ run.output_parsed.risk_flags?.length || 0 }} 项提示</summary>
+        <p class="analysis-run-summary">{{ consultantText(run.output_parsed.summary, '分析建议已生成，请查看下方内容并结合资料审核。') }}</p>
+        <div v-if="run.output_parsed.risk_flags?.length" class="analysis-risk-list">
+          <strong>需要留意</strong>
+          <p v-for="(flag, index) in run.output_parsed.risk_flags" :key="`${run.id}-risk-${index}`">
+            {{ consultantText(flag.message, '这项建议需要结合资料进一步核对。') }}<small v-if="flag.references?.length">依据：{{ referenceLabels(flag.references) }}</small>
+          </p>
+        </div>
+
+        </details>
+        <div class="candidate-kind"><VanButton plain native-type="button" :aria-pressed="candidateKind==='findings'" @click="candidateKind='findings'; selectedCandidateKey=''">判断建议</VanButton><VanButton plain native-type="button" :aria-pressed="candidateKind==='fragments'" @click="candidateKind='fragments'; selectedCandidateKey=''">分析建议</VanButton></div>
+        <WorkbenchRecordPicker v-model="selectedCandidateKey" :items="candidateKind==='findings' ? (run.output_parsed.findings || []) : (run.output_parsed.analysis_fragments || [])" :key-field="candidateKind==='findings' ? 'finding_key' : 'fragment_key'" :title-field="candidateKind==='findings' ? 'claim' : 'title'" label="选择技能建议" />
+        <div v-if="candidateKind==='findings' && run.output_parsed.findings?.length" class="analysis-candidate-group">
+          <h4>当前判断建议</h4>
+          <article v-for="candidate in selectedCandidates(run.output_parsed.findings, 'finding_key')" :key="candidate.finding_key" class="analysis-candidate">
+            <div class="analysis-candidate-title">
+              <strong>{{ candidate.kind === 'SIGNAL' ? 'AI 提出的待验证线索' : 'AI 专业判断候选' }}</strong>
+              <span>{{ candidate.kind === 'SIGNAL' ? '需要更多资料验证' : '需要咨询师审核' }}</span>
+            </div>
+            <p>{{ consultantText(candidate.claim, '这条建议暂时无法用中文展示，请重新生成后再审核。') }}</p>
+            <div class="analysis-candidate-meta">
+              <span>{{ semanticRoleLabel(candidate.semantic_role) }}</span>
+              <span>把握程度：{{ confidenceLabel(candidate.confidence) }}</span>
+              <span>参考优先级：{{ importanceLabel(candidate.importance) }}</span>
+            </div>
+            <small class="analysis-candidate-source">参考了 {{ candidate.evidence_refs?.length || 0 }} 项资料依据<template v-if="candidate.relation_refs?.length">，并结合 {{ candidate.relation_refs.length }} 条前序判断</template></small>
+            <details v-if="candidate.evidence_refs?.length" class="analysis-candidate-details">
+              <summary>查看参考资料</summary>
+              <ul><li v-for="key in candidate.evidence_refs" :key="key">{{ evidenceLabel(key) }}</li></ul>
+            </details>
+            <div class="analysis-candidate-action">
+              <span v-if="readOnly" class="analysis-applied-state">历史建议，仅供查看</span>
+              <span v-else-if="isAppliedFinding(run, candidate)" class="analysis-applied-state">{{ appliedStatus(currentFinding(candidate.finding_key)?.status) }}</span>
+              <span v-else-if="hasForeignFindingOwner(candidate)" class="analysis-blocked-state">前序步骤已有相同判断，请查看已确认内容，避免重复添加。</span>
+              <span v-else-if="!consultantText(candidate.claim, '')" class="analysis-blocked-state">这条建议暂时无法用中文展示，请重新生成后再审核。</span>
+              <VanButton
+                v-else
+                class="secondary-button compact-button"
+                type="default"
+                plain
+                native-type="button"
+                :disabled="saving"
+                :loading="savingFindingKey === `${run.id}:${candidate.finding_key}`"
+                @click="$emit('apply-finding', { run, candidate, expectedRevisionNo: currentFinding(candidate.finding_key)?.revision_no ?? null })"
+              >
+                {{ currentFinding(candidate.finding_key) ? '更新为待审核版本' : '加入待审核判断' }}
+              </VanButton>
+            </div>
+          </article>
+        </div>
+
+        <div v-if="candidateKind==='fragments' && run.output_parsed.analysis_fragments?.length" class="analysis-candidate-group">
+          <h4>当前分析建议</h4>
+          <article v-for="candidate in selectedCandidates(run.output_parsed.analysis_fragments, 'fragment_key')" :key="candidate.fragment_key" class="analysis-candidate analysis-fragment-candidate">
+            <div class="analysis-candidate-title"><strong>{{ consultantText(candidate.title, 'AI 分析内容候选') }}</strong><span>AI 生成 · 尚未确认</span></div>
+            <p>{{ consultantText(candidate.content, '这段建议暂时无法用中文展示，请重新生成后再审核。') }}</p>
+            <small class="analysis-candidate-source">关联 {{ candidate.finding_refs?.length || 0 }} 条专业判断和 {{ candidate.evidence_refs?.length || 0 }} 项资料依据</small>
+            <div class="analysis-candidate-action">
+              <span v-if="readOnly" class="analysis-applied-state">历史建议，仅供查看</span>
+              <span v-else-if="isAppliedFragment(run, candidate)" class="analysis-applied-state">{{ appliedStatus(currentFragment(candidate.fragment_key)?.status) }}</span>
+              <span v-else-if="missingFragmentFindings(candidate).length" class="analysis-blocked-state">需先将相关判断加入审核列表，再加入这段内容。</span>
+              <span v-else-if="hasForeignFragmentOwner(candidate)" class="analysis-blocked-state">前序步骤已有相同内容，请查看原有内容，避免重复添加。</span>
+              <span v-else-if="!consultantText(candidate.content, '')" class="analysis-blocked-state">这段建议暂时无法用中文展示，请重新生成后再审核。</span>
+              <VanButton
+                v-else
+                class="secondary-button compact-button"
+                type="default"
+                plain
+                native-type="button"
+                :disabled="saving"
+                :loading="savingFragmentKey === `${run.id}:${candidate.fragment_key}`"
+                @click="$emit('apply-fragment', { run, candidate, expectedRevisionNo: currentFragment(candidate.fragment_key)?.revision_no ?? null })"
+              >
+                {{ currentFragment(candidate.fragment_key) ? '更新待审核内容' : '加入待审核内容' }}
+              </VanButton>
+            </div>
+          </article>
+        </div>
+
+        <p v-if="!run.output_parsed.findings?.length && !run.output_parsed.analysis_fragments?.length" class="analysis-drafts-empty">
+          暂无可供审核的判断或报告内容。请查看提示，或调整处理要求后重试。
+        </p>
+      </template>
+    </article>
+  </section>
+</template>
+
+<script>
+import { Button as VanButton, Field as VanField } from 'vant'
+import WorkbenchRecordPicker from './WorkbenchRecordPicker.vue'
+import { reportEvidenceTitle } from '../workbench-inputs.js'
+import { formatDate } from '../../service-requests/formatters.js'
+
+export default {
+  name: 'AnalysisDraftsPanel',
+  components: { VanButton, VanField, WorkbenchRecordPicker },
+  data: () => ({ selectedRunId: '', selectedCandidateKey: '', candidateKind: 'findings', feedbackText: '' }),
+  props: {
+    readOnly: Boolean,
+    runs: { type: Array, default: () => [] },
+    content: { type: Object, required: true },
+    stepKey: { type: String, default: '' },
+    currentStep: { type: Object, default: null },
+    saving: { type: Boolean, default: false },
+    savingFindingKey: { type: String, default: '' },
+    savingFragmentKey: { type: String, default: '' },
+    feedbackSaving: { type: Boolean, default: false },
+    feedbackDisabled: { type: Boolean, default: false }
+  },
+  emits: ['apply-finding', 'apply-fragment', 'rerun-with-feedback'],
+  methods: {
+    formatDate,
+    submitFeedback() {
+      const feedback = this.feedbackText.trim()
+      if (!feedback || this.readOnly || !this.currentStep || this.feedbackSaving) return
+      const sourceRunId = this.visibleRuns[0]?.id
+      if (!sourceRunId) return
+      this.$emit('rerun-with-feedback', { runtimeInstruction: feedback, sourceRunId })
+    },
+    appliedStatus(status) { return ({CONFIRMED:'已加入并确认',REJECTED:'已加入并拒绝',STALE:'已加入，需重新审核'})[status] || '已加入，待审核' },
+    selectedCandidates(items, field) { const item = (items || []).find(row => row[field] === this.selectedCandidateKey) || items?.[0]; return item ? [item] : [] },
+    runStatusLabel(status) {
+      return { PENDING: '正在准备', RUNNING: '正在生成', COMPLETED: '已生成', FAILED: '暂时失败' }[status] || '处理中'
+    },
+    friendlyError(error) {
+      if (!error || !/^[a-z][a-z0-9_]+$/.test(String(error))) return ''
+      return ' 请刷新页面后重试；如仍无法完成，请联系管理员。'
+    },
+    consultantText(value, fallback = '请结合相关资料进一步核对。') {
+      const text = String(value || '').trim()
+      return text && /[\u3400-\u9fff]/.test(text) ? text : fallback
+    },
+    semanticRoleLabel(role) {
+      return {
+        STRENGTH: '优势', CHALLENGE: '需要留意', CONFLICT: '内在矛盾', PATTERN: '行为模式',
+        OBSERVATION: '观察', SIGNAL: '待验证线索', THEME: '核心主题', ACTION: '行动方向'
+      }[role] || '综合观察'
+    },
+    confidenceLabel(value) {
+      return { LOW: '较低', MEDIUM: '一般', HIGH: '较高' }[value] || '一般'
+    },
+    importanceLabel(value) {
+      return { LOW: '普通', MEDIUM: '关注', HIGH: '重要', CRITICAL: '优先处理' }[value] || '普通'
+    },
+    evidenceLabel(key) {
+      const evidence = (this.content.evidence || []).find(item => item.evidence_key === key)
+      if (!evidence) return '相关资料依据'
+      return reportEvidenceTitle(evidence)
+    },
+    referenceLabels(keys) {
+      return [...new Set((keys || []).map(key => this.evidenceLabel(key)))].join('、')
+    },
+    currentFinding(key) {
+      return (this.content.findings || []).find(item => item.finding_key === key) || null
+    },
+    currentFragment(key) {
+      return (this.content.fragments || []).find(item => item.fragment_key === key) || null
+    },
+    isAppliedFinding(run, candidate) {
+      return this.currentFinding(candidate.finding_key)?.source_skill_run_id === run.id
+    },
+    isAppliedFragment(run, candidate) {
+      return this.currentFragment(candidate.fragment_key)?.source_skill_run_id === run.id
+    },
+    hasForeignFindingOwner(candidate) {
+      const current = this.currentFinding(candidate.finding_key)
+      return Boolean(current?.owner_step_task_id && current.owner_step_task_id !== this.currentStepId)
+    },
+    hasForeignFragmentOwner(candidate) {
+      const current = this.currentFragment(candidate.fragment_key)
+      return Boolean(current?.owner_step_task_id && current.owner_step_task_id !== this.currentStepId)
+    },
+    missingFragmentFindings(candidate) {
+      return (candidate.finding_refs || []).filter(key => !this.currentFinding(key))
+    }
+  },
+  computed: {
+    activeRunId: { get() { return String(this.visibleRuns[0]?.id || '') }, set(value) { this.selectedRunId=value; this.selectedCandidateKey='' } },
+    visibleRuns() { const run = this.stageRuns.find(item => String(item.id) === this.selectedRunId) || this.stageRuns[0]; return run ? [run] : [] },
+    stageRuns() {
+      return this.runs
+        .filter(run => !this.currentStep || run.context_snapshot?.analysis_activation_no === this.currentStep.activation_no)
+        .filter(run => run.target_type === 'REPORT_ANALYSIS_DRAFT' && run.target_key === this.stepKey)
+        .sort((left, right) => right.id - left.id)
+    },
+    currentStepId() {
+      return this.currentStep?.id || null
+    }
+  }
+}
+</script>
+
+<style scoped src="./AnalysisDraftsPanel.css"></style>

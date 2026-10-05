@@ -1,6 +1,7 @@
 <script setup>
 import { Button as VanButton } from 'vant'
 import ProfileSummary from '../../../components/ProfileSummary.vue'
+import { calendarGenerationText } from '../generation-progress.js'
 
 defineProps({
   calendarRequests: { type: Array, default: () => [] },
@@ -19,7 +20,9 @@ defineEmits([
   'open',
   'close',
   'go-to-profile',
+  'go-to-reports',
   'submit',
+  'retry',
   'toggle-topic',
   'toggle-outcome'
 ])
@@ -30,7 +33,15 @@ function formatRequestDate(start, end) {
 }
 
 function requestStatusLabel(status) {
-  return { pending: '待审核', reviewing: '审核中', fulfilled: '已完成', rejected: '已退回', cancelled: '已取消' }[status] || status
+  return {
+    generating: 'AI 生成中',
+    fulfilled: '已生成并交付',
+    failed: '生成失败',
+    pending: '历史申请',
+    reviewing: '历史申请',
+    rejected: '已退回',
+    cancelled: '已取消'
+  }[status] || status
 }
 </script>
 
@@ -40,28 +51,34 @@ function requestStatusLabel(status) {
       <div class="calendar-section-heading request-heading">
         <div>
           <p class="section-kicker">CALENDAR REQUEST</p>
-          <h2 class="section-title">为下一阶段申请一张日历</h2>
+          <h2 class="section-title">基于人生说明书生成决策日历</h2>
         </div>
-        <p class="section-desc">日历会复用你的个人档案，但会根据这一次的周期、用途和决策目标重新制定。</p>
+        <p class="section-desc">日历以已交付报告为依据，结合你选择的周期与目标生成；完成后自动交付，无需人工审核。</p>
       </div>
 
       <div v-if="!showForm" class="calendar-request-cta paper-card">
         <div>
-          <span class="mini-label">PROFILE + CURRENT GOAL</span>
-          <h3>让日历回应眼前这一段路</h3>
-          <p>提交申请后，后台会按你的档案版本审核并沿用现有的创建、发布流程。</p>
+          <span class="mini-label">DELIVERED REPORT + 30 DAYS</span>
+          <h3>把报告里的方向放进接下来的日常</h3>
+          <p>请从已交付的人生说明书进入，日历会沿用那份报告的内容和你本次填写的目标。</p>
         </div>
-        <VanButton type="primary" native-type="button" class="btn-action" @click="$emit('open')">申请新日历</VanButton>
+        <VanButton v-if="draft.source_report_id" type="primary" native-type="button" class="btn-action" @click="$emit('open')">{{ feedback ? '重新生成日历' : '继续设置日历' }}</VanButton>
+        <VanButton v-else type="primary" native-type="button" class="btn-action" @click="$emit('go-to-reports')">查看已交付报告</VanButton>
+        <p v-if="feedback" class="request-feedback" role="status">{{ feedback }}</p>
       </div>
 
       <div v-else class="calendar-request-card paper-card">
         <div class="request-card-head">
           <div>
-            <span class="mini-label">APPLICATION CONTEXT</span>
-            <h3>补充这一次的日历目标</h3>
+            <span class="mini-label">REPORT-BASED GENERATION</span>
+            <h3>设置接下来 30 天的使用目标</h3>
           </div>
           <VanButton type="default" plain native-type="button" class="request-close" @click="$emit('close')">收起</VanButton>
         </div>
+
+        <p v-if="draft.source_report_id" class="calendar-source-report">
+          来源报告 #{{ draft.source_report_id }} · 生成后自动交付
+        </p>
 
         <ProfileSummary
           v-if="profile"
@@ -84,6 +101,7 @@ function requestStatusLabel(status) {
             <div class="request-form-field">
               <label for="calendar-request-end">结束日期 <span class="required">*</span></label>
               <input id="calendar-request-end" v-model="draft.end_date" type="date" required>
+              <small>周期必须连续 30 天</small>
             </div>
           </div>
 
@@ -93,6 +111,15 @@ function requestStatusLabel(status) {
               <option value="">请选择这张日历主要服务什么</option>
               <option v-for="option in usageOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
             </select>
+          </div>
+
+          <div class="request-form-field">
+            <label for="calendar-request-availability">每天可投入时间 <span class="required">*</span></label>
+            <div class="availability-input-row">
+              <input id="calendar-request-availability" v-model.number="draft.available_minutes_per_day" type="number" min="5" max="480" step="5" required>
+              <span>分钟</span>
+            </div>
+            <small>日历会按这段时间安排报告中的行动练习；默认 30 分钟。</small>
           </div>
 
           <fieldset class="request-form-field">
@@ -149,7 +176,7 @@ function requestStatusLabel(status) {
           <p v-if="feedback" class="request-feedback" role="status">{{ feedback }}</p>
           <div class="request-actions">
             <VanButton type="default" plain native-type="button" class="btn-secondary" @click="$emit('close')">取消</VanButton>
-            <VanButton type="primary" native-type="submit" class="btn-action" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '提交日历申请' }}</VanButton>
+            <VanButton type="primary" native-type="submit" class="btn-action" :disabled="submitting" :loading="submitting" :aria-busy="submitting">{{ submitting ? '正在提交…' : '生成30天日历' }}</VanButton>
           </div>
         </form>
       </div>
@@ -159,7 +186,8 @@ function requestStatusLabel(status) {
         <div class="request-history-list">
           <article v-for="item in calendarRequests" :key="item.id" class="request-history-item">
             <div><strong>{{ formatRequestDate(item.start_date, item.end_date) }}</strong><span>{{ item.goal }}</span></div>
-            <span class="request-status" :class="`status-${item.status}`">{{ requestStatusLabel(item.status) }}</span>
+            <span class="request-status" :class="`status-${item.status}`" role="status">{{ calendarGenerationText(item) }}<small v-if="item.calendar_id"> · 日历 #{{ item.calendar_id }}</small></span>
+            <VanButton v-if="item.status === 'failed'" plain native-type="button" :disabled="submitting" @click="$emit('retry', item.id)">重试生成</VanButton>
           </article>
         </div>
       </div>

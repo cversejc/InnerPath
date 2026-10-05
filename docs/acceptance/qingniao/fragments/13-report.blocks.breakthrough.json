@@ -1,0 +1,100 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "需要长出的四种能力",
+    "content": "对应四项卡点，可以发展四种不同能力：给回应留一点选择空间；发起低负担联系；命名等待中的情绪与需要；核对自己的判断依据。它们回应的是具体机制，不能用“更自信”概括全部。\n\n若借用四象限的探索地图，你可能更接近“角色中的承担者”：需要在责任里保留主权；“退回内在的探索者”可作次候选，提醒洞见需要进入实际连接。你自报的乐观、主动求助与ENFP，又是这些定位的反证。行动征服型与孤独思考型目前依据较弱，不用为了完整把你放进每一个象限。\n\n这些原型只是比喻，不是测评分级。柔韧仍可有立场，谋定也可以行动；第三章会把能力转成可撤回、可观察的实验。",
+    "used_findings": [
+      "s4.blocks.boundary_pleasing",
+      "s4.blocks.relationship_maintenance",
+      "s3.individuation.direction",
+      "s4.breakthrough.common_path"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.quadrant",
+      "analysis.s4.breakthrough"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向已经有了轮廓。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.breakthrough",
+      "chapter": "challenge",
+      "sequence_no": 13,
+      "new_information_role": "RESPOND",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "must_cover_checked": [
+        "需要发展的能力",
+        "与行动的联系（只指向第三章，不写步骤）"
+      ],
+      "boundary_notes": [
+        "未自述的感受与自动想法均以可能/可以核对表达",
+        "命盘与大运内容仅条件式表达，出生日期为演示假设",
+        "未展开实验动作、频率、退出条件，统一指向成长实验节",
+        "未引用金句"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 6986,
+    "output_tokens": 657,
+    "latency_ms": 3435,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "4966c3b0-fd99-44ef-b849-1eaedbb32c4d",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "618a30905a2756925869301ea4cda53e5dc8f925bd1ed80692f84989cd8a2735",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "从卡点到方向：让拒绝可协商，让联系有节奏",
+    "content": "前两节你已经看见两个卡点怎么运作：一个是在他人请求面前先答应下来，拒绝时语言生硬；一个是有事才联系、无事搁置，关系慢慢变远。它们看起来方向相反，其实共用同一套顺序——先把关系保住，自己的需求往后放。\n\n那么，需要发展的能力是什么？不是让你变得强硬或冷淡，而是两件事同时长出来：一是能温和地说出“这次不行”，二是能主动发起低强度的连接。前者让边界可协商，后者让联系可修复。这两项能力，恰好对应你自述的“太着急”提示——急迫往往是想尽快把不确定按下去，而拒绝和联系都需要一点缓冲时间。\n\n方向可以这样理解：从“以迁就换取关系安全”的单极策略，走向“能拒绝、也能主动联系”的双向能力。它不是一次修好，而是在反复情境中，每次多保留一点真实需求。你自述“愿意听别人对自身性格的建议”，这是可用的开放度资源；把它用在观察自己上，比用在评判自己上更有帮助。\n\n具体怎么练、练多久、什么时候停，统一放在成长实验一节。这里只指出方向：让拒绝有温度，让联系有节奏。\n\n（说明：以上方向为探索假设，可由你的现实经验修正；命理喜忌为候选，若反转则路径相应调整。）",
+    "used_findings": [
+      "s4.blocks.boundary_pleasing",
+      "s4.blocks.relationship_maintenance",
+      "s3.individuation.direction",
+      "s4.breakthrough.common_path"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.quadrant",
+      "analysis.s4.breakthrough"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向已经有了轮廓。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.breakthrough",
+      "chapter": "challenge",
+      "sequence_no": 13,
+      "new_information_role": "RESPOND",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "must_cover_checked": [
+        "需要发展的能力",
+        "与行动的联系（只指向第三章，不写步骤）"
+      ],
+      "boundary_notes": [
+        "未自述的感受与自动想法均以可能/可以核对表达",
+        "命盘与大运内容仅条件式表达，出生日期为演示假设",
+        "未展开实验动作、频率、退出条件，统一指向成长实验节",
+        "未引用金句"
+      ]
+    }
+  }
+}

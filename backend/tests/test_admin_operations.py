@@ -54,13 +54,18 @@ def test_audit_details_redact_secrets_and_parse_legacy_text():
     assert parse_audit_details("legacy detail") == {"message": "legacy detail"}
 
 
-def test_report_task_response_exposes_retry_capability_without_snapshot():
+def test_report_task_response_keeps_retry_history_without_advertising_retry_controls():
     payload = AdminReportTaskResponse(
         task_id="task-1",
         user_id=1,
         status="failed",
         progress=0,
+        retry_count=1,
+        retry_of_task_id="task-previous",
         created_at="2026-09-09T00:00:00",
         updated_at="2026-09-09T00:00:00",
     )
-    assert payload.has_input_snapshot is False
+    assert payload.retry_count == 1
+    assert payload.retry_of_task_id == "task-previous"
+    assert "has_input_snapshot" not in payload.model_dump()
+    assert "has_retry" not in payload.model_dump()

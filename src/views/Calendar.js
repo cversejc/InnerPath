@@ -1,19 +1,27 @@
 
 import CalendarRequestSection from '../features/calendar/components/CalendarRequestSection.vue'
 import CalendarPlanningSection from '../features/calendar/components/CalendarPlanningSection.vue'
+import { Button as VanButton } from 'vant'
 import { isToday, parseDateKey } from '../features/calendar/helpers.js'
 import requestsMethods from '../features/calendar/methods/requests.js'
 import calendarDataMethods from '../features/calendar/methods/calendarData.js'
 import selectionMethods from '../features/calendar/methods/selection.js'
 import recordsMethods, { createRecordDraft } from '../features/calendar/methods/records.js'
 import { confirmAction } from '../utils/confirmAction.js'
+import {
+  buildCalendarRequestPayload,
+  defaultThirtyDayRange
+} from '../features/calendar/calendar-request-payload.js'
 
 const mobileDetailMediaQuery = typeof window === 'undefined' ? null : window.matchMedia('(max-width: 900px)')
 
 export default {
   name: 'Calendar',
-  components: { CalendarPlanningSection, CalendarRequestSection },
+  components: { CalendarPlanningSection, CalendarRequestSection, VanButton },
   data() {
+    const sourceReportId = Number(this.$route.query.source_report_id)
+    const hasSourceReport = Number.isSafeInteger(sourceReportId) && sourceReportId > 0
+    const initialRange = defaultThirtyDayRange()
     return {
       loading: true,
       calendar: null,
@@ -40,18 +48,22 @@ export default {
       savingRecord: false,
       profile: null,
       calendarRequests: [],
-      showCalendarRequestForm: false,
+      calendarPollTimer: null,
+      calendarPollingDisposed: false,
+      showCalendarRequestForm: hasSourceReport,
       submittingCalendarRequest: false,
       calendarRequestError: '',
       calendarRequestFeedback: '',
       calendarRequestDraft: {
         profile_version: null,
-        start_date: '',
-        end_date: '',
+        source_report_id: hasSourceReport ? sourceReportId : null,
+        start_date: hasSourceReport ? initialRange.start_date : '',
+        end_date: hasSourceReport ? initialRange.end_date : '',
         focus_topics: [],
         usage_scenario: '',
         goal: '',
         expected_outcomes: [],
+        available_minutes_per_day: 30,
         decision_description: '',
         additional_info: ''
       },
@@ -86,6 +98,12 @@ export default {
     }
   },
   computed: {
+    monthlySections() {
+      const labels = { growth_task: '成长任务', resource: '可调用资源', old_pattern: '易激活的旧模式',
+        decision_principle: '决定原则', rhythm_changes: '节奏变化' }
+      return Object.entries(labels).map(([key, label]) => ({ key, label, content: this.meta.monthly?.[key] }))
+        .filter(section => section.content)
+    },
     selectedDay() {
       return this.days.find(day => day.date === this.selectedDate) || this.days[0] || {}
     },
@@ -94,6 +112,7 @@ export default {
     },
     actionClimate() {
       const climateByTone = {
+        blue: { label: '探索窗口', caption: '用小规模尝试打开新的可能。', position: 65 },
         green: { label: '推进窗口', caption: '适合把已经想清楚的事做成。', position: 84 },
         'green-yellow': { label: '先推进，再收束', caption: '上午打开行动，后半天留一点余地。', position: 72 },
         'yellow-green': { label: '先准备，再行动', caption: '先把信息理顺，下午再迈出下一步。', position: 58 },
@@ -102,7 +121,8 @@ export default {
         red: { label: '先收气', caption: '今天更适合减少消耗，为下一次行动留力。', position: 16 },
         rest: { label: '先收气', caption: '今天更适合减少消耗，为下一次行动留力。', position: 16 }
       }
-      return climateByTone[this.selectedEntry.tone] || climateByTone.yellow
+      const climate = climateByTone[this.selectedEntry.tone] || climateByTone.yellow
+      return { ...climate, caption: this.selectedEntry.tone_explanation || climate.caption }
     },
     visibleSuitable() {
       return this.showFullGuidance ? this.selectedEntry.suitable : this.selectedEntry.suitable.slice(0, 2)
@@ -115,6 +135,7 @@ export default {
       return Math.max(0, this.selectedEntry.suitable.length - 2) + Math.max(0, this.selectedEntry.unsuitable.length - 1)
     },
     rhythmSegments() {
+      if (this.selectedEntry.windows?.length) return this.selectedEntry.windows.map(window => ({ ...window, tone: this.selectedEntry.tone }))
       const rhythmByTone = {
         green: [['上午', '聚焦', 'green'], ['下午', '推进', 'green'], ['晚上', '收束', 'yellow']],
         'green-yellow': [['上午', '表达', 'green'], ['下午', '推进', 'green'], ['晚上', '收束', 'yellow']],
@@ -177,6 +198,8 @@ export default {
     await this.loadCalendarRequestData()
   },
   beforeUnmount() {
+    this.calendarPollingDisposed = true
+    clearTimeout(this.calendarPollTimer)
     window.removeEventListener('keydown', this.handleEscape)
     mobileDetailMediaQuery?.removeEventListener('change', this.handleLayoutChange)
     document.body.classList.remove('dialog-open')

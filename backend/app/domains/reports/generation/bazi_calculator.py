@@ -76,11 +76,15 @@ class BaziCalculator:
                 # 农历转换
                 lunar = Lunar.fromYmd(year, -month if is_leap_month else month, day)
                 solar = lunar.getSolar()
+                solar = Solar.fromYmdHms(solar.getYear(), solar.getMonth(), solar.getDay(), hour or 0, minute or 0, 0)
+                lunar = solar.getLunar()
 
             # 获取四柱
-            year_pillar = lunar.getYearInGanZhi()
-            month_pillar = lunar.getMonthInGanZhi()
-            day_pillar = lunar.getDayInGanZhi()
+            eight_char = lunar.getEightChar()
+            eight_char.setSect(2)  # 晚子时日柱不换日；年/月柱按立春和节气
+            year_pillar = eight_char.getYear()
+            month_pillar = eight_char.getMonth()
+            day_pillar = eight_char.getDay()
 
             # 日主 (日干)
             day_master = day_pillar[0] if day_pillar else ""
@@ -88,7 +92,7 @@ class BaziCalculator:
             # 时柱 (如果提供了时辰)
             hour_pillar = None
             if hour is not None:
-                hour_pillar = lunar.getTimeInGanZhi()
+                hour_pillar = eight_char.getTime()
 
             # 计算十神关系
             ten_gods = self._calculate_ten_gods(day_master, year_pillar, month_pillar, hour_pillar)
@@ -293,9 +297,26 @@ class BaziCalculator:
                 palace_stars = list(palace.stars[:8])
                 result["palaces"].append({
                     "name": palace_names[i],
+                    "stem": palace.stem_name,
                     "branch": branches[palace.branch],
-                    "main_stars": palace_stars
+                    "main_stars": list(palace.stars),
+                    "aux_stars": list(palace.aux_stars),
+                    "brightness": palace.brightness,
+                    "sihua": palace.sihua,
                 })
+
+            from .ziwei_tables import SIHUA_TABLE
+            result["body_palace"] = next(p for p in result["palaces"] if p["branch"] == branches[chart.shen_gong_branch])
+            result["wellbeing_palace"] = result["palaces"][10]
+            result["life_sanfang_sizheng"] = [result["palaces"][i] for i in (0, 4, 8, 6)]
+            paths = []
+            for source in chart.palaces:
+                for transformation, star in zip(("禄", "权", "科", "忌"), SIHUA_TABLE[source.stem]):
+                    targets = [p.name for p in chart.palaces if star in p.stars + p.aux_stars]
+                    paths.append({"source_palace": source.name, "source_stem": source.stem_name, "transformation": transformation, "star": star, "target_palaces": targets})
+            result["flying_transformations"] = paths
+            result["year_transformations"] = chart.sihua
+            result["ruleset"] = "project-ziwei-v1; 生年四化与宫干飞化分别呈现"
 
             return result
 

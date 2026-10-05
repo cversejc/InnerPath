@@ -1,0 +1,64 @@
+{
+  "signature": "886f0c4dd3303693a3a560d14d5a8e15b534e143134b98f21971e06374296203",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "三个卡点，一条暗线：先答应、后撤回的循环如何在不同场景里换装",
+    "content": "把三个卡点放在一起看，会看到它们并不是三件互不相干的事。\n\n先看共同的那条线。触发点都落在「临时」和「变动」上：同事临时请你代写方案，朋友的邀约连续两次临时改地点，项目在开头想法很多、交付评价临近时压力陡增。接下来，一个假设性的情绪与信念可能浮现——担心让人失望，担心被认为不够好，而想休息、不满与拒绝的面向在当下可能不易被允许。于是防御动作出现：先答应，把定稿往后推，或用不耐烦、取消来间接表达。短期看，这套动作确实有保护功能：维持关系与形象，避免当下冲突，也让自己暂时不用面对「拒绝会不会破坏关系」的不确定。长期看，代价是熬夜、透支、生硬回应、取消聚会，恢复不足，需求长期不被看见，关系也可能出现摩擦。\n\n再看三个卡点之间的关系。卡点一是主线：临时请求或关系变动时先答应、后撤回。卡点二更像是这条主线在休息场景里的延伸——他人需求与自身休息同时出现时，休息被推迟，不满以不耐烦或撤回的方式间接出现。卡点三则是它在项目与交付场景里的另一种表现——开头反复修改、接近截止才急着交付，短期避免被评价为不够好，长期压缩质量与休息空间。三者可能共享一个假设性的核心信念：担心让人失望。它们更像是同一套「先承接、后撤回」的模式在不同场景下的换装，而不是各自独立的毛病。\n\n需要说明的是，这只是一种可能的运作模式，不是因果定论。触发、情绪、信念、防御、短期保护、长期重复，这条链上的每一环都还需要你用真实事件去核对。已有的反例也说明这条路径并非必然：面对熟悉同事且有明确截止时，你能够协商任务边界，并不是每次都迁就。这说明协商的能力已经在你身上，只是还没有在临时和变动的情境里稳定地被调用。\n\n至于在什么条件下更容易协商、每次遇到什么会怎样，这些还需要更多场景来补充。",
+    "used_findings": [
+      "s4.block.boundary_cycle",
+      "s4.block.rest_shadow",
+      "s4.block.perfection_delay",
+      "s2.complex.boundary_cycle",
+      "s2.shadow.rest_excluded"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.cycle",
+      "analysis.s4.blocks"
+    ],
+    "used_actions": [],
+    "transition_hint": "从已确认卡点连接到发展方向和行动，不重新选择专业判断。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.common_pattern",
+      "sequence_no": 12,
+      "new_information_role": "SYNTHESIZE",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.common_pattern",
+        "status": "FULFILLED",
+        "reason": "已综合三个卡点，按触发→情绪/信念→防御→短期保护→长期重复展开，并以「可能的运作模式」「不是因果定论」保留非因果表述。",
+        "quote": "触发点都落在「临时」和「变动」上：同事临时请你代写方案，朋友的邀约连续两次临时改地点，项目在开头想法很多、交付评价临近时压力陡增。",
+        "follow_up_questions": [
+          "在什么条件下更容易协商？",
+          "每次遇到什么会怎样？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 8452,
+    "output_tokens": 858,
+    "latency_ms": 3903,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "510b5b1e-4054-43a4-963d-1a2a6656f3fd",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "7c1c6410b64236dd3c1dd5f2fa0704bbabfe78c4ddcc7f4dd4b95c201b40d572",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

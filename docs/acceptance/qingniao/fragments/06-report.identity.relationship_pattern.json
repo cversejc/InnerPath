@@ -1,0 +1,86 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "两种互动，先分别看清",
+    "content": "一条线是面对请求时难拒绝、倾向迁就；另一条线是无事时少联系朋友。你明确说后者伴随关系疏远，但没有说明两者一定有因果联系。\n\n可以探索的共同假设是：你是否在被动回应时容易给得过多，而主动联系时又不容易给自己一个理由？若存在，这种方式可能降低眼前的冲突或被拒绝的风险，却让联系缺少双方真实意愿。担心打扰、内疚、事后不适都须核对，不能当成自述。\n\n你说每次困境会有女贵人出现。这里保留为你对支持经验的主观描述，不预测未来，也不指认某个女性必定帮助你。值得补问的是：哪些支持真正有用？是否也有平时就愿意互相联系的人？关系改善未必从扩大社交开始，可以先认识已有的安全连接。",
+    "used_findings": [
+      "s4.relationships.cycle"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.relationships"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看见这条关系路径怎么运作、在保护什么。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.relationship_pattern",
+      "sequence_no": 6,
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "data_boundaries": [
+        "出生日期、出生地、分析日期均为演示假设，命盘与大运内容仅供条件式参考",
+        "担心关系变差、内疚、自我不适均为假设，未经证实",
+        "MBTI 为自报，未测八维，不作类型推断",
+        "关系循环中的触发情境与对方反应仍待访谈核对"
+      ],
+      "must_not_repeat_respected": true
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5203,
+    "output_tokens": 658,
+    "latency_ms": 3836,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "386edb12-29de-426f-9194-8077175161a2",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "e533579138906ed5d9871fde05e044ffcc0b7a38349a48318f14eee4108b9fed",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你的关系互动模式：先答应，再慢慢走远",
+    "content": "你提到自己不太会拒绝，拒绝时语言容易生硬，平时更习惯迁就；也提到和朋友往往是有事才联系，关系渐渐疏远。这两件事看起来方向相反，其实可能属于同一条关系路径。\n\n可以试着把它读成一个循环：有人开口请求，或关系到了需要维护的时候（具体情境待你补充）→ 你先答应、先迁就（你自述）→ 那一刻你心里可能闪过担心关系变差，或一点内疚（这是假设，可以核对）→ 表面上关系照常维持，但你自己可能不太舒服（同样是假设）→ 时间一长，联系反而变少，关系变远（你自述）。\n\n这条路径的保护功能是清楚的：先答应能快速让气氛平稳、避免当场冲突；有事才联系，则让你不必频繁暴露自己的需要。代价是，你的真实意愿很少被对方看见，关系维持在一个“安全但不深”的位置。\n\n不过它并不是全部。值得核对两个反例：你是否也有过温和拒绝、关系却继续的经历？是否也有过主动联系、关系反而更近的时候？另外，你提到每次困境会有女贵人出现——这些支持是在什么情境下到来的，也值得记下来。这些答案会决定这条循环是“一直如此”，还是只在某些情境里被触发。\n\n你自报的 ENFP 提示你可能偏好发散与价值内省（假设，未测八维）。若如此，把“拒绝”和“联系”都当作可协商、可修复的动作，会比追求一次说对更贴近你。具体怎么练，放在后面的成长实验里。",
+    "used_findings": [
+      "s4.relationships.cycle"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.relationships"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看见这条关系路径怎么运作、在保护什么。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.relationship_pattern",
+      "sequence_no": 6,
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "data_boundaries": [
+        "出生日期、出生地、分析日期均为演示假设，命盘与大运内容仅供条件式参考",
+        "担心关系变差、内疚、自我不适均为假设，未经证实",
+        "MBTI 为自报，未测八维，不作类型推断",
+        "关系循环中的触发情境与对方反应仍待访谈核对"
+      ],
+      "must_not_repeat_respected": true
+    }
+  }
+}
