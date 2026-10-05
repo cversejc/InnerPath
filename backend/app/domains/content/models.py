@@ -27,7 +27,7 @@ class CaseEvidenceItem(Base):
             "report_case_id", "evidence_key", name="uq_case_evidence_key"
         ),
         CheckConstraint(
-            "source_type IN ('USER_PROVIDED', 'SYSTEM_CALCULATED', 'EXTERNAL_REFERENCE')",
+            "source_type IN ('USER_PROVIDED', 'SYSTEM_CALCULATED', 'CONSULTANT_CORRECTED', 'EXTERNAL_REFERENCE')",
             name="ck_case_evidence_source_type",
         ),
         CheckConstraint("status IN ('ACTIVE', 'RETRACTED')", name="ck_case_evidence_status"),

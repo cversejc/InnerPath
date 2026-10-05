@@ -79,6 +79,21 @@ export async function startReportCaseAnalysisDraft(caseId, stepKey, payload) {
   return response.data
 }
 
+export async function calculateReportCaseFoundation(caseId, stepKey = 'S1') {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/steps/${stepKey}/foundation/calculate`
+  )
+  return response.data
+}
+
+export async function correctReportCaseFoundation(caseId, stepKey, payload) {
+  const response = await apiClient.put(
+    `/report-cases/${caseId}/steps/${stepKey}/foundation`,
+    payload
+  )
+  return response.data
+}
+
 export async function applyReportCaseAnalysisFinding(caseId, stepKey, runId, findingKey, payload) {
   const response = await apiClient.post(
     `/report-cases/${caseId}/steps/${stepKey}/analysis-drafts/${runId}/findings/${encodeURIComponent(findingKey)}/apply`,

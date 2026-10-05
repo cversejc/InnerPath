@@ -19,6 +19,8 @@ from app.application.report_analysis import (
     apply_analysis_finding_candidate,
     apply_analysis_fragment_candidate,
     get_analysis_step_completion_gate,
+    get_or_calculate_report_case_foundation,
+    correct_report_case_foundation,
     queue_case_analysis_draft,
     validate_analysis_step_completion,
 )
@@ -51,6 +53,7 @@ from app.domains.content.models import (
 )
 from app.domains.content.schemas import (
     AnalysisCandidateApplyInput,
+    FoundationCorrectionInput,
     ContentFragmentRevisionCreate,
     ContentFragmentRevisionResponse,
     FindingRevisionCreate,
@@ -150,8 +153,13 @@ def _workflow_error(error: ValueError) -> None:
         "report_analysis_step_not_in_review",
         "report_analysis_run_not_completed",
         "report_analysis_run_activation_changed",
+        "report_analysis_feedback_source_invalid",
+        "report_analysis_feedback_source_stale",
         "report_analysis_candidate_owned_by_another_step",
         "report_analysis_output_required",
+        "report_analysis_fragment_findings_unconfirmed",
+        "report_analysis_candidate_evidence_stale",
+        "report_foundation_revision_conflict",
         "report_analysis_sop_coverage_required",
         "report_analysis_framework_coverage_required",
         "report_analysis_reasoning_required",
@@ -199,7 +207,7 @@ def _workflow_error(error: ValueError) -> None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
-    if code.startswith(("workflow_", "step_", "narrative_", "report_case_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_authoring_", "report_coherence_", "fragment_narrative_", "final_qa_", "qa_", "framework_", "product_framework_", "reasoning_", "case_skill_")):
+    if code.startswith(("workflow_", "step_", "narrative_", "report_case_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_foundation_", "report_authoring_", "report_coherence_", "fragment_narrative_", "final_qa_", "qa_", "framework_", "product_framework_", "reasoning_", "case_skill_")):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
         )
@@ -954,6 +962,57 @@ async def start_report_case_step(
 
 
 @router.post(
+    "/{case_id}/steps/{step_key}/foundation/calculate",
+    response_model=EvidenceResponse,
+)
+async def calculate_report_case_foundation(
+    case_id: int,
+    step_key: str,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        evidence = await get_or_calculate_report_case_foundation(
+            db, case_id=case_id, step_key=step_key, actor=current_user
+        )
+        await db.commit()
+        await db.refresh(evidence)
+        return evidence
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.put(
+    "/{case_id}/steps/{step_key}/foundation",
+    response_model=EvidenceResponse,
+)
+async def correct_report_case_foundation_route(
+    case_id: int,
+    step_key: str,
+    data: FoundationCorrectionInput,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        evidence = await correct_report_case_foundation(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            expected_evidence_key=data.expected_evidence_key,
+            value=data.value,
+            reason=data.reason,
+            actor=current_user,
+        )
+        await db.commit()
+        await db.refresh(evidence)
+        return evidence
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post(
     "/{case_id}/steps/{step_key}/analysis-drafts",
     response_model=SkillRunResponse,
     status_code=status.HTTP_202_ACCEPTED,
@@ -1003,6 +1062,7 @@ async def apply_report_case_analysis_finding(
             finding_key=finding_key,
             expected_revision_no=data.expected_revision_no,
             actor=current_user,
+            review=data.finding_review.model_dump(exclude_unset=True) if data.finding_review else None,
         )
         await db.commit()
         await db.refresh(revision)
@@ -1034,6 +1094,7 @@ async def apply_report_case_analysis_fragment(
             fragment_key=fragment_key,
             expected_revision_no=data.expected_revision_no,
             actor=current_user,
+            review=data.fragment_review.model_dump(exclude_unset=True) if data.fragment_review else None,
         )
         await db.commit()
         await db.refresh(revision)

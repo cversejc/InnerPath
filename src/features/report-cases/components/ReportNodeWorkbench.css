@@ -109,19 +109,6 @@
   color: var(--jade-deep);
   font-size: var(--text-body-sm);
 }
-.node-step-switch {
-  max-width: 100%;
-  min-width: 0;
-  min-height: var(--touch-target);
-  border: 1px solid var(--line);
-  border-radius: var(--button-radius);
-  padding: 0 var(--space-3);
-  background: var(--surface);
-  color: var(--ink-soft);
-  font: inherit;
-  font-size: var(--text-body);
-  cursor: pointer;
-}
 .node-header-actions,
 .node-view-actions,
 .node-actions {
@@ -145,6 +132,13 @@
 }
 .node-view-actions :deep(button) {
   flex-shrink: 0;
+}
+.node-view-arrow {
+  flex: 0 0 auto;
+  align-self: center;
+  padding: 0 var(--space-1);
+  color: var(--gold-deep);
+  font-size: var(--text-body);
 }
 .node-view-actions :deep(.active) {
   border-color: var(--cinnabar);
@@ -270,6 +264,9 @@
 .workflow-finished-state {
   padding: var(--space-5) 0;
 }
+.node-continuation { grid-column: 1 / -1; padding: var(--space-4); border: 1px solid var(--jade); border-radius: var(--button-radius); background: var(--surface); color: var(--jade-deep); }
+.node-continuation strong { font-size: var(--text-body); font-weight: var(--weight-semibold); }
+.node-continuation p { margin: var(--space-2) 0 var(--space-3); font-size: var(--text-body-sm); line-height: var(--leading-body); }
 @media (max-width: 1000px) {
   .workflow-progress-rail {
     grid-template-columns: repeat(3, minmax(0, 1fr));

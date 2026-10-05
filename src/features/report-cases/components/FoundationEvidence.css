@@ -246,6 +246,110 @@
 .foundation-evidence .chart-fallback {
   white-space: pre-wrap;
 }
+.foundation-evidence .calculation-edit-guidance {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--gold-deep);
+  background: var(--paper-soft);
+  color: var(--ink-soft);
+  font-size: var(--text-body-sm);
+}
+.foundation-evidence.is-disabled { opacity: 0.7; pointer-events: none; }
+.foundation-evidence.is-editable label {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-width: 0;
+  color: var(--ink-soft);
+  font-size: var(--text-body-sm);
+}
+.foundation-evidence.is-editable input,
+.foundation-evidence.is-editable select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--button-radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: max(16px, var(--text-body));
+}
+.foundation-evidence.is-editable .pillar-edit-pair,
+.foundation-evidence.is-editable .date-edit-grid,
+.foundation-evidence.is-editable .period-number-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.foundation-evidence.is-editable .pillar-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+}
+.foundation-evidence.is-editable .pillar-card > label { margin-top: var(--space-1); }
+.foundation-evidence.is-editable .pillar-card .pillar-symbol { margin-top: 0; }
+.foundation-evidence .detail-heading {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+}
+.foundation-evidence.is-editable .hidden-stems li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+}
+.foundation-evidence .inline-add,
+.foundation-evidence .inline-remove {
+  justify-self: start;
+  min-height: var(--touch-target);
+}
+.foundation-evidence .inline-remove { color: var(--cinnabar-deep); }
+.foundation-evidence.is-editable .relation-list article {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+.foundation-evidence .position-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--button-radius);
+}
+.foundation-evidence .position-editor legend { color: var(--ink-soft); font-size: var(--text-body-sm); }
+.foundation-evidence.is-editable .position-editor label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+}
+.foundation-evidence.is-editable .position-editor input { width: var(--touch-target); min-height: var(--touch-target); }
+.foundation-evidence .relation-note-edit { grid-column: 1 / -1; }
+.foundation-evidence.is-editable .dayun-timeline li { align-content: start; }
+.foundation-evidence.is-editable .dayun-timeline strong { margin: 0; }
+.foundation-evidence.is-editable .year-transformations label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--button-radius);
+  background: var(--surface);
+}
+.foundation-evidence .transformation-list article label { min-width: 0; }
+.foundation-evidence .foundation-section > h4 + p { margin: 0; }
+@media (max-width: 600px) {
+  .foundation-evidence.is-editable .relation-list article { grid-template-columns: 1fr; }
+  .foundation-evidence.is-editable .hidden-stems li { grid-template-columns: 1fr 1fr; }
+  .foundation-evidence.is-editable .hidden-stems li .inline-remove { grid-column: 1 / -1; }
+  .foundation-evidence.is-editable .period-number-grid { grid-template-columns: 1fr 1fr; }
+}
 @media (max-width: 1000px) {
   .foundation-evidence .palace-grid,
   .foundation-evidence .palace-summary-grid {

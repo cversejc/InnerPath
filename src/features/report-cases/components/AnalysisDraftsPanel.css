@@ -236,6 +236,12 @@
   color: var(--gold-deep);
 }
 
+.analysis-fragment-prerequisite {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+}
+
 @media (max-width: 640px) {
   .analysis-drafts-panel {
     padding: 12px 10px;
@@ -265,6 +271,7 @@
 
 .analysis-feedback { display:grid; gap:var(--space-2); margin:var(--space-4) 0; padding:var(--space-3); border:1px solid var(--line); border-radius:var(--button-radius); background:var(--surface-strong); }
 .analysis-feedback > label { color:var(--ink); font-size:var(--text-body); font-weight:var(--weight-medium); }
+.analysis-prerequisite-note { margin:0;color:var(--gold-deep);font-size:var(--text-body-sm);line-height:var(--leading-body); }
 .analysis-feedback-field { padding:0; background:transparent; }
 .analysis-feedback-field :deep(.van-field__control) { min-height:72px; font-size:16px; line-height:1.5; }
 .analysis-feedback-actions { display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); }

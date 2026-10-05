@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 EvidenceSourceType = Literal[
-    "USER_PROVIDED", "SYSTEM_CALCULATED", "EXTERNAL_REFERENCE"
+    "USER_PROVIDED", "SYSTEM_CALCULATED", "CONSULTANT_CORRECTED", "EXTERNAL_REFERENCE"
 ]
 FindingStatus = Literal["PROPOSED", "CONFIRMED", "REJECTED"]
 EditKind = Literal["SEMANTIC", "STYLE"]
@@ -16,6 +16,12 @@ class EvidenceCreate(BaseModel):
     source_type: EvidenceSourceType
     source_ref: str = Field(..., min_length=1, max_length=500)
     value: Any
+
+
+class FoundationCorrectionInput(BaseModel):
+    expected_evidence_key: str = Field(..., min_length=1, max_length=240)
+    value: dict[str, Any]
+    reason: str = Field(..., min_length=3, max_length=1000)
 
 
 class EvidenceResponse(BaseModel):
@@ -164,6 +170,8 @@ class NarrativePlanConfirm(BaseModel):
 
 class AnalysisCandidateApplyInput(BaseModel):
     expected_revision_no: Optional[int] = Field(None, ge=1)
+    finding_review: Optional[FindingRevisionCreate] = None
+    fragment_review: Optional[ContentFragmentRevisionCreate] = None
 
 
 class ReportFragmentGenerate(BaseModel):
