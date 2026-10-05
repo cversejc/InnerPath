@@ -32,7 +32,15 @@ def save(path, value):
 
 
 def load_input():
-    source = (ROOT / "docs" / "青鸟基本信息.txt").read_text(encoding="utf-8")
+    source_path = ROOT / "docs" / "青鸟基本信息.txt"
+    if source_path.exists():
+        source = source_path.read_text(encoding="utf-8")
+    else:
+        saved_input = OUTPUT / "input.json"
+        saved_case = json.loads(saved_input.read_text(encoding="utf-8"))
+        source = (saved_case.get("context") or {}).get("source_questionnaire")
+        if not isinstance(source, str) or not source.strip():
+            raise ValueError("qingniao_questionnaire_source_missing")
     assumptions = ["出生日期假设为公历2004-06-15（仅演示，与22岁一致，待本人提供）", "出生城市假设为山东济南；居住城市未补造，仍记录江苏", "分析日期为2026-10-04；未补造家庭、关系或心理经历"]
     profile = dict(name="青鸟", gender="female", birth_year=2004, birth_month=6, birth_day=15, birth_hour=15, birth_minute=15, calendar_type="solar", birth_time_precision="exact", birth_place="山东济南（演示假设）", latitude=36.65, longitude=117.12, current_residence="江苏", occupation_status="全职会计", highest_education="本科", marital_status="单身", mbti="ENFP（自报，未测八维）", personality_keywords=["无知的乐观主义", "权衡利弊", "急迫"], strengths="愿意听别人对自身性格的建议", limitations="太着急", preferred_content_depth="深入详细", demo_assumptions=assumptions)
     context = dict(focus_topics=["personal_growth", "relationships", "career"], current_challenge="不太会拒绝，拒绝时语言生硬，习惯迁就；有事才联系朋友，关系逐渐疏远", issue_duration="感觉一直存在", impact_level="有些影响", decision_status="no", decision_style=["直觉", "咨询家人朋友"], expected_outcomes=["解决当前问题", "验证已有判断", "方向性指引", "认识自己"], usage_scenario="每天晚上复盘；遇到困惑时查询", additional_info="每次困境会有女贵人出现（用户自述）", source_questionnaire=source, analysis_date="2026-10-04", demo_assumptions=assumptions)
