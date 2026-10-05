@@ -3,6 +3,7 @@
   --reader-surface: rgba(255, 252, 245, 0.96);
   position: relative;
   min-width: 0;
+  overflow-anchor: none;
 }
 
 .report-reader__topbar,
@@ -19,6 +20,12 @@
   padding: 0 0 10px;
 }
 
+.report-reader__topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .report-reader .van-button.report-reader__toc-toggle,
 .report-reader .van-button.report-reader__page-button {
   min-height: var(--touch-target);
@@ -29,6 +36,53 @@
   font-family: var(--font-ui);
   font-size: var(--text-body-sm);
   font-weight: var(--weight-medium);
+}
+
+.report-reader__mode-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: var(--text-body-sm);
+  white-space: nowrap;
+}
+
+.report-reader__mode-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.report-reader__mode-select {
+  min-height: var(--touch-target);
+  appearance: none;
+  border: 1px solid var(--reader-line);
+  border-radius: var(--button-radius);
+  padding: 0 34px 0 14px;
+  background: var(--reader-surface);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-ui);
+}
+
+.report-reader__mode-select:focus-visible {
+  outline: 2px solid var(--cinnabar);
+  outline-offset: 2px;
+}
+
+.report-reader__mode-chevron {
+  position: absolute;
+  right: 14px;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  color: var(--ink-soft);
+  pointer-events: none;
+  transform: translateY(-2px) rotate(45deg);
 }
 
 .report-reader .van-button.report-reader__toc-toggle {
@@ -63,6 +117,10 @@
 
 .report-reader__stage {
   min-width: 0;
+  scroll-margin-top: calc(var(--nav-height) + 20px);
+}
+
+.report-reader__stage [data-reader-page] {
   scroll-margin-top: calc(var(--nav-height) + 20px);
 }
 
@@ -232,6 +290,19 @@
   .report-reader__pagination {
     gap: 7px;
     padding-top: 12px;
+  }
+
+  .report-reader__topbar-actions {
+    gap: 6px;
+  }
+
+  .report-reader__mode-control {
+    gap: 5px;
+    font-size: var(--text-caption);
+  }
+
+  .report-reader__mode-select {
+    font-size: 16px;
   }
 
   .report-reader .van-button.report-reader__page-button {

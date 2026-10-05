@@ -67,17 +67,21 @@ inject untrusted markup.
 
 ## Online Reader Navigation
 
-The web reader presents the cover, foreword, contents, each report section and an
-available summary as individual reader pages. Its directory shows the page number
-within that reader sequence; selecting an entry opens that page, and clicking outside
-the directory closes it. Readers can also advance from the page surface, use the
-previous/next controls or arrow and Page Up/Page Down keys, and enter a page number to
-jump directly. Keep controls keyboard-accessible and retain visible focus states.
+The web reader presents the cover, foreword, contents, report sections and an
+available summary as A4-shaped reader pages. Long legacy Markdown sections continue
+onto additional pages at heading, paragraph, list and sentence boundaries; the
+directory opens each chapter at its first page. Selecting an entry opens that page,
+and clicking outside the directory closes it. Readers can advance from the page
+surface, use the previous/next controls or arrow keys, and enter a page number to jump
+directly. A labelled reading-mode selector switches between page-by-page navigation
+and continuous scrolling while keeping the page at the reading position in view. In
+continuous mode, the page counter follows the page in view and directory/page-number
+jumps scroll to that page. In page-by-page mode, Page Up/Page Down also navigate pages.
+Keep controls keyboard-accessible and retain visible focus states. Print must show every
+report page even when the web reader has one page selected.
 
-Reader page numbers describe this online sequence, not physical PDF pages. A long
-section may flow across multiple printed pages, so the printed contents page remains
-an ordered list without page numbers. Print must show every report page even when the
-web reader has one page selected.
+Reader page numbers describe this online sequence, not printed PDF page numbers. The
+printed contents page remains an ordered list without page numbers.
 
 ## Visual Hierarchy
 
@@ -108,7 +112,8 @@ web reader has one page selected.
 - The contents page lists section order, not page numbers. Section length varies, so
   do not display a page number unless it is computed from the final rendered layout.
 - Print with CSS paged media at A4 with backgrounds enabled. Start major sections on a
-  new page where appropriate; let long sections continue naturally across pages.
+  new page where appropriate; let long structured sections continue naturally across
+  pages. Legacy Markdown uses the same continuation pages in the web reader and PDF.
   Avoid splitting short headings from their first paragraph and preserve widows and
   orphans for prose.
 - The Playwright export must open the same report route and use the same Vue template

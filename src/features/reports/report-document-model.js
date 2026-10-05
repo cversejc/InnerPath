@@ -1,4 +1,5 @@
 import { parseLegacyReportContent } from './report-content.js'
+import { paginateMarkdownForReader } from './reader-pagination.js'
 
 const REPORT_LABELS = {
   action: '具体行动',
@@ -228,6 +229,7 @@ export function buildReportDocument(report, { foundationData = null, markdown = 
       title: '完整解读',
       subtitle: '',
       content: markdown,
+      readerPages: paginateMarkdownForReader(markdown),
       items: [],
       blocks: [],
       kind: 'markdown'

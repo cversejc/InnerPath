@@ -879,6 +879,7 @@
   .navbar,
   .footer,
   .van-tabbar,
+  .brand-page-header,
   .report-header,
   .report-actions {
     display: none !important;

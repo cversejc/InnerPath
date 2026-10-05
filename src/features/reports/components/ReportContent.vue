@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { Button as VanButton } from 'vant'
 import ReportContentBlock from './ReportContentBlock.vue'
 import { formatReportMarkdown } from '../report-markdown.js'
@@ -14,6 +14,9 @@ const tocButtonRef = ref(null)
 const currentPage = ref(0)
 const pageInput = ref('01')
 const tocOpen = ref(false)
+const readerMode = ref('paged')
+const isContinuous = computed(() => readerMode.value === 'continuous')
+let pageObserver = null
 const displayName = computed(() => props.document.recipient || '')
 const displayTitle = computed(() => props.document.title || '人生说明书')
 const reportDate = computed(() => props.document.reportDate || '')
@@ -34,16 +37,40 @@ const hasSummary = computed(() => Boolean(
 ))
 const hasDocumentContent = computed(() => documentModel.value.sections.length > 0 || chapterItems.value.length > 0)
 const firstContentPageIndex = computed(() => 2 + (chapterItems.value.length ? 1 : 0))
-const pageCount = computed(() => 2
-  + (chapterItems.value.length ? 1 : 0)
-  + documentModel.value.sections.length
+const sectionPageEntries = computed(() => {
+  let pageIndex = firstContentPageIndex.value
+  return documentModel.value.sections.flatMap((section, sectionIndex) => {
+    const contents = section.readerPages?.length ? section.readerPages : [section.content || '']
+    return contents.map((content, pageInSection) => ({
+      section,
+      sectionIndex,
+      content,
+      pageInSection,
+      pageIndex: pageIndex++
+    }))
+  })
+})
+const summaryPageIndex = computed(() => firstContentPageIndex.value + sectionPageEntries.value.length)
+const pageCount = computed(() => firstContentPageIndex.value
+  + sectionPageEntries.value.length
   + (hasSummary.value ? 1 : 0)
   + (hasDocumentContent.value ? 0 : 1))
-const readerTocItems = computed(() => chapterItems.value.map((chapter, index) => ({
-  ...chapter,
-  pageIndex: firstContentPageIndex.value + index,
-  pageNumber: firstContentPageIndex.value + index + 1
-})))
+const readerTocItems = computed(() => {
+  let pageIndex = firstContentPageIndex.value
+  return chapterItems.value.map((chapter, index) => {
+    const chapterPageCount = index < documentModel.value.sections.length
+      ? (documentModel.value.sections[index].readerPages?.length || 1)
+      : 1
+    const item = {
+      ...chapter,
+      pageIndex,
+      pageNumber: pageIndex + 1,
+      endPageIndex: pageIndex + chapterPageCount
+    }
+    pageIndex += chapterPageCount
+    return item
+  })
+})
 const foundationSection = computed(() => documentModel.value.sections.find(section => section.kind === 'foundation'))
 const foundationData = computed(() => foundationSection.value?.foundationData || {})
 const baziPillars = computed(() => {
@@ -85,11 +112,18 @@ function joinStars(palace) {
   return [...(palace?.main_stars || []), ...(palace?.aux_stars || [])].filter(Boolean).join(' · ')
 }
 
-function scrollToCurrentPage() {
-  nextTick(() => {
-    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    pageStageRef.value?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
-  })
+function scrollToPage(pageIndex, mode = readerMode.value, requestedBehavior = 'smooth', afterScroll, waitForLayout = false) {
+  const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  const behavior = requestedBehavior === 'smooth' && !reducedMotion ? 'smooth' : 'instant'
+  const scroll = () => {
+    const target = mode === 'continuous'
+      ? readerRef.value?.querySelector(`[data-reader-page="${pageIndex + 1}"]`)
+      : pageStageRef.value
+    target?.scrollIntoView({ behavior, block: 'start' })
+    afterScroll?.()
+  }
+  if (waitForLayout) nextTick(() => requestAnimationFrame(scroll))
+  else scroll()
 }
 
 function goToPage(index, focusStage = false) {
@@ -100,7 +134,7 @@ function goToPage(index, focusStage = false) {
   if (focusStage) {
     nextTick(() => pageStageRef.value?.focus({ preventScroll: true }))
   }
-  scrollToCurrentPage()
+  scrollToPage(nextPage, readerMode.value, isContinuous.value ? 'auto' : 'smooth')
 }
 
 function jumpToPage() {
@@ -110,6 +144,54 @@ function jumpToPage() {
   }
   const requestedPage = Number(pageInput.value)
   goToPage(Math.min(Math.max(requestedPage, 1), pageCount.value) - 1)
+}
+
+function observeContinuousPages() {
+  pageObserver?.disconnect()
+  if (!isContinuous.value || typeof IntersectionObserver === 'undefined') return
+
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+  const readingBandTop = Math.round(viewportHeight * 0.18)
+  const readingBandBottom = Math.round(viewportHeight * 0.72)
+  pageObserver = new IntersectionObserver(() => {
+    currentPage.value = pageAtReadingPosition()
+  }, {
+    rootMargin: `-${readingBandTop}px 0px -${readingBandBottom}px 0px`,
+    threshold: 0
+  })
+
+  readerRef.value?.querySelectorAll('[data-reader-page]').forEach(page => pageObserver.observe(page))
+}
+
+function pageAtReadingPosition() {
+  const readingLine = window.innerHeight * 0.24
+  const visiblePages = [...(readerRef.value?.querySelectorAll('[data-reader-page]') || [])]
+    .filter(page => page.getClientRects().length)
+  const pageAtLine = visiblePages.find(page => {
+    const bounds = page.getBoundingClientRect()
+    return bounds.top <= readingLine && bounds.bottom >= readingLine
+  })
+  const nearestPage = pageAtLine || visiblePages.reduce((nearest, page) => {
+    const bounds = page.getBoundingClientRect()
+    const nearestBounds = nearest.getBoundingClientRect()
+    const distance = Math.max(bounds.top - readingLine, readingLine - bounds.bottom, 0)
+    const nearestDistance = Math.max(nearestBounds.top - readingLine, readingLine - nearestBounds.bottom, 0)
+    return distance < nearestDistance ? page : nearest
+  }, visiblePages[0])
+  const pageIndex = Number(nearestPage?.dataset.readerPage) - 1
+  return Number.isInteger(pageIndex) ? Math.min(Math.max(pageIndex, 0), pageCount.value - 1) : currentPage.value
+}
+
+function setReaderMode(mode) {
+  if (!['paged', 'continuous'].includes(mode) || mode === readerMode.value) return
+
+  const pageToKeep = isContinuous.value ? pageAtReadingPosition() : currentPage.value
+  pageObserver?.disconnect()
+  currentPage.value = pageToKeep
+  readerMode.value = mode
+  scrollToPage(pageToKeep, mode, 'auto', () => {
+    if (mode === 'continuous') observeContinuousPages()
+  }, true)
 }
 
 function toggleContents() {
@@ -151,11 +233,13 @@ function handleReaderKeydown(event) {
     }
     return
   }
-  if (tocOpen.value || event.target.closest?.('button, input, textarea, select, a, [contenteditable="true"]')) return
-  if (['ArrowRight', 'PageDown'].includes(event.key) && currentPage.value < pageCount.value - 1) {
+  if (tocOpen.value || event.target.closest?.('input, textarea, select, a, [contenteditable="true"]')) return
+  const nextKeys = isContinuous.value ? ['ArrowRight'] : ['ArrowRight', 'PageDown']
+  const previousKeys = isContinuous.value ? ['ArrowLeft'] : ['ArrowLeft', 'PageUp']
+  if (nextKeys.includes(event.key) && currentPage.value < pageCount.value - 1) {
     event.preventDefault()
     goToPage(currentPage.value + 1)
-  } else if (['ArrowLeft', 'PageUp'].includes(event.key) && currentPage.value > 0) {
+  } else if (previousKeys.includes(event.key) && currentPage.value > 0) {
     event.preventDefault()
     goToPage(currentPage.value - 1)
   }
@@ -164,26 +248,47 @@ function handleReaderKeydown(event) {
 function advanceFromPage(event) {
   if (event.target.closest?.('button, input, textarea, select, a, [contenteditable="true"]')) return
   if (window.getSelection?.()?.toString()) return
-  if (currentPage.value < pageCount.value - 1) goToPage(currentPage.value + 1)
+  pageStageRef.value?.focus({ preventScroll: true })
+  if (!isContinuous.value && currentPage.value < pageCount.value - 1) goToPage(currentPage.value + 1)
 }
+
+onBeforeUnmount(() => pageObserver?.disconnect())
 </script>
 
 <template>
-  <div ref="readerRef" class="report-reader" @keydown="handleReaderKeydown">
-    <div v-if="chapterItems.length" class="report-reader__topbar">
-      <VanButton
-        ref="tocButtonRef"
-        type="default"
-        plain
-        native-type="button"
-        class="report-reader__toc-toggle"
-        aria-controls="report-reader-toc"
-        :aria-expanded="tocOpen"
-        @click.stop="toggleContents"
-      >
-        查看目录
-        <span class="report-reader__chevron" :class="{ 'is-open': tocOpen }" aria-hidden="true"></span>
-      </VanButton>
+  <div ref="readerRef" class="report-reader" :class="{ 'report-reader--continuous': isContinuous }" @keydown="handleReaderKeydown">
+    <div class="report-reader__topbar">
+      <div class="report-reader__topbar-actions">
+        <label class="report-reader__mode-control">
+          <span class="report-reader__mode-label">阅读方式</span>
+          <span class="report-reader__mode-select-wrap">
+            <select
+              class="report-reader__mode-select"
+              aria-label="阅读方式"
+              :value="readerMode"
+              @change="setReaderMode($event.target.value)"
+            >
+              <option value="paged">分页阅读</option>
+              <option value="continuous">连续阅读</option>
+            </select>
+            <span class="report-reader__mode-chevron" aria-hidden="true"></span>
+          </span>
+        </label>
+        <VanButton
+          v-if="chapterItems.length"
+          ref="tocButtonRef"
+          type="default"
+          plain
+          native-type="button"
+          class="report-reader__toc-toggle"
+          aria-controls="report-reader-toc"
+          :aria-expanded="tocOpen"
+          @click.stop="toggleContents"
+        >
+          查看目录
+          <span class="report-reader__chevron" :class="{ 'is-open': tocOpen }" aria-hidden="true"></span>
+        </VanButton>
+      </div>
     </div>
 
     <div v-if="tocOpen" class="report-reader__toc-scrim" @click="closeContents">
@@ -195,7 +300,7 @@ function advanceFromPage(event) {
               <button
                 type="button"
                 class="report-reader__toc-item"
-                :aria-current="currentPage === item.pageIndex ? 'page' : undefined"
+                :aria-current="currentPage >= item.pageIndex && currentPage < item.endPageIndex ? 'page' : undefined"
                 @click="goToPage(item.pageIndex, true)"
               >
                 <span class="report-reader__toc-title">{{ item.title }}</span>
@@ -213,11 +318,11 @@ function advanceFromPage(event) {
       class="report-reader__stage"
       role="region"
       tabindex="0"
-      :aria-label="`报告阅读页 ${currentPage + 1} / ${pageCount}。使用方向键或 Page Up、Page Down 翻页。`"
+      :aria-label="`报告阅读页 ${currentPage + 1} / ${pageCount}。使用左右方向键翻页。`"
       @click="advanceFromPage"
     >
       <article class="report-document" data-render-ready="true">
-    <section class="report-page report-page--cover" :class="{ 'report-page--reader-hidden': currentPage !== 0 }" aria-label="报告封面">
+    <section class="report-page report-page--cover" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== 0 }" data-reader-page="1" aria-label="报告封面">
       <div class="report-cover__frame">
         <div class="report-cover__mark" aria-hidden="true"><span></span></div>
         <p class="report-cover__eyebrow">辰鉴 · PERSONAL MAP</p>
@@ -229,7 +334,7 @@ function advanceFromPage(event) {
       </div>
     </section>
 
-    <section class="report-page report-page--intro" :class="{ 'report-page--reader-hidden': currentPage !== 1 }" aria-labelledby="report-intro-title">
+    <section class="report-page report-page--intro" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== 1 }" data-reader-page="2" aria-labelledby="report-intro-title">
       <div class="report-page__running"><span>序言</span><span>{{ reportIdentity }}</span></div>
       <div class="report-page__body report-intro">
         <p class="report-page__eyebrow">{{ reportIdentity }}</p>
@@ -243,7 +348,7 @@ function advanceFromPage(event) {
       <div v-if="reportDate" class="report-page__footer"><span>报告日期 · {{ reportDate }}</span></div>
     </section>
 
-    <section v-if="chapterItems.length" class="report-page report-page--toc" :class="{ 'report-page--reader-hidden': currentPage !== 2 }" aria-labelledby="report-toc-title">
+    <section v-if="chapterItems.length" class="report-page report-page--toc" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== 2 }" data-reader-page="3" aria-labelledby="report-toc-title">
       <div class="report-page__running"><span>目录</span><span>{{ reportIdentity }}</span></div>
       <div class="report-page__body">
         <div class="report-heading report-heading--large">
@@ -262,28 +367,32 @@ function advanceFromPage(event) {
     </section>
 
     <section
-      v-for="(section, index) in documentModel.sections"
-      :key="section.id"
+      v-for="page in sectionPageEntries"
+      :key="`${page.section.id}-reader-${page.pageInSection}`"
       class="report-page report-page--content"
       :class="{
-        'report-page--foundation': section.kind === 'foundation',
-        'report-page--markdown': section.kind === 'markdown',
-        'report-page--reader-hidden': currentPage !== firstContentPageIndex + index
+        'report-page--foundation': page.section.kind === 'foundation',
+        'report-page--markdown': page.section.kind === 'markdown',
+        'report-page--reader-hidden': !isContinuous && currentPage !== page.pageIndex
       }"
-      :aria-labelledby="`report-section-title-${index}`"
+      :data-reader-page="page.pageIndex + 1"
+      :aria-labelledby="`report-section-title-${page.pageIndex}`"
     >
-      <div class="report-page__running"><span>{{ chapterNumber(index) }} · {{ section.title }}</span><span>{{ reportIdentity }}</span></div>
+      <div class="report-page__running">
+        <span>{{ chapterNumber(page.sectionIndex) }} · {{ page.section.title }}<template v-if="page.pageInSection"> · 续页 {{ page.pageInSection + 1 }}</template></span>
+        <span>{{ reportIdentity }}</span>
+      </div>
       <div class="report-page__body">
         <div class="report-heading">
-          <span class="report-heading__prefix">{{ chapterNumber(index) }}</span>
-          <h2 :id="`report-section-title-${index}`">{{ section.title }}</h2>
+          <span class="report-heading__prefix">{{ chapterNumber(page.sectionIndex) }}</span>
+          <h2 :id="`report-section-title-${page.pageIndex}`">{{ page.section.title }}<template v-if="page.pageInSection">（续页 {{ page.pageInSection + 1 }}）</template></h2>
         </div>
 
-        <p v-if="section.subtitle" class="report-lead">{{ section.subtitle }}</p>
-        <div v-if="section.kind === 'markdown' && section.content" class="report-markdown-content" v-html="formatReportMarkdown(section.content)"></div>
-        <div v-else-if="section.content" class="report-section-intro report-markdown-content" v-html="formatReportMarkdown(section.content)"></div>
+        <p v-if="page.pageInSection === 0 && page.section.subtitle" class="report-lead">{{ page.section.subtitle }}</p>
+        <div v-if="page.section.kind === 'markdown' && page.content" class="report-markdown-content" v-html="formatReportMarkdown(page.content)"></div>
+        <div v-else-if="page.pageInSection === 0 && page.section.content" class="report-section-intro report-markdown-content" v-html="formatReportMarkdown(page.section.content)"></div>
 
-        <div v-if="section.kind === 'foundation'" class="report-foundation-content">
+        <div v-if="page.section.kind === 'foundation'" class="report-foundation-content">
           <div v-if="baziPillars.length" class="report-grid report-grid--four">
             <div v-for="([label, pillar]) in baziPillars" :key="label" class="report-card report-card--center">
               <span class="report-card__label">{{ label }}</span>
@@ -308,19 +417,19 @@ function advanceFromPage(event) {
           <ReportContentBlock v-if="additionalFoundation" :block="additionalFoundation" />
         </div>
 
-        <ul v-if="section.items?.length" class="report-list report-list--spaced">
-          <li v-for="(item, itemIndex) in section.items" :key="`${section.id}-item-${itemIndex}`">{{ item }}</li>
+        <ul v-if="page.pageInSection === 0 && page.section.items?.length" class="report-list report-list--spaced">
+          <li v-for="(item, itemIndex) in page.section.items" :key="`${page.section.id}-item-${itemIndex}`">{{ item }}</li>
         </ul>
         <ReportContentBlock
-          v-for="block in section.blocks"
+          v-for="block in page.pageInSection === 0 ? page.section.blocks : []"
           :key="block.id"
           :block="block"
         />
       </div>
-      <div class="report-page__footer"><span>{{ chapterNumber(index) }} · {{ section.title }}</span></div>
+      <div class="report-page__footer"><span>{{ chapterNumber(page.sectionIndex) }} · {{ page.section.title }}<template v-if="page.pageInSection"> · 续页 {{ page.pageInSection + 1 }}</template></span></div>
     </section>
 
-    <section v-if="hasSummary" class="report-page report-page--ending report-page--dark" :class="{ 'report-page--reader-hidden': currentPage !== firstContentPageIndex + documentModel.sections.length }" aria-labelledby="report-summary-title">
+    <section v-if="hasSummary" class="report-page report-page--ending report-page--dark" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== summaryPageIndex }" :data-reader-page="summaryPageIndex + 1" aria-labelledby="report-summary-title">
       <div class="report-ending">
         <p class="report-divider__number">{{ chapterNumber(documentModel.sections.length) }}</p>
         <h2 id="report-summary-title">总结与寄语</h2>
@@ -336,7 +445,7 @@ function advanceFromPage(event) {
       </div>
     </section>
 
-    <section v-if="!hasDocumentContent" class="report-page report-page--empty" :class="{ 'report-page--reader-hidden': currentPage !== 2 }" aria-live="polite">
+    <section v-if="!hasDocumentContent" class="report-page report-page--empty" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== 2 }" data-reader-page="3" aria-live="polite">
       <div class="report-page__body">
         <div class="report-heading"><h2>报告正文暂不可用</h2></div>
       </div>
@@ -376,7 +485,7 @@ function advanceFromPage(event) {
         @click="goToPage(currentPage + 1)"
       >下一页</VanButton>
     </div>
-    <p class="report-reader__hint" aria-hidden="true">也可以点击报告页面进入下一页</p>
+    <p class="report-reader__hint" aria-hidden="true">{{ isContinuous ? '连续下滑阅读，也可使用左右方向键或目录跳转' : '点击报告页面或使用左右方向键翻页' }}</p>
     <span class="report-reader__live-status" role="status" aria-live="polite">第 {{ currentPage + 1 }} 页，共 {{ pageCount }} 页</span>
   </div>
 </template>
