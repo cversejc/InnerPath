@@ -18,12 +18,14 @@ S1_FOUNDATION_SKILL_KEY = "report.s1_foundation_analysis"
 S2_PSYCHOLOGY_SKILL_KEY = "report.s2_psychology_mapping"
 S3_INTEGRATION_SKILL_KEY = "report.s3_integration"
 S4_MECHANISM_SKILL_KEY = "report.s4_mechanism_block_action"
+NARRATIVE_PLAN_SKILL_KEY = "report.narrative_plan"
 REASONING_GUIDANCE_SKILL_KEYS = frozenset(
     {
         S1_FOUNDATION_SKILL_KEY,
         S2_PSYCHOLOGY_SKILL_KEY,
         S3_INTEGRATION_SKILL_KEY,
         S4_MECHANISM_SKILL_KEY,
+        NARRATIVE_PLAN_SKILL_KEY,
     }
 )
 ANALYSIS_SKILL_STEPS = {
@@ -31,6 +33,14 @@ ANALYSIS_SKILL_STEPS = {
     S2_PSYCHOLOGY_SKILL_KEY: "S2",
     S3_INTEGRATION_SKILL_KEY: "S3",
     S4_MECHANISM_SKILL_KEY: "S4",
+}
+REASONING_GUIDANCE_RUNTIME_REQUIREMENTS = {
+    NARRATIVE_PLAN_SKILL_KEY: [
+        "只选择 semantic_model.findings 中的 finding_key，不重新分析用户。",
+        "supporting_findings、deemphasized_findings 和 priority_blocks[].finding_refs 都必须逐字复制当前输入的 finding_key，不引用样例、分析片段编号或自行缩写。",
+        "不得创建事实、Finding、置信度或覆盖人工确认。",
+        "输出严格 JSON，不附加 Markdown 或解释文字。",
+    ],
 }
 
 ANALYSIS_SYSTEM_REQUIREMENTS = [
@@ -295,22 +305,35 @@ def analysis_system_requirements(step_key: str) -> list[str]:
     return [*sop_methodology(step_key)[1:], *ANALYSIS_SYSTEM_REQUIREMENTS]
 
 
+def reasoning_guidance_runtime_requirements(
+    skill_key: str,
+) -> list[str] | None:
+    """Return application-owned prompt rules for an intent-only skill."""
+    step_key = ANALYSIS_SKILL_STEPS.get(skill_key)
+    if step_key is not None:
+        return analysis_system_requirements(step_key)
+    requirements = REASONING_GUIDANCE_RUNTIME_REQUIREMENTS.get(skill_key)
+    return list(requirements) if requirements is not None else None
+
+
 def prepare_reasoning_guidance_specification(
     specification: dict[str, Any],
 ) -> dict[str, Any]:
     """Separate administrator guidance from application-owned stage contracts.
 
-    Older analysis versions stored administrator guidance, fixed coverage
-    instructions and output requirements together in ``instructions.methodology``.
-    Keep accepting that shape while exposing only the editable reasoning layer.
+    Older versions stored administrator guidance and application-owned prompt
+    rules together in ``instructions.methodology``. Keep accepting that shape
+    while exposing only the editable reasoning layer.
     """
     spec = deepcopy(specification)
     identity = spec.get("identity") if isinstance(spec, dict) else None
     if not isinstance(identity, dict):
         return spec
     skill_key = identity.get("skill_key")
-    step_key = ANALYSIS_SKILL_STEPS.get(skill_key)
-    if step_key is None:
+    current_runtime_requirements = reasoning_guidance_runtime_requirements(
+        skill_key
+    )
+    if current_runtime_requirements is None:
         return spec
 
     instructions = spec.get("instructions")
@@ -325,7 +348,7 @@ def prepare_reasoning_guidance_specification(
     methodology = guidance.get("methodology", instructions.get("methodology", []))
     if not isinstance(methodology, list):
         methodology = []
-    fixed_items = set(analysis_system_requirements(step_key))
+    fixed_items = set(current_runtime_requirements)
     previous_fixed_items = []
     previous_contract = spec.get("runtime_contract")
     previous_sources = [instructions.get("system_requirements")]
@@ -358,7 +381,7 @@ def prepare_reasoning_guidance_specification(
     instructions.pop("system_requirements", None)
     spec["runtime_contract"] = {
         "system_requirements": list(dict.fromkeys([
-            *analysis_system_requirements(step_key),
+            *current_runtime_requirements,
             *previous_fixed_items,
         ])),
     }
@@ -382,9 +405,16 @@ def compile_reasoning_guidance_specification(
     runtime_contract = spec.pop("runtime_contract", {})
     instructions = spec["instructions"]
     instructions["objective"] = guidance.get("objective", "")
+    identity = spec.get("identity") if isinstance(spec, dict) else {}
+    skill_key = identity.get("skill_key") if isinstance(identity, dict) else ""
+    runtime_requirements = (
+        runtime_contract.get("system_requirements")
+        or reasoning_guidance_runtime_requirements(skill_key)
+        or s1_system_requirements()
+    )
     instructions["methodology"] = [
         *(guidance.get("methodology") or []),
-        *(runtime_contract.get("system_requirements") or s1_system_requirements()),
+        *runtime_requirements,
     ]
     return spec
 
@@ -401,7 +431,28 @@ def reasoning_guidance_for_skill(
     if skill_key not in REASONING_GUIDANCE_SKILL_KEYS:
         return None
     spec = prepare_reasoning_guidance_specification(specification)
-    return deepcopy(spec.get("reasoning_guidance") or {"objective": "", "methodology": []})
+    guidance = deepcopy(
+        spec.get("reasoning_guidance") or {"objective": "", "methodology": []}
+    )
+    if skill_key == NARRATIVE_PLAN_SKILL_KEY:
+        legacy_objectives = {
+            "提出 2 到 3 个彼此有差异、由确认 Finding 支持的报告叙事候选。":
+                "基于已确认内容，提出几种彼此有差异、贴合本案的报告主线供咨询师选择。",
+        }
+        guidance["objective"] = legacy_objectives.get(
+            guidance["objective"], guidance["objective"]
+        )
+        legacy_wording = {
+            "明确列出支持和弱化的 Finding，缺少依据时降低表达强度。":
+                "比较主线的依据和不适合作为重点的内容；依据不足时降低表达力度。",
+            "按S4已审核卡点选择优先4–5项（证据不足可3项），不得为了数量发明卡点。":
+                "从已确认的少数关键卡点中选出重点；资料不足时减少重点，不为凑数制造内容。",
+        }
+        guidance["methodology"] = [
+            legacy_wording.get(item, item)
+            for item in guidance.get("methodology", [])
+        ]
+    return guidance
 
 
 def s1_reasoning_guidance(
@@ -431,22 +482,17 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
         dict.fromkeys(candidates["context_policy"]["context_fields"] + ["semantic_model"])
     )
     candidates["instructions"] = {
-        "objective": "提出 2 到 3 个彼此有差异、由确认 Finding 支持的报告叙事候选。",
+        "objective": "基于咨询师已确认的内容，提出几种贴合用户经历、各有侧重的报告主线，供咨询师选择。",
         "methodology": [
-            "只选择 semantic_model.findings 中的 finding_key，不重新分析用户。",
-            "supporting_findings、deemphasized_findings 和 priority_blocks[].finding_refs 都必须逐字复制当前输入的 finding_key，不引用样例、分析片段编号或自行缩写。",
-            "不得创建事实、Finding、置信度或覆盖人工确认。",
-            "明确列出支持和弱化的 Finding，缺少依据时降低表达强度。",
-            "输出严格 JSON，不附加 Markdown 或解释文字。",
+            "所有主线都只围绕咨询师确认过的命理、心理和行动内容展开，不新增案例解释或用户事实。",
+            "从用户本案最有解释力的核心张力出发，将自我认识、被隐藏的模式、卡点曾经的保护、共同机制、整合方向、人生阶段与现实行动串成一条成长脉络。",
+            "整体沿着‘你是谁、卡在哪、往哪去’推进，各部分职责清楚、前后呼应；标题、意象和叙述顺序贴合用户，不暴露框架，也不套固定模板。",
+            "从现实依据较充分的卡点中选择重要重点，合并真正重复的模式并保留差异；资料不足时减少重点或降低语气，不为凑数制造卡点。",
+            "比较不同主线怎样解释用户经历、连接已确认方向，以及哪些内容不适合作为主线；说明取舍依据，让咨询师按本案决定最终方向。",
         ],
     }
     candidates["tool_policy"] = {"allowed": []}
     candidates["example_policy"] = {"enabled": True, "max_examples": 3}
-    candidates["instructions"]["methodology"].extend([
-        "总叙事：心灵结构→认识自己→隐藏部分→卡点→保护功能→共性模式→整合能力→人生方向→成长实验。",
-        "保持你是谁/卡在哪/往哪去三章分工，候选主线和标题必须围绕用户独特矛盾，避免固定模板。",
-        "按S4已审核卡点选择优先4–5项（证据不足可3项），不得为了数量发明卡点。",
-    ])
     candidates["processor_policy"] = {"processor": "reports.narrative_candidates"}
     candidates["output_contract"] = {
         "type": "object",
@@ -568,6 +614,7 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
             "requirement_coverage": {"type": "array"},
         },
     }
+    candidates = prepare_reasoning_guidance_specification(candidates)
     return [validate_skill_specification(candidates), validate_skill_specification(authoring)]
 
 

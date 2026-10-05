@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import pytest
 from tests.test_skill_runtime import skill_db
-from app.domains.skills.service import ensure_default_analysis_skill_versions
+from app.domains.skills.service import ensure_default_analysis_skill_versions, ensure_default_narrative_skill_versions
 from app.domains.skills.examples import retrieve_skill_examples, retire_skill_example, create_example_revision, publish_skill_example, update_example_redaction
 
 
@@ -93,4 +93,21 @@ async def test_s4_default_thought_changes_do_not_publish_over_existing_version(s
     assert again[3].id == published.id
     assert again[3].specification_json["reasoning_guidance"]["methodology"] == [
         "已审核的旧版机制与行动思路"
+    ]
+
+
+@pytest.mark.asyncio
+async def test_narrative_plan_default_thought_changes_do_not_publish_over_existing_version(skill_db):
+    versions = await ensure_default_narrative_skill_versions(skill_db)
+    published = versions[0]
+    previous = deepcopy(published.specification_json)
+    previous["reasoning_guidance"]["methodology"] = ["已审核的旧版报告主线思路"]
+    published.specification_json = previous
+    await skill_db.flush()
+
+    again = await ensure_default_narrative_skill_versions(skill_db)
+
+    assert again[0].id == published.id
+    assert again[0].specification_json["reasoning_guidance"]["methodology"] == [
+        "已审核的旧版报告主线思路"
     ]

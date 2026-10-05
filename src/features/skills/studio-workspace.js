@@ -24,7 +24,8 @@ const POLL_INTERVAL = 2500;
 const S1_FOUNDATION_SKILL_KEY = REPORT_SKILLS.find((item) => item.step === "S1")?.key;
 const REASONING_GUIDANCE_SKILL_KEYS = new Set(
   REPORT_SKILLS.filter((item) =>
-    ["S1", "S2", "S3", "S4"].includes(item.step),
+    ["S1", "S2", "S3", "S4"].includes(item.step) ||
+    item.key === "report.narrative_plan",
   ).map((item) => item.key),
 );
 

@@ -43,7 +43,10 @@ async def test_case_and_workflow_keep_all_skill_versions_after_new_publication(q
     for key in sorted(PRODUCTION_KEYS):
         original = await resolve_case_skill(db, first, key)
         spec = deepcopy(original.specification_json)
-        spec["instructions"]["objective"] += " Updated acceptance version."
+        if isinstance(spec.get("reasoning_guidance"), dict):
+            spec["reasoning_guidance"]["objective"] += " Updated acceptance version."
+        else:
+            spec["instructions"]["objective"] += " Updated acceptance version."
         published = await create_skill_draft(db, skill_key=key, name=original.name,
             category=original.category, specification=spec, created_by=1)
         await publish_skill_version(db, published.id, published_by=1)

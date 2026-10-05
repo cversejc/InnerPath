@@ -16,6 +16,7 @@ from app.domains.skills.definitions import (
     S2_PSYCHOLOGY_SKILL_KEY,
     S3_INTEGRATION_SKILL_KEY,
     S4_MECHANISM_SKILL_KEY,
+    NARRATIVE_PLAN_SKILL_KEY,
     compile_s1_runtime_specification,
     compile_reasoning_guidance_specification,
     default_analysis_skill_specifications,
@@ -44,6 +45,7 @@ from app.domains.skills.service import (
     create_skill_run,
     create_skill_draft,
     ensure_default_analysis_skill_versions,
+    ensure_default_narrative_skill_versions,
     ensure_default_skill_version,
     ensure_default_validator_skill_version,
     publish_skill_version,
@@ -555,6 +557,158 @@ async def test_s4_reasoning_guidance_draft_preserves_contract_and_compiles(skill
         "reasoning_path" in item
         for item in runtime["instructions"]["methodology"]
     )
+
+
+def test_narrative_plan_guidance_covers_framework_without_technical_fields():
+    specification = default_narrative_skill_specifications()[0]
+    guidance = specification["reasoning_guidance"]
+    method_text = "\n".join(guidance["methodology"])
+
+    assert specification["identity"]["skill_key"] == NARRATIVE_PLAN_SKILL_KEY
+    assert len(guidance["methodology"]) == 5
+    assert all(
+        phrase in method_text
+        for phrase in ("核心张力", "卡点曾经的保护", "你是谁、卡在哪、往哪去", "卡点", "不同主线")
+    )
+    assert not any(
+        technical_name in method_text
+        for technical_name in (
+            "semantic_model", "finding_key", "priority_blocks", "supporting_findings",
+            "deemphasized_findings", "reports.narrative_candidates",
+        )
+    )
+    assert any(
+        "finding_key" in item
+        for item in specification["runtime_contract"]["system_requirements"]
+    )
+
+
+def test_narrative_plan_legacy_instructions_project_as_guidance_and_compile_same_runtime():
+    current = default_narrative_skill_specifications()[0]
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = "提出 2 到 3 个彼此有差异、由确认 Finding 支持的报告叙事候选。"
+    legacy["instructions"]["methodology"] = [
+        "只选择 semantic_model.findings 中的 finding_key，不重新分析用户。",
+        "supporting_findings、deemphasized_findings 和 priority_blocks[].finding_refs 都必须逐字复制当前输入的 finding_key，不引用样例、分析片段编号或自行缩写。",
+        "不得创建事实、Finding、置信度或覆盖人工确认。",
+        "明确列出支持和弱化的 Finding，缺少依据时降低表达强度。",
+        "输出严格 JSON，不附加 Markdown 或解释文字。",
+        "总叙事：心灵结构→认识自己→隐藏部分→卡点→保护功能→共性模式→整合能力→人生方向→成长实验。",
+        "保持你是谁/卡在哪/往哪去三章分工，候选主线和标题必须围绕用户独特矛盾，避免固定模板。",
+        "按S4已审核卡点选择优先4–5项（证据不足可3项），不得为了数量发明卡点。",
+    ]
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    guidance = reasoning_guidance_for_skill(NARRATIVE_PLAN_SKILL_KEY, legacy)
+    runtime = compile_reasoning_guidance_specification(legacy)
+
+    assert "Finding" not in guidance["objective"]
+    assert "Finding" not in "\n".join(guidance["methodology"])
+    assert "finding_key" not in "\n".join(guidance["methodology"])
+    assert "semantic_model" not in "\n".join(guidance["methodology"])
+    assert any("卡点曾经的保护" in item for item in current["reasoning_guidance"]["methodology"])
+    assert all(
+        item in runtime["instructions"]["methodology"]
+        for item in legacy["instructions"]["methodology"]
+    )
+
+
+@pytest.mark.asyncio
+async def test_narrative_plan_reasoning_guidance_draft_preserves_contract_and_hides_spec(skill_db):
+    published = (await ensure_default_narrative_skill_versions(skill_db))[0]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    objective = "依据已确认判断搭建贴合本案的叙事方向，供咨询师选择。"
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=objective,
+        methodology=guidance["methodology"],
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+    response = _skill_version_response(updated)
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert runtime["instructions"]["objective"] == objective
+    assert "核心张力" in "\n".join(runtime["instructions"]["methodology"])
+    assert runtime["processor_policy"]["processor"] == "reports.narrative_candidates"
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["output_contract"]["properties"]["candidates"]["type"] = "string"
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            draft.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
+
+
+@pytest.mark.asyncio
+async def test_narrative_plan_runtime_compiles_guidance_and_candidate_contract():
+    specification = default_narrative_skill_specifications()[0]
+    skill = SimpleNamespace(
+        id=75,
+        skill_key=NARRATIVE_PLAN_SKILL_KEY,
+        version=1,
+        specification_json=specification,
+    )
+    findings = [
+        {"finding_key": "finding.boundary", "claim": "用户希望保持关系，同时拥有拒绝空间。"},
+        {"finding_key": "finding.energy", "claim": "用户重视稳定节奏。"},
+        {"finding_key": "finding.block", "claim": "用户在请求面前有时快速答应。"},
+    ]
+    candidates = [
+        {
+            "candidate_key": "thread-boundary",
+            "theme": "让关心有边界，也保留自己的节奏",
+            "rationale": "从关系需要与自主空间之间的张力组织报告。",
+            "supporting_findings": ["finding.boundary", "finding.block"],
+            "deemphasized_findings": ["finding.energy"],
+            "priority_blocks": [
+                {"title": "在回应请求前留一点空间", "finding_refs": ["finding.block"]}
+            ],
+            "narrative_arc": ["认识自己的连接方式", "理解快速答应的保护", "尝试更有节奏的回应"],
+        },
+        {
+            "candidate_key": "thread-rhythm",
+            "theme": "在稳定的日常里找到自己的方向",
+            "rationale": "从稳定需要与探索意愿的并存出发安排叙事。",
+            "supporting_findings": ["finding.energy", "finding.boundary"],
+            "deemphasized_findings": ["finding.block"],
+            "priority_blocks": [],
+            "narrative_arc": ["看见自己的节奏", "理解关系中的拉扯", "安排小范围尝试"],
+        },
+    ]
+    gateway = StubGateway(json.dumps({"candidates": candidates}, ensure_ascii=False))
+
+    result = await execute_skill(
+        skill_version=skill,
+        input_data={
+            "profile": {},
+            "context": {"semantic_model": {"findings": findings}},
+        },
+        gateway=gateway,
+    )
+
+    assert len(result.output_parsed["candidates"]) == 2
+    assert "核心张力" in gateway.last_request[0]
+    assert "finding_key" in gateway.last_request[0]
+    assert '"candidate_key"' in gateway.last_request[0]
 
 
 @pytest.mark.asyncio
