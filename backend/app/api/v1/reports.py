@@ -40,7 +40,11 @@ async def _report_for_read(db: AsyncSession, report_id: int, actor: User) -> Rep
     report = await get_report_by_id(db, report_id, None if staff else actor.id)
     if report is None or report.status != "completed":
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Report not found")
-    if actor.role == "consultant" and not await has_staff_assignment(db, actor.id, report.user_id):
+    if (
+        actor.role == "consultant"
+        and report.user_id != actor.id
+        and not await has_staff_assignment(db, actor.id, report.user_id)
+    ):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not assigned")
     return report
 
