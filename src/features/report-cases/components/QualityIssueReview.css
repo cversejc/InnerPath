@@ -1,0 +1,14 @@
+.quality-issue-review { display: grid; gap: var(--space-3); margin: var(--space-4) 0; }
+.quality-review-guide, .quality-review-note { margin: 0; color: var(--ink-soft); font-size: var(--text-body-sm); line-height: var(--leading-body); }
+.quality-review-note { padding: var(--space-3); border-left: 2px solid var(--gold-deep); background: var(--paper-soft); color: var(--gold-deep); }
+.quality-review-note.error { color: var(--cinnabar-deep); border-color: var(--cinnabar); }
+.quality-review-card { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--button-radius); }
+.quality-review-card > header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2); }
+.quality-review-card h4 { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-semibold); }
+.quality-review-card header > span { color: var(--ink-soft); font-size: var(--text-body-sm); }
+.quality-review-card > p { margin: 0; font-size: var(--text-body); line-height: var(--leading-body); white-space: pre-wrap; overflow-wrap: anywhere; }
+.quality-review-form, .quality-review-field { display: grid; gap: var(--space-2); font-size: var(--text-body); }
+.quality-review-form { gap: var(--space-3); }
+.quality-review-field select, .quality-review-field textarea { width: 100%; min-width: 0; min-height: var(--touch-target); padding: var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--button-radius); background: var(--paper-soft); color: var(--ink); font: inherit; font-size: var(--text-body); line-height: var(--leading-body); }
+.quality-review-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+@media (max-width: 640px) { .quality-review-card { padding: var(--space-3); } .quality-review-actions { flex-direction: column; } .quality-review-actions :deep(.van-button) { width: 100%; } }

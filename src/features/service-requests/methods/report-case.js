@@ -32,11 +32,12 @@ function splitReferences(value) {
 }
 
 export default {
-  async loadReportCaseData(caseId) {
-    this.reportCaseLoading = true
+  async loadReportCaseData(caseId, { silent = false } = {}) {
+    if (!silent) this.reportCaseLoading = true
     if (this.reportCase?.id !== Number(caseId)) {
       this.narrativeFeedbackDrafts = {}
       this.qualityFeedbackDraft = ''
+      this.foundationError = ''
     }
     if (this.reportNarrativePollTimer) {
       clearTimeout(this.reportNarrativePollTimer)
@@ -99,12 +100,13 @@ export default {
           }
         }
       }
+      this.resumeGeneratedReportReview?.()
       this.scheduleNarrativePoll(caseId)
     } catch (error) {
       this.message = this.errorText(error)
       throw error
     } finally {
-      this.reportCaseLoading = false
+      if (!silent) this.reportCaseLoading = false
     }
   },
   narrativeDraftKey(run, candidate) {
@@ -184,6 +186,7 @@ export default {
             }
           }
         }
+        this.resumeGeneratedReportReview?.()
         this.scheduleNarrativePoll(caseId)
       } catch (error) {
         this.message = this.errorText(error)
@@ -203,6 +206,7 @@ export default {
       return
     }
     this.reportQualitySaving = true
+    this.finalGateAttested = false
     try {
       this.reportQuality = await runReportCaseQuality(this.reportCase.id, {
         idempotency_key: `case-${this.reportCase.id}-qa-${Date.now()}`,
@@ -359,8 +363,10 @@ export default {
           self_direction: draft.self_direction || null
         }
       })
-      await this.loadReportCaseData(this.reportCase.id)
-      this.message = '报告主线已确认并保存。'
+      await this.loadReportCaseData(this.reportCase.id, { silent: true })
+      this.nodeWritingMode = 'allocation'
+      this.scrollWorkspaceToTop()
+      this.message = '报告主线已确认，已进入逐段编排。核对内容安排后可按顺序生成正文。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -374,8 +380,10 @@ export default {
       await startReportCaseGeneration(this.reportCase.id, {
         idempotency_key: `case-${this.reportCase.id}-generation-${Date.now()}`
       })
-      await this.loadReportCaseData(this.reportCase.id)
-      this.message = '报告内容已开始按顺序生成。'
+      this.reportReviewAutoOpen = true
+      this.nodeWritingMode = 'progress'
+      await this.loadReportCaseData(this.reportCase.id, { silent: true })
+      this.message = '报告内容已开始按顺序生成；检查完成后会接入逐段审稿。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -389,7 +397,7 @@ export default {
       const run = await runReportCaseCoherenceCheck(this.reportCase.id, {
         idempotency_key: `case-${this.reportCase.id}-coherence-${Date.now()}`
       })
-      await this.loadReportCaseData(this.reportCase.id)
+      await this.loadReportCaseData(this.reportCase.id, { silent: true })
       this.message = run.target_type === 'REPORT_CHAPTER_COHERENCE'
         ? '当前章节的连贯性检查已开始。'
         : '整篇报告的连贯性检查已开始。'
@@ -451,8 +459,9 @@ export default {
     this.reportStepSaving = true
     try {
       await startReportCaseStep(this.reportCase.id, step.step_key)
-      await this.loadReportCaseData(this.reportCase.id)
-      this.message = `已开始${this.reportStepLabel(step.step_key)}，可以查看并处理相关内容。`
+      await this.loadReportCaseData(this.reportCase.id, { silent: true })
+      this.setReportWorkspaceSection('upstream')
+      this.message = `已开始${this.reportStepLabel(step.step_key)}，请先核对上游输入，再继续本节点工作。`
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -464,8 +473,8 @@ export default {
     if (!this.reportCase || !step || this.reportStepSaving) return
     const confirmed = await this.confirmAction({
       title: '完成当前步骤',
-      message: '确认已完成当前步骤的人工审核？下一步骤将被激活。',
-      confirmButtonText: '完成步骤'
+      message: '确认已完成当前节点的人工审核？完成后将打开下一节点，同专业负责人可继续开始处理，跨专业节点交给对应负责人。',
+      confirmButtonText: '完成并进入下一节点'
     })
     if (!confirmed) return
     this.reportStepSaving = true
@@ -474,10 +483,12 @@ export default {
         reviewed_finding_count: this.reportCaseContent.findings.length,
         reviewed_fragment_count: this.reportCaseContent.fragments.length
       })
-      await this.loadReportCaseData(this.reportCase.id)
-      this.message = '当前步骤已完成。'
+      await this.loadReportCaseData(this.reportCase.id, { silent: true })
+      this.showNextReportStep(step)
     } catch (error) {
-      this.message = this.errorText(error)
+      this.message = error.response?.data?.detail === 'report_authoring_not_ready'
+        ? '写作节点还有待办：请逐段确认正文，并重新检查修改后的报告连贯性。'
+        : this.errorText(error)
     } finally {
       this.reportStepSaving = false
     }

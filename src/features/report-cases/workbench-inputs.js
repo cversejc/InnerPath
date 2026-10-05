@@ -27,7 +27,11 @@ const VALUE_LABELS = {
   relationships: '人际关系', personal_growth: '个人成长',
   self: '自我价值', growth: '个人成长', stress: '压力与焦虑', decision: '选择与决策',
   low: '较低', medium: '一般', high: '较高', critical: '很高',
-  unknown: '不确定', approximate: '大约时间', exact: '准确时间',
+  none: '几乎不影响', some: '有些影响', serious: '严重影响日常生活',
+  intuition: '凭直觉判断', rational: '理性分析利弊',
+  family_friends: '咨询家人 / 朋友意见', professional: '寻求专业人士建议',
+  wait: '顺其自然，等时间给答案', other: '其他',
+  unknown: '不确定', uncertain: '不确定，正在犹豫中', approximate: '大约时间', exact: '准确时间',
   not_started: '尚未开始', considering: '正在考虑', decided: '已经决定',
   undecided: '尚未决定', unsure: '尚未确定', yes: '是', no: '否'
 }
@@ -182,7 +186,9 @@ function calculationSummary(value) {
 }
 
 export function formatConsultantEvidenceValue(value, sourceType = '') {
-  return sourceType === 'SYSTEM_CALCULATED' ? calculationSummary(value) : presentValue(value)
+  return ['SYSTEM_CALCULATED', 'CONSULTANT_CORRECTED'].includes(sourceType)
+    ? calculationSummary(value)
+    : presentValue(value)
 }
 
 export function isVisibleConsultantEvidence(item) {
@@ -191,14 +197,38 @@ export function isVisibleConsultantEvidence(item) {
 
 export function visibleConsultantEvidence(items = []) {
   const seenCalculations = new Set()
+  const currentFoundation = currentReportFoundation(items)
   return items.filter(item => {
     if (!isVisibleConsultantEvidence(item)) return false
-    if (item?.source_type !== 'SYSTEM_CALCULATED') return true
+    const calculationKey = String(item?.evidence_key || '')
+    const isChartCalculation = calculationKey.startsWith('calculated.mingli_foundation.')
+      || calculationKey.startsWith('calculated.foundation.skill_run.')
+      || ['system.bazi', 'system.four_pillars', 'system.ziwei'].includes(calculationKey)
+    if (currentFoundation && item.evidence_key !== currentFoundation.evidence_key && isChartCalculation) return false
+    if (!['SYSTEM_CALCULATED', 'CONSULTANT_CORRECTED'].includes(item?.source_type)) return true
     const signature = JSON.stringify(item.value_json)
     if (seenCalculations.has(signature)) return false
     seenCalculations.add(signature)
     return true
   })
+}
+
+export function currentReportFoundation(items = []) {
+  const candidates = items.filter(item => item?.status === 'ACTIVE'
+    && (item.source_type === 'SYSTEM_CALCULATED'
+      && item.evidence_key?.startsWith('calculated.mingli_foundation.v2')
+      || item.source_type === 'CONSULTANT_CORRECTED'
+      && item.evidence_key?.startsWith('calculated.mingli_foundation.consultant.'))
+    && item.value_json?.calculation_version === 'mingli-v2'
+    && item.value_json?.bazi
+  )
+  const corrections = candidates.filter(item => item.source_type === 'CONSULTANT_CORRECTED')
+  const canonical = candidates.filter(item => item.evidence_key?.startsWith('calculated.mingli_foundation.v2'))
+  const selected = [...(corrections.length ? corrections : canonical.length ? canonical : candidates)]
+  return selected.sort((left, right) => {
+    const dateOrder = String(right.created_at || '').localeCompare(String(left.created_at || ''))
+    return dateOrder || Number(right.id || 0) - Number(left.id || 0)
+  })[0] || null
 }
 
 function profileItems(profile = {}) {
@@ -261,6 +291,7 @@ function evidenceTitle(item) {
   if (key.toLowerCase().includes('ziwei')) return '紫微测算结果'
   if (key.toLowerCase().includes('bazi') || key.toLowerCase().includes('four_pillars')) return '八字测算结果'
   if (item.source_type === 'SYSTEM_CALCULATED') return '系统测算依据'
+  if (item.source_type === 'CONSULTANT_CORRECTED') return '咨询师修订的测算依据'
   if (item.source_type === 'USER_CONTEXT' || item.source_type === 'APPLICATION_CONTEXT') return '本次申请情境'
   return '用户提交的资料'
 }
@@ -278,8 +309,8 @@ function evidenceItems(evidence = [], keys = null) {
       key: item.evidence_key,
       title: evidenceTitle(item),
       body: formatConsultantEvidenceValue(item.value_json, item.source_type),
-      calculation: item.source_type === 'SYSTEM_CALCULATED' ? item.value_json : null,
-      meta: item.source_type === 'SYSTEM_CALCULATED' ? '系统测算' : item.source_type === 'EXTERNAL_REFERENCE' ? '外部资料' : '用户提供'
+      calculation: ['SYSTEM_CALCULATED', 'CONSULTANT_CORRECTED'].includes(item.source_type) ? item.value_json : null,
+      meta: item.source_type === 'SYSTEM_CALCULATED' ? '系统测算' : item.source_type === 'CONSULTANT_CORRECTED' ? '咨询师修订' : item.source_type === 'EXTERNAL_REFERENCE' ? '外部资料' : '用户提供'
     }))
 }
 

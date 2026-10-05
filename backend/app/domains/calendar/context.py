@@ -21,7 +21,7 @@ def calendar_model_context(snapshot, temporal):
             {"fragment_key", "title", "content", "structured_analysis", "finding_refs", "evidence_refs"}}
             for f in semantics.get("analysis_fragments", [])],
         "evidence": [{k: deepcopy(v) for k, v in e.items() if k in {"evidence_key", "source_type", "value"}
-                      and not (k == "value" and e.get("source_type") == "SYSTEM_CALCULATED")}
+                      and not (k == "value" and e.get("source_type") in {"SYSTEM_CALCULATED", "CONSULTANT_CORRECTED"})}
             for e in semantics.get("evidence", [])],
     }
     return {"profile": deepcopy(snapshot.get("profile") or {}), "source_report": report,

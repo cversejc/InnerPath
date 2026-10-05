@@ -20,10 +20,15 @@ import queueMethods from '../features/service-requests/methods/queue.js'
 import workflowMethods from '../features/service-requests/methods/workflow.js'
 import reportCaseMethods from '../features/service-requests/methods/report-case.js'
 import reportAnalysisMethods from '../features/service-requests/methods/report-analysis.js'
+import reportFoundationMethods from '../features/service-requests/methods/report-foundation.js'
+import reportReviewMethods from '../features/service-requests/methods/report-review.js'
 import ReportNodeWorkbench from '../features/report-cases/components/ReportNodeWorkbench.vue'
 import AnalysisDraftsPanel from '../features/report-cases/components/AnalysisDraftsPanel.vue'
+import FoundationCalculationPanel from '../features/report-cases/components/FoundationCalculationPanel.vue'
 import WorkbenchRecordPicker from '../features/report-cases/components/WorkbenchRecordPicker.vue'
 import QualityScorecard from '../features/report-cases/components/QualityScorecard.vue'
+import ReportFragmentReview from '../features/report-cases/components/ReportFragmentReview.vue'
+import QualityIssueReview from '../features/report-cases/components/QualityIssueReview.vue'
 import { nodeWorkspaceComputed, nodeWorkspaceMethods } from '../features/report-cases/node-workspace-state.js'
 import DeliveredReportSummary from '../features/report-cases/components/DeliveredReportSummary.vue'
 import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
@@ -38,7 +43,7 @@ import { confirmAction } from '../utils/confirmAction.js'
 
 export default {
   name: 'StaffConsole',
-  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, DeliveredReportSummary, WorkbenchRecordPicker, QualityScorecard },
+  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, FoundationCalculationPanel, DeliveredReportSummary, WorkbenchRecordPicker, QualityScorecard, ReportFragmentReview, QualityIssueReview },
   data() {
     const admin = hasRole('admin')
     return {
@@ -80,6 +85,8 @@ export default {
       reportAnalysisSaving: false,
       reportAnalysisFindingSavingKey: '',
       reportAnalysisFragmentSavingKey: '',
+      foundationSaving: false,
+      foundationError: '',
       reportNarrativeSaving: false,
       reportNarrativePollTimer: null,
       narrativeCandidateDrafts: {},
@@ -94,6 +101,8 @@ export default {
       reportFragmentDrafts: {},
       newReportFragment: { fragment_key: '', title: '', content: '', finding_refs: '', evidence_refs: '' },
       reportFragmentSaving: false,
+      reportReviewBusy: false,
+      reportReviewAutoOpen: false,
       loading: false,
       accepting: false,
       aiStarting: false,
@@ -249,8 +258,14 @@ export default {
     },
     '$route.query.section'(sectionId) {
       if (!this.selectedRequest) return
-      const section = this.reportWorkspaceSections.some(item => item.id === sectionId)
-        ? sectionId
+      const normalizedSection = {
+        inputs: 'upstream',
+        context: 'upstream',
+        evidence: this.selectedReportStepKey === 'S1' ? 'calculation' : 'upstream',
+        suggestions: 'analysis'
+      }[sectionId] || sectionId
+      const section = this.reportWorkspaceSections.some(item => item.id === normalizedSection)
+        ? normalizedSection
         : 'overview'
       if (section === this.workspaceSection) return
       this.workspaceSection = section
@@ -279,6 +294,8 @@ export default {
     ...workflowMethods,
     ...reportCaseMethods,
     ...reportAnalysisMethods,
+    ...reportFoundationMethods,
+    ...reportReviewMethods,
     ...assignmentMethods,
     ...nodeWorkspaceMethods,
     reportFragmentStatus(fragmentKey) {
@@ -312,15 +329,20 @@ export default {
       return REPORT_STEP_STATUS_LABELS[status] || '处理中'
     },
     setReportWorkspaceSection(sectionId) {
+      if (this.reportReviewBusy) { this.message = '请先保存或取消当前修改，再切换工作界面。'; return }
       const sectionMap = {
-        'case-context': 'inputs',
-        'case-evidence': 'inputs',
+        'case-context': 'upstream',
+        'case-evidence': this.selectedReportStepKey === 'S1' ? 'calculation' : 'upstream',
+        'case-calculation': 'calculation',
+        'case-analysis': 'analysis',
         'case-findings': 'findings',
         'case-fragments': 'fragments',
         'case-narrative': 'writing',
         'case-quality': 'quality'
       }
-      const section = sectionMap[sectionId] || sectionId
+      const section = sectionMap[sectionId]
+        || ({ inputs: 'upstream', suggestions: 'analysis' }[sectionId])
+        || sectionId
       if (!this.reportWorkspaceSections.some(item => item.id === section)) return
       this.workspaceSection = section
       if (this.selectedRequest) this.syncWorkspaceRoute(this.selectedRequest.id, section, { history: 'push' })
@@ -369,6 +391,7 @@ export default {
       this.restoreReportNode()
     },
     closeReportWorkspace() {
+      if (this.reportReviewBusy) { this.message = '请先保存或取消当前修改，再关闭报告工作区。'; return }
       this.syncWorkspaceRoute(null)
       this.clearReportWorkspaceState()
     },
@@ -378,6 +401,9 @@ export default {
       this.workspace = null
       this.reportCase = null
       this.reportCaseCompletionGate = null
+      this.reportReviewBusy = false
+      this.reportReviewAutoOpen = false
+      this.foundationError = ''
       this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
       this.reportAnalysisRuns = []
       this.reportNarrative = { current_plan: null, candidate_runs: [], fragment_runs: [] }
@@ -396,7 +422,7 @@ export default {
     },
     evidenceSourceLabel(sourceType) {
       return {
-        SYSTEM_CALCULATED: '系统测算', USER_CONTEXT: '申请补充',
+        SYSTEM_CALCULATED: '系统测算', CONSULTANT_CORRECTED: '咨询师修订', USER_CONTEXT: '申请补充',
         APPLICATION_CONTEXT: '申请补充', USER_PROFILE: '用户档案',
         REPORT: '已交付报告', CONSULTANT: '咨询师补充'
       }[sourceType] || '用户资料'

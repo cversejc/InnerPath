@@ -918,6 +918,21 @@ async def test_analysis_draft_is_assignment_checked_and_candidates_keep_run_prov
     assert finding.source_skill_run_id == run.id
     assert finding.owner_step_task_id == current.id
 
+    with pytest.raises(ValueError, match="report_analysis_fragment_findings_unconfirmed"):
+        await apply_analysis_fragment_candidate(
+            assigned_db, case_id=84, step_key="S2", run_id=run.id,
+            fragment_key="analysis.psychology.persona", expected_revision_no=None, actor=actor,
+        )
+    finding = await apply_analysis_finding_candidate(
+        assigned_db, case_id=84, step_key="S2", run_id=run.id,
+        finding_key=finding.finding_key, expected_revision_no=finding.revision_no, actor=actor,
+        review={"claim": "在边界清楚时，用户愿意尝试新的工作方向，仍需核对具体情境。", "status": "CONFIRMED"},
+    )
+    assert finding.status == "CONFIRMED"
+    assert finding.revision_no == 2
+    assert finding.source_skill_run_id == run.id
+    assert "仍需核对" in finding.claim
+
     fragment = await apply_analysis_fragment_candidate(
         assigned_db,
         case_id=84,
@@ -930,6 +945,50 @@ async def test_analysis_draft_is_assignment_checked_and_candidates_keep_run_prov
     assert fragment.status == "PROPOSED"
     assert fragment.source_skill_run_id == run.id
     assert fragment.source_snapshot["findings"][0]["finding_key"] == finding.finding_key
+
+    fragment = await apply_analysis_fragment_candidate(
+        assigned_db, case_id=84, step_key="S2", run_id=run.id,
+        fragment_key=fragment.fragment_key, expected_revision_no=fragment.revision_no, actor=actor,
+        review={"content": "咨询师已核对边界感与探索意愿的联系，仍需结合具体事件理解。", "status": "CONFIRMED"},
+    )
+    assert fragment.status == "CONFIRMED"
+    assert fragment.revision_no == 2
+    assert fragment.source_skill_run_id == run.id
+    assert fragment.source_snapshot["findings"][0]["revision_no"] == finding.revision_no
+    with pytest.raises(ValueError, match="fragment_revision_conflict"):
+        await apply_analysis_fragment_candidate(
+            assigned_db, case_id=84, step_key="S2", run_id=run.id,
+            fragment_key=fragment.fragment_key, expected_revision_no=1, actor=actor,
+            review={"content": "冲突修改不得覆盖已确认内容。", "status": "CONFIRMED"},
+        )
+    finding = await apply_analysis_finding_candidate(
+        assigned_db, case_id=84, step_key="S2", run_id=run.id,
+        finding_key=finding.finding_key, expected_revision_no=finding.revision_no, actor=actor,
+        review={"status": "REJECTED"},
+    )
+    assert finding.status == "REJECTED"
+    assert fragment.status == "STALE"
+    with pytest.raises(ValueError, match="report_analysis_fragment_findings_unconfirmed"):
+        await apply_analysis_fragment_candidate(
+            assigned_db, case_id=84, step_key="S2", run_id=run.id,
+            fragment_key=fragment.fragment_key, expected_revision_no=fragment.revision_no, actor=actor,
+            review={"status": "CONFIRMED"},
+        )
+    with pytest.raises(ValueError, match="report_analysis_fragment_support_required"):
+        await apply_analysis_fragment_candidate(
+            assigned_db, case_id=84, step_key="S2", run_id=run.id,
+            fragment_key=fragment.fragment_key, expected_revision_no=fragment.revision_no, actor=actor,
+            review={"finding_refs": [], "evidence_refs": [], "status": "CONFIRMED"},
+        )
+    fragment = await apply_analysis_fragment_candidate(
+        assigned_db, case_id=84, step_key="S2", run_id=run.id,
+        fragment_key=fragment.fragment_key, expected_revision_no=fragment.revision_no, actor=actor,
+        review={"finding_refs": [], "content": "仅能确认用户正在评估工作方向，探索意愿与边界感的解释暂不采用。", "status": "CONFIRMED"},
+    )
+    assert fragment.status == "CONFIRMED"
+    assert fragment.source_snapshot["findings"] == []
+    assert fragment.source_snapshot["evidence"][0]["evidence_key"] == evidence.evidence_key
+    assert run.output_parsed["analysis_fragments"][0]["finding_refs"] == [finding.finding_key]
 
     feedback_run, feedback_created = await queue_case_analysis_draft(
         assigned_db,

@@ -1,11 +1,12 @@
 import {
   nodeAssets,
   nodeViews,
-  nodeTools,
   resolveNodeLocation,
 } from "./node-workspace.js";
 
 import { canHandleStep } from "./professional-ownership.js";
+import { currentReportFoundation } from "./workbench-inputs.js";
+import { orderedReportFragments } from "./review-continuation.js";
 
 function selected(items, key, field) {
   const item = items.find((row) => String(row[field]) === key) || items[0];
@@ -48,11 +49,15 @@ export const nodeWorkspaceComputed = {
     );
   },
   nodeFragments() {
+    if (["S5", "S6"].includes(this.selectedReportStepKey)) return orderedReportFragments(this.reportCaseContent, this.reportContentPlan);
     return nodeAssets(
       this.reportCaseContent,
       this.selectedReportStep,
       "fragments",
     );
+  },
+  reportFoundationEvidence() {
+    return currentReportFoundation(this.reportCaseContent?.evidence || []);
   },
   visibleNodeFindings() {
     return selected(
@@ -140,6 +145,7 @@ export const nodeWorkspaceComputed = {
 
 export const nodeWorkspaceMethods = {
   selectReportNode(stepKey) {
+    if (this.reportReviewBusy) { this.message = "请先保存或取消当前修改，再切换节点。"; return; }
     if (
       !this.reportCase?.workflow_instance?.steps.some(
         (step) => step.step_key === stepKey,
@@ -155,11 +161,13 @@ export const nodeWorkspaceMethods = {
       candidate: "",
     };
     this.nodeWritingMode = "plan";
+    this.reportReviewAutoOpen = false;
     this.showNodeAddForm = false;
     this.reportStepReturn.visible = false;
     this.setReportWorkspaceSection("overview");
   },
   openReportOverview() {
+    if (this.reportReviewBusy) { this.message = "请先保存或取消当前修改，再返回报告总览。"; return; }
     this.selectedReportStepKey = "";
     this.workspaceSection = "overview";
     this.syncWorkspaceRoute(this.selectedRequest.id, "overview", {
@@ -175,23 +183,5 @@ export const nodeWorkspaceMethods = {
     );
     this.selectedReportStepKey = location.stepKey;
     this.workspaceSection = location.section;
-  },
-  async runReportNodeTool(requestedTool) {
-    const tool = nodeTools(this.selectedReportStep, this.currentReportStep, {
-      pending: this.nodeToolPending,
-      planReady:
-        this.reportNarrative.current_plan?.status === "CONFIRMED" &&
-        this.reportContentPlan?.status === "READY",
-      generationStatus: this.reportGeneration?.status,
-    }).find((item) => item.action === requestedTool.action);
-    if (!tool || tool.disabled || !canHandleStep(this.selectedReportStep, this.staffActor)) return;
-    this.setReportWorkspaceSection(tool.destination);
-    const method = {
-      analysis: "startReportAnalysisDraft",
-      narrative: "generateNarrativeCandidates",
-      authoring: "generateCompleteReport",
-      quality: "runReportQuality",
-    }[tool.action];
-    await this[method]();
   },
 };

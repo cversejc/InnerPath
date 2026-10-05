@@ -135,7 +135,7 @@ def validate_timeline_source(record, evidence, source_keys):
     known = set()
     for row in evidence:
         value = row.get("value") or {}
-        if row.get("source_type") != "SYSTEM_CALCULATED" or row.get("evidence_key") not in source_keys or not isinstance(value, dict):
+        if row.get("source_type") not in {"SYSTEM_CALCULATED", "CONSULTANT_CORRECTED"} or row.get("evidence_key") not in source_keys or not isinstance(value, dict):
             continue
         for period in (value.get("bazi_facts") or {}).get("dayun", []):
             if isinstance(period, dict):

@@ -9,7 +9,12 @@ from .dependencies import mark_dependents_stale
 from .models import CaseEvidenceItem, FindingRevision
 
 
-EVIDENCE_SOURCE_TYPES = {"USER_PROVIDED", "SYSTEM_CALCULATED", "EXTERNAL_REFERENCE"}
+EVIDENCE_SOURCE_TYPES = {
+    "USER_PROVIDED",
+    "SYSTEM_CALCULATED",
+    "CONSULTANT_CORRECTED",
+    "EXTERNAL_REFERENCE",
+}
 
 
 def _application_source_values(snapshot: dict[str, Any]) -> list[tuple[str, Any]]:

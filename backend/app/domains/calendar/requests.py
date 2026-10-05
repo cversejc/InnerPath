@@ -87,8 +87,20 @@ async def create_calendar_request(
             raise ValueError("calendar_request_source_report_mismatch")
         semantics = (version.semantic_snapshot or {}).get("semantics") or {}
         evidence = semantics.get("evidence") or []
-        foundation = next((e.get("value") for e in evidence
-                           if e.get("source_type") == "SYSTEM_CALCULATED" and isinstance(e.get("value"), dict) and e["value"].get("bazi")), {})
+        foundation_rows = [
+            e for e in evidence
+            if e.get("source_type") in {"CONSULTANT_CORRECTED", "SYSTEM_CALCULATED"}
+            and isinstance(e.get("value"), dict)
+            and e["value"].get("bazi")
+        ]
+        foundation_rows.sort(key=lambda e: (
+            0 if e.get("source_type") == "CONSULTANT_CORRECTED"
+            and str(e.get("evidence_key", "")).startswith("calculated.mingli_foundation.consultant.")
+            else 1 if e.get("source_type") == "SYSTEM_CALCULATED"
+            and str(e.get("evidence_key", "")).startswith("calculated.mingli_foundation.v2")
+            else 2
+        ))
+        foundation = foundation_rows[0].get("value") if foundation_rows else {}
         source_report_snapshot.update({
             "report_version_id": version.id, "report_case_id": version.report_case_id,
             "summary": (version.structured_data.get("narrative_plan") or {}).get("core_theme"),

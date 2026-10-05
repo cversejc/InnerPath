@@ -4,25 +4,26 @@ import { classifyWorkbenchStepView } from "./workbench-inputs.js";
 export function nodeViews(stepKey) {
   const common = [
     { id: "overview", label: "节点首页" },
-    { id: "inputs", label: "查看输入" },
+    { id: "upstream", label: "上游输入" },
   ];
   if (["S1", "S2", "S3", "S4"].includes(stepKey))
     return [
       ...common,
-      { id: "suggestions", label: "技能建议" },
+      ...(stepKey === "S1" ? [{ id: "calculation", label: "程序计算" }] : []),
+      { id: "analysis", label: "AI 分析" },
       { id: "findings", label: "判断审核" },
       { id: "fragments", label: "分析内容" },
     ];
   if (stepKey === "S5")
     return [
       ...common,
-      { id: "writing", label: "主线与编排" },
+      { id: "writing", label: "AI 写作与编排" },
       { id: "fragments", label: "逐段审稿" },
     ];
   if (stepKey === "S6")
     return [
       ...common,
-      { id: "quality", label: "评分与问题" },
+      { id: "quality", label: "AI 检查与问题" },
       { id: "fragments", label: "复核正文" },
     ];
   return common;
@@ -42,9 +43,13 @@ export function resolveNodeLocation(steps, currentStep, query = {}) {
       ? steps.find((item) => item.step_key === legacyOwner[query.section]) ||
         step
       : step;
-  const section = ["context", "evidence"].includes(query.section)
-    ? "inputs"
-    : query.section;
+  const sectionAliases = {
+    context: "upstream",
+    inputs: "upstream",
+    evidence: selected?.step_key === "S1" ? "calculation" : "upstream",
+    suggestions: "analysis",
+  };
+  const section = sectionAliases[query.section] || query.section;
   return {
     stepKey: selected?.step_key || "",
     section: nodeViews(selected?.step_key).some((item) => item.id === section)
@@ -92,7 +97,7 @@ export function nodeTools(
         name: `${reportStage(step.step_key).shortName}分析技能`,
         input: "本节点输入和前序已确认内容",
         output: "候选判断、分析片段和风险提示",
-        destination: "suggestions",
+        destination: "analysis",
       },
     ];
   else if (step.step_key === "S5")

@@ -34,21 +34,13 @@
       <header class="node-heading">
         <div class="node-identity">
           <h2>{{ stage.shortName }}</h2>
-          <span class="node-state" :title="viewMode === 'UPCOMING' ? '先完成前序节点，再开始处理' : viewMode !== 'CURRENT' ? '历史节点，可查看输入、技能记录和审核成果，当前内容只读' : ''">{{ statusLabel(viewStep.status) }}{{ viewMode === 'UPCOMING' ? ' · 预览' : viewMode !== 'CURRENT' ? ' · 只读' : '' }}</span>
+          <span class="node-state" :title="viewMode === 'UPCOMING' ? '先完成前序节点，再开始处理' : viewMode !== 'CURRENT' ? '历史节点可查看输入、运行记录和审核成果；当前内容只读' : ''">{{ statusLabel(viewStep.status) }}{{ viewMode === 'UPCOMING' ? ' · 预览' : viewMode !== 'CURRENT' ? ' · 只读' : '' }}</span>
         </div>
-        <select class="node-step-switch" aria-label="切换分析节点" :value="viewStep.step_key" @change="$emit('select-step', $event.target.value)">
-          <option v-for="step in steps" :key="step.id" :value="step.step_key">{{ step.sequence_no }}/{{ steps.length }} · {{ stageFor(step.step_key)?.shortName }} · {{ statusLabel(step.status) }}</option>
-        </select>
         <div class="node-header-actions">
           <VanButton
             plain
             native-type="button"
-            @click="openDialog('tools', $event)"
-            >技能工具</VanButton
-          ><VanButton
-            plain
-            native-type="button"
-            @click="openDialog('tasks', $event)"
+            @click="openDialog($event)"
             >任务说明</VanButton
           >
         </div>
@@ -58,20 +50,31 @@
         class="node-view-actions"
         aria-label="本节点工作界面"
       >
-        <VanButton
-          v-for="view in views"
-          :key="view.id"
-          plain
-          native-type="button"
-          :aria-pressed="section === view.id"
-          :class="{ active: section === view.id }"
-          @click="$emit('to-section', view.id)"
-          >{{ view.label }}</VanButton
-        >
+        <template v-for="(view, index) in views" :key="view.id">
+          <VanButton
+            plain
+            native-type="button"
+            :aria-pressed="section === view.id"
+            :disabled="reviewBusy"
+            :class="{ active: section === view.id }"
+            @click="$emit('to-section', view.id)"
+            >{{ index + 1 }}. {{ view.label }}</VanButton
+          >
+          <span v-if="index < views.length - 1" class="node-view-arrow" aria-hidden="true">→</span>
+        </template>
       </nav>
       </div>
       <div class="node-workspace-body" role="region" :aria-label="`${stage.shortName}工作内容`" tabindex="0">
       <div v-if="section === 'overview'" class="node-home">
+        <div v-if="viewStep.status === 'COMPLETED' && currentStep" class="node-continuation" role="status">
+          <strong>本节点已完成 · 下一待办：{{ stageFor(currentStep.step_key)?.shortName }}</strong>
+          <p>{{ canHandleCurrent ? '已确认成果已传给下一节点。进入下一待办后，点击“开始本节点”继续工作。' : `下一待办由${specialtyLabels[currentStep.required_capability] || '对应咨询师'}负责${currentStep.assignee_id ? '，请由该负责人接续处理。' : '，当前待接单或分配。'}` }}</p>
+          <VanButton plain native-type="button" @click="$emit('select-step', currentStep.step_key)">进入当前待办</VanButton>
+        </div>
+        <div v-else-if="isCurrent && viewStep.status === 'READY'" class="node-continuation" role="status">
+          <strong>{{ canAct ? '本节点已就绪，可以开始处理' : `${ownerLabel}待办 · ${viewStep.assignee_id ? '由对应负责人处理' : '尚未接单或分配'}` }}</strong>
+          <p>{{ canAct ? '请先点击下方“开始本节点”，再按顺序核对上游输入和本节点任务。' : '前序成果已传入本节点。对应负责人接单或由管理员分配后，才能开始处理。' }}</p>
+        </div>
         <div class="node-brief">
           <div>
             <p class="eyebrow">你的任务</p>
@@ -80,19 +83,19 @@
         </div>
         <div class="node-launchers">
           <button
-            v-for="view in views.filter((item) => item.id !== 'overview')"
+            v-for="(view, index) in views.filter((item) => item.id !== 'overview')"
             :key="view.id"
             type="button"
             @click="$emit('to-section', view.id)"
           >
-            <strong>{{ view.label }}</strong
+            <strong>{{ index + 2 }}. {{ view.label }}</strong
             ><span>{{ viewHint(view.id) }}</span
             ><span class="launcher-arrow" aria-hidden="true">→</span>
           </button>
         </div>
       </div>
       <NodeInputsPanel
-        v-if="section === 'inputs'"
+        v-if="section === 'upstream'"
         :key="viewStep.step_key"
         :groups="inputGroups"
         :guidance="stage.inputGuidance"
@@ -119,6 +122,7 @@
           class="primary-button"
           native-type="button"
           :loading="loading"
+          :disabled="loading || reviewBusy"
           @click="$emit('start-step')"
           >开始本节点</VanButton
         ><template
@@ -139,10 +143,10 @@
             native-type="button"
             :loading="loading"
             :disabled="
-              loading || (completionGate && !completionGate.can_complete)
+              loading || reviewBusy || (completionGate && !completionGate.can_complete)
             "
             @click="$emit('complete-step')"
-            >确认成果并完成本节点</VanButton
+            >确认成果并进入下一节点</VanButton
           ></template
         ><VanButton
           v-if="canAct && isCurrent && viewStep.status === 'IN_REVIEW'"
@@ -171,64 +175,14 @@
       <NodeWorkbenchDialog
         :return-focus-element="dialogTrigger"
         :show="Boolean(dialog)"
-        :title="dialogKind === 'tools' ? '本节点技能工具' : '任务与完成标准'"
+        title="任务与完成标准"
         @update:show="
           (value) => {
             if (!value) dialog = '';
           }
         "
       >
-        <template v-if="dialogKind === 'tools'"
-          ><p>
-            技能使用本节点资料生成候选结果。运行后进入对应工作界面，由你审核确认。
-          </p>
-          <article
-            v-for="tool in tools"
-            :key="tool.action"
-            class="node-skill-tool"
-          >
-            <h3>{{ tool.name }}</h3>
-            <p>输入：{{ tool.input }}</p>
-            <p>产出：{{ tool.output }}</p>
-            <p v-if="tool.disabledReason" class="tool-reason">
-              {{ tool.disabledReason }}
-            </p>
-            <VanButton
-              type="primary"
-              class="primary-button"
-              native-type="button"
-              :disabled="tool.disabled"
-              @click="runTool(tool)"
-              >运行技能</VanButton
-            ><VanButton
-              plain
-              native-type="button"
-              @click="openView(tool.destination)"
-              >查看结果</VanButton
-            >
-          </article>
-          <router-link class="node-studio-link" :to="studioLocation"
-            >前往技能与示例工作台</router-link
-          >
-          <details v-if="stageRuns.length">
-            <summary>本节点运行记录 · {{ stageRuns.length }} 次</summary>
-            <ul>
-              <li v-for="run in stageRuns" :key="run.id">
-                {{ runStatus(run.status) }} · 技能版本
-                {{ run.skill_version_id }} · 使用
-                {{ run.selected_examples?.length || 0 }} 个样例
-                <router-link
-                  v-if="isFeedbackRerun(run)"
-                  class="node-run-review-link"
-                  :to="studioLocationForRun(run)"
-                  >查看反馈与技能维护</router-link
-                >
-              </li>
-            </ul>
-          </details></template
-        >
-        <template v-else
-          ><h3>本步目标</h3>
+        <h3>本步目标</h3>
           <p>{{ stage.purpose }}</p>
           <p>{{ stage.deliverable }}</p>
           <h3>本步要完成什么</h3>
@@ -272,15 +226,14 @@
               <h4>{{ topic.title }}</h4>
               <p>{{ topic.task }}</p>
             </article>
-          </details></template
-        >
+          </details>
       </NodeWorkbenchDialog>
     </template>
     <div v-else class="workflow-finished-state">
       <h2>
         {{ reportCase.status === "DELIVERED" ? "报告已交付" : "报告处理总览" }}
       </h2>
-      <p>选择上方节点，查看该步骤的输入、技能和成果。</p>
+      <p>选择上方节点，查看该步骤的上游资料、处理过程和成果。</p>
       <dl class="report-overview-stats">
         <div>
           <dt>已确认判断</dt>
@@ -330,10 +283,9 @@ import {
   buildWorkbenchInputGroups,
   classifyWorkbenchStepView,
 } from "../workbench-inputs.js";
-import { nodeViews, nodeTools, nodeAssets } from "../node-workspace.js";
+import { nodeViews, nodeAssets } from "../node-workspace.js";
 import NodeInputsPanel from "./NodeInputsPanel.vue";
 import NodeWorkbenchDialog from "./NodeWorkbenchDialog.vue";
-import { runSkillKey } from "../../skills/presentation.js";
 export default {
   components: { VanButton, NodeInputsPanel, NodeWorkbenchDialog },
   props: {
@@ -346,13 +298,12 @@ export default {
     completionGate: Object,
     narrativePlan: Object,
     quality: Object,
-    analysisRuns: { type: Array, default: () => [] },
     loading: Boolean,
     toolPending: Boolean,
     generationStatus: String,
     canReopen: Boolean,
     waitingForUser: Boolean,
-    studioLocation: Object,
+    reviewBusy: Boolean,
   },
   emits: [
     "select-step",
@@ -362,11 +313,12 @@ export default {
     "request-info",
     "toggle-return",
     "reopen",
-    "run-tool",
   ],
-  data: () => ({ dialog: "", dialogKind: "tools", dialogTrigger: null }),
+  data: () => ({ dialog: "", dialogTrigger: null }),
   computed: {
     canAct() { return canHandleStep(this.viewStep, this.actor) && !this.waitingForUser },
+    canHandleCurrent() { return canHandleStep(this.currentStep, this.actor) },
+    specialtyLabels() { return specialtyLabels },
     ownerLabel() { return specialtyLabels[this.viewStep?.required_capability] || "咨询师" },
     steps() {
       return this.reportCase.workflow_instance?.steps || [];
@@ -398,28 +350,11 @@ export default {
         quality: this.quality,
       });
     },
-    tools() {
-      return nodeTools(this.viewStep, this.currentStep, {
-        pending: this.toolPending || !this.canAct,
-        generationStatus: this.generationStatus,
-        planReady:
-          this.narrativePlan?.status === "CONFIRMED" &&
-          this.narrativePlan?.plan_json?.content_plan?.status === "READY",
-      });
-    },
     contract() {
       return this.isCurrent ? this.completionGate?.sop_contract : null;
     },
-    stageRuns() {
-      return this.analysisRuns.filter(
-        (run) => run.step_task_id === this.viewStep?.id,
-      );
-    },
   },
   watch: {
-    dialog(value) {
-      if (value) this.dialogKind = value;
-    },
     selectedStepKey() {
       this.dialog = "";
       this.revealSelectedView();
@@ -437,46 +372,19 @@ export default {
         this.$refs.viewNavigation?.querySelector('[aria-pressed="true"]')?.scrollIntoView({ block: "nearest", inline: "nearest" });
       });
     },
-    openDialog(kind, event) {
+    openDialog(event) {
       this.dialogTrigger = event.currentTarget;
-      this.dialog = kind;
+      this.dialog = "tasks";
     },
     stageFor: reportStage,
     statusLabel(status) {
       return REPORT_STEP_STATUS_LABELS[status] || "待处理";
     },
-    runStatus(status) {
-      return (
-        {
-          PENDING: "待运行",
-          RUNNING: "运行中",
-          COMPLETED: "已完成",
-          FAILED: "失败",
-        }[status] || "待处理"
-      );
-    },
-    studioLocationForRun(run) {
-      const base = this.studioLocation || { path: "/skills", query: {} };
-      return {
-        ...base,
-        query: {
-          ...(base.query || {}),
-          skill: runSkillKey(run) || base.query?.skill,
-          run_id: String(run.id),
-          panel: this.actor?.role === "admin" ? "feedback" : "runs",
-        },
-      };
-    },
-    isFeedbackRerun(run) {
-      return Boolean(
-        run.runtime_instruction &&
-          ["REPORT_ANALYSIS_DRAFT", "NARRATIVE_CANDIDATES", "REPORT_FRAGMENT", "REPORT_QA"].includes(run.target_type),
-      );
-    },
     viewHint(id) {
       return {
-        inputs: `${this.inputGroups.length} 类输入，集中核对资料与来源`,
-        suggestions: "查看技能候选，选择加入审核",
+        upstream: `${this.inputGroups.length} 类输入，集中核对资料与来源`,
+        calculation: "核对程序测算；发现错误时创建人工修订版本",
+        analysis: "运行 AI 分析，查看并处理候选结果",
         findings: `${nodeAssets(this.content, this.viewStep, "findings").length} 条本步判断，逐条确认`,
         fragments: `${nodeAssets(this.content, this.viewStep, "fragments").length} 项内容，逐项审阅与编辑`,
         writing: "选择报告主线，确认编排",
@@ -499,15 +407,6 @@ export default {
           confirmed_growth_experiments_required: "确认3–5项可执行成长实验",
         }[code] || "请检查未完成的审核项"
       );
-    },
-    openView(section) {
-      this.dialog = "";
-      this.$emit("to-section", section);
-    },
-    runTool(tool) {
-      if (tool.disabled) return;
-      this.dialog = "";
-      this.$emit("run-tool", tool);
     },
   },
 };

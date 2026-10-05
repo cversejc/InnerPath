@@ -4,6 +4,7 @@
       ><span>{{ label }} · {{ items.length }} 项</span
       ><select
         :value="activeKey"
+        :disabled="disabled"
         @change="$emit('update:modelValue', $event.target.value)"
       >
         <option
@@ -19,7 +20,7 @@
       <VanButton
         plain
         native-type="button"
-        :disabled="activeIndex <= 0"
+        :disabled="disabled || activeIndex <= 0"
         @click="move(-1)"
         >上一项</VanButton
       >
@@ -27,7 +28,7 @@
       <VanButton
         plain
         native-type="button"
-        :disabled="activeIndex >= items.length - 1"
+        :disabled="disabled || activeIndex >= items.length - 1"
         @click="move(1)"
         >下一项</VanButton
       >
@@ -44,6 +45,7 @@ export default {
     label: { type: String, default: "选择条目" },
     keyField: { type: String, default: "key" },
     titleField: { type: String, default: "title" },
+    disabled: Boolean,
   },
   emits: ["update:modelValue"],
   computed: {
@@ -64,7 +66,17 @@ export default {
       return String(item[this.keyField] ?? item.id ?? item.title);
     },
     itemLabel(item) {
-      return String(item[this.titleField] || "未命名条目").slice(0, 85);
+      if (this.titleField === "claim") {
+        const shortTitle = item.short_title || item.structured_data?.short_title || item.structured_data_json?.short_title;
+        if (shortTitle) return String(shortTitle).replace(/\s+/g, " ").slice(0, 32);
+        const claim = String(item.claim || "未命名判断").replace(/\s+/g, " ").trim();
+        const firstPhrase = claim
+          .split(/[，,。；;：:！？!?]/)
+          .map((part) => part.trim())
+          .find((part) => part.length >= 4) || claim;
+        return firstPhrase.length > 24 ? `${firstPhrase.slice(0, 23)}…` : firstPhrase;
+      }
+      return String(item[this.titleField] || "未命名条目").replace(/\s+/g, " ").slice(0, 85);
     },
     move(direction) {
       const item = this.items[this.activeIndex + direction];

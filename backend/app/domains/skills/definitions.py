@@ -472,8 +472,9 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "sop_contract": stage_contract(step_key),
         }
         spec["instructions"]["methodology"].extend([
+            "每条 finding 都提供 short_title：8–20 字的中文关键词标签，概括其核心判断，供列表快速识别；详细依据仍写在 claim 中。",
             "控制输出预算，保证JSON完整：summary约120字，每个Finding.claim约40–120字，analysis_fragments.content每项约150–300字，结构化details每字段约25–80字。只在reasoning_contract列出的片段返回structured_analysis，其他片段不添加。引用必要Evidence，不复制上游整份总结；不以压缩为由漏掉规定片段或Action字段。",
-            "新案例analysis_context.reasoning_contract存在时，其analysis_structures列出的片段必须提交structured_analysis={status,reason,quote,follow_up_questions,details}。details严格按该key的字段表，逐字段给依据和边界；FULFILLED全部字段齐全，DEFERRED可为空但须在正文明确暂缓并补问，不能用NOT_APPLICABLE删掉核心推导。阶段地图periods.start_year/end_year必须逐字采用已提供SYSTEM_CALCULATED证据内bazi_facts.dayun的起止年份，并在该片段evidence_refs引用计算证据；资料不足用DEFERRED，禁止补造年份。",
+            "新案例analysis_context.reasoning_contract存在时，其analysis_structures列出的片段必须提交structured_analysis={status,reason,quote,follow_up_questions,details}。details严格按该key的字段表，逐字段给依据和边界；FULFILLED全部字段齐全，DEFERRED可为空但须在正文明确暂缓并补问，不能用NOT_APPLICABLE删掉核心推导。阶段地图periods.start_year/end_year必须逐字采用已提供程序测算证据内bazi_facts.dayun的起止年份，并在该片段evidence_refs引用当前测算版本；资料不足用DEFERRED，禁止补造年份。",
             "新案例S4每项ACTION的structured_data.reasoning_path须有resource_refs(只指已确认RESOURCE/USEFUL_GOD/STRUCTURE/SELF_DIRECTION)、regulation_function、capacity、reality_gap、block_refs(与行动block_refs一致)、integration_task、tool(与method一致)、rationale、evidence_refs(现实自述依据)。逐项说明资源如何转成能力、回应哪些卡点和为何选此工具。真实生活依据不能用单独的命盘计算冒充。关联当前批次BLOCK时使用已有候选key；先列资源/卡点，再列行动便于审核保存。不虚构新的事实或补造心理经历。",
             "新案例analysis_context.framework_contract存在时，每个analysis_fragments对象须有framework_coverage：status(FULFILLED/DEFERRED/NOT_APPLICABLE/MISSING)、reason、quote、follow_up_questions。quote只能从该对象刚生成的content逐字选择连续一句，不能摘录未出现在本content中的问卷、上游分析或details文字；structured_analysis.quote同样如此。DEFERRED必须说明缺失输入并给补问；NOT_APPLICABLE必须有资料证明的理由。MISSING不能用于完成节点。",
             "S2 mapping明确产出意识自我/自我信念，并与面具和未被接纳的部分区分；S4 ACTION的block_refs只能引用semantic_role=BLOCK的判断。不得用别的角色代替卡点。",
@@ -506,6 +507,7 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
                         ],
                         "properties": {
                             "finding_key": {"type": "string"},
+                            "short_title": {"type": "string"},
                             "claim": {"type": "string"},
                             "kind": {"type": "string", "enum": ["FINDING", "SIGNAL"]},
                             "semantic_role": {"type": "string"},

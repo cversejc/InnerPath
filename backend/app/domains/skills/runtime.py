@@ -27,6 +27,7 @@ from app.domains.reports.generation.report_response_parser import (
     extract_chat_content,
     parse_ai_response,
 )
+from app.domains.skills.analysis_sop import display_topic_title
 from .definitions import (
     GLOBAL_POLICY,
     GLOBAL_POLICY_VERSION,
@@ -633,6 +634,7 @@ def _validate_analysis_draft_output(
         key = item.get("finding_key")
         claim = item.get("claim")
         role = item.get("semantic_role")
+        short_title = item.get("short_title")
         if (
             not isinstance(key, str)
             or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,199}", key)
@@ -640,6 +642,11 @@ def _validate_analysis_draft_output(
             or not isinstance(claim, str)
             or not claim.strip()
             or len(claim) > 5000
+            or (short_title is not None and (
+                not isinstance(short_title, str)
+                or not short_title.strip()
+                or len(short_title) > 32
+            ))
             or not isinstance(role, str)
             or not role.strip()
             or len(role) > 48
@@ -693,6 +700,10 @@ def _validate_analysis_draft_output(
             or not finding_refs and not evidence_refs
         ):
             raise ValueError("report_analysis_fragment_invalid")
+        if isinstance(title, str):
+            display_title = display_topic_title(title)
+            if display_title:
+                item["title"] = display_title
         fragment_keys.add(key)
         if analysis_context.get("framework_contract"):
             item["framework_coverage"] = normalize_coverage(item.get("framework_coverage"), content, allow_not_applicable=True)
@@ -701,6 +712,10 @@ def _validate_analysis_draft_output(
             item["structured_analysis"] = normalize_structured_analysis(key, item.get("structured_analysis"), content)
             if key == "analysis.s3.timeline":
                 validate_timeline_source(item["structured_analysis"], analysis_context.get("evidence", []), set(evidence_refs))
+        elif key not in ANALYSIS_STRUCTURES:
+            # Older/model-generated S1 candidates may carry this optional field even
+            # though structured analysis is only defined for the reasoning-contract keys.
+            item.pop("structured_analysis", None)
 
     required_topics = (analysis_context.get("sop_contract") or {}).get("topics") or []
     if any(topic["fragment_key"] not in fragment_keys for topic in required_topics):
