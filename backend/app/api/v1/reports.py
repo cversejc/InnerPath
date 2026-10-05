@@ -71,6 +71,23 @@ async def _create_pdf_response(
     )
 
 
+async def _report_for_read(db: AsyncSession, report_id: int, actor: User) -> Report:
+    """Return a completed report to its owner or authorized staff."""
+    is_staff = actor.role in {"admin", "consultant"}
+    report = await get_report_by_id(db, report_id, None if is_staff else actor.id)
+    if report is None or report.status != "completed":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Report not found")
+
+    if (
+        actor.role == "consultant"
+        and report.user_id != actor.id
+        and not await has_staff_assignment(db, actor.id, report.user_id)
+    ):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not assigned")
+
+    return report
+
+
 @router.get("", response_model=ReportListResponse)
 async def get_reports(
     page: int = Query(1, ge=1),
@@ -157,10 +174,7 @@ async def export_report_pdf(
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    report = await get_report_by_id(db, report_id, current_user.id)
-    if not report:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Report not found")
-
+    report = await _report_for_read(db, report_id, current_user)
     report_payload = jsonable_encoder(format_report_response(report))
     return await _create_pdf_response(report_id, report_payload, current_user)
 
@@ -172,14 +186,7 @@ async def get_report(
     db: AsyncSession = Depends(get_db),
 ):
     """Get report details."""
-    report = await get_report_by_id(db, report_id, current_user.id)
-
-    if not report:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Report not found",
-        )
-
+    report = await _report_for_read(db, report_id, current_user)
     return format_report_response(report)
 
 
