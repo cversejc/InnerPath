@@ -23,12 +23,12 @@ from app.application.calendar_production import (
     queue_calendar_from_report, execute_calendar_production, retry_calendar_production,
     recover_stalled_calendar_requests,
 )
-from app.application.report_cases import create_user_service_request
+from app.application.report_cases import create_user_service_request, ensure_collaborative_workflow_version
 from app.domains.service_requests.schemas import ServiceRequestCreate
 from app.domains.service_requests.staff import accept_service_request, list_staff_service_requests, staff_can_access
 from app.domains.workflow.models import StepTask
 from app.domains.workflow.authorization import validate_step_actor, STEP_SPECIALTIES
-from app.domains.workflow.service import start_step, complete_step
+from app.domains.workflow.service import create_report_case, start_step, complete_step
 from tests.test_workflow_foundation import SyncSessionAdapter
 
 
@@ -337,7 +337,13 @@ async def test_two_specialties_accept_and_hand_off_sequential_steps(chain_db):
     request, case = await create_user_service_request(db, user, ServiceRequestCreate(service_type="report",
         profile={"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
         context={"current_challenge": "测试工作边界", "focus_topics": ["career"]}, idempotency_key="chain-request-1"))
-    assert case.application_snapshot["collaboration_contract"]["version"] == "professional-handoff-v1"
+    expected_specialties = {
+        "S1": "mingli", "S2": "mingli", "S3": "mingli",
+        "S4": "psychology", "S5": "psychology", "S6": "psychology",
+    }
+    assert STEP_SPECIALTIES == expected_specialties
+    assert case.application_snapshot["collaboration_contract"]["version"] == "professional-handoff-v2"
+    assert case.application_snapshot["collaboration_contract"]["step_specialties"] == expected_specialties
     await accept_service_request(db, request.id, mingli)
     assert any(r.id == request.id for r, _ in await list_staff_service_requests(db, psychology, scope="available"))
     await accept_service_request(db, request.id, psychology)
@@ -354,8 +360,63 @@ async def test_two_specialties_accept_and_hand_off_sequential_steps(chain_db):
             validate_step_actor(step, wrong)
     await start_step(db, case.id, "S1")
     await complete_step(db, case.id, "S1", result_json={"professional_review": "test fixture"})
-    assert steps[1].status == "READY" and steps[1].assignee_id == psychology.id
+    assert steps[1].status == "READY" and steps[1].assignee_id == mingli.id
     assert not any(r.id == request.id for r, _ in await list_staff_service_requests(db, competing, scope="available"))
+
+
+@pytest.mark.asyncio
+async def test_stale_collaboration_contract_is_versioned_for_new_cases(chain_db):
+    db = chain_db
+    user, _, _, _ = await seed_report(db)
+    previous = await ensure_collaborative_workflow_version(db)
+
+    # Simulate a database whose latest published collaboration version predates
+    # the diagram: S2 was psychology-owned in professional-handoff-v1.
+    stale_definition = deepcopy(previous.definition_json)
+    stale_definition["collaboration_contract"] = {
+        "version": "professional-handoff-v1",
+        "step_specialties": {
+            "S1": "mingli", "S2": "psychology", "S3": "mingli",
+            "S4": "psychology", "S5": "psychology", "S6": "psychology",
+        },
+    }
+    for step in stale_definition["steps"]:
+        step["required_capability"] = stale_definition["collaboration_contract"]["step_specialties"][step["step_key"]]
+    previous.definition_json = stale_definition
+    await db.commit()
+
+    current = await ensure_collaborative_workflow_version(db)
+    assert current.id != previous.id
+    assert previous.definition_json["collaboration_contract"]["step_specialties"]["S2"] == "psychology"
+    assert current.definition_json["collaboration_contract"]["version"] == "professional-handoff-v2"
+    assert current.definition_json["collaboration_contract"]["step_specialties"]["S2"] == "mingli"
+
+    old_case = await create_report_case(
+        db,
+        user_id=user.id,
+        service_request_id=None,
+        source_report_task_id="legacy-case",
+        application_snapshot={},
+        workflow_version=previous,
+    )
+    new_case = await create_report_case(
+        db,
+        user_id=user.id,
+        service_request_id=None,
+        source_report_task_id="new-case",
+        application_snapshot={},
+        workflow_version=current,
+    )
+    old_s2 = await db.scalar(select(StepTask).where(
+        StepTask.workflow_instance_id == old_case.workflow_instance_id,
+        StepTask.step_key == "S2",
+    ))
+    new_s2 = await db.scalar(select(StepTask).where(
+        StepTask.workflow_instance_id == new_case.workflow_instance_id,
+        StepTask.step_key == "S2",
+    ))
+    assert old_s2.required_capability == "psychology"
+    assert new_s2.required_capability == "mingli"
 
 
 def test_temporal_engine_and_weighted_colors_keep_missing_data_honest():

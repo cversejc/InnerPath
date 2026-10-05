@@ -9,7 +9,6 @@ from app.domains.content.reasoning_contract import reasoning_snapshot
 from app.domains.skills.bindings import freeze_report_skills
 
 from .definitions import validate_workflow_definition
-from .authorization import STEP_SPECIALTIES
 from .models import (
     ReportCase,
     StepTask,
@@ -187,7 +186,9 @@ async def create_report_case(
             sequence_no=step["sequence_no"],
             executor=step["executor"],
             status="READY" if is_first else "PENDING",
-            required_capability=STEP_SPECIALTIES.get(step["step_key"]) if collaboration else step.get("required_capability"),
+            # The published workflow version freezes the professional owner for
+            # this case. Do not silently replace it with the latest code mapping.
+            required_capability=step.get("required_capability"),
             activation_no=1 if is_first else 0,
             config_snapshot=step.get("config", {}),
             activated_at=now if is_first else None,

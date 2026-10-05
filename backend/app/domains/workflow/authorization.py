@@ -5,7 +5,7 @@ from app.domains.service_requests.models import ServiceRequest
 
 
 STEP_SPECIALTIES = {
-    "S1": "mingli", "S2": "psychology", "S3": "mingli",
+    "S1": "mingli", "S2": "mingli", "S3": "mingli",
     "S4": "psychology", "S5": "psychology", "S6": "psychology",
 }
 SPECIALTY_FIELDS = {

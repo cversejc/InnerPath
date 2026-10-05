@@ -20,6 +20,25 @@ from copy import deepcopy
 from app.models.user import User
 from app.domains.workflow.authorization import STEP_SPECIALTIES
 
+COLLABORATION_CONTRACT_VERSION = "professional-handoff-v2"
+
+
+def _has_current_collaboration_contract(version: Optional[WorkflowVersion]) -> bool:
+    if version is None:
+        return False
+    definition = version.definition_json or {}
+    contract = definition.get("collaboration_contract") or {}
+    if (
+        contract.get("version") != COLLABORATION_CONTRACT_VERSION
+        or contract.get("step_specialties") != STEP_SPECIALTIES
+    ):
+        return False
+    steps = {step.get("step_key"): step for step in definition.get("steps", [])}
+    return all(
+        steps.get(step_key, {}).get("required_capability") == specialty
+        for step_key, specialty in STEP_SPECIALTIES.items()
+    )
+
 
 async def ensure_default_workflow_version(db: AsyncSession) -> WorkflowVersion:
     existing = await db.scalar(
@@ -65,10 +84,15 @@ async def ensure_collaborative_workflow_version(db: AsyncSession) -> WorkflowVer
     await ensure_skill_workflow_version(db)
     await ensure_analysis_workflow_version(db)
     latest = await latest_published_version(db)
-    if latest and latest.definition_json.get("collaboration_contract"):
+    if _has_current_collaboration_contract(latest):
         return latest
+    if latest is None:
+        raise ValueError("workflow_version_not_published")
     definition = deepcopy(latest.definition_json)
-    definition["collaboration_contract"] = {"version": "professional-handoff-v1", "step_specialties": STEP_SPECIALTIES}
+    definition["collaboration_contract"] = {
+        "version": COLLABORATION_CONTRACT_VERSION,
+        "step_specialties": STEP_SPECIALTIES,
+    }
     for step in definition["steps"]:
         step["required_capability"] = STEP_SPECIALTIES[step["step_key"]]
     # Published workflow versions and existing cases stay immutable.
@@ -78,7 +102,7 @@ async def ensure_collaborative_workflow_version(db: AsyncSession) -> WorkflowVer
             return await publish_workflow_version(db, version.id, published_by=None)
     except IntegrityError:
         latest = await latest_published_version(db)
-        if latest and latest.definition_json.get("collaboration_contract"):
+        if _has_current_collaboration_contract(latest):
             return latest
         raise
 
