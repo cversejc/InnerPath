@@ -36,6 +36,8 @@ from app.domains.skills.runtime import (
     ModelCompletion,
     SkillExecutionError,
     _authoring_prompts,
+    _normalize_unallocated_fragment_references,
+    _validate_authoring_output,
     execute_skill,
 )
 from app.domains.reports.models import ReportTask
@@ -249,6 +251,69 @@ def test_fragment_authoring_contract_lists_runtime_status_values():
     system_prompt, _user_prompt = _authoring_prompts({}, specification, None)
     assert "READY_FOR_REVIEW" in system_prompt
     assert "MISSING_SEMANTIC_SUPPORT" in system_prompt
+
+
+def test_fragment_authoring_clears_references_when_allocation_has_none():
+    output = {
+        "status": "READY_FOR_REVIEW",
+        "title": "Overview",
+        "content": "A supported overview.",
+        "used_findings": ["finding.core"],
+        "used_analysis_fragments": ["analysis.not_allocated"],
+        "used_actions": ["action.not_allocated"],
+        "transition_hint": "Continue.",
+        "presentation_meta": {},
+        "requirement_coverage": [{"requirement_id": "R.not_allocated"}],
+    }
+    context = {
+        "context": {
+            "fragment_allocation": {"analysis_refs": [], "action_refs": []},
+            "semantic_model": {
+                "findings": [{"finding_key": "finding.core"}],
+                "analysis_fragments": [],
+            },
+        }
+    }
+
+    _normalize_unallocated_fragment_references(
+        output, context, "reports.fragment_authoring"
+    )
+    _validate_authoring_output(output, context, "reports.fragment_authoring")
+
+    assert output["used_analysis_fragments"] == []
+    assert output["used_actions"] == []
+    assert "requirement_coverage" not in output
+
+
+def test_fragment_authoring_still_rejects_unsupported_allocated_references():
+    output = {
+        "status": "READY_FOR_REVIEW",
+        "title": "Overview",
+        "content": "A supported overview.",
+        "used_findings": ["finding.core"],
+        "used_analysis_fragments": ["analysis.not_allocated"],
+        "used_actions": [],
+        "transition_hint": "Continue.",
+        "presentation_meta": {},
+    }
+    context = {
+        "context": {
+            "fragment_allocation": {
+                "analysis_refs": ["analysis.allowed"],
+                "action_refs": [],
+            },
+            "semantic_model": {
+                "findings": [{"finding_key": "finding.core"}],
+                "analysis_fragments": [{"fragment_key": "analysis.allowed"}],
+            },
+        }
+    }
+
+    _normalize_unallocated_fragment_references(
+        output, context, "reports.fragment_authoring"
+    )
+    with pytest.raises(ValueError, match="report_fragment_unsupported_fragment"):
+        _validate_authoring_output(output, context, "reports.fragment_authoring")
 
 
 @pytest.mark.asyncio

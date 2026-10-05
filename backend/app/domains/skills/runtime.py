@@ -471,6 +471,23 @@ def _parse_json_output(raw: str) -> dict[str, Any]:
     return parsed
 
 
+def _normalize_unallocated_fragment_references(
+    output: dict[str, Any], context: dict[str, Any], processor: str
+) -> None:
+    if processor != "reports.fragment_authoring":
+        return
+    context_data = context.get("context") or {}
+    allocation = context_data.get("fragment_allocation")
+    if not isinstance(allocation, dict):
+        return
+    if not allocation.get("analysis_refs"):
+        output["used_analysis_fragments"] = []
+    if not allocation.get("action_refs"):
+        output["used_actions"] = []
+    if not allocation.get("requirements"):
+        output.pop("requirement_coverage", None)
+
+
 def _validate_authoring_output(
     output: dict[str, Any], context: dict[str, Any], processor: str
 ) -> None:
@@ -964,6 +981,7 @@ async def execute_skill(
             if processor == "reports.single_step"
             else _parse_json_output(completion.content)
         )
+        _normalize_unallocated_fragment_references(output, context, processor)
         _validate_output(output, completion.content, specification)
         if processor == "reports.analysis_draft":
             output, reference_repairs = _sanitize_analysis_draft_references(
