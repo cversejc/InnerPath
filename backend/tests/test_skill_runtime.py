@@ -15,6 +15,7 @@ from app.domains.skills.definitions import (
     DEFAULT_SKILL_KEY,
     S2_PSYCHOLOGY_SKILL_KEY,
     S3_INTEGRATION_SKILL_KEY,
+    S4_MECHANISM_SKILL_KEY,
     compile_s1_runtime_specification,
     compile_reasoning_guidance_specification,
     default_analysis_skill_specifications,
@@ -472,6 +473,90 @@ async def test_s3_reasoning_guidance_draft_preserves_contract_and_compiles(skill
     assert runtime["output_contract"] == published.specification_json["output_contract"]
 
 
+def test_s4_guidance_covers_framework_thought_without_exposing_contract_fields():
+    specification = default_analysis_skill_specifications()[3]
+    guidance = specification["reasoning_guidance"]
+    method_text = "\n".join(guidance["methodology"])
+
+    assert specification["identity"]["skill_key"] == S4_MECHANISM_SKILL_KEY
+    assert len(guidance["methodology"]) == 12
+    assert all(
+        phrase in method_text
+        for phrase in (
+            "防御机制", "保护", "能量管理", "阴影练习", "情结松动", "人生时序",
+            "自性方向", "卡点", "共同路径", "MBTI", "关系模式", "成长练习",
+        )
+    )
+    assert all(
+        topic["fragment_key"] not in method_text
+        for topic in specification["instructions"]["sop_contract"]["topics"]
+    )
+    assert not any(
+        technical_name in method_text
+        for technical_name in (
+            "structured_data", "semantic_role", "block_refs", "evidence_refs",
+            "analysis.s4.", "analysis_fragments",
+        )
+    )
+
+
+def test_s4_legacy_instructions_project_as_guidance_and_compile_to_same_runtime():
+    current = default_analysis_skill_specifications()[3]
+    guidance = deepcopy(current["reasoning_guidance"])
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = guidance["objective"]
+    legacy["instructions"]["methodology"] = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    assert reasoning_guidance_for_skill(
+        current["identity"]["skill_key"], legacy
+    ) == guidance
+    assert compile_reasoning_guidance_specification(legacy) == (
+        compile_reasoning_guidance_specification(current)
+    )
+
+
+@pytest.mark.asyncio
+async def test_s4_reasoning_guidance_draft_preserves_contract_and_compiles(skill_db):
+    published = (await ensure_default_analysis_skill_versions(skill_db))[3]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    objective = "围绕真实处境理解卡点，并寻找用户可以选择的低风险尝试。"
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=objective,
+        methodology=guidance["methodology"],
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+    response = _skill_version_response(updated)
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert runtime["instructions"]["objective"] == objective
+    assert "卡点" in "\n".join(runtime["instructions"]["methodology"])
+    assert len(runtime["instructions"]["sop_contract"]["topics"]) == 10
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+    assert any(
+        "reasoning_path" in item
+        for item in runtime["instructions"]["methodology"]
+    )
+
+
 @pytest.mark.asyncio
 async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
     specification = next(
@@ -623,6 +708,105 @@ async def test_s3_runtime_prompt_compiles_reasoning_and_fixed_framework_topics()
     assert "英雄四象限" in gateway.last_request[0]
     assert "自性化" in gateway.last_request[0]
     assert "analysis.s3.quadrant" in gateway.last_request[0]
+
+
+@pytest.mark.asyncio
+async def test_s4_runtime_prompt_compiles_reasoning_and_action_contract():
+    specification = default_analysis_skill_specifications()[3]
+    skill = SimpleNamespace(
+        id=74,
+        skill_key=specification["identity"]["skill_key"],
+        version=1,
+        specification_json=specification,
+    )
+    evidence_key = "input.context.current_challenge"
+    block_key = "s4.block.boundary"
+    findings = [
+        {
+            "finding_key": block_key,
+            "short_title": "边界卡点",
+            "claim": "用户描述自己有时未充分考虑安排就先答应请求。",
+            "kind": "FINDING",
+            "semantic_role": "BLOCK",
+            "confidence": "MEDIUM",
+            "importance": "HIGH",
+            "reportability": "RECOMMENDED",
+            "evidence_refs": [evidence_key],
+            "relation_refs": [],
+            "structured_data": {},
+        }
+    ]
+    for index in range(3):
+        findings.append(
+            {
+                "finding_key": f"s4.action.pause-{index}",
+                "short_title": "预留回应时间",
+                "claim": "在低风险请求中，先预留短暂思考时间再回应。",
+                "kind": "FINDING",
+                "semantic_role": "ACTION",
+                "confidence": "MEDIUM",
+                "importance": "MEDIUM",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": [evidence_key],
+                "relation_refs": [],
+                "structured_data": {
+                    "block_refs": [block_key],
+                    "method": "低风险行为实验",
+                    "steps": ["收到请求时先说明稍后回复"],
+                    "frequency": "weekly",
+                    "duration_minutes": 5,
+                    "observation": "记录自己的感受和对方的实际回应",
+                    "stop_rule": "感到明显压力时暂停并改选更安全的情境",
+                },
+            }
+        )
+    fragments = [
+        {
+            "fragment_key": topic["fragment_key"],
+            "title": topic["title"],
+            "content": "根据用户当前描述提出待审核的理解方向，并保留补问。",
+            "finding_refs": [block_key],
+            "evidence_refs": [evidence_key],
+        }
+        for topic in specification["instructions"]["sop_contract"]["topics"]
+    ]
+    output = {
+        "summary": "基于用户当前描述整理待核对的模式与低风险练习。",
+        "findings": findings,
+        "analysis_fragments": fragments,
+        "risk_flags": [],
+    }
+    gateway = StubGateway(json.dumps(output, ensure_ascii=False))
+
+    result = await execute_skill(
+        skill_version=skill,
+        input_data={
+            "profile": {},
+            "context": {"current_challenge": "有时没想好就答应请求"},
+            "analysis_context": {
+                "step_key": "S4",
+                "sop_contract": specification["instructions"]["sop_contract"],
+                "evidence": [
+                    {"evidence_key": evidence_key, "source_type": "USER_PROVIDED"}
+                ],
+                "upstream_confirmed_findings": [],
+            },
+        },
+        gateway=gateway,
+    )
+
+    assert len(result.output_parsed["analysis_fragments"]) == 10
+    assert len(
+        [
+            item
+            for item in result.output_parsed["findings"]
+            if item["semantic_role"] == "ACTION"
+        ]
+    ) == 3
+    assert "保护逻辑" in gateway.last_request[0]
+    assert "阴影练习" in gateway.last_request[0]
+    assert "analysis.s4.experiments" in gateway.last_request[0]
+    assert "reasoning_path" in gateway.last_request[0]
 
 
 @pytest.mark.asyncio

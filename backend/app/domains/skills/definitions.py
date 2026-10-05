@@ -17,13 +17,20 @@ never transfer facts from an example to the current user."""
 S1_FOUNDATION_SKILL_KEY = "report.s1_foundation_analysis"
 S2_PSYCHOLOGY_SKILL_KEY = "report.s2_psychology_mapping"
 S3_INTEGRATION_SKILL_KEY = "report.s3_integration"
+S4_MECHANISM_SKILL_KEY = "report.s4_mechanism_block_action"
 REASONING_GUIDANCE_SKILL_KEYS = frozenset(
-    {S1_FOUNDATION_SKILL_KEY, S2_PSYCHOLOGY_SKILL_KEY, S3_INTEGRATION_SKILL_KEY}
+    {
+        S1_FOUNDATION_SKILL_KEY,
+        S2_PSYCHOLOGY_SKILL_KEY,
+        S3_INTEGRATION_SKILL_KEY,
+        S4_MECHANISM_SKILL_KEY,
+    }
 )
 ANALYSIS_SKILL_STEPS = {
     S1_FOUNDATION_SKILL_KEY: "S1",
     S2_PSYCHOLOGY_SKILL_KEY: "S2",
     S3_INTEGRATION_SKILL_KEY: "S3",
+    S4_MECHANISM_SKILL_KEY: "S4",
 }
 
 ANALYSIS_SYSTEM_REQUIREMENTS = [
@@ -625,13 +632,19 @@ ANALYSIS_STEPS: dict[str, dict[str, Any]] = {
     "S4": {
         "skill_key": "report.s4_mechanism_block_action",
         "name": "S4 机制卡点与行动",
-        "objective": "将已确认的上游语义组织为可核查的运作机制、关键卡点与低风险行动候选。",
+        "objective": "结合已审核的命理、心理线索和现实经验，理解卡点背后的保护逻辑，并提出尊重选择、低风险的成长练习。",
         "methodology": [
-            "解释模式可能发挥的保护功能、触发条件和长期代价，不将其描述成缺陷或诊断。",
-            "优先提出可逆、具体、低成本且可复盘的行动，不替用户作重大决定。",
-            "每项机制、卡点或行动都必须引用已确认的 Finding 或 Evidence。",
-            "行动与专业判断分开表述；不得在本阶段创造缺少来源的新事实。",
-            "分析片段只用于咨询师审阅，不是给用户的报告正文。",
+            "先回到用户描述的真实处境和已审核的前序判断，再提出机制假设；清楚区分用户亲述、已有结论与需要核实的解释，不用命盘替代现实经历。",
+            "防御机制从具体触发情境和应对表现中识别，理解它曾保护用户什么、短期如何缓解、长期付出什么代价；合理化、回避、讨好、理智化、完美主义、抽离或自我批评都只能作为待核对的可能，不作心理诊断。",
+            "能量管理把已确认的命理资源线索与用户实际的充电、耗电体验互相核对，提出可观察的尝试；五行活动只是联想和实验方向，不承诺效果，也不压过用户自己的反馈。",
+            "阴影练习围绕可能被排斥的需要、能力或感受，帮助用户理解而非消灭它；日记、书写、艺术表达或安全情境中的小尝试都应由用户选择，并按承受程度调整或暂停。",
+            "情结松动从真实重复情境梳理触发、想法、情绪、行动与结果，比较支持和反证；认知重看、脚本调整或行为实验要贴合问题且风险低，不补造用户没有讲过的经历。",
+            "把人生时序作为调整练习方向和强度的参考，而不是事件预测；根据已确认的阶段线索和当下现实承载讨论顺势、承压或转换时可以关注什么，不由运势推断心理状态或必然结果。自性方向描述可整合的两端和待发展的能力，不定义所谓真正自我或完美人格。",
+            "卡点优先选取有现实依据、影响较大的少数模式；说明常见场景、模式如何运作、过去保护了什么、长期代价及可能的成长邀请。理解卡点时先不混入解决步骤，资料不足就保留问题，不为了凑数硬下判断。",
+            "归纳不同卡点之间真正重复的共同路径，也保留彼此差异；破局方向从已确认的资源出发，核对它在本案例中可能发挥的调节作用和用户现实中的能力缺口，再匹配适合的练习，不把命理资源直接翻译成处方。",
+            "用户主动提供的 MBTI 或八维结果可以作为探索线索；未提供时不推断类型或分数。描述功能倾向时结合实际选择与行为，并允许用户经验修正。",
+            "关系模式以用户描述的具体互动为中心，结合已审核的关系线索和加工倾向，梳理双方如何回应、各自体验及循环如何延续；同时保留反例、不同解释和需要向用户确认的问题。",
+            "成长练习应具体、低成本、可选择、可观察并适合用户当前的时间和资源；从少量日常行动开始，用户觉得不合适或出现明显不适时可以停止或改选，不把练习当作治疗或重大决定建议。",
         ],
     },
 }
@@ -754,7 +767,7 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "metrics": ["schema", "source_fidelity", "safety", "stage_fit"],
             "minimum_score": 0.8,
         }
-        if step_key in {"S1", "S2", "S3"}:
+        if step_key in {"S1", "S2", "S3", "S4"}:
             spec = prepare_reasoning_guidance_specification(spec)
         specifications.append(validate_skill_specification(spec))
     return specifications
