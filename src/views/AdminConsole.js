@@ -46,6 +46,7 @@ export default {
       dashboardRange: '30d',
       dashboard: null,
       dashboardLoading: false,
+      dashboardLoadError: false,
       lastUpdated: '',
       autoRefresh: true,
       refreshTimer: null,

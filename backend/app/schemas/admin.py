@@ -359,6 +359,44 @@ class AdminUserGrowthSummary(BaseModel):
     by_service: list[AdminUserGrowthChannel] = Field(default_factory=list)
 
 
+class AdminGenerationStage(BaseModel):
+    stage_key: str
+    label: str
+    active_runs: int = 0
+    completed_runs: int = 0
+    failed_runs: int = 0
+    retry_attempts: int = 0
+    p50_duration_hours: Optional[float] = None
+    p90_duration_hours: Optional[float] = None
+
+
+class AdminGenerationSummary(BaseModel):
+    range_start: date
+    range_end: date
+    active_runs: int = 0
+    completed_runs: int = 0
+    failed_runs: int = 0
+    success_rate_percent: Optional[float] = None
+    retry_attempts: int = 0
+    stages: list[AdminGenerationStage] = Field(default_factory=list)
+    report_cases_created: int = 0
+    report_cases_active: int = 0
+    report_cases_blocked: int = 0
+    report_cases_ready_to_deliver: int = 0
+    report_cases_delivered: int = 0
+    report_cases_cancelled: int = 0
+    calendar_queued: int = 0
+    calendar_generating: int = 0
+    calendar_failed: int = 0
+    calendar_delivered: int = 0
+    calendar_stalled: int = 0
+    outbox_pending: int = 0
+    outbox_pending_over_5m: int = 0
+    outbox_failed: int = 0
+    outbox_published: int = 0
+    outbox_retry_attempts: int = 0
+
+
 class DashboardOverviewResponse(BaseModel):
     range_preset: str
     start_date: date
@@ -369,6 +407,7 @@ class DashboardOverviewResponse(BaseModel):
     distributions: DashboardDistributionResponse
     service_sla: DashboardServiceSLAMetrics = Field(default_factory=DashboardServiceSLAMetrics)
     user_growth: Optional[AdminUserGrowthSummary] = None
+    generation: Optional[AdminGenerationSummary] = None
     alerts: list[DashboardAlert]
     recent_activity: list[AuditLogResponse]
 

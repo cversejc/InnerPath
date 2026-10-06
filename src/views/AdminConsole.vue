@@ -41,6 +41,7 @@
         :auto-refresh="autoRefresh"
         :chart-grid-lines="dashboardViewModel.chartGridLines"
         :dashboard="dashboard"
+        :dashboard-load-error="dashboardLoadError"
         :dashboard-loading="dashboardLoading"
         :dashboard-range="dashboardRange"
         :dashboard-ranges="dashboardRanges"
@@ -51,6 +52,7 @@
         @auto-refresh-change="setAutoRefresh"
         @change-range="changeDashboardRange"
         @go-from-alert="goFromAlert"
+        @retry-dashboard="loadDashboard"
         @switch-tab="switchTab"
       />
 

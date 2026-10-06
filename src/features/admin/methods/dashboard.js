@@ -3,11 +3,12 @@ import { getAdminDashboard } from '../api'
 export default {
   async loadDashboard(silent = false) {
       if (!silent) this.dashboardLoading = true
+      this.dashboardLoadError = false
       try {
         this.dashboard = await getAdminDashboard(this.dashboardRange)
         this.lastUpdated = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-      } catch (error) {
-        if (!silent) this.message = this.errorText(error)
+      } catch {
+        this.dashboardLoadError = true
       } finally {
         this.dashboardLoading = false
       }

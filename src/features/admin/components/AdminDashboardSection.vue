@@ -1,5 +1,6 @@
 <script setup>
 import { Button as VanButton } from 'vant'
+import AdminGenerationObservabilityPanel from './AdminGenerationObservabilityPanel.vue'
 import AdminUserGrowthPanel from './AdminUserGrowthPanel.vue'
 import {
   actionLabel,
@@ -14,6 +15,7 @@ defineProps({
   autoRefresh: { type: Boolean, default: false },
   chartGridLines: { type: Array, default: () => [] },
   dashboard: { type: Object, default: null },
+  dashboardLoadError: { type: Boolean, default: false },
   dashboardLoading: { type: Boolean, default: false },
   dashboardRange: { type: String, required: true },
   dashboardRanges: { type: Array, default: () => [] },
@@ -23,7 +25,7 @@ defineProps({
   trendTicks: { type: Array, default: () => [] }
 })
 
-defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab'])
+defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'retry-dashboard', 'switch-tab'])
 
 const consultationTypeLabels = {
   overall: '全部报告',
@@ -72,6 +74,10 @@ function formatElapsedHours(value) {
     </div>
 
     <template v-else-if="dashboard">
+      <div v-if="dashboardLoadError" class="dashboard-load-error" role="status" aria-live="polite">
+        <span>本次总览刷新失败，当前仍显示上次成功数据。</span>
+        <VanButton class="panel-link" type="default" plain native-type="button" :disabled="dashboardLoading" :loading="dashboardLoading" loading-text="刷新中…" :aria-busy="dashboardLoading" @click="$emit('retry-dashboard')">重试</VanButton>
+      </div>
       <div class="metric-grid">
         <article v-for="metric in metricCards" :key="metric.key" class="metric-card" :class="`metric-${metric.tone}`">
           <div class="metric-top"><span>{{ metric.label }}</span><b>{{ metric.mark }}</b></div>
@@ -81,6 +87,7 @@ function formatElapsedHours(value) {
       </div>
 
       <div class="dashboard-grid">
+        <AdminGenerationObservabilityPanel :dashboard-range="dashboardRange" :loading="dashboardLoading" :summary="dashboard.generation" @retry="$emit('retry-dashboard')" />
         <AdminUserGrowthPanel :dashboard-range="dashboardRange" :summary="dashboard.user_growth" />
         <article class="dashboard-panel trend-panel">
           <div class="panel-heading"><div><p class="eyebrow">RHYTHM / {{ dashboardRange.toUpperCase() }}</p><h3>业务流入趋势</h3></div><span class="panel-note">按上海时区聚合</span></div>
@@ -150,5 +157,13 @@ function formatElapsedHours(value) {
 
       </div>
     </template>
+
+    <section v-else-if="dashboardLoadError" class="dashboard-fetch-error" role="alert" aria-labelledby="dashboard-fetch-error-title">
+      <div>
+        <h3 id="dashboard-fetch-error-title">总览数据暂不可用</h3>
+        <p>请检查连接后重试。其他管理记录可通过上方导航继续查看。</p>
+      </div>
+      <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="dashboardLoading" :loading="dashboardLoading" loading-text="加载中…" :aria-busy="dashboardLoading" @click="$emit('retry-dashboard')">重试加载</VanButton>
+    </section>
   </section>
 </template>
