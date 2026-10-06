@@ -56,6 +56,13 @@ export async function updateAdminConsultantSpecialties(userId, specialties) {
   return response.data
 }
 
+export async function getAdminConsultantWorkload(periodDays = 30) {
+  const response = await apiClient.get('/admin/consultants/workload', {
+    params: { period_days: periodDays }
+  })
+  return response.data
+}
+
 export async function createStaffInvite(phone, role, consultantType) {
   const response = await apiClient.post('/admin/staff/invites', {
     phone,

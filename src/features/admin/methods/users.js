@@ -5,6 +5,7 @@ import {
   getAdminUserTimeline,
   getAdminUsers,
   getAllAdminUsers,
+  getAdminConsultantWorkload,
   resetAdminUserPassword,
   updateAdminUserProfile,
   updateAdminUserRole,
@@ -36,7 +37,22 @@ export default {
   async changeUserPage(offset) { const next = this.userPage + offset; if (next < 1 || next > this.pageCount(this.users.total, this.userPageSize)) return; this.userPage = next; await this.loadUsers() },
   async loadStaff() {
       this.staffLoading = true
-      try { const [admins, consultants] = await Promise.all([getAllAdminUsers({ role: 'admin', size: 100 }), getAllAdminUsers({ role: 'consultant', size: 100 })]); this.staffUsers = [...(admins.items || []), ...(consultants.items || [])].sort((a, b) => a.id - b.id) } catch (error) { this.message = this.errorText(error) } finally { this.staffLoading = false }
+      this.consultantWorkloadError = ''
+      try {
+        const [admins, consultants, workload] = await Promise.all([
+          getAllAdminUsers({ role: 'admin', size: 100 }),
+          getAllAdminUsers({ role: 'consultant', size: 100 }),
+          getAdminConsultantWorkload().then(data => ({ data })).catch(error => ({ error }))
+        ])
+        this.staffUsers = [...(admins.items || []), ...(consultants.items || [])].sort((a, b) => a.id - b.id)
+        if (workload.error) {
+          this.consultantWorkloads = []
+          this.consultantWorkloadError = this.errorText(workload.error)
+        } else {
+          this.consultantWorkloads = workload.data.items || []
+          this.consultantWorkloadPeriodDays = workload.data.period_days || 30
+        }
+      } catch (error) { this.message = this.errorText(error) } finally { this.staffLoading = false }
     },
   async openUserDetail(user) {
       this.drawerTrigger = document.activeElement

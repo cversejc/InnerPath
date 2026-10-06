@@ -1,8 +1,23 @@
-import { getAdminAuditLogs } from '../api'
-import { getAdminDecisionLogs } from '../../calendar/api'
+import { getAdminAuditLogs } from '../api.js'
+import { getAdminDecisionLogs } from '../../calendar/api.js'
 
 export default {
   async setLogSection(section) { this.logSection = section; if (section === 'audit') await this.loadAuditLogs(); else if (section === 'behavior') await this.loadDecisionLogs(); else await this.loadReportTasks() },
+  async openConsultantActivity(consultantId) {
+    this.logSection = 'audit'
+    this.logFilters = {
+      search: '',
+      action: '',
+      resource_type: '',
+      actor_user_id: String(consultantId),
+      target_user_id: '',
+      date_from: '',
+      date_to: ''
+    }
+    this.logPage = 1
+    this.activeTab = 'logs'
+    await this.loadAuditLogs()
+  },
   async loadAuditLogs() { this.auditLoading = true; try { this.auditLogs = await getAdminAuditLogs({ ...this.cleanParams(this.logFilters), page: this.logPage, size: this.logPageSize }) } catch (error) { this.message = this.errorText(error) } finally { this.auditLoading = false } },
   resetLogFilters() { this.logFilters = { search: '', action: '', resource_type: '', actor_user_id: '', target_user_id: '', date_from: '', date_to: '' }; this.logPage = 1; this.loadAuditLogs() },
   async changeLogPage(offset) { const next = this.logPage + offset; if (next < 1 || next > this.pageCount(this.auditLogs.total, this.logPageSize)) return; this.logPage = next; await this.loadAuditLogs() },

@@ -50,6 +50,20 @@ export default {
     this.requestPage = next
     await this.loadAdminRequests()
   },
+  async openConsultantServiceRequests(consultantId) {
+    this.assignmentRequest = null
+    this.requestKind = 'consultant'
+    this.requestFilters = {
+      search: '',
+      status: '',
+      consultant_id: String(consultantId),
+      date_from: '',
+      date_to: ''
+    }
+    this.requestPage = 1
+    this.activeTab = 'requests'
+    await this.loadAdminRequests()
+  },
   openAdminAssignment(request) {
     this.assignmentRequest = request
     this.assignmentError = ''

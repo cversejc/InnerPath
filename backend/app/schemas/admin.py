@@ -32,6 +32,30 @@ class AdminConsultantSpecialtiesUpdate(BaseModel):
         return value
 
 
+class AdminConsultantWorkEvent(BaseModel):
+    request_id: int
+    user_id: int
+    user_name: str
+    consultation_type: Optional[str] = None
+    current_status: str
+    event_type: Literal["accepted", "delivered"]
+    event_at: datetime
+
+
+class AdminConsultantWorkloadItem(BaseModel):
+    consultant_id: int
+    total_requests: int = 0
+    active_requests: int = 0
+    accepted_in_period: int = 0
+    delivered_in_period: int = 0
+    recent_events: list[AdminConsultantWorkEvent] = Field(default_factory=list)
+
+
+class AdminConsultantWorkloadResponse(BaseModel):
+    period_days: int
+    items: list[AdminConsultantWorkloadItem]
+
+
 class AdminUserUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=50)
     gender: Optional[str] = Field(None, pattern="^(male|female)$")

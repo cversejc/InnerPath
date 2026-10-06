@@ -16,6 +16,7 @@ from app.models.user import User
 from app.schemas.admin import (
     AdminPasswordResetRequest,
     AdminConsultantSpecialtiesUpdate,
+    AdminConsultantWorkloadResponse,
     AdminUserListResponse,
     AdminUserSummaryResponse,
     AdminUserUpdate,
@@ -28,9 +29,19 @@ from app.domains.users.service import apply_user_profile_update
 from app.domains.audit.service import record_audit
 from app.domains.auth.service import admin_reset_password, create_staff_invite
 from app.api.v1.admin_user_timeline import router as user_timeline_router
+from app.application.admin_consultant_workload import get_admin_consultant_workload
 
 router = APIRouter()
 router.include_router(user_timeline_router)
+
+
+@router.get("/consultants/workload", response_model=AdminConsultantWorkloadResponse)
+async def consultant_workload(
+    period_days: int = Query(30, ge=7, le=90),
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_admin_consultant_workload(db, period_days=period_days)
 
 
 @router.get("/users", response_model=AdminUserListResponse)

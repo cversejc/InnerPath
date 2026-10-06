@@ -215,6 +215,25 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .admin-shell .workload-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 10px;
+  }
+
+  .admin-shell .workload-metrics > div:nth-child(2) {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .admin-shell .workload-metrics > div:nth-child(3) {
+    border-right: 1px solid rgba(80, 54, 32, .1);
+    padding-left: 0;
+  }
+
+  .admin-shell .workload-metrics > div:nth-child(4) {
+    padding-right: 0;
+  }
+
   .admin-shell .user-timeline-item {
     grid-template-columns: 12px minmax(0, 1fr);
   }

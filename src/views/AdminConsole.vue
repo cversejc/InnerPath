@@ -130,10 +130,15 @@
         :invite-form="inviteForm"
         :invite-saving="inviteSaving"
         :invite-token="inviteToken"
+        :consultant-workloads="consultantWorkloads"
+        :workload-period-days="consultantWorkloadPeriodDays"
+        :workload-error="consultantWorkloadError"
         :specialty-saving-id="consultantSpecialtySavingId"
         :staff-loading="staffLoading"
         :staff-users="staffUsers"
         @invite="inviteStaff"
+        @open-activity="openConsultantActivity"
+        @open-requests="openConsultantServiceRequests"
         @update-specialties="updateConsultantSpecialties"
       />
 
