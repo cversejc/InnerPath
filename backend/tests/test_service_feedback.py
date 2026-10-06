@@ -222,6 +222,68 @@ async def test_admin_feedback_update_keeps_main_state_when_audit_insert_fails():
 
 
 @pytest.mark.asyncio
+async def test_reopening_admin_feedback_clears_stale_resolution_metadata():
+    feedback = SimpleNamespace(
+        id=31,
+        user_id=7,
+        status="RESOLVED",
+        assigned_to=12,
+        resolution="已核对报告交付记录，并向用户说明处理结果。",
+        resolved_by=9,
+        resolved_at=datetime(2026, 10, 3),
+        updated_by=9,
+    )
+
+    db = FeedbackSession([feedback, SimpleNamespace(id=12)])
+    updated = await update_admin_service_feedback(
+        db,
+        feedback_id=31,
+        actor=SimpleNamespace(id=10),
+        data=AdminServiceFeedbackUpdate(
+            status="IN_PROGRESS",
+            assigned_to=12,
+        ),
+    )
+
+    assert updated.status == "IN_PROGRESS"
+    assert updated.resolution is None
+    assert updated.resolved_by is None
+    assert updated.resolved_at is None
+    assert updated.updated_by == 10
+    assert db.saved_audit_failure is True
+
+
+@pytest.mark.asyncio
+async def test_repeated_resolved_feedback_save_keeps_original_resolution_time():
+    resolved_at = datetime(2026, 10, 3)
+    resolution = "已核对报告交付记录，并向用户说明处理结果。"
+    feedback = SimpleNamespace(
+        id=31,
+        user_id=7,
+        status="RESOLVED",
+        assigned_to=None,
+        resolution=resolution,
+        resolved_by=9,
+        resolved_at=resolved_at,
+        updated_by=9,
+    )
+
+    updated = await update_admin_service_feedback(
+        FeedbackSession([feedback]),
+        feedback_id=31,
+        actor=SimpleNamespace(id=10),
+        data=AdminServiceFeedbackUpdate(
+            status="RESOLVED",
+            resolution=resolution,
+        ),
+    )
+
+    assert updated.resolved_at == resolved_at
+    assert updated.resolved_by == 9
+    assert updated.updated_by == 10
+
+
+@pytest.mark.asyncio
 async def test_admin_feedback_list_maps_service_and_user_context():
     feedback = SimpleNamespace(
         id=31,

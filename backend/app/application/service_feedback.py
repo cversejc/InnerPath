@@ -267,9 +267,15 @@ async def update_admin_service_feedback(
     feedback.assigned_to = data.assigned_to
     feedback.updated_by = actor.id
     if data.status == "RESOLVED":
+        resolution_changed = feedback.resolution != data.resolution
         feedback.resolution = data.resolution
-        feedback.resolved_by = actor.id
-        feedback.resolved_at = datetime.utcnow()
+        if previous_status != "RESOLVED" or resolution_changed:
+            feedback.resolved_by = actor.id
+            feedback.resolved_at = datetime.utcnow()
+    else:
+        feedback.resolution = None
+        feedback.resolved_by = None
+        feedback.resolved_at = None
 
     await db.flush()
     await record_audit(
