@@ -1,0 +1,60 @@
+{
+  "signature": "7cb4a69cab8f3c99e8a86ffa1de5ea720fc21eb17fbc636f5a98f37e40d753a3",
+  "skill_digest": "401c626a6af612fee324e7049af24cc79f57a1f53a5ce40b5c9a0d4437b700a8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "想做到最好，结果拖到最后一刻",
+    "content": "你大概很熟悉这个画面：项目刚开始的时候，脑子里一下子冒出很多想法，每一条都值得做、都还能更好。可真正要动手时，另一个声音也来了——「这样做够好吗？」于是你改一版、再改一版，把开头打磨得很细，时间却在不知不觉中流走。等到截止日期逼近，你只能靠一股急劲把东西赶出来。交付是交付了，可你自己知道，那不是你想给出去的版本。\n\n这条链的触发点，往往不是懒，而恰恰是标准。任务一开始，质量要求就先亮起来：你担心做不好，于是用反复修改来对冲这份担心；修改本身又让你更晚进入真正的推进；越晚，越焦虑；越焦虑，越不敢草率收尾，只能等到最后关头用冲刺的方式交出去。它和前面两条链是近亲：先答应，是因为怕让人失望；忍到最后才生硬退出，是因为真实想法一直没被允许及时出场；而这一条，是那份「不能做差」的要求，把「开始」和「完成」之间拉出了一段过长的路。\n\n需要说清楚的是，这个模式过去确实保护过你。它守住了你对自己的要求，也守住了别人眼里那个「做出来的东西是靠谱的」的印象。反复修改的那段时间，其实是你在替自己确认：我是在认真对待这件事的。这份认真不是问题，它是你身上真实存在的东西。\n\n但如果只靠它一条腿走路，代价也会慢慢显出来：时间被前松后紧地切碎，精力在临近截止时被一次性透支，交付质量反而随状态起伏——你越想稳，结果越不稳。更隐蔽的一层是，你可能会把「拖到最后」误读成自己不够自律，从而又添一层自我责备，让下一次启动更难。\n\n所以这条链真正邀请你看见的，不是「要更努力」，而是让「做好」和「完成」这两端同时在场。它们不是敌人：一端是你对品质的在意，一端是事情需要落地。你不需要放弃任何一端，只需要让它们在同一段时间里都有位置。\n\n这一节先不展开具体怎么做——那些动作会放在后面「往哪去」的部分统一说。这里先留一个问题给你：当你说「还不够好」的时候，你担心的究竟是这件事真的会差，还是那个「做差了就不被认可」的可能？这个答案，会决定你接下来要练的到底是哪一种能力。",
+    "used_findings": [
+      "s4.block.perfection_delay"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "三条链都看清了：先答应后透支、忍到最后生硬退出、想做到最好拖到最后一刻。它们指向同一条暗线——「先答应」的脚本。接下来要往哪去，会先看这条暗线共同保护了什么，再把「有余地的表达」拆成你能落地的动作。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.block_03",
+      "chapter": "challenge",
+      "sequence_no": 11,
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_notes": "第二人称，现实语言，低隐喻；先意识层认同，再引入保护功能与整合邀请；不诊断、不宿命；不展开解决步骤。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "本节按「场景→触发→运作→过去保护→长期代价→整合邀请」完整展开第三个卡点，并明确把解决步骤留给第三章；来源为该卡点的已确认结构化描述与用户自述事件，未新增经历或心理结论。",
+        "quote": "你大概很熟悉这个画面：项目刚开始的时候，脑子里一下子冒出很多想法，每一条都值得做、都还能更好。",
+        "follow_up_questions": [
+          "你通常在任务的哪个节点开始反复修改——是刚接到任务时，还是已经有一版初稿之后？",
+          "当你说「还不够好」时，更常担心的是事情本身会出错，还是别人会因此觉得你不够可靠？",
+          "最近一次「接近截止才急着交付」之后，你对自己的评价是什么？这个评价和上一次相比有变化吗？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7830,
+    "output_tokens": 1026,
+    "latency_ms": 6081,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "5addebad-49cf-4f52-a52e-9e0424f3e29d",
+    "thinking_enabled": false,
+    "skill_version_id": 80,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 7,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "9ec63c62c85ef24a1c493eb32a51d3ab051470e9427af8937ce21097a7a6d2c6",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

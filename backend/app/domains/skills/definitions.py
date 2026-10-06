@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Any
 from .analysis_sop import sop_methodology, stage_contract
 from .report_knowledge import knowledge_for_stage
+from .framework_guidance import framework_reasoning_guidance
 from app.domains.quality.scorecard import RUBRIC
 
 
@@ -21,6 +22,18 @@ S4_MECHANISM_SKILL_KEY = "report.s4_mechanism_block_action"
 NARRATIVE_PLAN_SKILL_KEY = "report.narrative_plan"
 FRAGMENT_AUTHORING_SKILL_KEY = "report.fragment_authoring"
 FINAL_VALIDATOR_SKILL_KEY = "report.final_validator"
+CALENDAR_TEMPORAL_ANALYSIS_SKILL_KEY = "calendar.temporal_analysis"
+CALENDAR_MONTHLY_TONE_SKILL_KEY = "calendar.monthly_tone"
+CALENDAR_DAILY_AUTHORING_SKILL_KEY = "calendar.daily_authoring"
+CALENDAR_CALIBRATION_SKILL_KEY = "calendar.calibration"
+CALENDAR_REASONING_GUIDANCE_SKILL_KEYS = frozenset(
+    {
+        CALENDAR_TEMPORAL_ANALYSIS_SKILL_KEY,
+        CALENDAR_MONTHLY_TONE_SKILL_KEY,
+        CALENDAR_DAILY_AUTHORING_SKILL_KEY,
+        CALENDAR_CALIBRATION_SKILL_KEY,
+    }
+)
 REASONING_GUIDANCE_SKILL_KEYS = frozenset(
     {
         S1_FOUNDATION_SKILL_KEY,
@@ -30,6 +43,7 @@ REASONING_GUIDANCE_SKILL_KEYS = frozenset(
         NARRATIVE_PLAN_SKILL_KEY,
         FRAGMENT_AUTHORING_SKILL_KEY,
         FINAL_VALIDATOR_SKILL_KEY,
+        *CALENDAR_REASONING_GUIDANCE_SKILL_KEYS,
     }
 )
 ANALYSIS_SKILL_STEPS = {
@@ -249,7 +263,11 @@ def validate_skill_specification(specification: dict[str, Any]) -> dict[str, Any
     if skill_key in REASONING_GUIDANCE_SKILL_KEYS:
         guidance = spec.get("reasoning_guidance")
         if not isinstance(guidance, dict):
-            guidance = spec["instructions"]
+            # Compiled and legacy instructions also contain fixed program
+            # rules. Apply administrator limits to their reasoning layer only.
+            guidance = prepare_reasoning_guidance_specification(spec).get(
+                "reasoning_guidance", spec["instructions"]
+            )
         objective = guidance.get("objective")
         methodology = guidance.get("methodology")
         if (
@@ -379,6 +397,11 @@ def prepare_reasoning_guidance_specification(
     if not isinstance(identity, dict):
         return spec
     skill_key = identity.get("skill_key")
+    # Calendar skills carry their own fixed prompt requirements in the
+    # versioned runtime contract. Older calendar versions still contain the
+    # original combined instructions and must keep running unchanged.
+    if skill_key in CALENDAR_REASONING_GUIDANCE_SKILL_KEYS:
+        return spec
     current_runtime_requirements = reasoning_guidance_runtime_requirements(
         skill_key
     )
@@ -449,6 +472,20 @@ def compile_reasoning_guidance_specification(
     spec = prepare_reasoning_guidance_specification(specification)
     identity = spec.get("identity") if isinstance(spec, dict) else None
     if not isinstance(identity, dict) or identity.get("skill_key") not in REASONING_GUIDANCE_SKILL_KEYS:
+        return spec
+    skill_key = identity.get("skill_key")
+    if skill_key in CALENDAR_REASONING_GUIDANCE_SKILL_KEYS:
+        guidance = spec.get("reasoning_guidance")
+        runtime_contract = spec.get("runtime_contract")
+        if not isinstance(guidance, dict) or not isinstance(runtime_contract, dict):
+            # Compatibility path for already-published calendar versions.
+            return spec
+        instructions = spec.setdefault("instructions", {})
+        instructions["objective"] = guidance.get("objective", "")
+        instructions["methodology"] = [
+            *(guidance.get("methodology") or []),
+            *(runtime_contract.get("system_requirements") or []),
+        ]
         return spec
     guidance = spec.pop("reasoning_guidance", {})
     runtime_contract = spec.pop("runtime_contract", {})
@@ -556,16 +593,7 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
     candidates["context_policy"]["context_fields"] = list(
         dict.fromkeys(candidates["context_policy"]["context_fields"] + ["semantic_model"])
     )
-    candidates["instructions"] = {
-        "objective": "基于咨询师已确认的内容，提出几种贴合用户经历、各有侧重的报告主线，供咨询师选择。",
-        "methodology": [
-            "所有主线都只围绕咨询师确认过的命理、心理和行动内容展开，不新增案例解释或用户事实。",
-            "从用户本案最有解释力的核心张力出发，将自我认识、被隐藏的模式、卡点曾经的保护、共同机制、整合方向、人生阶段与现实行动串成一条成长脉络。",
-            "整体沿着‘你是谁、卡在哪、往哪去’推进，各部分职责清楚、前后呼应；标题、意象和叙述顺序贴合用户，不暴露框架，也不套固定模板。",
-            "从现实依据较充分的卡点中选择重要重点，合并真正重复的模式并保留差异；资料不足时减少重点或降低语气，不为凑数制造卡点。",
-            "比较不同主线怎样解释用户经历、连接已确认方向，以及哪些内容不适合作为主线；说明取舍依据，让咨询师按本案决定最终方向。",
-        ],
-    }
+    candidates["instructions"] = framework_reasoning_guidance(NARRATIVE_PLAN_SKILL_KEY)
     candidates["tool_policy"] = {"allowed": []}
     candidates["example_policy"] = {"enabled": True, "max_examples": 3}
     candidates["processor_policy"] = {"processor": "reports.narrative_candidates"}
@@ -626,19 +654,7 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
             ]
         )
     )
-    authoring["instructions"] = {
-        "objective": "根据已确认的报告方向与本段主题，写出贴合用户经历、自然连贯且便于审核的文字。",
-        "methodology": [
-            "以咨询师确认过的报告主线和本段主题为起点，只表达与本段有关的已确认内容，不在写作时重新推演命理、心理或用户经历。",
-            "分清用户亲述、系统计算和解释性理解：用户明确表达的感受可以如实呈现；对动机、保护功能或因果的解释用可能、假如或待核实等方式表达，并保留不同可能。",
-            "先明确本段要帮助读者看见什么，再选择必要内容支撑它；让各段共同服务主线，避免重复前文、堆叠所有资料，或在解释卡点时提前写成解决方案。",
-            "使用第二人称和生活化语言，把命理与心理学概念转成读者能理解的真实经验；表达清楚、有洞察、有画面，不过分学术、煽情或故作神秘。",
-            "根据用户的具体特点选择标题、比喻和表达次序，使内容贴近本案；章节各有职责但自然衔接，不展示分析框架或内部工作过程。",
-            "参考用户主动说明的阅读偏好和自我观察调整解释深浅、篇幅与隐喻，不根据这些信息推断未说过的性格。",
-            "结尾把哲学方向轻轻连回用户现实，用简短、温暖而克制的语言收束，避免空泛安慰、说教和堆砌金句。",
-            "资料不足时如实保留边界并提出待核问题，不用流畅叙事掩盖依据缺口。",
-        ],
-    }
+    authoring["instructions"] = framework_reasoning_guidance(FRAGMENT_AUTHORING_SKILL_KEY)
     authoring["tool_policy"] = {"allowed": []}
     authoring["example_policy"] = {"enabled": True, "max_examples": 3}
     authoring["knowledge_policy"] = {"snapshot": knowledge_for_stage("S5"), "retrieval": "VERSION_SNAPSHOT"}
@@ -695,81 +711,13 @@ def default_narrative_skill_specifications() -> list[dict[str, Any]]:
 
 
 ANALYSIS_STEPS: dict[str, dict[str, Any]] = {
-    "S1": {
-        "skill_key": "report.s1_foundation_analysis",
-        "name": "S1 命理基础结构分析",
-        "objective": "整理系统计算的命理基础，形成可供咨询师审核的结构判断与待验证信号。",
-        "methodology": [
-            "先核对出生资料与系统计算范围，分清可靠、待核和缺失的部分；只使用已给计算结果，不自行排盘或补造数据。",
-            "日主：从日干、五行、阴阳和意象说明命盘的自我核心线索；象征意义只作为待验证视角，不直接断定人格。",
-            "格局：以月令和全局生扶、克泄耗为主轴，比较身强、身弱、从格和化格的成立条件；给出首选候选、反证和分歧，不以元素出现次数判断旺衰。",
-            "月令：看月支、本气、藏干十神及与日主的生克，解释季节气候和能量基调；有关世界观的延伸只留作访谈线索。",
-            "十神：区分天干透出与地支藏干，结合旺衰、缺失及十神间关系寻找显性资源、隐性可能和张力；缺失不等于人格缺陷。",
-            "日支：结合日支与日主的生克和藏干十神，提出内在需求与存在方式的候选理解，并标明还缺少哪些现实资料验证。",
-            "时支：根据已知时支的五行和十神提出价值排序及后续发展线索；出生时间不明或不可靠时明确暂缓。",
-            "年柱：依据年干支和十神讨论早期印记与内在权威的象征线索；不得由年柱编造祖辈或家庭经历。",
-            "刑冲合害：先辨明干支中的冲、刑、合、害及合化是否成立，再讨论可能的内部张力；不从单一关系直接推断事件或心理冲突。",
-            "大运：按系统计算的起止年份和分析日期定位当前运，比较其五行、十神与原局关系；顺逆只说明阶段条件和可能放大的主题，不预测必然事件。",
-            "用神与喜忌：从格局候选推导用神、喜神和忌神，解释各自调节什么、为何适用；若格局候选变化，也说明取用可能如何改变。",
-            "命宫：结合主星组合、亮度、吉煞和三方四正解释自我认同的象征线索；人格面具只是待现实经验核对的假设。",
-            "身宫：查看身宫位置、主星组合及与命宫的一致或背离，提出后天方向与转型张力的候选，不将阶段变化写成既定命运。",
-            "福德宫：结合主星、化忌、空劫与煞曜，对照命宫探索外在角色和内在感受的可能张力；不得据此诊断心理状态。",
-            "四化：区分生年四化与宫干飞化，沿禄、权、科、忌的源头和去向追踪主题，特别核对化忌流向；扩展宫位须有问卷依据并经咨询师选用。",
-            "参考古典分析中的五行气象、体用、格局变化、取用和行运思路来比较解释，不直接抄书、虚构引文或把流派解释当作计算事实。",
-            "综合八字与紫微的相互支持和冲突，将重要判断写成计算依据、解释路径、可能反证与待核问题；心理线索交下一步访谈，内部分析交咨询师审核，不直接当作报告正文。",
-        ],
-    },
-    "S2": {
-        "skill_key": "report.s2_psychology_mapping",
-        "name": "S2 心理映射分析",
-        "objective": "根据用户本次自述与 S1 已确认的命理结构，提出可由现实经历验证的心理运作假设，供咨询师审核。",
-        "methodology": [
-            "先分清用户本次直接表达、实际情境、S1 已确认的命理结构和本步解释。传统命理象征不能替代用户经历；缺少现实依据时保留为待验证假设并提出中性补问。",
-            "双层映射：围绕与本次问题有关的日主与透干、月令与日支、藏干与未透十神、十神交战与刑冲、四化、用神与忌神，分别提出意识层的角色/信念和潜意识层的可能面向/耗能模式；说明映射依据与不确定性，不把缺失当缺陷。",
-            "十神映射：从系统提供的十神参考中选取 S1 已确认且与问题相关的部分，解释命理含义如何成为心理机制、原型、意识表现和阴影候选；参考表不是人格测验，不能由旺弱、缺失或‘无制’直接诊断防御或病理。",
-            "紫微映射：仅依据 S1 已确认的命宫、身宫、福德宫、四化，以及咨询师明确选用的其他宫位，使用系统提供的十四主星原型参考，讨论面具、阴影和触发主题；写出支持点、冲突和现实核验方向，不强行统一八字与紫微。",
-            "人格面具：从用户在具体场景中认同或习惯呈现的角色出发，区分用户自述与命理解释提出的候选；结合自我信念，而不把日主、透干或命迁组合直接等同于人格。",
-            "阴影：探索可能被忽略或不易承认的边界、攻击性、欲望、休息、脆弱、独立判断等需要与资源；阴影不等于缺点，命盘只能提供联想线索，不能证明用户排斥某种面向。",
-            "情结：从月令主题、十神张力、刑冲和飞化提出可能的触发倾向，再回到用户真实重复经历，核对情境、自动想法、核心情绪与行为；没有具体经历时不宣称存在情结或强迫性重复。",
-            "激活路径：按触发情境→可能浮现的被排斥面向→情绪/信念→防御与保护功能→短期缓解和长期代价→重复倾向梳理。逐环区分事实、推测和待补问，并写出反例或其他可能解释。",
-            "权威与超我：官杀、印星及咨询师选用的父母宫只作为理解‘应该、必须、不能’的象征线索；其现实来源要由用户经验核实，不归责家庭，并帮助用户看见自己现在可以采纳、调整或拒绝的原则。",
-            "每项心理判断都指出对应的用户原话/情境和已确认的上一步依据，标明证据边界与可能反证；用开放问题邀请验证。分析供咨询师审核，不写成诊断、确定的人格定论或报告正文。",
-        ],
-    },
-    "S3": {
-        "skill_key": "report.s3_integration",
-        "name": "S3 命理心理哲学整合",
-        "objective": "将已确认的命理时序与心理线索放入哲学视角，形成尊重用户选择、可由现实经历修正的成长路线候选。",
-        "methodology": [
-            "只使用 S1/S2 已确认的命理与心理判断及本次现实资料，不重新排盘、重做心理映射或把未确认候选写成事实；上游冲突并列呈现，留给咨询师核查。",
-            "自性化指更完整、自由、真实的两端整合，可用螺旋成长作比喻；不是变得完美、顺从或更强，也不把人生分成高低等级。",
-            "英雄四象限只作理解张力与成长任务的原型地图。比较相关象限的依据、反证与可发展的能力，可保留跨象限特征；不把象限当作人格诊断或固定身份，不用贬义标签称呼用户。",
-            "人生时序以系统已经计算的当前及后续大运年份和 S1/S2 现实线索为基础，描述每段可能放大的主题、资源、旧模式和发展能力；顺逆运不等于好坏人生或某个自性化阶段，冲合也不直接证明具体事件。",
-            "易经时义作为贴合当下处境的哲学比喻，说明它如何帮助观察时机、进退或变化，以及比喻不适用的边界；不自行起卦，不声称卦象证明人生走向。",
-            "用金花种子与周期、道德经的自知与反向整合、了凡四训的主动实践等视角搭建个体经验与集体意象的桥梁；只转述有把握的观点，不虚构原文、引文、页码或作者结论。",
-            "三重整合时，把命理结构、心理两端张力和哲学意义并置比较：先天配置与意识/潜意识、阶段节律与时义、可用资源与明德、耗能张力与反向整合、干支互动与阴阳、隐藏可能与觉察；映射不成立或资料不足时明确暂缓。",
-            "路线图呈现可尝试的方向、能力和选择，不替用户规定使命、阶段或重大决定；让问卷中的现实经验能够改变整合结论，并保留不同解释。",
-            "每项整合判断指出支持它的已确认上游依据和用户现实资料，也写出冲突、反例或还需核实之处。分析仅供咨询师审核，不作为报告定论或必然预言。",
-        ],
-    },
-    "S4": {
-        "skill_key": "report.s4_mechanism_block_action",
-        "name": "S4 机制卡点与行动",
-        "objective": "结合已审核的命理、心理线索和现实经验，理解卡点背后的保护逻辑，并提出尊重选择、低风险的成长练习。",
-        "methodology": [
-            "先回到用户描述的真实处境和已审核的前序判断，再提出机制假设；清楚区分用户亲述、已有结论与需要核实的解释，不用命盘替代现实经历。",
-            "防御机制从具体触发情境和应对表现中识别，理解它曾保护用户什么、短期如何缓解、长期付出什么代价；合理化、回避、讨好、理智化、完美主义、抽离或自我批评都只能作为待核对的可能，不作心理诊断。",
-            "能量管理把已确认的命理资源线索与用户实际的充电、耗电体验互相核对，提出可观察的尝试；五行活动只是联想和实验方向，不承诺效果，也不压过用户自己的反馈。",
-            "阴影练习围绕可能被排斥的需要、能力或感受，帮助用户理解而非消灭它；日记、书写、艺术表达或安全情境中的小尝试都应由用户选择，并按承受程度调整或暂停。",
-            "情结松动从真实重复情境梳理触发、想法、情绪、行动与结果，比较支持和反证；认知重看、脚本调整或行为实验要贴合问题且风险低，不补造用户没有讲过的经历。",
-            "把人生时序作为调整练习方向和强度的参考，而不是事件预测；根据已确认的阶段线索和当下现实承载讨论顺势、承压或转换时可以关注什么，不由运势推断心理状态或必然结果。自性方向描述可整合的两端和待发展的能力，不定义所谓真正自我或完美人格。",
-            "卡点优先选取有现实依据、影响较大的少数模式；说明常见场景、模式如何运作、过去保护了什么、长期代价及可能的成长邀请。理解卡点时先不混入解决步骤，资料不足就保留问题，不为了凑数硬下判断。",
-            "归纳不同卡点之间真正重复的共同路径，也保留彼此差异；破局方向从已确认的资源出发，核对它在本案例中可能发挥的调节作用和用户现实中的能力缺口，再匹配适合的练习，不把命理资源直接翻译成处方。",
-            "用户主动提供的 MBTI 或八维结果可以作为探索线索；未提供时不推断类型或分数。描述功能倾向时结合实际选择与行为，并允许用户经验修正。",
-            "关系模式以用户描述的具体互动为中心，结合已审核的关系线索和加工倾向，梳理双方如何回应、各自体验及循环如何延续；同时保留反例、不同解释和需要向用户确认的问题。",
-            "成长练习应具体、低成本、可选择、可观察并适合用户当前的时间和资源；从少量日常行动开始，用户觉得不合适或出现明显不适时可以停止或改选，不把练习当作治疗或重大决定建议。",
-        ],
-    },
+    step: {"skill_key": key, "name": name, **framework_reasoning_guidance(key)}
+    for step, key, name in (
+        ("S1", S1_FOUNDATION_SKILL_KEY, "S1 命理基础结构分析"),
+        ("S2", S2_PSYCHOLOGY_SKILL_KEY, "S2 心理映射分析"),
+        ("S3", S3_INTEGRATION_SKILL_KEY, "S3 命理心理哲学整合"),
+        ("S4", S4_MECHANISM_SKILL_KEY, "S4 机制卡点与行动"),
+    )
 }
 
 
@@ -789,13 +737,11 @@ def default_analysis_skill_specifications() -> list[dict[str, Any]]:
             "forbidden": ["other_users", "internal_chain_of_thought"],
             "projection": "FULL",
         }
+        spec["reasoning_guidance"] = framework_reasoning_guidance(stage["skill_key"])
         spec["instructions"] = {
-            "objective": stage["objective"],
-            "methodology": stage["methodology"] + sop_methodology(step_key),
             "stage_key": step_key,
             "sop_contract": stage_contract(step_key),
         }
-        spec["instructions"]["methodology"].extend(ANALYSIS_SYSTEM_REQUIREMENTS)
         spec["example_policy"] = {"enabled": True, "max_examples": 3}
         spec["knowledge_policy"] = {"snapshot": knowledge_for_stage(step_key), "retrieval": "VERSION_SNAPSHOT"}
         spec["processor_policy"] = {"processor": "reports.analysis_draft"}
@@ -913,19 +859,7 @@ def default_validator_skill_specification() -> dict[str, Any]:
         "profile_fields": ["name"],
         "context_fields": ["qa_input"],
     }
-    spec["instructions"] = {
-        "objective": "审视报告是否忠实于已确认内容和用户经历，判断安全边界、前后连贯、叙事与行动是否合适。",
-        "methodology": [
-            "从用户自述、咨询师确认的分析和本次审核目的出发，核对重要判断与行动是否有真实依据；不把格式齐全当作内容可信。",
-            "区分用户亲述事实和分析解释：亲述可以如实表达；解释要保留适用边界、其他可能和可核实的反证。",
-            "检查各部分是否共同服务报告主线，章节职责、前后衔接和重点是否清楚；也看卡点、资源与行动能否彼此说得通。",
-            "优先识别会误导或伤害用户的越界内容，例如编造经历、诊断、确定预言，或把传统解释写成科学事实。",
-            "核对关键解释的推导是否站得住脚，尤其是传统视角如何连接现实经验、资源如何回应实际困难、成长方向如何落实为可行尝试。",
-            "只指出有依据、可核实并值得修订的问题，给出准确证据和可执行方向，不替作者重写整篇报告。",
-            "尊重用户明确表达的自我观察，允许忠实转译；不因缺少某个固定说法或内部标签机械判错。资料不足时保留边界并提出核实方向，不把审慎表达当成事实错误。",
-            "检查整篇是否重复、矛盾或失衡，并按实际质量给出判断；既不漏掉有影响的问题，也不为了形式凑问题或默认通过。",
-        ],
-    }
+    spec["instructions"] = framework_reasoning_guidance(FINAL_VALIDATOR_SKILL_KEY)
     spec["instructions"]["methodology"].extend([
         *reasoning_guidance_runtime_requirements(FINAL_VALIDATOR_SKILL_KEY),
     ])

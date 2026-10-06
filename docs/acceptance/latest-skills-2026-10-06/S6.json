@@ -1,0 +1,411 @@
+{
+  "signature": "45a5dc612f73744a5353d9ea7dc3f2e14c9b4f60031b6016168239e1b45f6725",
+  "skill_digest": "ef3b3ff55e161581388fe67f1641c36c67b1415e6b68ffced5bc79919e6a3ee2",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。独立严审16项内容职责。framework_review每项fragment_keys必须列出content_plan中全部归属（卡点要求包括所有卡点），quote必须是其中某段的逐字摘录。结构齐全不等于语义成立。",
+  "output": {
+    "issues": [
+      {
+        "issue_type": "FACT_FIDELITY",
+        "severity": "MAJOR",
+        "message": "报告在「命盘底稿旁注」中把「身偏弱」候选写成较确定的格局判断，并据此展开用神与心理转译，弱化了上游明确保留的中和反证与咨询师确认要求。",
+        "evidence": "格局上，目前的主候选是「身偏弱」：你生在午月，火当令，月干甲木伤官泄身、年干丙火正财耗身、日支未土七杀克身，克泄耗的力量占优；只有时柱庚申正印生水、年支子水比肩为助。",
+        "suggestion": "在正文中把「身偏弱」明确标为待咨询师确认的候选，并同步说明若金水成势致中和则用神可能反转，避免后续心理转译被读成定论。",
+        "target_fragment_key": "report.identity.foundation_notes"
+      },
+      {
+        "issue_type": "FACT_FIDELITY",
+        "severity": "MAJOR",
+        "message": "报告把「用神候选为金水」直接用于解释调节功能与实验方向，但上游明确该判断存在中和反转分歧；正文虽提分歧，仍以候选用神作为行动推导基础，忠实度不足。",
+        "evidence": "用神候选是金（正印，生水扶身），喜神是水（比劫助身）；忌神是火（财耗身）、土（官杀克身），木（伤官泄身）为次忌。",
+        "suggestion": "在破局推导与成长实验中注明：若咨询师判定用神反转，则「金水调节功能」的转译需重估；当前实验仅作为低风险尝试，不绑定用神定论。",
+        "target_fragment_key": "report.blocks.breakthrough"
+      },
+      {
+        "issue_type": "REPETITION",
+        "severity": "MAJOR",
+        "message": "「先答应、后透支／先答应、后反噬」这一核心观点在多个章节反复完整展开，超过三次，削弱三章递进结构。",
+        "evidence": "它不是你的性格缺陷，而是一条曾经有用、现在开始让你透支的旧路径。",
+        "suggestion": "保留第一章概览与第二章共性机制中的完整解释，删除或压缩卡点一、卡点二、破局点中重复的完整循环描述，改为一句回指。",
+        "target_fragment_key": "report.blocks.block_01"
+      },
+      {
+        "issue_type": "REPETITION",
+        "severity": "MAJOR",
+        "message": "「可靠、能扛、不添麻烦」与「休息、拒绝、被照顾、游戏性」两端对立在概览、自我认知、隐藏自我、方向、阶段地图、成长实验、结尾多处重复完整展开。",
+        "evidence": "一端是「可靠、能扛、不添麻烦」，另一端是「休息、拒绝、被照顾、游戏性」。",
+        "suggestion": "将完整两端解释集中在自我方向一节；其他章节只保留一句引用或删除，避免同一核心观点换句话重复三次以上。",
+        "target_fragment_key": "report.direction.life_map"
+      },
+      {
+        "issue_type": "STRUCTURE_COHERENCE",
+        "severity": "MAJOR",
+        "message": "第二章卡点节已出现「整合邀请」并指向具体练习方向，虽未列步骤，但仍提前承担第三章行动功能，削弱「理解→整合→行动」的章节分工。",
+        "evidence": "整合的邀请，不是让你从此不再答应别人，而是让「答应」和「休息」这两端可以在同一个情境里同时在场。",
+        "suggestion": "卡点节只保留「整合邀请」作为理解性收束，删除任何可被读成练习动作的表述，具体动作统一放到成长实验。",
+        "target_fragment_key": "report.blocks.block_01"
+      },
+      {
+        "issue_type": "STRUCTURE_COHERENCE",
+        "severity": "MINOR",
+        "message": "第三章「当下阶段」与「人生阶段地图」都重复解释辛卯运的「支持中带输出压力」，章节内信息重复。",
+        "evidence": "从时间上看，你现在所处的阶段（2019–2028，辛卯）有一个比较明确的基调：一边是被支持、被滋养的部分在增强，一边是「要表达、要产出」的要求在上升。",
+        "suggestion": "当下阶段保留阶段主题与卦象比喻，人生阶段地图只保留起止年份、阶段基调、能力与旧模式，删除重复的辛卯运解释。",
+        "target_fragment_key": "report.direction.current_stage"
+      },
+      {
+        "issue_type": "ACTION_VALUE",
+        "severity": "MAJOR",
+        "message": "成长实验虽列出动作、频率、耗时、观察与退出，但部分实验与卡点对应关系不够清晰，且未充分说明与用户现实条件（工作日5–10分钟、周末20分钟）的匹配边界。",
+        "evidence": "实验二：触发链记录（对应卡点「拖延后生硬回应」）。",
+        "suggestion": "在每个实验下明确标注对应卡点、所需时间是否落在用户可用时间内，以及时间不足时的减量方式，避免实验被读成额外负担。",
+        "target_fragment_key": "report.direction.growth_experiments"
+      },
+      {
+        "issue_type": "ACTION_VALUE",
+        "severity": "MINOR",
+        "message": "实验四「故意不完美一次」证据等级偏低，正文虽说明低风险，但未明确该实验与用户自述「项目开头想法多、担心做不好反复修改」之间的具体适配理由。",
+        "evidence": "实验四：故意不完美一次（对应卡点「完美主义拖延」）。",
+        "suggestion": "补充说明该实验针对的是「不完美会出事」这一假设，并明确若任务涉及高风险或重要关系则暂停改选，强化适配理由。",
+        "target_fragment_key": "report.direction.growth_experiments"
+      },
+      {
+        "issue_type": "UNCERTAINTY_SAFETY",
+        "severity": "MAJOR",
+        "message": "报告在解释「怕让人失望」情结时，将核心情绪与自动想法写成较确定的假设，虽标注假设，但未充分保留用户自述校正与反证空间。",
+        "evidence": "核心情绪可能是愧疚和怕被否定，自动想法可能是「拒绝就会让人觉得我不够好」。",
+        "suggestion": "在情结解释后补充：若用户实际感受为委屈、愤怒或其他，则假设需按用户版本改写；并明确该判断不构成临床结论。",
+        "target_fragment_key": "report.identity.hidden_self"
+      },
+      {
+        "issue_type": "UNCERTAINTY_SAFETY",
+        "severity": "MINOR",
+        "message": "报告在阶段地图中描述未来大运时使用「可能」「条件式」等限定，但部分表述仍接近确定趋势，需进一步条件化。",
+        "evidence": "这两段官杀透干克身，基调可能是「外部责任与规则压力上升」，也可能激活阴影与情结。",
+        "suggestion": "将「可能激活阴影与情结」改为「在现实压力增加时，旧有应对方式可能更容易被触发」，并强调最终由用户现实经验校正。",
+        "target_fragment_key": "report.direction.life_map"
+      },
+      {
+        "issue_type": "PERSONALIZATION",
+        "severity": "MINOR",
+        "message": "部分心理描述较通用，换一个用户仍可能成立，个性化程度不足，未充分使用用户独有的反证与具体事件差异。",
+        "evidence": "你并不缺责任感，你缺的是在答应之前，给自己留出的那几秒钟。",
+        "suggestion": "在关键结论处更多引用用户独有的反证（熟悉同事且有明确截止时可协商）与具体事件，强化「这一份只属于该用户」的辨识度。",
+        "target_fragment_key": "report.overview.psychic_structure"
+      },
+      {
+        "issue_type": "READING_EXPERIENCE",
+        "severity": "MINOR",
+        "message": "「命盘底稿旁注」一节术语密度较高，对非专业读者可能造成阅读负担，与用户「深入详细」偏好不完全冲突，但可读性可优化。",
+        "evidence": "地支关系上，子午六冲（年-月）、子未六害（年-日）、午未六合（月-日）；天干有丙癸、丙庚、甲庚相克。",
+        "suggestion": "将命理术语集中为可跳读的旁注，正文心理部分减少术语堆叠，保持第二人称与现实语言。",
+        "target_fragment_key": "report.identity.foundation_notes"
+      },
+      {
+        "issue_type": "quality_score_below_threshold",
+        "severity": "BLOCK",
+        "target_fragment_key": null,
+        "message": "报告未达到总分80、事实16及安全8分的交付门槛。",
+        "evidence": "七维总分：79/100",
+        "suggestion": "修正低分维度并重新运行全文校准。"
+      }
+    ],
+    "scorecard": {
+      "dimensions": {
+        "fact_fidelity": {
+          "score": 15,
+          "reason": "整体忠实于上游已确认来源，未编造用户经历；但「身偏弱」与「用神金水」候选在正文中被较确定地用于心理转译，弱化了中和反证与咨询师确认要求。",
+          "fragment_keys": [
+            "report.identity.foundation_notes",
+            "report.blocks.breakthrough",
+            "report.direction.growth_experiments"
+          ],
+          "max_score": 20,
+          "label": "案例事实忠实度"
+        },
+        "personalization": {
+          "score": 16,
+          "reason": "大量使用用户自述、具体事件与反证，个性化较强；但部分关键结论仍偏通用，未充分放大用户独有的反证差异。",
+          "fragment_keys": [
+            "report.overview.psychic_structure",
+            "report.identity.self_perception",
+            "report.identity.hidden_self"
+          ],
+          "max_score": 20,
+          "label": "个性化"
+        },
+        "psychological_logic": {
+          "score": 13,
+          "reason": "人格面具→意识自我→情结→阴影→防御→重复模式→自性需求→整合链条基本完整，但部分环节重复展开，且卡点节提前承担行动功能。",
+          "fragment_keys": [
+            "report.identity.hidden_self",
+            "report.blocks.common_pattern",
+            "report.blocks.breakthrough"
+          ],
+          "max_score": 15,
+          "label": "心理逻辑"
+        },
+        "structure_coherence": {
+          "score": 11,
+          "reason": "三章职责大体清晰，但核心观点跨章重复超过三次，卡点节与第三章行动边界有越界，削弱递进结构。",
+          "fragment_keys": [
+            "report.blocks.block_01",
+            "report.blocks.block_02",
+            "report.direction.life_map"
+          ],
+          "max_score": 15,
+          "label": "三章连贯性"
+        },
+        "reading_experience": {
+          "score": 8,
+          "reason": "第二人称、现实语言为主，整体可读；但命盘旁注术语密度高，部分章节重复感明显，影响流畅度。",
+          "fragment_keys": [
+            "report.identity.foundation_notes",
+            "report.direction.current_stage"
+          ],
+          "max_score": 10,
+          "label": "阅读体验"
+        },
+        "action_value": {
+          "score": 8,
+          "reason": "四个实验具体、频率与退出条件齐全，适配用户时间；但部分实验与卡点对应关系及现实条件匹配说明仍可更清晰。",
+          "fragment_keys": [
+            "report.direction.growth_experiments"
+          ],
+          "max_score": 10,
+          "label": "行动价值"
+        },
+        "uncertainty_safety": {
+          "score": 8,
+          "reason": "无诊断、无确定未来、保留用户主体性；但情结情绪假设与未来大运表述仍可进一步条件化，避免被读成确定结论。",
+          "fragment_keys": [
+            "report.identity.hidden_self",
+            "report.direction.life_map"
+          ],
+          "max_score": 10,
+          "label": "不确定性与安全"
+        }
+      },
+      "total": 79,
+      "max_score": 100,
+      "passes_threshold": false
+    },
+    "framework_review": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "fragment_keys": [
+          "report.overview.psychic_structure"
+        ],
+        "status": "FULFILLED",
+        "reason": "概览按「向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向」组织，并给出暗线与关键结论，未展开卡点细节。",
+        "quote": "向世界展示的我（可靠、能扛、不添麻烦）→ 以为的自己（要靠谱、不能让人失望）→ 潜意识层面的自己（被排斥的休息、拒绝、被照顾、游戏性）→ 整合后的方向（在具体情境中同时保留责任与边界）",
+        "follow_up_questions": [
+          "这四层结构中，哪一层最贴近你现在的感受？"
+        ]
+      },
+      {
+        "requirement_id": "R.persona",
+        "fragment_keys": [
+          "report.identity.outer_self"
+        ],
+        "status": "FULFILLED",
+        "reason": "给出用户可识别的外在角色，并明确区分用户自述与符号解释。",
+        "quote": "你自己说出来的部分很清楚：要靠谱、不能让人失望；拒绝之后会担心别人觉得你不够好。",
+        "follow_up_questions": [
+          "在什么场景你感到「这才是我」？"
+        ]
+      },
+      {
+        "requirement_id": "R.self_belief",
+        "fragment_keys": [
+          "report.identity.self_perception"
+        ],
+        "status": "FULFILLED",
+        "reason": "覆盖意识自我与底层信念、应该/必须/不能及权威内化，并保留用户自我感受、反证与待补问。",
+        "quote": "你自述「拒绝后担心别人觉得我不够好」，这句话是这条脚本最直接的证词",
+        "follow_up_questions": [
+          "「必须靠谱」这条脚本，最早是在什么样的场景里被强化的？",
+          "哪些「应该」是你愿意保留的原则，哪些其实只是习惯性的自动应答？"
+        ]
+      },
+      {
+        "requirement_id": "R.hidden_self",
+        "fragment_keys": [
+          "report.identity.hidden_self"
+        ],
+        "status": "FULFILLED",
+        "reason": "区分情结、阴影、防御并说明关系，给出情绪和信念假设，同时保留保护功能与现实核对。",
+        "quote": "阴影，是被你排除在「我这个人」之外的面向；情结，是围绕某个核心情绪组织起来的重复结构；防御，是自我用来管理这两者、让自己不至于太难受的方式。",
+        "follow_up_questions": [
+          "下次「我必须答应」出现时，如果我不答应，我到底在怕什么？"
+        ]
+      },
+      {
+        "requirement_id": "R.self_direction",
+        "fragment_keys": [
+          "report.identity.self_direction"
+        ],
+        "status": "FULFILLED",
+        "reason": "说明当前倾向的一端、被排除的另一端，并强调两端整合而非完美人格。",
+        "quote": "不是把「可靠」换成「松弛」，也不是变成一个更完美、更会拿捏的人。真正的方向，是让这两端在同一件事里同时在场",
+        "follow_up_questions": [
+          "在什么情境下你最容易先答应后反悔？"
+        ]
+      },
+      {
+        "requirement_id": "R.energy",
+        "fragment_keys": [
+          "report.identity.energy_pattern"
+        ],
+        "status": "FULFILLED",
+        "reason": "覆盖充电/耗电与实际反馈、探索→价值→执行→反馈路径及张力，并明确无自报不推MBTI或八维分数。",
+        "quote": "你没有提供 MBTI 或八维自报，所以这里不推断你的类型，也不给任何功能打分",
+        "follow_up_questions": [
+          "你更习惯先发散还是先收敛？",
+          "在什么条件下你更容易启动执行？"
+        ]
+      },
+      {
+        "requirement_id": "R.relationships",
+        "fragment_keys": [
+          "report.identity.relationship_pattern"
+        ],
+        "status": "FULFILLED",
+        "reason": "描述请求/回应/感受/反馈循环，使用真实场景，并保留反例与待核对部分。",
+        "quote": "请求：同事临时请你代写方案，朋友连续两次临时改约。回应：你先答应，或不表达意见。感受：愧疚、怕被否定、不耐烦。反馈：拖延、生硬退出、直接取消。",
+        "follow_up_questions": [
+          "在什么关系或情境下你更容易先答应后反悔？",
+          "对方通常如何回应你的退出？"
+        ]
+      },
+      {
+        "requirement_id": "R.blocks",
+        "fragment_keys": [
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03"
+        ],
+        "status": "FULFILLED",
+        "reason": "三个卡点均覆盖场景→触发→运作→过去保护→长期代价→整合邀请，且本节未展开解决步骤。",
+        "quote": "整合的邀请，不是让你从此不再答应别人，而是让「答应」和「休息」这两端可以在同一个情境里同时在场。",
+        "follow_up_questions": [
+          "哪个卡点最贴近你现在的感受？"
+        ]
+      },
+      {
+        "requirement_id": "R.common_pattern",
+        "fragment_keys": [
+          "report.blocks.common_pattern"
+        ],
+        "status": "FULFILLED",
+        "reason": "综合多个卡点，给出触发→情绪/信念→防御→短期保护→长期重复路径，并声明为候选路径而非因果。",
+        "quote": "触发（临时请求、临时改约、任务开始）→ 内在反应（担心让人失望、担心做不好）→ 防御动作（先答应、不表达、反复修改）→ 短期结果（当场没有冲突，关系看起来还在，质量感被保住）→ 长期重复（熬夜透支、情绪积压、关系张力、自我信任下降）。",
+        "follow_up_questions": [
+          "这条候选路径中，哪一环最需要你用真实经历核对？"
+        ]
+      },
+      {
+        "requirement_id": "R.breakthrough",
+        "fragment_keys": [
+          "report.blocks.breakthrough"
+        ],
+        "status": "FULFILLED",
+        "reason": "覆盖用神/资源→调节功能→能力→现实缺口→工具→实验，能力回应共性机制，动作指向第三章。",
+        "quote": "用神候选是金水。金对应你时柱的正印，在这里的调节功能是「自我支持与学习」",
+        "follow_up_questions": [
+          "若咨询师判定用神反转，你希望如何调整这些实验？"
+        ]
+      },
+      {
+        "requirement_id": "R.archetype",
+        "fragment_keys": [
+          "report.blocks.breakthrough"
+        ],
+        "status": "FULFILLED",
+        "reason": "使用中式人物意象苏武具象化，给出可学习能力及适用边界，并声明不作史实或人格诊断。",
+        "quote": "中式人物意象上，可以借苏武来看：他在长期的外部压力里，守住了自己内在的主权。",
+        "follow_up_questions": [
+          "苏武这个意象中，哪一点最贴近你现在的处境？"
+        ]
+      },
+      {
+        "requirement_id": "R.life_map",
+        "fragment_keys": [
+          "report.direction.life_map"
+        ],
+        "status": "FULFILLED",
+        "reason": "给出真实大运起止、原局互动依据、每阶段基调/放大主题/能力/旧模式，并保持条件式未来与积极资源。",
+        "quote": "下面的大运起止年份来自程序测算（库传统计龄、未校正真太阳时），阶段基调是条件式描述，不是必然事件",
+        "follow_up_questions": [
+          "转换期你最担心失去什么？"
+        ]
+      },
+      {
+        "requirement_id": "R.timing_wisdom",
+        "fragment_keys": [
+          "report.direction.current_stage"
+        ],
+        "status": "FULFILLED",
+        "reason": "解释当下境遇与乾坤比喻为何匹配，给出不适用边界，并声明不是起卦证明。",
+        "quote": "这只是借《易经》的意象来照见你此刻的处境，不是起卦结果，也不构成任何占卜证明。",
+        "follow_up_questions": [
+          "你什么时候最需要「坤」的承载？"
+        ]
+      },
+      {
+        "requirement_id": "R.experiments",
+        "fragment_keys": [
+          "report.direction.growth_experiments"
+        ],
+        "status": "FULFILLED",
+        "reason": "提供四项已确认Action，对应卡点/能力/工具，包含动作/频率/耗时/观察/退出，并适配现实条件。",
+        "quote": "实验一：答应前缓冲（对应卡点「答应后透支」）。",
+        "follow_up_questions": [
+          "哪个实验你最愿意先试？"
+        ]
+      },
+      {
+        "requirement_id": "R.practice_rhythm",
+        "fragment_keys": [
+          "report.direction.growth_experiments"
+        ],
+        "status": "FULFILLED",
+        "reason": "给出每日能量/每周阴影/每月触发链/每季方向复盘节奏，并提供时间不足减量方案。",
+        "quote": "每日1分钟能量觉察（记一项充电、一项耗电）；每周10分钟阴影写信；每月20分钟触发链记录；每季一次方向复盘",
+        "follow_up_questions": [
+          "时间不足时你希望优先保留哪一项？"
+        ]
+      },
+      {
+        "requirement_id": "R.ending",
+        "fragment_keys": [
+          "report.ending"
+        ],
+        "status": "FULFILLED",
+        "reason": "以哲学贯通认识→理解→行动，给出个性化温暖寄语，署名引用使用已核验《道德经》句。",
+        "quote": "《道德经》里有一句「知人者智，自知者明」。",
+        "follow_up_questions": [
+          "你希望「心理重生」先从哪一件小事开始？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 96675,
+    "output_tokens": 5020,
+    "latency_ms": 19107,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b94393f1-887f-4e1a-9ad9-7cb2fa4ec0fc",
+    "thinking_enabled": false,
+    "skill_version_id": 81,
+    "skill_key": "report.final_validator",
+    "skill_version": 7,
+    "processor": "reports.validator",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "4f6d6d8794984c6bd7baf5b41963d0f5cf6dbab16775240d4c4869cea0c6a8e2",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

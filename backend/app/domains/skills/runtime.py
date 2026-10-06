@@ -938,7 +938,12 @@ async def execute_skill(
         raise ValueError("skill_input_contract_missing_fields")
     foundation = context.get("foundation_data")
     if processor == "calendar.production":
-        system_prompt = GLOBAL_POLICY + "\n" + json.dumps(specification["instructions"], ensure_ascii=False) + "\n输出契约：" + json.dumps(specification["output_contract"], ensure_ascii=False)
+        identity = specification["identity"]
+        system_prompt = (
+            GLOBAL_POLICY + f"\n【当前技能】{identity['skill_key']} · {identity['name']}\n"
+            + json.dumps(specification["instructions"], ensure_ascii=False)
+            + "\n输出契约：" + json.dumps(specification["output_contract"], ensure_ascii=False)
+        )
         user_prompt = json.dumps(context, ensure_ascii=False)
         if runtime_instruction:
             system_prompt += "\n" + runtime_instruction

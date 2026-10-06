@@ -1,0 +1,693 @@
+{
+  "signature": "e39103b5d1d0608d910635d03bf52a3a7c46ec8b826bab9e8a897733ea380d89",
+  "skill_digest": "5ee6ab3c4d50a5348a7061c96ca53bc514250d1a0abb06ce90af2263f0ef9b35",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每个规定分析片段都须有framework_coverage；structured_analysis/details严格使用当前reasoning_contract字段。Action的reasoning_path逐项具体，不用通用空话。",
+  "output": {
+    "summary": "本批S4候选基于合成验收样本的问卷自述与已确认上游符号假设，提炼防御机制、能量管理、阴影与情结练习、时序自性、3个核心卡点、共性破局、八维路径（无自报不推类型）、关系循环与4项成长实验。所有心理判断均为待验证假设，须由用户现实反馈与咨询师审核校正；命理为符号系统，不作诊断或必然预测。",
+    "findings": [
+      {
+        "finding_key": "s4.defense.agree_then_withdraw",
+        "claim": "主要防御候选：先答应、拖延、最后生硬退出或取消。触发为临时请求与临时改约；短期保护可靠形象、避免当场冲突与被否定的焦虑；长期代价为熬夜透支、关系损耗与自我信任下降。属待验证假设，非临床判断。",
+        "kind": "FINDING",
+        "semantic_role": "DEFENSE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "short_title": "先答应后生硬退出防御",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.cycle.agree_then_withdraw"
+          },
+          {
+            "finding_key": "s2.complex.disappoint_others"
+          }
+        ],
+        "structured_data": {
+          "defense_candidates": "先答应、拖延、生硬退出、取消",
+          "signal": "「我必须答应」想法出现时",
+          "protection": "维持可靠形象、避免当场冲突",
+          "cost": "熬夜透支、关系损耗",
+          "counterexample": "熟悉同事且有明确截止时可协商",
+          "note": "待验证假设，非诊断"
+        }
+      },
+      {
+        "finding_key": "s4.defense.intellectualize_perfectionism",
+        "claim": "次要防御候选：理智化与完美主义。项目开头想法多、担心做不好反复修改、接近截止才急交付，提示以反复思考与修改替代对「做不好」的焦虑。短期保护质量感与自我要求，长期代价为拖延与精力透支。属待验证假设。",
+        "kind": "SIGNAL",
+        "semantic_role": "DEFENSE",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "short_title": "理智化与完美主义候选",
+        "evidence_refs": [
+          "input.context.concrete_events"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.conflict"
+          }
+        ],
+        "structured_data": {
+          "defense_candidates": "理智化、完美主义、反复修改",
+          "signal": "担心做不好时反复修改",
+          "protection": "维持质量感与自我要求",
+          "cost": "拖延、精力透支",
+          "note": "待验证假设"
+        }
+      },
+      {
+        "finding_key": "s4.block.agree_then_overdraft",
+        "claim": "卡点一：答应后透支。场景为同事临时请代写方案，本想休息却答应，熬夜后第二天不耐烦。运作：触发临时请求→怕让人失望→先答应→熬夜完成→疲惫与不耐烦。过去保护了可靠形象与关系和谐；长期代价为身体透支、情绪积压与关系张力。整合邀请：看见「答应」与「休息」两端可以同时在场。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "short_title": "答应后熬夜透支卡点",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.complex.disappoint_others"
+          },
+          {
+            "finding_key": "s2.shadow.boundary_rest"
+          }
+        ],
+        "structured_data": {
+          "scene": "同事临时请代写方案，本想休息却答应，熬夜后第二天不耐烦",
+          "trigger": "临时请求",
+          "operation": "怕让人失望→先答应→熬夜完成→疲惫不耐烦",
+          "past_protection": "维持可靠形象与关系和谐",
+          "long_term_cost": "身体透支、情绪积压、关系张力",
+          "integration_invitation": "让答应与休息在同一情境共同存在"
+        }
+      },
+      {
+        "finding_key": "s4.block.delay_then_harsh",
+        "claim": "卡点二：拖延后生硬回应。场景为朋友连续两次临时改地点，未表达意见，最后直接取消聚会。运作：触发改约→不表达不满→积压→生硬退出。过去保护了当场不冲突与关系表面和谐；长期代价为关系损耗与自我信任下降。整合邀请：在早期以有余地的方式表达真实感受。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "short_title": "拖延后生硬退出卡点",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s2.cycle.agree_then_withdraw"
+          },
+          {
+            "finding_key": "s1.interactions.clash_harm"
+          }
+        ],
+        "structured_data": {
+          "scene": "朋友连续两次临时改地点，未表达意见，最后直接取消聚会",
+          "trigger": "临时改约",
+          "operation": "不表达不满→积压→生硬退出",
+          "past_protection": "避免当场冲突、维持表面和谐",
+          "long_term_cost": "关系损耗、自我信任下降",
+          "integration_invitation": "早期以有余地的方式表达真实感受"
+        }
+      },
+      {
+        "finding_key": "s4.block.perfection_delay",
+        "claim": "卡点三：完美主义拖延。场景为项目开头想法多，担心做不好反复修改，接近截止才急着交付。运作：触发任务→担心做不好→反复修改→接近截止急交付。过去保护了质量感与自我要求；长期代价为拖延、精力透支与交付质量波动。整合邀请：让「做好」与「完成」两端共同存在。",
+        "kind": "FINDING",
+        "semantic_role": "BLOCK",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "short_title": "完美主义反复修改卡点",
+        "evidence_refs": [
+          "input.context.concrete_events"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.conflict"
+          },
+          {
+            "finding_key": "s2.authority.internal_should"
+          }
+        ],
+        "structured_data": {
+          "scene": "项目开头想法多，担心做不好反复修改，接近截止才急着交付",
+          "trigger": "任务开始与质量要求",
+          "operation": "担心做不好→反复修改→接近截止急交付",
+          "past_protection": "维持质量感与自我要求",
+          "long_term_cost": "拖延、精力透支、交付质量波动",
+          "integration_invitation": "让做好与完成两端共同存在"
+        }
+      },
+      {
+        "finding_key": "s4.action.pause_before_yes",
+        "claim": "成长实验一：答应前缓冲。在收到临时请求时，先记录身体与情绪信号，再给自己一个缓冲句「我需要先看时间，稍后回复」，不立即答应。对应卡点：答应后透支。方法为CBT认知重构与短焦小步实验，非治疗。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "short_title": "答应前缓冲实验",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.available_time"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s4.block.agree_then_overdraft"
+          }
+        ],
+        "structured_data": {
+          "block_refs": [
+            "s4.block.agree_then_overdraft"
+          ],
+          "method": "CBT认知重构+短焦小步实验",
+          "steps": [
+            "收到临时请求时先记录身体与情绪信号",
+            "使用缓冲句「我需要先看时间，稍后回复」",
+            "给自己至少10分钟再决定",
+            "记录答应或拒绝后的感受"
+          ],
+          "frequency": "daily",
+          "duration_minutes": 5,
+          "observation": "是否出现「我必须答应」的想法；缓冲后焦虑是否下降",
+          "stop_rule": "若缓冲引发强烈焦虑或影响紧急工作，暂停并改为事后记录",
+          "reasoning_path": {
+            "resource_refs": [
+              "s1.useful_gods.candidate",
+              "s1.ten_gods.resources"
+            ],
+            "regulation_function": "金水用神候选提示以学习与被支持调节耗身输出；正印资源可转化为自我支持",
+            "capacity": "在答应前保留自主判断与边界",
+            "reality_gap": "用户自述需要拒绝时拖到最后才生硬回应，缺少早期缓冲",
+            "block_refs": [
+              "s4.block.agree_then_overdraft"
+            ],
+            "integration_task": "让责任与休息在同一情境共同存在",
+            "tool": "CBT认知重构+短焦小步实验",
+            "rationale": "缓冲句降低当场答应压力，CBT识别「必须答应」自动想法；非治疗，适合每晚5–10分钟",
+            "evidence_refs": [
+              "input.context.current_challenge",
+              "input.context.available_time"
+            ]
+          }
+        }
+      },
+      {
+        "finding_key": "s4.action.trigger_chain_log",
+        "claim": "成长实验二：触发链记录。每月记录一次「触发事件→自动想法→情绪→行为→结果」链条，重点记录临时请求与改约场景。对应卡点：拖延后生硬回应。方法为CBT触发链记录与荣格情结命名，非治疗。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "short_title": "触发链记录实验",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.available_time"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s4.block.delay_then_harsh"
+          }
+        ],
+        "structured_data": {
+          "block_refs": [
+            "s4.block.delay_then_harsh"
+          ],
+          "method": "CBT触发链记录+荣格情结命名",
+          "steps": [
+            "记录触发事件",
+            "记录自动想法",
+            "记录情绪与身体感受",
+            "记录行为与结果",
+            "给情结起一个中性名字"
+          ],
+          "frequency": "monthly",
+          "duration_minutes": 20,
+          "observation": "触发链是否重复；情结命名后是否更容易觉察",
+          "stop_rule": "若记录引发强烈情绪，暂停并改为只记事实",
+          "reasoning_path": {
+            "resource_refs": [
+              "s1.ten_gods.resources",
+              "s3.self.pole_reliable_vs_rest"
+            ],
+            "regulation_function": "正印资源支持观察与命名；自我方向提示两端整合",
+            "capacity": "识别自动想法与情结触发，发展元认知",
+            "reality_gap": "用户自述需要拒绝时拖到最后才生硬回应，缺少对触发链的觉察",
+            "block_refs": [
+              "s4.block.delay_then_harsh"
+            ],
+            "integration_task": "让表达与边界在早期同时在场",
+            "tool": "CBT触发链记录+荣格情结命名",
+            "rationale": "记录链条帮助看见重复模式，情结命名降低被吞没感；每月一次适合周末20分钟",
+            "evidence_refs": [
+              "input.context.concrete_events",
+              "input.context.available_time"
+            ]
+          }
+        }
+      },
+      {
+        "finding_key": "s4.action.shadow_letter",
+        "claim": "成长实验三：阴影写信。每周用10分钟给被压抑的「休息与拒绝」写一封不寄出的信，表达它想说什么，不评判、不修改。对应卡点：答应后透支。方法为荣格式阴影写信与艺术表达，非治疗。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "short_title": "阴影写信实验",
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.available_time"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s4.block.agree_then_overdraft"
+          }
+        ],
+        "structured_data": {
+          "block_refs": [
+            "s4.block.agree_then_overdraft"
+          ],
+          "method": "荣格式阴影写信+艺术表达",
+          "steps": [
+            "每周固定时间",
+            "给「休息与拒绝」写一封不寄出的信",
+            "写下它想说的话",
+            "不评判、不修改",
+            "读一遍后合上"
+          ],
+          "frequency": "weekly",
+          "duration_minutes": 10,
+          "observation": "写信时出现的情绪与身体感受；是否出现新的需要",
+          "stop_rule": "若写信引发强烈痛苦或失控感，暂停并寻求专业支持",
+          "reasoning_path": {
+            "resource_refs": [
+              "s3.self.pole_reliable_vs_rest",
+              "s1.ten_gods.resources"
+            ],
+            "regulation_function": "自我方向提示被排除端需要被看见；正印资源支持自我关怀",
+            "capacity": "接纳休息、拒绝与被照顾的面向",
+            "reality_gap": "用户自述独自散步时放松，但休息需求未被主动主张",
+            "block_refs": [
+              "s4.block.agree_then_overdraft"
+            ],
+            "integration_task": "让可靠与休息两端共同存在",
+            "tool": "荣格式阴影写信+艺术表达",
+            "rationale": "写信提供低风险表达通道，适合每周10分钟；不寄出降低关系风险",
+            "evidence_refs": [
+              "input.context.self_description",
+              "input.context.available_time"
+            ]
+          }
+        }
+      },
+      {
+        "finding_key": "s4.action.imperfect_experiment",
+        "claim": "成长实验四：故意不完美一次。每月选一件低风险任务，故意提前交付或保留一处不完美，观察世界是否崩塌。对应卡点：完美主义拖延。方法为CBT行为实验与ACT接纳，非治疗。",
+        "kind": "FINDING",
+        "semantic_role": "ACTION",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "short_title": "故意不完美行为实验",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.available_time"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s4.block.perfection_delay"
+          }
+        ],
+        "structured_data": {
+          "block_refs": [
+            "s4.block.perfection_delay"
+          ],
+          "method": "CBT行为实验+ACT接纳",
+          "steps": [
+            "每月选一件低风险任务",
+            "故意提前交付或保留一处不完美",
+            "记录焦虑程度",
+            "观察结果与反馈",
+            "记录世界是否崩塌"
+          ],
+          "frequency": "monthly",
+          "duration_minutes": 20,
+          "observation": "焦虑是否随时间下降；结果是否真的变差",
+          "stop_rule": "若任务涉及高风险或重要关系，暂停并改选低风险任务",
+          "reasoning_path": {
+            "resource_refs": [
+              "s1.ten_gods.resources",
+              "s1.structure.weak_candidate"
+            ],
+            "regulation_function": "正印资源支持自我接纳；身弱候选提示减少耗身输出",
+            "capacity": "容忍不完美、降低反复修改",
+            "reality_gap": "用户自述担心做不好反复修改，接近截止才急交付",
+            "block_refs": [
+              "s4.block.perfection_delay"
+            ],
+            "integration_task": "让做好与完成两端共同存在",
+            "tool": "CBT行为实验+ACT接纳",
+            "rationale": "低风险行为实验检验「不完美会崩塌」的假设；每月一次适合周末20分钟",
+            "evidence_refs": [
+              "input.context.concrete_events",
+              "input.context.available_time"
+            ]
+          }
+        }
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "全部资料为合成验收数据，不得冒充真实客户；心理假设须由用户自述与反证校正。",
+        "references": [
+          "input.context.synthetic_notice"
+        ]
+      },
+      {
+        "message": "命理为原型符号系统，不直接等同医学、精神医学或人格障碍诊断；单一十神或星曜不足以决定人格。",
+        "references": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "message": "用户未提供童年经历，权威内化来源暂缓，不作家庭归因。",
+        "references": [
+          "input.context.self_description"
+        ]
+      },
+      {
+        "message": "无MBTI/八维自报，不得推断具体类型或功能分数。",
+        "references": [
+          "input.profile.name"
+        ]
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s4.defense",
+        "title": "防御机制",
+        "content": "结合你的自述与具体事件，主要防御候选是「先答应、拖延、最后生硬退出或取消」。触发是临时请求与临时改约；当「我必须答应」的想法出现时，身体可能先紧绷，随后用答应来缓解怕让人失望的焦虑。短期它保护了可靠形象、避免了当场冲突；长期代价是熬夜透支、关系损耗与自我信任下降。次要候选是理智化与完美主义：项目开头想法多、担心做不好反复修改，接近截止才急交付，用反复思考替代对「做不好」的焦虑。这些是待验证假设，不是诊断。你可以观察的信号：当「我必须X」出现时，暂停，问自己「如果我不X，我害怕什么？」反证是：面对熟悉同事且有明确截止时，你能够协商任务边界，说明防御并非在所有情境启动。",
+        "finding_refs": [
+          "s4.defense.agree_then_withdraw",
+          "s4.defense.intellectualize_perfectionism"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.defense给出主要与次要防御候选、情境、保护功能、长期代价与觉察信号，未用星曜诊断妄想或解离。",
+          "quote": "主要防御候选是「先答应、拖延、最后生硬退出或取消」。",
+          "follow_up_questions": [
+            "当「我必须答应」出现时，你最先感到什么？",
+            "什么条件下你能协商边界？"
+          ]
+        }
+      },
+      {
+        "fragment_key": "analysis.s4.energy",
+        "title": "能量管理",
+        "content": "结合喜用候选（金水）与你的现实反馈：充电情境候选为独自散步、安静学习、整理与明确边界、被支持的学习环境；你自述独自散步时比较放松，支持这一方向。耗电情境候选为临时请求密集、熬夜输出、反复修改、频繁应酬与表面社交；你自述答应额外任务后常熬夜、下班后常查看消息怕漏事，支持这一方向。五行活动是可试验建议，不承诺效果。反例与未确认部分：面对熟悉同事且有明确截止时你能协商，说明耗电并非在所有工作场景发生；需要观察的是「什么条件下你更容易透支」。观察方式：每晚用1分钟记录今日充电/耗电各一项，连续两周后回看。",
+        "finding_refs": [
+          "s4.defense.agree_then_withdraw"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.available_time"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.energy对照喜用候选与用户现实反馈，给出充电/耗电清单、反例与观察方式，并声明五行活动为可试验建议。",
+          "quote": "充电情境候选为独自散步、安静学习、整理与明确边界、被支持的学习环境",
+          "follow_up_questions": [
+            "哪些活动让你事后感到恢复？",
+            "什么条件下你更容易透支？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "已按reasoning_contract的analysis.s4.energy字段给出充电、耗电与现实核对，引用用户自述与反证。",
+          "quote": "你自述独自散步时比较放松，支持这一方向。",
+          "follow_up_questions": [
+            "哪些活动让你事后感到恢复？",
+            "什么条件下你更容易透支？"
+          ],
+          "details": {
+            "charging": "独自散步、安静学习、整理与明确边界、被支持的学习环境；用户自述独自散步时比较放松，支持此方向。",
+            "draining": "临时请求密集、熬夜输出、反复修改、频繁应酬与表面社交；用户自述答应额外任务后常熬夜、下班后常查看消息怕漏事，支持此方向。",
+            "reality_check": "反例为熟悉同事且有明确截止时可协商，说明耗电非全场景；未确认部分为具体恢复时长与活动偏好；观察方式为每晚1分钟记录充电/耗电各一项，连续两周回看。"
+          }
+        }
+      },
+      {
+        "fragment_key": "analysis.s4.shadow_practice",
+        "title": "阴影整合",
+        "content": "你最需要接纳的阴影面向候选是「休息、拒绝、被照顾、游戏性」。练习可选：日记练习，每天记录「今天我否定了自己的什么面向？」，持续21天可调整；写信练习，给阴影写一封不寄出的信——「我知道你一直被我压抑，我想听听你想说什么」；低风险角色扮演，在安全环境中练习说「不」；艺术表达，通过绘画、音乐或舞蹈表达被压抑的能量，不评判只表达。结合你的时间，建议每周一次10分钟写信，或每天1分钟日记。接纳的是「休息与拒绝也是我的一部分」，不是把它们变成新的应该。何时暂停：若练习引发强烈痛苦、失控感或影响日常功能，暂停并寻求专业支持。",
+        "finding_refs": [
+          "s4.action.shadow_letter"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.available_time"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.shadow_practice给出日记、写信、低风险角色扮演与艺术表达选项，写明接纳面向与暂停条件，并适配用户时间。",
+          "quote": "你最需要接纳的阴影面向候选是「休息、拒绝、被照顾、游戏性」。",
+          "follow_up_questions": [
+            "你允许自己在关系中提出需要吗？",
+            "拒绝别人后你通常有什么感受？"
+          ]
+        }
+      },
+      {
+        "fragment_key": "analysis.s4.complex_practice",
+        "title": "情结松动",
+        "content": "核心情结候选为「怕让人失望」。练习步骤：第一步命名情结，给它起一个中性名字，如「怕失望小姐」；第二步追踪触发链，记录「触发事件→自动想法→情绪→行为→结果」，例如同事临时请代写方案→「拒绝会让人觉得我不够好」→愧疚→先答应→熬夜；第三步寻找证据与反证，「怕失望小姐」说「拒绝就会被抛弃」，证据是什么？反证是什么？你自述熟悉同事且有明确截止时能协商，就是反证；第四步重写脚本，如「即使我拒绝，我也值得被尊重」；第五步行为实验，故意在低风险场景拒绝一次，观察世界是否崩塌。CBT与荣格式工具适配你的真实问题，非治疗。",
+        "finding_refs": [
+          "s4.action.trigger_chain_log"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.complex_practice给出命名→触发链→证据/反证→重写脚本→行为实验五步，并适配真实问题。",
+          "quote": "核心情结候选为「怕让人失望」。",
+          "follow_up_questions": [
+            "每次遇到临时请求时，你最先出现的感受是什么？",
+            "拒绝后你担心对方怎么看你？"
+          ]
+        }
+      },
+      {
+        "fragment_key": "analysis.s4.timing_self",
+        "title": "时序与自性",
+        "content": "当前大运辛卯（2019–2028，偏印，金/木）为「支持中带输出压力」：辛金偏印生扶日主，卯木食神泄身。练习强度建议：顺势期建立新习惯、拓展舒适区；调整期减少外求、增加内观；转换期回顾总结、放下旧模式。结合你的问卷，自性方向不是变成完美人格，而是整合两端：一端是「可靠、能扛、不添麻烦」，另一端是「休息、拒绝、被照顾、游戏性」。你自述独自散步时放松，说明被排除端并未消失。若两端逐渐被整合，你可能成为一个既能承担、也能主张边界的人；这不是消灭任何一端，而是让它们在具体情境中共同存在。童年经历未提供，权威内化来源暂缓，不作家庭归因。",
+        "finding_refs": [
+          "s4.block.agree_then_overdraft"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "calculated.foundation"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.timing_self结合当前大运给出顺势/调整/转换练习强度，整合意识、情结、阴影与时序，问卷改变方向，不写完美人格。",
+          "quote": "自性方向不是变成完美人格，而是整合两端",
+          "follow_up_questions": [
+            "转换期你最担心失去什么？",
+            "你希望先从哪一件小事开始整合？"
+          ]
+        }
+      },
+      {
+        "fragment_key": "analysis.s4.blocks",
+        "title": "卡点理解",
+        "content": "本批提炼三个核心卡点。卡点一：答应后透支。场景为同事临时请代写方案，本想休息却答应，熬夜后第二天不耐烦；运作是怕让人失望→先答应→熬夜→疲惫不耐烦；过去保护了可靠形象与关系和谐；长期代价为身体透支、情绪积压与关系张力；整合邀请是让答应与休息在同一情境共同存在。卡点二：拖延后生硬回应。场景为朋友连续两次临时改地点，未表达意见，最后直接取消聚会；运作是不表达不满→积压→生硬退出；过去保护了避免当场冲突；长期代价为关系损耗与自我信任下降；整合邀请是早期以有余地的方式表达真实感受。卡点三：完美主义拖延。场景为项目开头想法多，担心做不好反复修改，接近截止才急交付；运作是担心做不好→反复修改→急交付；过去保护了质量感与自我要求；长期代价为拖延与精力透支；整合邀请是让做好与完成两端共同存在。本节不展开解决步骤。",
+        "finding_refs": [
+          "s4.block.agree_then_overdraft",
+          "s4.block.delay_then_harsh",
+          "s4.block.perfection_delay"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.blocks给出3个核心卡点的场景、运作、过去保护、长期代价与整合邀请，本节不展开解决步骤。",
+          "quote": "本批提炼三个核心卡点。",
+          "follow_up_questions": [
+            "哪个卡点最贴近你现在的感受？",
+            "还有哪些场景反复出现？"
+          ]
+        }
+      },
+      {
+        "fragment_key": "analysis.s4.breakthrough",
+        "title": "共性与破局",
+        "content": "三个卡点的共性机制候选：触发（临时请求/改约/任务开始）→情绪（怕让人失望、担心做不好）→防御（先答应、拖延、反复修改）→短期保护（维持形象、避免冲突）→长期重复（透支、关系损耗、拖延）。用神候选为金水：金（正印）在此案中承担「自我支持与学习」的调节功能，水（比劫）承担「自主与边界」的调节功能。需要发展的心理能力是「在答应前保留自主判断」与「早期表达真实感受」。现实缺口是用户自述需要拒绝时拖到最后才生硬回应，缺少早期缓冲与表达。工具匹配：CBT认知重构承接「必须答应」的自动想法，荣格阴影写信承接被排斥的休息端，短焦小步实验承接低风险行为尝试。中式原型可参考「苏武」——在长期外部压力中守住内在主权，但比喻仅作具象化，不作史实或人格诊断。两端整合后的方向：既能承担，也能主张边界。",
+        "finding_refs": [
+          "s4.block.agree_then_overdraft",
+          "s4.block.delay_then_harsh",
+          "s4.block.perfection_delay"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.self_description",
+          "input.context.counterexample"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.breakthrough给出共性路径、用神到调节功能转译、能力与现实缺口、工具匹配与两端整合方向，不靠命盘替代现实。",
+          "quote": "三个卡点的共性机制候选：触发（临时请求/改约/任务开始）→情绪（怕让人失望、担心做不好）→防御（先答应、拖延、反复修改）→短期保护（维持形象、避免冲突）→长期重复（透支、关系损耗、拖延）。",
+          "follow_up_questions": [
+            "哪个卡点最贴近你现在的感受？",
+            "什么条件下你能协商边界？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "已按reasoning_contract的analysis.s4.breakthrough字段给出共性机制、资源转译、能力缺口、整合任务与工具理由，并关联Action的reasoning_path。",
+          "quote": "用神候选为金水：金（正印）在此案中承担「自我支持与学习」的调节功能，水（比劫）承担「自主与边界」的调节功能。",
+          "follow_up_questions": [
+            "哪个卡点最贴近你现在的感受？",
+            "什么条件下你能协商边界？"
+          ],
+          "details": {
+            "common_mechanism": "触发→情绪（怕让人失望、担心做不好）→防御（先答应、拖延、反复修改）→短期保护→长期重复；综合三个卡点，非单一因果。",
+            "resource_translation": "用神候选金水：金（正印）转为自我支持与学习能力，水（比劫）转为自主与边界能力；依据s1.useful_gods.candidate与s1.ten_gods.resources。",
+            "capacity_gap": "需发展「答应前保留自主判断」与「早期表达真实感受」；现实缺口为用户自述需要拒绝时拖到最后才生硬回应。",
+            "integration_task": "让可靠与休息、做好与完成两端在同一情境共同存在；非完美人格目标。",
+            "tool_rationale": "CBT认知重构承接「必须答应」自动想法，荣格阴影写信承接被排斥的休息端，短焦小步实验承接低风险行为尝试；与Action的reasoning_path一致。"
+          }
+        }
+      },
+      {
+        "fragment_key": "analysis.s4.functions",
+        "title": "八维路径",
+        "content": "你没有提供MBTI或八维自报，因此不推断具体类型或功能分数。以下仅描述加工倾向假设：探索入口——项目开头想法多，倾向先发散再收敛；价值判断入口——在意「靠谱、不让人失望」，倾向以外部评价校准价值；执行入口——担心做不好反复修改，接近截止才急交付，执行启动偏晚；反馈入口——下班后常查看消息怕漏事，倾向持续扫描外部反馈。张力在于：探索与价值判断都指向外部期待，而执行与反馈缺少内部节奏。以上为倾向假设，须由你自述校正；无自报不推类型。",
+        "finding_refs": [
+          "s4.defense.intellectualize_perfectionism"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.self_description"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.functions在无自报前提下不推类型，仅描述探索/价值/执行/反馈路径与张力假设。",
+          "quote": "你没有提供MBTI或八维自报，因此不推断具体类型或功能分数。",
+          "follow_up_questions": [
+            "你更习惯先发散还是先收敛？",
+            "什么条件下你更容易启动执行？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "已按reasoning_contract的analysis.s4.functions字段给出探索、价值、执行、反馈入口与张力，未自报不推断类型或分数。",
+          "quote": "探索入口——项目开头想法多，倾向先发散再收敛",
+          "follow_up_questions": [
+            "你更习惯先发散还是先收敛？",
+            "什么条件下你更容易启动执行？"
+          ],
+          "details": {
+            "exploration": "项目开头想法多，倾向先发散再收敛；依据用户自述项目开头有许多想法。",
+            "valuation": "在意「靠谱、不让人失望」，倾向以外部评价校准价值；依据自述要靠谱、不能让人失望。",
+            "execution": "担心做不好反复修改，接近截止才急交付，执行启动偏晚；依据具体事件。",
+            "feedback": "下班后常查看消息怕漏事，倾向持续扫描外部反馈；依据具体事件。",
+            "tension": "探索与价值判断都指向外部期待，执行与反馈缺少内部节奏；无MBTI/八维自报，不推断类型或分数。"
+          }
+        }
+      },
+      {
+        "fragment_key": "analysis.s4.relationships",
+        "title": "关系循环",
+        "content": "关系循环候选：请求（同事临时请代写方案、朋友临时改约）→回应（先答应或不表达意见）→感受（愧疚、怕被否定、不耐烦）→反馈（拖延、生硬退出或取消）→对方可能感到突然或困惑→循环强化。你自述拒绝后担心别人觉得我不够好，支持「怕让人失望」的情结假设。反例：面对熟悉同事且有明确截止时，你能够协商任务边界，说明循环并非在所有关系启动。待访谈的问题：在什么关系或情境下你更容易先答应后反悔？对方通常如何回应你的退出？你希望关系中的请求与回应变成什么样？",
+        "finding_refs": [
+          "s4.block.delay_then_harsh"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.relationships结合问卷、关系结构与加工倾向描述请求/回应/感受/反馈循环，明确反例与待访谈问题。",
+          "quote": "关系循环候选：请求（同事临时请代写方案、朋友临时改约）→回应（先答应或不表达意见）→感受（愧疚、怕被否定、不耐烦）→反馈（拖延、生硬退出或取消）",
+          "follow_up_questions": [
+            "在什么关系或情境下你更容易先答应后反悔？",
+            "对方通常如何回应你的退出？"
+          ]
+        }
+      },
+      {
+        "fragment_key": "analysis.s4.experiments",
+        "title": "成长实验与日历",
+        "content": "结合你的时间（工作日每晚5–10分钟，周末20分钟），安排四个低成本实验。实验一：答应前缓冲，每日5分钟，收到临时请求时先记录身体与情绪信号，使用缓冲句「我需要先看时间，稍后回复」，观察「我必须答应」的想法是否出现；若缓冲引发强烈焦虑，暂停并改为事后记录。实验二：触发链记录，每月20分钟，记录「触发事件→自动想法→情绪→行为→结果」，给情结起中性名字；若记录引发强烈情绪，暂停并只记事实。实验三：阴影写信，每周10分钟，给「休息与拒绝」写一封不寄出的信；若引发强烈痛苦，暂停并寻求专业支持。实验四：故意不完美一次，每月20分钟，选低风险任务提前交付或保留一处不完美，观察世界是否崩塌；若涉及高风险任务，暂停并改选。日历节奏：每日能量觉察（1分钟记录充电/耗电各一项）；每周阴影日记（10分钟）；每月情结追踪（20分钟触发链）；每季方向复盘（结合大运节奏检视成长方向）。时间不足时减量：优先保留每日1分钟与每周10分钟。",
+        "finding_refs": [
+          "s4.action.pause_before_yes",
+          "s4.action.trigger_chain_log",
+          "s4.action.shadow_letter",
+          "s4.action.imperfect_experiment"
+        ],
+        "evidence_refs": [
+          "input.context.available_time",
+          "input.context.expected_outcomes"
+        ],
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按A.S4.experiments给出4项Action、每日/每周/每月/每季节奏与时间不足减量方案，适配用户可用时间。",
+          "quote": "结合你的时间（工作日每晚5–10分钟，周末20分钟），安排四个低成本实验。",
+          "follow_up_questions": [
+            "哪个实验你最愿意先试？",
+            "时间不足时你希望优先保留哪一项？"
+          ]
+        }
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 51213,
+    "output_tokens": 9034,
+    "latency_ms": 33825,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "fb8de294-9285-4a3c-b692-b94bf145fc22",
+    "thinking_enabled": false,
+    "skill_version_id": 78,
+    "skill_key": "report.s4_mechanism_block_action",
+    "skill_version": 8,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "14c75663439d408491463173ead557cd895ab9dba17642a1aa3809f2c12dd816",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -6,8 +6,11 @@ import ExamplesPanel from "./components/ExamplesPanel.vue";
 import EvaluationPanel from "./components/EvaluationPanel.vue";
 import SkillInstructions from "./components/SkillInstructions.vue";
 import {
+  ALL_SKILLS,
+  CALENDAR_SKILL_KEYS,
   buildSkillCatalog,
   REPORT_SKILLS,
+  REASONING_GUIDANCE_SKILL_KEYS,
   runSkillKey,
 } from "./presentation.js";
 import {
@@ -22,16 +25,6 @@ import {
 
 const POLL_INTERVAL = 2500;
 const S1_FOUNDATION_SKILL_KEY = REPORT_SKILLS.find((item) => item.step === "S1")?.key;
-const REASONING_GUIDANCE_SKILL_KEYS = new Set(
-  REPORT_SKILLS.filter((item) =>
-    ["S1", "S2", "S3", "S4"].includes(item.step) ||
-    [
-      "report.narrative_plan",
-      "report.fragment_authoring",
-      "report.final_validator",
-    ].includes(item.key),
-  ).map((item) => item.key),
-);
 
 function reasoningGuidanceFromVersion(version) {
   const guidance = version?.reasoning_guidance;
@@ -52,7 +45,7 @@ export default {
   data() {
     const isAdmin = hasRole("admin");
     const selectedSkillKey =
-      REPORT_SKILLS.find((item) => item.key === this.$route.query.skill)?.key ||
+      ALL_SKILLS.find((item) => item.key === this.$route.query.skill)?.key ||
       REPORT_SKILLS.find((item) => item.step === this.$route.query.step)?.key ||
       REPORT_SKILLS[0].key;
     const validPanels = [
@@ -70,7 +63,9 @@ export default {
           ? "skills"
           : requestedPanel === "evaluation"
             ? "debug"
-            : requestedPanel
+            : CALENDAR_SKILL_KEYS.has(selectedSkillKey) && requestedPanel === "feedback"
+              ? "skills"
+              : requestedPanel
         : requestedPanel;
     return {
       isAdmin,
@@ -116,6 +111,9 @@ export default {
       return (
         this.isAdmin && REASONING_GUIDANCE_SKILL_KEYS.has(this.selectedSkillKey)
       );
+    },
+    isCalendarSkillAdmin() {
+      return this.isAdmin && CALENDAR_SKILL_KEYS.has(this.selectedSkillKey);
     },
     catalog() {
       return buildSkillCatalog(this.versions);
@@ -354,9 +352,14 @@ export default {
       if (!this.selectedVersion) return;
       this.saving = true;
       try {
+        const baseVersion =
+          REASONING_GUIDANCE_SKILL_KEYS.has(this.selectedSkillKey)
+            ? this.skillVersions.find((item) => item.status === "PUBLISHED") ||
+              this.selectedVersion
+            : this.selectedVersion;
         const created =
           REASONING_GUIDANCE_SKILL_KEYS.has(this.selectedSkillKey)
-            ? await api.createSkillDraft(this.selectedVersion.id)
+            ? await api.createSkillDraft(baseVersion.id)
             : await api.createSkillVersion({
                 skill_key: this.selectedVersion.skill_key,
                 name: this.selectedVersion.name,

@@ -1,0 +1,17 @@
+{
+  "status": "USER_ACCEPTED",
+  "recorded_at": "2026-10-06T12:51:12+08:00",
+  "scope": "技能思路与程序契约分离、来源框架内容补全、直接发布与最新技能合成报告验收",
+  "user_instruction": "确认是用最新完善后的技能生成出来的报告吗？是的话验收通过，进行变更提交",
+  "condition_verified": true,
+  "verification_evidence": "publication-verification.json",
+  "report_skill_count": 7,
+  "real_model_call_count": 23,
+  "all_calls_match_latest_published_skills": true,
+  "all_report_skills_match_current_initialization_defaults": true,
+  "framework_sources_in_sync": true,
+  "original_ai_quality_score": 79,
+  "original_ai_quality_passes_threshold": false,
+  "original_ai_quality_issue_count": 13,
+  "customer_delivery_performed": false
+}

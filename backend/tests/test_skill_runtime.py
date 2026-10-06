@@ -251,16 +251,12 @@ def test_s1_legacy_instructions_project_as_guidance_and_compile_to_same_runtime(
 
 def test_s1_guidance_covers_all_fourteen_step_one_framework_topics():
     guidance = default_analysis_skill_specifications()[0]["reasoning_guidance"]
-    topic_names = [
-        item.split("：", 1)[0]
-        for item in guidance["methodology"]
-        if "：" in item
-    ]
+    method_text = "\n".join(guidance["methodology"])
+    assert all(topic in method_text for topic in (
+        "日主定性", "格局判定", "月令分析", "十神分析", "日支", "时支", "年柱",
+        "刑冲合害分析", "大运分析", "用神与喜忌", "命宫", "身宫", "福德宫", "四化飞化",
+    ))
 
-    assert topic_names == [
-        "日主", "格局", "月令", "十神", "日支", "时支", "年柱",
-        "刑冲合害", "大运", "用神与喜忌", "命宫", "身宫", "福德宫", "四化",
-    ]
     assert all("analysis.s1." not in item for item in guidance["methodology"])
 
 
@@ -269,13 +265,13 @@ def test_s2_guidance_covers_framework_thought_without_exposing_contract_fields()
     guidance = specification["reasoning_guidance"]
 
     assert specification["identity"]["skill_key"] == S2_PSYCHOLOGY_SKILL_KEY
-    assert len(guidance["methodology"]) == 11
-    assert any(item.startswith("命理为表") for item in guidance["methodology"])
+    assert len(guidance["methodology"]) >= 30
+    assert any("命理为表" in item for item in guidance["methodology"])
     assert all(
         phrase in "\n".join(guidance["methodology"])
         for phrase in (
-            "双层映射", "十神映射", "十四主星", "人格面具", "阴影", "情结",
-            "激活路径", "权威与超我", "可能反证", "开放问题",
+            "双层结构", "十神-荣格", "紫微星曜", "人格面具", "阴影", "情结",
+            "激活路径", "权威内化与超我", "正印", "破军",
         )
     )
     assert all(
@@ -314,12 +310,12 @@ def test_s3_guidance_covers_framework_integration_without_contract_fields():
     method_text = "\n".join(guidance["methodology"])
 
     assert specification["identity"]["skill_key"] == S3_INTEGRATION_SKILL_KEY
-    assert len(guidance["methodology"]) == 10
+    assert len(guidance["methodology"]) >= 20
     assert all(
         phrase in method_text
         for phrase in (
-            "自性化", "英雄四象限", "后续大运", "顺逆运不等于", "易经时义",
-            "金花", "道德经", "了凡四训", "三重", "保留不同解释",
+            "自性化", "英雄原型分区", "大运周期", "喜用神大运", "易经时序",
+            "金花", "道德经", "了凡四训", "三重", "多系统冲突",
         )
     )
     assert all(
@@ -428,7 +424,7 @@ async def test_s2_reasoning_guidance_draft_preserves_contract_and_compiles(skill
         "reasoning_guidance"
     ]
     assert runtime["instructions"]["objective"] == objective
-    assert "双层映射" in "\n".join(runtime["instructions"]["methodology"])
+    assert "双层结构" in "\n".join(runtime["instructions"]["methodology"])
     assert len(runtime["instructions"]["sop_contract"]["topics"]) == 8
     assert runtime["output_contract"] == published.specification_json["output_contract"]
 
@@ -472,7 +468,7 @@ async def test_s3_reasoning_guidance_draft_preserves_contract_and_compiles(skill
         "reasoning_guidance"
     ]
     assert runtime["instructions"]["objective"] == objective
-    assert "英雄四象限" in "\n".join(runtime["instructions"]["methodology"])
+    assert "英雄原型分区" in "\n".join(runtime["instructions"]["methodology"])
     assert len(runtime["instructions"]["sop_contract"]["topics"]) == 6
     assert runtime["output_contract"] == published.specification_json["output_contract"]
 
@@ -483,12 +479,12 @@ def test_s4_guidance_covers_framework_thought_without_exposing_contract_fields()
     method_text = "\n".join(guidance["methodology"])
 
     assert specification["identity"]["skill_key"] == S4_MECHANISM_SKILL_KEY
-    assert len(guidance["methodology"]) == 12
+    assert len(guidance["methodology"]) >= 20
     assert all(
         phrase in method_text
         for phrase in (
-            "防御机制", "保护", "能量管理", "阴影练习", "情结松动", "人生时序",
-            "自性方向", "卡点", "共同路径", "MBTI", "关系模式", "成长练习",
+            "防御机制", "保护", "能量管理", "阴影整合练习", "情结松动", "人生时序",
+            "自性", "卡点", "共性模式", "MBTI", "关系模式", "成长实验",
         )
     )
     assert all(
@@ -567,10 +563,10 @@ def test_narrative_plan_guidance_covers_framework_without_technical_fields():
     method_text = "\n".join(guidance["methodology"])
 
     assert specification["identity"]["skill_key"] == NARRATIVE_PLAN_SKILL_KEY
-    assert len(guidance["methodology"]) == 5
+    assert len(guidance["methodology"]) >= 25
     assert all(
         phrase in method_text
-        for phrase in ("核心张力", "卡点曾经的保护", "你是谁、卡在哪、往哪去", "卡点", "不同主线")
+        for phrase in ("核心线索", "过去保护了什么", "你是谁", "卡在哪", "往哪去", "新的脉络")
     )
     assert not any(
         technical_name in method_text
@@ -609,7 +605,7 @@ def test_narrative_plan_legacy_instructions_project_as_guidance_and_compile_same
     assert "Finding" not in "\n".join(guidance["methodology"])
     assert "finding_key" not in "\n".join(guidance["methodology"])
     assert "semantic_model" not in "\n".join(guidance["methodology"])
-    assert any("卡点曾经的保护" in item for item in current["reasoning_guidance"]["methodology"])
+    assert any("过去保护了什么" in item for item in current["reasoning_guidance"]["methodology"])
     assert all(
         item in runtime["instructions"]["methodology"]
         for item in legacy["instructions"]["methodology"]
@@ -622,10 +618,10 @@ def test_fragment_authoring_guidance_is_human_facing_and_legacy_contract_is_pres
     guidance_text = "\n".join([guidance["objective"], *guidance["methodology"]])
 
     assert current["identity"]["skill_key"] == FRAGMENT_AUTHORING_SKILL_KEY
-    assert len(guidance["methodology"]) == 8
+    assert len(guidance["methodology"]) >= 30
     assert all(
         phrase in guidance_text
-        for phrase in ("已确认", "本段", "用户经历", "不同可能", "自然连贯", "资料不足")
+        for phrase in ("已审核", "用户问卷", "照见", "描述", "潜意识", "mbti")
     )
     assert not any(
         technical_name in guidance_text
@@ -634,7 +630,7 @@ def test_fragment_authoring_guidance_is_human_facing_and_legacy_contract_is_pres
             "must_cover", "must_not_repeat", "continuity", "Case",
             "MISSING_SEMANTIC_SUPPORT", "used_findings", "used_analysis_fragments",
             "requirement_coverage", "required_finding_refs", "reasoning_path",
-            "INTERNAL_ONLY", "quote_library", "report.direction", "MBTI", "Finding",
+            "INTERNAL_ONLY", "quote_library", "report.direction", "Finding",
         )
     )
 
@@ -753,10 +749,10 @@ def test_validator_guidance_is_human_facing_and_legacy_contract_is_preserved():
     guidance_text = "\n".join([guidance["objective"], *guidance["methodology"]])
 
     assert current["identity"]["skill_key"] == FINAL_VALIDATOR_SKILL_KEY
-    assert len(guidance["methodology"]) == 8
+    assert len(guidance["methodology"]) >= 10
     assert all(
         phrase in guidance_text
-        for phrase in ("真实依据", "用户亲述", "报告主线", "误导或伤害", "反证", "可执行方向")
+        for phrase in ("案例事实忠实度", "个性化程度", "心理逻辑", "行动价值", "是否编造", "重复3次以上")
     )
     assert not any(
         technical_name in guidance_text
@@ -876,7 +872,7 @@ async def test_narrative_plan_reasoning_guidance_draft_preserves_contract_and_hi
         "reasoning_guidance"
     ]
     assert runtime["instructions"]["objective"] == objective
-    assert "核心张力" in "\n".join(runtime["instructions"]["methodology"])
+    assert "核心线索" in "\n".join(runtime["instructions"]["methodology"])
     assert runtime["processor_policy"]["processor"] == "reports.narrative_candidates"
     assert runtime["output_contract"] == published.specification_json["output_contract"]
 
@@ -940,7 +936,7 @@ async def test_narrative_plan_runtime_compiles_guidance_and_candidate_contract()
     )
 
     assert len(result.output_parsed["candidates"]) == 2
-    assert "核心张力" in gateway.last_request[0]
+    assert "核心线索" in gateway.last_request[0]
     assert "finding_key" in gateway.last_request[0]
     assert '"candidate_key"' in gateway.last_request[0]
 
@@ -1013,8 +1009,8 @@ async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
     assert "【机器可读输出契约】" in gateway.last_request[0]
     assert '"analysis_fragments"' in gateway.last_request[0]
     assert '"relation_refs"' in gateway.last_request[0]
-    assert "双层映射：" in gateway.last_request[0]
-    assert "激活路径：" in gateway.last_request[0]
+    assert "双层结构" in gateway.last_request[0]
+    assert "激活路径" in gateway.last_request[0]
     assert "analysis.s2.mapping" in gateway.last_request[0]
     assert '"evidence_keys": ["input.context.current_challenge"]' in gateway.last_request[0]
     assert '"confirmed_finding_keys": ["foundation.balance"]' in gateway.last_request[0]
@@ -1191,8 +1187,8 @@ async def test_s4_runtime_prompt_compiles_reasoning_and_action_contract():
             if item["semantic_role"] == "ACTION"
         ]
     ) == 3
-    assert "保护逻辑" in gateway.last_request[0]
-    assert "阴影练习" in gateway.last_request[0]
+    assert "过去保护了什么" in gateway.last_request[0]
+    assert "阴影整合练习" in gateway.last_request[0]
     assert "analysis.s4.experiments" in gateway.last_request[0]
     assert "reasoning_path" in gateway.last_request[0]
 
@@ -2414,26 +2410,57 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
 
 
 @pytest.mark.asyncio
-async def test_regression_batches_persist_checks_and_gate_skill_publish(skill_db):
+async def test_calendar_reasoning_guidance_publishes_without_required_evaluation(skill_db):
     from app.application.skill_evaluation import (
         ensure_evaluation_passed_before_publish,
         get_evaluation_batch,
         start_evaluation_batch,
     )
 
-    version = await ensure_default_validator_skill_version(skill_db)
-    with pytest.raises(ValueError, match="skill_evaluation_required"):
-        await ensure_evaluation_passed_before_publish(skill_db, version.id)
+    from app.domains.calendar.production import ensure_calendar_skills
 
-    batch = await start_evaluation_batch(skill_db, version_id=version.id)
+    version = (await ensure_calendar_skills(skill_db))[0]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=version.skill_key,
+        name=version.name,
+        category=version.category,
+        specification=version.specification_json,
+        created_by=17,
+    )
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective="结合当月目标说明每天可以留意的节奏。",
+        methodology=version.specification_json["reasoning_guidance"]["methodology"],
+    )
+    response = _skill_version_response(updated)
+    assert response.specification_json is None
+    assert response.reasoning_guidance.objective == "结合当月目标说明每天可以留意的节奏。"
+    await ensure_evaluation_passed_before_publish(skill_db, updated.id)
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["runtime_contract"]["system_requirements"][0] += " 不可编辑"
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            updated.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
+    published = await publish_skill_version(
+        skill_db, updated.id, published_by=17
+    )
+    assert published.status == "PUBLISHED"
+
+    batch = await start_evaluation_batch(skill_db, version_id=published.id)
     assert batch["total"] == 1
     assert batch["completed"] == 0
     run = await skill_db.get(SkillRun, batch["runs"][0]["run_id"])
     assert run.target_type == "REGRESSION"
     assert run.context_snapshot["evaluation"]["dataset_version"]
     assert run.context_snapshot["evaluation"]["specification_sha256"]
-    with pytest.raises(ValueError, match="skill_evaluation_incomplete"):
-        await ensure_evaluation_passed_before_publish(skill_db, version.id)
+    await ensure_evaluation_passed_before_publish(skill_db, published.id)
 
     run.status = "COMPLETED"
     run.output_parsed = {"issues": []}
@@ -2449,8 +2476,7 @@ async def test_regression_batches_persist_checks_and_gate_skill_publish(skill_db
     assert failed_batch["failed"] == 0
     assert failed_batch["passed"] == 0
     assert failed_batch["pass_rate"] == 0.0
-    with pytest.raises(ValueError, match="skill_evaluation_failed"):
-        await ensure_evaluation_passed_before_publish(skill_db, version.id)
+    await ensure_evaluation_passed_before_publish(skill_db, published.id)
 
     run.context_snapshot = {
         **run.context_snapshot,
@@ -2460,7 +2486,7 @@ async def test_regression_batches_persist_checks_and_gate_skill_publish(skill_db
         },
     }
     await skill_db.flush()
-    await ensure_evaluation_passed_before_publish(skill_db, version.id)
+    await ensure_evaluation_passed_before_publish(skill_db, published.id)
 
 
 @pytest.mark.asyncio
@@ -2552,3 +2578,55 @@ def test_regression_expectations_score_schema_paths_and_finding_boundaries():
     assert passing["passed"] is True
     assert failing["passed"] is False
     assert any(not check["passed"] for check in failing["checks"])
+
+
+def test_calendar_skills_separate_admin_reasoning_from_runtime_contracts():
+    from app.domains.calendar.skill_definitions import default_calendar_skill_specifications
+
+    specifications = default_calendar_skill_specifications()
+    assert len(specifications) == 4
+    for _category, specification in specifications:
+        skill_key = specification["identity"]["skill_key"]
+        guidance = specification["reasoning_guidance"]
+        runtime_contract = specification["runtime_contract"]
+        assert guidance["objective"].strip()
+        assert guidance["methodology"]
+        assert "objective" not in specification["instructions"]
+        assert "methodology" not in specification["instructions"]
+        assert not any(
+            marker in item
+            for item in guidance["methodology"]
+            for marker in (
+                "entry_date", "source_refs", "field_path", "输出契约", "严格JSON",
+            )
+        )
+
+        compiled = compile_reasoning_guidance_specification(specification)
+        assert compiled["instructions"]["objective"] == guidance["objective"]
+        assert compiled["instructions"]["methodology"] == [
+            *guidance["methodology"],
+            *runtime_contract["system_requirements"],
+        ]
+        assert compiled["output_contract"] == specification["output_contract"]
+        assert compiled["processor_policy"]["processor"] == "calendar.production"
+        if skill_key == "calendar.temporal_analysis":
+            assert compiled["instructions"]["tone_weights"] == {
+                "useful_support": 0.3,
+                "flow": 0.3,
+                "interaction_stability": 0.2,
+                "pattern_regulation": 0.2,
+            }
+
+    # Historical pinned calendar versions keep their original prompt shape.
+    legacy = deepcopy(specifications[0][1])
+    legacy["instructions"] = {
+        **legacy["instructions"],
+        "objective": "30天时序分析",
+        "methodology": deepcopy(legacy["runtime_contract"]["system_requirements"]),
+    }
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+    assert compile_reasoning_guidance_specification(legacy) == legacy
+    assert reasoning_guidance_for_skill(
+        legacy["identity"]["skill_key"], legacy
+    ) == {"objective": "", "methodology": []}

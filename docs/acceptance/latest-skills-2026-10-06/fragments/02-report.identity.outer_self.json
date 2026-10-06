@@ -1,0 +1,65 @@
+{
+  "signature": "7b2287f9a6df54c3cdc8396541b2c1b063963ba295b26e1da44cfe9fe6bff9d7",
+  "skill_digest": "401c626a6af612fee324e7049af24cc79f57a1f53a5ce40b5c9a0d4437b700a8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你向世界展示的样子：那个可靠、能扛、不添麻烦的你",
+    "content": "如果有人要描述你，最可能出现的词是：靠谱。\n\n事情交到你手上，别人会放心；团队里临时出了缺口，你常常是那个先补位的人；朋友找你帮忙，你很少说“我不行”。你自己也说过一句话——你认为自己要靠谱、不能让人失望。这不是别人贴给你的标签，这是你认同的角色。\n\n这个角色有它真实的价值。它让你在关系里被需要，在工作里被信任，也让你在不确定的环境里有一块相对稳的地面。你不是在演一个假人，你是在用一个有效的方式和世界打交道。先认下这一点，后面的内容才站得住。\n\n接下来要分清楚两件事：一件是你自己说出来的感受，另一件是从符号系统里读出来的解释。前者是事实，后者是假设，需要你用自己的经验去校正。\n\n你自己说出来的部分很清楚：要靠谱、不能让人失望；拒绝之后会担心别人觉得你不够好。这是你此刻的真实感受，不需要任何符号来证明它。\n\n符号层面的解释是另一回事。你的日主是癸水，柔韧、善观察、能适应环境；日支落在未土，本气为七杀，常被读作一种“责任脚本”——事情来了先扛住，而不是先问这是不是我的；命宫在酉，主星廉贞破军，外显是独立、敢破敢立、有原则，但生年化忌落在廉贞，这一层常被读作内在的紧绷与自我要求。迁移宫天相，对外在意形象、在意别人怎么看。这几条线索放在一起，指向一个候选面具：可靠、能扛、不添麻烦。\n\n请注意这里的措辞——是候选，是假设。符号不是照相机，它提供的是一种可能的读法。真正确认它的，是你自己在哪些场景里感到“这才是我”。\n\n这里还有一处值得保留的张力：命宫的廉贞破军看起来是刚强进取的，但福德宫天府又偏向内在求稳、包容。外显的独立和内在的求稳不完全一致。这种不一致不必急着统一，它本身可能就是你的真实状态——外面撑着一个能扛的样子，里面其实想要一个可以停下来的地方。\n\n所以这一节想让你先认领的，不是“你有问题”，而是：你确实有一个很好用的面具，它帮了你很多年。它让你被信任，也让你被依赖。它唯一没有替你处理的，是那个总在说“不能让人失望”的声音——它从哪来，代价是什么，我们往下走。",
+    "used_findings": [
+      "s2.persona.reliable_observer",
+      "s1.ziwei.life_palace"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.persona",
+      "analysis.s2.ten_gods",
+      "analysis.s2.stars"
+    ],
+    "used_actions": [],
+    "transition_hint": "面具认领完了，下一层要往下走：那个“不能让人失望”的声音，是从哪一层长出来的。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.outer_self",
+      "sequence_no": 2,
+      "new_information_role": "INTRODUCE",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、现实语言，先意识层后潜意识层；命理术语已转译为日常表达；未自述内容以候选/假设表述。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.persona",
+        "status": "FULFILLED",
+        "reason": "已按分析来源 analysis.s2.persona 呈现用户可识别的外在角色（靠谱、能扛、不添麻烦），并明确区分用户自述与符号解释假设。",
+        "quote": "你自己说出来的部分很清楚：要靠谱、不能让人失望；拒绝之后会担心别人觉得你不够好。这是你此刻的真实感受，不需要任何符号来证明它。",
+        "follow_up_questions": [
+          "在什么场景你感到「这才是我」？",
+          "被依赖时你是安心还是紧绷？",
+          "有没有哪一次你其实不想答应，但还是说了好？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15825,
+    "output_tokens": 1009,
+    "latency_ms": 5137,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "026bc90c-06e7-4258-b7e8-7fdf4165becd",
+    "thinking_enabled": false,
+    "skill_version_id": 80,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 7,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "54143cd6011a171be7e846babd3cb61ef64c5984fcd260af66c1054293967458",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

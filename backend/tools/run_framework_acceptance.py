@@ -27,6 +27,7 @@ from app.application.skill_runtime import _project_semantic_model
 from app.application.report_generation import _advance_continuity
 
 ROOT = Path(__file__).resolve().parents[2]
+_PUBLICATIONS = {}
 
 
 def save(path, value):
@@ -128,7 +129,9 @@ async def execute_saved(spec, data, path, instruction):
                 return cached["output"]
         else:
             raise ValueError(f"Acceptance inputs changed; use a new output directory: {path.name}")
-    skill = SimpleNamespace(id=0, version=1, skill_key=spec["identity"]["skill_key"], specification_json=spec)
+    pinned = _PUBLICATIONS.get(spec["identity"]["skill_key"]) or {}
+    skill = SimpleNamespace(id=pinned.get("id", 0), version=pinned.get("version", 1),
+        skill_key=spec["identity"]["skill_key"], specification_json=spec)
     previous_failures = list(path.parent.glob(f"{path.stem}.attempt-*.failure.json"))
     compact_instruction = "\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。"
     repair = compact_instruction if previous_failures else ""
@@ -155,14 +158,46 @@ async def execute_saved(spec, data, path, instruction):
         return result.output_parsed
 
 
-async def run(output, scenario):
+async def published_specifications():
+    """Read and freeze actual publications; never change a production record."""
+    from sqlalchemy import select
+    from app.db.session import AsyncSessionLocal, engine
+    from app.domains.skills.models import AISkillVersion
+    engine.echo = False
+    defaults = [*default_analysis_skill_specifications(), *default_narrative_skill_specifications(), default_validator_skill_specification()]
+    specs = []
+    async with AsyncSessionLocal() as db:
+        for default in defaults:
+            key = default["identity"]["skill_key"]
+            row = await db.scalar(select(AISkillVersion).where(
+                AISkillVersion.skill_key == key, AISkillVersion.status == "PUBLISHED"
+            ).order_by(AISkillVersion.version.desc()).limit(1))
+            if row is None:
+                raise ValueError(f"Published skill missing: {key}")
+            spec = deepcopy(row.specification_json)
+            _PUBLICATIONS[key] = {"id": row.id, "version": row.version,
+                "specification_digest": specification_digest(row.specification_json)}
+            specs.append(spec)
+    await engine.dispose()
+    return specs
+
+
+async def run(output, scenario, *, published=False, analysis_date=None):
     case = sample_input(scenario)
-    current_specs = [*default_analysis_skill_specifications(), *default_narrative_skill_specifications(), default_validator_skill_specification()]
+    if analysis_date:
+        case["context"]["analysis_date"] = analysis_date
+        for evidence in case["evidence"]:
+            if evidence["evidence_key"] == "input.context.analysis_date":
+                evidence["value"] = analysis_date
+    current_specs = (await published_specifications() if published else
+        [*default_analysis_skill_specifications(), *default_narrative_skill_specifications(), default_validator_skill_specification()])
     manifest_path = output / "manifest.json"
     manifest = {"notice": "真实模型＋合成用户；本地技术验收，无生产写入，无客户交付，待咨询师审核。",
+        "skill_source": "LATEST_PUBLISHED_DATABASE_SNAPSHOT" if published else "CODE_DEFAULTS",
         "framework_contract": framework_snapshot(), "reasoning_contract": reasoning_snapshot(),
         "input_digest": digest(case), "skills": {s["identity"]["skill_key"]: {
-            "digest": specification_digest(s), "specification": s} for s in current_specs}}
+            "digest": specification_digest(s), "specification": s,
+            "publication": _PUBLICATIONS.get(s["identity"]["skill_key"])} for s in current_specs}}
     if manifest_path.exists():
         frozen = json.loads(manifest_path.read_text(encoding="utf-8"))
         if frozen["input_digest"] != manifest["input_digest"]:
@@ -170,6 +205,7 @@ async def run(output, scenario):
         manifest = frozen
     else:
         save(manifest_path, manifest)
+    _PUBLICATIONS.update({key: value.get("publication") or {} for key, value in manifest["skills"].items()})
     specs = {k: v["specification"] for k, v in manifest["skills"].items()}
     save(output / "input.json", case)
     model = {"findings": [], "analysis_fragments": [], "evidence": case["evidence"],
@@ -248,6 +284,7 @@ async def repair_report(output, scenario, round_no):
     source = output if round_no == 1 else output / "repairs" / f"round-{round_no - 1}"
     destination = output / "repairs" / f"round-{round_no}"
     manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    _PUBLICATIONS.update({key: value.get("publication") or {} for key, value in manifest["skills"].items()})
     case = json.loads((output / "input.json").read_text(encoding="utf-8"))
     specs = {k: v["specification"] for k, v in manifest["skills"].items()}
     model = {"findings": [], "analysis_fragments": [], "evidence": case["evidence"],
@@ -363,5 +400,8 @@ if __name__ == "__main__":
     )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--repair", type=int, choices=[1, 2, 3])
+    parser.add_argument("--published-skills", action="store_true")
+    parser.add_argument("--analysis-date")
     args = parser.parse_args()
-    asyncio.run(repair_report(args.output.resolve(), args.scenario, args.repair) if args.repair else run(args.output.resolve(), args.scenario))
+    asyncio.run(repair_report(args.output.resolve(), args.scenario, args.repair) if args.repair else
+        run(args.output.resolve(), args.scenario, published=args.published_skills, analysis_date=args.analysis_date))

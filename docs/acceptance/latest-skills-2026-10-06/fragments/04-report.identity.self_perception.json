@@ -1,0 +1,74 @@
+{
+  "signature": "dc47e4efc865a5dd751a88fd8b321594a41c7272ce4454b518f34f63e30eb22f",
+  "skill_digest": "401c626a6af612fee324e7049af24cc79f57a1f53a5ce40b5c9a0d4437b700a8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你眼中的自己：那个「必须靠谱」的声音，是怎么长成一条固定脚本的",
+    "content": "你对自己的描述很简短，却有分量：「我认为自己要靠谱、不能让人失望。」这句话不是一句口号，它更像你每天睁开眼就自动加载的系统设置——先确认今天有没有人等着你、有没有事不能掉链子，然后才轮到你自己的状态。\n\n先说清楚一件事：这条脚本不是缺点。它是你这些年最有效的生存策略之一。癸水日主那种先观察、后回应的柔韧，加上透干的正财、伤官、正印，让你在别人眼里是一个务实、能输出、也愿意学习的角色；命宫廉贞破军的外显独立，又让你看起来「自己就能搞定」。内外两层叠在一起，形成一个非常实用的面具：可靠、能扛、不添麻烦。这个面具帮你拿到过信任、机会和被需要的感觉，它值得被认领，而不是被否定。\n\n但面具下面还有一层。月令午火财旺、日支未土七杀克身，这套结构在符号层面提示的底层信念是：环境是热切的、要求是密集的，我必须持续输出才安全。于是「要靠谱」慢慢从一句自我要求，变成了一条没有出口的脚本——它不区分场合，也不区分对象，只要有人开口，它就自动应答。你自述「拒绝后担心别人觉得我不够好」，这句话是这条脚本最直接的证词：真正让你难以说不的，可能不是那件任务本身，而是拒绝之后那个「我不够好」的自我判定。\n\n再往里一层，是那个「应该」的声音。官杀与印星的结构提示，你心里可能住着一套被内化的外部期待——「必须靠谱」「不能让人失望」「不能添麻烦」。这里要特别说明：你没有提供童年经历，所以这套「应该」最早从哪里来，目前只能作为待验证的假设，不能替你做家庭归因。它可能来自某段具体的关系，也可能来自你长期在环境里摸索出的安全策略，这两种来源的心理含义并不相同，需要你自己来校正。\n\n这里有一个重要的反证，请不要跳过。你提到，面对熟悉的同事、且有明确截止时间时，你是能够协商任务边界的。这说明「先答应」并不是你的全部，它是有条件的：条件越模糊、关系越需要维护、拒绝的代价越难预估，脚本就越容易自动运行；条件越清晰、关系越安全，你反而能守住余地。这个差异本身就是线索——它说明你要练习的不是「变成一个会拒绝的人」，而是把你在安全场景里已经有的那份能力，慢慢迁移到更模糊的场景里去。\n\n还有一条反证同样值得记下：你提到独自散步时比较放松。这说明休息的需求一直都在，只是它目前还没有被你主动主张，只在没人看见的时候才偷偷冒头。它不是你不具备的能力，而是还没被写进你「应该做的事」清单里。\n\n所以这一节先停在这里，不下结论。你可以带着两个问题往下读：第一，「必须靠谱」这条脚本，最早是在什么样的场景里被强化的？第二，哪些「应该」是你愿意保留的原则，哪些其实只是习惯性的自动应答？这两个问题的答案，会决定后面「卡在哪」那一章，究竟是在讲你的问题，还是在讲你的策略。",
+    "used_findings": [
+      "s2.persona.reliable_observer",
+      "s2.shadow.boundary_rest",
+      "s2.complex.disappoint_others",
+      "s2.authority.internal_should"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.mapping",
+      "analysis.s2.authority"
+    ],
+    "used_actions": [],
+    "transition_hint": "脚本的样子看清了，接下来要往下走一层：当这条「先答应」的脚本真的跑起来，它在你的工作、关系和时间里，具体长成了哪几个反复出现的卡点。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_perception",
+      "sequence_no": 4,
+      "narrative_role": "从面具承接，深入意识自我与底层信念，点出「应该」的来源待验证，并保留反证",
+      "style_notes": {
+        "person": "第二人称",
+        "theory_density": "medium",
+        "metaphor_density": "low",
+        "action_density": "low",
+        "tone": "描述而非判断，照见而非定论"
+      },
+      "boundary_notes": [
+        "未展开任何实验动作、频率或退出条件，具体实践统一留在成长实验节",
+        "未引用任何收束金句",
+        "对 s2.persona.reliable_observer 采用承接方式，未重新完整解释",
+        "对「应该」来源使用假设性语言，未做家庭归因",
+        "原始自述与解释性假设已分开陈述，并保留两条反证"
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_belief",
+        "status": "FULFILLED",
+        "reason": "本节先认领意识层面的自我（可靠、能扛、不添麻烦的面具及其实用功能），再下探到「必须持续输出才安全」的底层信念，随后引入官杀与印星结构提示的「应该/必须/不能」及权威内化假设，并明确该来源需访谈验证、不作家庭归因；同时完整保留用户自述（要靠谱、不能让人失望、拒绝后担心别人觉得我不够好）、两条反证（熟悉同事且有明确截止时能协商边界；独自散步时比较放松），并给出两个具体待补问。",
+        "quote": "你对自己的描述很简短，却有分量：「我认为自己要靠谱、不能让人失望。」",
+        "follow_up_questions": [
+          "「必须靠谱」这条脚本，最早是在什么样的场景里被强化的？",
+          "哪些「应该」是你愿意保留的原则，哪些其实只是习惯性的自动应答？",
+          "在什么关系或情境下，你更容易先答应、之后又反悔？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 17074,
+    "output_tokens": 1361,
+    "latency_ms": 7670,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "45d25491-5f4b-4b4d-8544-8208027f48ff",
+    "thinking_enabled": false,
+    "skill_version_id": 80,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 7,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "fb0b56bfb1fdb206764351c5cb1a24b4c0dd48c5c74a3ecbf15ee58cd270a10e",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

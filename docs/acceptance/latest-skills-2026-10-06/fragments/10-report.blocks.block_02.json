@@ -1,0 +1,61 @@
+{
+  "signature": "71f1ac7b4687fd0fd822103c7802e79febd8136bc19845b1d7d63fe99ac13e56",
+  "skill_digest": "401c626a6af612fee324e7049af24cc79f57a1f53a5ce40b5c9a0d4437b700a8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "忍到最后，用生硬的方式退出",
+    "content": "上一节看的是「先答应、后透支」这条链。这一节看它的近亲：当不满没有在当场说出来，它最后会以另一种方式结账。\n\n先说场景。你自己描述过：朋友连续两次临时改地点，你都没有表达意见，最后直接取消了那次聚会。这不是孤例，你把它放在「需要拒绝时拖到最后才生硬回应」这一句里一起说了——也就是说，改约只是最近一次触发，模式本身更早就在运行。\n\n触发点很具体：对方临时改动安排，你的原计划被打乱。\n\n接下来发生的事情，是一条可以拆开的链。第一步，你当下没有表达不满——可能因为那一刻提出异议，意味着让对方扫兴、意味着你成了「不好说话的人」。第二步，那些没说出口的东西并没有消失，它们被存了起来。第三步，存量超过某个点，你不再解释，直接退出：取消、沉默、生硬地回一句。\n\n需要说清楚的是：前面两步是你自述的行为，第三步的「积压」是一种解释性假设——它符合你描述的顺序，但具体是委屈、疲惫还是别的情绪在累积，只有你能核对。如果实际情况是别的东西，这条链的中间一环就要按你的版本改写。\n\n这个模式过去保护了什么？它保护了当场不冲突，也保护了关系表面的和谐。在改约那一刻不吭声，你们之间不会立刻变僵；在同事临时加活时不吭声，你不会被看成不配合的人。它是有功能的，不是软弱。\n\n代价也在同一个位置。短期省下的冲突，长期变成了关系的损耗——对方可能只看到你突然取消，看不到前面两次你没说出口的不舒服；也变成了自我信任的下降：你答应过自己「下次要说」，但下次还是没有说，于是那条「说了也没用」的判断又被验证了一次。\n\n这条链和上一节是同一条根：先答应，后反噬。区别只是结账方式——上一节结在身体和时间上，这一节结在关系上。\n\n整合的邀请，不是让你立刻变得强硬，而是在更早的位置留出余地：在改约发生的那一刻，就让自己有一个可以表达真实感受的缝隙。具体怎么练，留到第三章。\n\n这一节只做一件事：把这条链看清楚。看清它怎么跑，比急着改它更要紧。",
+    "used_findings": [
+      "s4.block.delay_then_harsh"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这条「忍到最后、生硬退出」的链看清了。下一节会看它的第三个近亲：想做到最好，结果拖到最后一刻。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.block_02",
+      "chapter": "challenge",
+      "sequence_no": 10,
+      "block_key": "block_02",
+      "reading_style": {
+        "person": "second",
+        "theory_density": "medium",
+        "action_density": "none_in_this_fragment",
+        "metaphor_density": "low"
+      },
+      "source_boundary": "本片段仅使用 s4.block.delay_then_harsh 及两条用户自述证据；未引入其他卡点、实验或金句。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "已按「场景→触发→运作→过去保护→长期代价→整合邀请」逐项展开，卡点数量为1项（本片段分配范围内仅此一项，其余卡点由相邻片段承载，故不在此重复）；未展开任何解决步骤，实践统一留至第三章。",
+        "quote": "先说场景。你自己描述过：朋友连续两次临时改地点，你都没有表达意见，最后直接取消了那次聚会。",
+        "follow_up_questions": [
+          "取消聚会那一刻，你心里最主要的感受是什么——委屈、疲惫、还是「不想再解释了」？",
+          "在改约发生的第一时间，你当时有没有闪过一句想说但没说的话？那句话大概是什么？",
+          "除了朋友改约，最近半年还有哪些场景出现过类似的「先忍着、最后直接退出」？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7946,
+    "output_tokens": 976,
+    "latency_ms": 5856,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "aac3ca41-6fc2-4725-97a4-b22660ef49d0",
+    "thinking_enabled": false,
+    "skill_version_id": 80,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 7,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "514e7913f04df6b349cf0254d03ae07598a7c3249867204c935252e4e3f3f2b2",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

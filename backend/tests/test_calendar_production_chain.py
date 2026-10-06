@@ -74,17 +74,17 @@ class CalendarGateway:
         self.calls += 1
         inputs = json.loads(user_prompt)
         facts = {f["entry_date"]: f for f in inputs["temporal_facts"].get("days", [])}
-        if "30天时序分析" in system_prompt:
+        if "calendar.temporal_analysis" in system_prompt:
             result = {"days": [{"entry_date": d, "primary_theme": "表达沟通", "secondary_theme": "关系边界",
                 "psychological_theme": "在实际工作中练习清楚表达边界", "source_refs": ["invented" if self.bad_source else "report.boundary"],
                 "dimensions": {key: {"score": 1, "reason": "已审核报告与时序的条件性支持"} for key in
                     ["useful_support", "flow", "interaction_stability", "pattern_regulation"]},
                 "windows": [{"period": w["period"], "label": "小步验证", "suggestion": "安排短沟通"}
                             for w in facts[d]["windows"][:2]]} for d in inputs["requested_dates"]]}
-        elif "30天总基调" in system_prompt:
+        elif "calendar.monthly_tone" in system_prompt:
             result = {"monthly": {key: "先以小步行动验证边界，再按实际反馈调整节奏。" for key in
                 ["direction", "growth_task", "resource", "old_pattern", "decision_principle", "rhythm_changes"]}}
-        elif "逐日决策文案" in system_prompt:
+        elif "calendar.daily_authoring" in system_prompt:
             analysis = {a["entry_date"]: a for a in inputs["temporal_analysis"]}
             def action_refs(day):
                 return inputs["practice_schedule"].get(day, [])
@@ -207,13 +207,13 @@ async def test_monthly_review_rewrites_monthly_and_cannot_be_fixed_by_daily_patc
             result = await super().complete(**kwargs)
             inputs = json.loads(kwargs["user_prompt"])
             output = json.loads(result.content)
-            if "30天总基调" in kwargs["system_prompt"]:
+            if "calendar.monthly_tone" in kwargs["system_prompt"]:
                 self.monthly_calls += 1
                 if self.monthly_calls == 2:
                     assert inputs["previous_monthly"]["rhythm_changes"] == wrong
                     assert inputs["quality_feedback"][0]["field_path"] == "monthly.rhythm_changes"
                 output["monthly"]["rhythm_changes"] = wrong if self.monthly_calls == 1 else corrected
-            elif "逐日决策文案" in kwargs["system_prompt"]:
+            elif "calendar.daily_authoring" in kwargs["system_prompt"]:
                 self.daily_calls += 1
             elif "30天整体校准" in kwargs["system_prompt"]:
                 self.reviews += 1

@@ -1,8 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  CALENDAR_SKILLS,
   buildSkillCatalog,
   REPORT_SKILLS,
+  REASONING_GUIDANCE_SKILL_KEYS,
   runSkillKey,
   displayText,
   patchInstructions,
@@ -28,6 +30,22 @@ test("catalog groups versions without losing custom skills or changing runtime k
     new Set(["S1", "S2", "S3", "S4", "S5", "S6"]),
   );
   assert.equal(versions[0].name, "S1");
+});
+
+test("calendar production skills use the reasoning-only maintenance flow", () => {
+  assert.deepEqual(
+    new Set(CALENDAR_SKILLS.map((item) => item.key)),
+    new Set([
+      "calendar.temporal_analysis",
+      "calendar.monthly_tone",
+      "calendar.daily_authoring",
+      "calendar.calibration",
+    ]),
+  );
+  for (const skill of CALENDAR_SKILLS) {
+    assert.ok(REASONING_GUIDANCE_SKILL_KEYS.has(skill.key));
+    assert.ok(buildSkillCatalog().some((item) => item.key === skill.key));
+  }
 });
 
 test("actual report run target types resolve to the owning skill", () => {

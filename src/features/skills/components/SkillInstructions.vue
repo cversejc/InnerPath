@@ -1,7 +1,7 @@
 <template>
   <section class="skill-instructions" aria-label="技能维护内容">
     <p v-if="intentOnly" class="maintenance-note">
-      你只需维护 AI 的分析目标和思路。输入资料、输出结构、固定校验和技术配置由系统维护。
+      你只需维护 AI 的工作目标和思考方向。输入资料、输出结构、固定校验和运行配置由系统维护。
     </p>
     <p v-else class="maintenance-note">
       {{
@@ -12,18 +12,18 @@
     </p>
     <template v-if="specification">
       <label v-if="editable"
-        >{{ intentOnly ? "AI 分析目标" : "技能目标" }}<textarea
+        >{{ intentOnly ? "AI 希望完成什么" : "技能目标" }}<textarea
           :value="specification.instructions?.objective || ''"
           rows="3"
           @input="update({ objective: $event.target.value })"
         ></textarea>
       </label>
       <div v-else>
-        <h3>{{ intentOnly ? "AI 分析目标" : "技能目标" }}</h3>
+        <h3>{{ intentOnly ? "AI 希望完成什么" : "技能目标" }}</h3>
         <p>{{ displayText(specification.instructions?.objective) }}</p>
       </div>
       <label v-if="editable"
-        >{{ intentOnly ? "AI 分析思路（每行一项）" : "执行方法（每行一项）" }}<textarea
+        >{{ intentOnly ? "给 AI 的思考方向（每行一项）" : "执行方法（每行一项）" }}<textarea
           :value="(specification.instructions?.methodology || []).join('\n')"
           rows="8"
           @input="
@@ -36,7 +36,7 @@
         ></textarea>
       </label>
       <div v-else>
-        <h3>{{ intentOnly ? "AI 分析思路" : "执行方法" }}</h3>
+        <h3>{{ intentOnly ? "给 AI 的思考方向" : "执行方法" }}</h3>
         <ol>
           <li
             v-for="(item, index) in specification.instructions?.methodology ||

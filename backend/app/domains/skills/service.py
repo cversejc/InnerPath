@@ -60,9 +60,44 @@ async def _ensure_published_builtin_version(
         .limit(1)
     )
     if skill_key in REASONING_GUIDANCE_SKILL_KEYS and latest_published is not None:
-        # Administrator-maintained reasoning must not be overwritten by a code
-        # default update after a reviewed version already exists.
-        return latest_published
+        if latest_published.specification_json == specification:
+            return latest_published
+        if (
+            latest_published.created_by is not None
+            or latest_published.published_by is not None
+        ):
+            # Administrator-maintained reasoning remains authoritative. Code
+            # defaults initialize new installations and never overwrite it.
+            return latest_published
+
+        latest_any = await db.scalar(
+            select(AISkillVersion)
+            .where(AISkillVersion.skill_key == skill_key)
+            .order_by(AISkillVersion.version.desc())
+            .limit(1)
+        )
+        if latest_any is not None and latest_any.version > latest_published.version:
+            # Do not publish over an administrator's in-progress draft during
+            # startup. Matching system-created drafts can be promoted directly.
+            if latest_any.created_by is not None:
+                return latest_published
+            if (
+                latest_any.status == "DRAFT"
+                and prepare_reasoning_guidance_specification(
+                    latest_any.specification_json
+                ).get("reasoning_guidance")
+                == prepare_reasoning_guidance_specification(specification).get(
+                    "reasoning_guidance"
+                )
+            ):
+                # Keep the administrator-owned guidance while refreshing
+                # program-owned runtime fields from the current definition.
+                latest_any.specification_json = specification
+                latest_any.status = "PUBLISHED"
+                latest_any.published_by = None
+                latest_any.published_at = _now()
+                await db.flush()
+                return latest_any
     if (
         latest_published is not None
         and (latest_published.specification_json == specification

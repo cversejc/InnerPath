@@ -13,6 +13,7 @@ from app.domains.skills.evaluation import (
     specification_digest,
 )
 from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.skills.definitions import REASONING_GUIDANCE_SKILL_KEYS
 
 
 def list_evaluation_cases(*, skill_key: str | None = None) -> list[dict]:
@@ -120,6 +121,12 @@ async def ensure_evaluation_passed_before_publish(
     version = await db.get(AISkillVersion, version_id)
     if version is None:
         raise ValueError("skill_version_not_found")
+    if version.skill_key in REASONING_GUIDANCE_SKILL_KEYS:
+        # These built-in skills contain human-maintained reasoning guidance;
+        # their runtime input/output contract is fixed and evaluated in code.
+        # Requiring a regression batch here blocks routine guidance publishing
+        # without validating a user-editable schema.
+        return
     required_cases = regression_cases(skill_key=version.skill_key)
     if not required_cases:
         return
