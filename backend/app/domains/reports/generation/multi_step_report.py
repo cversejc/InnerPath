@@ -1,14 +1,12 @@
-import httpx
 import json
 from typing import Any, Dict
 
-from app.config import settings
 from app.core.logging_config import get_logger
+from app.services.llm import chat
 from .mingli_foundation import calculate_mingli_foundation
 from .multi_step_report_parser import MultiStepReportParser
 from .multi_step_report_prompts import MultiStepReportPrompts
 from .multi_step_report_sections import MultiStepReportSections
-from .report_response_parser import extract_chat_content
 
 logger = get_logger(__name__)
 
@@ -18,11 +16,6 @@ class MultiStepReportGenerator(
     MultiStepReportSections,
 ):
     """Multi-step AI report generation with progressive context building"""
-
-    def __init__(self):
-        self.api_url = settings.DEEPSEEK_API_URL
-        self.api_key = settings.DEEPSEEK_API_KEY
-        self.model = settings.DEEPSEEK_MODEL
 
     async def generate_report(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
         """Main orchestration method for multi-step report generation"""
@@ -72,7 +65,7 @@ class MultiStepReportGenerator(
     ) -> str:
         """Step 2: Analyze energy profile"""
         prompt = self._build_step2_prompt(foundation_data, user_data)
-        return await self._call_ai(prompt, temperature=0.7, max_tokens=2000)
+        return await self._call_ai(prompt, max_tokens=2000)
 
     async def _step3_topic_analysis(
         self, foundation_data: Dict[str, Any], energy_profile: str, user_data: Dict[str, Any]
@@ -85,39 +78,18 @@ class MultiStepReportGenerator(
         max_tokens = 2000 + (len(selected_topics) * 500)  # ~500 tokens per topic
         max_tokens = min(max_tokens, 4000)  # Cap at 4000
 
-        return await self._call_ai(prompt, temperature=0.7, max_tokens=max_tokens)
+        return await self._call_ai(prompt, max_tokens=max_tokens)
 
     async def _call_ai(
-        self, prompt: str, temperature: float = 0.7, max_tokens: int = 2000
+        self, prompt: str, temperature: float | None = None, max_tokens: int = 2000
     ) -> str:
-        """Call DeepSeek API with given prompt"""
-        async with httpx.AsyncClient(timeout=settings.DEEPSEEK_TIMEOUT_SECONDS) as client:
-            response = await client.post(
-                self.api_url,
-                json={
-                    "model": self.model,
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": prompt
-                        }
-                    ],
-                    "temperature": temperature,
-                    "max_tokens": max_tokens,
-                    "stream": False,
-                    "thinking": {
-                        "type": "enabled" if settings.DEEPSEEK_THINKING else "disabled"
-                    }
-                },
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {self.api_key}"
-                }
-            )
-
-            response.raise_for_status()
-            response_data = response.json()
-            return extract_chat_content(response_data)
+        """Generate one report step through the shared chat interface."""
+        completion = await chat(
+            [{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        return completion.content
 
     def _assemble_report(
         self,
@@ -154,7 +126,7 @@ class MultiStepReportGenerator(
                 "name": user_data.get("name", ""),
                 "birth_date": f"{user_data.get('birth_year')}-{user_data.get('birth_month')}-{user_data.get('birth_day')}",
                 "report_date": None,
-                "generated_by": "DeepSeek AI (Multi-Step)"
+                "generated_by": "AI (Multi-Step)"
             },
             "ai_generated_content": full_content,
             "structured_sections": structured_content,  # New: structured sections for UI

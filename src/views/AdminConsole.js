@@ -9,6 +9,7 @@ import AdminReportsSection from '../features/admin/components/AdminReportsSectio
 import AdminActivitySection from '../features/admin/components/AdminActivitySection.vue'
 import AdminCalendarSection from '../features/admin/components/AdminCalendarSection.vue'
 import AdminStaffSection from '../features/admin/components/AdminStaffSection.vue'
+import AdminLLMSection from '../features/admin/components/AdminLLMSection.vue'
 import AdminDetailDrawers from '../features/admin/components/AdminDetailDrawers.vue'
 import AdminIconButton from '../features/admin/components/AdminIconButton.vue'
 import dashboardMethods from '../features/admin/methods/dashboard.js'
@@ -26,7 +27,7 @@ const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
+  components: { AdminDashboardSection, AdminUsersSection, AdminRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminLLMSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
@@ -37,7 +38,8 @@ export default {
         { id: 'calendar', index: '04', label: '日历' },
         { id: 'reports', index: '05', label: '报告' },
         { id: 'logs', index: '06', label: '日志' },
-        { id: 'staff', index: '07', label: '后台成员' }
+        { id: 'staff', index: '07', label: '后台成员' },
+        { id: 'models', index: '08', label: '模型配置' }
       ],
       dashboardRanges: [{ id: '7d', label: '7 天' }, { id: '30d', label: '30 天' }, { id: '90d', label: '90 天' }],
       dashboardRange: '30d',

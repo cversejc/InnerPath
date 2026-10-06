@@ -359,8 +359,9 @@ test('S6 shows report copy and open quality findings', () => {
   })
 
   assert.equal(groups[0].items[0].body, '先完成一次从业者访谈。')
-  assert.match(groups[2].items[0].meta, /必须处理/)
-  assert.equal(groups[2].items[0].body, '补充来源或删除该句。')
+  const qualityIssue = groups.find(group => group.key === 'qualityIssues').items[0]
+  assert.match(qualityIssue.meta, /必须处理/)
+  assert.equal(qualityIssue.body, '补充来源或删除该句。')
 })
 
 test('S6 explains repeated semantic references without exposing internal finding keys', () => {
@@ -381,10 +382,11 @@ test('S6 explains repeated semantic references without exposing internal finding
     }
   })
 
-  assert.equal(groups[2].items[0].title, '同一专业判断被多段引用')
-  assert.match(groups[2].items[0].body, /各段是否各自承担不同作用/)
-  assert.match(groups[2].items[0].meta, /建议复核/)
-  assert.doesNotMatch(JSON.stringify(groups[2].items[0]), /central_tension|Finding s3/)
+  const qualityIssue = groups.find(group => group.key === 'qualityIssues').items[0]
+  assert.equal(qualityIssue.title, '同一专业判断被多段引用')
+  assert.match(qualityIssue.body, /各段是否各自承担不同作用/)
+  assert.match(qualityIssue.meta, /建议复核/)
+  assert.doesNotMatch(JSON.stringify(qualityIssue), /central_tension|Finding s3/)
 })
 
 test('completed quality checks show the open work instead of an unrun state', () => {
@@ -424,7 +426,7 @@ test('quality issues use clear Chinese action labels and severity levels', () =>
     }
   })
 
-  const issue = groups[2].items[0]
+  const issue = groups.find(group => group.key === 'qualityIssues').items[0]
   assert.equal(issue.title, '当前职业处境 · 报告表达需要复核')
   assert.match(issue.body, /统一叙述方式/)
   assert.match(issue.meta, /需要处理 · 待处理/)

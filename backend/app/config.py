@@ -33,12 +33,13 @@ class Settings(BaseSettings):
     PASSWORD_MIN_LENGTH: int = 8
 
     # DeepSeek API
-    DEEPSEEK_API_KEY: str
+    DEEPSEEK_API_KEY: str = ""
     DEEPSEEK_API_URL: str = "https://api.deepseek.com/v1/chat/completions"
     DEEPSEEK_MODEL: str = "deepseek-v4-flash"
     DEEPSEEK_THINKING: bool = False
     DEEPSEEK_TIMEOUT_SECONDS: float = 120.0
     DEEPSEEK_MAX_TOKENS: int = 8000
+    LLM_CONFIG_ENCRYPTION_KEY: str = ""
     REPORT_MAX_RETRIES: int = 2
     ADMIN_EXPORT_MAX_ROWS: int = 10000
     REPORT_EXPORT_FRONTEND_URL: str = "http://127.0.0.1:3000"

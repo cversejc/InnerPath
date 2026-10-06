@@ -9,6 +9,7 @@ from typing import Any, Protocol
 import httpx
 
 from app.config import settings
+from app.services.llm import chat
 from app.domains.quality.scorecard import validate_scorecard
 from app.domains.content.framework_coverage import (
     normalize_coverage, normalize_requirement_coverage, normalize_framework_review,
@@ -53,7 +54,7 @@ class ModelGateway(Protocol):
     ) -> ModelCompletion: ...
 
 
-class DeepSeekGateway:
+class ConfiguredModelGateway:
     async def complete(
         self,
         *,
@@ -61,56 +62,44 @@ class DeepSeekGateway:
         user_prompt: str,
         model_policy: dict[str, Any],
     ) -> ModelCompletion:
-        model = model_policy.get("model") or settings.DEEPSEEK_MODEL
-        timeout = min(max(float(model_policy.get("timeout_seconds") or 120), 1), 240)
-        thinking_enabled = model_policy.get("thinking", settings.DEEPSEEK_THINKING)
-        request_body = {
-            "model": model,
-            "messages": [
+        completion = await chat(
+            [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            "temperature": float(model_policy.get("temperature", 0.7)),
-            "max_tokens": min(int(model_policy.get("max_tokens") or 8000), 32768 if thinking_enabled else 16000),
-            "stream": False,
-            "thinking": {
-                "type": "enabled" if thinking_enabled else "disabled"
-            },
-        }
-        started = time.perf_counter()
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.post(
-                settings.DEEPSEEK_API_URL,
-                json=request_body,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {settings.DEEPSEEK_API_KEY}",
-                },
-            )
-            response.raise_for_status()
-            response_data = response.json()
-        elapsed_ms = round((time.perf_counter() - started) * 1000)
-        usage = response_data.get("usage") or {}
-        choice = (response_data.get("choices") or [{}])[0]
+            model=model_policy.get("model"),
+            temperature=model_policy.get("temperature"),
+            max_tokens=model_policy.get("max_tokens"),
+            timeout_seconds=model_policy.get("timeout_seconds"),
+            thinking=model_policy.get("thinking"),
+            allow_empty=True,
+            client_factory=httpx.AsyncClient,
+        )
         trace = {
-            "provider": "deepseek",
-            "model": model,
-            "input_tokens": usage.get("prompt_tokens"),
-            "output_tokens": usage.get("completion_tokens"),
-            "latency_ms": elapsed_ms,
+            "provider": completion.provider,
+            "model": completion.model,
+            "input_tokens": completion.usage.get("input_tokens"),
+            "output_tokens": completion.usage.get("output_tokens"),
+            "latency_ms": completion.latency_ms,
             "estimated_cost": None,
-            "finish_reason": choice.get("finish_reason"),
-            "request_id": response_data.get("id"),
-            "thinking_enabled": thinking_enabled,
+            "finish_reason": completion.finish_reason,
+            "request_id": completion.request_id,
+            "thinking_enabled": completion.thinking_enabled,
         }
         try:
-            content = extract_chat_content(response_data)
+            content = extract_chat_content({
+                "choices": [{"message": {"content": completion.content}}]
+            })
         except ValueError as error:
-            code = "skill_output_truncated" if choice.get("finish_reason") == "length" else "skill_provider_response_invalid"
+            code = "skill_output_truncated" if completion.finish_reason == "length" else "skill_provider_response_invalid"
             raise SkillExecutionError(code, {
                 **trace, "output_validation": "failed", "error_type": "EmptyProviderContent"
             }, output_raw="") from error
         return ModelCompletion(content=content, trace=trace)
+
+
+# Kept as an import alias for application call sites and older integrations.
+DeepSeekGateway = ConfiguredModelGateway
 
 
 @dataclass(frozen=True)
@@ -964,8 +953,8 @@ async def execute_skill(
     prompt_hash = hashlib.sha256(
         f"{system_prompt}\0{user_prompt}".encode("utf-8")
     ).hexdigest()
-    provider = specification["model_policy"]["provider"]
-    model = specification["model_policy"].get("model") or settings.DEEPSEEK_MODEL
+    provider = "configured"
+    model = specification["model_policy"].get("model")
     started = time.perf_counter()
     try:
         completion = await (gateway or DeepSeekGateway()).complete(

@@ -131,6 +131,8 @@
         @update-specialties="updateConsultantSpecialties"
       />
 
+      <AdminLLMSection v-else-if="activeTab === 'models'" />
+
       <AdminReportsSection
         v-else-if="activeTab === 'reports'"
         :page-size="reportPageSize"

@@ -21,6 +21,38 @@ export async function getAdminDashboard(range = '30d') {
   return response.data
 }
 
+export async function getAdminLLMConfigurations() {
+  const response = await apiClient.get('/admin/llm/configurations')
+  return response.data
+}
+
+export async function createAdminLLMConfiguration(data) {
+  const response = await apiClient.post('/admin/llm/configurations', data)
+  return response.data
+}
+
+export async function updateAdminLLMConfiguration(id, data) {
+  const response = await apiClient.put(`/admin/llm/configurations/${id}`, data)
+  return response.data
+}
+
+export async function setDefaultAdminLLMConfiguration(id) {
+  const response = await apiClient.post(`/admin/llm/configurations/${id}/default`)
+  return response.data
+}
+
+export async function deleteAdminLLMConfiguration(id) {
+  await apiClient.delete(`/admin/llm/configurations/${id}`)
+  return true
+}
+
+export async function testAdminLLMConfiguration(data) {
+  const response = await apiClient.post('/admin/llm/configurations/test', data, {
+    timeout: 30000
+  })
+  return response.data
+}
+
 export async function getAdminUser(userId) {
   const response = await apiClient.get(`/admin/users/${userId}`)
   return response.data

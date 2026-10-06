@@ -16,7 +16,7 @@
 **技术栈**：
 - 前端：Vue 3 + Vite + Vue Router
 - 后端：FastAPI + PostgreSQL + Redis
-- AI：DeepSeek API
+- AI：后台可配置 DeepSeek 或 OpenAI 兼容的大模型服务
 - 部署：Docker + Docker Compose + Nginx
 
 ---
@@ -25,7 +25,7 @@
 
 ### 前置要求
 - Docker 和 Docker Compose
-- DeepSeek API Key（[获取地址](https://platform.deepseek.com/)）
+- 可访问的 DeepSeek 或 OpenAI 兼容大模型服务；密钥可在管理员后台配置
 
 ### 启动步骤
 
@@ -36,7 +36,8 @@ cd InnerPath
 
 # 2. 配置环境变量
 cp .env.example .env
-# 编辑 .env 文件，填入 DEEPSEEK_API_KEY 和 SMS_SPUG_TOKEN
+# 编辑 .env 文件，配置数据库、SECRET_KEY 和短信服务等必需项
+# DeepSeek 环境密钥可选；也可在管理员后台配置模型服务
 
 # 3. 启动服务
 ./scripts/dev.sh
@@ -65,6 +66,21 @@ python -m app.cli create-admin --phone 13800138000 --name 系统管理员
 ```
 
 登录入口仅支持手机号 + 密码。公开注册和密码找回都需要短信验证码；找回密码后会撤销该账号已有的刷新会话。工作人员通过管理员生成的一次性邀请令牌完成账号初始化。短信使用 Spug 短信模板，服务端通过 `SMS_SPUG_TOKEN` 配置接口令牌；本地开发如需从后端日志读取验证码，必须显式将 `SMS_DEV_CODE_LOGGING=true`，否则未配置短信服务会返回错误，不会向前端报告发送成功。刷新令牌只保存在 HttpOnly Cookie，访问令牌保存在当前浏览器会话中。
+
+管理员登录后进入“模型配置”，可新增 DeepSeek 或 OpenAI 兼容服务，填写 API 地址、模型名称和密钥，测试连接并切换默认配置。密钥会加密后保存到数据库，`LLM_CONFIG_ENCRYPTION_KEY` 可单独指定加密密钥；留空时使用 `SECRET_KEY` 派生，因此生产环境应固定其中一个密钥。数据库迁移完成后，报告、日历和技能生成会统一使用默认模型配置；尚未设置后台默认项时，才回退到可选的 DeepSeek 环境配置。
+
+后端业务模块通过统一接口发起对话：
+
+```python
+from app.services.llm import chat
+
+completion = await chat([
+    {"role": "system", "content": "你是一个有帮助的助手。"},
+    {"role": "user", "content": "请总结这段内容。"},
+])
+```
+
+接口返回正文、实际 provider/model、token 用量、结束原因、请求 ID 和延迟信息。
 
 ---
 
@@ -105,7 +121,7 @@ vim /opt/innerpath/current/.env
 # 至少确认：
 # SESSION_COOKIE_SECURE=true
 # CORS_ORIGINS 中包含 https://chenvis.com
-# 并填入 DEEPSEEK_API_KEY、数据库密码、SECRET_KEY 等生产配置
+# 并设置数据库密码、SECRET_KEY 等生产配置；模型可在后台配置
 
 # 4. 后续更新代码
 ./scripts/deploy.sh remote update
@@ -309,15 +325,15 @@ services:
       - "8001:8000"  # 改为 8001 端口
 ```
 
-### API Key 无效
+### 模型服务连接失败
 
-检查 `.env` 文件中的配置：
+在管理员后台的“模型配置”中运行连接测试，并检查 API 地址、模型名称与密钥。若使用 DeepSeek 环境回退，检查 `.env` 中的配置：
 
 ```bash
 DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-确保 API Key 格式正确，没有多余的空格或引号。
+确保 API Key 格式正确，没有多余的空格或引号；保存到后台的密钥不会在读取时显示明文。
 
 ### 服务无法启动
 
@@ -361,7 +377,7 @@ docker-compose restart postgres
 - 响应式设计（移动端适配）
 
 ### 2. AI 报告生成引擎
-- 集成 DeepSeek API
+- 通过统一对话接口连接管理员配置的 DeepSeek 或 OpenAI 兼容服务
 - 深度整合八字、紫微斗数、心理学与哲学翻译
 - 生成包含“我是谁 / 我卡在哪 / 我往哪去”的人生说明书
 - 明确不做命盘等级、财富等级、能力高低与具体未来因果预测
@@ -418,8 +434,11 @@ docker-compose restart postgres
 关键配置项（`.env` 文件）：
 
 ```bash
-# DeepSeek API（必填）
-DEEPSEEK_API_KEY=sk-your-api-key-here
+# DeepSeek 环境回退（可选；优先使用管理员后台的默认模型配置）
+DEEPSEEK_API_KEY=
+
+# 数据库模型密钥加密（可选；未设置时由 SECRET_KEY 派生，需保持密钥稳定）
+LLM_CONFIG_ENCRYPTION_KEY=
 
 # 数据库（生产环境必须修改密码）
 POSTGRES_PASSWORD=change_this_in_production

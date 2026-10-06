@@ -4,31 +4,14 @@ import json
 from datetime import date, timedelta
 from typing import Any, Dict
 
-import httpx
 from pydantic import ValidationError
 
-from app.config import settings
 from app.core.logging_config import get_logger
 from app.domains.calendar.schemas import CalendarCreate, CalendarEntryInput
+from app.services.llm import chat
 
 
 logger = get_logger(__name__)
-
-
-def _extract_content(response_data: dict[str, Any]) -> str:
-    choices = response_data.get("choices") or []
-    if not choices:
-        raise ValueError("calendar_ai_empty_response")
-    message = choices[0].get("message") or {}
-    content = message.get("content")
-    if isinstance(content, list):
-        content = "".join(
-            part.get("text", "") if isinstance(part, dict) else str(part)
-            for part in content
-        )
-    if not isinstance(content, str) or not content.strip():
-        raise ValueError("calendar_ai_empty_content")
-    return content.strip()
 
 
 def _parse_json_content(content: str) -> dict[str, Any]:
@@ -120,30 +103,16 @@ async def generate_calendar_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]
 必须覆盖输入的全部 30 天，日期不能重复，也不能超出范围。结合已交付报告的具体特质与本次目标，避免照搬通用建议。不得声称报告以外的诊断或事实；每条建议都要保持可选择、可调整。"""
 
     logger.info("开始生成决策日历 AI 初稿 | start=%s", user_data.get("start_date"))
-    async with httpx.AsyncClient(timeout=settings.DEEPSEEK_TIMEOUT_SECONDS) as client:
-        response = await client.post(
-            settings.DEEPSEEK_API_URL,
-            json={
-                "model": settings.DEEPSEEK_MODEL,
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": prompt},
-                ],
-                "temperature": 0.6,
-                "max_tokens": settings.DEEPSEEK_MAX_TOKENS,
-                "stream": False,
-                "thinking": {"type": "enabled" if settings.DEEPSEEK_THINKING else "disabled"},
-            },
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {settings.DEEPSEEK_API_KEY}",
-            },
-        )
-        response.raise_for_status()
-        parsed = _parse_json_content(_extract_content(response.json()))
-        parsed["start_date"] = parsed.get("start_date") or user_data.get("start_date")
-        parsed["end_date"] = parsed.get("end_date") or user_data.get("end_date")
-        return parsed
+    completion = await chat(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt},
+        ]
+    )
+    parsed = _parse_json_content(completion.content)
+    parsed["start_date"] = parsed.get("start_date") or user_data.get("start_date")
+    parsed["end_date"] = parsed.get("end_date") or user_data.get("end_date")
+    return parsed
 
 
 def validate_generated_calendar(

@@ -9,7 +9,7 @@ from app.domains.reports.generation.single_step_report import generate_report_si
 logger = get_logger(__name__)
 
 
-@log_external_api("DeepSeek API")
+@log_external_api("LLM API")
 async def generate_report_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]:
     """Normalize report input and run the configured generation strategy."""
     if user_data.get("schema_version") == 2 and user_data.get("profile"):

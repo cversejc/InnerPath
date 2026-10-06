@@ -32,6 +32,7 @@ from app.domains.content.models import (
 )
 from app.domains.quality.models import QAIssue
 from app.domains.delivery.models import ReportVersion
+from app.domains.llm.models import LLMProviderConfig
 
 # this is the Alembic Config object
 config = context.config

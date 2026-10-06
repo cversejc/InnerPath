@@ -3,7 +3,7 @@ from datetime import datetime, time as dt_time
 from typing import List, Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import desc, exists, func, select
-from app.config import settings
+from app.domains.llm.service import default_model_name
 from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.users.lunar_calendar import solar_date_for_birth
@@ -76,7 +76,7 @@ async def create_report(
         personal_growth=report_data["personal_growth"],
         summary=report_data.get("summary"),
         ai_raw_content=report_data.get("ai_generated_content"),
-        ai_model=settings.DEEPSEEK_MODEL,
+        ai_model=await default_model_name(db),
         generation_time_ms=generation_time_ms,
         selected_topics=(input_data or {}).get("selected_topics", report_data.get("selected_topics", [])),
         additional_info=(input_data or {}).get("additional_info", report_data.get("additional_info")),
@@ -243,7 +243,7 @@ def format_report_response(report: Report) -> Dict[str, Any]:
             "calendar_type": birth_profile.get("calendar_type", report.birth_calendar_type),
             "birth_is_leap_month": bool(birth_profile.get("birth_is_leap_month", False)),
             "report_date": report.created_at.date().isoformat(),
-            "generated_by": "咨询师审校 + AI 初稿" if report.reviewed_at else ("DeepSeek AI" if report.ai_raw_content else "Basic Algorithm")
+            "generated_by": "咨询师审校 + AI 初稿" if report.reviewed_at else ("AI" if report.ai_raw_content else "Basic Algorithm")
         },
         "energy_profile": report.energy_profile,
         "career_guidance": report.career_guidance,

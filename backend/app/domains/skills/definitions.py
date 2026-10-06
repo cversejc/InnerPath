@@ -196,7 +196,7 @@ DEFAULT_SKILL_SPECIFICATION: dict[str, Any] = {
     "processor_policy": {"processor": "reports.single_step"},
     "tool_policy": {"allowed": ["reports.calculate_mingli_foundation"]},
     "model_policy": {
-        "provider": "deepseek",
+        "provider": "configured",
         "model": None,
         "temperature": 0.7,
         "max_tokens": 8000,
@@ -286,9 +286,10 @@ def validate_skill_specification(specification: dict[str, Any]) -> dict[str, Any
     processor = spec["processor_policy"].get("processor")
     if processor not in ALLOWED_PROCESSORS:
         raise ValueError("skill_processor_required")
-    if not isinstance(spec["model_policy"].get("provider"), str):
+    provider = spec["model_policy"].get("provider")
+    if not isinstance(provider, str) or not provider.strip():
         raise ValueError("skill_model_provider_required")
-    if spec["model_policy"]["provider"] != "deepseek":
+    if provider not in {"configured", "deepseek", "openai_compatible"}:
         raise ValueError("skill_model_provider_unsupported")
     tools = spec["tool_policy"].get("allowed", [])
     if not isinstance(tools, list) or any(tool not in ALLOWED_TOOLS for tool in tools):

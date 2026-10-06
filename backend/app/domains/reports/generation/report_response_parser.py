@@ -6,7 +6,7 @@ def extract_chat_content(response_data: Dict[str, Any]) -> str:
     """Extract visible assistant content from a chat-completions response."""
     choices = response_data.get("choices") or []
     if not choices or not isinstance(choices[0], dict):
-        raise ValueError("DeepSeek 响应缺少 choices")
+        raise ValueError("模型服务响应缺少 choices")
 
     choice = choices[0]
     message = choice.get("message") or {}
@@ -27,7 +27,7 @@ def extract_chat_content(response_data: Dict[str, Any]) -> str:
 
     if not normalized_content:
         finish_reason = choice.get("finish_reason", "unknown")
-        raise ValueError(f"DeepSeek 返回空正文，finish_reason={finish_reason}")
+        raise ValueError(f"模型服务返回空正文，finish_reason={finish_reason}")
 
     return normalized_content
 
@@ -42,7 +42,7 @@ def parse_ai_response(ai_content: str, user_data: Dict[str, Any]) -> Dict[str, A
                 f"{user_data.get('birth_day')}"
             ),
             "report_date": None,
-            "generated_by": "DeepSeek AI",
+            "generated_by": "AI",
         },
         "ai_generated_content": ai_content,
         "energy_profile": extract_energy_profile(ai_content),

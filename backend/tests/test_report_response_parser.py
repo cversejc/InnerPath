@@ -64,7 +64,7 @@ def test_parse_ai_response_extracts_report_fields_and_keeps_defaults():
         "name": "林一",
         "birth_date": "1990-5-15",
         "report_date": None,
-        "generated_by": "DeepSeek AI",
+        "generated_by": "AI",
     }
     assert report["energy_profile"]["type"] == "稳步探索型"
     assert report["energy_profile"]["core_traits"] == "认真观察、逐步行动"
