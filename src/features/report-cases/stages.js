@@ -155,6 +155,7 @@ export const REPORT_WORKFLOW_STAGES = [
     inputGroups: [
       { key: 'reportFragments', title: '等待最终复核的报告正文', reason: '只复核已确认的报告段落；重点看是否准确回应用户本次问题。', empty: '还没有可供复核的报告段落。' },
       { key: 'confirmedFindings', title: '报告可以引用的已确认判断', reason: '用来核验报告每项重要结论是否有已审核的专业依据。', empty: '没有已确认的专业判断。' },
+      { key: 'referencedEvidence', title: '报告关联的原始资料', reason: '沿报告段落和判断的引用回看原始资料；失效来源会标记出来。', empty: '报告尚未关联可追溯的原始资料。' },
       { key: 'qualityIssues', title: '系统检查与待处理事项', reason: '按严重程度处理问题；仍有阻断项时不能完成交付。', empty: '尚未运行交付前检查。' }
     ],
     tools: [

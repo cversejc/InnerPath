@@ -21,7 +21,15 @@
           <template v-if="finding.record">
             <p class="review-prose">{{ finding.record.claim }}</p>
             <p class="review-note">{{ displayText(finding.record.kind) }} · {{ displayText(finding.record.semantic_role, 'semantic_role') }} · {{ displayText(finding.record.confidence) }}把握 · {{ displayText(finding.record.reportability) }}</p>
-            <p class="review-note">资料依据：{{ evidenceTitles(finding.record.evidence_refs) || '采用关联判断作为依据' }}</p>
+            <details v-if="finding.record.evidence_refs?.length" class="review-source-details">
+              <summary>查看 {{ finding.record.evidence_refs.length }} 项原始资料依据</summary>
+              <div v-for="item in evidenceRecords(finding.record.evidence_refs)" :key="item.evidence_key" class="review-source-item">
+                <strong>{{ evidenceLabel(item.evidence_key) }}</strong>
+                <p>{{ evidenceSummary(item) }}</p>
+                <small v-if="item.status !== 'ACTIVE'" class="review-source-stale">来源已更新、撤回或无法找到。</small>
+              </div>
+            </details>
+            <p v-else class="review-note">资料依据：{{ finding.record.relation_refs?.length ? '采用关联判断作为依据' : '暂未关联资料' }}</p>
             <p v-if="finding.done" class="review-note">这条判断的审核结果会用于所有引用它的分析方向。</p>
             <div v-if="editingKind === 'finding'" class="review-form">
               <label>判断内容<textarea v-model.trim="findingDraft.claim" rows="4" maxlength="5000"></textarea></label>
@@ -30,7 +38,7 @@
                 <label>参考优先级<select v-model="findingDraft.importance"><option value="LOW">普通</option><option value="MEDIUM">关注</option><option value="HIGH">重要</option><option value="CRITICAL">优先处理</option></select></label>
                 <label>报告中的呈现程度<select v-model="findingDraft.reportability"><option value="INTERNAL_ONLY">仅供内部参考</option><option value="OPTIONAL">可酌情呈现</option><option value="RECOMMENDED">建议呈现</option><option value="MUST_INCLUDE">报告需要包含</option></select></label>
               </div>
-              <fieldset class="review-references"><legend>资料依据（可多选）</legend><label v-for="item in activeEvidence" :key="item.evidence_key"><input v-model="findingDraft.evidence_refs" type="checkbox" :value="item.evidence_key" />{{ evidenceLabel(item.evidence_key) }}</label></fieldset>
+              <EvidenceReferencePicker v-model="findingDraft.evidence_refs" :items="evidenceItems" :preferred-keys="preferredEvidenceKeys" label="判断依据" />
             </div>
             <div v-if="!readOnly && finding.editable" class="review-actions">
               <VanButton v-if="!editingKind" plain native-type="button" :disabled="locked" @click="editFinding">修改判断</VanButton>
@@ -55,7 +63,7 @@
             <label>分析标题<input v-model.trim="fragmentDraft.title" maxlength="240" /></label>
             <label>分析正文<textarea v-model="fragmentDraft.content" rows="9" maxlength="30000"></textarea></label>
             <fieldset class="review-references"><legend>引用判断（可多选；正文与引用须一致）</legend><label v-for="item in referenceFindings" :key="item.key"><input v-model="fragmentDraft.finding_refs" type="checkbox" :value="item.key" :disabled="item.status !== 'CONFIRMED' && !fragmentDraft.finding_refs.includes(item.key)" />{{ item.title }} · {{ statusLabel(item.status) }}</label></fieldset>
-            <fieldset class="review-references"><legend>资料依据（可多选）</legend><label v-for="item in activeEvidence" :key="item.evidence_key"><input v-model="fragmentDraft.evidence_refs" type="checkbox" :value="item.evidence_key" />{{ evidenceLabel(item.evidence_key) }}</label></fieldset>
+            <EvidenceReferencePicker v-model="fragmentDraft.evidence_refs" :items="evidenceItems" :preferred-keys="preferredEvidenceKeys" label="分析直接依据" />
             <details v-if="fragmentDraft.framework_coverage || fragmentDraft.structured_analysis" class="review-detail-fields">
               <summary>覆盖说明与推导记录（修改正文后请同步核对）</summary>
               <AnalysisCoverageEditor v-model="fragmentDraft.framework_coverage" label="本方向覆盖说明" />
@@ -66,7 +74,15 @@
         <template v-else>
           <p class="review-prose">{{ direction.record.content }}</p>
           <p class="review-note">关联判断：{{ direction.findings.map(item => item.title).join('、') || '直接依据原始资料分析' }}</p>
-          <p class="review-note">资料依据：{{ evidenceTitles(fragmentReview.evidence_refs) || '采用已确认的关联判断' }}</p>
+          <details v-if="fragmentEvidenceKeys.length" class="review-source-details">
+            <summary>查看 {{ fragmentEvidenceKeys.length }} 项原始资料依据</summary>
+            <div v-for="item in evidenceRecords(fragmentEvidenceKeys)" :key="item.evidence_key" class="review-source-item">
+              <strong>{{ evidenceLabel(item.evidence_key) }}</strong>
+              <p>{{ evidenceSummary(item) }}</p>
+              <small v-if="item.status !== 'ACTIVE'" class="review-source-stale">来源已更新、撤回或无法找到。</small>
+            </div>
+          </details>
+          <p v-else class="review-note">资料依据：采用已确认的关联判断</p>
         </template>
         <div v-if="!readOnly" class="review-actions">
           <VanButton v-if="!editingKind" plain native-type="button" :disabled="locked" @click="editFragment">修改内容与引用</VanButton>
@@ -91,12 +107,13 @@
 import { Button as VanButton } from 'vant'
 import WorkbenchRecordPicker from './WorkbenchRecordPicker.vue'
 import AnalysisCoverageEditor from './AnalysisCoverageEditor.vue'
+import EvidenceReferencePicker from './EvidenceReferencePicker.vue'
 import { displayText } from '../../skills/presentation.js'
-import { reportEvidenceTitle } from '../workbench-inputs.js'
+import { formatConsultantEvidenceValue, reportEvidenceTitle } from '../workbench-inputs.js'
 import { buildAnalysisDirections, createFindingReview, createFragmentReview, findingReviewTitle, fragmentReviewProblem } from '../analysis-review-flow.js'
 
 export default {
-  components: { VanButton, WorkbenchRecordPicker, AnalysisCoverageEditor },
+  components: { VanButton, WorkbenchRecordPicker, AnalysisCoverageEditor, EvidenceReferencePicker },
   props: { run: { type: Object, required: true }, content: { type: Object, required: true }, stepId: Number,
     readOnly: Boolean, saving: Boolean, sourcesCurrent: { type: Function, required: true } },
   emits: ['review-candidate', 'go-overview', 'busy'],
@@ -111,12 +128,31 @@ export default {
     completed() { return this.directions.filter(item => item.complete).length },
     locked() { return Boolean(this.saving || this.pending || this.editingKind) },
     savingNow() { return Boolean(this.pending || this.saving) },
-    activeEvidence() { return (this.content.evidence || []).filter(item => item.status === 'ACTIVE') },
+    evidenceItems() { return this.content.evidence || [] },
+    fragmentEvidenceKeys() {
+      const findingRefs = (this.direction?.findings || []).flatMap(item => item.record?.evidence_refs || [])
+      return [...new Set([...(this.fragmentReview?.evidence_refs || []), ...findingRefs])]
+    },
+    preferredEvidenceKeys() { return this.fragmentEvidenceKeys },
     fragmentReview() { return this.direction?.fragment ? createFragmentReview(this.direction, this.run.id) : null },
     referenceFindings() {
+      const context = this.run.input_snapshot?.analysis_context || {}
+      const candidates = this.run.output_parsed?.findings || []
+      const allowedKeys = new Set([
+        ...(this.direction?.findings || []).map(item => item.key),
+        ...candidates.map(item => item.finding_key),
+        ...(context.upstream_confirmed_findings || []).map(item => item.finding_key),
+        ...(this.content.findings || []).filter(item => item.owner_step_task_id === this.stepId && item.status === 'CONFIRMED').map(item => item.finding_key)
+      ])
       const choices = new Map((this.direction?.findings || []).map(item => [item.key, item]))
       for (const row of this.content.findings || []) {
-        if (row.status === 'CONFIRMED' && !choices.has(row.finding_key)) choices.set(row.finding_key, { key: row.finding_key, title: findingReviewTitle(row), status: row.status })
+        if (allowedKeys.has(row.finding_key) && row.status === 'CONFIRMED' && !choices.has(row.finding_key)) choices.set(row.finding_key, { key: row.finding_key, title: findingReviewTitle(row), status: row.status })
+      }
+      for (const candidate of candidates) {
+        if (allowedKeys.has(candidate.finding_key) && !choices.has(candidate.finding_key)) {
+          const current = (this.content.findings || []).find(item => item.finding_key === candidate.finding_key)
+          choices.set(candidate.finding_key, { key: candidate.finding_key, title: findingReviewTitle(candidate), status: current?.status || 'PROPOSED' })
+        }
       }
       return [...choices.values()]
     },
@@ -131,8 +167,14 @@ export default {
   methods: {
     displayText,
     statusLabel(value) { return { CONFIRMED: '已确认', REJECTED: '已拒绝', STALE: '需复核', PROPOSED: '待审核' }[value] || '待审核' },
-    evidenceLabel(key) { const row = this.content.evidence.find(item => item.evidence_key === key); return row ? reportEvidenceTitle(row) : '已更新或待核对的资料' },
-    evidenceTitles(keys) { return [...new Set((keys || []).map(this.evidenceLabel))].join('、') },
+    evidenceLabel(key) { const row = (this.content.evidence || []).find(item => item.evidence_key === key); return row ? reportEvidenceTitle(row) : '已更新或待核对的资料' },
+    evidenceRecords(keys) { return (keys || []).map(key => (this.content.evidence || []).find(item => item.evidence_key === key) || { evidence_key: key, status: 'MISSING' }) },
+    evidenceSummary(item) {
+      if (item.status === 'MISSING') return item.evidence_key
+      const value = formatConsultantEvidenceValue(item.value_json, item.source_type)
+      const text = String(value || '').replace(/\s+/g, ' ').trim()
+      return text.length > 300 ? `${text.slice(0, 300)}…` : text || '没有可显示的资料摘要。'
+    },
     fail(message) { this.error = message; this.$nextTick(() => this.$refs.error?.focus()) },
     focusCurrent() { this.$refs.reviewCard?.scrollIntoView({ block: 'nearest' }); this.$refs.reviewCard?.focus({ preventScroll: true }) },
     resetDirection() {

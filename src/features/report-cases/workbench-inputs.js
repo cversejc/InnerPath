@@ -300,17 +300,23 @@ export function reportEvidenceTitle(item) {
   return evidenceTitle(item || {})
 }
 
-function evidenceItems(evidence = [], keys = null) {
+function evidenceItems(evidence = [], keys = null, includeUnavailable = false) {
   const wanted = keys ? new Set(keys) : null
-  return visibleConsultantEvidence(evidence)
-    .filter(item => item.status === 'ACTIVE'
-      && (!wanted || wanted.has(item.evidence_key)))
-    .map(item => ({
+  const source = includeUnavailable
+    ? evidence.filter(item => isVisibleConsultantEvidence(item) && (!wanted || wanted.has(item.evidence_key)))
+    : visibleConsultantEvidence(evidence).filter(item => item.status === 'ACTIVE' && (!wanted || wanted.has(item.evidence_key)))
+  const byKey = new Map(source.map(item => [item.evidence_key, item]))
+  if (includeUnavailable && wanted) {
+    for (const key of wanted) {
+      if (!byKey.has(key)) byKey.set(key, { evidence_key: key, status: 'MISSING', value_json: null })
+    }
+  }
+  return [...byKey.values()].map(item => ({
       key: item.evidence_key,
       title: evidenceTitle(item),
-      body: formatConsultantEvidenceValue(item.value_json, item.source_type),
-      calculation: ['SYSTEM_CALCULATED', 'CONSULTANT_CORRECTED'].includes(item.source_type) ? item.value_json : null,
-      meta: item.source_type === 'SYSTEM_CALCULATED' ? '系统测算' : item.source_type === 'CONSULTANT_CORRECTED' ? '咨询师修订' : item.source_type === 'EXTERNAL_REFERENCE' ? '外部资料' : '用户提供'
+      body: item.status === 'MISSING' ? item.evidence_key : formatConsultantEvidenceValue(item.value_json, item.source_type),
+      calculation: item.status === 'ACTIVE' && ['SYSTEM_CALCULATED', 'CONSULTANT_CORRECTED'].includes(item.source_type) ? item.value_json : null,
+      meta: item.status === 'MISSING' ? '来源无法找到' : item.status !== 'ACTIVE' ? '来源已更新或撤回' : item.source_type === 'SYSTEM_CALCULATED' ? '系统测算' : item.source_type === 'CONSULTANT_CORRECTED' ? '咨询师修订' : item.source_type === 'EXTERNAL_REFERENCE' ? '外部资料' : '用户提供'
     }))
 }
 
@@ -319,11 +325,15 @@ function excerpt(value, limit = 280) {
   return text.length > limit ? `${text.slice(0, limit)}…` : text
 }
 
-function sourceEvidenceTitles(item, evidenceByKey) {
+function sourceEvidenceKeys(item) {
   const refs = Array.isArray(item.evidence_refs)
     ? item.evidence_refs
     : (item.source_snapshot?.evidence || []).map(source => source.evidence_key)
-  return [...new Set(refs.map(key => evidenceByKey.get(key)).filter(Boolean))].join('、')
+  return [...new Set(refs.map(ref => typeof ref === 'string' ? ref : ref?.evidence_key).filter(Boolean))]
+}
+
+function sourceEvidenceTitles(item, evidenceByKey) {
+  return [...new Set(sourceEvidenceKeys(item).map(key => evidenceByKey.get(key)).filter(Boolean))].join('、')
 }
 
 function sourceFindingTitles(item, findingsByKey) {
@@ -523,12 +533,16 @@ export function buildWorkbenchInputGroups({ stage, reportCase, content, narrativ
     : stage.stepKey === 'S1' ? [] : findings
   const evidenceByKey = new Map((content?.evidence || []).map(item => [item.evidence_key, evidenceTitle(item)]))
   const findingsByKey = new Map(findings.map(item => [item.finding_key, item]))
-  const allRefs = [...new Set(relevantFindings.flatMap(item => item.evidence_refs || []))]
+  const reportFragments = (content?.fragments || []).filter(item => item.fragment_type === 'REPORT' && item.status === 'CONFIRMED')
+  const evidenceSources = stage.stepKey === 'S6'
+    ? [...relevantFindings, ...analysisFragments, ...reportFragments]
+    : relevantFindings
+  const allRefs = [...new Set(evidenceSources.flatMap(sourceEvidenceKeys))]
   const inputItems = {
     profile: profileItems(snapshot.profile),
     context: contextItems(snapshot),
     systemEvidence: evidenceItems(content?.evidence || []).filter(item => item.meta === '系统测算'),
-    referencedEvidence: evidenceItems(content?.evidence || [], allRefs),
+    referencedEvidence: evidenceItems(content?.evidence || [], allRefs, stage.stepKey === 'S6'),
     upstreamFindings: findingCards(upstreamFindings, evidenceByKey),
     confirmedFindings: findingCards(confirmedFindings, evidenceByKey),
     upstreamFragments: fragmentCards(analysisFragments, evidenceByKey, findingsByKey),

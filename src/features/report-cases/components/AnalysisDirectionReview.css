@@ -8,6 +8,12 @@
 .review-phases > span { color: var(--gold-deep); }
 .review-card { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--surface); }
 .review-prose { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); font-size: var(--text-body); line-height: var(--leading-body); }
+.review-source-details { border-left: 2px solid var(--line); padding-left: var(--space-3); }
+.review-source-details summary { min-height: var(--touch-target); padding: var(--space-2) 0; color: var(--gold-deep); font-size: var(--text-body-sm); cursor: pointer; }
+.review-source-item { padding: var(--space-2) 0; }
+.review-source-item strong { color: var(--ink-soft); font-size: var(--text-body-sm); font-weight: var(--weight-semibold); }
+.review-source-item p { margin: var(--space-1) 0 0; color: var(--ink); font-size: var(--text-body-sm); line-height: var(--leading-body); overflow-wrap: anywhere; }
+.review-source-stale { display: block; margin-top: var(--space-1); color: var(--cinnabar-deep); font-size: var(--text-caption); }
 .review-form { display: grid; gap: var(--space-3); }
 .review-form :deep(label) { display: grid; gap: var(--space-2); color: var(--ink); font-size: var(--text-body); }
 .review-form :deep(textarea), .review-form :deep(select), .review-form :deep(input:not([type="checkbox"])) { width: 100%; min-width: 0; min-height: var(--touch-target); padding: var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--button-radius); background: var(--paper-soft); color: var(--ink); font: inherit; font-size: var(--text-body); line-height: var(--leading-body); }
