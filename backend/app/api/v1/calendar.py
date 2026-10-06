@@ -17,6 +17,7 @@ from app.domains.calendar.schemas import (
     DecisionLogResponse,
     CalendarListResponse,
 )
+from app.domains.calendar.models import CalendarRequest
 from app.domains.calendar.query_service import get_user_calendars
 from app.domains.calendar.decision_logs import (
     create_user_decision_log,
@@ -24,7 +25,10 @@ from app.domains.calendar.decision_logs import (
     get_user_decision_logs,
 )
 from app.application.staff_calendar_access import get_calendar_for_staff
-from app.domains.calendar.requests import get_user_calendar_requests, serialize_calendar_request
+from app.domains.calendar.requests import (
+    get_user_calendar_requests,
+    serialize_calendar_request,
+)
 
 router = APIRouter()
 
@@ -70,6 +74,9 @@ async def create_my_calendar_request(
             "calendar_request_requires_expected_outcomes": "至少选择一个期望输出",
             "calendar_request_requires_source_report": "请先从一份已交付报告进入日历生成",
             "calendar_request_source_report_mismatch": "来源报告不存在、尚未交付或不属于当前账号",
+            "calendar_request_source_report_required": "请先申请报告，并等待咨询师交付后再生成日历。",
+            "calendar_request_source_report_not_delivered": "请先申请报告，并等待咨询师交付后再生成日历。",
+            "calendar_request_must_cover_30_days": "日历周期需覆盖 30 天，请重新选择日期。",
             "calendar_ai_generation_failed": "AI 生成失败，请稍后重试；本次日历未交付",
         }
         code = (
@@ -83,20 +90,39 @@ async def create_my_calendar_request(
     return await serialize_calendar_request(db, calendar_request)
 
 
-@router.post("/requests/{request_id}/retry", response_model=CalendarRequestResponse, status_code=202)
-async def retry_my_calendar_request(request_id: int, current_user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
-    try:
-        return await serialize_calendar_request(db, await retry_calendar_production(db, current_user, request_id))
-    except ValueError as error:
-        raise HTTPException(status_code=404 if str(error) == "calendar_request_not_found" else 409, detail=str(error))
-
-
 @router.get("/requests", response_model=CalendarRequestListResponse)
 async def get_my_calendar_requests(
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
     return CalendarRequestListResponse(items=await get_user_calendar_requests(db, current_user.id))
+
+
+@router.post("/requests/{request_id}/retry", response_model=CalendarRequestResponse, status_code=status.HTTP_202_ACCEPTED)
+async def retry_my_calendar_request(
+    request_id: int,
+    request: Request,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    calendar_request = await db.get(CalendarRequest, request_id)
+    if not calendar_request or calendar_request.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Calendar request not found")
+    try:
+        calendar_request = await retry_calendar_production(
+            db,
+            current_user,
+            request_id,
+            audit_context=audit_context_from_request(request),
+        )
+    except ValueError as error:
+        code = str(error)
+        if code == "calendar_request_source_report_not_delivered":
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="请先申请报告，并等待咨询师交付后再生成日历。")
+        if code in {"calendar_request_retry_not_allowed", "calendar_request_not_failed"}:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="当前日历任务不能重试。")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Calendar request not found")
+    return await serialize_calendar_request(db, calendar_request)
 
 
 @router.get("/decision-logs", response_model=DecisionLogListResponse)

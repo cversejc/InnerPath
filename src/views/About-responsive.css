@@ -11,20 +11,6 @@
 }
 
 @media (max-width: 560px) {
-  .about-header {
-    padding: 54px 0 42px;
-  }
-
-  .about-header h1 {
-    font-size: clamp(38px, 11vw, 52px);
-  }
-
-  .about-header p:not(.section-kicker) {
-    margin-top: 16px;
-    font-size: 16px;
-    line-height: 1.75;
-  }
-
   .about-story-grid {
     gap: 22px;
   }
@@ -42,18 +28,6 @@
 
 /* 移动端最终密度：减少留白，让长页面更容易连续阅读。 */
 @media (max-width: 767px) {
-  .about-header {
-    padding: 38px 0 30px;
-  }
-
-  .about-header h1 {
-    font-size: clamp(32px, 10vw, 44px);
-  }
-
-  .about-header p:not(.section-kicker) {
-    margin-top: 14px;
-  }
-
   .section-band {
     padding-top: 40px;
     padding-bottom: 40px;

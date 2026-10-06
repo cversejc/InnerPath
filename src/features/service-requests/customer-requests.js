@@ -16,6 +16,9 @@ export default {
       followUpAnswers: {},
       followUpResponseKeys: {},
       supplementSubmittingId: null,
+      retryingCalendarId: null,
+      requestRefreshTimer: null,
+      requestFetchInFlight: false,
       filters: [
         { id: 'all', label: '全部' },
         { id: 'report', label: '报告' },
@@ -24,6 +27,15 @@ export default {
     }
   },
   computed: {
+    hasDeliveredReport() {
+      return this.requests.some(item => item.service_type === 'report' && item.status === 'delivered' && item.result_type === 'report')
+    },
+    calendarActionPath() {
+      return this.hasDeliveredReport ? '/pages/calendar/calendar?generate=1' : '/pages/assessment/assessment'
+    },
+    calendarActionLabel() {
+      return this.hasDeliveredReport ? '生成决策日历' : '先申请报告'
+    },
     filteredRequests() {
       if (this.activeFilter === 'all') return this.requests
       return this.requests.filter(item => item.service_type === this.activeFilter)
@@ -32,9 +44,15 @@ export default {
   async mounted() {
     await this.loadRequests()
     if (this.$route.query.submitted) {
-      this.message = '申请 #' + this.$route.query.submitted + ' 已提交，接下来等待咨询师接单。'
+      this.message = this.$route.query.kind === 'calendar'
+        ? '日历生成任务已启动，成功后会自动出现在日历中。'
+        : '报告申请 #' + this.$route.query.submitted + ' 已提交，接下来等待咨询师接单。'
       this.messageType = 'info'
     }
+    this.syncRequestPolling()
+  },
+  beforeUnmount() {
+    if (this.requestRefreshTimer) window.clearInterval(this.requestRefreshTimer)
   },
   methods: {
     confirmAction,

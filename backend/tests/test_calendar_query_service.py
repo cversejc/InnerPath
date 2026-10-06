@@ -41,6 +41,7 @@ async def test_user_calendar_serialization_redacts_internal_notes():
         start_date=date(2026, 10, 1),
         end_date=date(2026, 10, 31),
         meta_payload={},
+        source_report_id=None,
         calendar_request_id=None,
         published_at=None,
         created_at=None,

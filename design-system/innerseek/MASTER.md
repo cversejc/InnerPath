@@ -145,6 +145,23 @@ shapes for statuses, seals, tags and compact metadata.
 - Use translucent `surface`/`surface-strong` layers over the paper background.
 - Admin panels may be denser, but must retain the same ink, border and status colors.
 
+### Interior page composition
+
+- Reuse `BrandPageHeader` for page titles, introductory copy, seal ornaments and page
+  actions. Full-width headers belong below navigation; `contained` headers belong inside
+  application content widths, and `compact` headers suit staff and operations screens.
+- `--landscape-wash` reuses `--landscape-art` (the homepage mountain image) with an opaque paper layer
+  behind text. `--paper-scene` reuses the homepage paper backdrop with a quiet wash.
+  Both are canonical background tokens in `src/styles/foundation.css`; do not copy the
+  image paths or create unrelated backgrounds in each domain.
+- `--landscape-wash-mobile` increases the paper opacity across the full header width,
+  keeping text readable when a narrow viewport places it over the artwork.
+- Keep illustrations concentrated in page headers. Forms, report prose and operational
+  data use readable `surface-strong` cards. Seal ornaments are decorative and hidden
+  from assistive technology. Existing typography roles and scales remain authoritative.
+- Authentication retains the previous centered, single-column form layout on a plain
+  paper background. All actual input text stays at 16px.
+
 ### Inputs and forms
 
 - Visible labels are required; placeholders are supplementary only.
@@ -158,6 +175,11 @@ shapes for statuses, seals, tags and compact metadata.
 - Mobile bottom navigation owns the four primary destinations: 首页、报告、日历、我的。
 - Hamburger navigation is reserved for secondary links, role-specific entries and
   account actions.
+- About remains a standalone page at `/pages/about/about`. Desktop navigation includes
+  “关于”; the mobile secondary menu includes “关于辰鉴”. Keep its full brand introduction
+  separate from the homepage until the product structure is reassessed.
+- Its introduction uses `BrandPageHeader` with the homepage landscape; the page uses
+  `--paper-scene` beneath readable `surface-strong` content cards.
 - Menu, sheet, drawer and modal surfaces must provide dialog semantics, Escape close,
   focus entry, focus containment and focus restoration.
 - Fixed navigation must be compensated by page padding and safe-area variables.
@@ -176,9 +198,14 @@ shapes for statuses, seals, tags and compact metadata.
 - **Assessment:** progress indicator, one step at a time, field-level feedback and
   clear recovery on generation failure.
 - **Calendar:** overview first, selected-day detail second, records alongside guidance;
-  mobile detail opens as a sheet above the bottom navigation.
+  mobile detail opens as a sheet above the bottom navigation. The personal-space calendar
+  access card may use four seasonal cover variants selected from the calendar start date;
+  keep its copy readable on the left and size its action like the report-card action,
+  expanding it to full width on mobile.
 - **Reports:** content-first reading layout with a single next action into the decision
-  calendar.
+  calendar. Report-list covers may use five subdued landscape variants selected by the
+  report's day-pillar Nayin element; keep the day pillar visible and use a warm scrim so
+  the summary stays readable.
 - **Admin:** scanable metrics, filters, tables or mobile cards, explicit loading/empty/
   error states and task-oriented drawers.
 - **Consultant report workbench:** the report overview owns the six-stage rail.
@@ -233,3 +260,6 @@ shapes for statuses, seals, tags and compact metadata.
 - Page-specific tokens must be added as documented scoped extensions, not silently
   introduced as unrelated one-off colors.
 - When changing the visual direction, update this file and the implementation together.
+- 2026-10-04 source decision: the user's request to extend homepage styling to the
+  remaining pages. Implemented in `BrandPageHeader` and domain styles without changing
+  fonts. The user's subsequent decision retains About as a separate page for evaluation.

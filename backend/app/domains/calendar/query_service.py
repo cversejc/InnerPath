@@ -51,6 +51,7 @@ async def serialize_calendar(
         "status": calendar.status,
         "meta_payload": calendar.meta_payload,
         "calendar_request_id": calendar.calendar_request_id,
+        "source_report_id": calendar.source_report_id,
         "published_at": calendar.published_at,
         "entries": entries,
         "created_at": calendar.created_at,

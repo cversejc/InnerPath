@@ -23,7 +23,7 @@ defineExpose({ focusStepHeading })
     <div v-if="isGenerating" class="generating">
       <div class="loading-compass" aria-hidden="true"></div>
       <h2 ref="stepHeading" tabindex="-1">正在提交咨询师报告申请</h2>
-      <p>正在保存本次资料与情境快照，并创建咨询师工作流。</p>
+      <p>正在保存本次资料与情境快照，并创建咨询师工作流。报告交付后，你可以基于它生成决策日历。</p>
       <div class="generating-steps">
         <div class="gen-step" :class="{ active: genStep >= 1 }">核对本次情境</div>
         <div class="gen-step" :class="{ active: genStep >= 2 }">创建申请记录</div>

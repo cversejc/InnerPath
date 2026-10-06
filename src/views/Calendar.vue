@@ -2,8 +2,10 @@
   <div class="page-shell calendar-page">
     <BrandNav />
 
+    <BrandPageHeader v-if="loading || !calendar || !days.length" eyebrow="YOUR PERSONAL TIMING" title="给行动，找到自己的节奏" description="一段三十天的个人日历。看见适合推进与停留的时刻，把每一次选择留成可回看的记录。" seal="知序" />
+
     <main v-if="loading" class="calendar-empty-state">
-      <div class="container"><h1>正在为你打开决策日历…</h1></div>
+      <div class="container calendar-loading" role="status" aria-live="polite"><IconMark name="calendar" /><h2>正在为你打开决策日历…</h2></div>
     </main>
 
     <main v-else-if="!calendar || !days.length" class="calendar-empty-state">
@@ -11,11 +13,11 @@
         <span class="seal-badge">PERSONAL TIMEZONE</span>
         <h1>还没有已交付的决策日历</h1>
         <p v-if="calendarError" role="alert">{{ calendarError }}</p>
-        <p v-else>先申请并收到人生说明书，再从报告详情进入日历生成。AI 会以该报告为依据生成连续 30 天的安排，并自动交付。</p>
+        <p v-else>{{ reports.length ? '选择一份已交付报告，补充这 30 天的目标。生成成功后，日历会自动开放使用。' : '请先申请报告并等待咨询师交付。获得报告后，回到这里即可生成决策日历。' }}</p>
         <div class="calendar-empty-actions">
           <VanButton v-if="calendarError" class="secondary-button" type="default" plain native-type="button" @click="retryCalendarLoad">重新加载日历</VanButton>
-          <router-link class="primary-button" to="/pages/user/user?tab=reports">查看已交付报告</router-link>
-          <router-link class="secondary-button" to="/pages/assessment/assessment">申请人生说明书</router-link>
+          <router-link class="primary-button" :to="reports.length ? '/pages/calendar/calendar?generate=1' : '/pages/assessment/assessment'">{{ reports.length ? '基于报告生成日历' : '先申请报告' }}</router-link>
+          <router-link class="secondary-button" to="/pages/requests/requests">查看我的申请</router-link>
         </div>
       </div>
     </main>
@@ -186,8 +188,9 @@
     </main>
 
     <CalendarRequestSection
-      v-if="!loading"
+      v-if="!loading && (reports.length || calendar)"
       :calendar-requests="calendarRequests"
+      :reports="reports"
       :show-form="showCalendarRequestForm"
       :draft="calendarRequestDraft"
       :profile="profile"

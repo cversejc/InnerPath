@@ -5,6 +5,7 @@ import { calendarGenerationText } from '../generation-progress.js'
 
 defineProps({
   calendarRequests: { type: Array, default: () => [] },
+  reports: { type: Array, default: () => [] },
   showForm: { type: Boolean, default: false },
   draft: { type: Object, required: true },
   profile: { type: Object, default: null },
@@ -35,9 +36,14 @@ function formatRequestDate(start, end) {
 function requestStatusLabel(status) {
   return {
     generating: 'AI 生成中',
+    queued: '等待生成',
+    processing: '生成中',
     fulfilled: '已生成并交付',
+    delivered: '已开放使用',
     failed: '生成失败',
     pending: '历史申请',
+    accepted: '旧流程已停用',
+    submitted: '旧流程已停用',
     reviewing: '历史申请',
     rejected: '已退回',
     cancelled: '已取消'
@@ -56,15 +62,23 @@ function requestStatusLabel(status) {
         <p class="section-desc">日历以已交付报告为依据，结合你选择的周期与目标生成；完成后自动交付，无需人工审核。</p>
       </div>
 
-      <div v-if="!showForm" class="calendar-request-cta paper-card">
+      <div v-if="!reports.length" class="calendar-request-cta paper-card report-first-card">
         <div>
-          <span class="mini-label">DELIVERED REPORT + 30 DAYS</span>
-          <h3>把报告里的方向放进接下来的日常</h3>
-          <p>请从已交付的人生说明书进入，日历会沿用那份报告的内容和你本次填写的目标。</p>
+          <span class="mini-label">REPORT FIRST</span>
+          <h3>先申请并获得已交付报告</h3>
+          <p>日历以已交付的人生说明书为依据。咨询师交付报告后，再选择这 30 天的目标启动生成。</p>
         </div>
-        <VanButton v-if="draft.source_report_id" type="primary" native-type="button" class="btn-action" @click="$emit('open')">{{ feedback ? '重新生成日历' : '继续设置日历' }}</VanButton>
-        <VanButton v-else type="primary" native-type="button" class="btn-action" @click="$emit('go-to-reports')">查看已交付报告</VanButton>
+        <router-link class="btn-action primary-button" to="/pages/assessment/assessment">申请报告</router-link>
         <p v-if="feedback" class="request-feedback" role="status">{{ feedback }}</p>
+      </div>
+
+      <div v-else-if="!showForm" class="calendar-request-cta paper-card">
+        <div>
+          <span class="mini-label">DELIVERED REPORT + CURRENT GOAL</span>
+          <h3>从已交付报告生成决策日历</h3>
+          <p>选择一份报告并说明这 30 天的目标。生成成功后，日历会自动开放使用。</p>
+        </div>
+        <VanButton type="primary" native-type="button" class="btn-action" @click="$emit('open')">生成新日历</VanButton>
       </div>
 
       <div v-else class="calendar-request-card paper-card">
@@ -93,6 +107,15 @@ function requestStatusLabel(status) {
         </div>
 
         <form class="calendar-request-form" novalidate @submit.prevent="$emit('submit')">
+          <div class="request-form-field">
+            <label for="calendar-source-report">已交付报告 <span class="required">*</span></label>
+            <select id="calendar-source-report" v-model="draft.source_report_id" required>
+              <option value="">请选择一份已交付报告</option>
+              <option v-for="report in reports" :key="report.id" :value="report.id">{{ report.title }} · {{ report.created_at ? new Date(report.created_at).toLocaleDateString('zh-CN') : '已交付' }}</option>
+            </select>
+            <small>日历将结合这份报告与下面填写的目标生成。</small>
+          </div>
+
           <div class="request-date-grid">
             <div class="request-form-field">
               <label for="calendar-request-start">开始日期 <span class="required">*</span></label>
@@ -100,7 +123,7 @@ function requestStatusLabel(status) {
             </div>
             <div class="request-form-field">
               <label for="calendar-request-end">结束日期 <span class="required">*</span></label>
-              <input id="calendar-request-end" v-model="draft.end_date" type="date" required>
+              <input id="calendar-request-end" v-model="draft.end_date" type="date" required readonly aria-readonly="true">
               <small>周期必须连续 30 天</small>
             </div>
           </div>
@@ -181,8 +204,8 @@ function requestStatusLabel(status) {
         </form>
       </div>
 
-      <div v-if="calendarRequests.length" class="calendar-request-history">
-        <div class="history-heading"><span class="mini-label">REQUEST HISTORY</span><strong>我的申请记录</strong></div>
+      <div v-if="reports.length && calendarRequests.length" class="calendar-request-history">
+        <div class="history-heading"><span class="mini-label">GENERATION HISTORY</span><strong>日历生成记录</strong></div>
         <div class="request-history-list">
           <article v-for="item in calendarRequests" :key="item.id" class="request-history-item">
             <div><strong>{{ formatRequestDate(item.start_date, item.end_date) }}</strong><span>{{ item.goal }}</span></div>

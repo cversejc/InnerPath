@@ -74,6 +74,9 @@ class ReportListItem(BaseModel):
     created_at: datetime
     energy_type: Optional[str] = None
     core_traits: Optional[str] = None
+    summary: Optional[str] = None
+    day_pillar: Optional[str] = None
+    cover_description: Optional[str] = Field(None, description="Short introduction shown on the report cover.")
 
     class Config:
         from_attributes = True

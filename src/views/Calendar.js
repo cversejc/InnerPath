@@ -12,6 +12,7 @@ import {
   buildCalendarRequestPayload,
   defaultThirtyDayRange
 } from '../features/calendar/calendar-request-payload.js'
+import { getUserReports } from '../features/reports/api.js'
 
 const mobileDetailMediaQuery = typeof window === 'undefined' ? null : window.matchMedia('(max-width: 900px)')
 
@@ -19,7 +20,7 @@ export default {
   name: 'Calendar',
   components: { CalendarPlanningSection, CalendarRequestSection, VanButton },
   data() {
-    const sourceReportId = Number(this.$route.query.source_report_id)
+    const sourceReportId = Number(this.$route.query.source_report_id || this.$route.query.sourceReportId)
     const hasSourceReport = Number.isSafeInteger(sourceReportId) && sourceReportId > 0
     const initialRange = defaultThirtyDayRange()
     return {
@@ -47,6 +48,7 @@ export default {
       recordFeedback: '',
       savingRecord: false,
       profile: null,
+      reports: [],
       calendarRequests: [],
       calendarPollTimer: null,
       calendarPollingDisposed: false,
@@ -188,6 +190,14 @@ export default {
         })),
         ...emptyCells.slice(leading)
       ]
+    }
+  },
+  watch: {
+    'calendarRequestDraft.start_date'(start) {
+      this.setCalendarEndDate(start)
+    },
+    '$route.query.generate'(requested) {
+      if (requested === '1' && this.reports.length) this.openCalendarRequest()
     }
   },
   async mounted() {

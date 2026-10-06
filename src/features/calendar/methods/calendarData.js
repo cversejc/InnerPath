@@ -9,6 +9,7 @@ import {
 } from '../../../data/decisionCalendar.js'
 import { dateKeyFromLabel, isToday, parseDateKey, weekdays } from '../helpers.js'
 import { resolveCalendarPracticeRefs } from '../practice-actions.js'
+import { selectPublishedCalendar } from '../cover.js'
 
 const allowDemoCalendar = Boolean(import.meta.env?.DEV && import.meta.env?.VITE_DEMO_CALENDAR === 'true')
 
@@ -43,7 +44,7 @@ export default {
     try {
       this.calendarError = ''
       const response = await fetchCalendars()
-      const publishedCalendar = response.items?.find(item => item.status === 'published' && item.entries?.length) || null
+      const publishedCalendar = selectPublishedCalendar(response)
       if (publishedCalendar) {
         this.applyCalendar(publishedCalendar, 'api')
       } else if (allowDemoCalendar) {

@@ -35,7 +35,7 @@ def test_report_application_keeps_context_and_profile_version_snapshot():
         "focus_topics": ["career"],
         "current_challenge": "考虑转行",
         "expected_outcomes": ["方向指引"],
-        "decision_description": {"stage": "early"},
+        "decision_description": "刚开始考虑这个决定",
     }
     data = ServiceRequestCreate(
         service_type="report",
@@ -50,11 +50,15 @@ def test_report_application_keeps_context_and_profile_version_snapshot():
     payload, key = payload_from_create(data, user)
 
     assert payload["profile_version"] == 7
-    assert payload["context"] == context
+    assert payload["context"]["focus_topics"] == context["focus_topics"]
+    assert payload["context"]["current_challenge"] == context["current_challenge"]
+    assert payload["context"]["expected_outcomes"] == context["expected_outcomes"]
+    assert payload["context"]["decision_description"] == context["decision_description"]
     assert payload["selected_topics"] == ["career"]
     assert key == "stable-report-submit-7"
-    data.context["decision_description"]["stage"] = "changed"
-    assert payload["context"]["decision_description"]["stage"] == "early"
+    data.context.expected_outcomes.append("changed")
+    assert payload["context"]["expected_outcomes"] == ["方向指引"]
+    assert payload["context"]["decision_description"] == "刚开始考虑这个决定"
 
 
 def test_report_application_rejects_stale_profile_version():

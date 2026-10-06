@@ -1,14 +1,29 @@
+import re
 from datetime import datetime, time as dt_time
 from typing import List, Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+from sqlalchemy import desc, exists, func, select
 from app.config import settings
 from app.domains.reports.models import Report
+from app.domains.service_requests.models import ServiceRequest
 from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.core.logging_config import get_logger
 from app.services.intake_service import normalize_context
 
 logger = get_logger(__name__)
+
+
+def delivered_report_clause():
+    return Report.reviewed_at.is_not(None) & exists(
+        select(ServiceRequest.id).where(
+            ServiceRequest.id == Report.request_id,
+            ServiceRequest.user_id == Report.user_id,
+            ServiceRequest.service_type == "report",
+            ServiceRequest.status == "delivered",
+            ServiceRequest.result_type == "report",
+            ServiceRequest.result_id == Report.id,
+        )
+    )
 
 
 async def create_report(
@@ -83,8 +98,12 @@ async def get_report_by_id(db: AsyncSession, report_id: int, user_id: Optional[i
     logger.debug(f"查询报告 | 报告ID: {report_id} | 用户ID: {user_id}")
 
     query = select(Report).where(Report.id == report_id, Report.is_deleted == False)
-    if user_id:
-        query = query.where(Report.user_id == user_id, Report.status == "completed")
+    if user_id is not None:
+        query = query.where(
+            Report.user_id == user_id,
+            Report.status == "completed",
+            delivered_report_clause(),
+        )
 
     result = await db.execute(query)
     report = result.scalar_one_or_none()
@@ -104,26 +123,83 @@ async def get_user_reports(
     limit: int = 10
 ) -> tuple[List[Report], int]:
     """Get user's reports with pagination"""
-    # Get total count
-    count_query = select(Report).where(
+    # Only a consultant-delivered report belongs in the user's report library.
+    visible_report = delivered_report_clause()
+    count_query = select(func.count(Report.id)).where(
         Report.user_id == user_id,
-        Report.is_deleted == False,
+        Report.is_deleted.is_(False),
         Report.status == "completed",
+        visible_report,
     )
-    count_result = await db.execute(count_query)
-    total = len(count_result.all())
+    total = await db.scalar(count_query) or 0
 
     # Get reports
     query = select(Report).where(
         Report.user_id == user_id,
-        Report.is_deleted == False,
+        Report.is_deleted.is_(False),
         Report.status == "completed",
+        visible_report,
     ).order_by(desc(Report.created_at)).offset(skip).limit(limit)
 
     result = await db.execute(query)
     reports = result.scalars().all()
 
     return list(reports), total
+
+
+def extract_report_day_pillar(report: Report) -> Optional[str]:
+    """Return a report's natal day pillar from structured or legacy content."""
+    content_payload = report.content_payload if isinstance(report.content_payload, dict) else {}
+    foundation_data = (
+        content_payload.get("foundation_data")
+        or content_payload.get("foundationData")
+        or {}
+    )
+    bazi = foundation_data.get("bazi") if isinstance(foundation_data, dict) else {}
+    day = bazi.get("day") if isinstance(bazi, dict) else {}
+
+    if isinstance(day, str):
+        candidate = day.strip()
+    elif isinstance(day, dict):
+        candidate = day.get("pillar") or f"{day.get('stem', '')}{day.get('branch', '')}"
+        candidate = candidate.strip()
+    else:
+        candidate = ""
+
+    valid_pillar = re.compile(r"^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]$")
+    if valid_pillar.fullmatch(candidate):
+        return candidate
+
+    legacy_content = report.ai_raw_content or ""
+    match = re.search(
+        r"\*\*日柱[^*]*\*\*\s*([甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥])",
+        legacy_content,
+    )
+    return match.group(1) if match else None
+
+
+def format_report_list_item(report: Report) -> dict[str, Any]:
+    """Project report content needed by report cards without loading detail pages."""
+    energy_profile = report.energy_profile or {}
+    content_payload = report.content_payload if isinstance(report.content_payload, dict) else {}
+    core_traits = energy_profile.get("core_traits") or energy_profile.get("coreTraits")
+    if isinstance(core_traits, list):
+        core_traits = "、".join(str(trait) for trait in core_traits if trait)
+    cover_description = content_payload.get("cover_description") or content_payload.get("coverDescription")
+    if not isinstance(cover_description, str) or not cover_description.strip():
+        cover_description = None
+    else:
+        cover_description = cover_description.strip()
+    return {
+        "id": report.id,
+        "title": report.title,
+        "created_at": report.created_at,
+        "energy_type": energy_profile.get("type"),
+        "core_traits": core_traits,
+        "summary": report.summary,
+        "day_pillar": extract_report_day_pillar(report),
+        "cover_description": cover_description,
+    }
 
 
 async def delete_report(db: AsyncSession, report_id: int, user_id: int) -> bool:

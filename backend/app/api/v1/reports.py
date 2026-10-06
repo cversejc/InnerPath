@@ -22,7 +22,9 @@ from app.domains.reports.schemas import (
 )
 from app.domains.reports.service import (
     delete_report,
+    format_report_list_item,
     format_report_response,
+    delivered_report_clause,
     get_report_by_id,
     get_user_reports,
 )
@@ -113,7 +115,7 @@ async def get_reports(
     skip = (page - 1) * size
     reports, total = await get_user_reports(db, current_user.id, skip=skip, limit=size)
 
-    return ReportListResponse(total=total, items=format_report_list(reports))
+    return ReportListResponse(total=total, items=[format_report_list_item(report) for report in reports])
 
 
 @router.get("/staff/users/{user_id}", response_model=ReportListResponse)
@@ -126,7 +128,7 @@ async def get_staff_user_reports(
         if not await has_staff_assignment(db, current_user.id, user_id):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not assigned")
     reports, total = await get_user_reports(db, user_id)
-    return ReportListResponse(total=total, items=format_report_list(reports))
+    return ReportListResponse(total=total, items=[format_report_list_item(report) for report in reports])
 
 
 @router.get("/admin/users/{user_id}", response_model=ReportListResponse)
@@ -136,7 +138,7 @@ async def get_admin_user_reports(
     db: AsyncSession = Depends(get_db),
 ):
     reports, total = await get_user_reports(db, user_id)
-    return ReportListResponse(total=total, items=format_report_list(reports))
+    return ReportListResponse(total=total, items=[format_report_list_item(report) for report in reports])
 
 
 @router.get("/latest/context", response_model=LatestReportContextResponse)
@@ -146,7 +148,12 @@ async def get_latest_report_context(
 ):
     result = await db.execute(
         select(Report)
-        .where(Report.user_id == current_user.id, Report.is_deleted.is_(False))
+        .where(
+            Report.user_id == current_user.id,
+            Report.is_deleted.is_(False),
+            Report.status == "completed",
+            delivered_report_clause(),
+        )
         .order_by(Report.created_at.desc())
         .limit(1)
     )

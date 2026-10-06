@@ -2,28 +2,24 @@
   <div class="report-detail">
     <BrandNav />
 
-    <section v-if="report" class="report-header">
-      <div class="container">
+    <BrandPageHeader
+      eyebrow="YOUR PERSONAL REPORT"
+      :title="report ? '辰鉴 · 人生说明书' : loading ? '正在打开你的个人报告…' : loadError || '报告不存在或无权访问'"
+      :description="report ? '从你的特质与处境出发，读懂反复出现的模式，也为下一步留一点新的可能。' : ''"
+      seal="见己"
+    >
+      <template #leading>
         <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
-        <h1>辰鉴·人生说明书</h1>
         <p v-if="staffView" class="report-meta">已交付最终报告 · 与用户收到的正文一致</p>
+      </template>
+      <template v-if="report" #default>
         <div class="report-meta">
           <span>生成日期：{{ report.basicInfo?.reportDate || '今天' }}</span>
           <span class="divider">|</span>
           <span>{{ report.basicInfo?.name || '用户' }}</span>
         </div>
-      </div>
-    </section>
-
-    <section v-else-if="loading" class="report-header">
-      <div class="container"><h1>正在打开你的个人报告…</h1></div>
-    </section>
-    <section v-else class="report-header">
-      <div class="container">
-        <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
-        <h1>{{ loadError || '报告不存在或无权访问' }}</h1>
-      </div>
-    </section>
+      </template>
+    </BrandPageHeader>
 
     <section class="report-content">
       <div class="container">
@@ -34,7 +30,8 @@
           :content-without-foundation="contentWithoutFoundation"
         />
 
-        <div v-if="report && !staffView" class="report-actions">
+        <div v-if="report && !staffView" class="report-actions paper-card">
+          <div class="report-next-copy"><p class="section-kicker">FROM INSIGHT TO ACTION</p><h2>把看见的，带回生活里</h2><p>用决策日历照看日常节奏，留下自己的行动与选择。</p></div>
           <VanButton type="primary" native-type="button" class="btn-action primary" @click="goToCalendar">
             <template #icon><IconMark class="icon" name="calendar" /></template>
             基于这份报告生成决策日历
@@ -102,8 +99,8 @@ export default {
       this.$router.push({
         path: '/pages/calendar/calendar',
         query: Number.isSafeInteger(reportId) && reportId > 0
-          ? { source_report_id: String(reportId) }
-          : {}
+          ? { generate: '1', source_report_id: String(reportId) }
+          : { generate: '1' }
       })
     }
   }

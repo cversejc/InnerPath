@@ -6,17 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.admin_support import _count, _date_filter
 from app.domains.reports.models import Report, ReportTask
+from app.domains.reports.service import format_report_list_item
 from app.models.user import User
 
 
 def _serialize_report(report: Report, user: User, task: Optional[ReportTask] = None) -> dict[str, Any]:
-    energy_profile = report.energy_profile or {}
     return {
-        "id": report.id,
-        "title": report.title,
-        "created_at": report.created_at,
-        "energy_type": energy_profile.get("type"),
-        "core_traits": energy_profile.get("core_traits") or energy_profile.get("coreTraits"),
+        **format_report_list_item(report),
         "user_id": user.id,
         "user_name": user.name,
         "user_phone": user.phone,

@@ -2,13 +2,12 @@
   <div class="page-shell assessment-page">
     <BrandNav />
 
-    <section class="page-header">
-      <div class="container header-inner">
-        <p class="section-kicker">FI / YOUR LIFE MANUAL</p>
-        <h1>申请人生说明书</h1>
-        <p>先建立一份可复用的个人档案，再把这一次真正想看的问题交给咨询师</p>
-      </div>
-    </section>
+    <BrandPageHeader
+      eyebrow="YOUR LIFE MANUAL"
+      title="写一本属于你的说明书"
+      description="先确认个人档案，再写下这一次真正想看清的问题。从认识自己，找到更适合的下一步。"
+      seal="见己"
+    />
 
     <section class="section-band assessment-section">
       <div class="container assessment-container">
@@ -23,13 +22,16 @@
             </div>
             <ol class="progress-step-list" aria-label="申请步骤">
               <li class="progress-step" :class="{ active: currentStep === 1, completed: currentStep > 1 }" :aria-current="currentStep === 1 ? 'step' : undefined">
+                <span class="progress-step-index" aria-hidden="true">01</span>
                 <span class="progress-step-name">个人档案</span>
               </li>
               <li class="progress-step" :class="{ active: currentStep === 2, completed: currentStep > 2 }" :aria-current="currentStep === 2 ? 'step' : undefined">
+                <span class="progress-step-index" aria-hidden="true">02</span>
                 <span class="progress-step-name">本次问题</span>
               </li>
               <li class="progress-step" :class="{ active: currentStep === 3 }" :aria-current="currentStep === 3 ? 'step' : undefined">
-                <span class="progress-step-name">生成说明书</span>
+                <span class="progress-step-index" aria-hidden="true">03</span>
+                <span class="progress-step-name">提交申请</span>
               </li>
             </ol>
           </div>
@@ -76,6 +78,7 @@
           :profile-version="profileVersion"
           :show-advanced-context="showAdvancedContext"
           :submitting="submitting"
+          :is-editing-request="Boolean(editingRequestId)"
           :topics="topics"
           @edit-profile="editProfile"
           @reuse-context="reusePreviousContext"
@@ -91,8 +94,8 @@
         <AssessmentResultStep
           v-else
           ref="stepContent"
-          :gen-step="genStep"
           :is-generating="isGenerating"
+          :gen-step="genStep"
           :request-id="currentRequestId"
           @view-requests="viewMyRequests"
           @new-application="startAnotherApplication"

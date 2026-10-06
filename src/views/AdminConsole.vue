@@ -2,13 +2,8 @@
   <div class="admin-shell">
     <BrandNav />
     <main class="admin-main">
-      <header class="admin-hero">
-        <div>
-          <p class="section-kicker">CHENVIS / OPERATIONS ROOM</p>
-          <h1>辰鉴运营中枢</h1>
-          <p class="hero-caption">把每一个用户、时机与行动，整理成可以被照看的全局</p>
-        </div>
-        <div class="hero-actions">
+      <BrandPageHeader contained compact eyebrow="OPERATIONS ROOM" title="辰鉴运营中枢" description="把每一个用户、申请与交付，整理成可以被照看的全局。" seal="有序">
+        <template #actions>
           <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
           <router-link class="secondary-button compact-button" to="/staff">申请工作台</router-link>
           <router-link class="secondary-button compact-button" to="/skills">技能与示例工作台</router-link>
@@ -20,8 +15,8 @@
             <template #icon><IconMark name="logout" /></template>
             退出登录
           </VanButton>
-        </div>
-      </header>
+        </template>
+      </BrandPageHeader>
 
       <nav class="admin-tabs" aria-label="管理后台导航">
         <button

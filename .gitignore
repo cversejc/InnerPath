@@ -61,6 +61,7 @@ backend/htmlcov/
 .tmp-fonts/
 .tmp-fonttools/
 .tmp-review-2/
+docs/product/.qa_docx/word-render/
 
 # Local design source already distilled into the tracked design system
 docs/chenjian_typography_design_v1.0.docx

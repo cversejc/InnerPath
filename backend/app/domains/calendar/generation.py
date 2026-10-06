@@ -1,4 +1,4 @@
-"""Generate and validate a decision calendar for direct user delivery."""
+"""AI generation for a user-ready calendar based on a delivered report."""
 
 import json
 from datetime import date, timedelta
@@ -111,12 +111,12 @@ async def generate_calendar_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]
       "suitable": ["适合事项"],
       "unsuitable": ["不适合事项"],
       "time_window": "时间节奏建议",
-      "admin_note": "给咨询师的内部备注，可为空"
+      "admin_note": "留空字符串"
     }
   ]
 }
 
-必须覆盖输入的全部 30 天，日期不能重复，也不能超出范围。"""
+必须覆盖输入的全部 30 天，日期不能重复，也不能超出范围。结合已交付报告的具体特质与本次目标，避免照搬通用建议。不得声称报告以外的诊断或事实；每条建议都要保持可选择、可调整。"""
 
     logger.info("开始生成决策日历 AI 初稿 | start=%s", user_data.get("start_date"))
     async with httpx.AsyncClient(timeout=settings.DEEPSEEK_TIMEOUT_SECONDS) as client:

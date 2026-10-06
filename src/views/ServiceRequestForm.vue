@@ -2,11 +2,9 @@
   <div class="request-form-page">
     <BrandNav />
     <main class="request-form-main">
-      <header class="form-hero">
-        <p class="section-kicker">TE / DECISION CALENDAR REQUEST</p>
-        <h1>申请一段属于你的决策日历</h1>
-        <p>决策日历以已交付的人生说明书为依据，请从报告详情进入生成。</p>
-      </header>
+      <BrandPageHeader class="form-hero" contained eyebrow="YOUR NEXT 30 DAYS" title="基于报告生成决策日历" description="日历只会基于已交付的人生说明书生成。请从报告详情选择这 30 天的起始日期与关注目标。" seal="知序">
+        <span class="request-form-note">30 天个人日历 · 成功后自动交付</span>
+      </BrandPageHeader>
 
       <form v-if="ready" class="request-form paper-card" novalidate @submit.prevent="submitRequest">
         <section class="form-section" aria-labelledby="profile-title">

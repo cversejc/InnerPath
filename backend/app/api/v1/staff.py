@@ -5,10 +5,15 @@ from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarListResponse
-from app.domains.reports.schemas import ReportListItem, ReportListResponse, ReportResponse
+from app.domains.reports.schemas import ReportListResponse, ReportResponse
 from app.domains.users.schemas import UserResponse
 from app.domains.calendar.query_service import get_user_calendars
-from app.domains.reports.service import format_report_response, get_report_by_id, get_user_reports
+from app.domains.reports.service import (
+    format_report_list_item,
+    format_report_response,
+    get_report_by_id,
+    get_user_reports,
+)
 from app.domains.service_requests.service import has_staff_assignment
 
 router = APIRouter()
@@ -54,18 +59,7 @@ async def get_staff_reports(
 ):
     await ensure_staff_user_access(db, current_user, user_id)
     reports, total = await get_user_reports(db, user_id)
-    items = []
-    for report in reports:
-        energy_profile = report.energy_profile or {}
-        items.append(
-            ReportListItem(
-                id=report.id,
-                title=report.title,
-                created_at=report.created_at,
-                energy_type=energy_profile.get("type"),
-                core_traits=energy_profile.get("core_traits") or energy_profile.get("coreTraits"),
-            )
-        )
+    items = [format_report_list_item(report) for report in reports]
     return ReportListResponse(total=total, items=items)
 
 

@@ -10,6 +10,7 @@ celery_app = Celery(
         "app.tasks.report_tasks",
         "app.tasks.service_request_tasks",
         "app.tasks.workflow_tasks",
+        "app.tasks.calendar_generation_tasks",
     ]
 )
 

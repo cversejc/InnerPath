@@ -4,9 +4,12 @@ import {
 } from '../../utils/apiClient.js'
 import {
   acceptStaffInviteRequest,
+  changePhoneRequest,
+  deactivateAccountRequest,
   loginRequest,
   logoutRequest,
   registerRequest,
+  requestPhoneChangeCodeRequest,
   resetPasswordRequest,
   sendVerificationCodeRequest
 } from './api.js'
@@ -46,6 +49,18 @@ export async function logout() {
     clearAccessToken()
     sessionStorage.removeItem('user')
   }
+}
+
+export async function requestPhoneChangeCode(newPhone) {
+  return requestPhoneChangeCodeRequest(newPhone)
+}
+
+export async function changePhone(newPhone, code, currentPassword) {
+  return changePhoneRequest(newPhone, code, currentPassword)
+}
+
+export async function deactivateAccount(currentPassword) {
+  return deactivateAccountRequest(currentPassword)
 }
 
 export function isAuthenticated() {
