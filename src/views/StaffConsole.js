@@ -30,6 +30,7 @@ import WorkbenchRecordPicker from '../features/report-cases/components/Workbench
 import QualityScorecard from '../features/report-cases/components/QualityScorecard.vue'
 import ReportFragmentReview from '../features/report-cases/components/ReportFragmentReview.vue'
 import QualityIssueReview from '../features/report-cases/components/QualityIssueReview.vue'
+import EvidenceReferencePicker from '../features/report-cases/components/EvidenceReferencePicker.vue'
 import { nodeWorkspaceComputed, nodeWorkspaceMethods } from '../features/report-cases/node-workspace-state.js'
 import DeliveredReportSummary from '../features/report-cases/components/DeliveredReportSummary.vue'
 import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
@@ -44,7 +45,7 @@ import { confirmAction } from '../utils/confirmAction.js'
 
 export default {
   name: 'StaffConsole',
-  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, FoundationCalculationPanel, DeliveredReportSummary, WorkbenchRecordPicker, QualityScorecard, ReportFragmentReview, QualityIssueReview },
+  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, FoundationCalculationPanel, DeliveredReportSummary, WorkbenchRecordPicker, QualityScorecard, ReportFragmentReview, QualityIssueReview, EvidenceReferencePicker },
   data() {
     const admin = hasRole('admin')
     return {
@@ -187,7 +188,36 @@ export default {
       return buildApplicationContextItems(this.reportCase?.application_snapshot)
     },
     reportEvidenceItems() {
-      return visibleConsultantEvidence(this.reportCaseContent.evidence || [])
+      return this.reportCaseContent.evidence || []
+    },
+    reportReferenceFindings() {
+      const step = this.selectedReportStep
+      const steps = this.reportCase?.workflow_instance?.steps || []
+      const allowedStepIds = new Set(steps
+        .filter(item => step && item.sequence_no <= step.sequence_no)
+        .map(item => item.id))
+      return (this.reportCaseContent.findings || []).filter(item => item.status === 'CONFIRMED'
+        && (!item.owner_step_task_id || allowedStepIds.has(item.owner_step_task_id)))
+    },
+    reportPreferredEvidenceKeys() {
+      const stepKey = this.selectedReportStepKey
+      const activeEvidence = visibleConsultantEvidence(this.reportEvidenceItems).filter(item => item.status === 'ACTIVE')
+      const refs = this.reportReferenceFindings.flatMap(item => item.evidence_refs || [])
+      const userContextKeys = activeEvidence
+        .filter(item => ['USER_PROVIDED', 'USER_CONTEXT', 'APPLICATION_CONTEXT'].includes(item.source_type)
+          || item.evidence_key?.startsWith('input.context.')
+          || item.evidence_key === 'input.additional_info')
+        .map(item => item.evidence_key)
+      if (stepKey === 'S1') {
+        return activeEvidence
+          .filter(item => ['SYSTEM_CALCULATED', 'CONSULTANT_CORRECTED'].includes(item.source_type)
+            || /^input\.profile\.(birth_|calendar_type$|time_accuracy$|birth_is_leap_month$)/.test(item.evidence_key || ''))
+          .map(item => item.evidence_key)
+      }
+      if (['S2', 'S4'].includes(stepKey)) {
+        refs.push(...userContextKeys)
+      }
+      return [...new Set(refs)]
     },
     reportGeneration() {
       return this.reportNarrative.current_plan?.plan_json?.generation || {}
