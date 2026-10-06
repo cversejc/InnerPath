@@ -17,8 +17,13 @@ from app.api.v1.admin_activity_support import _load_audits
 from app.api.v1.admin_dashboard_support import _daily_counts
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.domains.calendar.models import DecisionLog, UserCalendar
+from app.domains.calendar.models import CalendarRequest, DecisionLog, UserCalendar
 from app.domains.reports.models import Report, ReportTask
+from app.domains.service_requests.models import ServiceRequest
+from app.domains.service_requests.service import (
+    STALE_SERVICE_REQUEST_STATUSES,
+    assignment_incomplete_condition,
+)
 from app.models.user import User
 from app.domains.audit.models import AuditLog
 from app.schemas.admin import (
@@ -45,6 +50,71 @@ def _dashboard_range(preset: str) -> tuple[date, date]:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Invalid dashboard range")
     end_date = _local_today()
     return end_date - timedelta(days=days - 1), end_date
+
+
+async def _operation_alerts(db: AsyncSession, now: datetime | None = None) -> list[DashboardAlert]:
+    current_time = now or datetime.utcnow()
+    service_cutoff = current_time - timedelta(hours=24)
+    calendar_cutoff = current_time - timedelta(minutes=45)
+    open_report_request = (
+        ServiceRequest.service_type == "report",
+        ServiceRequest.status.not_in(("delivered", "withdrawn", "rejected")),
+    )
+    incomplete_assignment = assignment_incomplete_condition()
+
+    counts = {
+        "incomplete_assignment": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(*open_report_request, incomplete_assignment),
+        ),
+        "incomplete_assignment_over_24h": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(
+                *open_report_request,
+                incomplete_assignment,
+                ServiceRequest.created_at < service_cutoff,
+            ),
+        ),
+        "stale_service_requests": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(
+                ServiceRequest.service_type == "report",
+                ServiceRequest.status.in_(STALE_SERVICE_REQUEST_STATUSES),
+                ServiceRequest.updated_at < service_cutoff,
+            ),
+        ),
+        "failed_service_requests": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(
+                ServiceRequest.service_type == "report",
+                ServiceRequest.status == "failed",
+            ),
+        ),
+        "failed_calendar_requests": await _count(
+            db,
+            select(func.count(CalendarRequest.id)).where(CalendarRequest.status == "failed"),
+        ),
+        "stalled_calendar_requests": await _count(
+            db,
+            select(func.count(CalendarRequest.id)).where(
+                CalendarRequest.status == "generating",
+                CalendarRequest.updated_at < calendar_cutoff,
+            ),
+        ),
+    }
+    definitions = (
+        ("incomplete_assignment", "warning", "咨询师席位未完整分配", "requests"),
+        ("incomplete_assignment_over_24h", "danger", "超过 24 小时未完成分配", "requests"),
+        ("stale_service_requests", "warning", "工作流超过 24 小时未更新", "requests"),
+        ("failed_service_requests", "danger", "服务申请处理失败", "requests"),
+        ("failed_calendar_requests", "danger", "日历生成失败", "requests"),
+        ("stalled_calendar_requests", "warning", "日历生成超过 45 分钟", "requests"),
+    )
+    return [
+        DashboardAlert(key=key, level=level, label=label, count=counts[key], route=route)
+        for key, level, label, route in definitions
+        if counts[key]
+    ]
 
 async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewResponse:
     start_date, end_date = _dashboard_range(preset)
@@ -91,7 +161,7 @@ async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewRes
     failed_logins = await _count(db, select(func.count(AuditLog.id)).where(
         AuditLog.action == "auth.login.failure", AuditLog.created_at >= start_dt, AuditLog.created_at < end_dt
     ))
-    alerts = []
+    alerts = await _operation_alerts(db)
     if report_failed:
         alerts.append(DashboardAlert(key="failed_reports", level="danger", label="报告任务失败", count=report_failed, route="reports"))
     if draft_calendars:

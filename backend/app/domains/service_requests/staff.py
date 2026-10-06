@@ -22,6 +22,39 @@ from app.domains.workflow.authorization import (
 from app.domains.workflow.models import ReportCase, StepTask
 
 
+STALE_SERVICE_REQUEST_STATUSES = ("accepted", "ai_processing", "ai_ready", "reviewing")
+
+
+def assignment_incomplete_condition():
+    collaborative = select(ReportCase.id).where(
+        ReportCase.service_request_id == ServiceRequest.id,
+        ReportCase.application_snapshot["collaboration_contract"].is_not(None),
+    ).exists()
+    collaborative_assignment_missing = or_(
+        and_(
+            ServiceRequest.consultation_type == "metaphysics",
+            ServiceRequest.assigned_mingli_consultant_id.is_(None),
+        ),
+        and_(
+            ServiceRequest.consultation_type == "psychology",
+            ServiceRequest.assigned_psychology_consultant_id.is_(None),
+        ),
+        and_(
+            ServiceRequest.consultation_type == "integrated",
+            or_(
+                ServiceRequest.assigned_mingli_consultant_id.is_(None),
+                ServiceRequest.assigned_psychology_consultant_id.is_(None),
+            ),
+        ),
+        ServiceRequest.consultation_type.is_(None),
+        ServiceRequest.consultation_type.not_in(("metaphysics", "psychology", "integrated")),
+    )
+    return or_(
+        and_(~collaborative, ServiceRequest.assigned_consultant_id.is_(None)),
+        and_(collaborative, collaborative_assignment_missing),
+    )
+
+
 async def accept_service_request(
     db: AsyncSession,
     request_id: int,
@@ -246,6 +279,7 @@ async def list_admin_service_requests(
     service_type: Optional[str] = None,
     user_id: Optional[int] = None,
     consultant_id: Optional[int] = None,
+    queue_filter: Optional[str] = None,
     search: Optional[str] = None,
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
@@ -253,6 +287,18 @@ async def list_admin_service_requests(
     size: int = 20,
 ) -> tuple[list[tuple[ServiceRequest, User, Optional[User], Optional[User], Optional[User]]], int]:
     conditions = []
+    if queue_filter in {"incomplete_assignment", "incomplete_assignment_over_24h"}:
+        conditions.extend((
+            ServiceRequest.status.not_in(("delivered", "withdrawn", "rejected")),
+            assignment_incomplete_condition(),
+        ))
+        if queue_filter == "incomplete_assignment_over_24h":
+            conditions.append(ServiceRequest.created_at < datetime.utcnow() - timedelta(hours=24))
+    elif queue_filter == "stale_over_24h":
+        conditions.extend((
+            ServiceRequest.status.in_(STALE_SERVICE_REQUEST_STATUSES),
+            ServiceRequest.updated_at < datetime.utcnow() - timedelta(hours=24),
+        ))
     if status:
         conditions.append(ServiceRequest.status == status)
     if service_type:

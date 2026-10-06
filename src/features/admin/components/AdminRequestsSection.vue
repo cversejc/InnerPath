@@ -48,6 +48,7 @@ defineProps({
   page: { type: Number, default: 1 },
   pageSize: { type: Number, default: 20 },
   requestKind: { type: String, default: 'consultant' },
+  retryingRequestKey: { type: String, default: '' },
   serviceRequests: { type: Object, required: true }
 })
 
@@ -60,6 +61,8 @@ defineEmits([
   'open-report',
   'open-user',
   'reset-filters',
+  'retry-service-request',
+  'retry-calendar-request',
   'search'
 ])
 </script>
@@ -102,6 +105,12 @@ defineEmits([
           <option value="">全部咨询师</option>
           <option v-for="consultant in consultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option>
         </select>
+        <select v-model="filters.queue_filter" aria-label="按运营待办筛选">
+          <option value="">全部运营状态</option>
+          <option value="incomplete_assignment">咨询师席位未完整分配</option>
+          <option value="incomplete_assignment_over_24h">超过 24 小时未完成分配</option>
+          <option value="stale_over_24h">工作流超过 24 小时未更新</option>
+        </select>
         <label class="date-filter"><span>提交自</span><input v-model="filters.date_from" type="date"></label>
         <label class="date-filter"><span>至</span><input v-model="filters.date_to" type="date"></label>
         <VanButton class="primary-button compact-button" type="primary" native-type="button" @click="$emit('search')">查询</VanButton>
@@ -126,7 +135,7 @@ defineEmits([
                   </div>
                   <VanButton class="secondary-button compact-button request-assignment-button" type="default" plain native-type="button" :disabled="['delivered', 'withdrawn', 'rejected'].includes(item.status)" @click="$emit('open-assignment', item)">{{ item.is_collaborative ? '管理专业分工' : (item.assigned_consultant_id ? '改派负责人' : '分配负责人') }}</VanButton>
                 </td>
-                <td><span :class="['status-badge', `request-${item.status}`]">{{ serviceRequestStatusText(item.status) }}</span><small v-if="item.current_step_key">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><small v-if="item.report_case_status">工作流：{{ reportCaseStatusLabel(item.report_case_status) }}</small><small v-if="item.needs_info_reason" class="request-note">待补充：{{ item.needs_info_reason }}</small><small v-if="item.last_error" class="request-note error-cell">{{ item.last_error }}</small></td>
+                <td><span :class="['status-badge', `request-${item.status}`]">{{ serviceRequestStatusText(item.status) }}</span><small v-if="item.current_step_key">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><small v-if="item.report_case_status">工作流：{{ reportCaseStatusLabel(item.report_case_status) }}</small><small v-if="item.needs_info_reason" class="request-note">待补充：{{ item.needs_info_reason }}</small><small v-if="item.last_error" class="request-note error-cell">{{ item.last_error }}</small><VanButton v-if="item.status === 'failed' && item.service_type === 'report' && !item.report_case_id" class="secondary-button compact-button request-retry-button" type="default" plain native-type="button" :disabled="Boolean(retryingRequestKey)" :loading="retryingRequestKey === `service-${item.id}`" @click="$emit('retry-service-request', item.id)">重试初稿</VanButton></td>
                 <td>{{ formatDateTime(item.created_at) }}</td>
                 <td>{{ formatDateTime(item.accepted_at) }}</td>
                 <td>{{ formatDateTime(item.delivered_at) }}</td>
@@ -149,9 +158,12 @@ defineEmits([
         <input v-model.trim="calendarFilters.search" aria-label="搜索用户姓名或手机号" placeholder="搜索姓名或手机号" @keyup.enter="$emit('search')">
         <select v-model="calendarFilters.status" aria-label="按日历申请状态筛选">
           <option value="">全部状态</option><option value="pending">待生成</option>
-          <option value="processing">生成中</option><option value="delivered">已交付</option>
-          <option value="failed">生成失败</option><option value="reviewing">审核中</option>
-          <option value="fulfilled">已完成</option><option value="rejected">已退回</option><option value="cancelled">已取消</option>
+          <option value="queued">排队中</option><option value="generating">生成中</option>
+          <option value="failed">生成失败</option><option value="fulfilled">已完成</option>
+          <option value="rejected">已退回</option><option value="cancelled">已取消</option>
+        </select>
+        <select v-model="calendarFilters.stalled_only" aria-label="按日历生成时长筛选">
+          <option :value="false">全部生成时长</option><option :value="true">生成超过 45 分钟</option>
         </select>
         <label class="date-filter"><span>提交自</span><input v-model="calendarFilters.date_from" type="date"></label>
         <label class="date-filter"><span>至</span><input v-model="calendarFilters.date_to" type="date"></label>
@@ -170,10 +182,10 @@ defineEmits([
                 <td><strong>申请 #{{ item.id }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · {{ item.user_phone || '—' }}</small><button type="button" class="detail-link" @click="$emit('open-user', { id: item.user_id, name: item.user_name })">查看用户</button></td>
                 <td>{{ formatDate(item.start_date) }} — {{ formatDate(item.end_date) }}<small>{{ item.focus_topics?.join('、') || '未选择关注领域' }}</small></td>
                 <td class="request-summary-cell"><strong>{{ item.goal || '未填写目标' }}</strong><small>{{ item.usage_scenario || '未填写用途' }}</small></td>
-                <td><span :class="['status-badge', `calendar-request-${item.status}`]">{{ calendarRequestStatusText(item.status) }}</span><small v-if="item.status === 'processing'">{{ item.progress }}% · 第 {{ item.retry_count + 1 }} 次</small><small v-if="item.generation_error" class="request-note error-cell">{{ item.generation_error }}</small></td>
+                <td><span :class="['status-badge', `calendar-request-${item.status}`]">{{ calendarRequestStatusText(item.status) }}</span><small v-if="item.status === 'generating'">{{ item.progress }}% · 第 {{ item.retry_count + 1 }} 次</small><small v-if="item.generation_error" class="request-note error-cell">{{ item.generation_error }}</small></td>
                 <td>{{ item.source_report_id ? `报告 #${item.source_report_id}` : '—' }}</td>
                 <td>{{ formatDateTime(item.created_at) }}<small>更新 {{ formatDateTime(item.updated_at) }}</small></td>
-                <td><details class="request-payload-details"><summary>申请内容</summary><pre>{{ prettyJson(item) }}</pre></details><small v-if="item.reviewed_at">审核 {{ formatDateTime(item.reviewed_at) }} · {{ item.reviewer_id ? `成员 #${item.reviewer_id}` : '—' }}</small><small v-if="item.review_note">{{ item.review_note }}</small><small v-if="item.calendar_id">日历 #{{ item.calendar_id }}</small></td>
+                <td><details class="request-payload-details"><summary>申请内容</summary><pre>{{ prettyJson(item) }}</pre></details><small v-if="item.reviewed_at">审核 {{ formatDateTime(item.reviewed_at) }} · {{ item.reviewer_id ? `成员 #${item.reviewer_id}` : '—' }}</small><small v-if="item.review_note">{{ item.review_note }}</small><small v-if="item.calendar_id">日历 #{{ item.calendar_id }}</small><VanButton v-if="item.status === 'failed'" class="secondary-button compact-button request-retry-button" type="default" plain native-type="button" :disabled="Boolean(retryingRequestKey)" :loading="retryingRequestKey === `calendar-${item.id}`" @click="$emit('retry-calendar-request', item.id)">重试生成</VanButton></td>
               </tr>
               <tr v-if="!calendarRequests.items.length"><td colspan="7" class="empty-cell">暂无符合条件的日历申请。</td></tr>
             </tbody>

@@ -260,12 +260,18 @@ async def get_calendar_requests_for_admin(
     search: Optional[str] = None,
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
+    stalled_only: bool = False,
     page: int = 1,
     size: int = 20,
 ) -> dict:
     conditions = []
     if status_filter:
         conditions.append(CalendarRequest.status == status_filter)
+    if stalled_only:
+        conditions.extend((
+            CalendarRequest.status == "generating",
+            CalendarRequest.updated_at < datetime.utcnow() - timedelta(minutes=45),
+        ))
     if user_id:
         conditions.append(CalendarRequest.user_id == user_id)
     if date_from:

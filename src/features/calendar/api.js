@@ -55,6 +55,11 @@ export async function getAdminCalendarRequests(params = {}) {
   return response.data
 }
 
+export async function retryAdminCalendarRequest(requestId) {
+  const response = await apiClient.post(`/admin/calendar-requests/${requestId}/retry`)
+  return response.data
+}
+
 export async function createAdminCalendar(userId, data) {
   const response = await apiClient.post(`/admin/users/${userId}/calendars`, data)
   return response.data

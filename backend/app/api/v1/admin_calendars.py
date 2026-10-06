@@ -4,11 +4,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
+from app.application.calendar_production import retry_calendar_production_for_admin
 from app.api.v1.admin_support import _get_calendar_or_404
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
 from app.domains.calendar.schemas import (
+    AdminCalendarRequestResponse,
     CalendarCreate,
     CalendarImportRequest,
     CalendarListResponse,
@@ -25,7 +27,7 @@ from app.domains.calendar.service import (
     update_calendar,
 )
 from app.domains.calendar.query_service import get_user_calendars, serialize_calendar
-from app.domains.calendar.requests import get_calendar_requests_for_admin
+from app.domains.calendar.requests import get_calendar_requests_for_admin, serialize_calendar_request
 
 router = APIRouter()
 
@@ -37,6 +39,7 @@ async def list_admin_calendar_requests(
     search: str | None = Query(None, max_length=100),
     date_from: date | None = None,
     date_to: date | None = None,
+    stalled_only: bool = False,
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
     current_user: User = Depends(require_roles("admin")),
@@ -49,10 +52,46 @@ async def list_admin_calendar_requests(
         search=search,
         date_from=date_from,
         date_to=date_to,
+        stalled_only=stalled_only,
         page=page,
         size=size,
     )
     return AdminCalendarRequestListResponse(**result)
+
+
+@router.post(
+    "/calendar-requests/{request_id}/retry",
+    response_model=AdminCalendarRequestResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def retry_admin_calendar_request(
+    request_id: int,
+    request: Request,
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        calendar_request = await retry_calendar_production_for_admin(
+            db,
+            current_user,
+            request_id,
+            audit_context=audit_context_from_request(request),
+        )
+    except ValueError as error:
+        code = str(error)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+            if code == "calendar_request_not_found"
+            else status.HTTP_409_CONFLICT,
+            detail=code,
+        )
+    target_user = await db.get(User, calendar_request.user_id)
+    payload = await serialize_calendar_request(db, calendar_request)
+    return AdminCalendarRequestResponse(
+        **payload,
+        user_name=target_user.name if target_user else None,
+        user_phone=target_user.phone if target_user else None,
+    )
 
 
 @router.get("/users/{user_id}/calendars", response_model=CalendarListResponse)

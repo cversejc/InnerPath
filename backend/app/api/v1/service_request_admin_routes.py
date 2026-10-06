@@ -39,6 +39,10 @@ async def list_admin_requests(
     service_type: Optional[str] = Query("report", pattern="^(report|calendar)$"),
     user_id: Optional[int] = Query(None, ge=1),
     consultant_id: Optional[int] = Query(None, ge=1),
+    queue_filter: Optional[str] = Query(
+        None,
+        pattern="^(incomplete_assignment|incomplete_assignment_over_24h|stale_over_24h)$",
+    ),
     search: Optional[str] = Query(None, max_length=100),
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
@@ -53,6 +57,7 @@ async def list_admin_requests(
         service_type=service_type,
         user_id=user_id,
         consultant_id=consultant_id,
+        queue_filter=queue_filter,
         search=search,
         date_from=date_from,
         date_to=date_to,

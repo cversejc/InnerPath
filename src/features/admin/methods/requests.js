@@ -1,5 +1,5 @@
-import { getAdminCalendarRequests } from '../../calendar/api.js'
-import { getAdminServiceRequests, updateAdminServiceRequestAssignment } from '../../service-requests/api.js'
+import { getAdminCalendarRequests, retryAdminCalendarRequest as retryCalendarRequest } from '../../calendar/api.js'
+import { getAdminServiceRequests, retryStaffAIDraft, updateAdminServiceRequestAssignment } from '../../service-requests/api.js'
 
 export default {
   async loadAdminRequests() {
@@ -37,9 +37,9 @@ export default {
   },
   resetAdminRequestFilters() {
     if (this.requestKind === 'calendar') {
-      this.calendarRequestFilters = { search: '', status: '', date_from: '', date_to: '' }
+      this.calendarRequestFilters = { search: '', status: '', stalled_only: false, date_from: '', date_to: '' }
     } else {
-      this.requestFilters = { search: '', status: '', consultant_id: '', date_from: '', date_to: '' }
+      this.requestFilters = { search: '', status: '', consultant_id: '', queue_filter: '', date_from: '', date_to: '' }
     }
     this.searchAdminRequests()
   },
@@ -57,6 +57,7 @@ export default {
       search: '',
       status: '',
       consultant_id: String(consultantId),
+      queue_filter: '',
       date_from: '',
       date_to: ''
     }
@@ -96,6 +97,32 @@ export default {
       this.assignmentError = this.errorText(error)
     } finally {
       this.assignmentSavingKey = ''
+    }
+  },
+  async retryAdminServiceRequest(requestId) {
+    if (this.retryingRequestKey) return
+    this.retryingRequestKey = `service-${requestId}`
+    try {
+      await retryStaffAIDraft(requestId)
+      await this.loadAdminRequests()
+      this.message = `申请 #${requestId} 已重新提交 AI 初稿。`
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.retryingRequestKey = ''
+    }
+  },
+  async retryAdminCalendarRequest(requestId) {
+    if (this.retryingRequestKey) return
+    this.retryingRequestKey = `calendar-${requestId}`
+    try {
+      await retryCalendarRequest(requestId)
+      await this.loadAdminRequests()
+      this.message = `日历申请 #${requestId} 已重新排队。`
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.retryingRequestKey = ''
     }
   }
 }

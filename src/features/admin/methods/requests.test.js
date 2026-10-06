@@ -7,7 +7,7 @@ test('consultant workload link opens all report requests for that consultant', a
   const context = {
     activeTab: 'staff',
     assignmentRequest: { id: 4 },
-    requestFilters: { search: 'old', status: 'failed', consultant_id: '', date_from: '2026-01-01', date_to: '2026-01-31' },
+    requestFilters: { search: 'old', status: 'failed', consultant_id: '', queue_filter: 'stale_over_24h', date_from: '2026-01-01', date_to: '2026-01-31' },
     requestKind: 'calendar',
     requestPage: 7,
     loadAdminRequests: async () => { loads += 1 }
@@ -23,6 +23,7 @@ test('consultant workload link opens all report requests for that consultant', a
     search: '',
     status: '',
     consultant_id: '23',
+    queue_filter: '',
     date_from: '',
     date_to: ''
   })

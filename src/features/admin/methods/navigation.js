@@ -1,4 +1,4 @@
-import { logout as logoutUser } from '../../../stores/auth'
+import { logout as logoutUser } from '../../../stores/auth.js'
 
 export default {
   syncDrawerBodyLock() {
@@ -11,7 +11,10 @@ export default {
       if (tab === 'users') await this.loadUsers()
       if (tab === 'requests') await this.loadAdminRequests()
       if (tab === 'calendar' && !this.calendarUsers.length) await this.loadCalendarUsers()
-      if (tab === 'reports') await this.loadReports()
+      if (tab === 'reports') {
+        if (this.reportSection === 'tasks') await this.loadReportTasks()
+        else await this.loadReports()
+      }
       if (tab === 'logs') await this.loadAuditLogs()
       this.syncAutoRefresh()
     },
@@ -48,9 +51,48 @@ export default {
   handleVisibilityChange() {
       this.syncAutoRefresh()
     },
-  goFromAlert(alert) {
+  async goFromAlert(alert) {
+      const serviceQueueFilters = {
+        incomplete_assignment: 'incomplete_assignment',
+        incomplete_assignment_over_24h: 'incomplete_assignment_over_24h',
+        stale_service_requests: 'stale_over_24h'
+      }
+      if (serviceQueueFilters[alert.key] || ['failed_service_requests'].includes(alert.key)) {
+        this.requestKind = 'consultant'
+        this.requestFilters = {
+          search: '',
+          status: alert.key === 'failed_service_requests' ? 'failed' : '',
+          consultant_id: '',
+          queue_filter: serviceQueueFilters[alert.key] || '',
+          date_from: '',
+          date_to: ''
+        }
+        this.requestPage = 1
+        await this.switchTab('requests')
+        return
+      }
+      if (['failed_calendar_requests', 'stalled_calendar_requests'].includes(alert.key)) {
+        this.requestKind = 'calendar'
+        this.calendarRequestFilters = {
+          search: '',
+          status: alert.key === 'failed_calendar_requests' ? 'failed' : '',
+          stalled_only: alert.key === 'stalled_calendar_requests',
+          date_from: '',
+          date_to: ''
+        }
+        this.requestPage = 1
+        await this.switchTab('requests')
+        return
+      }
+      if (alert.key === 'failed_reports') {
+        this.reportSection = 'tasks'
+        this.taskFilters = { search: '', status: 'failed' }
+        this.taskPage = 1
+        await this.switchTab('reports')
+        return
+      }
       const target = alert.route === 'calendar' ? 'calendar' : alert.route === 'reports' ? 'reports' : 'logs'
-      this.switchTab(target)
+      await this.switchTab(target)
     },
   getDrawer(name) { return this.$refs.adminDetailDrawers?.getDrawer(name) },
   getOpenDrawer() { if (this.logDetail) return this.getDrawer('logDrawer'); if (this.reportDetail) return this.getDrawer('reportDrawer'); if (this.detailUser) return this.getDrawer('userDrawer'); return null },

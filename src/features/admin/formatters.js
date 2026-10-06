@@ -45,8 +45,9 @@ export function serviceRequestStatusText(value) {
 
 export function calendarRequestStatusText(value) {
   return {
-    pending: '待生成', processing: '生成中', delivered: '已交付', failed: '生成失败',
-    reviewing: '审核中', fulfilled: '已完成', rejected: '已退回', cancelled: '已取消'
+      pending: '待生成', queued: '排队中', generating: '生成中', processing: '旧版处理中',
+      delivered: '已交付', reviewing: '审核中', failed: '生成失败',
+      fulfilled: '已完成', rejected: '已退回', cancelled: '已取消'
   }[value] || value || '—'
 }
 

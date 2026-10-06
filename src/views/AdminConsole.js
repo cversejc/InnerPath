@@ -55,8 +55,8 @@ export default {
       requestKind: 'consultant',
       adminServiceRequests: { ...EMPTY_PAGE },
       adminCalendarRequests: { ...EMPTY_PAGE },
-      requestFilters: { search: '', status: '', consultant_id: '', date_from: '', date_to: '' },
-      calendarRequestFilters: { search: '', status: '', date_from: '', date_to: '' },
+      requestFilters: { search: '', status: '', consultant_id: '', queue_filter: '', date_from: '', date_to: '' },
+      calendarRequestFilters: { search: '', status: '', stalled_only: false, date_from: '', date_to: '' },
       requestPage: 1,
       requestPageSize: 20,
       requestsLoading: false,
@@ -66,6 +66,7 @@ export default {
       assignmentRequest: null,
       assignmentSavingKey: '',
       assignmentError: '',
+      retryingRequestKey: '',
       reports: { ...EMPTY_PAGE },
       reportsLoading: false,
       reportFilters: { search: '', status: '', ai_model: '', date_from: '', date_to: '' },
@@ -127,7 +128,7 @@ export default {
   },
   computed: {
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.assignmentSavingKey !== '' || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.assignmentSavingKey !== '' || this.retryingRequestKey !== '' || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
     },
     dashboardViewModel() {
       return createDashboardViewModel(this.dashboard)

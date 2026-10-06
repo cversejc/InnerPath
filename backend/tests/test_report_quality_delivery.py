@@ -43,6 +43,18 @@ class SessionAdapter:
     def __init__(self, session):
         self.session = session
 
+    @property
+    def new(self):
+        return self.session.new
+
+    @property
+    def dirty(self):
+        return self.session.dirty
+
+    @property
+    def deleted(self):
+        return self.session.deleted
+
     def add(self, value):
         self.session.add(value)
 
@@ -55,8 +67,8 @@ class SessionAdapter:
     async def get(self, model, identity):
         return self.session.get(model, identity)
 
-    async def flush(self):
-        self.session.flush()
+    async def flush(self, objects=None):
+        self.session.flush(objects=objects)
 
     async def commit(self):
         self.session.commit()

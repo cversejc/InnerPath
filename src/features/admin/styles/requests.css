@@ -63,6 +63,10 @@
   margin-top: 9px;
 }
 
+.admin-shell .request-retry-button {
+  margin-top: 8px;
+}
+
 .admin-shell .request-summary-cell {
   max-width: 250px;
   white-space: normal;
@@ -119,6 +123,8 @@
 .admin-shell .request-reviewing { background: rgba(111, 159, 147, .15); color: #477366; }
 .admin-shell .request-ai_processing,
 .admin-shell .calendar-request-processing { background: rgba(106, 133, 158, .14); color: #496c81; }
+.admin-shell .calendar-request-queued,
+.admin-shell .calendar-request-generating { background: rgba(106, 133, 158, .14); color: #496c81; }
 .admin-shell .request-needs_info,
 .admin-shell .request-failed,
 .admin-shell .request-rejected,
