@@ -34,6 +34,7 @@ from .definitions import (
     compile_reasoning_guidance_specification,
     validate_skill_specification,
 )
+from .lifecycle import require_active_skill
 
 
 @dataclass(frozen=True)
@@ -896,6 +897,7 @@ async def execute_skill(
     runtime_instruction: str | None = None,
     gateway: ModelGateway | None = None,
 ) -> SkillExecutionResult:
+    require_active_skill(skill_version.skill_key)
     specification = validate_skill_specification(
         compile_reasoning_guidance_specification(
             validate_skill_specification(skill_version.specification_json)

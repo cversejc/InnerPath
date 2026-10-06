@@ -1,0 +1,86 @@
+{
+  "legacy_versions": [
+    {
+      "id": 1,
+      "version": 1,
+      "status": "RETIRED"
+    }
+  ],
+  "maintenance_skill_keys": [
+    "calendar.calibration",
+    "calendar.daily_authoring",
+    "calendar.monthly_tone",
+    "calendar.temporal_analysis",
+    "report.final_validator",
+    "report.fragment_authoring",
+    "report.narrative_plan",
+    "report.s1_foundation_analysis",
+    "report.s2_psychology_mapping",
+    "report.s3_integration",
+    "report.s4_mechanism_block_action"
+  ],
+  "maintenance_skill_count": 11,
+  "legacy_visible": false,
+  "current_workflow_version": 11,
+  "current_workflow_bindings": [
+    "report.final_validator",
+    "report.fragment_authoring",
+    "report.narrative_plan",
+    "report.s1_foundation_analysis",
+    "report.s2_psychology_mapping",
+    "report.s3_integration",
+    "report.s4_mechanism_block_action"
+  ],
+  "current_s5": {
+    "name": "报告撰写",
+    "config": {
+      "authoring_mode": "NARRATIVE_FRAGMENTS",
+      "completion_policy": "MANUAL"
+    },
+    "executor": "HYBRID",
+    "step_key": "S5",
+    "sequence_no": 5,
+    "required_capability": "psychology"
+  },
+  "accepted_report_publications_unchanged": {
+    "report.s1_foundation_analysis": true,
+    "report.s2_psychology_mapping": true,
+    "report.s3_integration": true,
+    "report.s4_mechanism_block_action": true,
+    "report.narrative_plan": true,
+    "report.fragment_authoring": true,
+    "report.final_validator": true
+  },
+  "historical_workflow_instance_counts": [
+    [
+      3,
+      "RUNNING",
+      1
+    ],
+    [
+      4,
+      "RUNNING",
+      3
+    ],
+    [
+      1,
+      "COMPLETED",
+      1
+    ],
+    [
+      6,
+      "RUNNING",
+      1
+    ],
+    [
+      6,
+      "COMPLETED",
+      1
+    ],
+    [
+      1,
+      "RUNNING",
+      1
+    ]
+  ]
+}

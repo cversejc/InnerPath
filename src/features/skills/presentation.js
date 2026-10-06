@@ -100,6 +100,7 @@ export function skillInfo(key, fallback = "") {
 export function buildSkillCatalog(versions = []) {
   const catalog = ALL_SKILLS.map((item) => ({ ...item }));
   for (const version of versions) {
+    if (version.skill_key === "report.generate") continue;
     if (!catalog.some((item) => item.key === version.skill_key))
       catalog.push(skillInfo(version.skill_key, version.name));
   }

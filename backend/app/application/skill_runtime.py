@@ -26,11 +26,11 @@ from app.domains.content.narrative_lineage import (
 from app.domains.content.queries import load_case_semantic_model
 from app.domains.skills.definitions import (
     ANALYSIS_STEPS,
-    DEFAULT_SKILL_KEY,
     default_skill_specification,
 )
 from app.domains.skills.models import AISkillVersion, SkillRun
 from app.domains.skills.bindings import resolve_case_skill
+from app.domains.skills.lifecycle import require_active_skill
 from app.domains.skills.examples import retrieve_skill_examples
 from app.domains.skills.evaluation import evaluate_regression_output
 from app.domains.skills.runtime import (
@@ -44,7 +44,6 @@ from app.domains.skills.service import (
     create_skill_run,
     ensure_default_analysis_skill_versions,
     ensure_default_narrative_skill_versions,
-    ensure_default_skill_version,
     ensure_default_validator_skill_version,
 )
 from app.domains.workflow.definitions import (
@@ -68,46 +67,8 @@ from app.domains.workflow.authorization import is_assigned, assignment_condition
 
 
 async def ensure_skill_workflow_version(db: AsyncSession) -> WorkflowVersion:
-    existing = await db.scalar(
-        select(WorkflowVersion).where(
-            WorkflowVersion.workflow_key == DEFAULT_WORKFLOW_KEY,
-            WorkflowVersion.version == 2,
-        )
-    )
-    if existing and existing.status == "PUBLISHED":
-        return existing
-    if existing:
-        raise ValueError("skill_workflow_version_not_published")
-    skill = await ensure_default_skill_version(db)
-    definition = default_workflow_definition()
-    authoring_step = next(
-        step for step in definition["steps"] if step["step_key"] == "S5"
-    )
-    authoring_step["executor"] = "HYBRID"
-    authoring_step["config"].update(
-        {"skill_key": DEFAULT_SKILL_KEY, "skill_version_id": skill.id}
-    )
-    try:
-        async with db.begin_nested():
-            version = await create_workflow_draft(
-                db,
-                DEFAULT_WORKFLOW_KEY,
-                "咨询师报告生产流程",
-                definition,
-                created_by=None,
-            )
-            await publish_workflow_version(db, version.id, published_by=None)
-        return version
-    except IntegrityError:
-        existing = await db.scalar(
-            select(WorkflowVersion).where(
-                WorkflowVersion.workflow_key == DEFAULT_WORKFLOW_KEY,
-                WorkflowVersion.version == 2,
-            )
-        )
-        if existing and existing.status == "PUBLISHED":
-            return existing
-        raise
+    """Compatibility entry point; initialize only the current production flow."""
+    return await ensure_analysis_workflow_version(db)
 
 
 async def ensure_analysis_workflow_version(db: AsyncSession) -> WorkflowVersion:
@@ -116,9 +77,7 @@ async def ensure_analysis_workflow_version(db: AsyncSession) -> WorkflowVersion:
         *await ensure_default_narrative_skill_versions(db),
         await ensure_default_validator_skill_version(db),
     ]
-    authoring = await ensure_default_skill_version(db)
     skill_by_key = {skill.skill_key: skill for skill in skill_versions}
-    skill_by_key[DEFAULT_SKILL_KEY] = authoring
 
     latest = await latest_published_version(db, DEFAULT_WORKFLOW_KEY)
     if latest is not None:
@@ -134,10 +93,15 @@ async def ensure_analysis_workflow_version(db: AsyncSession) -> WorkflowVersion:
         analysis_shape_matches = (
             analysis_shape_matches
             and by_key.get("S5", {}).get("executor") == "HYBRID"
-            and authoring_config.get("skill_key") == DEFAULT_SKILL_KEY
+            and authoring_config.get("skill_key") in {None, "report.generate"}
+        )
+        uses_current_authoring = (
+            authoring_config.get("authoring_mode") == "NARRATIVE_FRAGMENTS"
+            and "skill_key" not in authoring_config
+            and "skill_version_id" not in authoring_config
         )
         frozen_bindings = latest.definition_json.get("skill_bindings") or {}
-        bindings_match = all(
+        bindings_match = set(frozen_bindings) == set(skill_by_key) and all(
             (
                 entry.get("id") if isinstance(entry, dict) else entry
             )
@@ -149,11 +113,14 @@ async def ensure_analysis_workflow_version(db: AsyncSession) -> WorkflowVersion:
             by_key.get(step_key, {}).get("config", {}).get("skill_version_id")
             == skill_by_key[stage["skill_key"]].id
             for step_key, stage in ANALYSIS_STEPS.items()
-        ) and authoring_config.get("skill_version_id") == authoring.id
+        ) and uses_current_authoring
         if analysis_shape_matches and bindings_match and step_versions_match:
             return latest
-        if analysis_shape_matches and (
-            latest.created_by is not None or latest.published_by is not None
+        if (
+            analysis_shape_matches
+            and uses_current_authoring
+            and "report.generate" not in frozen_bindings
+            and (latest.created_by is not None or latest.published_by is not None)
         ):
             # An administrator may intentionally pin a reviewed workflow to
             # specific skill versions. Only refresh system-owned workflows.
@@ -181,9 +148,9 @@ async def ensure_analysis_workflow_version(db: AsyncSession) -> WorkflowVersion:
         step for step in definition["steps"] if step["step_key"] == "S5"
     )
     authoring_step["executor"] = "HYBRID"
-    authoring_step["config"].update(
-        {"skill_key": DEFAULT_SKILL_KEY, "skill_version_id": authoring.id}
-    )
+    authoring_step["config"].pop("skill_key", None)
+    authoring_step["config"].pop("skill_version_id", None)
+    authoring_step["config"]["authoring_mode"] = "NARRATIVE_FRAGMENTS"
     # Let workflow publication freeze a fresh snapshot of all seven report
     # skills; the previous frozen map belongs to the historical version.
     definition.pop("skill_bindings", None)
@@ -267,6 +234,9 @@ async def _queue_run(
     skill_version = await db.get(AISkillVersion, version_id)
     if skill_version is None:
         raise ValueError("skill_version_not_found")
+    require_active_skill(skill_version.skill_key)
+    if skill_version.status == "RETIRED":
+        raise ValueError("skill_retired")
     specification = skill_version.specification_json
     base_input = build_context_envelope(input_data, specification)
     example_policy = specification.get("example_policy") or {}
@@ -545,6 +515,8 @@ async def queue_case_step_skill_run(
     idempotency_key: str,
     runtime_instruction: str | None,
 ) -> tuple[SkillRun, bool]:
+    if step_key == "S5":
+        raise ValueError("report_authoring_workflow_required")
     report_case = await _authorize_case(db, case_id, actor)
     if report_case.workflow_instance_id is None:
         raise ValueError("workflow_instance_not_found")
@@ -876,6 +848,12 @@ async def execute_skill_run_record(
     if skill_version is None:
         run.status = "FAILED"
         run.error = "skill_version_not_found"
+        run.completed_at = datetime.utcnow()
+        await db.commit()
+        return run
+    if skill_version.skill_key == "report.generate" or skill_version.status == "RETIRED":
+        run.status = "FAILED"
+        run.error = "skill_retired"
         run.completed_at = datetime.utcnow()
         await db.commit()
         return run

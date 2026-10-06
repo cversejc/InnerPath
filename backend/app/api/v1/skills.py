@@ -11,6 +11,7 @@ from app.application.skill_evaluation import ensure_evaluation_passed_before_pub
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.skills.models import AISkillVersion, SkillRun
+from app.domains.skills.lifecycle import RETIRED_SKILL_KEYS
 from app.domains.skills.definitions import reasoning_guidance_for_skill
 from app.domains.skills.schemas import (
     SkillRunCreate,
@@ -64,6 +65,8 @@ def _skill_error(error: ValueError) -> None:
     }:
         raise HTTPException(status_code=404, detail=code)
     if code in {
+        "skill_retired",
+        "report_authoring_workflow_required",
         "skill_version_immutable",
         "skill_run_idempotency_conflict",
         "step_not_ready",
@@ -92,7 +95,9 @@ async def list_skills(
     await ensure_calendar_skills(db)
     await db.commit()
     rows = await db.scalars(
-        select(AISkillVersion).order_by(
+        select(AISkillVersion).where(
+            AISkillVersion.skill_key.notin_(RETIRED_SKILL_KEYS)
+        ).order_by(
             AISkillVersion.skill_key, AISkillVersion.version.desc()
         )
     )

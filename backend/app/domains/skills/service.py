@@ -12,11 +12,11 @@ from .definitions import (
     default_analysis_skill_specifications,
     default_validator_skill_specification,
     default_narrative_skill_specifications,
-    default_skill_specification,
     prepare_reasoning_guidance_specification,
     validate_skill_specification,
 )
 from .models import AISkillVersion, SkillRun
+from .lifecycle import require_active_skill
 from .builtin_examples import ensure_builtin_examples
 
 
@@ -157,6 +157,7 @@ async def create_skill_draft(
     specification: dict[str, Any],
     created_by: int | None,
 ) -> AISkillVersion:
+    require_active_skill(skill_key)
     if _is_reasoning_guidance_specification(specification):
         specification = prepare_reasoning_guidance_specification(specification)
     spec = validate_skill_specification(specification)
@@ -208,6 +209,7 @@ async def update_skill_draft(
     )
     if version is None:
         raise ValueError("skill_version_not_found")
+    require_active_skill(version.skill_key)
     if version.status != "DRAFT":
         raise ValueError("skill_version_immutable")
     if _is_reasoning_guidance_specification(specification):
@@ -249,6 +251,7 @@ async def update_reasoning_guidance(
     )
     if version is None:
         raise ValueError("skill_version_not_found")
+    require_active_skill(version.skill_key)
     if version.status != "DRAFT":
         raise ValueError("skill_version_immutable")
     if version.skill_key not in REASONING_GUIDANCE_SKILL_KEYS:
@@ -297,6 +300,7 @@ async def publish_skill_version(
     )
     if version is None:
         raise ValueError("skill_version_not_found")
+    require_active_skill(version.skill_key)
     if version.status != "DRAFT":
         raise ValueError("skill_version_immutable")
     version.specification_json = validate_skill_specification(
@@ -310,45 +314,14 @@ async def publish_skill_version(
 
 
 async def ensure_default_skill_version(db: AsyncSession) -> AISkillVersion:
-    existing = await db.scalar(
-        select(AISkillVersion).where(
-            AISkillVersion.skill_key == DEFAULT_SKILL_KEY,
-            AISkillVersion.version == 1,
-        )
-    )
-    if existing and existing.status == "PUBLISHED":
-        return existing
-    if existing:
-        raise ValueError("default_skill_version_not_published")
-    now = _now()
-    spec = default_skill_specification()
-    version = AISkillVersion(
-        skill_key=DEFAULT_SKILL_KEY,
-        name=spec["identity"]["name"],
-        category="AUTHORING",
-        version=1,
-        status="PUBLISHED",
-        specification_json=spec,
-        created_by=None,
-        published_by=None,
-        created_at=now,
-        published_at=now,
-    )
-    try:
-        async with db.begin_nested():
-            db.add(version)
-            await db.flush()
-        return version
-    except IntegrityError:
-        existing = await db.scalar(
-            select(AISkillVersion).where(
-                AISkillVersion.skill_key == DEFAULT_SKILL_KEY,
-                AISkillVersion.version == 1,
-            )
-        )
-        if existing and existing.status == "PUBLISHED":
-            return existing
-        raise
+    """Read a historical version for old callers; never initialize this skill."""
+    existing = await db.scalar(select(AISkillVersion).where(
+        AISkillVersion.skill_key == DEFAULT_SKILL_KEY,
+        AISkillVersion.version == 1,
+    ))
+    if existing is None:
+        raise ValueError("skill_retired")
+    return existing
 
 
 async def ensure_default_narrative_skill_versions(

@@ -79,9 +79,8 @@ async def ensure_default_workflow_version(db: AsyncSession) -> WorkflowVersion:
 
 
 async def ensure_collaborative_workflow_version(db: AsyncSession) -> WorkflowVersion:
-    from app.application.skill_runtime import ensure_skill_workflow_version, ensure_analysis_workflow_version
+    from app.application.skill_runtime import ensure_analysis_workflow_version
     await ensure_default_workflow_version(db)
-    await ensure_skill_workflow_version(db)
     await ensure_analysis_workflow_version(db)
     latest = await latest_published_version(db)
     if _has_current_collaboration_contract(latest):
