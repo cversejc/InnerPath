@@ -4,6 +4,7 @@
   --calendar-muted: var(--muted, #7d6653);
   --calendar-line: rgba(139, 90, 20, 0.16);
   --calendar-green: #658f73;
+  --calendar-blue: #567d96;
   --calendar-yellow: #bd9550;
   --calendar-red: #b45d58;
   background: var(--paper-scene) center top / cover;

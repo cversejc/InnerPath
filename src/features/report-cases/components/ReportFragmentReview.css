@@ -1,0 +1,17 @@
+.report-fragment-review { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--button-radius); background: var(--surface); }
+.report-fragment-review > header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2); }
+.report-fragment-review h4 { margin: 0; font-size: var(--text-h4); font-weight: var(--weight-semibold); }
+.report-fragment-review header > span, .review-hint { color: var(--ink-soft); font-size: var(--text-body-sm); line-height: var(--leading-body); }
+.fragment-review-prose, .fragment-review-sources p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--text-body); line-height: var(--leading-prose); }
+.fragment-review-form { display: grid; min-width: 0; gap: var(--space-3); margin: 0; padding: 0; border: 0; }
+.fragment-review-form legend { padding-bottom: var(--space-3); color: var(--gold-deep); font-size: var(--text-body-sm); }
+.fragment-review-form label { display: grid; gap: var(--space-2); font-size: var(--text-body); }
+.fragment-review-form input, .fragment-review-form textarea, .fragment-review-form select { width: 100%; min-width: 0; min-height: var(--touch-target); padding: var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--button-radius); background: var(--paper-soft); color: var(--ink); font: inherit; font-size: var(--text-body); line-height: var(--leading-body); }
+.fragment-review-form textarea { resize: vertical; }
+.fragment-review-sources summary { min-height: var(--touch-target); padding: var(--space-3) 0; color: var(--gold-deep); cursor: pointer; font-size: var(--text-body-sm); }
+.fragment-review-sources section { margin-bottom: var(--space-3); padding: var(--space-3); background: var(--paper-soft); }
+.fragment-review-sources strong { font-size: var(--text-body-sm); font-weight: var(--weight-medium); }
+.fragment-review-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.review-feedback { margin: 0; padding: var(--space-3); border-left: 2px solid var(--gold-deep); background: var(--paper-soft); color: var(--gold-deep); font-size: var(--text-body-sm); line-height: var(--leading-body); }
+.review-feedback.error { border-color: var(--cinnabar); color: var(--cinnabar-deep); }
+@media (max-width: 640px) { .report-fragment-review { padding: var(--space-3); } .fragment-review-actions { flex-direction: column; } .fragment-review-actions :deep(.van-button) { width: 100%; } }

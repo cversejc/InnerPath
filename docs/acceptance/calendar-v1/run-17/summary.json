@@ -1,0 +1,55 @@
+{
+  "status": "failed",
+  "request_id": 1,
+  "synthetic": true,
+  "database": "isolated-memory",
+  "source": "C:\\Users\\21815\\Desktop\\Project\\innerseek\\docs\\acceptance\\framework-v1\\full",
+  "generation": {
+    "status": "FAILED",
+    "attempt": 1,
+    "completed_runs": 7,
+    "total_runs": 9,
+    "started_at": "2026-10-04T14:53:09.233844",
+    "stage": "calendar.daily_authoring",
+    "heartbeat_at": "2026-10-04T14:55:13.097694",
+    "error_code": "calendar_directions_invalid"
+  },
+  "calendar_skill_bindings": {
+    "calendar.temporal_analysis": {
+      "id": 2,
+      "version": 1,
+      "sha256": "ef4e584a74df50708bbaea08ea9e1720ebd650256c51b13ee43472bfde24288f"
+    },
+    "calendar.monthly_tone": {
+      "id": 3,
+      "version": 1,
+      "sha256": "8cd0ed9f133d62fa59322b0faab24f8ed3a57fdd6bbc90a136dcd4d0e126998b"
+    },
+    "calendar.daily_authoring": {
+      "id": 4,
+      "version": 1,
+      "sha256": "0c35c866dd4c4c34fa20e4c92b617fab2c2aa2845b0e1756f6f90590006f9e25"
+    },
+    "calendar.calibration": {
+      "id": 5,
+      "version": 1,
+      "sha256": "ced29c57b1a94524ee8ad80ce2ceb077964718573ae56f6375903531e56898b0"
+    }
+  },
+  "fixture_report": {
+    "report_case_id": 1,
+    "report_id": 1,
+    "report_version_id": 1,
+    "frozen": true,
+    "finding_count": 33,
+    "action_ids": [
+      "s4.action.boundary_script",
+      "s4.action.enough_good_delivery",
+      "s4.action.pause_before_yes",
+      "s4.action.weekly_shadow_review"
+    ],
+    "unavailable_actions": []
+  },
+  "practice_schedule": {},
+  "available_minutes_per_day": 30
+}

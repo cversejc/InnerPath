@@ -1,0 +1,580 @@
+{
+  "fragments": [
+    {
+      "fragment_key": "report.overview.psychic_structure",
+      "chapter": "identity",
+      "status": "READY_FOR_REVIEW",
+      "title": "在关系里，给自己的意愿留一个位置",
+      "content": "你提到三个具体困扰：难以拒绝，拒绝时语言生硬；有事才联系朋友，关系逐渐疏远；自己太着急。这里先把它们看作可以观察、调整的模式，而非固定的性格缺点。\n\n本章关键句：你愿意听建议，也值得让自己的意愿进入对话。\n阅读路径：现实自述 → 外在角色与内在需要 → 识别卡点 → 选择小实验 → 用实际反馈修正理解。\n\n以下心理机制都是探索假设。命理部分另有资料限制：真实生日未提供，暂用公历2004-06-15、山东济南作演示；15:15是你提供的精确出生时间，江苏是目前居住地。命盘与大运仅在这一假设下成立，真实生日补齐后须重新计算与审核。",
+      "used_findings": [
+        "s4.blocks.relationship_maintenance",
+        "s4.blocks.boundary_pleasing",
+        "s1.day_master.b_yi"
+      ],
+      "used_analysis_fragments": [],
+      "used_actions": [],
+      "transition_hint": "读者已了解主线与路径图，下一节可进入“你是谁”的自我核心线索，展开乙木日主与天府命宫的传统解释视角。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.overview.psychic_structure",
+        "sequence_no": 1,
+        "chapter_opening": true,
+        "theory_density": "medium",
+        "action_density": "none",
+        "metaphor_density": "low",
+        "contains_key_conclusion": true,
+        "contains_path_diagram": true,
+        "data_boundaries": [
+          "出生日期为演示假设，日主随真实出生日期可能变化",
+          "命理内容为传统解释视角，属待验证假设而非定论",
+          "未自述的感受与场景均以可能/待核对方式表达"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.identity.outer_self",
+      "chapter": "identity",
+      "status": "READY_FOR_REVIEW",
+      "title": "乐观、权衡与急迫，如何同时出现在你身上",
+      "content": "你用“无知的乐观主义、权衡利弊、急迫”描述自己，也说愿意听别人对性格的建议。这几句话展示了不同面向：对可能性保持开放，同时希望把选择想清楚，却又觉得自己太着急。它们可以同时存在，不必选一个当作你的全部。\n\n你目前全职做会计，但问卷没有说你喜欢或不喜欢这份工作，也没有描述职场冲突。因此，“靠谱、不出错是否成了你的重要角色期待”只能作为核对问题，不能由职业直接推断人格。\n\n在演示命盘的传统意象中，乙木的柔韧、天府的守成、身宫天相的角色意识，可作为观察面具的比喻。若你并不认同“稳重协调”，自报的乐观和急迫就是反证。请优先相信现实经验，而非迎合这幅描述。",
+      "used_findings": [
+        "s4.energy.charge_drain",
+        "s2.persona.self_report_vs_interpretation"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s2.persona",
+        "analysis.s2.mapping",
+        "analysis.s2.ten_gods",
+        "analysis.s2.stars",
+        "analysis.s2.authority"
+      ],
+      "used_actions": [],
+      "transition_hint": "读者已看见“先照顾场面、再照顾自己”的外在顺序，下一节可进入这套顺序如何在具体场景里运作、保护了什么、又付出了什么。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.outer_self",
+        "sequence_no": 2,
+        "reading_level": "深入但紧凑",
+        "tone": "第二人称、描述模式、不评判",
+        "theory_density": "medium",
+        "metaphor_density": "low",
+        "length_note": "正文约480汉字，符合250–500区间",
+        "boundary_notes": [
+          "出生日期2004-06-15为演示假设，命盘内容仅条件式表达",
+          "未自述的感受与自动想法均用可能/待核对表达",
+          "本节未展开实验动作，未引用金句",
+          "未暴露内部来源编号与审核过程"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.identity.foundation_notes",
+      "chapter": "identity",
+      "status": "READY_FOR_REVIEW",
+      "title": "命盘旁注：符号线索与资料边界",
+      "content": "这一节把命盘里的符号翻译成日常语言，作为旁注来读——它们提供的是待验证的线索，不是对你心理的证明。\n\n出生城市同样暂用济南，不能作为真实出生地。演示四柱为甲申、庚午、乙丑、甲申；系统按中国UTC+8民用钟表时间、精确节气与晚子时sect=2计算，未校正真太阳时。\n\n**日主与月令**\n\n先看自我核心：日干为乙木，阴木，传统上取藤蔓、花草的意象。可以把它理解为一种柔韧、借势、对关系氛围较敏感的倾向。你自报“愿意听别人对自身性格的建议”“权衡利弊”，与这种描述方向相近，但这是否贴合你，仍待你核对。需要说明：出生日期公历2004-06-15为演示假设，日主随真实出生日期可能变化，请以本人提供后重算为准。\n\n**结构与十神**\n\n再看结构：月令午火（食神、偏财），透庚正官，年时双甲劫财，日支丑土泄耗。候选倾向身偏弱，但存在反证——甲木帮身、丑中癸水可生身，若通根有力则可能转为中和偏弱。因此格局归类与喜忌（候选倾向水、木为用）都属解释性判断，最终由咨询师确认，若判定身强或从格，喜忌会反转。\n\n**干支、人生观与早期印记**\n\n日支丑土含偏财、偏印、七杀，传统视角可提供安全、内省与压力应对的观察线索，不能证明你的真实人生观；年柱甲申可提供集体印记与内在权威的符号线索，问卷没有祖辈或童年资料，早期印记明确暂缓，不补造家庭影响。\n\n干支关系上，庚乙之间既相合又相克，甲庚相克，午丑相害。这些可对应“内在权威与自我表达之间存在张力”的线索，但合不等于合化，成化条件仍需人工判断。时支申金藏正官、正印、正财，传统上可对应价值排序偏重规则、学习与积累；出生时刻你自报精确，但真太阳时未校正，时柱须咨询师核对。十神分布中出现次数不代表旺衰，缺失的伤官、比肩也不能证明人格缺陷。\n\n**命、身、福德与四化**\n\n生年四化为廉贞禄、破军权、武曲科、太阳忌。\n\n紫微部分：命宫在酉，主星天府（旺），可对应稳重、务实、善守成的人格面具；身宫落官禄宫（丑），天相（得）配陀罗、天魁，命身不一致，传统上可对应后天方向偏重职业角色与责任承担。福德宫廉贞、贪狼，带生年化禄，可对应内在欲望与享乐倾向的线索，不能据此诊断。宫干飞化中，命宫、交友宫、田宅宫三条忌流向福德宫，这里只保留经审核的飞化路径，不由这些路径新增心理结论。\n\n**起运与时序边界**\n\n最后是大运：按分析日期2026-10-04，当前大运为戊辰（2017–2026，正财，土），偏重务实取财；后续丁卯（2027–2036，食神）、丙寅（2037–2046，伤官）等阶段主题见阶段地图。顺逆势依据由库计算，须咨询师核对。你自述的边界困难、拒绝生硬、有事才联系、自评“太着急”，在这里只作为待验证信号，不作诊断，后续章节会结合具体场景展开。",
+      "used_findings": [
+        "s1.day_master.b_yi",
+        "s1.signal.boundary_urgency",
+        "s1.dayun.current_wuchen",
+        "s1.ziwei.transformations",
+        "s1.useful_gods.candidate",
+        "s1.structure.candidate_weak_officer",
+        "s1.hour.shen_metal",
+        "s1.ten_gods.visible_hidden",
+        "s1.month.wu_fire",
+        "s1.interactions.relations",
+        "s1.ziwei.wellbeing_palace",
+        "s1.ziwei.life_palace",
+        "s1.ziwei.body_palace",
+        "s1.year.jia_shen",
+        "s1.day_branch.chou_earth"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s1.day_master",
+        "analysis.s1.structure",
+        "analysis.s1.month",
+        "analysis.s1.ten_gods",
+        "analysis.s1.day_branch",
+        "analysis.s1.hour",
+        "analysis.s1.year",
+        "analysis.s1.interactions",
+        "analysis.s1.dayun",
+        "analysis.s1.useful_gods",
+        "analysis.s1.ziwei_life",
+        "analysis.s1.ziwei_body",
+        "analysis.s1.ziwei_wellbeing",
+        "analysis.s1.ziwei_transformations"
+      ],
+      "used_actions": [],
+      "transition_hint": "命盘旁注到此收束，符号只作线索。下一节进入具体场景：这套“先照顾场面”的顺序如何运作、保护了什么、又付出了什么。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.foundation_notes",
+        "sequence_no": 3,
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low",
+        "tone": "第二人称、条件式表达、不评判不诊断",
+        "boundary_notes": [
+          "出生日期公历2004-06-15与出生地济南为演示假设，日主随时柱/日期可能变化，须本人提供后重算",
+          "真太阳时未校正，时柱须咨询师核对",
+          "格局、喜忌、大运顺逆势为解释性候选，须咨询师确认",
+          "紫微四化与飞化解读为传统解释视角，不能据此诊断心理",
+          "用户自述的边界困难、拒绝生硬、有事才联系、太着急仅作待验证信号"
+        ],
+        "must_cover_check": [
+          "八字十项及紫微重点的已确认内容或暂缓边界：已覆盖",
+          "心理含义只是待验证线索：已反复标注"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.identity.hidden_self",
+      "chapter": "identity",
+      "status": "READY_FOR_REVIEW",
+      "title": "那些还没找到表达方式的需要",
+      "content": "你明确说自己习惯迁就，但没有说每一次都是先答应，也没有说拒绝后会内疚。这些细节需要分开。\n\n一个可核对的防御假设是：迁就可能替你挡住当场的冲突；过多权衡也可能让感受暂时退到后面。如果这一解释贴近实际，难处便不只是措辞，而是“我能不能允许自己有不同的意愿”。长期代价可能是需求被推后，急迫感累积；这不是已经证实的心理成因。\n\n所谓阴影，在这里指尚未被充分允许的拒绝、休息、被支持的需要，并非你有某种坏的隐藏人格。所谓情结，是某类情境是否会反复激活强烈反应的观察角度；没有童年、家庭事件的资料，不能解释为家庭创伤。\n\n也请寻找反例：是否曾温和拒绝而关系照常？是否有不用权衡很久就能表达需要的对象？这些经验可以推翻或限定上述假设。\n\n权衡也可能只是你的有效决策方式，并不意味着压抑感受。可以核对：分析之后，你是否更清楚自己的意愿，还是更难决定？两种结果需要不同理解。",
+      "used_findings": [
+        "s3.tension.core",
+        "s4.defense.people_pleasing",
+        "s4.defense.rationalization_avoidance",
+        "s2.shadow.boundary_need",
+        "s2.complex.authority_expression",
+        "s2.complex.relationship_distance"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s2.shadow",
+        "analysis.s2.complex",
+        "analysis.s4.defense"
+      ],
+      "used_actions": [],
+      "transition_hint": "你已经看见这套顺序在保护什么、又付出了什么。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+      "presentation_meta": {
+        "section_key": "report.identity.hidden_self",
+        "chapter": "identity",
+        "sequence_no": 4,
+        "tone": "second_person_nonjudgmental",
+        "theory_density": "medium",
+        "metaphor_density": "low",
+        "length_chars_approx": 620,
+        "language": "zh-CN",
+        "data_boundary_notes": [
+          "出生日期、出生地均为演示假设，命盘与大运内容仅作条件式表达，未在本节展开。",
+          "用户未自述的情绪、自动想法与保护功能均以“可能/可以核对”表达。",
+          "用户希望每天复盘，不代表已形成该习惯，本节未据此推断。",
+          "未自述家庭、关系史或心理经历，未补造。"
+        ],
+        "quote_used": false,
+        "experiments_referenced": false
+      }
+    },
+    {
+      "fragment_key": "report.identity.energy_pattern",
+      "chapter": "identity",
+      "status": "READY_FOR_REVIEW",
+      "title": "找到自己的补给入口",
+      "content": "会计的工作角色、你自报的权衡习惯与急迫，提示可以观察规则压力和持续思考的耗能，但不能证明你实际耗竭。先以过去一周真实的精神与身体感受为准。\n\n在演示命盘的喜忌候选下，写作、静观、自然、学习、规划及同辈支持，被整理为可能的补给选项；规则压力、过度输出和持续务实消耗，是可能的耗能情境。这不是你已经自述的偏好，也不保证某类活动有效。候选格局变化后，符号映射也可能变化。\n\n你自报ENFP，未提供八维测评。这里不生成八功能分数或强弱结论，只保留探索新可能、核对自身价值、安排执行、回看反馈四个观察入口。请用具体事件验证它们，不能把类型名称当作能力证明。\n\n你希望晚上复盘，这尚不是已建立的习惯。无需新增一套复杂记录，后面的情绪命名与刻度复盘，可以同时帮助你观察什么真的让自己恢复。",
+      "used_findings": [
+        "s4.energy.charge_drain",
+        "s2.mapping.resource_drain"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s4.energy",
+        "analysis.s4.functions"
+      ],
+      "used_actions": [],
+      "transition_hint": "你已经看见自己的能量从哪里来、往哪里去。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.energy_pattern",
+        "sequence_no": 5,
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "boundary_notes": [
+          "五行喜忌映射为候选假设，格局反转则映射反转",
+          "MBTI 为自报，八维未测，仅作倾向假设",
+          "未自述的情绪与自动想法以可能/可核对表达",
+          "实验动作统一放在成长实验节，本节不展开"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.identity.relationship_pattern",
+      "chapter": "identity",
+      "status": "READY_FOR_REVIEW",
+      "title": "两种互动，先分别看清",
+      "content": "一条线是面对请求时难拒绝、倾向迁就；另一条线是无事时少联系朋友。你明确说后者伴随关系疏远，但没有说明两者一定有因果联系。\n\n可以探索的共同假设是：你是否在被动回应时容易给得过多，而主动联系时又不容易给自己一个理由？若存在，这种方式可能降低眼前的冲突或被拒绝的风险，却让联系缺少双方真实意愿。担心打扰、内疚、事后不适都须核对，不能当成自述。\n\n你说每次困境会有女贵人出现。这里保留为你对支持经验的主观描述，不预测未来，也不指认某个女性必定帮助你。值得补问的是：哪些支持真正有用？是否也有平时就愿意互相联系的人？关系改善未必从扩大社交开始，可以先认识已有的安全连接。",
+      "used_findings": [
+        "s4.relationships.cycle"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s4.relationships"
+      ],
+      "used_actions": [],
+      "transition_hint": "你已经看见这条关系路径怎么运作、在保护什么。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+      "presentation_meta": {
+        "chapter": "identity",
+        "fragment_key": "report.identity.relationship_pattern",
+        "sequence_no": 6,
+        "new_information_role": "MANIFEST",
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "data_boundaries": [
+          "出生日期、出生地、分析日期均为演示假设，命盘与大运内容仅供条件式参考",
+          "担心关系变差、内疚、自我不适均为假设，未经证实",
+          "MBTI 为自报，未测八维，不作类型推断",
+          "关系循环中的触发情境与对方反应仍待访谈核对"
+        ],
+        "must_not_repeat_respected": true
+      }
+    },
+    {
+      "fragment_key": "report.identity.self_direction",
+      "chapter": "identity",
+      "status": "READY_FOR_REVIEW",
+      "title": "保留关心，也保留选择",
+      "content": "从前面的材料提出一个方向候选：让关心不必只用迁就表达，让联系不必只由事情启动。这不是要求你变强硬，也不是人格成熟度判断。\n\n你愿意接受反馈，是可用的资源；同时，别人的建议和自己的意愿都需要有位置。下一章会拆开四个不同的卡点，帮助你判断究竟哪一段最贴近实际。",
+      "used_findings": [
+        "s3.individuation.direction"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s3.self",
+        "analysis.s3.integration"
+      ],
+      "used_actions": [],
+      "transition_hint": "方向已经有了轮廓，下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+      "presentation_meta": {
+        "fragment_key": "report.identity.self_direction",
+        "chapter": "identity",
+        "sequence_no": 7,
+        "new_information_role": "REFERENCE",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low",
+        "contains_experiment_steps": false,
+        "contains_quote": false
+      }
+    },
+    {
+      "fragment_key": "report.blocks.block_01",
+      "chapter": "challenge",
+      "status": "READY_FOR_REVIEW",
+      "title": "卡点一：拒绝如何多一个档位",
+      "content": "本章关键句：先辨认模式在保护什么，才更容易选择另一种回应。\n路径图：具体请求 → 可能的关系顾虑 → 迁就或生硬拒绝 → 观察实际代价 → 找到中间档位。\n\n你明确说不太会拒绝，拒绝时语言生硬，习惯迁就。假如面对一个不想接受的请求，你难以找到“愿意帮一点，但不能全接”的语言，就可能在答应与挡回去之间摆动；具体场景仍待你补充。\n\n它可能保护当时的关系气氛，让你不必马上承受分歧。长期代价则可能是自己的时间、需要或真实意愿被推后。这里没有证据说明你一定感到委屈，也不能认定朋友因此疏远。\n\n整合邀请是把回应从二选一扩为可协商的选择。具体做法留在第三章的暂停实验。",
+      "used_findings": [
+        "s4.blocks.boundary_pleasing"
+      ],
+      "used_analysis_fragments": [],
+      "used_actions": [],
+      "transition_hint": "这是四个卡点中的第一个。下一节看第二类：为什么你常常“有事才联系”。",
+      "presentation_meta": {
+        "chapter": "challenge",
+        "fragment_key": "report.blocks.block_01",
+        "chapter_opening": true,
+        "sequence_no": 8,
+        "word_count": 296,
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low",
+        "person": "second",
+        "data_boundary_note": "出生日期与出生地均为演示假设，须本人提供后重算；本节未使用命盘内容。",
+        "confidence_note": "用户自述内容按事实呈现；场景与感受用“可能/可以核对”表达。"
+      }
+    },
+    {
+      "fragment_key": "report.blocks.block_02",
+      "chapter": "challenge",
+      "status": "READY_FOR_REVIEW",
+      "title": "卡点二：联系需要一个足够正当的理由",
+      "content": "你说有事才联系朋友，无事就放在那，关系逐渐疏远。这一项有直接的现实依据。\n\n一个假想场景是：想起朋友，却没有具体事务，于是暂不发消息。原因可能是怕打扰、怕没有回应，也可能只是忙碌或尚未形成联系节奏；不能提前选定解释。\n\n若不主动确实帮助你避开了尴尬，它曾提供短期保护；代价可能是关系缺少日常积累，每次重启都更需要理由。也要核对双方是否都偏好低频联系，避免把联系次数当作亲密程度的唯一尺度。\n\n整合邀请是为“无事的连接”找到双方都舒服的位置，而非要求你变成高频社交者。\n\n具体做法见第三章的低负担联系实验。",
+      "used_findings": [
+        "s4.blocks.relationship_maintenance"
+      ],
+      "used_analysis_fragments": [],
+      "used_actions": [],
+      "transition_hint": "这是四个卡点中的第二个。下一节看第三类：当“太着急”成为推进事情的方式时，它替你解决了什么、又带来了什么。",
+      "presentation_meta": {
+        "chapter": "challenge",
+        "fragment_key": "report.blocks.block_02",
+        "sequence_no": 9,
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low",
+          "depth": "深入详细"
+        },
+        "data_boundaries": [
+          "生日2004-06-15/济南为演示假设，本段未使用命盘或大运内容",
+          "本段未列解决步骤，行动集中在成长实验节",
+          "未自述的感受均以可能/待核对表达"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.blocks.block_03",
+      "chapter": "challenge",
+      "status": "READY_FOR_REVIEW",
+      "title": "卡点三：急迫让过程难以停留",
+      "content": "“太着急”是你的自评，具体触发情境尚未提供。可以假想一次需要等待结果或协商的事件，核对自己是否很快想推动它结束。\n\n急迫可能保护你免于停滞或失控的感受，也可能帮助你行动；这两种功能都只是候选。它不必被整体否定。\n\n长期代价可能是没有足够时间辨认情绪与需要，或自己的节奏和别人的节奏碰撞。但问卷没有说你催促过谁，也没有说急迫已经损害工作，因此不把这些可能性写成经历。\n\n整合邀请是区分事情的客观时限与自己对等待的感受。第三章实验三的情绪命名会为这一区分提供观察材料。",
+      "used_findings": [
+        "s4.blocks.urgency"
+      ],
+      "used_analysis_fragments": [],
+      "used_actions": [],
+      "transition_hint": "这是四个卡点中的第三个。下一节看第四类：当“权威期待”与“自我表达”同时在场时，你会怎么摆放自己。",
+      "presentation_meta": {
+        "chapter": "challenge",
+        "block_key": "block_03",
+        "sequence_no": 10,
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low",
+        "person": "second",
+        "boundary_notes": [
+          "未自述的感受与场景触发点均以“可能/值得核对”表达。",
+          "未展开任何实验动作、频率或退出条件，统一留在成长实验节。",
+          "未引用收束金句。"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.blocks.block_04",
+      "chapter": "challenge",
+      "status": "READY_FOR_REVIEW",
+      "title": "卡点四：建议与自己的标准如何并存",
+      "content": "你做决定时会参考直觉与家人朋友的建议，也愿意听性格反馈。这可以是开放和获得支持的资源，不能直接解释为缺少主见。\n\n这一卡点证据较弱：假如面对建议时，你有一个“应该配合”的内在标准，却不容易表达不同意见，外部期待与自身判断就可能拉扯。须用真实事件核对，不能由演示命盘或职业推出这一结论。\n\n它可能保护可靠、好相处的形象；若长期如此，代价可能是越来越难分辨自己认可的原则与尚未检验的规则。若你其实经常听完建议仍自主选择，这项解释就应被弱化或撤下。\n\n整合邀请是让建议成为材料，同时保留自己的决定权。想法记录实验对应这一项。",
+      "used_findings": [
+        "s4.blocks.authority_expression"
+      ],
+      "used_analysis_fragments": [],
+      "used_actions": [],
+      "transition_hint": "这是四个卡点中的最后一个。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+      "presentation_meta": {
+        "fragment_key": "report.blocks.block_04",
+        "chapter": "challenge",
+        "sequence_no": 11,
+        "new_information_role": "MANIFEST",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low",
+        "reader_preference": "深入详细",
+        "boundary_notes": [
+          "出生日期与出生地仅为演示假设，命盘内容以条件式表达",
+          "未自述的感受与自动想法均以“可能/可以核对”表达",
+          "不包含解决步骤与实验动作，统一留在成长实验节",
+          "不引用收束金句"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.blocks.common_pattern",
+      "chapter": "challenge",
+      "status": "READY_FOR_REVIEW",
+      "title": "共同顺序：先处理外部，再听见自己",
+      "content": "四项的共同假设是：外部情境出现后，自己的需要未必及时进入回应。但各项的入口不同：第一项关乎回应请求，第二项关乎发起联系，第三项关乎等待的节奏，第四项关乎判断标准。\n\n它们不能被合并成已经证实的单一因果链。尤其“因为迁就所以朋友疏远”并未由问卷建立。请用一次真实事件看清触发、想法、感受、回应及对方反馈；如果某一环不成立，就修改模型，而非替模型寻找证据。\n\n这份共同顺序的价值，是帮助你找最先可以辨认的位置，不是再给自己增加一个标签。",
+      "used_findings": [
+        "s4.blocks.boundary_pleasing",
+        "s4.blocks.relationship_maintenance",
+        "s4.blocks.urgency",
+        "s4.blocks.authority_expression",
+        "s2.cycle.activation_path"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s2.cycle",
+        "analysis.s4.blocks"
+      ],
+      "used_actions": [],
+      "transition_hint": "共同模式已经看清：四个卡点共用一套“先保关系、后顾自己”的顺序。下一节把镜头拉到时间轴上，看这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+      "presentation_meta": {
+        "fragment_key": "report.blocks.common_pattern",
+        "chapter": "challenge",
+        "sequence_no": 12,
+        "new_information_role": "SYNTHESIZE",
+        "must_cover": [
+          "共同模式",
+          "模式之间的关系"
+        ],
+        "must_not_repeat_respected": true,
+        "theory_density": "medium",
+        "action_density": "none",
+        "metaphor_density": "low",
+        "data_boundary_notes": [
+          "出生日期2004-06-15为演示假设，本片段未使用命盘或大运内容",
+          "触发环节为待补问，情绪与自动想法均以可能/可核对表达",
+          "未将每天复盘当作已形成的习惯",
+          "未复述内部来源编号"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.blocks.breakthrough",
+      "chapter": "challenge",
+      "status": "READY_FOR_REVIEW",
+      "title": "需要长出的四种能力",
+      "content": "对应四项卡点，可以发展四种不同能力：给回应留一点选择空间；发起低负担联系；命名等待中的情绪与需要；核对自己的判断依据。它们回应的是具体机制，不能用“更自信”概括全部。\n\n若借用四象限的探索地图，你可能更接近“角色中的承担者”：需要在责任里保留主权；“退回内在的探索者”可作次候选，提醒洞见需要进入实际连接。你自报的乐观、主动求助与ENFP，又是这些定位的反证。行动征服型与孤独思考型目前依据较弱，不用为了完整把你放进每一个象限。\n\n这些原型只是比喻，不是测评分级。柔韧仍可有立场，谋定也可以行动；第三章会把能力转成可撤回、可观察的实验。",
+      "used_findings": [
+        "s4.blocks.boundary_pleasing",
+        "s4.blocks.relationship_maintenance",
+        "s3.individuation.direction",
+        "s4.breakthrough.common_path"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s3.quadrant",
+        "analysis.s4.breakthrough"
+      ],
+      "used_actions": [],
+      "transition_hint": "方向已经有了轮廓。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+      "presentation_meta": {
+        "fragment_key": "report.blocks.breakthrough",
+        "chapter": "challenge",
+        "sequence_no": 13,
+        "new_information_role": "RESPOND",
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "must_cover_checked": [
+          "需要发展的能力",
+          "与行动的联系（只指向第三章，不写步骤）"
+        ],
+        "boundary_notes": [
+          "未自述的感受与自动想法均以可能/可以核对表达",
+          "命盘与大运内容仅条件式表达，出生日期为演示假设",
+          "未展开实验动作、频率、退出条件，统一指向成长实验节",
+          "未引用金句"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.direction.life_map",
+      "chapter": "direction",
+      "status": "READY_FOR_REVIEW",
+      "title": "阶段地图：时间提供参照，进度由现实决定",
+      "content": "本章关键句：用小实验决定下一步，而不是等待某个年份替你改变。\n路径图：选一项真实困扰 → 选择对应实验 → 留下观察 → 调整强度或暂停。\n\n以下年份来自演示生日2004-06-15、济南的库计算，须收到真实生日后重算；阶段主题是传统解释的隐喻，不预测事件或心理成熟。当前按2026-10-04落在戊辰末段，不能据此判断你将换工作或改变关系。\n\n| 计算阶段 | 解释基调与可能放大主题 | 可发展的能力 | 需要观察的旧模式 |\n| --- | --- | --- | --- |\n| 戊辰 2017–2026｜正财、土 | 务实承担、责任与资源积累 | 承担中保留协商与边界 | 迁就、急迫为自述；阶段放大与否待核对 |\n| 丁卯 2027–2036｜食神、火/木 | 表达、滋养与创造 | 温和表达需要 | 用享受回避责任的可能性 |\n| 丙寅 2037–2046｜伤官、火/木 | 突破、自我主张与边界 | 有分寸地拒绝 | 冲动表达可能损耗连接 |\n| 乙丑 2047–2056｜比肩、木/土 | 同辈支持与主体性 | 平等协作 | 固执的可能性 |\n| 甲子 2057–2066｜劫财、木/水 | 行动、争取与资源 | 有边界地行动 | 争夺、边界模糊的可能性 |\n| 癸亥 2067–2076｜偏印、水/水 | 内省、学习与独立判断 | 静观与连接并重 | 疏离的可能性 |\n| 壬戌 2077–2086｜正印、水/土 | 涵养、传承与整合 | 给予与接受 | 依赖外部认可的可能性 |\n| 辛酉 2087–2096｜七杀、金/金 | 压力、勇气与果断 | 用勇气保护边界 | 过度防御的可能性 |\n\n这些能力现在就可以探索，不必等到相应大运。练习强度应由你的时间、感受、对方反馈决定；大运不决定训练进度。你尚未提供重大事件，因此这里不编造过去的成长故事。\n\n时义上，可以借地山谦理解“有原则的柔”：力量可以含蓄，却不必消失。它只是哲学比喻，不是起卦证明；当对方持续越界时，不能把谦误用为继续迁就，需要更直接地表达边界。\n\n针对第二章‘先处理外部，再听见自己’的共同假设，下一节用暂停、情绪命名与想法记录，把辨认自己的需要带回回应之前。",
+      "used_findings": [
+        "s3.individuation.direction",
+        "s3.timeline.current",
+        "s3.timeline.subsequent"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s3.timeline",
+        "analysis.s3.yijing",
+        "analysis.s4.timing_self"
+      ],
+      "used_actions": [],
+      "transition_hint": "时间轴已经展开：当前阶段在邀请你练习边界与协商，后续阶段逐步转向表达与主张。下一节把这些方向落成可以每天做一点的具体动作。",
+      "presentation_meta": {
+        "chapter": "direction",
+        "fragment_key": "report.direction.life_map",
+        "chapter_opening": true,
+        "sequence_no": 14,
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "boundary_notes": [
+          "出生日期与出生地为演示假设，大运须本人提供真实信息后重算并由咨询师核对",
+          "命盘与大运内容为条件式表达，阶段为隐喻，不预测必然事件",
+          "未自述的感受、自动想法与保护功能均以可能/待核对表达",
+          "本节不含实验动作、频率与退出条件，统一留在成长实验节"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.direction.growth_experiments",
+      "chapter": "direction",
+      "status": "READY_FOR_REVIEW",
+      "title": "把方向落成可以每天做一点的具体动作",
+      "content": "方向已经有了轮廓，接下来要做的不是“一次修好”，而是在反复情境里每次多保留一点真实需求。下面五项实验都来自已确认的成长方向，耗时较少：一周几分钟到十几分钟，做不动时可以停。\n\n实验一，暂停再回应（针对“以迁就换连接”）。收到低风险请求时，先说一句“我看看安排，晚些回复你”，稍后再决定同意、部分帮忙还是拒绝；每周一次，约5分钟；观察对方的实际反应，以及你自己的紧张程度。如果出现权力威胁或明显不适，先暂停，换更安全的情境。\n\n实验二，低负担联系（针对“有事才联系”）。选一位让你觉得安全的对象，发一条没有目的的问候或分享，不要求对方立刻回应，也不拿回应速度评判关系；每周一次，约10分钟；记录发出前后的感受和对方的回应。如果连续两周明显焦虑，或对方明确表示不便，先暂停，和咨询师讨论后再继续。\n\n实验三，情绪命名（针对“太着急”）。每天晚间用1–10刻度给当下的情绪打分，再写一句“我现在需要……”，看看命名前后急迫感有没有变化；每天一次，约5分钟。如果命名引发强烈不适或持续低落，暂停并寻求专业支持。\n\n实验四，想法记录（针对“权威期待与自我表达”的张力）。在拒绝或表达需求之后，记下事件、自动想法和感受，写下支持与反对它的证据，再设计一个可以反悔的小实验去验证；每周一次，约15分钟；观察想法强度和后续行为的变化。如果记录引发持续反刍或明显痛苦，先暂停。\n\n实验五，刻度复盘（针对前两个卡点）。作为可选的每周总复盘，可直接使用实验一、二已有记录，用0–10刻度评估边界与连接的状态，找出一个“比上周好一点”的例外，并记下它发生的条件；每周一次，约10分钟。如果刻度持续下降或困扰明显，暂停并寻求专业支持。\n\n节奏上可以这样排：每天晚间记录能量与情绪（5分钟）；每周写一次“今天我真实想要的是……”（约10分钟），并完成实验一、二、四、五中的一到两项；每月复盘一次触发链（约20分钟）；每季用0–10刻度回看边界与连接的方向（约30分钟）。时间不够时，优先保留实验一和实验三，其余改成每月一次即可。\n\n这些动作都不追求立刻见效，效果以你自己的现实观察为准，随时可以停。\n\n五项是可选菜单，先选一至两项，不必同时执行。",
+      "used_findings": [
+        "s4.blocks.boundary_pleasing",
+        "s4.blocks.relationship_maintenance",
+        "s3.individuation.direction",
+        "s4.experiments.pause_before_commit",
+        "s4.experiments.low_stakes_contact",
+        "s4.experiments.thought_record",
+        "s4.experiments.scaling_review",
+        "s4.experiments.emotion_naming"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s4.shadow_practice",
+        "analysis.s4.complex_practice",
+        "analysis.s4.experiments"
+      ],
+      "used_actions": [
+        "s4.experiments.pause_before_commit",
+        "s4.experiments.low_stakes_contact",
+        "s4.experiments.thought_record",
+        "s4.experiments.scaling_review",
+        "s4.experiments.emotion_naming"
+      ],
+      "transition_hint": "具体动作已经排好，最后收束一下：回到你最开始想解决的问题，看看这一路看清了什么。",
+      "presentation_meta": {
+        "chapter": "direction",
+        "fragment_key": "report.direction.growth_experiments",
+        "sequence_no": 15,
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "high",
+          "metaphor_density": "low"
+        },
+        "contains_actions": true,
+        "contains_verified_quote": false,
+        "data_boundaries": [
+          "出生日期与出生地为演示假设，命盘内容仅作条件式参考，待本人提供后重算",
+          "未自述的情绪、自动想法与保护功能均以可能/待核对表达"
+        ]
+      }
+    },
+    {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "status": "READY_FOR_REVIEW",
+      "title": "不催促自己成为另一个人",
+      "content": "边界像需要季节的种子，不能靠催促一次长成。你愿意听反馈，也可以让自己的经验参与判断：一次回应是否更清楚，一次联系是否更自在，一次等待是否多了理解。\n\n不必同时完成全部练习，先选择最贴近实际的一项。改变后的反馈会告诉你，哪些解释适用，哪些需要放下。\n\n“知人者智，自知者明。”——《道德经》第三十三章。[核验原文](https://ctext.org/dao-de-jing/zh)。",
+      "used_findings": [
+        "s3.individuation.direction"
+      ],
+      "used_analysis_fragments": [
+        "analysis.s3.bridge"
+      ],
+      "used_actions": [],
+      "transition_hint": "报告到此收束：主线回扣、现实落点与哲学寄语已齐，具体实践见成长实验节。",
+      "presentation_meta": {
+        "fragment_key": "report.ending",
+        "chapter": "direction",
+        "sequence_no": 16,
+        "word_count": 428,
+        "reader_profile": {
+          "theory_density": "medium",
+          "action_density": "low",
+          "metaphor_density": "low"
+        },
+        "quote_used": {
+          "key": "laozi-33-self-knowledge",
+          "text": "知人者智，自知者明。",
+          "attribution": "《道德经》第三十三章",
+          "status": "VERIFIED"
+        },
+        "boundary_notes": [
+          "出生日期等为演示假设，命盘与阶段内容须本人提供后重算",
+          "方向为探索假设，可由现实经验修正",
+          "未自述的感受、自动想法与保护功能均以可能/待核对表达"
+        ]
+      }
+    }
+  ],
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "保存原始模型输出与逐段修订，等待独立重校准。"
+  }
+}

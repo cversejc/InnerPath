@@ -26,9 +26,9 @@ const emit = defineEmits(['set-field', 'set-number-field', 'set-birth-date', 'se
     <div class="profile-section-heading">
       <div>
         <p class="section-kicker">CORE PROFILE</p>
-        <h3 id="profile-core-title">建立你的个人档案</h3>
+        <h3 id="profile-core-title">填写基本信息</h3>
       </div>
-      <p>这些资料会被报告与日历复用，之后只需在资料发生变化时更新</p>
+      <p>生成人生说明书和决策日历所需的基础资料</p>
     </div>
 
     <div class="profile-field-stack">
@@ -122,7 +122,7 @@ const emit = defineEmits(['set-field', 'set-number-field', 'set-birth-date', 'se
 
       <fieldset class="profile-field profile-choice-fieldset" :aria-describedby="errors.birth_time_precision || errors.birth_time ? idPrefix + '-birth-time-error' : undefined">
         <legend class="profile-label">出生时间准确度 <span class="required">*</span></legend>
-        <p class="profile-hint">不知道也可以跳过；有省 / 市级出生地时，分析更容易做真太阳时校正</p>
+        <p class="profile-hint">如果不确定，可以勾选“不知道”。</p>
         <VanRadioGroup
           :model-value="profile.birth_time_precision"
           class="profile-segmented"

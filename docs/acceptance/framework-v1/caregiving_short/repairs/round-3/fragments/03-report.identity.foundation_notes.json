@@ -1,0 +1,122 @@
+{
+  "signature": "dd3df50aebed5b5ee371ffef55b383f5478edf699cc7f29fa0eafda5da4bfe3f",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "命盘旁注：把符号当作线索，而不是结论",
+    "content": "这一节把已审核的命盘逻辑转成可读的旁注。先说明边界：以下内容基于你提供的出生信息（1989年11月3日7时20分，四川成都）与分析日期2026年10月4日，属解释视角，不是客观事实，也不是心理诊断；流派不同，取用与结论可能不同，符号不能当心理证据。\n\n八字侧：日主为丁火，传统意象偏灯烛、星火，主细腻、持续、以柔化刚，这是待验证的自我核心线索。月支戌土伤官当令，泄火为主；月干与时干甲木正印双透，日支卯木偏印贴身生扶，年支巳火藏丙劫财为根；克泄耗则有戌土当令、己土食神透出、藏干伤官三见与财星两见。综合来看，身弱为第一候选，用印比（木、火）为第一候选，忌食伤（土）与财（金）过旺；若判定身强则喜忌相反。这两项都属解释性判断，待确认。十神显隐：透干正印二、食神一；藏干伤官三、偏印二、劫财、正财、偏财、比肩、七杀各一；正官不透——出现次数不代表旺衰，缺失也不等于人格缺陷。月支戌为燥土，气候偏干，火土相生而木气受耗，可作世界观基调的待验证线索。日支卯木偏印主内省与学习需求；时支辰土藏偏印与七杀，价值排序线索偏先立规则再表达；年柱己巳食神透干、藏劫财正财伤官，可作集体印记线索，不推断具体家庭经历。刑冲合害：己甲五合又相克（年与月、年与时）、戌卯六合（月日）、戌辰六冲（月时）、卯辰六害（日时）；合与合化须分开，有合不等于合化。大运：当前辛未（2018–2027，偏财），未土加重土气、偏财透干，主资源与责任并增；后续庚午2028–2037、己巳2038–2047、戊辰2048–2057、丁卯2058–2067、丙寅2068–2077、乙丑2078–2087，属解释视角，非必然未来。\n\n紫微侧：命宫在未，主星廉贞、七杀，辅星擎羊、火星、天空；三方四正为财帛紫微贪狼化权、官禄武曲破军化禄、迁移天府左右——面具线索偏刚毅、能扛事而内藏张力。身宫落财帛宫（卯），紫微贪狼化权、地劫，命身分居，后天方向偏资源与价值经营。解释性线索：福德宫在酉，无主星，辅星龙池、天官，无化忌与空劫煞星，面具与内在安顿之间存在张力线索，但不能据此诊断任何心理状况。生年四化：武曲禄（官禄）、贪狼权（财帛）、天梁科（兄弟）、文曲忌（父母）。宫干飞化重点忌流向为命宫飞文昌忌入兄弟、父母宫飞武曲忌入官禄、官禄宫飞太阴忌入疾厄，属待验证线索。\n\n使用方式：这些符号只提供观察角度，不替代你的自述与反证；如与你的实际经验不符，以你的经验为准。具体实践动作、频率与退出条件统一放在成长实验一节，此处不展开。",
+    "used_findings": [
+      "s1.dayun.current_xinwei",
+      "s1.interactions.list",
+      "s1.day_master.ding_fire",
+      "s1.ziwei.year_sihua",
+      "s1.ziwei.life_palace",
+      "s1.useful_gods.candidate",
+      "s1.structure.candidate_weak",
+      "s1.ten_gods.visible_hidden",
+      "s1.month.xu_climate",
+      "s1.ziwei.body_palace",
+      "s1.ziwei.wellbeing",
+      "s1.hour.chen_yin",
+      "s1.day_branch.mao_yin",
+      "s1.year.jisi"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s1.day_master",
+      "analysis.s1.structure",
+      "analysis.s1.month",
+      "analysis.s1.ten_gods",
+      "analysis.s1.day_branch",
+      "analysis.s1.hour",
+      "analysis.s1.year",
+      "analysis.s1.interactions",
+      "analysis.s1.dayun",
+      "analysis.s1.useful_gods",
+      "analysis.s1.ziwei_life",
+      "analysis.s1.ziwei_body",
+      "analysis.s1.ziwei_wellbeing",
+      "analysis.s1.ziwei_transformations"
+    ],
+    "used_actions": [],
+    "transition_hint": "命盘旁注只提供观察角度；接下来从这些线索回到你眼中的自己，核对现实中的自我描述。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.foundation_notes",
+      "sequence_no": 3,
+      "word_count": 1090,
+      "tone": "第二人称、现实语言、简洁清楚",
+      "theory_density": "medium",
+      "metaphor_density": "low",
+      "boundary_notice": "解释视角，非客观事实，非心理诊断；流派分歧与待确认项已标注。",
+      "review_issues_addressed": [
+        "身弱与用印比改为第一候选并标注待确认",
+        "福德宫张力线索前加解释性线索限定",
+        "未展开实验动作与收束金句"
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "must_cover_1",
+        "status": "FULFILLED",
+        "reason": "正文覆盖八字十项与紫微重点的已确认内容或暂缓边界，并声明符号不能当心理证据。",
+        "quote": "这一节把已审核的命盘逻辑转成可读的旁注。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_cover_2",
+        "status": "FULFILLED",
+        "reason": "正文将心理含义标注为待验证线索，未把符号当作心理证据。",
+        "quote": "日支卯木偏印主内省与学习需求；时支辰土藏偏印与七杀，价值排序线索偏先立规则再表达；年柱己巳食神透干、藏劫财正财伤官，可作集体印记线索，不推断具体家庭经历。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_1",
+        "status": "FULFILLED",
+        "reason": "本节只做命盘旁注，未展开后续心理章节的逐条解释。",
+        "quote": "使用方式：这些符号只提供观察角度，不替代你的自述与反证；如与你的实际经验不符，以你的经验为准。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_2",
+        "status": "FULFILLED",
+        "reason": "正文未展开实验动作、频率或退出条件，并明确统一放在成长实验节。",
+        "quote": "具体实践动作、频率与退出条件统一放在成长实验一节，此处不展开。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_3",
+        "status": "FULFILLED",
+        "reason": "正文未引用任何收束金句。",
+        "quote": "使用方式：这些符号只提供观察角度，不替代你的自述与反证；如与你的实际经验不符，以你的经验为准。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_4",
+        "status": "FULFILLED",
+        "reason": "十神显隐以简表方式承接，未重新完整解释。",
+        "quote": "十神显隐：透干正印二、食神一；藏干伤官三、偏印二、劫财、正财、偏财、比肩、七杀各一；正官不透——出现次数不代表旺衰，缺失也不等于人格缺陷。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 21886,
+    "output_tokens": 1995,
+    "latency_ms": 7182,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "1cf4f07c-c645-401c-8544-7f206fa7cbd9",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "bc666b51de948019352cc4de3b700438b18835a4f9279fa86d51eeab1e579bf8",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

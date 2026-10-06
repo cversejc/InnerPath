@@ -36,20 +36,25 @@ PROFILE_SNAPSHOT_FIELDS = (
     "strengths",
     "limitations",
     "mingli_experience",
+    "mingli_experience_other",
     "mingli_attitude",
     "preferred_content_depth",
     "default_usage_scenarios",
+    "default_usage_scenarios_other",
 )
 
 CONTEXT_FIELDS = (
     "focus_topics",
+    "focus_topics_other",
     "current_challenge",
     "expected_outcomes",
+    "expected_outcomes_other",
     "issue_duration",
     "impact_level",
     "decision_status",
     "decision_description",
     "decision_style",
+    "decision_style_other",
     "additional_info",
 )
 

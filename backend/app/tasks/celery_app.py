@@ -1,4 +1,5 @@
 from celery import Celery
+from celery.schedules import schedule
 from app.config import settings
 
 celery_app = Celery(
@@ -8,6 +9,7 @@ celery_app = Celery(
     include=[
         "app.tasks.report_tasks",
         "app.tasks.service_request_tasks",
+        "app.tasks.workflow_tasks",
         "app.tasks.calendar_generation_tasks",
     ]
 )
@@ -21,4 +23,10 @@ celery_app.conf.update(
     task_track_started=True,
     task_time_limit=300,  # 5 minutes
     task_soft_time_limit=240,  # 4 minutes
+    beat_schedule={
+        "dispatch-workflow-outbox": {
+            "task": "dispatch_workflow_outbox",
+            "schedule": schedule(run_every=15.0),
+        }
+    },
 )

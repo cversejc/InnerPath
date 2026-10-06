@@ -55,6 +55,7 @@ def _normalize_payload(
     start_date: Optional[date | str],
     context: Optional[dict[str, Any]] = None,
     profile_version: Optional[int] = None,
+    *,
 ) -> dict[str, Any]:
     ensure_service_type(service_type)
     profile_model = ServiceProfileSnapshot.model_validate(profile)
@@ -105,7 +106,7 @@ def _normalize_payload(
         normalized["context"] = normalized_context
         normalized["selected_topics"] = normalized_context["focus_topics"]
         normalized["additional_info"] = normalized_context["additional_info"]
-    if profile_version is not None:
+    if service_type == "report" and profile_version is not None:
         normalized["profile_version"] = int(profile_version)
     return normalized
 
@@ -113,7 +114,11 @@ def _normalize_payload(
 def payload_from_create(
     data: ServiceRequestCreate, user: User
 ) -> tuple[dict[str, Any], Optional[str]]:
-    if data.profile_version is not None and int(data.profile_version) != int(user.profile_version or 1):
+    if (
+        data.service_type == "report"
+        and data.profile_version is not None
+        and int(data.profile_version) != int(user.profile_version or 1)
+    ):
         raise ValueError("profile_version_conflict")
     profile = data.profile.model_dump()
     if not profile.get("name"):
@@ -126,8 +131,8 @@ def payload_from_create(
             data.additional_info,
             data.calendar_goal,
             data.start_date,
-            data.context.model_dump() if data.context is not None else None,
-            data.profile_version or user.profile_version or 1,
+            context=data.context.model_dump() if data.context is not None else None,
+            profile_version=data.profile_version or user.profile_version or 1,
         ),
         data.idempotency_key,
     )
@@ -138,7 +143,11 @@ def payload_from_update(
     data: ServiceRequestUpdate,
     user: User,
 ) -> dict[str, Any]:
-    if data.profile_version is not None and int(data.profile_version) != int(user.profile_version or 1):
+    if (
+        request.service_type == "report"
+        and data.profile_version is not None
+        and int(data.profile_version) != int(user.profile_version or 1)
+    ):
         raise ValueError("profile_version_conflict")
     current = deepcopy(request.request_payload or {})
     current_profile = deepcopy(current.get("profile") or {})
@@ -182,8 +191,8 @@ def payload_from_update(
         additional_info,
         calendar_goal,
         start_date,
-        context,
-        profile_version or user.profile_version or 1,
+        context=context,
+        profile_version=profile_version or user.profile_version or 1,
     )
 
 

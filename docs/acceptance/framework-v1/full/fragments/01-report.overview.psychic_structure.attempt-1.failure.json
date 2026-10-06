@@ -1,0 +1,24 @@
+{
+  "error": "report_fragment_unsupported_fragment",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 12725,
+    "output_tokens": 1300,
+    "latency_ms": 7103,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "19e09d4f-7883-4fc1-a192-8134d737f5d0",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "995bb2f1ed64eda63e1e070b04c3d98b58af94daf0c66c2bfff086e68c919b93",
+    "output_validation": "failed",
+    "error_type": "ValueError"
+  },
+  "unvalidated_output": "{\n  \"status\": \"READY_FOR_REVIEW\",\n  \"title\": \"先停一下：在答应与透支之间，留出一个缓冲\",\n  \"content\": \"这份说明书的主线只有一句话：你可能习惯在“答应”和“透支”之间一路走到底，而真正需要的，是在两者之间插入一个小小的停顿。\\n\\n**一句关键结论**\\n\\n你并不缺责任感，也不缺对他人的体谅；你缺的，往往是在开口答应之前，给自己留出的那几秒钟。\\n\\n**本章路径图**\\n\\n向世界展示的我（可靠、好说话、不让人失望）→ 我以为的自己（应该做到、不能拒绝）→ 潜意识层面的自己（担心被评价为不够好，用顺从来换取关系安全）→ 整合后的方向（在关系关照与自身节奏之间，同时保留两者）。\\n\\n**整体结构**\\n\\n从你已经提供的材料看，你的外在形象与内在体验之间存在一条可辨认的线索。向世界展示的你，是那个“靠谱、不能让人失望”的人：同事临时请你代写方案，你本想休息却答应了；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。这些都不是孤立的偶然，而是同一套反应方式在不同场景里的重复。\\n\\n你以为的自己，可能是一个“应该随时能接住别人需求”的人。自述里“我认为自己要靠谱、不能让人失望”“拒绝后担心别人觉得我不够好”，是这套自我要求最直接的表达。它并不是虚荣，也不是软弱，更像是一种长期形成的安全策略：先满足对方，关系就不会紧张，自己就不会被否定。\\n\\n再往下看，是潜意识层面可能运作的部分。当请求来临时，你的第一反应可能是顺从答应；等到精力被透支、不满开始积压，表达又被推迟；最后要么生硬回应，要么干脆取消。这个循环的短期保护功能是维持关系安全与“靠谱”形象，长期代价则是熬夜透支、关系中突然的冷淡或取消，以及自我评价持续依赖外部反馈。需要说明的是，这一层目前是待验证的假设，不是结论；你面对熟悉同事且有明确截止时能够协商边界，正说明它并非全面发生，而是情境依赖的。\\n\\n同时，材料里也出现了另一端的线索：你提到独自散步时比较放松。这提示独处与稳定节奏可能是你的内在恢复资源。它和“先答应后透支”并不是互相否定，而是同一枚硬币的两面：一端是以外部认可与关系安全为参照来确认自我价值，另一端是以自身节奏与真实需求为主权。这两端不需要分出好坏，整合的方向是让它们在具体情境中同时在场。\\n\\n从时间背景看，按分析日期2026年10月4日，你当前处于辛卯大运（2019–2028，24–33岁）。传统命理中，辛金偏印与时柱庚申正印同类叠加，常被解释为对内在思考与自我要求的强化；卯木与日支未半合木局、与年支子相刑，则常被用来描述关系与环境中的拉扯感。这些属于解释性视角，不是心理诊断，也不预测必然结果；它们的价值在于提供一个观察自己的额外角度，而不是替你下结论。\\n\\n把这几层放在一起，这份说明书要做的不是给你贴标签，而是陪你走一条暗线：先看见“先答应—透支—延迟表达”的循环如何运作，再理解它曾经保护了什么，最后把“答应前的停顿”变成可以练习的动作。具体怎么练、练多久、什么时候退出，会放在后面的成长实验一节里，这里只先标出方向。\\n\\n你不需要立刻变成一个会拒绝的人。更现实的目标是：在下一次请求到来时，你能多出几秒钟，让关系关照与自身节奏同时被看见。\",\n  \"used_findings\": [\n    \"s4.block.overcommit_then_resent\",\n    \"s1.foundation.current_dayun\",\n    \"s4.block.self_worth_by_others\",\n    \"s2.pattern.overcommitment_loop\",\n    \"s2.pattern.self_worth_external_reference\",\n    \"s2.pattern.rest_recovery_resource\",\n    \"s3.self.core_tension\"\n  ],\n  \"used_analysis_fragments\": [\n    \"analysis.s2.persona\",\n    \"analysis.s2.authority\",\n    \"analysis.s2.shadow\",\n    \"analysis.s3.self\"\n  ],\n  \"used_actions\": [],\n  \"transition_hint\": \"下一章将按“请求—顺从—透支—延迟表达”的时间顺序展开三个卡点，先看它们各自如何运作、保护了什么、代价在哪里。\",\n  \"presentation_meta\": {\n    \"chapter\": \"identity\",\n    \"fragment_key\": \"report.overview.psychic_structure\",\n    \"chapter_opening\": true,\n    \"sequence_no\": 1,\n    \"reader_profile\": {\n      \"theory_density\": \"medium\",\n      \"action_density\": \"high\",\n      \"metaphor_density\": \"low\"\n    },\n    \"tone\": \"第二人称、描述性、非评判\",\n    \"contains_key_conclusion\": true,\n    \"contains_path_diagram\": true\n  },\n  \"requirement_coverage\": [\n    {\n      \"requirement_id\": \"R.psychic_structure\",\n      \"status\": \"FULFILLED\",\n      \"reason\": \"正文按“向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向”四层展开，并以概览方式呈现暗线；未展开实验动作、频率或退出条件，也未引用金句。\",\n      \"quote\": \"向世界展示的我（可靠、好说话、不让人失望）→ 我以为的自己（应该做到、不能拒绝）→ 潜意识层面的自己（担心被评价为不够好，用顺从来换取关系安全）→ 整合后的方向（在关系关照与自身节奏之间，同时保留两者）。\",\n      \"follow_up_questions\": []\n    }\n  ]\n}",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "signature": "4fb47926c34122c99d1069a614d669ef34eb64db7d235395105f2efede1c8bd9"
+}

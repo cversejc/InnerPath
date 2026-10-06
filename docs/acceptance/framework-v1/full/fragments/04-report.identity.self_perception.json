@@ -1,0 +1,62 @@
+{
+  "signature": "187fb915411fc9bf015f3ec38d5e9d6931ad343490c88c4b6e4bcb373795bb88",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "眼中的自己",
+    "content": "在你对自己的描述里，有一句很清晰的话：\"我认为自己要靠谱、不能让人失望。\"这不是一句空话，它像一根坐标轴，把你很多选择都对齐了上去。与此同时，你还说过另一句更靠里的话：\"拒绝后担心别人觉得我不够好。\"两句放在一起看，一个在明处，一个在暗处——明处是你想成为的样子，暗处是你怕变成的样子。\n\n用日常语言说，这可能是这样的结构：你在意识层面认同\"靠谱、专业、不让人失望\"这个角色，并且愿意为它付出；而在更靠下的层面，维持关系安全的方式，可能是通过顺应别人的期待。这两层并不冲突，它们共同解释了一件事——为什么你答应得那么快。答应，在当下是一种让关系安全、让自己\"合格\"的动作。\n\n顺着这条线往下，可以看见几个反复出现的\"应该\"。第一个是你自己说出口的：\"我应该靠谱、不能让人失望。\"第二个更像背景音：\"我必须把事情做好。\"第三个藏得最深：\"我不能拒绝，否则别人会觉得我不够好。\"前两个你大概能感觉到，第三个往往在拒绝的那一刻才浮上来。需要说明的是，后两个是基于你自述与命理线索提出的假设，不是结论，需要你在生活里核对。\n\n这些\"应该\"从哪里来，现在还不能下判断。你提到没有提供童年经历，所以这里不做补造。从线索上看，它们可能来自早期环境里\"务实、可靠、不添麻烦\"的氛围，也可能来自工作文化，或者只是你对自己长期的要求。这三者都可能，具体是哪一种，需要你自己回头辨认。有一个问题值得你慢慢想：这些\"应该\"最早是从哪里听到的？如果不遵守，你担心发生什么？\n\n有一处反证很重要，它说明你不是\"总是迁就\"的人。你说，面对熟悉同事且有明确截止时，你能够协商任务边界。这句话把整个画面从\"性格\"改成了\"情境\"——在安全、清晰、可预期的关系里，你是能表达边界的。也就是说，你并不是不会拒绝，而是在某些条件下，那个\"不能拒绝\"的开关会被打开。找到这些条件，比给自己贴一个\"不会拒绝\"的标签有用得多。\n\n所以，眼中的你，可能是一个把\"可靠\"放在很前面的人，同时也是一个对关系评价很敏感的人。这两件事叠在一起，就形成了你在请求面前的快速反应。这不评判好坏，它只是你长期用来保护关系、也保护自己\"合格感\"的方式。至于这个方式在哪些时刻开始变得吃力，下一节会按请求来临、顺从答应、透支、延迟表达的时间顺序，慢慢拆开来看。",
+    "used_findings": [
+      "s2.pattern.overcommitment_loop",
+      "s2.pattern.self_worth_external_reference"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.mapping",
+      "analysis.s2.authority"
+    ],
+    "used_actions": [],
+    "transition_hint": "下一节进入“卡在哪”，按请求来临—顺从答应—透支—延迟表达的时间顺序，拆解三个卡点，并说明即时缓冲的缺口在哪里。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_perception",
+      "sequence_no": 4,
+      "tone": "第二人称、描述模式、不评判",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "length_chars": 1010
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_belief",
+        "status": "FULFILLED",
+        "reason": "已覆盖意识自我与底层信念（'要靠谱、不能让人失望'与'拒绝后担心别人觉得我不够好'分层呈现）；已覆盖应该/必须/不能及权威内化（三条内化标准并说明来源需核对、不指责家庭、主权交接意涵）；已覆盖用户自我感受、反证与待补问（引用明确截止可协商边界的反证，并给出两个具体补问）。",
+        "quote": "有一处反证很重要，它说明你不是\"总是迁就\"的人。你说，面对熟悉同事且有明确截止时，你能够协商任务边界。",
+        "follow_up_questions": [
+          "这些\"应该\"最早是从哪里听到的？",
+          "如果不遵守，你担心发生什么？",
+          "在什么情境下你最容易答应别人的请求？",
+          "答应之后身体和情绪的第一反应是什么？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 14780,
+    "output_tokens": 1045,
+    "latency_ms": 6027,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "1d1d737e-5211-4428-b643-518ec9e09c6e",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "99655052a870cdd629427c7e7c4812a736b9efba7fa29ae8b216e36dc2249c47",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

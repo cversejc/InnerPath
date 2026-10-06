@@ -125,7 +125,7 @@ defineEmits([
       </div>
       <div v-if="tasksLoading" class="list-loading" aria-label="正在加载报告任务日志"><i v-for="index in 4" :key="index"></i></div>
       <div v-else class="table-panel">
-        <div class="table-meta"><span>共 {{ reportTasks.total }} 个任务</span><span>任务日志只读，失败任务请到报告页重试</span></div>
+        <div class="table-meta"><span>共 {{ reportTasks.total }} 个任务</span><span>旧版生成任务只读；新报告请在服务申请工作流中处理</span></div>
         <div class="admin-table-wrap" tabindex="0" aria-label="数据表格，可横向滚动查看">
           <table class="admin-table">
             <thead><tr><th>任务</th><th>用户</th><th>状态</th><th>进度</th><th>失败原因</th><th>更新时间</th></tr></thead>

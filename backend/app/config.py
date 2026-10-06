@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     DEEPSEEK_MAX_TOKENS: int = 8000
     REPORT_MAX_RETRIES: int = 2
     ADMIN_EXPORT_MAX_ROWS: int = 10000
+    REPORT_EXPORT_FRONTEND_URL: str = "http://127.0.0.1:3000"
 
     # SMS Service
     SMS_SPUG_TOKEN: str = ""

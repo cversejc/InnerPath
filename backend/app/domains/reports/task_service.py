@@ -40,6 +40,18 @@ async def get_report_task(
     return result.scalar_one_or_none()
 
 
+async def get_latest_report_task(
+    db: AsyncSession, user_id: int
+) -> Optional[ReportTask]:
+    result = await db.execute(
+        select(ReportTask)
+        .where(ReportTask.user_id == user_id)
+        .order_by(ReportTask.created_at.desc())
+        .limit(1)
+    )
+    return result.scalar_one_or_none()
+
+
 async def get_report_task_by_id(db: AsyncSession, task_id: str) -> Optional[ReportTask]:
     result = await db.execute(select(ReportTask).where(ReportTask.task_id == task_id))
     return result.scalar_one_or_none()

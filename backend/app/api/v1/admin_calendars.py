@@ -65,6 +65,16 @@ async def list_user_calendars(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return CalendarListResponse(items=await get_user_calendars(db, user_id, published_only=False))
 
+@router.patch("/calendar-requests/{request_id}", status_code=status.HTTP_409_CONFLICT)
+async def review_calendar_request(
+    request_id: int,
+    current_user: User = Depends(require_roles("admin")),
+):
+    raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail="calendar_manual_review_disabled",
+    )
+
 @router.post("/users/{user_id}/calendars", response_model=CalendarResponse, status_code=status.HTTP_201_CREATED)
 async def create_user_calendar(
     user_id: int,

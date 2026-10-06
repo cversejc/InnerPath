@@ -1,0 +1,72 @@
+{
+  "signature": "5d7197d59d8fdf26c6039d309b7dc09fdfe5ecc321d37f40822e54ec7a101e95",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点二：夜班后靠反复查群才敢休息",
+    "content": "你提到，夜班结束后你会继续查工作群，担心漏掉交接信息；把手机交给同事保管半小时，你才能睡着。这是你自己说出的观察，也是一个具体的现实场景。\n\n从触发到运作，可以这样看：触发点可能是下班那一刻交接是否“完全清楚”的不确定感；运作方式是反复检查来维持交接安全感。这里需要先限定一句——“用检查维持安全感”是对这个行为可能起到的作用的一种解释，不是定论。如果后续出现反证，比如某次没查群也顺利入睡，那会帮助校正这个理解。\n\n过去的保护功能，是防止交接失误、避免责任风险。它在保护交接安全和家庭运转，不是缺陷。代价也很具体：入睡被推迟，休息质量下降，而休息又是你维持轮班和照护的基础。\n\n整合邀请是把放松部分交给可信任的外部结构。这一节只解释场景、触发、运作、保护功能和长期代价，不展开具体解决步骤；把手机交给同事这个动作已经出现，但它的频率、观察方式和退出条件，统一放到成长实验节说明。\n\n变化所需的下一步理解是：这个卡点不是要你“别查群”，而是看到检查背后的保护意图，并允许可信任的外部结构暂时接管。",
+    "used_findings": [
+      "s4.block.control_rest"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "夜班后查群的保护与代价已经看清，接下来看第三个具体情境：先答应请求，再补协商。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.block_02",
+      "chapter": "challenge",
+      "sequence_no": 10,
+      "word_count": 371,
+      "style": {
+        "person": "second",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low"
+      },
+      "source_boundary": {
+        "finding_refs": [
+          "s4.block.control_rest"
+        ],
+        "analysis_refs": [],
+        "action_refs": [],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.expected_outcomes"
+        ]
+      },
+      "notes": [
+        "用户自述的夜班后查群、手机交给同事后能睡着保留为自述事实。",
+        "“用检查维持安全感”在引入时已明确限定为解释性假设，并保留反证校正空间。",
+        "本节未展开解决步骤，未引用金句，未重复卡点一的完整触发链。"
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "本节按场景→触发→运作→过去保护→长期代价→整合邀请的顺序解释了夜班后反复查群这一卡点；未展开解决步骤；来源仅使用分配的 s4.block.control_rest 与相关用户自述证据。",
+        "quote": "你提到，夜班结束后你会继续查工作群，担心漏掉交接信息；把手机交给同事保管半小时，你才能睡着。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5601,
+    "output_tokens": 758,
+    "latency_ms": 3489,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "3a0a4636-301f-493c-811a-b1760c2244c0",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "fe5983512b9dfa08f222a6debe871e175a5a0159da41171ff0b91d2f219f2d43",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

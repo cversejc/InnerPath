@@ -1,0 +1,82 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "在关系里，给自己的意愿留一个位置",
+    "content": "你提到三个具体困扰：难以拒绝，拒绝时语言生硬；有事才联系朋友，关系逐渐疏远；自己太着急。这里先把它们看作可以观察、调整的模式，而非固定的性格缺点。\n\n本章关键句：你愿意听建议，也值得让自己的意愿进入对话。\n阅读路径：现实自述 → 外在角色与内在需要 → 识别卡点 → 选择小实验 → 用实际反馈修正理解。\n\n以下心理机制都是探索假设。命理部分另有资料限制：真实生日未提供，暂用公历2004-06-15、山东济南作演示；15:15是你提供的精确出生时间，江苏是目前居住地。命盘与大运仅在这一假设下成立，真实生日补齐后须重新计算与审核。",
+    "used_findings": [
+      "s4.blocks.relationship_maintenance",
+      "s4.blocks.boundary_pleasing",
+      "s1.day_master.b_yi"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "读者已了解主线与路径图，下一节可进入“你是谁”的自我核心线索，展开乙木日主与天府命宫的传统解释视角。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.overview.psychic_structure",
+      "sequence_no": 1,
+      "chapter_opening": true,
+      "theory_density": "medium",
+      "action_density": "none",
+      "metaphor_density": "low",
+      "contains_key_conclusion": true,
+      "contains_path_diagram": true,
+      "data_boundaries": [
+        "出生日期为演示假设，日主随真实出生日期可能变化",
+        "命理内容为传统解释视角，属待验证假设而非定论",
+        "未自述的感受与场景均以可能/待核对方式表达"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 11220,
+    "output_tokens": 597,
+    "latency_ms": 3314,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "0e650415-6026-4841-a5ca-e2e0318b36f0",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "9208483259e5812ddeb0c4452b6ebf5fdda9f81ec0111798e9ee144150828cfd",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你的主线：让拒绝有温度，让联系有节奏",
+    "content": "这份说明书的主线可以概括成一句话：你并不缺连接的能力，缺的是让连接可持续的节奏。你自述不太会拒绝、拒绝时语言生硬、习惯迁就，也提到有事才联系朋友、关系逐渐疏远，并且这种状态感觉一直存在。把这些放在一起看，它们不是两个分开的问题，而是同一套结构的两端——一端是怕关系断掉而先答应，另一端是怕打扰或被拒绝而把联系搁置。\n\n传统命理视角下，你的日主是乙木，意象为藤蔓花草，柔韧、善借势、敏感、善于协调；这是一种待验证的自我核心线索，不是定论。它与你自述的“愿意听别人对自身性格的建议”“权衡利弊”可以相互参照：你倾向于先顺应环境、再考虑自己。出生日期目前是演示假设，等本人提供后需要重算。\n\n本章的系统路径图：\n他人请求或关系维护需求 → 先答应 / 无事不联系 → 关系暂时平稳 → 自我需求被压下、失落累积 → 关系反而疏远 → 下一次更不敢主动\n\n这条路径说明的不是你不够好，而是这套保护方式在关系安全上曾经有效，只是长期代价落在了你自己的需求上。往哪去，方向是让拒绝与联系都变得可协商、可修复；具体怎么做，留给后面的成长实验。",
+    "used_findings": [
+      "s1.day_master.b_yi",
+      "s4.blocks.boundary_pleasing",
+      "s4.blocks.relationship_maintenance"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "读者已了解主线与路径图，下一节可进入“你是谁”的自我核心线索，展开乙木日主与天府命宫的传统解释视角。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.overview.psychic_structure",
+      "sequence_no": 1,
+      "chapter_opening": true,
+      "theory_density": "medium",
+      "action_density": "none",
+      "metaphor_density": "low",
+      "contains_key_conclusion": true,
+      "contains_path_diagram": true,
+      "data_boundaries": [
+        "出生日期为演示假设，日主随真实出生日期可能变化",
+        "命理内容为传统解释视角，属待验证假设而非定论",
+        "未自述的感受与场景均以可能/待核对方式表达"
+      ]
+    }
+  }
+}

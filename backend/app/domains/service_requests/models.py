@@ -36,6 +36,8 @@ class ServiceRequest(Base, TimestampMixin):
 
     assigned_consultant_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     consultation_type = Column(String(30), nullable=True)
+    assigned_mingli_consultant_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    assigned_psychology_consultant_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     result_type = Column(String(20), nullable=True)
     result_id = Column(Integer, nullable=True)
 

@@ -1,0 +1,56 @@
+{
+  "signature": "a8f3811807a9615fe646122258c42328edb654405d45f9340053412030aaf0c3",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "用准备代替交付：反复修改与临近截止的赶工",
+    "content": "前两节我们看到，请求来临时你可能会先答应，而“怕被评价为不够好”的担心又常常提前介入选择。这一节按同一时间顺序继续往下看：当任务真正开始，这份担心可能换一种形式出现——不是让你答应得更多，而是让你迟迟交不出去。\n\n常见场景可能是这样：项目开头你有很多想法，这本身是资源；但越接近定稿，你越容易反复修改，把“还不够好”当作再等等的理由，直到临近截止才集中赶工。你自述的“担心做不好、反复修改、接近截止才急着交付”，指向的正是这个环节。需要说明的是，这是你自报的模式，具体到每一次任务，节奏和强度可能不同，值得你用自己的实际记录去核对。\n\n触发点通常不是能力不足，而是“需要定稿或交付”这个动作本身。运作机制可以这样理解：修改和准备在短期内确实能降低被挑出问题的风险，于是它被反复使用，逐渐替代了“先交出一个阶段性版本”的动作。它过去保护了你——让你在短期内避免被评价为做得不好，这份保护是真实有效的，不必否定它。\n\n长期代价则是另一面：节奏被打乱，临近截止时透支，交付质量反而出现波动；同时，反复准备占用的时间，也可能挤压了休息和恢复的空间。这里有一个反证值得留意：你最终仍然能够交付，说明行动并没有被思虑完全替代，你具备完成的能力，只是完成的方式让你付出了额外代价。\n\n变化所需的下一步理解是：这一环的关键不在于“别想太多”，而在于把“准备”和“交付”重新分开——允许一个“足够好”的阶段性交付先发生，把一部分准备资源转为小步行动。这只是一个理解方向，具体怎么练、练多久、什么条件下暂停，留到后面的成长实验一节再展开。\n\n如果你愿意带着这个问题往下读，可以留意：最近一次反复修改时，你真正担心被谁、以什么标准评价？这个答案，会帮助你更准确地找到自己的缓冲点。",
+    "used_findings": [
+      "s4.block.rumination_over_action"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "三个卡点已按请求—顺从—透支—延迟表达的顺序展开；下一章进入“往哪去”，从答应前的停顿开始，把理解转成可练习的小步。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_03",
+      "sequence_no": 11,
+      "block_key": "block_03",
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_notes": "第二人称、现实语言；未自述的情绪与场景均以可能/假如/待核对表达；不展开解决步骤，不引用金句。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "本节按场景→触发→运作→过去保护→长期代价→整合邀请的顺序完整解释卡点三，来源为已确认的 s4.block.rumination_over_action 与用户自报事件；未展开任何解决步骤，具体实践留待成长实验节。",
+        "quote": "常见场景可能是这样：项目开头你有很多想法，这本身是资源；但越接近定稿，你越容易反复修改，把“还不够好”当作再等等的理由，直到临近截止才集中赶工。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4283,
+    "output_tokens": 869,
+    "latency_ms": 5203,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "5c4afa45-e396-494e-a77b-567f30492206",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "5d9dc2050e72989605b48470fc05890d401a62f06c2f2fa8a8b3e963a2dc23dd",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

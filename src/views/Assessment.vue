@@ -4,8 +4,8 @@
 
     <BrandPageHeader
       eyebrow="YOUR LIFE MANUAL"
-      title="写一本属于你的说明书"
-      description="先确认个人档案，再写下这一次真正想看清的问题。从认识自己，找到更适合的下一步。"
+      title="书写你的人生说明书"
+      description="先填写一份个人档案，再把当下想解决的问题告诉我们。"
       seal="见己"
     />
 
@@ -73,6 +73,7 @@
           :expected-outcome-options="expectedOutcomeOptions"
           :form-message="formMessage"
           :last-context="lastContext"
+          :latest-report-status="latestReportStatus"
           :profile="profileDraft"
           :profile-last-confirmed-at="profileLastConfirmedAt"
           :profile-version="profileVersion"
@@ -81,6 +82,7 @@
           :is-editing-request="Boolean(editingRequestId)"
           :topics="topics"
           @edit-profile="editProfile"
+          @open-latest-report="openLatestReport"
           @reuse-context="reusePreviousContext"
           @submit-assessment="submitAssessment"
           @toggle-advanced-context="showAdvancedContext = !showAdvancedContext"
@@ -95,7 +97,10 @@
           v-else
           ref="stepContent"
           :is-generating="isGenerating"
-          @view-requests="viewRequests"
+          :gen-step="genStep"
+          :request-id="currentRequestId"
+          @view-requests="viewMyRequests"
+          @new-application="startAnotherApplication"
         />
       </div>
     </section>

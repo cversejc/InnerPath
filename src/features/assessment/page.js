@@ -1,4 +1,5 @@
 import { getLatestReportContext } from '../reports/api.js'
+import { getMyServiceRequests } from '../service-requests/api.js'
 import { getCurrentUser } from '../users/service.js'
 import { getMyServiceRequest } from '../service-requests/api.js'
 import AssessmentProfileStep from './components/AssessmentProfileStep.vue'
@@ -27,6 +28,7 @@ export default {
       savingProfile: false,
       submitting: false,
       isGenerating: false,
+      genStep: 0,
       formMessage: '',
       contextMessage: '',
       showOptionalProfile: false,
@@ -44,6 +46,8 @@ export default {
       lastContext: null,
       lastContextReportId: null,
       currentRequestId: null,
+      submissionFingerprint: null,
+      submissionIdempotencyKey: null,
       editingRequestId: null,
       reportIdempotencyKey: null,
       topics: assessmentTopics,
@@ -59,7 +63,7 @@ export default {
       return Object.values(this.contextErrors)
     },
     currentStepLabel() {
-      return ['个人档案', '本次问题', '提交申请'][this.currentStep - 1] || '申请'
+      return ['个人档案', '本次问题', '申请已提交'][this.currentStep - 1] || '申请'
     },
     stepProgress() {
       return Math.round((this.currentStep / 3) * 100)
@@ -99,10 +103,17 @@ export default {
       this.formMessage = error.response?.data?.detail || '暂时无法读取个人档案，请刷新后重试。'
     }
     try {
-      const latest = await getLatestReportContext()
-      if (latest?.context) {
-        this.lastContext = latest.context
-        this.lastContextReportId = latest.report_id
+      const requests = await getMyServiceRequests({ service_type: 'report' })
+      const latestRequest = requests.items?.[0]
+      if (latestRequest?.request_payload?.context) {
+        this.lastContext = latestRequest.request_payload.context
+        this.lastContextReportId = latestRequest.id
+      } else {
+        const latest = await getLatestReportContext()
+        if (latest?.context) {
+          this.lastContext = latest.context
+          this.lastContextReportId = latest.report_id
+        }
       }
     } catch (error) {
       // The report form remains usable if a legacy deployment has no context endpoint yet.

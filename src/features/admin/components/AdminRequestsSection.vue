@@ -10,6 +10,31 @@ import {
 } from '../formatters.js'
 import { consultationTypeLabel } from '../../service-requests/formatters.js'
 
+function reportStepLabel(stepKey) {
+  const number = String(stepKey || '').match(/\d+/)?.[0]
+  return number ? `第 ${number} 步` : '尚未开始'
+}
+
+function reportStepStatusLabel(status) {
+  return {
+    READY: '待开始',
+    IN_REVIEW: '审阅中',
+    EXECUTING: '处理中',
+    WAITING_REVIEW: '待复核',
+    COMPLETED: '已完成'
+  }[status] || '待处理'
+}
+
+function reportCaseStatusLabel(status) {
+  return {
+    ACTIVE: '进行中',
+    BLOCKED: '受阻',
+    READY_TO_DELIVER: '待交付',
+    DELIVERED: '已交付',
+    CANCELLED: '已关闭'
+  }[status] || ''
+}
+
 defineProps({
   calendarFilters: { type: Object, required: true },
   calendarRequests: { type: Object, required: true },
@@ -81,13 +106,13 @@ defineEmits([
         <div class="table-meta"><span>共 {{ serviceRequests.total }} 份报告申请</span><span>接单与交付时间来自服务申请生命周期记录</span></div>
         <div class="admin-table-wrap" tabindex="0" aria-label="报告申请列表，可横向滚动查看">
           <table class="admin-table admin-request-table">
-            <thead><tr><th>申请 / 用户</th><th>咨询方向 / 关注内容</th><th>咨询师</th><th>状态</th><th>提交</th><th>接单</th><th>交付</th><th>记录</th></tr></thead>
+            <thead><tr><th>申请 / 用户</th><th>咨询方向 / 关注内容</th><th>咨询师</th><th>状态与流程</th><th>提交</th><th>接单</th><th>交付</th><th>记录</th></tr></thead>
             <tbody>
               <tr v-for="item in serviceRequests.items" :key="item.id">
                 <td><strong>申请 #{{ item.id }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · {{ item.user_phone || '—' }}</small><button type="button" class="detail-link" @click="$emit('open-user', { id: item.user_id, name: item.user_name })">查看用户</button></td>
                 <td class="request-summary-cell"><strong>{{ consultationTypeLabel(item.consultation_type) }}</strong><small>{{ item.request_payload?.context?.current_challenge || item.request_payload?.calendar_goal || '未填写目标' }}</small><small>{{ item.request_payload?.selected_topics?.join('、') || item.request_payload?.context?.selected_topics?.join('、') || '未选择关注主题' }}</small></td>
-                <td>{{ item.assigned_consultant_name || '待分配' }}<small v-if="item.assigned_consultant_id">#{{ item.assigned_consultant_id }}</small></td>
-                <td><span :class="['status-badge', `request-${item.status}`]">{{ serviceRequestStatusText(item.status) }}</span><small v-if="item.needs_info_reason" class="request-note">待补充：{{ item.needs_info_reason }}</small><small v-if="item.last_error" class="request-note error-cell">{{ item.last_error }}</small></td>
+                <td>{{ item.assigned_consultant_name || '待分配' }}<small v-if="item.assigned_consultant_id">#{{ item.assigned_consultant_id }}</small><small v-if="item.assigned_mingli_consultant_id">命理：{{ item.assigned_mingli_consultant_name || `#${item.assigned_mingli_consultant_id}` }}</small><small v-if="item.assigned_psychology_consultant_id">心理：{{ item.assigned_psychology_consultant_name || `#${item.assigned_psychology_consultant_id}` }}</small></td>
+                <td><span :class="['status-badge', `request-${item.status}`]">{{ serviceRequestStatusText(item.status) }}</span><small v-if="item.current_step_key">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><small v-if="item.report_case_status">工作流：{{ reportCaseStatusLabel(item.report_case_status) }}</small><small v-if="item.needs_info_reason" class="request-note">待补充：{{ item.needs_info_reason }}</small><small v-if="item.last_error" class="request-note error-cell">{{ item.last_error }}</small></td>
                 <td>{{ formatDateTime(item.created_at) }}</td>
                 <td>{{ formatDateTime(item.accepted_at) }}</td>
                 <td>{{ formatDateTime(item.delivered_at) }}</td>

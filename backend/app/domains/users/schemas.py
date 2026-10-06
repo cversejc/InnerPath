@@ -25,9 +25,11 @@ class UserBase(BaseModel):
     strengths: Optional[str] = Field(None, max_length=500)
     limitations: Optional[str] = Field(None, max_length=500)
     mingli_experience: List[str] = Field(default_factory=list, max_length=3)
+    mingli_experience_other: Optional[str] = Field(None, max_length=500)
     mingli_attitude: Optional[str] = Field(None, max_length=30)
     preferred_content_depth: Optional[str] = Field(None, max_length=30)
     default_usage_scenarios: List[str] = Field(default_factory=list, max_length=6)
+    default_usage_scenarios_other: Optional[str] = Field(None, max_length=500)
 
 
 class UserCreate(UserBase):
@@ -55,9 +57,11 @@ class UserUpdate(BaseModel):
     strengths: Optional[str] = Field(None, max_length=500)
     limitations: Optional[str] = Field(None, max_length=500)
     mingli_experience: Optional[List[str]] = Field(None, max_length=3)
+    mingli_experience_other: Optional[str] = Field(None, max_length=500)
     mingli_attitude: Optional[str] = Field(None, max_length=30)
     preferred_content_depth: Optional[str] = Field(None, max_length=30)
     default_usage_scenarios: Optional[List[str]] = Field(None, max_length=6)
+    default_usage_scenarios_other: Optional[str] = Field(None, max_length=500)
     avatar_url: Optional[str] = None
 
 
@@ -84,15 +88,18 @@ class UserResponse(BaseModel):
     strengths: Optional[str]
     limitations: Optional[str]
     mingli_experience: List[str]
+    mingli_experience_other: Optional[str] = None
     mingli_attitude: Optional[str]
     preferred_content_depth: Optional[str]
     default_usage_scenarios: List[str]
+    default_usage_scenarios_other: Optional[str] = None
     profile_version: int
     profile_last_confirmed_at: Optional[datetime]
     profile_completion: int
     avatar_url: Optional[str]
     user_type: str
     role: str
+    consultant_type: Optional[str] = None
     is_active: bool
     phone_verified_at: Optional[datetime]
     last_login_at: Optional[datetime]

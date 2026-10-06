@@ -1,0 +1,13 @@
+{
+  "raw": "{\"approved\": false, \"issues\": [{\"code\": \"MISSING_FIELD\", \"severity\": \"BLOCK\", \"entry_date\": null, \"message\": \"交付缺少顶层 monthly 字段，月度方向/成长任务/资源/旧模式/决定原则/节奏变化均未提供，无法核对月度与逐日一致性。\"}, {\"code\": \"MISSING_FIELD\", \"severity\": \"BLOCK\", \"entry_date\": null, \"message\": \"交付缺少顶层 profile 与 questionnaire 字段，无法核对用户资料与咨询议题是否被正确引用。\"}, {\"code\": \"MISSING_FIELD\", \"severity\": \"BLOCK\", \"entry_date\": null, \"message\": \"交付缺少顶层 source_report 与 allowed_source_refs 字段，无法核对文案引用是否落在已审核来源范围内。\"}, {\"code\": \"MISSING_FIELD\", \"severity\": \"BLOCK\", \"entry_date\": null, \"message\": \"交付缺少顶层 temporal_facts 与 programmatic_checks 字段，无法核对历法事实与程序检查结论。\"}, {\"code\": \"MISSING_FIELD\", \"severity\": \"BLOCK\", \"entry_date\": null, \"message\": \"交付缺少顶层 decision_feedback 字段，无法核对是否按用户此前行动记录调整动作大小与复盘问题。\"}, {\"code\": \"MISSING_FIELD\", \"severity\": \"MAJOR\", \"entry_date\": null, \"message\": \"交付缺少顶层 few_shot_examples 字段，无法核对是否仅学习方法而未复制其他用户事实。\"}, {\"code\": \"MISSING_FIELD\", \"severity\": \"MAJOR\", \"entry_date\": null, \"message\": \"交付缺少顶层 current_request 字段，无法核对本次请求的焦点议题与目标是否被回应。\"}, {\"code\": \"MISSING_FIELD\", \"severity\": \"MAJOR\", \"entry_date\": null, \"message\": \"交付缺少顶层 color_policy 与 tone_weights 字段，无法核对色块阈值与语气权重是否被正确应用。\"}, {\"code\": \"MISSING_FIELD\", \"severity\": \"MAJOR\", \"entry_date\": null, \"message\": \"交付缺少顶层 calendar_review_days 字段，30天逐日文案、四维分数、干支与窗口均未提供，无法进行逐日实质审核。\"}, {\"code\": \"MISSING_FIELD\", \"severity\": \"MAJOR\", \"entry_date\": null, \"message\": \"交付缺少顶层 reviewed_foundation 与 confirmed_semantics 字段，无法核对命盘事实与已确认语义是否被正确引用。\"}], \"patches\": []}",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 48688,
+    "output_tokens": 577,
+    "latency_ms": 3307,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "45fbd5ba-9a8b-4424-940f-d63ebf035932"
+  }
+}

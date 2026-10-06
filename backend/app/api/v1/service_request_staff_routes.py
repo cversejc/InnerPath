@@ -21,6 +21,7 @@ from app.domains.service_requests.schemas import (
 )
 from app.application.service_request_delivery import deliver_service_request
 from app.application.service_request_ai import start_service_request_ai_draft
+from app.application.report_cases import ensure_legacy_service_request_allowed
 from app.domains.service_requests.service import (
     accept_service_request,
     get_service_request,
@@ -31,7 +32,12 @@ from app.domains.service_requests.service import (
     serialize_task,
     staff_can_access,
 )
-from app.api.v1.service_request_api_support import _raise_value_error, _serialize_public, _workspace_response
+from app.api.v1.service_request_api_support import (
+    _raise_value_error,
+    _serialize_public,
+    _workspace_response,
+    report_case_progress_for_requests,
+)
 from app.tasks.service_request_dispatch import dispatch_service_request_draft
 
 staff_router = APIRouter()
@@ -49,12 +55,16 @@ async def list_staff_requests(
     # belong in the consultant review queue.
     rows = await list_staff_service_requests(db, current_user, request_status, "report", scope)
     items = []
+    progress_by_request = await report_case_progress_for_requests(
+        db, [item.id for item, _target_user in rows]
+    )
     for item, target_user in rows:
         assigned_name = None
         if item.assigned_consultant_id:
             assigned_name = await db.scalar(select(User.name).where(User.id == item.assigned_consultant_id))
         payload = item.request_payload or {}
         profile = payload.get("profile") or {}
+        progress = progress_by_request.get(item.id, {})
         items.append(
             StaffServiceRequestListItem(
                 id=item.id,
@@ -73,9 +83,12 @@ async def list_staff_requests(
                     "birth_year": profile.get("birth_year") if scope != "available" or current_user.role == "admin" else None,
                 },
                 assigned_consultant_id=item.assigned_consultant_id,
+                assigned_mingli_consultant_id=item.assigned_mingli_consultant_id,
+                assigned_psychology_consultant_id=item.assigned_psychology_consultant_id,
                 assigned_consultant_name=assigned_name,
                 needs_info_reason=item.needs_info_reason,
                 last_error=item.last_error,
+                **progress,
                 created_at=item.created_at,
                 updated_at=item.updated_at,
             )
@@ -113,7 +126,10 @@ async def get_staff_request_workspace(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     if not staff_can_access(service_request, current_user):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Service request is not assigned")
-    return _workspace_response(await get_workspace(db, service_request))
+    workspace = await get_workspace(db, service_request)
+    if service_request.service_type == "report":
+        workspace["request"] = (await _serialize_public(db, service_request)).model_dump()
+    return _workspace_response(workspace)
 
 
 @staff_router.post("/{request_id}/ai-draft", response_model=ServiceRequestTaskResponse, status_code=status.HTTP_202_ACCEPTED)
@@ -127,6 +143,7 @@ async def start_ai_draft(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
+        ensure_legacy_service_request_allowed(service_request)
         task = await start_service_request_ai_draft(
             db,
             service_request,
@@ -151,6 +168,7 @@ async def save_staff_draft(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
+        ensure_legacy_service_request_allowed(service_request)
         draft = await save_service_request_draft(
             db,
             service_request,
@@ -182,6 +200,7 @@ async def request_staff_info(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
+        ensure_legacy_service_request_allowed(service_request)
         service_request = await request_more_info(
             db,
             service_request,
@@ -206,6 +225,7 @@ async def retry_staff_ai(
     if not service_request:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
+        ensure_legacy_service_request_allowed(service_request)
         task = await start_service_request_ai_draft(
             db,
             service_request,

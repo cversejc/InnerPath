@@ -1,0 +1,71 @@
+{
+  "signature": "9865cd768d652016a2413e54c8f323857da0e877146d30a87b18a4f1f2ef56b6",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "人生阶段地图：把“停一下”练成长期能力",
+    "content": "如果把前面看到的模式放回时间轴，你会发现它并不是凭空出现的。你自述“要靠谱、不能让人失望”，也自述“拒绝后担心别人觉得我不够好”——这可能是一个待验证的假设：你的自我价值感或许长期以外部评价为主要参照。但请同时保留你自己的反例：面对熟悉同事且有明确截止时，你能够协商任务边界，并非每次都迁就。这说明“外部参照”不是全部事实，而是一个需要继续核对的线索。另一端也同样真实：你自述独自散步时比较放松，说明你对自身节奏的需要一直存在。这两个方向不是谁对谁错，而是需要一起被照顾的整合方向：既保留关系里的关照，也逐步把“我自己的节奏”放回坐标里。\n\n从阶段来看，当前大运辛卯（2019–2028年，约24–33岁）。天干辛金偏印与时柱庚申正印同类叠加，地支卯木与日支未半合木局、与年支子相刑。这个阶段的基调可以理解为“内化与准备被放大”：你可能更容易反复修改、担心做不好，或用“还没准备好”来推迟及时表达。对应的能力方向，是把这份内化资源转成及时的小步行动与温和的边界表达；要留意的旧模式，是用思虑替代行动、延迟表达后积累成生硬回应。这些是解释性候选，不是必然预测。\n\n下一阶段庚寅（2029–2038年，约34–43岁），天干庚金正印、地支寅木。基调是“被支持与规范内化资源延续”，放大主题偏向学习与专业积累。能力方向是把学习资源转为可交付的稳定节奏；旧模式则是用“还不够好”推迟交付。寅木与日支未、时支申的具体互动关系，需要咨询师按库计算核对，这里先不补造细节。\n\n再往后，沿库计算的真实起止年份是：己丑2039–2048（七杀），责任与压力主题，能力是把压力转为有原则的承担，旧模式是过度防御或对“被要求”高度敏感；戊子2049–2058（正官），规范与主权主题，能力是自主选择原则，旧模式是怕错与压抑；丁亥2059–2068（偏财），体验与投入主题，能力是自由中的持续投入，旧模式是用刺激补充匮乏；丙戌2069–2078（正财），务实与成果主题，能力是稳定中保留感受，旧模式是以掌控替代连接；乙酉2079–2088（食神），表达与滋养主题，能力是可分享的创造，旧模式是以享受回避责任。这些阶段的原局互动细节，同样需要咨询师按库计算核对，本批不补造。\n\n这些阶段不是必然发生的预测，而是条件式的可能：如果你能在练习中逐步把“停一下”变成能力，透支可能减少，表达也可能更及时；如果情境需要快速响应（比如危机处理），及时停下这个方向可能需要调整节奏。\n\n你已有的资源也值得被看见：面对熟悉同事且有明确截止时，你能够协商任务边界，并非每次都迁就——这说明“有余地的表达”对你来说不是从零开始。接下来的成长实验，会把这些方向落成具体的小步动作；这一节只负责把地图画清楚：方向已经连起来，下一步是把理解转成可练习的动作。",
+    "used_findings": [
+      "s3.self.core_tension",
+      "s2.pattern.self_worth_external_reference",
+      "s3.yijing.metaphor",
+      "s3.timeline.current_period",
+      "s3.timeline.next_period",
+      "s3.timeline.later_periods",
+      "s4.action.weekly_shadow_review"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.timeline",
+      "analysis.s4.timing_self"
+    ],
+    "used_actions": [],
+    "transition_hint": "阶段地图已经画清：当前与往后的主题、能力方向和需要留意的旧模式都已按真实起止年份摆开，也保留了待核对与条件式的边界；下一节进入成长实验，把这些方向落成可练习的小步动作。",
+    "presentation_meta": {
+      "chapter": "direction",
+      "fragment_key": "report.direction.life_map",
+      "sequence_no": 15,
+      "reader_facing_title": "人生阶段地图：把“停一下”练成长期能力",
+      "tone": "第二人称、温和而具体",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "length_band": "约900字",
+      "contains_quote": false,
+      "contains_diagnosis": false,
+      "contains_prediction": false,
+      "hypotheses_marked": true,
+      "counterexample_preserved": true
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.life_map",
+        "status": "FULFILLED",
+        "reason": "正文按 analysis.s3.timeline 列出当前及后续每个大运的真实起止年份，并逐阶段写明基调、放大主题、能力方向与旧模式；对寅木与原局关系等未确认细节明确标注需咨询师核对，不补造；同时用条件式表达未来，并保留用户自述的反例作为积极资源。",
+        "quote": "当前大运辛卯（2019–2028年，约24–33岁）。天干辛金偏印与时柱庚申正印同类叠加，地支卯木与日支未半合木局、与年支子相刑。",
+        "follow_up_questions": [
+          "在当前阶段，你最希望减少哪种透支？",
+          "有没有一次你成功表达了边界且关系没有受损的经历？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 18279,
+    "output_tokens": 1341,
+    "latency_ms": 5508,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "02150001-f3f4-4db9-aae0-b5c717144471",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "f5b1838be0a4188cc2b78e5906a3288888b3d11d36dae797c5387f2df34d3d79",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

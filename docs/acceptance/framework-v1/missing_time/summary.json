@@ -1,0 +1,464 @@
+{
+  "scenario": "missing_time",
+  "analysis_count": 38,
+  "report_count": 17,
+  "framework_review": [
+    {
+      "requirement_id": "R.psychic_structure",
+      "fragment_keys": [
+        "report.overview.psychic_structure"
+      ],
+      "status": "FULFILLED",
+      "reason": "已按向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向展开，并给出概览路径图；但假设语气不足，已在 issues 中记录。",
+      "quote": "第一层，是向世界展示的你。你自述“我认为自己要靠谱、不能让人失望”，这让“靠谱”成为你意识层认同的角色。",
+      "follow_up_questions": [
+        "在哪些场景你最容易先答应？",
+        "在哪些场景你已经能协商边界？"
+      ]
+    },
+    {
+      "requirement_id": "R.persona",
+      "fragment_keys": [
+        "report.identity.outer_self"
+      ],
+      "status": "FULFILLED",
+      "reason": "已给出可识别的外在角色，并区分自述与符号解释；但符号解释部分未充分标注为待验证线索。",
+      "quote": "它指向一个可识别的外在角色：在同事和朋友眼里，你像是那个能承接、不推脱、可以把事托付的人。",
+      "follow_up_questions": [
+        "在哪些场景最认同『靠谱』角色？",
+        "在哪些场景该角色较松？"
+      ]
+    },
+    {
+      "requirement_id": "R.self_belief",
+      "fragment_keys": [
+        "report.identity.self_perception"
+      ],
+      "status": "FULFILLED",
+      "reason": "已呈现意识自我与底层信念、应该规则及反证；但底层信念的假设语气不足，已在 issues 中记录。",
+      "quote": "再往里一层，是一个更底层的信念假设：被认可，可能取决于你是否满足了别人的期待。",
+      "follow_up_questions": [
+        "这些应该规则最早在什么场景被强化？",
+        "在什么场景下可以松动？"
+      ]
+    },
+    {
+      "requirement_id": "R.hidden_self",
+      "fragment_keys": [
+        "report.identity.hidden_self"
+      ],
+      "status": "FULFILLED",
+      "reason": "已区分阴影、情结、防御并给出保护功能与现实核对；但部分表述将假设写成机制，已在 issues 中记录。",
+      "quote": "阴影，指的是你可能没把它算进“我是谁”的那些面向；情结，指的是在特定情境下被触发、然后自动跑起来的一套反应；防御，是这套反应里具体用的办法。",
+      "follow_up_questions": [
+        "在什么情境下允许自己休息？",
+        "不满通常如何表达？"
+      ]
+    },
+    {
+      "requirement_id": "R.self_direction",
+      "fragment_keys": [
+        "report.identity.self_direction"
+      ],
+      "status": "FULFILLED",
+      "reason": "已给出当前倾向的一端、被排除的另一端与两端整合方向，并保留反例；但部分符号解释未充分标注为待验证。",
+      "quote": "所谓整合，不是变成完美的人，而是让两端在具体情境里同时在场：既保留关系，也保留自己的节奏。",
+      "follow_up_questions": [
+        "在哪些场景你最容易先答应？",
+        "在哪些场景你已经能协商边界？"
+      ]
+    },
+    {
+      "requirement_id": "R.energy",
+      "fragment_keys": [
+        "report.identity.energy_pattern"
+      ],
+      "status": "FULFILLED",
+      "reason": "已呈现充电/耗电、探索→价值→执行→反馈路径及张力，并声明无自报不推 MBTI；但路径描述偏确定，已在 issues 中记录。",
+      "quote": "探索的入口是项目开头涌出的许多想法；价值的入口是“要靠谱、不能让人失望”，外部期待在这里权重较高；执行的入口是反复修改、接近截止才交付，推进力主要来自截止压力；反馈的入口偏向外部监控，例如下班后查看消息怕漏事，而独自散步时放松则是少见的向内反馈。",
+      "follow_up_questions": [
+        "你是否有MBTI或八维自报结果可提供？",
+        "在探索与执行之间，你通常如何做取舍？"
+      ]
+    },
+    {
+      "requirement_id": "R.relationships",
+      "fragment_keys": [
+        "report.identity.relationship_pattern"
+      ],
+      "status": "FULFILLED",
+      "reason": "已按请求/回应/感受/反馈描述循环，并给出反例与待核对问题；但感受部分假设语气不足，已在 issues 中记录。",
+      "quote": "一个可能的循环大致是这样：临时请求或关系变动出现——比如同事临时请你代写方案，或朋友连续两次临时改地点；你的回应是先答应下来；紧接着的感受可能是担心让人失望，以及熬夜之后的不耐烦；随后你用延迟回应、生硬回应或直接取消聚会来完成“反馈”；对方那边可能感到疏远，而这次经历又反过来强化“不能拒绝”的信念。",
+      "follow_up_questions": [
+        "在什么关系与条件下你更容易协商？",
+        "对方通常如何回应你的拒绝？"
+      ]
+    },
+    {
+      "requirement_id": "R.blocks",
+      "fragment_keys": [
+        "report.blocks.block_01",
+        "report.blocks.block_02",
+        "report.blocks.block_03"
+      ],
+      "status": "FULFILLED",
+      "reason": "三个卡点均按场景→触发→运作→过去保护→长期代价→整合邀请展开，且本节未展开解决步骤；但部分机制表述偏确定，已在 issues 中记录。",
+      "quote": "一句关键结论：你可能并不是不会拒绝，而是习惯先把关系稳住，再在事后用延迟、生硬回应或取消来替自己说出边界。",
+      "follow_up_questions": [
+        "哪个卡点最贴近你当下的体验？",
+        "在什么条件下你更容易协商边界？"
+      ]
+    },
+    {
+      "requirement_id": "R.common_pattern",
+      "fragment_keys": [
+        "report.blocks.common_pattern"
+      ],
+      "status": "FULFILLED",
+      "reason": "已综合多个卡点并给出触发→情绪/信念→防御→短期保护→长期重复链条，且声明非因果；但共享信念的假设语气不足，已在 issues 中记录。",
+      "quote": "三者共享同一个假设性的核心信念：担心让人失望。",
+      "follow_up_questions": [
+        "在什么条件下更容易协商？",
+        "每次遇到什么会怎样？"
+      ]
+    },
+    {
+      "requirement_id": "R.breakthrough",
+      "fragment_keys": [
+        "report.blocks.breakthrough"
+      ],
+      "status": "FULFILLED",
+      "reason": "已给出资源→调节功能→能力→现实缺口→工具→实验方向，并指向第三章；但资源转译未标明为解释性候选，已在 issues 中记录。",
+      "quote": "若把癸水理解为「静观与渗透」的倾向、伤官理解为「整理与表达」的倾向、正财理解为「务实与收束」的倾向，那么它们对应的调节功能大致是：在刺激与回应之间留出一段缓冲，把模糊的感受整理成可说出口的句子，再把句子落到具体的时间与条件上。",
+      "follow_up_questions": [
+        "你希望优先发展哪项能力？",
+        "哪个工具最符合你的日常节奏？"
+      ]
+    },
+    {
+      "requirement_id": "R.archetype",
+      "fragment_keys": [
+        "report.blocks.breakthrough"
+      ],
+      "status": "FULFILLED",
+      "reason": "已给出中式人物意象、可学习能力与适用边界，并声明不作史实或人格诊断。",
+      "quote": "用一个中式人物意象来具象化这种承担模式：像一位「持家守成的当家人」，善于维持关系、把责任揽在身上，家里的事先应下来再说。",
+      "follow_up_questions": [
+        "在哪些场景你感到责任必须由自己承担？",
+        "在哪些场景你愿意把责任交还？"
+      ]
+    },
+    {
+      "requirement_id": "R.life_map",
+      "fragment_keys": [
+        "report.direction.life_map"
+      ],
+      "status": "DEFERRED",
+      "reason": "已明确说明大运起止无法给出、原局互动不单独推断阶段主题，并给出条件式未来与补问；但资源判断未标明为假设，已在 issues 中记录。",
+      "quote": "真实的大运起止年份，目前无法给出。系统计算的大运为空，而你的出生钟表时间未提供，起运无法确定，因此既不能按当前分析日期选定当前运，也无法给出后续每十年的起止年份，更不能补造。",
+      "follow_up_questions": [
+        "请提供尽量准确的出生钟表时间（几点几分）。",
+        "出生时间是否接近整点或时辰交界？"
+      ]
+    },
+    {
+      "requirement_id": "R.timing_wisdom",
+      "fragment_keys": [
+        "report.direction.current_stage"
+      ],
+      "status": "FULFILLED",
+      "reason": "已给出当下境遇与比喻匹配、不适用边界，并声明非起卦证明；但比喻对应偏确定，已在 issues 中记录。",
+      "quote": "需要说明的是，这是一则哲学比喻，不是起卦结果，也不证明任何必然走向。",
+      "follow_up_questions": [
+        "在哪些情境你觉得必须立即回应？",
+        "在哪些情境你可以先停一停？"
+      ]
+    },
+    {
+      "requirement_id": "R.experiments",
+      "fragment_keys": [
+        "report.direction.growth_experiments"
+      ],
+      "status": "FULFILLED",
+      "reason": "已列出3项已确认 Action，并给出动作/频率/耗时/观察/退出，适配现实条件；但部分练习依据未标明为解释性候选，已在 issues 中记录。",
+      "quote": "第一件，暂停后回应。对应卡点：临时请求下先答应、后撤回。能力：在压力下识别自身意愿并延后回应。工具：短焦加依恋沟通。",
+      "follow_up_questions": [
+        "哪项练习你最愿意先开始？",
+        "时间紧张时你希望优先保留哪一项？"
+      ]
+    },
+    {
+      "requirement_id": "R.practice_rhythm",
+      "fragment_keys": [
+        "report.direction.growth_experiments"
+      ],
+      "status": "FULFILLED",
+      "reason": "已给出每日/每周/每月/每季节奏与时间不足减量，并说明可选菜单。",
+      "quote": "每日1分钟做能量记录；每周5分钟做一次阴影观察，也就是留意那些「想休息、想拒绝」的时刻；每月10分钟做一次触发链复盘，回看一次「请求→担心让人失望→先答应→透支→延迟或撤回」的完整过程；每季20分钟做一次方向复盘，看这三件事是否还贴合你现在的处境。",
+      "follow_up_questions": [
+        "哪项练习你最愿意先开始？",
+        "时间紧张时你希望优先保留哪一项？"
+      ]
+    },
+    {
+      "requirement_id": "R.ending",
+      "fragment_keys": [
+        "report.ending"
+      ],
+      "status": "FULFILLED",
+      "reason": "已以哲学贯通认识→理解→行动，并给出个性化寄语；但引用未标注章节，已在 issues 中记录。",
+      "quote": "《道德经》里有一句：「知人者智，自知者明。」你已经比开始时更清楚自己是怎么运转的。",
+      "follow_up_questions": [
+        "你愿意从哪一个小练习开始？",
+        "什么时间做最可行？"
+      ]
+    }
+  ],
+  "scorecard": {
+    "dimensions": {
+      "fact_fidelity": {
+        "score": 12,
+        "reason": "多处将待验证假设写成较确定结论，且未保留反证与待核对提示；概览与卡点章节的假设语气不足。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.identity.self_perception",
+          "report.identity.hidden_self",
+          "report.identity.energy_pattern",
+          "report.identity.relationship_pattern",
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough",
+          "report.direction.current_stage",
+          "report.direction.life_map",
+          "report.direction.growth_experiments"
+        ],
+        "max_score": 20,
+        "label": "案例事实忠实度"
+      },
+      "personalization": {
+        "score": 16,
+        "reason": "大量使用用户自述场景与反例，个性化程度较高；但部分章节将假设写成通用机制，削弱了与用户具体经验的绑定。",
+        "fragment_keys": [
+          "report.identity.outer_self",
+          "report.identity.self_perception",
+          "report.identity.hidden_self",
+          "report.identity.relationship_pattern",
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03",
+          "report.direction.growth_experiments"
+        ],
+        "max_score": 20,
+        "label": "个性化"
+      },
+      "psychological_logic": {
+        "score": 11,
+        "reason": "阴影、情结、防御的区分与关系有呈现，但部分推导将假设写成机制，且未充分保留反证与待核对部分。",
+        "fragment_keys": [
+          "report.identity.hidden_self",
+          "report.identity.self_perception",
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03",
+          "report.blocks.common_pattern"
+        ],
+        "max_score": 15,
+        "label": "心理逻辑"
+      },
+      "structure_coherence": {
+        "score": 13,
+        "reason": "章节顺序与暗线基本连贯，概览与各章职责较清楚；但概览与卡点章节存在重复展开，且部分章节假设语气不一致。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough"
+        ],
+        "max_score": 15,
+        "label": "三章连贯性"
+      },
+      "reading_experience": {
+        "score": 8,
+        "reason": "第二人称、现实语言，阅读流畅；但部分段落术语与假设混用，读者可能难以区分已确认与待验证内容。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.identity.foundation_notes",
+          "report.identity.self_perception",
+          "report.identity.hidden_self",
+          "report.blocks.breakthrough"
+        ],
+        "max_score": 10,
+        "label": "阅读体验"
+      },
+      "action_value": {
+        "score": 8,
+        "reason": "三件练习与节奏具体、适配用户时间条件；但部分练习依据的命理转译未标明为解释性候选，可能影响行动依据的可靠性。",
+        "fragment_keys": [
+          "report.direction.growth_experiments",
+          "report.blocks.breakthrough"
+        ],
+        "max_score": 10,
+        "label": "行动价值"
+      },
+      "uncertainty_safety": {
+        "score": 6,
+        "reason": "多处未保留假设语气与反证，且部分章节将待验证机制写成较确定结论；虽无诊断与必然未来，但不确定性表达不足。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.identity.self_perception",
+          "report.identity.hidden_self",
+          "report.identity.energy_pattern",
+          "report.identity.relationship_pattern",
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough",
+          "report.direction.current_stage",
+          "report.direction.life_map",
+          "report.direction.growth_experiments"
+        ],
+        "max_score": 10,
+        "label": "不确定性与安全"
+      }
+    },
+    "total": 74,
+    "max_score": 100,
+    "passes_threshold": false
+  },
+  "issues": [
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "概览把「先答应、后撤回」写成已确认主线，但该模式在来源中仅为待验证假设（s1.signal.boundary_pattern 为 INTERNAL_ONLY，s2.complex.boundary_cycle 标注为假设）。概览未保留假设语气，读者会读成定论。",
+      "evidence": "你可能在用“先答应”维持一个靠谱、不让人失望的形象，再用“延迟、生硬回应或取消”把被压缩的休息和真实需求放回关系里",
+      "suggestion": "在概览首句加入假设限定，如「以下是一种待验证的假设」，并说明需以真实场景与反例校正。",
+      "target_fragment_key": "report.overview.psychic_structure"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "概览称「它的保护功能是让你被需要、被认可」，但来源中「以承接需求换取被认可」是 s2.mapping.mask_reliable 的假设，且该 finding 在概览中的角色为 REFERENCE，不应在此新增解释性断言。",
+      "evidence": "它的保护功能是让你被需要、被认可，也让你避开当下的冲突",
+      "suggestion": "改为引用式表述，如「前面提到的假设认为，这套反应可能短期维持被需要与被认可的位置」，并标注为假设。",
+      "target_fragment_key": "report.overview.psychic_structure"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「眼中的自己」把「被认可取决于是否满足他人期待」写成「一个更底层的信念假设」后，又用「如果这个信念成立」推导拒绝的心理代价，但来源 s2.mapping.core_belief 的 confidence 为 MEDIUM 且明确为假设；正文未保留反证与待核对提示。",
+      "evidence": "如果这个信念成立，那么拒绝就不只是拒绝一件事，而像是冒着“我这个人不够好”的风险",
+      "suggestion": "补充该信念为假设、需以真实场景核对，并保留用户自述的反例作为校正依据。",
+      "target_fragment_key": "report.identity.self_perception"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「还没被允许出声的那部分你」把「想休息、想说‘不’、想表达不满」写成「在当下可能不太容易被你允许直接出现」，但来源 s2.shadow.rest_excluded 的 confidence 为 MEDIUM 且标注「需以更多场景核对」；正文虽称假设，但随后用「要么被压下去，要么换成别的方式冒出来」强化为运作机制。",
+      "evidence": "它们要么被压下去，要么换成别的方式冒出来",
+      "suggestion": "将该句改为待核对假设，并明确列出可核对场景（如家人、亲近朋友）以保留反证空间。",
+      "target_fragment_key": "report.identity.hidden_self"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「能量与做事节奏」把「探索→价值→执行→反馈」路径写成较确定的描述，但来源 analysis.s4.functions 明确为「倾向假设，需以自报或访谈校正」，且用户未提供 MBTI 或八维自报。",
+      "evidence": "张力出现在探索与执行之间：中间缺少一个价值核对与停顿的环节，想法直接滑向承接，承接又直接滑向透支。",
+      "suggestion": "在该段前后补充「这是基于问卷与行为描述的倾向假设，需以自报或访谈校正」，避免读成已确认结论。",
+      "target_fragment_key": "report.identity.energy_pattern"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「关系循环」把「担心让人失望」和「熬夜后不耐烦」写成循环中的固定感受，但来源 s2.complex.boundary_cycle 的 emotion 为假设；正文虽有一句「不是已经证实的固定事实」，但整体叙述仍以确定语气展开。",
+      "evidence": "紧接着的感受可能是担心让人失望，以及熬夜之后的不耐烦",
+      "suggestion": "将「可能是」改为「假设可能是」，并在段末保留待核对问题，避免读者读成已确认情绪链。",
+      "target_fragment_key": "report.identity.relationship_pattern"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「卡在哪：先答应、后撤回的循环」把「你自述的‘要靠谱、不能让人失望’在这个循环里可能扮演了加速器的角色」写成机制性判断，但来源 s1.signal.boundary_pattern 为 INTERNAL_ONLY，s2.complex.boundary_cycle 为假设；正文未说明该机制为待验证。",
+      "evidence": "它让答应变得顺理成章，也让当场协商显得像一种冒险",
+      "suggestion": "补充该机制为假设、需以真实场景核对，并保留反例作为校正依据。",
+      "target_fragment_key": "report.blocks.block_01"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「卡在哪：休息与拒绝为何难以被允许」把「答应的动作先发生，不舒服的感受被留到后面才浮上来」写成顺序性判断，但来源 s2.shadow.rest_excluded 与 s4.block.rest_shadow 均为假设，且用户未提供该顺序的自述。",
+      "evidence": "更像是答应的动作先发生，不舒服的感受被留到后面才浮上来",
+      "suggestion": "改为「如果这个顺序在你身上反复出现」的假设句式，并明确需以真实场景核对。",
+      "target_fragment_key": "report.blocks.block_02"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「卡在哪：担心做不好而反复修改」把「反复修改不是懒惰或拖延，而是一种保护动作」写成解释性结论，但来源 s4.block.perfection_delay 的 confidence 为 MEDIUM 且标注「假设，需以真实项目场景核对」。",
+      "evidence": "反复修改不是懒惰或拖延，而是一种保护动作",
+      "suggestion": "改为「可以理解为一种保护动作」并保留假设与待核对提示。",
+      "target_fragment_key": "report.blocks.block_03"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「三个卡点，一条暗线」把「三者共享同一个假设性的核心信念：担心让人失望」写成共享信念，但来源 s2.mapping.core_belief 为假设，且 s4.block.perfection_delay 的 relation_refs 指向 s2.mapping.core_belief 与 s3.quadrant.carrier，未确认三者共享同一信念。",
+      "evidence": "三者共享同一个假设性的核心信念：担心让人失望",
+      "suggestion": "改为「三者可能共享一个假设性的核心信念」，并说明需以真实事件核对。",
+      "target_fragment_key": "report.blocks.common_pattern"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「往哪去」把「若把癸水理解为……那么它们对应的调节功能大致是……」写成可练习链条，但来源 s1.useful_gods.candidate 为 LOW confidence 且存在从财杀分歧；正文未说明该转译仅为解释性候选。",
+      "evidence": "这是一条可练习的链条，不是命定的性格标签。",
+      "suggestion": "补充该转译为解释性候选、存在流派分歧，需咨询师确认后再作为练习依据。",
+      "target_fragment_key": "report.blocks.breakthrough"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「当下时义」把「你像大地一样先接住别人的需求，之后才在某个时刻突然撤回」写成匹配比喻，但来源 s3.yijing.metaphor 为 LOW confidence 且标注「哲学比喻，非占卜证明」；正文虽声明非起卦，但比喻与用户行为的对应仍偏确定。",
+      "evidence": "你像大地一样先接住别人的需求，之后才在某个时刻突然撤回",
+      "suggestion": "改为「可以借这个比喻来观察」，并保留不适用边界与待核对提示。",
+      "target_fragment_key": "report.direction.current_stage"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「阶段地图」把「背后可能有一条条件化的信念在运作：被认可，取决于是否满足了别人的期待」写成假设后，又用「这正是一个可以扩大的积极资源」将反例升格为资源，但来源 s2.mapping.core_belief 为假设，且 s3.timeline.deferred 为 DEFERRED；正文未说明该资源判断需以真实场景核对。",
+      "evidence": "这正是一个可以扩大的积极资源。",
+      "suggestion": "补充该资源判断为假设、需以真实场景核对，并保留待补问。",
+      "target_fragment_key": "report.direction.life_map"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "「把方向落成可以练习的动作」把「你的日主为癸水，传统意象偏向以渗透、观察、顺势的方式回应环境，这在练习里对应的是先看清、再回应」写成练习依据，但来源 s1.dm.gui_water 为解释视角，且 s1.useful_gods.candidate 为 LOW confidence；正文未说明该对应为待验证线索。",
+      "evidence": "你的日主为癸水，传统意象偏向以渗透、观察、顺势的方式回应环境，这在练习里对应的是先看清、再回应",
+      "suggestion": "补充该对应为解释性线索、非练习效果保证，并保留待确认提示。",
+      "target_fragment_key": "report.direction.growth_experiments"
+    },
+    {
+      "issue_type": "safety",
+      "severity": "MAJOR",
+      "message": "「收束」引用《道德经》「知人者智，自知者明。」但来源 quote_library 中该条目的 attribution 为「《道德经》第三十三章」，正文未标注章节，且未说明该引用来自已核验库；虽不构成事实错误，但署名引用应完整标注来源。",
+      "evidence": "《道德经》里有一句：「知人者智，自知者明。」",
+      "suggestion": "补充章节标注「《道德经》第三十三章」，或改为不署名原创句。",
+      "target_fragment_key": "report.ending"
+    },
+    {
+      "issue_type": "quality_score_below_threshold",
+      "severity": "BLOCK",
+      "target_fragment_key": null,
+      "message": "报告未达到总分80、事实16及安全8分的交付门槛。",
+      "evidence": "七维总分：74/100",
+      "suggestion": "修正低分维度并重新运行全文校准。"
+    }
+  ],
+  "consultant_review": "PENDING"
+}

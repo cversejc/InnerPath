@@ -14,6 +14,7 @@ class UserStatusUpdate(BaseModel):
 
 class UserRoleUpdate(BaseModel):
     role: str = Field(..., pattern="^(user|consultant|admin)$")
+    consultant_type: Optional[str] = Field(None, pattern="^(mingli|psychology|integrated)$")
 
 
 class AdminPasswordResetRequest(BaseModel):
@@ -52,9 +53,11 @@ class AdminUserUpdate(BaseModel):
     strengths: Optional[str] = Field(None, max_length=500)
     limitations: Optional[str] = Field(None, max_length=500)
     mingli_experience: Optional[list[str]] = Field(None, max_length=3)
+    mingli_experience_other: Optional[str] = Field(None, max_length=500)
     mingli_attitude: Optional[str] = Field(None, max_length=30)
     preferred_content_depth: Optional[str] = Field(None, max_length=30)
     default_usage_scenarios: Optional[list[str]] = Field(None, max_length=6)
+    default_usage_scenarios_other: Optional[str] = Field(None, max_length=500)
     avatar_url: Optional[str] = None
 
 
@@ -63,6 +66,7 @@ class AdminUserListItem(BaseModel):
     name: str
     phone: str
     role: str
+    consultant_type: Optional[str] = None
     user_type: str
     is_active: bool
     created_at: datetime
@@ -196,8 +200,6 @@ class AdminReportTaskResponse(BaseModel):
     error: Optional[str] = None
     retry_count: int = 0
     retry_of_task_id: Optional[str] = None
-    has_input_snapshot: bool = False
-    has_retry: bool = False
     created_at: datetime
     updated_at: datetime
 

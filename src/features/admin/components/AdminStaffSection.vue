@@ -19,9 +19,17 @@ const specialties = [
 ]
 const specialtyDrafts = reactive({})
 
+function specialtiesFor(member) {
+  if (member.consultant_specialties?.length) return [...member.consultant_specialties]
+  if (member.consultant_type === 'integrated') return specialties.map(item => item.id)
+  if (member.consultant_type === 'mingli') return ['metaphysics']
+  if (member.consultant_type === 'psychology') return ['psychology']
+  return []
+}
+
 watch(() => props.staffUsers, members => {
   for (const member of members) {
-    if (member.role === 'consultant') specialtyDrafts[member.id] = [...(member.consultant_specialties || [])]
+    if (member.role === 'consultant') specialtyDrafts[member.id] = specialtiesFor(member)
   }
 }, { immediate: true, deep: true })
 
@@ -33,7 +41,7 @@ function toggleSpecialty(memberId, specialty, checked) {
 }
 
 function specialtiesChanged(member) {
-  return JSON.stringify(specialtyDrafts[member.id] || []) !== JSON.stringify(member.consultant_specialties || [])
+  return JSON.stringify(specialtyDrafts[member.id] || []) !== JSON.stringify(specialtiesFor(member))
 }
 
 function saveSpecialties(member) {
@@ -50,6 +58,7 @@ function saveSpecialties(member) {
         <form class="stack-form" @submit.prevent="$emit('invite')">
           <label>手机号<input v-model.trim="inviteForm.phone" type="tel" inputmode="numeric" autocomplete="tel" required maxlength="11" placeholder="11 位手机号"></label>
           <label>角色<select v-model="inviteForm.role"><option value="consultant">咨询师</option><option value="admin">管理员</option></select></label>
+          <label v-if="inviteForm.role === 'consultant'">专业类型<select v-model="inviteForm.consultant_type" required><option value="mingli">命理咨询师</option><option value="psychology">心理咨询师</option><option value="integrated">综合咨询师</option></select></label>
           <VanButton class="primary-button" type="primary" native-type="submit" :disabled="inviteSaving" :loading="inviteSaving" loading-text="生成中…" :aria-busy="inviteSaving">生成邀请链接</VanButton>
         </form>
         <div v-if="inviteToken" class="invite-result" role="status" aria-live="polite"><span>本次令牌</span><code>{{ inviteToken }}</code><router-link :to="{ path: '/auth/invite', query: { token: inviteToken } }">打开邀请页面 →</router-link></div>

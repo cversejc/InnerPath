@@ -57,10 +57,18 @@ backend/htmlcov/
 .claude/
 
 # Local verification artifacts
+/tmp/
 .tmp-fonts/
 .tmp-fonttools/
 .tmp-review-2/
 docs/product/.qa_docx/word-render/
 
+# Locally generated report files and PDF page renders
+/output/pdf/
+/tmp/pdfs/
+
 # Local design source already distilled into the tracked design system
 docs/chenjian_typography_design_v1.0.docx
+
+# Local source questionnaire contains personal information
+docs/青鸟基本信息.txt

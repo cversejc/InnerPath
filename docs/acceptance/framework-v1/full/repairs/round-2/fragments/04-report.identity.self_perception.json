@@ -1,0 +1,63 @@
+{
+  "signature": "d5cdb9dc047f3b3ac46518e47997bc81e7f68637b3bc325796bbdc850ef1b779",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "眼中的自己",
+    "content": "你对自己的描述里，有一句很清晰的话：“我认为自己要靠谱、不能让人失望。”这是你直接说出口的感受，不是推测。它像一根坐标轴，把你不少选择都对齐了上去。与此同时，你还说过另一句更靠里的话：“拒绝后担心别人觉得我不够好。”两句放在一起看，一个在明处，一个在暗处——明处是你想成为的样子，暗处是你怕变成的样子。\n\n用日常语言说，这可能是这样的结构：在意识层面，你可能认同“靠谱、专业、不让人失望”这个角色，并且愿意为它付出；在更靠下的层面，维持关系安全的方式，可能是通过顺应别人的期待。需要说明的是，后半句是基于你自述与传统命理解释视角提出的假设，不是结论。传统解释视角下，日主癸水常被关联为敏感、以柔应事的自我核心线索，透干正印常被关联为以被认可为调节的资源线索，月令偏财七杀常被关联为以外部成果与他人评价为参照的线索——这些只是解释视角，用来提供一种理解自己的语言，不是事实判断，最终要以你在生活里的实际感受和反馈为准。\n\n顺着这条线往下，可以看见几个反复出现的“应该”。第一个是你自己说出口的：“我应该靠谱、不能让人失望。”第二个更像背景音：“我必须把事情做好。”第三个藏得最深：“我不能拒绝，否则别人会觉得我不够好。”前两个你大概能感觉到，第三个往往在拒绝的那一刻才浮上来。后两个是基于你自述与命理线索提出的假设，不是结论，需要你在生活里核对。\n\n这些“应该”从哪里来，现在还不能下判断。你提到没有提供童年经历，所以这里不补造。从线索上看，它们可能来自早期环境里“务实、可靠、不添麻烦”的氛围，也可能来自工作文化，或者只是你对自己长期的要求。这三者都可能，具体是哪一种，需要你自己回头辨认。有一个问题值得你慢慢想：这些“应该”最早是从哪里听到的？如果不遵守，你担心发生什么？\n\n有一处反证很重要，它说明你不是“总是迁就”的人。你提到，面对熟悉同事且有明确截止时，你能够协商任务边界。这句话把整个画面从“性格”改成了“情境”——在安全、清晰、可预期的关系里，你是能表达边界的。也就是说，你并不是不会拒绝，而是在某些条件下，那个“不能拒绝”的开关会被打开。找到这些条件，比给自己贴一个“不会拒绝”的标签有用得多。\n\n所以，眼中的你，可能是一个把“可靠”放在很前面的人，同时也是一个对关系评价很敏感的人。这两件事叠在一起，就形成了你在请求面前的快速反应。这不评判好坏，它只是你长期用来保护关系、也保护自己“合格感”的方式。至于这个方式在哪些时刻开始变得吃力，下一节会按请求来临、顺从答应、透支、延迟表达的时间顺序，慢慢拆开来看。",
+    "used_findings": [
+      "s2.pattern.overcommitment_loop",
+      "s2.pattern.self_worth_external_reference"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.mapping",
+      "analysis.s2.authority"
+    ],
+    "used_actions": [],
+    "transition_hint": "下一节进入“卡在哪”，按请求来临—顺从答应—透支—延迟表达的时间顺序，拆解三个卡点，并说明即时缓冲的缺口在哪里。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_perception",
+      "sequence_no": 4,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "new_information_role": "DEEPEN"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_belief",
+        "status": "FULFILLED",
+        "reason": "已分别呈现意识层的可靠角色认同与底层的关系安全信念假设；已写出三个“应该/必须/不能”并说明其内化来源需访谈验证、不指责家庭；已包含用户自述感受、反证与待补问。",
+        "quote": "用日常语言说，这可能是这样的结构：在意识层面，你可能认同“靠谱、专业、不让人失望”这个角色，并且愿意为它付出；在更靠下的层面，维持关系安全的方式，可能是通过顺应别人的期待。",
+        "follow_up_questions": [
+          "这些“应该”最早是从哪里听到的？",
+          "如果不遵守，你担心发生什么？",
+          "在什么情境下你最容易答应别人的请求？",
+          "答应之后身体和情绪的第一反应是什么？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15652,
+    "output_tokens": 1087,
+    "latency_ms": 5170,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "8b52ffd2-f7eb-41bd-bbcb-50cdfdb9853d",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "6aaaacb0fa22208396f89c054203af0bc698d2b98a2e75c7f7b20c51b0a7f557",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

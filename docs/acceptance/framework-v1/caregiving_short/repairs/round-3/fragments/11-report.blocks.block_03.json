@@ -1,0 +1,55 @@
+{
+  "signature": "d247e71560cf458fc720b18bf9e26935f235c018f19025a20bab81e5d5740abe",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点三：先答应请求，再补协商",
+    "content": "这一节看第三个卡点：面对临时请求，你可能先答应下来，之后才把条件说清楚。它和前面两个卡点不同——等确定、查群都发生在你独自推进或休息时，而这个卡点发生在别人向你开口的那一刻。\n\n现实里它长这样：姐姐临时请你替她陪诊，你先应下，后来才把轮班表摊开，和她改成轮流陪诊。这个顺序本身不是问题，你也明确说过不觉得拒绝有错；事情一多时，你会先等规则和时间表更清楚。\n\n触发点通常是“请求来得突然、时间表还没对上”。你的第一反应是先把家庭的运转接住，别让谁的计划当场落空。保护功能也在这里：当场答应避免了即时冲突，让陪诊和轮班不至于停摆，把关系里的紧张压到最低。\n\n代价出现在滞后上。需求表达被排到答应之后，负担先落到你身上一段时间；如果协商一直没补上，休息和转岗准备就会被挤。需要说明的是，这不是一个已经坐实的性格结论——你曾与姐姐协商陪诊分工并达成轮换，说明协商能力是存在的，只是常常启动得晚。\n\n整合的邀请是：把协商提前到答应之前。具体怎么练、什么频率、何时退出，留到成长实验一节展开。",
+    "used_findings": [
+      "s4.block.accept_then_negotiate"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "第三个卡点已经看清，接下来综合多个卡点，看它们是否共享同一运作模式。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.block_03",
+      "chapter": "challenge",
+      "sequence_no": 11,
+      "content_length": 396,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "正文按场景→触发→运作→过去保护→长期代价→整合邀请顺序展开；只聚焦一个卡点，未展开解决步骤，具体动作留给成长实验节。",
+        "quote": "这一节看第三个卡点：面对临时请求，你可能先答应下来，之后才把条件说清楚。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5599,
+    "output_tokens": 595,
+    "latency_ms": 2599,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "56a33e76-93fd-4fba-85a0-66f04f073997",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "3b96084eb9d692e05b5cd545eb8f68c9507557e20ca72f201bdcb79651c7aa5f",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

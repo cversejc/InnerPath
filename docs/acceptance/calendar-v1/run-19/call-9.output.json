@@ -1,0 +1,14 @@
+{
+  "raw": "{\"approved\": true, \"issues\": [{\"code\": \"REPETITION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-04\", \"field_path\": \"suitable.0\", \"observed_text\": \"收到请求时先不回答，深呼吸一次，记录身体第一反应与脑中自动想法，再回复“我需要看一下时间，稍后回复你”\", \"message\": \"该停顿建议在整月多数日期逐字重复；虽属同一日常练习且窗口观察点在递进，仍建议按当日情境微调措辞，减少整月文本重复感。\"}], \"patches\": []}",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 63295,
+    "output_tokens": 11836,
+    "latency_ms": 49054,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "4b1f515b-f34c-473f-9be3-ee72f68b275b",
+    "thinking_enabled": true
+  }
+}

@@ -27,7 +27,7 @@ def _serialize_report(report: Report, user: User, task: Optional[ReportTask] = N
     }
 
 
-def _serialize_task(task: ReportTask, user: Optional[User] = None, has_retry: bool = False) -> dict[str, Any]:
+def _serialize_task(task: ReportTask, user: Optional[User] = None) -> dict[str, Any]:
     return {
         "task_id": task.task_id,
         "user_id": task.user_id,
@@ -38,8 +38,6 @@ def _serialize_task(task: ReportTask, user: Optional[User] = None, has_retry: bo
         "error": task.error,
         "retry_count": task.retry_count,
         "retry_of_task_id": task.retry_of_task_id,
-        "has_input_snapshot": bool(task.input_snapshot),
-        "has_retry": has_retry,
         "created_at": task.created_at,
         "updated_at": task.updated_at,
     }
@@ -127,10 +125,4 @@ async def _load_admin_tasks(
     if conditions:
         statement = statement.where(*conditions)
     rows = (await db.execute(statement)).all()
-    task_ids = [task.task_id for task, _ in rows]
-    retry_ids = set()
-    if task_ids:
-        retry_ids = set((await db.execute(
-            select(ReportTask.retry_of_task_id).where(ReportTask.retry_of_task_id.in_(task_ids))
-        )).scalars().all())
-    return [_serialize_task(task, user, task.task_id in retry_ids) for task, user in rows], total
+    return [_serialize_task(task, user) for task, user in rows], total

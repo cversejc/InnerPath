@@ -6,7 +6,6 @@ export default {
       try {
         this.dashboard = await getAdminDashboard(this.dashboardRange)
         this.lastUpdated = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-        this.reportRetryLimit = 2
       } catch (error) {
         if (!silent) this.message = this.errorText(error)
       } finally {

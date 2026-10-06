@@ -8,10 +8,12 @@ export function normalizeReportData(report) {
   const rawGrowth = source.personalGrowth || source.personal_growth || report.personalGrowth || report.personal_growth || {}
 
   return {
+    id: report.id ?? null,
+    title: report.title || '',
     basicInfo: {
       ...rawBasicInfo,
-      name: rawBasicInfo.name || '用户',
-      reportDate: rawBasicInfo.reportDate || rawBasicInfo.report_date || new Date().toISOString().split('T')[0]
+      name: rawBasicInfo.name || '',
+      reportDate: rawBasicInfo.reportDate || rawBasicInfo.report_date || ''
     },
     contentPayload,
     structuredSections: source.structuredSections || source.structured_sections || report.structuredSections || report.structured_sections || null,
@@ -113,25 +115,4 @@ export function parseLegacyReportContent(content) {
     : content
 
   return { foundationData, contentWithoutFoundation }
-}
-
-export function formatReportMarkdown(content) {
-  if (!content) return ''
-
-  let html = content
-    .replace(/^---$/gim, '<hr>')
-    .replace(/^##### (.*$)/gim, '<h5>$1</h5>')
-    .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^\- (.*$)/gim, '<li>$1</li>')
-    .replace(/^\* (.*$)/gim, '<li>$1</li>')
-    .replace(/\n\n+/g, '</p><p>')
-    .replace(/\n/g, '<br>')
-
-  html = html.replace(/(<li>.*?<\/li>(<br>)?)+/g, match => `<ul>${match.replace(/<br>/g, '')}</ul>`)
-  if (!html.startsWith('<h') && !html.startsWith('<ul>')) html = `<p>${html}</p>`
-  return html
 }

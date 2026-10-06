@@ -1,0 +1,50 @@
+{
+  "signature": "3350b96277eb2010c19c976f9ad65d62727e4b399bdf74b5cff397a54ce1604e",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点三：休息与余地少被允许",
+    "content": "到这里，第三个卡点值得单独看一看：休息与有余地的表达，似乎很少被你允许。\n\n先说现实表现。你提到下班后常查看消息，怕漏事；而独自散步时，你比较放松。这两个画面放在一起，本身就说明：放松这一端在你身上是真实存在的，只是它常常要等到“没有任务在场”时才被放行。\n\n再看触发与运作。触发点可能是持续在线的责任感，以及对遗漏事情的担忧。运作方式，是以持续产出和在线状态去替代休息，休息要先被解释、被证明“有理由”，才允许发生。需要说明的是，这些是基于你自述的机制假设，不是对你的判定；如果你在某些场景里其实能安心休息，那正是需要保留的反例。\n\n它过去保护了什么？可能是维持“可靠、能扛事”的形象，以及你在团队和关系里的资源位置，避免被看作不负责。这份保护有它的功劳，不必急着否定。\n\n长期代价也清楚：休息被压缩，情绪与耐心储备下降。你提到答应代写方案后熬夜、第二天不耐烦，朋友两次临时改地点你没表达、最后直接取消聚会——这些场景里，透支与沉默可能是同一件事的两面。\n\n整合邀请是：允许休息不解释，把散步式的放松纳入日常节奏。具体怎么练习，留到第三章的成长实验里展开，这里先不列步骤。",
+    "used_findings": [
+      "s4.block.rest_as_excluded"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "第三个卡点先看到这里。接下来进入第三章：往哪去，让承担与休息同时在场。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.block_03",
+      "chapter": "challenge",
+      "sequence_no": 11,
+      "new_information_role": "MANIFEST",
+      "style_note": "第二人称、低隐喻、中等理论密度；未自述处均用可能/假设表达。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "按场景→触发→运作→过去保护→长期代价→整合邀请的链条展开，来源为已确认的 s4.block.rest_as_excluded 及其证据；本节未展开解决步骤，只以一句指向第三章成长实验。",
+        "quote": "触发点可能是持续在线的责任感，以及对遗漏事情的担忧。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4616,
+    "output_tokens": 603,
+    "latency_ms": 3892,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "a5315879-df9d-4403-a38a-f55eef98c507",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "9f52cd4c8bcf99dc41d4b5f05edd9cbbb62b202516e56cefe23fe5fbc50b6b90",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

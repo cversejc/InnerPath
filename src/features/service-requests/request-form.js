@@ -33,6 +33,10 @@ export default {
     }
   },
   async mounted() {
+    if (this.$route.query.type === 'calendar') {
+      await this.$router.replace('/pages/user/user?tab=reports')
+      return
+    }
     if (this.$route.query.type === 'report') {
       const target = this.$route.query.requestId
         ? '/pages/assessment/assessment?requestId=' + this.$route.query.requestId

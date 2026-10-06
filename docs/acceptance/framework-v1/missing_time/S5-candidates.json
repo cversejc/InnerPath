@@ -1,0 +1,180 @@
+{
+  "signature": "d0afdf75b68df1fd23ee666f2cdce17d1600cc121886b8c5958b9f745abcaa8c",
+  "skill_digest": "32d4cd20c007d179b2e3607ec578d6ae28848576fd38f1e1a9d57717374315ed",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。只用已确认BLOCK，不新增卡点。INTERNAL_ONLY仅为推导依据，不选为核心结论。\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。\n上一轮输出未通过程序校验：narrative_candidate_unsupported_finding。请重新生成完整JSON。reasoning_path.resource_refs只能引用指定角色资源，不能用PERSONA代替。",
+  "output": {
+    "candidates": [
+      {
+        "candidate_key": "candidate.boundary_cycle",
+        "theme": "先答应、后撤回的边界循环：从维持形象到透支",
+        "rationale": "以已确认的卡点一为主线，把临时请求下的承接模式作为叙事核心；其余卡点作为该循环在不同场景的延伸。用户自述与具体事件支持此模式，反例显示协商能力已存在，故叙事强调可练习的余地而非固定人格。",
+        "supporting_findings": [
+          "s4.block.boundary_cycle",
+          "s2.complex.boundary_cycle",
+          "s1.signal.boundary_pattern",
+          "s2.mapping.mask_reliable",
+          "s2.mapping.core_belief"
+        ],
+        "deemphasized_findings": [
+          "s1.structure.cong_candidate",
+          "s1.ten_gods.absent",
+          "s1.year.bing_zi"
+        ],
+        "priority_blocks": [
+          {
+            "title": "临时请求下先答应后撤回",
+            "finding_refs": [
+              "s4.block.boundary_cycle"
+            ]
+          },
+          {
+            "title": "休息与拒绝不易被允许",
+            "finding_refs": [
+              "s4.block.rest_shadow"
+            ]
+          },
+          {
+            "title": "担心做不好而反复修改",
+            "finding_refs": [
+              "s4.block.perfection_delay"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "以日主癸水与透干伤官、正财作为待验证的自我核心线索，结合自述『要靠谱、不能让人失望』，呈现承接型自我。"
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "以卡点一为主线展开先答应后撤回的循环，卡点二与卡点三作为同一机制在休息与项目场景中的延伸。"
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "以反例为起点练习缓冲与协商，把关系维系与自我节奏同时纳入选择。"
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate.rest_shadow",
+        "theme": "被排除的休息：需求以不耐烦和撤回间接出现",
+        "rationale": "以已确认的卡点二为主线，聚焦休息、拒绝与真实需求不易进入自我认同；卡点一与卡点三作为该阴影在关系与工作场景中的表现。用户自述本想休息却答应、熬夜后不耐烦，支持此叙事；阴影不等于缺点，故叙事强调接纳而非纠正。",
+        "supporting_findings": [
+          "s4.block.rest_shadow",
+          "s2.shadow.rest_excluded",
+          "s3.self.pole_tension",
+          "s1.ten_gods.hidden",
+          "s2.mapping.core_belief"
+        ],
+        "deemphasized_findings": [
+          "s1.structure.cong_candidate",
+          "s1.useful_gods.candidate",
+          "s1.ten_gods.absent"
+        ],
+        "priority_blocks": [
+          {
+            "title": "休息需求被推迟",
+            "finding_refs": [
+              "s4.block.rest_shadow"
+            ]
+          },
+          {
+            "title": "临时请求下先答应后撤回",
+            "finding_refs": [
+              "s4.block.boundary_cycle"
+            ]
+          },
+          {
+            "title": "担心做不好而反复修改",
+            "finding_refs": [
+              "s4.block.perfection_delay"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "从自述与藏干食神线索出发，呈现被排除的休息与自我照顾面向，并保留反例校正空间。"
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "以卡点二为主线，呈现休息需求如何被推迟、不满如何以不耐烦或撤回间接出现。"
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "把休息视为节律而非懒惰，在最小行动中让休息与承接同时存在。"
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate.perfection_delay",
+        "theme": "反复修改与截止压力：以完美化避免被评价",
+        "rationale": "以已确认的卡点三为主线，聚焦项目开头想法多、担心做不好而反复修改、接近截止才交付；卡点一与卡点二作为同一信念假设在关系与恢复场景中的延伸。用户自述支持此模式，故叙事强调可迭代交付而非质量妥协。",
+        "supporting_findings": [
+          "s4.block.perfection_delay",
+          "s2.mapping.core_belief",
+          "s3.quadrant.carrier",
+          "s1.ten_gods.visible",
+          "s2.mapping.mask_reliable"
+        ],
+        "deemphasized_findings": [
+          "s1.structure.cong_candidate",
+          "s1.ten_gods.absent",
+          "s1.year.bing_zi"
+        ],
+        "priority_blocks": [
+          {
+            "title": "反复修改推迟定稿",
+            "finding_refs": [
+              "s4.block.perfection_delay"
+            ]
+          },
+          {
+            "title": "临时请求下先答应后撤回",
+            "finding_refs": [
+              "s4.block.boundary_cycle"
+            ]
+          },
+          {
+            "title": "休息与拒绝不易被允许",
+            "finding_refs": [
+              "s4.block.rest_shadow"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          {
+            "chapter": "你是谁",
+            "focus": "以透干伤官与正财作为表达与务实两条线的待验证线索，结合承担者意象呈现对评价的敏感。"
+          },
+          {
+            "chapter": "卡在哪",
+            "focus": "以卡点三为主线，呈现反复修改如何短期避免被评价、长期压缩质量与休息。"
+          },
+          {
+            "chapter": "往哪去",
+            "focus": "允许先完成可交付版本再迭代，把表达质量与休息节奏同时照顾。"
+          }
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 49226,
+    "output_tokens": 1419,
+    "latency_ms": 6547,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "758432cb-6dc0-4b0a-83c0-109e379532cc",
+    "skill_version_id": 0,
+    "skill_key": "report.narrative_plan",
+    "skill_version": 1,
+    "processor": "reports.narrative_candidates",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "4ed6a6d23e4179b33a11d9d9a7318a160a24ac78b33bd9fe9cef5f3e2124f7a2",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -1,0 +1,63 @@
+{
+  "signature": "6d788cbe57f1d9ad77a9c963dbcf9fad449f5a171034108c35739431e84f9634",
+  "skill_digest": "401c626a6af612fee324e7049af24cc79f57a1f53a5ce40b5c9a0d4437b700a8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "三条链，其实在跑同一个脚本",
+    "content": "把三件事放在一起看，你会发现它们不是三个独立的问题。\n\n先看它们各自的样子。同事临时请你代写方案，你本想休息却答应，熬夜之后第二天不耐烦——这是第一条链。朋友连着两次临时改地点，你当场没说什么，忍到最后直接取消聚会——这是第二条链。项目开头想法很多，担心做不好反复修改，快到截止才急着交付——这是第三条链。三条链的场景不同，一个是工作请求，一个是关系改约，一个是任务质量，但它们的走向惊人地相似：都是先接住，再积压，最后以一种不太好看的方式退出来。\n\n共同的结构大致是这样一条路径：\n\n触发（临时请求、临时改约、任务开始）→ 内在反应（担心让人失望、担心做不好）→ 防御动作（先答应、不表达、反复修改）→ 短期结果（当场没有冲突，关系看起来还在，质量感被保住）→ 长期重复（熬夜透支、情绪积压、关系张力、自我信任下降）。\n\n需要说清楚的是，这是一条「候选路径」，不是已经坐实的因果链。它来自你自己的描述和几个具体事件，每一环都还需要用真实经历去核对。尤其「担心让人失望」这一环，目前更像是一个合理的假设，而不是你亲口确认的全部动机。\n\n三条链之间还有一层关系。第一条和第二条其实是一对：一个先把请求接进来，一个把不满压下去，最后都用「退出」收场——只不过一个退到深夜的电脑前，一个退到取消聚会的消息里。第三条看起来最不一样，它没有别人参与，但它同样是「先接住一个高标准，再在最后时刻用赶工退出」。三条链共享的，是同一个动作习惯：先答应，再反噬。\n\n还有一个不能忽略的反证：面对熟悉的同事、且有明确截止时间时，你是能够协商边界的。这说明这条链并不是你的固定人格，而是特定条件下的启动模式。条件一变，行为就会变——这恰恰是后面可以工作的空间。\n\n所以，与其说你有三个卡点，不如说你有一套在压力下自动启动的回应方式。它过去帮你维持了「靠谱」的形象，也帮你避开了当场冲突。代价是，那些没被说出口的「我不想」「我需要休息」，最后都以透支和生硬的方式替你说了出来。看见这一点，不是为了责怪这套方式，而是为了知道：真正要练的，不是变得强硬，而是在最开始的几秒钟里，给自己留一点余地。",
+    "used_findings": [
+      "s4.block.agree_then_overdraft",
+      "s4.block.delay_then_harsh",
+      "s4.block.perfection_delay",
+      "s2.cycle.agree_then_withdraw"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.cycle",
+      "analysis.s4.blocks"
+    ],
+    "used_actions": [],
+    "transition_hint": "共同脚本看清了：先接住，再积压，最后生硬退出。接下来要往哪去，会先看这条暗线共同保护了什么，再把「有余地的表达」拆成你能落地的动作。",
+    "presentation_meta": {
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "tone": "第二人称、描述性、非评判",
+      "length_note": "约560字，符合300–600字区间"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.common_pattern",
+        "status": "FULFILLED",
+        "reason": "综合了三个已确认卡点（答应后透支、拖延后生硬退出、完美主义拖延）与激活路径候选，按触发→内在反应→防御→短期保护→长期重复的结构呈现共同模式，并明确标注为候选路径、需以真实经历核对，未将相关性写成因果。",
+        "quote": "触发（临时请求、临时改约、任务开始）→ 内在反应（担心让人失望、担心做不好）→ 防御动作（先答应、不表达、反复修改）→ 短期结果（当场没有冲突，关系看起来还在，质量感被保住）→ 长期重复（熬夜透支、情绪积压、关系张力、自我信任下降）。",
+        "follow_up_questions": [
+          "每次遇到临时请求或改约时，你当下的第一反应具体是什么？",
+          "在什么条件下你能像面对熟悉同事那样协商边界？",
+          "三条链里，哪一条最贴近你现在的感受？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 10291,
+    "output_tokens": 1045,
+    "latency_ms": 5464,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "9b3f40c9-4b48-40ce-bb00-d25451771aa5",
+    "thinking_enabled": false,
+    "skill_version_id": 80,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 7,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "e6474dd261fb9d520c0ac61c89f793167866b6c0b049bf6a2511a4d04a46828e",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

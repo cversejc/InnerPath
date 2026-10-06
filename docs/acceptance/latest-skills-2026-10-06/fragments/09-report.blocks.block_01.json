@@ -1,0 +1,59 @@
+{
+  "signature": "2f2303e6656ce6548527bbb511570e3750a8747cb7fb5def9a9aa84aa2fadd5a",
+  "skill_digest": "401c626a6af612fee324e7049af24cc79f57a1f53a5ce40b5c9a0d4437b700a8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "答应了，却把自己熬空",
+    "content": "你答应别人的速度，往往快过你问自己一句「我现在还有力气吗」。\n\n这一节先从最常出现的那一幕说起。同事临时请你代写方案，你本来打算休息，却还是应了下来；夜里熬到很晚，第二天带着一股说不清的烦躁。朋友连续两次临时改地点，你嘴上没说什么，最后干脆取消了聚会。这两件看起来不一样的事，其实走的是同一条路：先答应，再硬撑，撑到某个点，用疲惫或退出把它结束掉。\n\n把这条链拆开看，会更清楚。触发点通常不是一件大事，而是一个「临时」的请求——它来得快，留给你的反应时间很短。就在这短短几秒里，你心里的第一反应不是「我想不想」，而是「如果我不答应，对方会不会失望」。于是你先点头，把决定权交出去；接着进入执行，用加班、熬夜、反复修改把这件事扛下来。到这一步为止，一切都还像「靠谱」。真正的问题出现在后半段：当身体和情绪被消耗到某个临界点，你会变得不耐烦，或者干脆用取消、生硬回应来收场。\n\n这个模式在过去确实保护过你。它让你在别人眼里是可靠的、好说话的、不添麻烦的；它让你在关系里很少起冲突，因为你总是先满足对方。它甚至帮你换来了一些信任和机会。换句话说，「先答应」不是缺点，它是你早年学会的一种让自己安全、被需要的方式。\n\n但它的代价也在累积。长期看，它把你的休息和拒绝挤到了很后面的位置——你总是先照顾别人的需要，最后才轮到自己，而那时你往往已经没有余力好好表达，只能用疲惫或不耐烦来「喊停」。于是关系里出现一种张力：对方觉得你答应了又冷淡，你觉得自己付出了却没人理解。这不是你不够好，而是这条链本身就没有给「我也有边界」留位置。\n\n整合的邀请，不是让你从此不再答应别人，而是让「答应」和「休息」这两端可以在同一个情境里同时在场。你不需要在点头和拒绝之间二选一，你可以先停一下，看看自己此刻真实的状态，再决定用什么方式回应。这个「停一下」，就是这条链开始松动的地方。\n\n至于具体怎么做，下一章会展开。这一节只负责把这条链看清楚：它不是你的性格缺陷，而是一条曾经有用、现在开始让你透支的旧路径。\n\n本章路径图：\n临时请求 → 怕让人失望 → 先答应 → 熬夜硬撑 → 疲惫/不耐烦 → 取消或生硬退出 → 关系张力 → 回到「我必须更靠谱」\n\n一句关键结论：你不是不够坚定，你只是把「不让别人失望」排在了「先听见自己」的前面。",
+    "used_findings": [
+      "s4.block.agree_then_overdraft"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这条「先答应、后透支」的链看清了。下一节会看它的近亲：当你忍到最后，是怎么用生硬的方式退出的。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_01",
+      "sequence_no": 9,
+      "chapter_opening": true,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、现实语言、先意识后潜意识；本节不展开解决步骤，行动统一放在成长实验节。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "本节按「场景→触发→运作→过去保护→长期代价→整合邀请」六段完整展开卡点一；只解释机制与保护功能，未给出解决步骤，具体行动留待第三章成长实验节；来源为已确认的用户自述与已审核 Finding，未新增经历或心理结论。",
+        "quote": "触发点通常不是一件大事，而是一个「临时」的请求——它来得快，留给你的反应时间很短。",
+        "follow_up_questions": [
+          "「怕让人失望」这个念头出现时，你身体上最先有反应的是哪个部位？",
+          "在你答应之后、开始熬夜之前，中间有没有过一瞬间想过「其实我不想」？那一刻你通常怎么把它压下去？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 8256,
+    "output_tokens": 1030,
+    "latency_ms": 5804,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "e2b53860-12e0-480f-a979-e85674aca29c",
+    "thinking_enabled": false,
+    "skill_version_id": 80,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 7,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "45cf75e09053d55c0032c5b02f457a4c042e3d47a682011bad80e464fd482691",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

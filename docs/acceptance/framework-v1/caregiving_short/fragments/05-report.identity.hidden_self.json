@@ -1,0 +1,70 @@
+{
+  "signature": "5b9a80e91fa7d062fd9e30ae74249ef815c67230bb07a341f5927c3690a55c12",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "隐藏的自己：那些被排到最后的部分",
+    "content": "前一节看的是你眼中的自己：可靠、能扛事、按规则办事。这一节换个角度，看那些常被排在最后的部分。\n\n先分清三个层次。情结更像反复出现的剧本——安排一变，你先承接，再协商；阴影更像被长期排除在外的选项——休息、把责任交出去、允许自己“先不管”；防御则是当下自动启动的动作——延迟询问、先答应后协商、夜班后反复查群。三者不是并列的毛病，而是同一套保护逻辑在不同深度上的表现：情结提供剧本，防御负责执行，阴影是被这套逻辑挡在门外的部分。\n\n这套逻辑里藏着几个假设，都需要你核对。信念假设：等所有家庭安排确定，你才能安全地推进自己的事。依据是你自述“先等规则和时间表更清楚”，以及想报名培训却连续两周没问清课程安排。情绪假设：安排变动时，你可能先感到担心失控和怕给别人添麻烦。自动想法假设：“等所有安排确定，我才不会出错或拖累别人。”这些都不是定论——你已与姐姐协商达成轮换，也曾在把手机交给同事半小时后睡着，说明协商和放松的能力都在，只是需要条件。\n\n保护功能值得被说清。延迟询问，是避免在安排未定时出错或影响家人；先答应再协商，是当场维持关系与家庭运转；查群，是防止交接失误。它们过去确实在起作用。代价也真实：转岗准备被推迟，休息被挤压，表达常常滞后。核对的方向是——延迟是否只在涉及父亲安排时出现？查群是否对应具体交接风险？如果一次交接真的漏了，你预想会发生什么？\n\n内在张力因此可以这样描述：一端是“先等规则与安排确定”的秩序感，另一端是“先推进自己的事、允许休息与协商”的自主性。两者不是好坏之分。整合的入口，是带着不确定先做一小步——比如先只问清课程时间与报名截止，不要求同时解决父亲复诊安排。具体怎么落地，留到成长实验节再谈。",
+    "used_findings": [
+      "s4.action.ask_course_first",
+      "s3.self.rule_vs_autonomy",
+      "s2.shadow.rest_and_letting_go",
+      "s2.complex.responsibility_autonomy",
+      "s2.belief.wait_for_clarity",
+      "s4.block.delay_until_certain",
+      "s4.block.control_rest",
+      "s4.block.accept_then_negotiate"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.shadow",
+      "analysis.s2.complex",
+      "analysis.s4.defense"
+    ],
+    "used_actions": [],
+    "transition_hint": "这一节看的是被排到最后的部分；接下来会看“先稳住”的模式在哪些具体场景里成为卡点。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.hidden_self",
+      "sequence_no": 5,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.hidden_self",
+        "status": "FULFILLED",
+        "reason": "正文先区分情结（反复剧本）、阴影（被排除的选项）与防御（自动动作）三层及其关系，再给出信念、情绪、自动想法的假设并标注待核对，最后说明三类防御的保护功能、现实代价与核对方向；行动部分仅一句指向成长实验节，未展开频率与退出条件。",
+        "quote": "情结更像反复出现的剧本——安排一变，你先承接，再协商；阴影更像被长期排除在外的选项——休息、把责任交出去、允许自己“先不管”；防御则是当下自动启动的动作——延迟询问、先答应后协商、夜班后反复查群。",
+        "follow_up_questions": [
+          "延迟询问是否只在涉及父亲安排时出现？",
+          "查群是否与具体交接风险相关？",
+          "如果一次交接真的漏了，你预想会发生什么？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 16365,
+    "output_tokens": 995,
+    "latency_ms": 4436,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "f457bb36-5b39-415c-b27d-624119ad4987",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "38dd9f3a3997147643b77d42d65bbd38f950117048ecfdbda0436bfc4d247350",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

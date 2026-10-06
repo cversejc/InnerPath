@@ -1,0 +1,63 @@
+{
+  "signature": "ba15feb4c1445c3732312dade7287d5dd3084e73a4fde20a4dcae993e7d9a73a",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "收束：把“等确定”当作起点，而不是停下的理由",
+    "content": "你这一路看到的，不是“你太谨慎”或“你不够主动”这类评判，而是一条更完整的线：你习惯先等规则与安排确定，再推进自己的事；这不是缺陷，而是一种保护——它保护了交接安全、家庭运转，也保护了你在多重责任下不轻易出错。与此同时，你也已经用现实经验证明，另一端并非不存在：你和姐姐协商陪诊分工并达成轮换，把手机交给同事，都是“先推进、允许休息与协商”的雏形。\n\n所以方向可以落在一句很朴素的话上：带着不确定，先做一小步。这不是要你推翻“等确定”，而是让两端在同一件事里同时出现——先问清课程、先谈分工，再决定要不要继续等。具体动作、频率和退出条件已经放在成长实验那一节，这里不再展开。\n\n如果把这一路收进一个更长的视角：认识，是看见“等确定”在保护什么；理解，是不把它当成缺点，也不把它当成唯一答案；行动，是从问清课程、谈好分工这样的小事开始，让改变从现实经验里长出来，而不是等命运或权威许可。道德经说“知人者智，自知者明”，放在你这里，自知不是给自己下结论，而是知道自己在什么条件下会先稳住、在什么条件下可以往前挪一步。\n\n你已经在轮班和照护之间维持了相当长的时间，也在其中做出过协商与交出的动作。接下来不必把每一步都走成“确定之后”的样子；按你的轮班表选一项先开始，用现实观察校正假设，就已经是在往前。",
+    "used_findings": [
+      "s3.self.rule_vs_autonomy",
+      "s3.bridge.self_knowing"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "三项动作、节奏与退出条件已放在这里。接下来按你的轮班表选一项先开始，用现实观察校正假设。",
+    "presentation_meta": {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "sequence_no": 17,
+      "reader_facing_title": "收束：把“等确定”当作起点，而不是停下的理由",
+      "tone": "简洁、清楚、温暖而不空泛",
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low",
+      "quote_used": {
+        "key": "laozi-33-self-knowledge",
+        "text": "知人者智，自知者明。",
+        "attribution": "《道德经》第三十三章",
+        "status": "VERIFIED"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.ending",
+        "status": "FULFILLED",
+        "reason": "以“认识—理解—行动”贯通收束：认识“等确定”在保护什么，理解它不必被当成缺陷或唯一答案，行动落在先问清课程、先谈分工等已确认方向；并给出个性化寄语，署名引用仅使用核验库中 VERIFIED 的《道德经》第三十三章。",
+        "quote": "认识，是看见“等确定”在保护什么；理解，是不把它当成缺点，也不把它当成唯一答案；行动，是从问清课程、谈好分工这样的小事开始，让改变从现实经验里长出来，而不是等命运或权威许可。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5726,
+    "output_tokens": 836,
+    "latency_ms": 3995,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "30860460-01b2-4c54-a713-ecaae4bbba87",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "4d687bb52615366f05fe53ad9ba7a8de00e7fa166a7aeb9b0fe96acdf9f9f3da",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

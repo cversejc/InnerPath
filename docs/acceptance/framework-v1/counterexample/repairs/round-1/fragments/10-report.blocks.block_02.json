@@ -1,0 +1,58 @@
+{
+  "signature": "33db89ce33b97e9f563fc95781186b9a4cb64b5e01c1f724f984891a12a389ef",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点二：反复修改与截止前的急交付",
+    "content": "先答应后撤退的循环先看到这里。接下来进入第二个卡点：反复修改与截止前的急交付。\n\n这个卡点需要先说清楚：它是一条把握程度偏低的线索，属于待核对的假设，和卡点一的确定度不同。下面用的“可能”“往往”不是客套，而是真实的不确定。\n\n你自述过：项目开头你会有许多想法，担心做不好就反复修改，接近截止才急着交付。这条线索的场景在“任务开始”与“截止临近”之间；触发点往往是这两端之间的时间压力；运作方式可能是把“判断”一直往后推，用反复修改代替明确交付。假如这个描述符合你，那么它在短期里避免的是过早交付后被评判，同时保留“还能再改”的空间——这就是它过去保护你的地方，不轻易把自己交出去。\n\n代价出现在长期：节奏失控、熬夜，交付质量和身心状态同时受压。你自述的期待是理解反复出现的机制、练习有余地的表达、减少透支；从这个角度看，反复修改可能不是懒或拖，而是一种把评判风险推迟到最后一刻的自我保护，只是成本落在了你自己的睡眠和节奏上。\n\n需要保留的反证是：它可能只在某些任务上出现，也可能在别的任务上完全不出现。这一点值得你自己核对，而不是接受上面的描述。\n\n变化所需的下一步理解是：允许阶段性交付，把“完成”和“完美”分开。这句话本身不是动作，只是一个可以慢慢接受的前提；具体怎么在现实里练，会放到后面的成长实验一节。\n\n如果你愿意，可以回想一次最近反复修改的任务：当时你在担心谁的评判？那个担心后来真的发生了吗？",
+    "used_findings": [
+      "s4.block.perfectionist_completion"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "反复修改与截止前的急交付先看到这里。接下来进入第三个卡点：休息与余地少被允许。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_02",
+      "sequence_no": 10,
+      "confidence_note": "该卡点证据把握程度偏低，正文以待核对假设表述",
+      "style": {
+        "person": "second",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "按场景→触发→运作→过去保护→长期代价→整合邀请的顺序展开；只呈现一个卡点并说明其把握程度偏低；本节不展开解决步骤，仅指出具体练习在成长实验一节。",
+        "quote": "这条线索的场景在“任务开始”与“截止临近”之间；触发点往往是这两端之间的时间压力；运作方式可能是把“判断”一直往后推，用反复修改代替明确交付。",
+        "follow_up_questions": [
+          "这个卡点是否只在部分任务上出现？哪些任务更容易触发？",
+          "反复修改时，你担心的评判具体来自谁？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5242,
+    "output_tokens": 749,
+    "latency_ms": 3625,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "aabfeefe-1ff6-4f9d-b4a7-803243eb5048",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "bcece49e18971bd0e9eb30d8b02f34447f863245abb2497f82bd0f3052fc2c13",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

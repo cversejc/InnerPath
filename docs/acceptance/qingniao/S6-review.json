@@ -1,0 +1,129 @@
+{
+  "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+  "note": "技术验收与来源核对，不是咨询师签字，不改变模型87分，不向生产或客户账号写入。",
+  "qa_sha256": "923f7c6970190d3a63de296d5840cec49b929b67c335785be5c9c29563bbe898",
+  "report_sha256": "d94bcf66f569d5bd19f6daf94274b72663ccb8b49d008534d0a728402b9ad95e",
+  "decisions": [
+    {
+      "issue_index": 0,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.blocks.common_pattern",
+      "message": "“让拒绝与联系都变得可协商、可修复”这一核心表述在多个片段中反复出现，超过三次，构成同一观点的重复展开。",
+      "status": "DISMISSED",
+      "resolution": "核查16段当前正文，所引整句出现0次；它来自上游分析而非当前报告，不能据此判正文重复。"
+    },
+    {
+      "issue_index": 1,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.direction.growth_experiments",
+      "message": "“不是一次修好，而是在反复情境中每次多保留一点真实需求”在多个片段重复出现，属于同一核心观点的多次展开。",
+      "status": "DISMISSED",
+      "resolution": "当前正文只在实验引言保留该意旨，未发现3次完整重复；该逐字证据也不在当前正文。"
+    },
+    {
+      "issue_index": 2,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.foundation_notes",
+      "message": "“出生日期为演示假设，须本人提供后重算”在多个片段中重复出现，信息重复但可定位。",
+      "status": "ACCEPTED",
+      "resolution": "资料是假设，开篇、命盘旁注与时序图各需声明前提，避免脱离上下文被当真实生日；保留必要边界。"
+    },
+    {
+      "issue_index": 3,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.foundation_notes",
+      "message": "“喜忌为候选，若格局判定反转则映射亦反转”在多个片段重复出现，属于同一限定条件的多次展开。",
+      "status": "ACCEPTED",
+      "resolution": "只在命盘旁注与能量映射两处解释同一候选前提，职责不同且不足3次；保留防止误读。"
+    },
+    {
+      "issue_index": 4,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.hidden_self",
+      "message": "“不作诊断”在多个片段中反复出现，属于同一安全声明的重复。",
+      "status": "DISMISSED",
+      "resolution": "目标隐藏自己片段无此引文；全文仅命盘旁注出现一次，不支持高频重复判断。"
+    },
+    {
+      "issue_index": 5,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.blocks.block_01",
+      "message": "“具体做法见第三章”在多个卡点片段中重复出现，属于同一指向的多次展开。",
+      "status": "ACCEPTED",
+      "resolution": "四项卡点各指向不同对应实验，属于可用导航而非机制重复，保留。"
+    },
+    {
+      "issue_index": 6,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.hidden_self",
+      "message": "“须访谈验证”在多个片段中反复出现，属于同一限定条件的重复。",
+      "status": "DISMISSED",
+      "resolution": "该摘录不在目标片段或当前正文，不能据此形成修订项。"
+    },
+    {
+      "issue_index": 7,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.hidden_self",
+      "message": "“反例问题”在多个片段中重复出现，属于同一核对方式的多次展开。",
+      "status": "DISMISSED",
+      "resolution": "该逐字摘录不在当前正文；隐藏自己中的温和拒绝问题仅一次，用于检验假设。"
+    },
+    {
+      "issue_index": 8,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.outer_self",
+      "message": "“命理映射为假设，非定论”在多个片段中重复出现，属于同一安全声明的重复。",
+      "status": "DISMISSED",
+      "resolution": "该摘录不在目标正文，模型混用了内部分析语句。"
+    },
+    {
+      "issue_index": 9,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.direction.life_map",
+      "message": "“阶段为隐喻，不预测必然事件”在多个片段中重复出现，属于同一限定条件的重复。",
+      "status": "ACCEPTED",
+      "resolution": "阶段图需条件化未来，命盘旁注需说明计算前提；两者职责不同，保留必要声明。"
+    },
+    {
+      "issue_index": 10,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.hidden_self",
+      "message": "“不作诊断”在多个片段中反复出现，属于同一安全声明的重复。",
+      "status": "DISMISSED",
+      "resolution": "重复第4项，且引文不在目标片段，不构成新问题。"
+    },
+    {
+      "issue_index": 11,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.hidden_self",
+      "message": "“须现实事件验证”在多个片段中反复出现，属于同一限定条件的重复。",
+      "status": "DISMISSED",
+      "resolution": "该摘录不在目标片段或当前正文，缺乏可定位的正文证据。"
+    },
+    {
+      "issue_index": 12,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.hidden_self",
+      "message": "“不虚构家庭成因”在多个片段中重复出现，属于同一安全声明的重复。",
+      "status": "DISMISSED",
+      "resolution": "该摘录不在当前正文；明确无家庭资料、不能解释为家庭创伤的说明有必要，不应删除。"
+    },
+    {
+      "issue_index": 13,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.hidden_self",
+      "message": "“不指责家庭”在多个片段中重复出现，属于同一安全声明的重复。",
+      "status": "DISMISSED",
+      "resolution": "该摘录不在当前正文，属于上游分析而非报告原文。"
+    },
+    {
+      "issue_index": 14,
+      "issue_type": "repetition",
+      "target_fragment_key": "report.identity.hidden_self",
+      "message": "“不作诊断”在多个片段中反复出现，属于同一安全声明的重复。",
+      "status": "DISMISSED",
+      "resolution": "重复第4项，且引文不在目标片段。"
+    }
+  ],
+  "hash_format": "canonical-json-utf8-sorted-compact"
+}

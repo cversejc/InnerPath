@@ -1,0 +1,317 @@
+{
+  "scenario": "missing_time",
+  "round": 1,
+  "analysis_count": 38,
+  "report_count": 17,
+  "scorecard": {
+    "dimensions": {
+      "fact_fidelity": {
+        "score": 16,
+        "reason": "多数内容忠实于已确认来源，但将用户自述的“担心让人失望”“熬夜后不耐烦”降级为待核对感受，且对“要靠谱”规则来源说明不足。",
+        "fragment_keys": [
+          "report.identity.relationship_pattern",
+          "report.blocks.block_01"
+        ],
+        "max_score": 20,
+        "label": "案例事实忠实度"
+      },
+      "personalization": {
+        "score": 17,
+        "reason": "大量使用用户自述场景与反例，个性化程度较高；结尾引用与用户情境连接稍弱。",
+        "fragment_keys": [
+          "report.identity.outer_self",
+          "report.identity.self_perception",
+          "report.ending"
+        ],
+        "max_score": 20,
+        "label": "个性化"
+      },
+      "psychological_logic": {
+        "score": 13,
+        "reason": "心理机制链条基本清晰，但“加速器”比喻可能被读作因果，且部分假设与自述边界处理不够精确。",
+        "fragment_keys": [
+          "report.blocks.block_01",
+          "report.blocks.common_pattern"
+        ],
+        "max_score": 15,
+        "label": "心理逻辑"
+      },
+      "structure_coherence": {
+        "score": 13,
+        "reason": "章节顺序合理，但概览节与后续章节存在内容重叠，反例重复出现影响连贯。",
+        "fragment_keys": [
+          "report.overview.psychic_structure",
+          "report.identity.self_perception"
+        ],
+        "max_score": 15,
+        "label": "三章连贯性"
+      },
+      "reading_experience": {
+        "score": 8,
+        "reason": "语言流畅、第二人称自然，但部分段落重复反例与机制解释，略显冗长。",
+        "fragment_keys": [
+          "report.identity.self_perception",
+          "report.blocks.block_01"
+        ],
+        "max_score": 10,
+        "label": "阅读体验"
+      },
+      "action_value": {
+        "score": 8,
+        "reason": "三件练习具体且适配时间条件，但观察指标与退出条件可操作性仍有提升空间。",
+        "fragment_keys": [
+          "report.direction.growth_experiments"
+        ],
+        "max_score": 10,
+        "label": "行动价值"
+      },
+      "uncertainty_safety": {
+        "score": 9,
+        "reason": "整体保留假设与反证，无诊断或确定未来；个别机制比喻需进一步限定。",
+        "fragment_keys": [
+          "report.blocks.block_01",
+          "report.direction.life_map"
+        ],
+        "max_score": 10,
+        "label": "不确定性与安全"
+      }
+    },
+    "total": 84,
+    "max_score": 100,
+    "passes_threshold": true
+  },
+  "framework_review": [
+    {
+      "requirement_id": "R.psychic_structure",
+      "fragment_keys": [
+        "report.overview.psychic_structure"
+      ],
+      "status": "FULFILLED",
+      "reason": "概览节按向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向展开，并给出暗线路径图。",
+      "quote": "向世界展示的我（靠谱、不让人失望）→ 以为的自己（承接需求、维持形象）→ 潜意识层面的自己（休息与拒绝转入阴影，以延迟、不耐烦或撤回间接出现）→ 整合后的方向（答应前留停顿，关系与自身节奏同时在场）。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.persona",
+      "fragment_keys": [
+        "report.identity.outer_self"
+      ],
+      "status": "FULFILLED",
+      "reason": "给出可识别的外在角色，并区分用户自报与符号解释。",
+      "quote": "你自述“我认为自己要靠谱、不能让人失望”，也自述拒绝后担心别人觉得你不够好——这是你的自报，不是我对你的解释。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.self_belief",
+      "fragment_keys": [
+        "report.identity.self_perception"
+      ],
+      "status": "FULFILLED",
+      "reason": "区分意识自我与底层信念，列出应该规则，并保留反证与待核对问题。",
+      "quote": "有一种假设是：你承接他人需求，除了责任感之外，也可能在维持一个“被需要、被认可”的位置。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.hidden_self",
+      "fragment_keys": [
+        "report.identity.hidden_self"
+      ],
+      "status": "FULFILLED",
+      "reason": "区分阴影、情结、防御，给出情绪与信念假设，并说明保护功能与现实核对。",
+      "quote": "阴影，指的是你可能没把它算进“我是谁”的那些面向；情结，指的是在特定情境下被触发、然后自动跑起来的一套反应；防御，是这套反应里具体用的办法。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.self_direction",
+      "fragment_keys": [
+        "report.identity.self_direction"
+      ],
+      "status": "FULFILLED",
+      "reason": "给出当前倾向一端、被排除另一端，并强调两端整合而非完美人格。",
+      "quote": "所谓整合，不是变成完美的人，而是让两端在具体情境里同时在场：既保留关系，也保留自己的节奏。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.energy",
+      "fragment_keys": [
+        "report.identity.energy_pattern"
+      ],
+      "status": "FULFILLED",
+      "reason": "列出充电/耗电线索与探索→价值→执行→反馈路径及张力，并声明无自报不推MBTI或八维分数。",
+      "quote": "你没有提供 MBTI 或八维自报，所以这里不推断你的类型，也不伪造任何功能分数。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.relationships",
+      "fragment_keys": [
+        "report.identity.relationship_pattern"
+      ],
+      "status": "FULFILLED",
+      "reason": "描述请求/回应/感受/反馈循环，引用真实场景，并给出反例与待核对问题。",
+      "quote": "一个假设的循环大致是这样：临时请求或关系变动出现——比如同事临时请你代写方案，或朋友连续两次临时改地点；你的回应是先答应下来",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.blocks",
+      "fragment_keys": [
+        "report.blocks.block_01",
+        "report.blocks.block_02",
+        "report.blocks.block_03"
+      ],
+      "status": "FULFILLED",
+      "reason": "三个卡点均按场景→触发→运作→过去保护→长期代价→整合邀请展开，本节未展开解决步骤。",
+      "quote": "路径图：临时请求出现 → 先答应，关系与形象暂时安全 → 自己的时间与精力被挤压 → 累积熬夜、透支和摩擦 → 事后延迟、生硬回应或取消 → 关系出现新的紧张。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.common_pattern",
+      "fragment_keys": [
+        "report.blocks.common_pattern"
+      ],
+      "status": "FULFILLED",
+      "reason": "综合三个卡点，给出触发→情绪/信念→防御→短期保护→长期重复链条，并声明非因果定论。",
+      "quote": "触发、情绪、信念、防御、短期保护、长期重复，这条链上的每一环都还需要你用真实事件去核对。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.breakthrough",
+      "fragment_keys": [
+        "report.blocks.breakthrough"
+      ],
+      "status": "FULFILLED",
+      "reason": "给出资源转译→调节功能→能力→现实缺口→工具→实验方向，并指向第三章。",
+      "quote": "工具选择上，短焦找例外用于承接边界卡点，ACT解离用于承接休息卡点，CBT记录自动想法用于承接完美化卡点，三者分别对应你在临时请求、休息与反复修改中反复出现的场景，具体理由见各行动条目。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.archetype",
+      "fragment_keys": [
+        "report.blocks.breakthrough"
+      ],
+      "status": "FULFILLED",
+      "reason": "使用中式人物意象具象化承担模式，给出可学习能力与适用边界，并声明不作史实或人格诊断。",
+      "quote": "用一个中式人物意象来具象化这种承担模式：像一位「持家守成的当家人」，善于维持关系、把责任揽在身上，家里的事先应下来再说。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.life_map",
+      "fragment_keys": [
+        "report.direction.life_map"
+      ],
+      "status": "DEFERRED",
+      "reason": "因出生时间未知、大运为空，正文明确暂缓真实大运起止与阶段主题，并给出补问方向。",
+      "quote": "真实的大运起止年份，目前无法给出。系统计算的大运为空，而你的出生钟表时间未提供，起运无法确定，因此既不能按当前分析日期选定当前运，也无法给出后续每十年的起止年份，更不能补造。",
+      "follow_up_questions": [
+        "请提供尽量准确的出生钟表时间（几点几分）。",
+        "出生时间是否接近整点或时辰交界？"
+      ]
+    },
+    {
+      "requirement_id": "R.timing_wisdom",
+      "fragment_keys": [
+        "report.direction.current_stage"
+      ],
+      "status": "FULFILLED",
+      "reason": "以坤艮比喻匹配当下境遇，说明不适用边界，并声明非起卦结果。",
+      "quote": "需要说明的是，这是一则哲学比喻，不是起卦结果，也不证明任何必然走向。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.experiments",
+      "fragment_keys": [
+        "report.direction.growth_experiments"
+      ],
+      "status": "FULFILLED",
+      "reason": "列出三项已确认Action，对应卡点/能力/工具，包含动作、频率、耗时、观察与退出条件，并适配现实时间。",
+      "quote": "第一件，暂停后回应。对应卡点：临时请求下先答应、后撤回。能力：在压力下识别自身意愿并延后回应。工具：短焦加依恋沟通。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.practice_rhythm",
+      "fragment_keys": [
+        "report.direction.growth_experiments"
+      ],
+      "status": "FULFILLED",
+      "reason": "给出每日能量、每周阴影、每月触发链、每季方向复盘节奏，并说明可选菜单与时间不足减量。",
+      "quote": "每日1分钟做能量记录；每周5分钟做一次阴影观察，也就是留意那些「想休息、想拒绝」的时刻；每月10分钟做一次触发链复盘，回看一次「请求→担心让人失望→先答应→透支→延迟或撤回」的完整过程；每季20分钟做一次方向复盘，看这三件事是否还贴合你现在的处境。",
+      "follow_up_questions": []
+    },
+    {
+      "requirement_id": "R.ending",
+      "fragment_keys": [
+        "report.ending"
+      ],
+      "status": "FULFILLED",
+      "reason": "以哲学贯通认识→理解→行动，给出个性化寄语，并引用已核验库中的《道德经》第三十三章。",
+      "quote": "《道德经》第三十三章里有一句：「知人者智，自知者明。」",
+      "follow_up_questions": []
+    }
+  ],
+  "issues": [
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "正文把“担心让人失望”写成假设链中待核对的感受，但用户自述明确包含“拒绝后担心别人觉得我不够好”，属于已提供资料，不应降级为未证实感受。",
+      "evidence": "“担心让人失望”和“熬夜后不耐烦”只是这条假设链里待核对的感受，不是已经证实的固定事实。",
+      "suggestion": "区分“担心让人失望”为自述内容、“熬夜后不耐烦”为事件描述，删除将其整体标为待核对感受的表述。",
+      "target_fragment_key": "report.identity.relationship_pattern"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "正文将“熬夜后不耐烦”列为待核对感受，但用户具体事件已明确描述熬夜后第二天不耐烦，属于已提供事实，不应作为未证实内容。",
+      "evidence": "“担心让人失望”和“熬夜后不耐烦”只是这条假设链里待核对的感受，不是已经证实的固定事实。",
+      "suggestion": "将“熬夜后不耐烦”作为用户自述事件陈述，仅对“担心让人失望”的机制解释保留假设限定。",
+      "target_fragment_key": "report.identity.relationship_pattern"
+    },
+    {
+      "issue_type": "source_fidelity",
+      "severity": "MAJOR",
+      "message": "正文称“要靠谱、不能让人失望”作为加速器“主要依据你自述推想而来”，但该规则在确认语义中属于内化应该规则假设，来源待访谈验证，正文未说明其假设属性。",
+      "evidence": "这个“加速器”目前只是一个待核对的假设，不是已经确认的机制：它主要依据你自述的“要靠谱、不能让人失望”推想而来",
+      "suggestion": "补充说明该规则是内化应该规则假设，来源待访谈验证，避免仅以自述推想作为机制依据。",
+      "target_fragment_key": "report.blocks.block_01"
+    },
+    {
+      "issue_type": "safety",
+      "severity": "MINOR",
+      "message": "正文使用“加速器”比喻描述心理机制，可能被读作确定性因果，且未明确保留多系统冲突与用户主体性。",
+      "evidence": "在这个循环里可能扮演了加速器的角色",
+      "suggestion": "改为“可能起放大作用”并补充“是否成立需以真实场景核对”，避免机制化因果表述。",
+      "target_fragment_key": "report.blocks.block_01"
+    },
+    {
+      "issue_type": "repetition",
+      "severity": "MINOR",
+      "message": "“面对熟悉同事且有明确截止时能协商边界”这一反例在多个片段中反复出现，部分段落仅重复而未新增信息，造成阅读重复。",
+      "evidence": "面对熟悉同事且有明确截止时，你能够协商任务边界",
+      "suggestion": "保留首次引入与关键转折处的引用，其余位置改为简短承接或删除，避免同一反例多次完整复述。",
+      "target_fragment_key": "report.identity.self_perception"
+    },
+    {
+      "issue_type": "structure_coherence",
+      "severity": "MINOR",
+      "message": "概览节已展开四层结构与卡点循环细节，与后续身份、卡点章节存在内容重叠，未完全做到“概览暗线，不重复展开卡点”。",
+      "evidence": "第三层，是潜意识层面的自己。前面提到的假设认为：当临时请求或关系变动出现，你可能先答应，短期维持关系与形象、避开当下的冲突；随后以延迟、生硬回应或撤回表达边界。",
+      "suggestion": "概览节压缩为路径与关键结论，卡点细节移至卡点章节，避免重复展开。",
+      "target_fragment_key": "report.overview.psychic_structure"
+    },
+    {
+      "issue_type": "action_value",
+      "severity": "MINOR",
+      "message": "成长实验节列出三件练习，但“暂停后回应”的观察指标与退出条件较笼统，未明确记录频率或判断标准，可能影响执行。",
+      "evidence": "观察：停顿之后你是否仍然答应、身体紧张度、事后感受。退出条件：如果出现明显焦虑或关系冲突升级，先暂停改变回应，只做记录。",
+      "suggestion": "补充观察记录的具体维度（如0–10刻度、每周次数）及“明显焦虑”的可操作判断标准。",
+      "target_fragment_key": "report.direction.growth_experiments"
+    },
+    {
+      "issue_type": "personalization",
+      "severity": "MINOR",
+      "message": "结尾引用《道德经》第三十三章，但未说明该引用来自已核验库，也未与用户具体情境进一步连接，个性化温度稍弱。",
+      "evidence": "《道德经》第三十三章里有一句：「知人者智，自知者明。」",
+      "suggestion": "保留引用，并补充一句与用户“先答应后撤回”循环的具体连接，增强个性化收束。",
+      "target_fragment_key": "report.ending"
+    }
+  ],
+  "consultant_review": "PENDING"
+}

@@ -1,0 +1,63 @@
+{
+  "signature": "7e231d6aa30b3e969ec4c13c6776ce6a4e93e4418ae52947e5e90fc18e7592a9",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "眼中的自己",
+    "content": "前面几节里，你看到的是别人眼中的你，以及命盘旁注能提供的结构参考。这一节换个方向，看看你自己眼中的自己——你如何描述自己，以及这些描述背后，可能还压着一层你未必说出口的默认规则。\n\n先说你自己已经说清楚的部分。你自述不担心别人评价，答应任务是为了换取资源，不愿拒绝主要是因为分工规则不清。这三点是你的原话，也是这一节最重要的锚点：你不是一个“怕被讨厌所以不敢说不”的人，这一点后面还会再核对一次。\n\n再看可能存在的底层信念。把日主癸水与命宫廉贞破军放在一起，可以作一个假设性的线索：你在意识层可能更愿意呈现“能渗透、能接事”的运营者形象，这与你自述“答应任务换取资源”的方向是顺的。而月令午火伤官、日支未土七杀，可以作另一条假设：在更底层，也许有一套“需要以产出与承担来换取位置”的默认规则在运转。请注意，这是假设，不是结论，它需要你用自己真实的场景来核对。\n\n关于“应该、必须、不能”，也可以给出一个待验证的方向。官杀线索（日支未土七杀、年支子水藏干正官、时柱申中戊土正官）与印线索（时柱庚申正印）放在一起，可以假设：你对规则与责任的重视，可能有一部分来自较早期的内化，表现为“应该先把事接下来”“必须做到位”“不能因为自己而拖慢别人”。但这里有一条明确的用户反证：你曾明确拒绝领导，并且没有内疚。这条反证直接说明，把“讨好”或“权威恐惧”套在你身上是不成立的。所以更准确的说法可能是：规则感在，但它不是靠恐惧驱动的，而是和“分工规则不清”这种现实模糊更相关。\n\n还有一处需要暂缓。父母宫主星为空，只有火星、天喜等辅星，依据不足，这一节不展开家庭线索的推断，也不补造任何早年经历。如果你愿意，可以在后续访谈里补充：拒绝领导那次和答应同事那次，情境差异是什么？是对方身份、事情性质、时间压力，还是分工归属的清晰程度不同？这个问题能帮我们把这层“应该”的来源分得更细。\n\n关于“先答应后撤退”的循环，这一节只作承接，不重新完整解释。你已经在概览里看过它的整体路径，下一节会展开三个卡点的具体运作方式。这里只需要记住一点：这个循环的保护功能是避免当场冲突、维持资源关系，代价是透支与关系摩擦；而你的反例提醒我们，它并不是在所有场景都触发。\n\n综合来看，你眼中的自己，大致是这样一个形象：一个愿意用承担换取资源、对规则敏感、但拒绝能力其实存在的人。真正需要核对的，不是“你是不是太软”，而是“在哪些具体情境下，分工规则的模糊会让你先答应，又在什么时候，你其实可以像拒绝领导那次一样，把判断权收回自己手里”。主权交接的方向，是把“是否答应”的判断权从模糊的规则里收回来，而不是去指责谁。",
+    "used_findings": [
+      "s2.hypothesis.persona_competent_operator",
+      "s2.hypothesis.overcommit_withdraw_cycle"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.mapping",
+      "analysis.s2.authority"
+    ],
+    "used_actions": [],
+    "transition_hint": "眼中的自己先看到这里。接下来进入三个卡点的具体运作方式：先答应后撤退、反复修改与截止急交付、休息少被允许，并保留反例说明并非所有场景都触发。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_perception",
+      "sequence_no": 4,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_notes": "第二人称；命理术语已翻译为日常语言；未自述的情绪与信念均以可能/假设/待核对表达；未引用金句；未展开实验动作。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_belief",
+        "status": "FULFILLED",
+        "reason": "已覆盖意识自我（能接事、答应任务换取资源的运营者形象假设）、底层信念（以产出与承担换取位置的假设）、应该/必须/不能及权威内化（官杀与印线索的假设，并以拒绝领导无内疚的反证校正权威恐惧假设）、用户自我感受与反证（自述不担心评价、分工规则不清、明确拒绝领导），并给出具体待补问（拒绝领导与答应同事的情境差异）。",
+        "quote": "你自述不担心别人评价，答应任务是为了换取资源，不愿拒绝主要是因为分工规则不清。",
+        "follow_up_questions": [
+          "拒绝领导那次和答应同事那次，情境差异是什么？",
+          "是对方身份、事情性质、时间压力，还是分工归属的清晰程度不同？",
+          "在哪些具体情境下，分工规则的模糊会让你先答应？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 12621,
+    "output_tokens": 1213,
+    "latency_ms": 6508,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "4cf12764-ef91-4a09-98a9-8b642f43af57",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "a20a2b2c6c8fabf94dfd1174dd47769bd0d3e944ce9568055927f4513343f731",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

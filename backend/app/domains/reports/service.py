@@ -8,6 +8,7 @@ from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.core.logging_config import get_logger
+from app.services.intake_service import normalize_context
 
 logger = get_logger(__name__)
 
@@ -254,6 +255,10 @@ def format_report_response(report: Report) -> Dict[str, Any]:
         "reviewed_at": report.reviewed_at,
         "input_snapshot": snapshot,
         "profile_version": snapshot.get("profile_version"),
-        "context": snapshot.get("context"),
+        "context": (
+            normalize_context(snapshot.get("context"))
+            if snapshot.get("context") is not None
+            else None
+        ),
         "created_at": report.created_at
     }

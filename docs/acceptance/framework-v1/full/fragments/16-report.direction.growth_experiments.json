@@ -1,0 +1,86 @@
+{
+  "signature": "d240a5881ed6aa02aede15f9473bef60074af596debccb285f1554e56095c5eb",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "把“停一下”练成能力：四个已确认的成长实验",
+    "content": "前面几节已经把三个卡点连成一条线：请求来临时的即时顺从、以别人的评价为坐标、以及用准备代替交付。这一节不再重复解释这些机制，而是把它们转成可练习的小步。\n\n先说明这组实验背后的方向。你自述的“独自散步时比较放松”，是一个已经存在的恢复线索，本节的练习只是以它作为参照，不再展开。命理层面，当前以“金（印）为调节资源、水（比劫）为同类帮身”作为解释性候选，意思是：你并不缺准备与内化的能力，缺的是把这份准备及时转成动作的通道。本节不把它当作确定结论，只当作练习方向的参考。当前阶段（辛卯，2019–2028）的候选基调是“内化与准备被放大”，对应的能力是把内化资源转成及时的小步行动与温和边界表达；这是解释性候选，不是必然预测。\n\n**实验一：答应前的停顿。** 对应卡点是“先答应、后透支”的循环，要练的能力是及时觉察与延迟回应。做法：收到请求时先不回答，深呼吸一次，记录身体第一反应与脑中自动想法，然后回复“我需要看一下时间，稍后回复你”，在约定时间内再决定答应或协商。频率每日一次，每次约5分钟。观察：记录每次停顿后身体的紧张度（0–10）与最终回应方式。退出条件：若停顿引发强烈焦虑或影响紧急工作，暂停，改为只对非紧急请求练习。这套做法适合你工作日每晚5–10分钟的现实条件，不需要额外写长日记。\n\n**实验二：边界表达脚本。** 对应卡点同样是“先答应、后生硬回应”，要练的是温和而及时的边界表达能力。做法：先写下此刻的感受词与需要，用“我可以做A，B需要另约”的句式写出草稿，在低风险对象（例如你提到过的熟悉同事、有明确截止的情境）上先试一次，事后记录对方反应与自己的感受。频率每周一次，每次约10分钟。观察：协商后关系是否受损、自己的紧张度变化。退出条件：若对方反应激烈或自己持续不适，暂停，改为只写草稿不发送。这里用的情绪命名只用于日常表达，不涉及情绪唤起治疗。\n\n**实验三：“足够好”的阶段性交付。** 对应卡点是“用准备代替交付”。做法：写下反复修改时的自动想法，列出支持与反对该想法的证据，设定一个最小可交付版本，按约定时间交付并记录结果。频率每周一次，每次约15分钟。观察：交付后实际反馈与“担心做不好”之间的差距。退出条件：若交付后出现严重负面反馈或持续焦虑，暂停，回到草稿阶段。\n\n**实验四：每周阴影与触发链复盘。** 对应卡点是“自我价值感以外部评价为主要参照”。做法：回顾本周答应与拒绝的情境，用0–10刻度记录透支程度，写下被排斥的休息或不满，选一个下周的小步方向。频率每周一次，每次约20分钟。观察：刻度变化与下周方向是否可执行。退出条件：若复盘引发持续自责，暂停，改为只记录事实不评价。\n\n四项实验都来自已确认的行动：答应前停顿（短焦+ACT）、边界表达脚本（依恋沟通+EFT情绪命名）、“足够好”交付（CBT）、每周阴影与触发链复盘（短焦+ACT）。它们分别对应“先答应后透支”“用准备代替交付”“以外部评价为坐标”三个卡点，以及你自述的“想休息”与“有不满”这两面被推迟的需要。\n\n**实践节奏。** 每日：能量记录，可在散步或独处后用0–10刻度给自己打一个分。每周：一次阴影与触发链复盘，约20分钟。每月：一次触发链回顾，把当月反复出现的“请求—答应—透支—延迟表达”情境串起来看。每季：一次方向复盘，回看自己在“关系关照”与“自身节奏”之间是否更常同时在场。时间不足时可以减量：优先保留每日停顿与每周复盘，其余可隔周进行。所有练习都可以自主停止，效果以现实观察为准，不承诺结果。\n\n如果只选一个起点，建议从“答应前的停顿”开始：它耗时最短，也最直接地补上你在请求与回应之间缺的那一小段缓冲。",
+    "used_findings": [
+      "s4.action.pause_before_yes",
+      "s4.block.overcommit_then_resent",
+      "s2.pattern.rest_recovery_resource",
+      "s1.foundation.useful_gods_candidates",
+      "s4.action.boundary_script",
+      "s3.self.core_tension",
+      "s4.action.enough_good_delivery",
+      "s4.block.rumination_over_action",
+      "s3.timeline.current_period",
+      "s4.action.weekly_shadow_review",
+      "s4.block.self_worth_by_others"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.shadow_practice",
+      "analysis.s4.complex_practice",
+      "analysis.s4.experiments"
+    ],
+    "used_actions": [
+      "s4.action.pause_before_yes",
+      "s4.action.boundary_script",
+      "s4.action.enough_good_delivery",
+      "s4.action.weekly_shadow_review"
+    ],
+    "transition_hint": "成长实验已经落到每日、每周、每月、每季的节奏上；接下来可以把这些练习放回你的现实时间表，选一个小步开始。",
+    "presentation_meta": {
+      "chapter": "direction",
+      "fragment_key": "report.direction.growth_experiments",
+      "sequence_no": 16,
+      "reading_depth": "深入详细",
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low",
+      "contains_verified_quote": false,
+      "signature_quote_used": null
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.experiments",
+        "status": "FULFILLED",
+        "reason": "正文给出四项已确认Action，逐项写明对应卡点、要练的能力、所用工具、动作步骤、频率、耗时、观察内容与退出条件，并说明适配工作日每晚5–10分钟、周末20分钟的现实条件。",
+        "quote": "实验一：答应前的停顿。",
+        "follow_up_questions": [
+          "四项实验里，你更想先从哪一项开始？",
+          "哪一项在你现在的时间表里最容易排进去？"
+        ]
+      },
+      {
+        "requirement_id": "R.practice_rhythm",
+        "status": "FULFILLED",
+        "reason": "正文列出每日能量记录、每周阴影复盘、每月触发链回顾、每季方向复盘的四层节奏，并写明时间不足时的减量顺序（优先保留每日停顿与每周复盘，其余可隔周）。",
+        "quote": "实践节奏。",
+        "follow_up_questions": [
+          "每周20分钟的复盘，你更可能放在哪个时间段？",
+          "如果某周时间不够，你希望先保留哪一项？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 18119,
+    "output_tokens": 1668,
+    "latency_ms": 7487,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "77168268-69fb-49dd-a104-3c149dce2927",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "f31c9d0196b1541be901fb5005ec1bbac0b1285ecaf9424c776dfb74b580c83e",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

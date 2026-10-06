@@ -1,0 +1,2662 @@
+{
+  "plan": {
+    "core_theme": "先稳住，再往前：把“等确定”当作保护，也当作起点",
+    "must_include_findings": [
+      "s2.persona.role_holder",
+      "s2.belief.wait_for_clarity",
+      "s2.resource.negotiation_capacity",
+      "s3.self.rule_vs_autonomy",
+      "s4.action.ask_course_first",
+      "s4.action.phone_handover",
+      "s4.action.negotiate_before_yes"
+    ],
+    "priority_blocks": [
+      {
+        "title": "等安排确定才推进自己的事",
+        "finding_refs": [
+          "s4.block.delay_until_certain"
+        ]
+      },
+      {
+        "title": "夜班后靠反复查群才敢休息",
+        "finding_refs": [
+          "s4.block.control_rest"
+        ]
+      },
+      {
+        "title": "先答应请求，再补协商",
+        "finding_refs": [
+          "s4.block.accept_then_negotiate"
+        ]
+      }
+    ],
+    "narrative_arc": [
+      "心灵结构：以丁火与双印、命宫承担者线索，铺出“持续照护、按规则扛事”的底色。",
+      "认识自己：你在轮班与照护中被识别为可靠执行者，也这样看待自己。",
+      "隐藏部分：休息、把责任交出去、先推进自己的事，常被排在最后。",
+      "卡点一：等安排确定才推进自己的事，短期避免出错，长期推迟转岗准备。",
+      "卡点二：夜班后查群维持交接安全，代价是休息被挤压。",
+      "卡点三：先答应再协商，短期维持关系，长期使表达滞后。",
+      "保护功能：三个卡点都在保护交接安全与家庭运转，不是缺陷。",
+      "共性模式：不确定时先维持秩序与责任，再考虑自己的推进与休息。",
+      "整合能力：已能协商轮换、交出手机入睡，说明自主与放松能力存在。",
+      "人生方向：当前辛未大运偏承担与调整，屯卦意象提示先立根基再图进展。",
+      "成长实验：先问清课程、交出手机、把协商提前到答应之前。"
+    ],
+    "reader_profile": {
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low"
+    }
+  },
+  "content_plan": {
+    "version": 1,
+    "status": "READY",
+    "semantic_priorities": {
+      "must_include": [
+        "s2.persona.role_holder",
+        "s2.belief.wait_for_clarity",
+        "s2.resource.negotiation_capacity",
+        "s3.self.rule_vs_autonomy",
+        "s4.action.ask_course_first",
+        "s4.action.phone_handover",
+        "s4.action.negotiate_before_yes"
+      ],
+      "high_priority": [
+        "s4.action.ask_course_first",
+        "s3.self.rule_vs_autonomy",
+        "s3.integration.threefold",
+        "s2.resource.negotiation_capacity",
+        "s1.dayun.current_xinwei",
+        "s4.action.phone_handover",
+        "s4.block.delay_until_certain",
+        "s2.persona.role_holder",
+        "s2.complex.responsibility_autonomy",
+        "s2.belief.wait_for_clarity",
+        "s1.interactions.list",
+        "s1.day_master.ding_fire",
+        "s4.block.control_rest",
+        "s3.timeline.current_xinwei",
+        "s2.shadow.rest_and_letting_go",
+        "s1.ziwei.year_sihua",
+        "s1.ziwei.life_palace",
+        "s1.useful_gods.candidate",
+        "s1.structure.candidate_weak"
+      ],
+      "optional": [
+        "s3.quadrant.holder_learner",
+        "s4.block.accept_then_negotiate",
+        "s1.ten_gods.visible_hidden",
+        "s1.month.xu_climate",
+        "s1.ziwei.body_palace",
+        "s3.bridge.self_knowing",
+        "s3.yijing.qian_zhun",
+        "s1.ziwei.wellbeing",
+        "s1.hour.chen_yin",
+        "s1.day_branch.mao_yin",
+        "s2.authority.internalized_should",
+        "s1.year.jisi"
+      ],
+      "internal_only": [],
+      "candidate_blocks": [
+        {
+          "block_key": "block_01",
+          "title": "等安排确定才推进自己的事",
+          "finding_refs": [
+            "s4.block.delay_until_certain"
+          ]
+        },
+        {
+          "block_key": "block_02",
+          "title": "夜班后靠反复查群才敢休息",
+          "finding_refs": [
+            "s4.block.control_rest"
+          ]
+        },
+        {
+          "block_key": "block_03",
+          "title": "先答应请求，再补协商",
+          "finding_refs": [
+            "s4.block.accept_then_negotiate"
+          ]
+        }
+      ],
+      "candidate_actions": [
+        "s4.action.ask_course_first",
+        "s4.action.phone_handover",
+        "s4.action.negotiate_before_yes"
+      ],
+      "self_direction": [
+        "s3.self.rule_vs_autonomy",
+        "s3.integration.threefold",
+        "s3.quadrant.holder_learner",
+        "s3.bridge.self_knowing",
+        "s3.yijing.qian_zhun"
+      ],
+      "analysis_fragments": [
+        "analysis.s1.day_master",
+        "analysis.s1.structure",
+        "analysis.s1.month",
+        "analysis.s1.ten_gods",
+        "analysis.s1.day_branch",
+        "analysis.s1.hour",
+        "analysis.s1.year",
+        "analysis.s1.interactions",
+        "analysis.s1.dayun",
+        "analysis.s1.useful_gods",
+        "analysis.s1.ziwei_life",
+        "analysis.s1.ziwei_body",
+        "analysis.s1.ziwei_wellbeing",
+        "analysis.s1.ziwei_transformations",
+        "analysis.s2.mapping",
+        "analysis.s2.ten_gods",
+        "analysis.s2.stars",
+        "analysis.s2.persona",
+        "analysis.s2.shadow",
+        "analysis.s2.complex",
+        "analysis.s2.cycle",
+        "analysis.s2.authority",
+        "analysis.s3.self",
+        "analysis.s3.quadrant",
+        "analysis.s3.timeline",
+        "analysis.s3.yijing",
+        "analysis.s3.bridge",
+        "analysis.s3.integration",
+        "analysis.s4.defense",
+        "analysis.s4.energy",
+        "analysis.s4.shadow_practice",
+        "analysis.s4.complex_practice",
+        "analysis.s4.timing_self",
+        "analysis.s4.blocks",
+        "analysis.s4.breakthrough",
+        "analysis.s4.functions",
+        "analysis.s4.relationships",
+        "analysis.s4.experiments"
+      ]
+    },
+    "finding_usage": {
+      "s1.day_master.ding_fire": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.structure.candidate_weak": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.month.xu_climate": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.ten_gods.visible_hidden": {
+        "introduced_at": "report.identity.outer_self",
+        "used_in": [
+          "report.identity.outer_self",
+          "report.identity.foundation_notes",
+          "report.identity.energy_pattern"
+        ],
+        "full_explanation_count": 1,
+        "reference_count": 2
+      },
+      "s1.day_branch.mao_yin": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.hour.chen_yin": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.year.jisi": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.interactions.list": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.dayun.current_xinwei": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.useful_gods.candidate": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.ziwei.life_palace": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.ziwei.body_palace": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s1.ziwei.wellbeing": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes",
+          "report.direction.growth_experiments"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 2
+      },
+      "s1.ziwei.year_sihua": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.foundation_notes"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s2.persona.role_holder": {
+        "introduced_at": null,
+        "used_in": [
+          "report.overview.psychic_structure",
+          "report.identity.outer_self",
+          "report.identity.self_perception"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 3
+      },
+      "s2.belief.wait_for_clarity": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.self_perception",
+          "report.identity.hidden_self",
+          "report.blocks.common_pattern"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 3
+      },
+      "s2.shadow.rest_and_letting_go": {
+        "introduced_at": null,
+        "used_in": [
+          "report.overview.psychic_structure",
+          "report.identity.self_perception",
+          "report.identity.hidden_self",
+          "report.blocks.common_pattern"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 4
+      },
+      "s2.complex.responsibility_autonomy": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.self_perception",
+          "report.identity.hidden_self",
+          "report.blocks.common_pattern"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 3
+      },
+      "s2.authority.internalized_should": {
+        "introduced_at": null,
+        "used_in": [
+          "report.overview.psychic_structure",
+          "report.identity.self_perception"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 2
+      },
+      "s2.resource.negotiation_capacity": {
+        "introduced_at": "report.identity.outer_self",
+        "used_in": [
+          "report.overview.psychic_structure",
+          "report.identity.outer_self",
+          "report.identity.energy_pattern",
+          "report.direction.growth_experiments"
+        ],
+        "full_explanation_count": 1,
+        "reference_count": 3
+      },
+      "s3.self.rule_vs_autonomy": {
+        "introduced_at": null,
+        "used_in": [
+          "report.overview.psychic_structure",
+          "report.identity.hidden_self",
+          "report.identity.self_direction",
+          "report.blocks.breakthrough",
+          "report.direction.life_map",
+          "report.direction.growth_experiments",
+          "report.ending"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 7
+      },
+      "s3.quadrant.holder_learner": {
+        "introduced_at": null,
+        "used_in": [
+          "report.blocks.breakthrough",
+          "report.direction.life_map",
+          "report.direction.growth_experiments"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 3
+      },
+      "s3.timeline.current_xinwei": {
+        "introduced_at": null,
+        "used_in": [
+          "report.direction.life_map"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s3.yijing.qian_zhun": {
+        "introduced_at": null,
+        "used_in": [
+          "report.direction.current_stage"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s3.bridge.self_knowing": {
+        "introduced_at": null,
+        "used_in": [
+          "report.ending"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      },
+      "s3.integration.threefold": {
+        "introduced_at": null,
+        "used_in": [
+          "report.overview.psychic_structure",
+          "report.identity.self_direction",
+          "report.direction.life_map"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 3
+      },
+      "s4.block.delay_until_certain": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.hidden_self",
+          "report.blocks.block_01",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough",
+          "report.direction.growth_experiments"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 5
+      },
+      "s4.block.control_rest": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.hidden_self",
+          "report.identity.energy_pattern",
+          "report.blocks.block_02",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough",
+          "report.direction.growth_experiments"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 6
+      },
+      "s4.block.accept_then_negotiate": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.hidden_self",
+          "report.identity.relationship_pattern",
+          "report.blocks.block_03",
+          "report.blocks.common_pattern",
+          "report.blocks.breakthrough",
+          "report.direction.growth_experiments"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 6
+      },
+      "s4.action.ask_course_first": {
+        "introduced_at": null,
+        "used_in": [
+          "report.identity.hidden_self",
+          "report.identity.energy_pattern",
+          "report.direction.life_map",
+          "report.direction.growth_experiments"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 4
+      },
+      "s4.action.phone_handover": {
+        "introduced_at": null,
+        "used_in": [
+          "report.direction.life_map",
+          "report.direction.growth_experiments"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 2
+      },
+      "s4.action.negotiate_before_yes": {
+        "introduced_at": null,
+        "used_in": [
+          "report.direction.growth_experiments"
+        ],
+        "full_explanation_count": 0,
+        "reference_count": 1
+      }
+    },
+    "fragments": [
+      {
+        "fragment_key": "report.overview.psychic_structure",
+        "chapter": "identity",
+        "purpose": "用已确认材料概述整份说明书的主线，不展开单个判断。",
+        "finding_refs": [
+          "s3.self.rule_vs_autonomy",
+          "s3.integration.threefold",
+          "s2.resource.negotiation_capacity",
+          "s2.persona.role_holder",
+          "s2.authority.internalized_should",
+          "s2.shadow.rest_and_letting_go"
+        ],
+        "analysis_refs": [],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample",
+          "calculated.foundation",
+          "input.context.concrete_events"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "整体结构",
+          "核心主题",
+          "向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向",
+          "概览暗线，不重复展开卡点",
+          "一句关键结论",
+          "本章简短系统路径图（箭头文本即可）"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "SYNTHESIZE",
+        "finding_roles": {
+          "s3.self.rule_vs_autonomy": "SYNTHESIZE",
+          "s3.integration.threefold": "SYNTHESIZE",
+          "s2.resource.negotiation_capacity": "SYNTHESIZE",
+          "s2.persona.role_holder": "REFERENCE",
+          "s2.authority.internalized_should": "REFERENCE",
+          "s2.shadow.rest_and_letting_go": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.psychic_structure",
+            "title": "整体心灵结构",
+            "source_section": "5.4",
+            "target_fragment": "report.overview.psychic_structure",
+            "analysis_sources": [
+              "analysis.s2.persona",
+              "analysis.s2.authority",
+              "analysis.s2.shadow",
+              "analysis.s3.self"
+            ],
+            "checks": [
+              "向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向",
+              "概览暗线，不重复展开卡点"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "chapter_opening": true,
+        "sequence_no": 1,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.identity.outer_self",
+        "chapter": "identity",
+        "purpose": "从用户能够识别的外在表现开始建立共鸣。",
+        "finding_refs": [
+          "s2.resource.negotiation_capacity",
+          "s1.ten_gods.visible_hidden",
+          "s2.persona.role_holder"
+        ],
+        "analysis_refs": [
+          "analysis.s2.persona",
+          "analysis.s2.ten_gods",
+          "analysis.s2.stars"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "calculated.foundation",
+          "input.profile.occupation_status",
+          "input.context.self_description"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "可识别的外在表现",
+          "用户可识别的外在角色",
+          "自述与符号解释分开"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "INTRODUCE",
+        "finding_roles": {
+          "s2.resource.negotiation_capacity": "INTRODUCE",
+          "s1.ten_gods.visible_hidden": "INTRODUCE",
+          "s2.persona.role_holder": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.persona",
+            "title": "世界看到的你",
+            "source_section": "5.4",
+            "target_fragment": "report.identity.outer_self",
+            "analysis_sources": [
+              "analysis.s2.persona"
+            ],
+            "checks": [
+              "用户可识别的外在角色",
+              "自述与符号解释分开"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 2,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.identity.foundation_notes",
+        "chapter": "identity",
+        "purpose": "把已审核命盘逻辑转译为可理解的旁注，注明出生信息/流派不确定性；不把符号当心理证据。",
+        "finding_refs": [
+          "s1.dayun.current_xinwei",
+          "s1.interactions.list",
+          "s1.day_master.ding_fire",
+          "s1.ziwei.year_sihua",
+          "s1.ziwei.life_palace",
+          "s1.useful_gods.candidate",
+          "s1.structure.candidate_weak",
+          "s1.ten_gods.visible_hidden",
+          "s1.month.xu_climate",
+          "s1.ziwei.body_palace",
+          "s1.ziwei.wellbeing",
+          "s1.hour.chen_yin",
+          "s1.day_branch.mao_yin",
+          "s1.year.jisi"
+        ],
+        "analysis_refs": [
+          "analysis.s1.day_master",
+          "analysis.s1.structure",
+          "analysis.s1.month",
+          "analysis.s1.ten_gods",
+          "analysis.s1.day_branch",
+          "analysis.s1.hour",
+          "analysis.s1.year",
+          "analysis.s1.interactions",
+          "analysis.s1.dayun",
+          "analysis.s1.useful_gods",
+          "analysis.s1.ziwei_life",
+          "analysis.s1.ziwei_body",
+          "analysis.s1.ziwei_wellbeing",
+          "analysis.s1.ziwei_transformations"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.analysis_date"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "八字十项及紫微重点的已确认内容或暂缓边界",
+          "心理含义只是待验证线索"
+        ],
+        "must_not_repeat": [
+          "后续心理章节不要重复逐条命盘解释",
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次",
+          "不要重新完整解释 s1.ten_gods.visible_hidden；以 REFERENCE 方式承接。"
+        ],
+        "new_information_role": "DEEPEN",
+        "finding_roles": {
+          "s1.dayun.current_xinwei": "REFERENCE",
+          "s1.interactions.list": "REFERENCE",
+          "s1.day_master.ding_fire": "REFERENCE",
+          "s1.ziwei.year_sihua": "REFERENCE",
+          "s1.ziwei.life_palace": "REFERENCE",
+          "s1.useful_gods.candidate": "REFERENCE",
+          "s1.structure.candidate_weak": "REFERENCE",
+          "s1.ten_gods.visible_hidden": "REFERENCE",
+          "s1.month.xu_climate": "REFERENCE",
+          "s1.ziwei.body_palace": "REFERENCE",
+          "s1.ziwei.wellbeing": "REFERENCE",
+          "s1.hour.chen_yin": "REFERENCE",
+          "s1.day_branch.mao_yin": "REFERENCE",
+          "s1.year.jisi": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "sequence_no": 3,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.identity.self_perception",
+        "chapter": "identity",
+        "purpose": "眼中的自己",
+        "finding_refs": [
+          "s2.persona.role_holder",
+          "s2.belief.wait_for_clarity",
+          "s2.shadow.rest_and_letting_go",
+          "s2.complex.responsibility_autonomy",
+          "s2.authority.internalized_should"
+        ],
+        "analysis_refs": [
+          "analysis.s2.mapping",
+          "analysis.s2.authority"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "意识自我与底层信念",
+          "应该/必须/不能及权威内化",
+          "用户自我感受、反证或待补问"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "DEEPEN",
+        "finding_roles": {
+          "s2.persona.role_holder": "REFERENCE",
+          "s2.belief.wait_for_clarity": "REFERENCE",
+          "s2.shadow.rest_and_letting_go": "REFERENCE",
+          "s2.complex.responsibility_autonomy": "REFERENCE",
+          "s2.authority.internalized_should": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.self_belief",
+            "title": "眼中的自己",
+            "source_section": "5.4",
+            "target_fragment": "report.identity.self_perception",
+            "analysis_sources": [
+              "analysis.s2.mapping",
+              "analysis.s2.authority"
+            ],
+            "checks": [
+              "意识自我与底层信念",
+              "应该/必须/不能及权威内化",
+              "用户自我感受、反证或待补问"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 4,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.identity.hidden_self",
+        "chapter": "identity",
+        "purpose": "在不新增诊断的前提下呈现已有材料支持的内在张力。",
+        "finding_refs": [
+          "s4.action.ask_course_first",
+          "s3.self.rule_vs_autonomy",
+          "s2.shadow.rest_and_letting_go",
+          "s2.complex.responsibility_autonomy",
+          "s2.belief.wait_for_clarity",
+          "s4.block.delay_until_certain",
+          "s4.block.control_rest",
+          "s4.block.accept_then_negotiate"
+        ],
+        "analysis_refs": [
+          "analysis.s2.shadow",
+          "analysis.s2.complex",
+          "analysis.s4.defense"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.available_time",
+          "input.context.expected_outcomes",
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "已确认材料支持的内在张力",
+          "情结、阴影、防御的区别与关系",
+          "情绪和信念假设",
+          "保护功能与现实核对"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "DEEPEN",
+        "finding_roles": {
+          "s4.action.ask_course_first": "DEEPEN",
+          "s3.self.rule_vs_autonomy": "DEEPEN",
+          "s2.shadow.rest_and_letting_go": "REFERENCE",
+          "s2.complex.responsibility_autonomy": "REFERENCE",
+          "s2.belief.wait_for_clarity": "REFERENCE",
+          "s4.block.delay_until_certain": "REFERENCE",
+          "s4.block.control_rest": "REFERENCE",
+          "s4.block.accept_then_negotiate": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.hidden_self",
+            "title": "隐藏的自己",
+            "source_section": "2.4、5.4",
+            "target_fragment": "report.identity.hidden_self",
+            "analysis_sources": [
+              "analysis.s2.shadow",
+              "analysis.s2.complex",
+              "analysis.s4.defense"
+            ],
+            "checks": [
+              "情结、阴影、防御的区别与关系",
+              "情绪和信念假设",
+              "保护功能与现实核对"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 5,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.identity.self_direction",
+        "chapter": "identity",
+        "purpose": "为后续发展方向埋下已确认的语义线索。",
+        "finding_refs": [
+          "s3.self.rule_vs_autonomy",
+          "s3.integration.threefold"
+        ],
+        "analysis_refs": [
+          "analysis.s3.self",
+          "analysis.s3.integration"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample",
+          "calculated.foundation",
+          "input.context.concrete_events"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "发展方向的语义线索",
+          "当前倾向的一端",
+          "被排除的另一端",
+          "两端整合而非完美人格"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "REFERENCE",
+        "finding_roles": {
+          "s3.self.rule_vs_autonomy": "REFERENCE",
+          "s3.integration.threefold": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.self_direction",
+            "title": "通往完整的方向",
+            "source_section": "3.1、4.1.6、5.4",
+            "target_fragment": "report.identity.self_direction",
+            "analysis_sources": [
+              "analysis.s3.self",
+              "analysis.s3.integration"
+            ],
+            "checks": [
+              "当前倾向的一端",
+              "被排除的另一端",
+              "两端整合而非完美人格"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 6,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.identity.energy_pattern",
+        "chapter": "identity",
+        "purpose": "表达已确认的资源、能量和工作模式。",
+        "finding_refs": [
+          "s2.resource.negotiation_capacity",
+          "s1.ten_gods.visible_hidden",
+          "s4.block.control_rest",
+          "s4.action.ask_course_first"
+        ],
+        "analysis_refs": [
+          "analysis.s4.energy",
+          "analysis.s4.functions"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "calculated.foundation",
+          "input.context.available_time",
+          "input.context.expected_outcomes",
+          "input.profile.mbti"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "资源或能量模式",
+          "充电/耗电与实际反馈",
+          "探索→价值→执行→反馈路径及张力",
+          "无自报不推MBTI或八维分数"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次",
+          "不要重新完整解释 s2.resource.negotiation_capacity；以 MANIFEST 方式承接。",
+          "不要重新完整解释 s1.ten_gods.visible_hidden；以 MANIFEST 方式承接。"
+        ],
+        "new_information_role": "MANIFEST",
+        "finding_roles": {
+          "s2.resource.negotiation_capacity": "MANIFEST",
+          "s1.ten_gods.visible_hidden": "MANIFEST",
+          "s4.block.control_rest": "REFERENCE",
+          "s4.action.ask_course_first": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.energy",
+            "title": "能量与加工路径",
+            "source_section": "4.1.2、4.3、5.4",
+            "target_fragment": "report.identity.energy_pattern",
+            "analysis_sources": [
+              "analysis.s4.energy",
+              "analysis.s4.functions"
+            ],
+            "checks": [
+              "充电/耗电与实际反馈",
+              "探索→价值→执行→反馈路径及张力",
+              "无自报不推MBTI或八维分数"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 7,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.identity.relationship_pattern",
+        "chapter": "identity",
+        "purpose": "关系循环",
+        "finding_refs": [
+          "s4.block.accept_then_negotiate"
+        ],
+        "analysis_refs": [
+          "analysis.s4.relationships"
+        ],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.counterexample"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "请求/回应/感受/反馈循环",
+          "真实场景或明确暂缓",
+          "反例与待核对部分"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "DEEPEN",
+        "finding_roles": {
+          "s4.block.accept_then_negotiate": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.relationships",
+            "title": "关系循环",
+            "source_section": "4.4、5.4",
+            "target_fragment": "report.identity.relationship_pattern",
+            "analysis_sources": [
+              "analysis.s4.relationships"
+            ],
+            "checks": [
+              "请求/回应/感受/反馈循环",
+              "真实场景或明确暂缓",
+              "反例与待核对部分"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 8,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.blocks.block_01",
+        "chapter": "challenge",
+        "purpose": "沿现实表现、已确认机制、保护功能与长期影响解释一个卡点；缺少来源时返回语义缺口。",
+        "finding_refs": [
+          "s4.block.delay_until_certain"
+        ],
+        "analysis_refs": [],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "常见现实场景",
+          "运作机制",
+          "过去保护了什么",
+          "长期代价",
+          "整合邀请",
+          "现实表现",
+          "已确认机制",
+          "变化所需的下一步理解",
+          "场景→触发→运作→过去保护→长期代价→整合邀请",
+          "标准报告优先4–5项，证据不足记录理由",
+          "本节不展开解决步骤",
+          "一句关键结论",
+          "本章简短系统路径图（箭头文本即可）"
+        ],
+        "must_not_repeat": [
+          "本段不列解决步骤，行动集中在第三章",
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "MANIFEST",
+        "finding_roles": {
+          "s4.block.delay_until_certain": "MANIFEST"
+        },
+        "block_key": "block_01",
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.blocks",
+            "title": "核心卡点",
+            "source_section": "4.2、5.4",
+            "target_fragment": "report.blocks.block_*",
+            "analysis_sources": [
+              "analysis.s4.blocks"
+            ],
+            "checks": [
+              "场景→触发→运作→过去保护→长期代价→整合邀请",
+              "标准报告优先4–5项，证据不足记录理由",
+              "本节不展开解决步骤"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "chapter_opening": true,
+        "sequence_no": 9,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.blocks.block_02",
+        "chapter": "challenge",
+        "purpose": "沿现实表现、已确认机制、保护功能与长期影响解释一个卡点；缺少来源时返回语义缺口。",
+        "finding_refs": [
+          "s4.block.control_rest"
+        ],
+        "analysis_refs": [],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.expected_outcomes"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "常见现实场景",
+          "运作机制",
+          "过去保护了什么",
+          "长期代价",
+          "整合邀请",
+          "现实表现",
+          "已确认机制",
+          "变化所需的下一步理解",
+          "场景→触发→运作→过去保护→长期代价→整合邀请",
+          "标准报告优先4–5项，证据不足记录理由",
+          "本节不展开解决步骤"
+        ],
+        "must_not_repeat": [
+          "本段不列解决步骤，行动集中在第三章",
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "MANIFEST",
+        "finding_roles": {
+          "s4.block.control_rest": "MANIFEST"
+        },
+        "block_key": "block_02",
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.blocks",
+            "title": "核心卡点",
+            "source_section": "4.2、5.4",
+            "target_fragment": "report.blocks.block_*",
+            "analysis_sources": [
+              "analysis.s4.blocks"
+            ],
+            "checks": [
+              "场景→触发→运作→过去保护→长期代价→整合邀请",
+              "标准报告优先4–5项，证据不足记录理由",
+              "本节不展开解决步骤"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 10,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.blocks.block_03",
+        "chapter": "challenge",
+        "purpose": "沿现实表现、已确认机制、保护功能与长期影响解释一个卡点；缺少来源时返回语义缺口。",
+        "finding_refs": [
+          "s4.block.accept_then_negotiate"
+        ],
+        "analysis_refs": [],
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "input.context.self_description"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "常见现实场景",
+          "运作机制",
+          "过去保护了什么",
+          "长期代价",
+          "整合邀请",
+          "现实表现",
+          "已确认机制",
+          "变化所需的下一步理解",
+          "场景→触发→运作→过去保护→长期代价→整合邀请",
+          "标准报告优先4–5项，证据不足记录理由",
+          "本节不展开解决步骤"
+        ],
+        "must_not_repeat": [
+          "本段不列解决步骤，行动集中在第三章",
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "MANIFEST",
+        "finding_roles": {
+          "s4.block.accept_then_negotiate": "MANIFEST"
+        },
+        "block_key": "block_03",
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.blocks",
+            "title": "核心卡点",
+            "source_section": "4.2、5.4",
+            "target_fragment": "report.blocks.block_*",
+            "analysis_sources": [
+              "analysis.s4.blocks"
+            ],
+            "checks": [
+              "场景→触发→运作→过去保护→长期代价→整合邀请",
+              "标准报告优先4–5项，证据不足记录理由",
+              "本节不展开解决步骤"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 11,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.blocks.common_pattern",
+        "chapter": "challenge",
+        "purpose": "综合多个已确认卡点，说明它们是否共享同一运作模式。",
+        "finding_refs": [
+          "s4.block.delay_until_certain",
+          "s4.block.control_rest",
+          "s4.block.accept_then_negotiate",
+          "s2.complex.responsibility_autonomy",
+          "s2.shadow.rest_and_letting_go",
+          "s2.belief.wait_for_clarity"
+        ],
+        "analysis_refs": [
+          "analysis.s2.cycle",
+          "analysis.s4.blocks"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.expected_outcomes",
+          "input.context.counterexample"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "共同模式",
+          "模式之间的关系",
+          "综合多个卡点",
+          "触发→情绪/信念→防御→短期保护→长期重复",
+          "不把相关性写成因果"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "SYNTHESIZE",
+        "finding_roles": {
+          "s4.block.delay_until_certain": "SYNTHESIZE",
+          "s4.block.control_rest": "SYNTHESIZE",
+          "s4.block.accept_then_negotiate": "SYNTHESIZE",
+          "s2.complex.responsibility_autonomy": "REFERENCE",
+          "s2.shadow.rest_and_letting_go": "REFERENCE",
+          "s2.belief.wait_for_clarity": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.common_pattern",
+            "title": "共性机制",
+            "source_section": "2.4.4、4.2、5.4",
+            "target_fragment": "report.blocks.common_pattern",
+            "analysis_sources": [
+              "analysis.s2.cycle",
+              "analysis.s4.blocks"
+            ],
+            "checks": [
+              "综合多个卡点",
+              "触发→情绪/信念→防御→短期保护→长期重复",
+              "不把相关性写成因果"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 12,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.blocks.breakthrough",
+        "chapter": "challenge",
+        "purpose": "从已确认卡点连接到发展方向和行动，不重新选择专业判断。",
+        "finding_refs": [
+          "s4.block.delay_until_certain",
+          "s4.block.control_rest",
+          "s3.self.rule_vs_autonomy",
+          "s3.quadrant.holder_learner",
+          "s4.block.accept_then_negotiate"
+        ],
+        "analysis_refs": [
+          "analysis.s3.quadrant",
+          "analysis.s4.breakthrough"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.expected_outcomes",
+          "input.context.counterexample",
+          "input.profile.occupation_status"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "需要发展的能力",
+          "与行动的联系（只指向第三章，不写步骤）",
+          "用神/资源→调节功能→能力→现实缺口→工具→实验",
+          "能力回应共性机制",
+          "动作指向第三章",
+          "中式人物意象具象化",
+          "可学习的能力及适用边界",
+          "不作史实或人格诊断"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "RESPOND",
+        "finding_roles": {
+          "s4.block.delay_until_certain": "MANIFEST",
+          "s4.block.control_rest": "MANIFEST",
+          "s3.self.rule_vs_autonomy": "RESPOND",
+          "s3.quadrant.holder_learner": "REFERENCE",
+          "s4.block.accept_then_negotiate": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.breakthrough",
+            "title": "破局推导",
+            "source_section": "4.2、5.4",
+            "target_fragment": "report.blocks.breakthrough",
+            "analysis_sources": [
+              "analysis.s4.breakthrough"
+            ],
+            "checks": [
+              "用神/资源→调节功能→能力→现实缺口→工具→实验",
+              "能力回应共性机制",
+              "动作指向第三章"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.archetype",
+            "title": "中式原型与学习资源",
+            "source_section": "3.2、5.4",
+            "target_fragment": "report.blocks.breakthrough",
+            "analysis_sources": [
+              "analysis.s3.quadrant"
+            ],
+            "checks": [
+              "中式人物意象具象化",
+              "可学习的能力及适用边界",
+              "不作史实或人格诊断"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 13,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.direction.current_stage",
+        "chapter": "direction",
+        "purpose": "当下时义",
+        "finding_refs": [
+          "s3.yijing.qian_zhun"
+        ],
+        "analysis_refs": [
+          "analysis.s3.yijing"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.expected_outcomes"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "当下境遇与卦象比喻为何匹配",
+          "不适用边界",
+          "不是起卦证明",
+          "一句关键结论",
+          "本章简短系统路径图（箭头文本即可）"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "DEEPEN",
+        "finding_roles": {
+          "s3.yijing.qian_zhun": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.timing_wisdom",
+            "title": "当下时义",
+            "source_section": "3.3、5.4",
+            "target_fragment": "report.direction.current_stage",
+            "analysis_sources": [
+              "analysis.s3.yijing"
+            ],
+            "checks": [
+              "当下境遇与卦象比喻为何匹配",
+              "不适用边界",
+              "不是起卦证明"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "chapter_opening": true,
+        "sequence_no": 14,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.direction.life_map",
+        "chapter": "direction",
+        "purpose": "把已确认的 Self Direction 组织成现实发展方向。",
+        "finding_refs": [
+          "s3.self.rule_vs_autonomy",
+          "s3.integration.threefold",
+          "s3.quadrant.holder_learner",
+          "s3.timeline.current_xinwei",
+          "s4.action.ask_course_first",
+          "s4.action.phone_handover"
+        ],
+        "analysis_refs": [
+          "analysis.s3.timeline",
+          "analysis.s4.timing_self"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample",
+          "calculated.foundation",
+          "input.context.concrete_events",
+          "input.profile.occupation_status",
+          "input.context.analysis_date",
+          "input.context.available_time"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "发展方向",
+          "与前文卡点的联系",
+          "真实大运起止",
+          "原局互动依据或暂缓",
+          "每阶段基调/放大主题/能力/旧模式",
+          "条件式未来与积极资源",
+          "已确认的每个大运真实起止年份",
+          "阶段基调/放大主题/能力/旧模式"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节",
+          "不引用收束金句，金句仅在寄语出现一次"
+        ],
+        "new_information_role": "RESPOND",
+        "finding_roles": {
+          "s3.self.rule_vs_autonomy": "RESPOND",
+          "s3.integration.threefold": "RESPOND",
+          "s3.quadrant.holder_learner": "RESPOND",
+          "s3.timeline.current_xinwei": "REFERENCE",
+          "s4.action.ask_course_first": "REFERENCE",
+          "s4.action.phone_handover": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.life_map",
+            "title": "人生阶段地图",
+            "source_section": "3.3、5.4",
+            "target_fragment": "report.direction.life_map",
+            "analysis_sources": [
+              "analysis.s3.timeline",
+              "analysis.s4.timing_self"
+            ],
+            "checks": [
+              "真实大运起止",
+              "原局互动依据或暂缓",
+              "每阶段基调/放大主题/能力/旧模式",
+              "条件式未来与积极资源"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 15,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.direction.growth_experiments",
+        "chapter": "direction",
+        "purpose": "生成与已确认卡点、自我方向和 Action 相连的低成本成长实验。",
+        "finding_refs": [
+          "s4.block.delay_until_certain",
+          "s4.block.control_rest",
+          "s4.block.accept_then_negotiate",
+          "s3.self.rule_vs_autonomy",
+          "s4.action.ask_course_first",
+          "s4.action.phone_handover",
+          "s4.action.negotiate_before_yes",
+          "s2.resource.negotiation_capacity",
+          "s1.ziwei.wellbeing",
+          "s3.quadrant.holder_learner"
+        ],
+        "analysis_refs": [
+          "analysis.s4.shadow_practice",
+          "analysis.s4.complex_practice",
+          "analysis.s4.experiments"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.expected_outcomes",
+          "input.context.counterexample",
+          "input.context.available_time",
+          "calculated.foundation",
+          "input.profile.occupation_status"
+        ],
+        "action_refs": [
+          "s4.action.ask_course_first",
+          "s4.action.phone_handover",
+          "s4.action.negotiate_before_yes"
+        ],
+        "must_cover": [
+          "目标卡点",
+          "具体做法",
+          "观察内容",
+          "适配原因",
+          "3–5项已确认Action",
+          "对应卡点/能力/工具",
+          "动作/频率/耗时/观察/退出",
+          "适合现实条件",
+          "每日能量/每周阴影/每月触发链/每季方向复盘",
+          "可选菜单与时间不足减量",
+          "3–5个已确认成长实验",
+          "频率/耗时/观察/退出条件",
+          "日/周/月/季复盘节奏"
+        ],
+        "must_not_repeat": [
+          "不引用收束金句，金句仅在寄语出现一次",
+          "不要重新完整解释 s2.resource.negotiation_capacity；以 REFERENCE 方式承接。"
+        ],
+        "new_information_role": "RESPOND",
+        "finding_roles": {
+          "s4.block.delay_until_certain": "RESPOND",
+          "s4.block.control_rest": "RESPOND",
+          "s4.block.accept_then_negotiate": "RESPOND",
+          "s3.self.rule_vs_autonomy": "RESPOND",
+          "s4.action.ask_course_first": "RESPOND",
+          "s4.action.phone_handover": "RESPOND",
+          "s4.action.negotiate_before_yes": "RESPOND",
+          "s2.resource.negotiation_capacity": "REFERENCE",
+          "s1.ziwei.wellbeing": "REFERENCE",
+          "s3.quadrant.holder_learner": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.experiments",
+            "title": "成长实验",
+            "source_section": "4.1.3–4、5.4",
+            "target_fragment": "report.direction.growth_experiments",
+            "analysis_sources": [
+              "analysis.s4.shadow_practice",
+              "analysis.s4.complex_practice",
+              "analysis.s4.experiments"
+            ],
+            "checks": [
+              "3–5项已确认Action",
+              "对应卡点/能力/工具",
+              "动作/频率/耗时/观察/退出",
+              "适合现实条件"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.practice_rhythm",
+            "title": "实践节奏",
+            "source_section": "4.5",
+            "target_fragment": "report.direction.growth_experiments",
+            "analysis_sources": [
+              "analysis.s4.experiments"
+            ],
+            "checks": [
+              "每日能量/每周阴影/每月触发链/每季方向复盘",
+              "可选菜单与时间不足减量"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "required_finding_refs": [
+          "s4.action.ask_course_first",
+          "s4.block.delay_until_certain",
+          "s2.resource.negotiation_capacity",
+          "s3.self.rule_vs_autonomy",
+          "s4.action.phone_handover",
+          "s4.block.control_rest",
+          "s1.ziwei.wellbeing",
+          "s4.action.negotiate_before_yes",
+          "s4.block.accept_then_negotiate",
+          "s3.quadrant.holder_learner"
+        ],
+        "sequence_no": 16,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      },
+      {
+        "fragment_key": "report.ending",
+        "chapter": "direction",
+        "purpose": "回扣 NarrativePlan 主线，并收束到一个由来源支持的可行动方向。",
+        "finding_refs": [
+          "s3.self.rule_vs_autonomy",
+          "s3.bridge.self_knowing"
+        ],
+        "analysis_refs": [
+          "analysis.s3.bridge"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample",
+          "input.context.expected_outcomes"
+        ],
+        "action_refs": [],
+        "must_cover": [
+          "主线回扣",
+          "现实落点",
+          "以哲学贯通认识→理解→行动",
+          "个性化温暖寄语",
+          "署名引用仅用核验库，无匹配可不用",
+          "哲学收束与温暖寄语",
+          "已核验金句或不署名原创句"
+        ],
+        "must_not_repeat": [
+          "不展开实验动作/频率/退出条件，具体实践统一在成长实验节"
+        ],
+        "new_information_role": "REFERENCE",
+        "finding_roles": {
+          "s3.self.rule_vs_autonomy": "REFERENCE",
+          "s3.bridge.self_knowing": "REFERENCE"
+        },
+        "block_key": null,
+        "required": true,
+        "requirements": [
+          {
+            "requirement_id": "R.ending",
+            "title": "哲学收束与寄语",
+            "source_section": "3.4、5.4",
+            "target_fragment": "report.ending",
+            "analysis_sources": [
+              "analysis.s3.bridge"
+            ],
+            "checks": [
+              "以哲学贯通认识→理解→行动",
+              "个性化温暖寄语",
+              "署名引用仅用核验库，无匹配可不用"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "sequence_no": 17,
+        "continuity_inputs": [
+          "established_points",
+          "used_metaphors",
+          "unresolved_threads"
+        ]
+      }
+    ],
+    "coverage": {
+      "s1.day_master.ding_fire": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.structure.candidate_weak": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.month.xu_climate": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.ten_gods.visible_hidden": [
+        "report.identity.outer_self",
+        "report.identity.foundation_notes",
+        "report.identity.energy_pattern"
+      ],
+      "s1.day_branch.mao_yin": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.hour.chen_yin": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.year.jisi": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.interactions.list": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.dayun.current_xinwei": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.useful_gods.candidate": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.ziwei.life_palace": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.ziwei.body_palace": [
+        "report.identity.foundation_notes"
+      ],
+      "s1.ziwei.wellbeing": [
+        "report.identity.foundation_notes",
+        "report.direction.growth_experiments"
+      ],
+      "s1.ziwei.year_sihua": [
+        "report.identity.foundation_notes"
+      ],
+      "s2.persona.role_holder": [
+        "report.overview.psychic_structure",
+        "report.identity.outer_self",
+        "report.identity.self_perception"
+      ],
+      "s2.belief.wait_for_clarity": [
+        "report.identity.self_perception",
+        "report.identity.hidden_self",
+        "report.blocks.common_pattern"
+      ],
+      "s2.shadow.rest_and_letting_go": [
+        "report.overview.psychic_structure",
+        "report.identity.self_perception",
+        "report.identity.hidden_self",
+        "report.blocks.common_pattern"
+      ],
+      "s2.complex.responsibility_autonomy": [
+        "report.identity.self_perception",
+        "report.identity.hidden_self",
+        "report.blocks.common_pattern"
+      ],
+      "s2.authority.internalized_should": [
+        "report.overview.psychic_structure",
+        "report.identity.self_perception"
+      ],
+      "s2.resource.negotiation_capacity": [
+        "report.overview.psychic_structure",
+        "report.identity.outer_self",
+        "report.identity.energy_pattern",
+        "report.direction.growth_experiments"
+      ],
+      "s3.self.rule_vs_autonomy": [
+        "report.overview.psychic_structure",
+        "report.identity.hidden_self",
+        "report.identity.self_direction",
+        "report.blocks.breakthrough",
+        "report.direction.life_map",
+        "report.direction.growth_experiments",
+        "report.ending"
+      ],
+      "s3.quadrant.holder_learner": [
+        "report.blocks.breakthrough",
+        "report.direction.life_map",
+        "report.direction.growth_experiments"
+      ],
+      "s3.timeline.current_xinwei": [
+        "report.direction.life_map"
+      ],
+      "s3.yijing.qian_zhun": [
+        "report.direction.current_stage"
+      ],
+      "s3.bridge.self_knowing": [
+        "report.ending"
+      ],
+      "s3.integration.threefold": [
+        "report.overview.psychic_structure",
+        "report.identity.self_direction",
+        "report.direction.life_map"
+      ],
+      "s4.block.delay_until_certain": [
+        "report.identity.hidden_self",
+        "report.blocks.block_01",
+        "report.blocks.common_pattern",
+        "report.blocks.breakthrough",
+        "report.direction.growth_experiments"
+      ],
+      "s4.block.control_rest": [
+        "report.identity.hidden_self",
+        "report.identity.energy_pattern",
+        "report.blocks.block_02",
+        "report.blocks.common_pattern",
+        "report.blocks.breakthrough",
+        "report.direction.growth_experiments"
+      ],
+      "s4.block.accept_then_negotiate": [
+        "report.identity.hidden_self",
+        "report.identity.relationship_pattern",
+        "report.blocks.block_03",
+        "report.blocks.common_pattern",
+        "report.blocks.breakthrough",
+        "report.direction.growth_experiments"
+      ],
+      "s4.action.ask_course_first": [
+        "report.identity.hidden_self",
+        "report.identity.energy_pattern",
+        "report.direction.life_map",
+        "report.direction.growth_experiments"
+      ],
+      "s4.action.phone_handover": [
+        "report.direction.life_map",
+        "report.direction.growth_experiments"
+      ],
+      "s4.action.negotiate_before_yes": [
+        "report.direction.growth_experiments"
+      ]
+    },
+    "analysis_coverage": {
+      "analysis.s1.day_master": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.structure": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.month": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.ten_gods": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.day_branch": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.hour": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.year": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.interactions": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.dayun": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.useful_gods": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.ziwei_life": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.ziwei_body": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.ziwei_wellbeing": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s1.ziwei_transformations": [
+        "report.identity.foundation_notes"
+      ],
+      "analysis.s2.mapping": [
+        "report.identity.self_perception"
+      ],
+      "analysis.s2.ten_gods": [
+        "report.identity.outer_self"
+      ],
+      "analysis.s2.stars": [
+        "report.identity.outer_self"
+      ],
+      "analysis.s2.persona": [
+        "report.identity.outer_self"
+      ],
+      "analysis.s2.shadow": [
+        "report.identity.hidden_self"
+      ],
+      "analysis.s2.complex": [
+        "report.identity.hidden_self"
+      ],
+      "analysis.s2.cycle": [
+        "report.blocks.common_pattern"
+      ],
+      "analysis.s2.authority": [
+        "report.identity.self_perception"
+      ],
+      "analysis.s3.self": [
+        "report.identity.self_direction"
+      ],
+      "analysis.s3.quadrant": [
+        "report.blocks.breakthrough"
+      ],
+      "analysis.s3.timeline": [
+        "report.direction.life_map"
+      ],
+      "analysis.s3.yijing": [
+        "report.direction.current_stage"
+      ],
+      "analysis.s3.bridge": [
+        "report.ending"
+      ],
+      "analysis.s3.integration": [
+        "report.identity.self_direction"
+      ],
+      "analysis.s4.defense": [
+        "report.identity.hidden_self"
+      ],
+      "analysis.s4.energy": [
+        "report.identity.energy_pattern"
+      ],
+      "analysis.s4.shadow_practice": [
+        "report.direction.growth_experiments"
+      ],
+      "analysis.s4.complex_practice": [
+        "report.direction.growth_experiments"
+      ],
+      "analysis.s4.timing_self": [
+        "report.direction.life_map"
+      ],
+      "analysis.s4.blocks": [
+        "report.blocks.common_pattern"
+      ],
+      "analysis.s4.breakthrough": [
+        "report.blocks.breakthrough"
+      ],
+      "analysis.s4.functions": [
+        "report.identity.energy_pattern"
+      ],
+      "analysis.s4.relationships": [
+        "report.identity.relationship_pattern"
+      ],
+      "analysis.s4.experiments": [
+        "report.direction.growth_experiments"
+      ]
+    },
+    "reasoning_contract": {
+      "version": "report-reasoning-2026-10-04-v1",
+      "analysis_structures": {
+        "analysis.s2.mapping": {
+          "self_description": "用户如何看待自己，区分自述与解释",
+          "core_belief": "应该/必须/不能所形成的底层信念假设",
+          "authority_origin": "权威内化的依据，不补造童年经历",
+          "counterexample": "自述反证，或明确列出待核对的问题"
+        },
+        "analysis.s2.complex": {
+          "trigger": "具体或待核对的触发情境",
+          "emotion": "核心情绪假设",
+          "automatic_thought": "自动想法/信念假设",
+          "defense": "防御方式",
+          "protection": "短期保护功能",
+          "repetition_cost": "长期重复和代价",
+          "reality_check": "现实依据、反证和核对方式"
+        },
+        "analysis.s3.self": {
+          "dominant_pole": "目前偏重的一端",
+          "excluded_pole": "被排除的另一端",
+          "integration": "两端共同存在的能力与具体情境"
+        },
+        "analysis.s3.quadrant": {
+          "archetype": "中式人物意象",
+          "learnable_capacity": "可学习能力",
+          "fit_reason": "为何回应本人的议题",
+          "boundary": "比喻与不适用边界"
+        },
+        "analysis.s3.timeline": {
+          "periods": "各阶段对象列表：start_year/end_year/interaction/theme/capacity/old_pattern",
+          "uncertainty": "计算前提与条件式未来边界"
+        },
+        "analysis.s4.energy": {
+          "charging": "充电情境及用户反馈",
+          "draining": "耗电情境及用户反馈",
+          "reality_check": "反例、未确认部分与观察方式"
+        },
+        "analysis.s4.functions": {
+          "exploration": "探索入口",
+          "valuation": "价值判断入口",
+          "execution": "执行入口",
+          "feedback": "反馈入口",
+          "tension": "本人路径及张力，未自报不推断类型/分数"
+        },
+        "analysis.s4.breakthrough": {
+          "common_mechanism": "多个卡点的共性机制",
+          "resource_translation": "资源到调节功能的转译",
+          "capacity_gap": "需发展能力及现实缺口",
+          "integration_task": "整合任务",
+          "tool_rationale": "工具为何承接能力和卡点，关联Action中的reasoning_path"
+        }
+      },
+      "path_fields": {
+        "regulation_function": "资源如何调节",
+        "capacity": "需要发展的能力",
+        "reality_gap": "现实缺口",
+        "integration_task": "两端整合任务",
+        "tool": "采用工具",
+        "rationale": "工具到该实验的适配理由及边界"
+      },
+      "resource_roles": [
+        "RESOURCE",
+        "SELF_DIRECTION",
+        "STRUCTURE",
+        "USEFUL_GOD"
+      ],
+      "digest": "3169408011137d7c0d736fabfc52e65a9882f5438b37f44d8769def49cd72ab6"
+    },
+    "framework": {
+      "contract": {
+        "version": "product-analysis-2026-10-04-v2",
+        "source": "docs/产品分析框架.md",
+        "analysis_requirements": [
+          {
+            "requirement_id": "A.S1.day_master",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.day_master",
+            "source_section": "1.1.1"
+          },
+          {
+            "requirement_id": "A.S1.structure",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.structure",
+            "source_section": "1.1.2"
+          },
+          {
+            "requirement_id": "A.S1.month",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.month",
+            "source_section": "1.1.3"
+          },
+          {
+            "requirement_id": "A.S1.ten_gods",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.ten_gods",
+            "source_section": "1.1.4"
+          },
+          {
+            "requirement_id": "A.S1.day_branch",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.day_branch",
+            "source_section": "1.1.5"
+          },
+          {
+            "requirement_id": "A.S1.hour",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.hour",
+            "source_section": "1.1.6"
+          },
+          {
+            "requirement_id": "A.S1.year",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.year",
+            "source_section": "1.1.7"
+          },
+          {
+            "requirement_id": "A.S1.interactions",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.interactions",
+            "source_section": "1.1.8"
+          },
+          {
+            "requirement_id": "A.S1.dayun",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.dayun",
+            "source_section": "1.1.9"
+          },
+          {
+            "requirement_id": "A.S1.useful_gods",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.useful_gods",
+            "source_section": "1.1.10"
+          },
+          {
+            "requirement_id": "A.S1.ziwei_life",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.ziwei_life",
+            "source_section": "1.2.1"
+          },
+          {
+            "requirement_id": "A.S1.ziwei_body",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.ziwei_body",
+            "source_section": "1.2.2"
+          },
+          {
+            "requirement_id": "A.S1.ziwei_wellbeing",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.ziwei_wellbeing",
+            "source_section": "1.2.3"
+          },
+          {
+            "requirement_id": "A.S1.ziwei_transformations",
+            "stage": "S1",
+            "fragment_key": "analysis.s1.ziwei_transformations",
+            "source_section": "1.2.4"
+          },
+          {
+            "requirement_id": "A.S2.mapping",
+            "stage": "S2",
+            "fragment_key": "analysis.s2.mapping",
+            "source_section": "2.1"
+          },
+          {
+            "requirement_id": "A.S2.ten_gods",
+            "stage": "S2",
+            "fragment_key": "analysis.s2.ten_gods",
+            "source_section": "2.2"
+          },
+          {
+            "requirement_id": "A.S2.stars",
+            "stage": "S2",
+            "fragment_key": "analysis.s2.stars",
+            "source_section": "2.3"
+          },
+          {
+            "requirement_id": "A.S2.persona",
+            "stage": "S2",
+            "fragment_key": "analysis.s2.persona",
+            "source_section": "2.4.1"
+          },
+          {
+            "requirement_id": "A.S2.shadow",
+            "stage": "S2",
+            "fragment_key": "analysis.s2.shadow",
+            "source_section": "2.4.2"
+          },
+          {
+            "requirement_id": "A.S2.complex",
+            "stage": "S2",
+            "fragment_key": "analysis.s2.complex",
+            "source_section": "2.4.3"
+          },
+          {
+            "requirement_id": "A.S2.cycle",
+            "stage": "S2",
+            "fragment_key": "analysis.s2.cycle",
+            "source_section": "2.4.4"
+          },
+          {
+            "requirement_id": "A.S2.authority",
+            "stage": "S2",
+            "fragment_key": "analysis.s2.authority",
+            "source_section": "2.4.5"
+          },
+          {
+            "requirement_id": "A.S3.self",
+            "stage": "S3",
+            "fragment_key": "analysis.s3.self",
+            "source_section": "3.1"
+          },
+          {
+            "requirement_id": "A.S3.quadrant",
+            "stage": "S3",
+            "fragment_key": "analysis.s3.quadrant",
+            "source_section": "3.2"
+          },
+          {
+            "requirement_id": "A.S3.timeline",
+            "stage": "S3",
+            "fragment_key": "analysis.s3.timeline",
+            "source_section": "3.3"
+          },
+          {
+            "requirement_id": "A.S3.yijing",
+            "stage": "S3",
+            "fragment_key": "analysis.s3.yijing",
+            "source_section": "3.3"
+          },
+          {
+            "requirement_id": "A.S3.bridge",
+            "stage": "S3",
+            "fragment_key": "analysis.s3.bridge",
+            "source_section": "3.4"
+          },
+          {
+            "requirement_id": "A.S3.integration",
+            "stage": "S3",
+            "fragment_key": "analysis.s3.integration",
+            "source_section": "3.5"
+          },
+          {
+            "requirement_id": "A.S4.defense",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.defense",
+            "source_section": "4.1.1"
+          },
+          {
+            "requirement_id": "A.S4.energy",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.energy",
+            "source_section": "4.1.2"
+          },
+          {
+            "requirement_id": "A.S4.shadow_practice",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.shadow_practice",
+            "source_section": "4.1.3"
+          },
+          {
+            "requirement_id": "A.S4.complex_practice",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.complex_practice",
+            "source_section": "4.1.4"
+          },
+          {
+            "requirement_id": "A.S4.timing_self",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.timing_self",
+            "source_section": "4.1.5–6"
+          },
+          {
+            "requirement_id": "A.S4.blocks",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.blocks",
+            "source_section": "4.2"
+          },
+          {
+            "requirement_id": "A.S4.breakthrough",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.breakthrough",
+            "source_section": "4.2"
+          },
+          {
+            "requirement_id": "A.S4.functions",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.functions",
+            "source_section": "4.3"
+          },
+          {
+            "requirement_id": "A.S4.relationships",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.relationships",
+            "source_section": "4.4"
+          },
+          {
+            "requirement_id": "A.S4.experiments",
+            "stage": "S4",
+            "fragment_key": "analysis.s4.experiments",
+            "source_section": "4.5"
+          }
+        ],
+        "report_requirements": [
+          {
+            "requirement_id": "R.psychic_structure",
+            "title": "整体心灵结构",
+            "source_section": "5.4",
+            "target_fragment": "report.overview.psychic_structure",
+            "analysis_sources": [
+              "analysis.s2.persona",
+              "analysis.s2.authority",
+              "analysis.s2.shadow",
+              "analysis.s3.self"
+            ],
+            "checks": [
+              "向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向",
+              "概览暗线，不重复展开卡点"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.persona",
+            "title": "世界看到的你",
+            "source_section": "5.4",
+            "target_fragment": "report.identity.outer_self",
+            "analysis_sources": [
+              "analysis.s2.persona"
+            ],
+            "checks": [
+              "用户可识别的外在角色",
+              "自述与符号解释分开"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.self_belief",
+            "title": "眼中的自己",
+            "source_section": "5.4",
+            "target_fragment": "report.identity.self_perception",
+            "analysis_sources": [
+              "analysis.s2.mapping",
+              "analysis.s2.authority"
+            ],
+            "checks": [
+              "意识自我与底层信念",
+              "应该/必须/不能及权威内化",
+              "用户自我感受、反证或待补问"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.hidden_self",
+            "title": "隐藏的自己",
+            "source_section": "2.4、5.4",
+            "target_fragment": "report.identity.hidden_self",
+            "analysis_sources": [
+              "analysis.s2.shadow",
+              "analysis.s2.complex",
+              "analysis.s4.defense"
+            ],
+            "checks": [
+              "情结、阴影、防御的区别与关系",
+              "情绪和信念假设",
+              "保护功能与现实核对"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.self_direction",
+            "title": "通往完整的方向",
+            "source_section": "3.1、4.1.6、5.4",
+            "target_fragment": "report.identity.self_direction",
+            "analysis_sources": [
+              "analysis.s3.self",
+              "analysis.s3.integration"
+            ],
+            "checks": [
+              "当前倾向的一端",
+              "被排除的另一端",
+              "两端整合而非完美人格"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.energy",
+            "title": "能量与加工路径",
+            "source_section": "4.1.2、4.3、5.4",
+            "target_fragment": "report.identity.energy_pattern",
+            "analysis_sources": [
+              "analysis.s4.energy",
+              "analysis.s4.functions"
+            ],
+            "checks": [
+              "充电/耗电与实际反馈",
+              "探索→价值→执行→反馈路径及张力",
+              "无自报不推MBTI或八维分数"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.relationships",
+            "title": "关系循环",
+            "source_section": "4.4、5.4",
+            "target_fragment": "report.identity.relationship_pattern",
+            "analysis_sources": [
+              "analysis.s4.relationships"
+            ],
+            "checks": [
+              "请求/回应/感受/反馈循环",
+              "真实场景或明确暂缓",
+              "反例与待核对部分"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.blocks",
+            "title": "核心卡点",
+            "source_section": "4.2、5.4",
+            "target_fragment": "report.blocks.block_*",
+            "analysis_sources": [
+              "analysis.s4.blocks"
+            ],
+            "checks": [
+              "场景→触发→运作→过去保护→长期代价→整合邀请",
+              "标准报告优先4–5项，证据不足记录理由",
+              "本节不展开解决步骤"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.common_pattern",
+            "title": "共性机制",
+            "source_section": "2.4.4、4.2、5.4",
+            "target_fragment": "report.blocks.common_pattern",
+            "analysis_sources": [
+              "analysis.s2.cycle",
+              "analysis.s4.blocks"
+            ],
+            "checks": [
+              "综合多个卡点",
+              "触发→情绪/信念→防御→短期保护→长期重复",
+              "不把相关性写成因果"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.breakthrough",
+            "title": "破局推导",
+            "source_section": "4.2、5.4",
+            "target_fragment": "report.blocks.breakthrough",
+            "analysis_sources": [
+              "analysis.s4.breakthrough"
+            ],
+            "checks": [
+              "用神/资源→调节功能→能力→现实缺口→工具→实验",
+              "能力回应共性机制",
+              "动作指向第三章"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.archetype",
+            "title": "中式原型与学习资源",
+            "source_section": "3.2、5.4",
+            "target_fragment": "report.blocks.breakthrough",
+            "analysis_sources": [
+              "analysis.s3.quadrant"
+            ],
+            "checks": [
+              "中式人物意象具象化",
+              "可学习的能力及适用边界",
+              "不作史实或人格诊断"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.life_map",
+            "title": "人生阶段地图",
+            "source_section": "3.3、5.4",
+            "target_fragment": "report.direction.life_map",
+            "analysis_sources": [
+              "analysis.s3.timeline",
+              "analysis.s4.timing_self"
+            ],
+            "checks": [
+              "真实大运起止",
+              "原局互动依据或暂缓",
+              "每阶段基调/放大主题/能力/旧模式",
+              "条件式未来与积极资源"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.timing_wisdom",
+            "title": "当下时义",
+            "source_section": "3.3、5.4",
+            "target_fragment": "report.direction.current_stage",
+            "analysis_sources": [
+              "analysis.s3.yijing"
+            ],
+            "checks": [
+              "当下境遇与卦象比喻为何匹配",
+              "不适用边界",
+              "不是起卦证明"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.experiments",
+            "title": "成长实验",
+            "source_section": "4.1.3–4、5.4",
+            "target_fragment": "report.direction.growth_experiments",
+            "analysis_sources": [
+              "analysis.s4.shadow_practice",
+              "analysis.s4.complex_practice",
+              "analysis.s4.experiments"
+            ],
+            "checks": [
+              "3–5项已确认Action",
+              "对应卡点/能力/工具",
+              "动作/频率/耗时/观察/退出",
+              "适合现实条件"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.practice_rhythm",
+            "title": "实践节奏",
+            "source_section": "4.5",
+            "target_fragment": "report.direction.growth_experiments",
+            "analysis_sources": [
+              "analysis.s4.experiments"
+            ],
+            "checks": [
+              "每日能量/每周阴影/每月触发链/每季方向复盘",
+              "可选菜单与时间不足减量"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          },
+          {
+            "requirement_id": "R.ending",
+            "title": "哲学收束与寄语",
+            "source_section": "3.4、5.4",
+            "target_fragment": "report.ending",
+            "analysis_sources": [
+              "analysis.s3.bridge"
+            ],
+            "checks": [
+              "以哲学贯通认识→理解→行动",
+              "个性化温暖寄语",
+              "署名引用仅用核验库，无匹配可不用"
+            ],
+            "required": true,
+            "allow_not_applicable": false
+          }
+        ],
+        "policies": {
+          "P.narrative": "三章首页关键句与概览路径；一条暗线，理解→整合→行动，避免重复完整解释。",
+          "P.style": "第二人称、现实语言；按明确阅读偏好调节，不改变事实；避免模板、空泛安慰和术语堆叠。",
+          "P.fidelity": "只消费已确认来源，不新增经历、心理判断或行动；问卷反馈校正符号解释。",
+          "P.safety": "无诊断、无单信号强人格结论、无必然未来；保留多系统冲突及用户主体性。"
+        },
+        "digest": "9908d401df141bdbfd2a427ee8b35ad4dcfe9eaf41f2baae260ecaaa568aa244"
+      },
+      "allocations": [
+        {
+          "requirement_id": "R.psychic_structure",
+          "fragment_keys": [
+            "report.overview.psychic_structure"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.persona",
+          "fragment_keys": [
+            "report.identity.outer_self"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.self_belief",
+          "fragment_keys": [
+            "report.identity.self_perception"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.hidden_self",
+          "fragment_keys": [
+            "report.identity.hidden_self"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.self_direction",
+          "fragment_keys": [
+            "report.identity.self_direction"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.energy",
+          "fragment_keys": [
+            "report.identity.energy_pattern"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.relationships",
+          "fragment_keys": [
+            "report.identity.relationship_pattern"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.blocks",
+          "fragment_keys": [
+            "report.blocks.block_01",
+            "report.blocks.block_02",
+            "report.blocks.block_03"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.common_pattern",
+          "fragment_keys": [
+            "report.blocks.common_pattern"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.breakthrough",
+          "fragment_keys": [
+            "report.blocks.breakthrough"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.archetype",
+          "fragment_keys": [
+            "report.blocks.breakthrough"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.life_map",
+          "fragment_keys": [
+            "report.direction.life_map"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.timing_wisdom",
+          "fragment_keys": [
+            "report.direction.current_stage"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.experiments",
+          "fragment_keys": [
+            "report.direction.growth_experiments"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.practice_rhythm",
+          "fragment_keys": [
+            "report.direction.growth_experiments"
+          ],
+          "state": "ALLOCATED"
+        },
+        {
+          "requirement_id": "R.ending",
+          "fragment_keys": [
+            "report.ending"
+          ],
+          "state": "ALLOCATED"
+        }
+      ],
+      "issues": []
+    },
+    "gaps": []
+  },
+  "issues": []
+}

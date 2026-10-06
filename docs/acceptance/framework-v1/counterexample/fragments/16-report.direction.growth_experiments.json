@@ -1,0 +1,85 @@
+{
+  "signature": "81d4b2969e8d433b1493c48f149260e3ae86cf3184844ffd63bdbfe43ea760ed",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "成长实验：把“先停顿、再决定”练成日常",
+    "content": "这一节把前两章的卡点落到可执行的动作上。你不需要先解决所有问题，只需要在几个具体场景里，给“休息与余地”留出一点位置。以下四项实验都来自已确认的行动，费用很低，退出条件也写清楚了；如果某一项做起来太吃力，可以暂停，不必勉强。\n\n实验一：答应前先停顿（对应卡点一“先答应后撤退”，资源线索：时柱庚申正印可作内在支持，帮助在请求与回应之间留出缓冲）。做法：收到临时请求时先不立即回复，做三次呼吸；用一句话争取时间，例如“我看下安排，稍后回复你”；在回复前写下答应与不答应各自的代价；按决定回复，并记录当时的身体感受。频率：每周一次，耗时约五分钟。观察：停顿后是否仍感到被挤压，答应后是否仍熬夜。退出条件：若出现强烈焦虑或场景不适合，可暂停该练习，改为事后记录。\n\n实验二：不解释的休息（对应卡点三“休息与余地少被允许”，资源线索：福德宫天府可作内在安定线索，你独自散步时比较放松，已有现实反馈）。做法：每天固定一段五到十分钟的休息时间；休息时不处理消息，也不向他人解释；若出现“应该做事”的想法，写为“我正在有应该做事的想法”；结束后记录情绪与身体感受。频率：每日一次，耗时约十分钟。观察：休息后是否更能耐受消息与请求，耐心是否回升。退出条件：若休息引发强烈不安，可缩短到三分钟，先做呼吸。\n\n实验三：每月一次触发链记录（对应卡点一，资源线索：癸水渗透式理解与“自知”方向可作观察线索，帮助看见循环而非立即改变）。做法：每月选一次印象较深的请求或变动场景；写下触发事件与当时的情绪名称；写下当时的自动想法与最终回应；标注是否有与以往不同的处理方式。频率：每月一次，耗时约二十分钟。观察：触发链是否出现停顿、表达或拒绝的例外。退出条件：若书写负担过重，可改为口述录音或只写三行。\n\n实验四：阶段交付（对应卡点二“反复修改与截止急交付”，资源线索：月令伤官表达可转为阶段性输出，“渐”卦比喻提示按次序推进）。做法：把任务拆成两到三个可交付阶段；为第一阶段设定一个明确时间点；到点先交可用版本，记录当时的自动想法；收集反馈后再决定修改范围。频率：每周一次，耗时约十分钟。观察：阶段交付后焦虑是否下降，修改次数是否减少。退出条件：若阶段交付在现实中不可行，可改为先交提纲或草稿。\n\n节奏建议：每日做一次能量记录，记下休息与耗电；每周回看一次阴影练习与停顿实验；每月做一次触发链记录；每季复盘一次方向是否仍贴合。时间不足时，优先保留实验一与实验二；其余两项可暂时搁置，等有余力再捡起来。\n\n四项实验是菜单，不是清单。你可以先选一到两项开始，按自己的节奏推进；如果某一项在现实中不可行，可以调整或暂停，不必勉强。",
+    "used_findings": [
+      "s4.block.overcommit_withdraw_loop",
+      "s4.block.perfectionist_completion",
+      "s4.block.rest_as_excluded",
+      "s3.hypothesis.core_tension_productivity_vs_rest",
+      "s4.action.pause_before_promise",
+      "s4.action.rest_without_explaining",
+      "s4.action.trigger_chain_log",
+      "s4.action.staged_delivery",
+      "s1.foundation.hour_seal_gengshen",
+      "s1.foundation.ziwei_wellbeing_tianfu",
+      "s1.foundation.day_master_gui_water",
+      "s3.hypothesis.bridge_self_knowing_practice",
+      "s1.foundation.month_ling_wu_hurt_officer",
+      "s3.hypothesis.yijing_metaphor_jian"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.shadow_practice",
+      "analysis.s4.complex_practice",
+      "analysis.s4.experiments"
+    ],
+    "used_actions": [
+      "s4.action.pause_before_promise",
+      "s4.action.rest_without_explaining",
+      "s4.action.trigger_chain_log",
+      "s4.action.staged_delivery"
+    ],
+    "transition_hint": "成长实验先看到这里。接下来进入寄语一节，那里会简短收束整份报告。",
+    "presentation_meta": {
+      "chapter": "direction",
+      "fragment_key": "report.direction.growth_experiments",
+      "sequence_no": 16,
+      "tone": "务实、可操作、保留余地",
+      "length_note": "按用户偏好深入详细撰写，四项实验完整展开"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.experiments",
+        "status": "FULFILLED",
+        "reason": "正文列出四项已确认Action，逐一写明对应卡点、资源线索、动作步骤、频率、耗时、观察内容与退出条件，并说明适配工作日每晚5–10分钟、周末20分钟的现实条件。",
+        "quote": "实验一：答应前先停顿（对应卡点一“先答应后撤退”，资源线索：时柱庚申正印可作内在支持，帮助在请求与回应之间留出缓冲）。",
+        "follow_up_questions": [
+          "四项实验中，哪一项你愿意先尝试？",
+          "哪一类临时请求场景最适合先做“争取时间”的练习？"
+        ]
+      },
+      {
+        "requirement_id": "R.practice_rhythm",
+        "status": "FULFILLED",
+        "reason": "正文给出每日能量记录、每周回看阴影练习与停顿实验、每月触发链记录、每季方向复盘的节奏，并说明时间不足时优先保留实验一与实验二，其余可暂时搁置。",
+        "quote": "节奏建议：每日做一次能量记录，记下休息与耗电；每周回看一次阴影练习与停顿实验；每月做一次触发链记录；每季复盘一次方向是否仍贴合。",
+        "follow_up_questions": [
+          "每日能量记录你更愿意放在什么时间做？",
+          "如果某一周时间特别紧，你希望优先保留哪一项？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 18397,
+    "output_tokens": 1500,
+    "latency_ms": 6577,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "7bb66be6-28b1-480e-9318-f586e0e88f2a",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "92bb7a4f662e766ffaf5ac0e1e1510684c33fbd999fe74b1603cea21c3f112e7",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

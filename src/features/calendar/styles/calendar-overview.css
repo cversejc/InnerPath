@@ -67,6 +67,13 @@
 
 .calendar-page .overview-story p + p { margin-top: 14px; }
 
+.calendar-page .monthly-reading-section { position: relative; z-index: 1; border-bottom: 1px solid var(--line); padding: var(--space-3) 0; }
+.calendar-page .monthly-reading-section summary { min-height: var(--touch-target); display: flex; align-items: center; cursor: pointer; color: var(--ink); font-family: var(--font-ui); font-size: var(--text-body); font-weight: var(--weight-medium); }
+.calendar-page .monthly-reading-section summary:focus-visible { outline: 2px solid var(--cinnabar-deep); outline-offset: 4px; }
+.calendar-page .monthly-reading-section summary::after { content: '+'; margin-left: auto; color: var(--cinnabar-deep); }
+.calendar-page .monthly-reading-section[open] summary::after { content: '−'; }
+.calendar-page .focus-card > p { font-family: var(--font-body); font-size: var(--text-body); line-height: var(--leading-prose); color: var(--ink); margin-top: var(--space-4); }
+
 .calendar-page .overview-story .overview-emphasis {
   margin-top: 22px;
   color: var(--cinnabar-deep);
@@ -122,6 +129,7 @@
 .calendar-page .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .calendar-page .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--calendar-muted); }
 .calendar-page .legend-dot-green { background: var(--calendar-green); }
+.calendar-page .legend-dot-blue { background: var(--calendar-blue); }
 .calendar-page .legend-dot-yellow { background: var(--calendar-yellow); }
 .calendar-page .legend-dot-red { background: var(--calendar-red); }
 .calendar-page .legend-dot-yellow-green { background: linear-gradient(90deg, var(--calendar-yellow), var(--calendar-green)); }

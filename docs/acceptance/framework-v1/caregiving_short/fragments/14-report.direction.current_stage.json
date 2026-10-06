@@ -1,0 +1,58 @@
+{
+  "signature": "5838284c3260d594c14f42bcb922bc02501b8e827b130b85e4cf1dbda9605fbe",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "当下时义",
+    "content": "你在轮班和照顾父亲之间被压得休息变少，想转岗，却总等到所有家庭安排都确定后才行动——如果把这段境遇比作《易经》里的“屯”卦意象，它说的正是初生之难：草木要穿土而出，得先立根基，再图进展。这个比喻与你的匹配点在于，转岗准备和家庭安排在你这里交错在一起，像种子等待土壤稳定才发芽；而你其实已经能协商轮换、把手机交出去入睡，说明根基并不缺，缺的只是让“先推进”和“等确定”同时在场。这里有一句关键结论：屯的启示不是无限等待，而是先做能做的准备。本章的路径可以简写成：现实挤压→等安排确定才推进→保护交接与家庭运转→把可做的准备提前。需要说清的是，这只是哲学比喻，不是起卦结果或占卜证明；它也有不适用边界——当条件已经明确、只差行动时，继续用“时机未到”解释延迟就不再贴切。",
+    "used_findings": [
+      "s3.yijing.qian_zhun"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.yijing"
+    ],
+    "used_actions": [],
+    "transition_hint": "时义先看到这里：不是无限等待，而是先做能做的准备。接下来看具体动作、频率和退出条件。",
+    "presentation_meta": {
+      "fragment_key": "report.direction.current_stage",
+      "chapter": "direction",
+      "chapter_opening": true,
+      "sequence_no": 14,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、现实语言，按简洁清楚偏好控制篇幅与比喻密度。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.timing_wisdom",
+        "status": "FULFILLED",
+        "reason": "正文说明了当下境遇与屯卦比喻的匹配点（转岗准备与家庭安排交错、种子等待土壤稳定），给出了不适用边界（条件已明确时不宜再以时机未到推迟），并明确声明不是起卦结果或占卜证明；同时给出关键结论与箭头路径图。",
+        "quote": "这个比喻与你的匹配点在于，转岗准备和家庭安排在你这里交错在一起，像种子等待土壤稳定才发芽",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5130,
+    "output_tokens": 595,
+    "latency_ms": 3226,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b44d7620-57c6-4b7d-a7d8-faff39d300b5",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "bb4f01952642a897c40e70b8f021556dd0623cfe271183679154bbb6314a46d7",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

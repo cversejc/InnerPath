@@ -1,0 +1,60 @@
+{
+  "signature": "9a98516b4fa1dd3ba894da06715ac02c686b4c73c7e89e5e6b7733558be62acf",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "眼中的自己",
+    "content": "前面几节看的是别人眼中的你，以及命盘旁注能提供的结构参考。这一节换个方向：你自己怎么描述自己，以及这些描述背后，可能还压着一层你未必说出口的默认规则。\n\n先说你已经说清楚的部分。你自述不担心别人评价，答应任务是为了换取资源，不愿拒绝主要是因为分工规则不清。这三点是你的原话，也是这一节最重要的锚点。\n\n再看可能存在的意识层形象。把日主癸水与命宫廉贞破军放在一起，可以作一个假设性的线索：你在意识层可能更愿意呈现“能渗透、能接事”的运营者形象，这与你自述“答应任务换取资源”的方向是顺的。这是解释视角，不是结论。\n\n底层信念也只是一个待核对的假设。月令午火伤官、日支未土七杀可以作另一条线索：也许有一套“需要以产出与承担来换取位置”的默认规则在运转。它的反证条件很明确——如果你在分工清晰、时间充裕的场景里并不感到“必须承担”，或者你拒绝之后关系与资源并未受损，那这条假设就不成立，需要收回。\n\n关于“应该、必须、不能”，也可以给出一个待验证的方向。官杀线索（日支未土七杀、年支子水藏干正官、时柱申中戊土正官）与印线索（时柱庚申正印）放在一起，可以假设：你对规则与责任的重视，可能有一部分来自较早期的内化，表现为“应该先把事接下来”“必须做到位”“不能因为自己而拖慢别人”。但这里有一条明确的用户反证：你曾明确拒绝领导，并且没有内疚。这条反证直接说明，把“讨好”或“权威恐惧”套在你身上是不成立的。所以更准确的说法可能是：规则感在，但它不是靠恐惧驱动的，而更可能与“分工规则不清”这种现实模糊相关。\n\n还有一处需要暂缓。父母宫主星为空，只有火星、天喜等辅星，依据不足，这一节不展开家庭线索的推断，也不补造任何早年经历。如果你愿意，可以在后续访谈里补充：拒绝领导那次和答应同事那次，情境差异是什么？是对方身份、事情性质、时间压力，还是分工归属的清晰程度不同？这个问题能帮我们把这层“应该”的来源分得更细。\n\n“先答应后撤退”的循环，这一节只作承接，不重新完整解释。它的保护功能是避免当场冲突、维持资源关系，代价是透支与关系摩擦；而你的反例提醒我们，它并不是在所有场景都触发。\n\n综合来看，你眼中的自己，大致是这样一个形象：一个愿意用承担换取资源、对规则敏感、但拒绝能力其实存在的人。真正需要核对的，不是“你是不是太软”，而是“在哪些具体情境下，分工规则的模糊会让你先答应，又在什么时候，你其实可以像拒绝领导那次一样，把判断权收回自己手里”。主权交接的方向，是把“是否答应”的判断权从模糊的规则里收回来，而不是去指责谁。",
+    "used_findings": [
+      "s2.hypothesis.persona_competent_operator",
+      "s2.hypothesis.overcommit_withdraw_cycle"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.mapping",
+      "analysis.s2.authority"
+    ],
+    "used_actions": [],
+    "transition_hint": "命盘旁注与自我描述到此为止；接下来进入三个卡点的具体运作方式，包括先答应后撤退、反复修改与截止急交付、休息少被允许，并保留反例说明并非所有场景都触发。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_perception",
+      "sequence_no": 4,
+      "new_information_role": "DEEPEN",
+      "theory_density": "medium",
+      "action_density": "none",
+      "metaphor_density": "low",
+      "reading_depth": "深入详细",
+      "source_scope": "仅使用本次分配来源，未新增事实、诊断或行动建议"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_belief",
+        "status": "FULFILLED",
+        "reason": "已覆盖意识自我与底层信念、应该/必须/不能及权威内化、用户自我感受、反证与待补问；反例明确否定讨好与权威恐惧假设，父母宫依据不足处已标注暂缓并附核对问题。",
+        "quote": "你自述不担心别人评价，答应任务是为了换取资源，不愿拒绝主要是因为分工规则不清。",
+        "follow_up_questions": [
+          "拒绝领导那次与答应同事那次，情境差异是什么？是对方身份、事情性质、时间压力，还是分工归属的清晰程度不同？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 13767,
+    "output_tokens": 1115,
+    "latency_ms": 4682,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "a39f9c2f-0519-4a5a-ba3d-9ce60f06516f",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "175a06d3762c224f9424554e24da164cbd0803ed970e7b5c5ac13cb431b2fc2d",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

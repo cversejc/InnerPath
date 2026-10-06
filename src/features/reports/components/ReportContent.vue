@@ -1,169 +1,619 @@
 <script setup>
-import { formatReportMarkdown } from '../report-content.js'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { Button as VanButton } from 'vant'
+import ReportContentBlock from './ReportContentBlock.vue'
+import { formatReportMarkdown } from '../report-markdown.js'
 
-defineProps({
-  report: { type: Object, required: true },
-  foundationData: { type: Object, default: null },
-  contentWithoutFoundation: { type: String, default: '' }
+const props = defineProps({
+  document: { type: Object, required: true }
 })
+
+const readerRef = ref(null)
+const pageStageRef = ref(null)
+const tocButtonRef = ref(null)
+const currentPage = ref(0)
+const pageInput = ref('01')
+const tocOpen = ref(false)
+const readerMode = ref('paged')
+const isContinuous = computed(() => readerMode.value === 'continuous')
+let pageObserver = null
+const CHAPTER_COVERS = Object.freeze({
+  identity: {
+    title: '你是谁',
+    number: '01',
+    subtitle: '世界看见的你 · 你的心理底色',
+    excerpt: '先看见稳定的特质，也看见它如何在不同情境中展开。'
+  },
+  challenge: {
+    title: '卡在哪',
+    number: '02',
+    subtitle: '那些反复出现的模式',
+    excerpt: '把反复出现的困难，放回同一套运行机制里理解。'
+  },
+  direction: {
+    title: '往哪去',
+    number: '03',
+    subtitle: '人生方向 · 节奏 · 实验',
+    excerpt: '把理解带向选择、节奏与可以尝试的下一步。'
+  }
+})
+const displayName = computed(() => props.document.recipient || '')
+const displayTitle = computed(() => props.document.title || '人生说明书')
+const reportDate = computed(() => props.document.reportDate || '')
+const reportIdentity = computed(() => displayName.value ? `人生说明书 · ${displayName.value}` : '人生说明书')
+const documentModel = computed(() => props.document)
+const hasSummary = computed(() => Boolean(
+  documentModel.value.summary?.content || documentModel.value.summary?.items?.length || documentModel.value.summary?.blocks?.length
+))
+const hasDocumentContent = computed(() => documentModel.value.sections.length > 0 || hasSummary.value)
+const firstContentPageIndex = computed(() => 2 + (hasDocumentContent.value ? 1 : 0))
+const chapterCoverForSection = section => CHAPTER_COVERS[section.id]
+  || Object.values(CHAPTER_COVERS).find(cover => cover.title === section.title)
+const reportBodyPageEntries = computed(() => {
+  let pageIndex = firstContentPageIndex.value
+  return documentModel.value.sections.flatMap((section, sectionIndex) => {
+    const pages = section.readerPages?.length
+      ? section.readerPages
+      : [{ content: section.content || '', blocks: section.blocks || [] }]
+    const entries = []
+    const chapterCover = chapterCoverForSection(section)
+    if (chapterCover) {
+      entries.push({
+        type: 'chapter-cover',
+        section,
+        sectionIndex,
+        chapterCover,
+        pageIndex: pageIndex++
+      })
+    }
+    entries.push(...pages.map((page, pageInSection) => ({
+      type: 'section',
+      section,
+      sectionIndex,
+      content: page.content || '',
+      blocks: page.blocks || [],
+      pageInSection,
+      pageIndex: pageIndex++
+    })))
+    return entries
+  })
+})
+const sectionPageEntries = computed(() => reportBodyPageEntries.value.filter(page => page.type === 'section'))
+const chapterCoverEntries = computed(() => reportBodyPageEntries.value.filter(page => page.type === 'chapter-cover'))
+const summaryPageEntries = computed(() => {
+  if (!hasSummary.value) return []
+  const summary = documentModel.value.summary
+  const pages = summary.readerPages?.length
+    ? summary.readerPages
+    : [{ content: summary.content || '', blocks: summary.blocks || [] }]
+  const firstPageIndex = firstContentPageIndex.value + reportBodyPageEntries.value.length
+  return pages.map((page, pageInSection) => ({
+    content: page.content || '',
+    blocks: page.blocks || [],
+    pageInSection,
+    pageIndex: firstPageIndex + pageInSection
+  }))
+})
+const pageCount = computed(() => firstContentPageIndex.value
+  + reportBodyPageEntries.value.length
+  + summaryPageEntries.value.length
+  + (hasDocumentContent.value ? 0 : 1))
+function tocChildren(blocks, pages, pageOffset, depth = 1) {
+  return (blocks || []).flatMap(block => {
+    const children = tocChildren(block.children, pages, pageOffset, depth + 1)
+    if (!block.title) return children
+    const matches = pages.flatMap((page, index) => (page.blocks || [])
+      .filter(fragment => fragment.id === block.id)
+      .map(fragment => ({ pageOffset: index, anchorId: fragment.anchorId })))
+    const first = matches[0]
+    const last = matches[matches.length - 1]
+    return [{
+      id: block.id,
+      title: block.title,
+      depth,
+      anchorId: first?.anchorId || '',
+      pageIndex: pageOffset + (first?.pageOffset || 0),
+      pageNumber: pageOffset + (first?.pageOffset || 0) + 1,
+      endPageIndex: pageOffset + (last?.pageOffset ?? first?.pageOffset ?? 0) + 1,
+      children
+    }]
+  })
+}
+
+function flattenToc(items, depth = 0) {
+  return (items || []).flatMap(item => [
+    { ...item, depth },
+    ...flattenToc(item.children, depth + 1)
+  ])
+}
+
+const chapterItems = computed(() => {
+  const chapters = documentModel.value.sections.map((section, sectionIndex) => {
+    const pages = section.readerPages?.length ? section.readerPages : [{ blocks: [] }]
+    const pageCount = pages.length || 1
+    const firstSectionPage = sectionPageEntries.value.find(page => page.sectionIndex === sectionIndex && page.pageInSection === 0)
+    const chapterCover = chapterCoverEntries.value.find(page => page.sectionIndex === sectionIndex)
+    const pageIndex = chapterCover?.pageIndex ?? firstSectionPage?.pageIndex ?? firstContentPageIndex.value
+    const item = {
+      id: section.id,
+      title: section.title,
+      depth: 0,
+      chapterIndex: sectionIndex,
+      pageIndex,
+      pageNumber: pageIndex + 1,
+      endPageIndex: (firstSectionPage?.pageIndex ?? pageIndex) + pageCount,
+      anchorId: chapterCover ? '' : `report-section-title-${firstSectionPage?.pageIndex ?? pageIndex}`,
+      children: tocChildren(section.blocks, pages, firstSectionPage?.pageIndex ?? pageIndex)
+    }
+    return item
+  })
+  if (hasSummary.value) {
+    const summary = documentModel.value.summary
+    const pages = summary.readerPages?.length ? summary.readerPages : [{ blocks: [] }]
+    const pageIndex = firstContentPageIndex.value + reportBodyPageEntries.value.length
+    chapters.push({
+      id: 'summary',
+      title: summary.title || '总结与寄语',
+      depth: 0,
+      chapterIndex: chapters.length,
+      pageIndex,
+      pageNumber: pageIndex + 1,
+      endPageIndex: pageIndex + pages.length,
+      anchorId: `report-summary-title-${pageIndex}`,
+      children: tocChildren(summary.blocks, pages, pageIndex)
+    })
+  }
+  return chapters
+})
+const readerTocItems = computed(() => flattenToc(chapterItems.value))
+const foundationSection = computed(() => documentModel.value.sections.find(section => section.kind === 'foundation'))
+const foundationData = computed(() => foundationSection.value?.foundationData || {})
+const baziPillars = computed(() => {
+  const bazi = foundationData.value?.bazi
+  if (!bazi) return []
+  return [
+    ['年柱', bazi.year],
+    ['月柱', bazi.month],
+    ['日柱', bazi.day],
+    ['时柱', bazi.hour]
+  ].filter(([, pillar]) => pillar)
+})
+const ziweiPalaces = computed(() => {
+  const ziwei = foundationData.value?.ziwei
+  if (!ziwei) return []
+  return [
+    ['命宫', ziwei.life_palace],
+    ['事业宫', ziwei.career_palace],
+    ['财帛宫', ziwei.wealth_palace],
+    ['夫妻宫', ziwei.relationship_palace]
+  ].filter(([, palace]) => palace)
+})
+const additionalFoundation = computed(() => foundationSection.value?.foundationExtras || null)
+
+watch(currentPage, value => {
+  pageInput.value = String(value + 1).padStart(2, '0')
+})
+
+function chapterNumber(index) {
+  return String(index + 1).padStart(2, '0')
+}
+
+function pillarText(pillar) {
+  if (typeof pillar === 'string') return pillar
+  return `${pillar?.stem || ''}${pillar?.branch || ''}`
+}
+
+function joinStars(palace) {
+  return [...(palace?.main_stars || []), ...(palace?.aux_stars || [])].filter(Boolean).join(' · ')
+}
+
+function scrollToPage(pageIndex, mode = readerMode.value, requestedBehavior = 'smooth', afterScroll, waitForLayout = false, anchorId = '') {
+  const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  const behavior = requestedBehavior === 'smooth' && !reducedMotion ? 'smooth' : 'instant'
+  const scroll = () => {
+    const target = mode === 'continuous'
+      ? (anchorId ? readerRef.value?.querySelector(`[id="${anchorId}"]`) : null)
+        || readerRef.value?.querySelector(`[data-reader-page="${pageIndex + 1}"]`)
+      : pageStageRef.value
+    target?.scrollIntoView({ behavior, block: 'start' })
+    afterScroll?.()
+  }
+  if (waitForLayout) nextTick(() => requestAnimationFrame(scroll))
+  else scroll()
+}
+
+function goToPage(index, focusStage = false, anchorId = '') {
+  const nextPage = Math.min(Math.max(Number(index) || 0, 0), pageCount.value - 1)
+  currentPage.value = nextPage
+  pageInput.value = String(nextPage + 1).padStart(2, '0')
+  tocOpen.value = false
+  if (focusStage) {
+    nextTick(() => pageStageRef.value?.focus({ preventScroll: true }))
+  }
+  scrollToPage(nextPage, readerMode.value, isContinuous.value ? 'auto' : 'smooth', undefined, false, anchorId)
+}
+
+function goToTocItem(item) {
+  goToPage(item.pageIndex, !isContinuous.value, item.anchorId)
+}
+
+function jumpToPage() {
+  if (!/^\d+$/.test(pageInput.value.trim())) {
+    pageInput.value = String(currentPage.value + 1).padStart(2, '0')
+    return
+  }
+  const requestedPage = Number(pageInput.value)
+  goToPage(Math.min(Math.max(requestedPage, 1), pageCount.value) - 1)
+}
+
+function observeContinuousPages() {
+  pageObserver?.disconnect()
+  if (!isContinuous.value || typeof IntersectionObserver === 'undefined') return
+
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+  const readingBandTop = Math.round(viewportHeight * 0.18)
+  const readingBandBottom = Math.round(viewportHeight * 0.72)
+  pageObserver = new IntersectionObserver(() => {
+    currentPage.value = pageAtReadingPosition()
+  }, {
+    rootMargin: `-${readingBandTop}px 0px -${readingBandBottom}px 0px`,
+    threshold: 0
+  })
+
+  readerRef.value?.querySelectorAll('[data-reader-page]').forEach(page => pageObserver.observe(page))
+}
+
+function pageAtReadingPosition() {
+  const readingLine = window.innerHeight * 0.24
+  const visiblePages = [...(readerRef.value?.querySelectorAll('[data-reader-page]') || [])]
+    .filter(page => page.getClientRects().length)
+  const pageAtLine = visiblePages.find(page => {
+    const bounds = page.getBoundingClientRect()
+    return bounds.top <= readingLine && bounds.bottom >= readingLine
+  })
+  const nearestPage = pageAtLine || visiblePages.reduce((nearest, page) => {
+    const bounds = page.getBoundingClientRect()
+    const nearestBounds = nearest.getBoundingClientRect()
+    const distance = Math.max(bounds.top - readingLine, readingLine - bounds.bottom, 0)
+    const nearestDistance = Math.max(nearestBounds.top - readingLine, readingLine - nearestBounds.bottom, 0)
+    return distance < nearestDistance ? page : nearest
+  }, visiblePages[0])
+  const pageIndex = Number(nearestPage?.dataset.readerPage) - 1
+  return Number.isInteger(pageIndex) ? Math.min(Math.max(pageIndex, 0), pageCount.value - 1) : currentPage.value
+}
+
+function setReaderMode(mode) {
+  if (!['paged', 'continuous'].includes(mode) || mode === readerMode.value) return
+
+  const pageToKeep = currentPage.value
+  pageObserver?.disconnect()
+  currentPage.value = pageToKeep
+  readerMode.value = mode
+  scrollToPage(pageToKeep, mode, 'auto', () => {
+    if (mode === 'continuous') observeContinuousPages()
+  }, true)
+}
+
+function toggleContents() {
+  tocOpen.value = !tocOpen.value
+  if (tocOpen.value) {
+    nextTick(() => readerRef.value?.querySelector('.report-reader__toc-item')?.focus())
+  } else {
+    nextTick(focusContentsButton)
+  }
+}
+
+function closeContents() {
+  if (!tocOpen.value) return
+  tocOpen.value = false
+  nextTick(focusContentsButton)
+}
+
+function focusContentsButton() {
+  const button = tocButtonRef.value?.$el || tocButtonRef.value
+  button?.focus?.()
+}
+
+function handleReaderKeydown(event) {
+  if (event.key === 'Escape' && tocOpen.value) {
+    event.preventDefault()
+    closeContents()
+    return
+  }
+  if (event.key === 'Tab' && tocOpen.value) {
+    const items = [...(readerRef.value?.querySelectorAll('.report-reader__toc-item') || [])]
+    const activeIndex = items.indexOf(document.activeElement)
+    if (!items.length) return
+    if (activeIndex < 0 || (event.shiftKey && activeIndex === 0)) {
+      event.preventDefault()
+      items[items.length - 1].focus()
+    } else if (!event.shiftKey && activeIndex === items.length - 1) {
+      event.preventDefault()
+      items[0].focus()
+    }
+    return
+  }
+  if (tocOpen.value || event.target.closest?.('input, textarea, select, a, [contenteditable="true"]')) return
+  const nextKeys = isContinuous.value ? ['ArrowRight'] : ['ArrowRight', 'PageDown']
+  const previousKeys = isContinuous.value ? ['ArrowLeft'] : ['ArrowLeft', 'PageUp']
+  if (nextKeys.includes(event.key) && currentPage.value < pageCount.value - 1) {
+    event.preventDefault()
+    goToPage(currentPage.value + 1)
+  } else if (previousKeys.includes(event.key) && currentPage.value > 0) {
+    event.preventDefault()
+    goToPage(currentPage.value - 1)
+  }
+}
+
+function advanceFromPage(event) {
+  if (event.target.closest?.('button, input, textarea, select, a, [contenteditable="true"]')) return
+  if (window.getSelection?.()?.toString()) return
+  pageStageRef.value?.focus({ preventScroll: true })
+  if (!isContinuous.value && currentPage.value < pageCount.value - 1) goToPage(currentPage.value + 1)
+}
+
+onBeforeUnmount(() => pageObserver?.disconnect())
 </script>
 
 <template>
-  <div v-if="report.aiGeneratedContent" class="ai-content">
-    <div class="content-card">
-      <div class="ai-badge">
-        <IconMark class="badge-icon" name="spark" />
-        <span>辰鉴结构化解读</span>
-      </div>
-
-      <div v-if="foundationData" class="foundation-section">
-        <h2 class="section-title">
-          <IconMark class="title-icon" name="compass" />
-          先天坐标
-        </h2>
-
-        <div v-if="foundationData.bazi" class="bazi-container">
-          <h3 class="subsection-title">八字坐标</h3>
-          <div class="pillar-grid">
-            <div v-if="foundationData.bazi.year" class="pillar-card">
-              <div class="pillar-label">年柱</div>
-              <div class="pillar-value">{{ foundationData.bazi.year.stem }}{{ foundationData.bazi.year.branch }}</div>
-              <div v-if="foundationData.bazi.year.ten_god" class="pillar-god">{{ foundationData.bazi.year.ten_god }}</div>
-            </div>
-            <div v-if="foundationData.bazi.month" class="pillar-card">
-              <div class="pillar-label">月柱</div>
-              <div class="pillar-value">{{ foundationData.bazi.month.stem }}{{ foundationData.bazi.month.branch }}</div>
-              <div v-if="foundationData.bazi.month.ten_god" class="pillar-god">{{ foundationData.bazi.month.ten_god }}</div>
-            </div>
-            <div v-if="foundationData.bazi.day" class="pillar-card day-pillar">
-              <div class="pillar-label">日柱（日主）</div>
-              <div class="pillar-value">{{ foundationData.bazi.day.stem }}{{ foundationData.bazi.day.branch }}</div>
-            </div>
-            <div v-if="foundationData.bazi.hour" class="pillar-card">
-              <div class="pillar-label">时柱</div>
-              <div class="pillar-value">{{ foundationData.bazi.hour.stem }}{{ foundationData.bazi.hour.branch }}</div>
-              <div v-if="foundationData.bazi.hour.ten_god" class="pillar-god">{{ foundationData.bazi.hour.ten_god }}</div>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="foundationData.ziwei" class="ziwei-container">
-          <h3 class="subsection-title">紫微坐标</h3>
-          <div class="palace-grid">
-            <div v-if="foundationData.ziwei.life_palace" class="palace-card">
-              <div class="palace-label">命宫</div>
-              <div class="palace-stars">
-                <span v-for="(star, idx) in foundationData.ziwei.life_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
-                <span v-for="(star, idx) in foundationData.ziwei.life_palace.aux_stars" :key="'aux-' + idx" class="star-tag aux">{{ star }}</span>
-              </div>
-            </div>
-            <div v-if="foundationData.ziwei.career_palace" class="palace-card">
-              <div class="palace-label">事业宫</div>
-              <div class="palace-stars">
-                <span v-for="(star, idx) in foundationData.ziwei.career_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
-              </div>
-            </div>
-            <div v-if="foundationData.ziwei.wealth_palace" class="palace-card">
-              <div class="palace-label">财帛宫</div>
-              <div class="palace-stars">
-                <span v-for="(star, idx) in foundationData.ziwei.wealth_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
-              </div>
-            </div>
-            <div v-if="foundationData.ziwei.relationship_palace" class="palace-card">
-              <div class="palace-label">夫妻宫</div>
-              <div class="palace-stars">
-                <span v-for="(star, idx) in foundationData.ziwei.relationship_palace.main_stars" :key="idx" class="star-tag main">{{ star }}</span>
-              </div>
-            </div>
-          </div>
-          <div v-if="foundationData.ziwei.patterns && foundationData.ziwei.patterns.length > 0" class="patterns-section">
-            <div class="pattern-label">关键格局：</div>
-            <div class="pattern-tags">
-              <span v-for="(pattern, idx) in foundationData.ziwei.patterns" :key="idx" class="pattern-tag">{{ pattern }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="markdown-content" v-html="formatReportMarkdown(contentWithoutFoundation)"></div>
-    </div>
-  </div>
-
-  <div v-else class="structured-content">
-    <div class="content-card">
-      <h2>一、我是谁 · 性格密码</h2>
-      <div class="energy-type">
-        <span class="type-badge">{{ report.energyProfile?.type || '综合型' }}</span>
-      </div>
-      <div class="traits">
-        <strong>核心特质：</strong>{{ report.energyProfile?.coreTraits || '独特的个人特质' }}
-      </div>
-      <p class="description">{{ report.energyProfile?.description || '' }}</p>
-    </div>
-
-    <div class="content-card">
-      <h2>二、我往哪去 · 环境与方向</h2>
-      <div class="section-content">
-        <h3>可以尝试的方向</h3>
-        <ul class="path-list">
-          <li v-for="(path, index) in report.careerGuidance.suitablePaths" :key="index">{{ path }}</li>
-        </ul>
-        <h3>工作风格</h3>
-        <p>{{ report.careerGuidance.workStyle }}</p>
-        <h3>顺势建议</h3>
-        <ul class="suggestion-list">
-          <li v-for="(suggestion, index) in report.careerGuidance.developmentSuggestions" :key="index">{{ suggestion }}</li>
-        </ul>
+  <div ref="readerRef" class="report-reader" :class="{ 'report-reader--continuous': isContinuous }" @keydown="handleReaderKeydown">
+    <div class="report-reader__topbar">
+      <div class="report-reader__topbar-actions">
+        <label class="report-reader__mode-control">
+          <span class="report-reader__mode-label">阅读方式</span>
+          <span class="report-reader__mode-select-wrap">
+            <select
+              class="report-reader__mode-select"
+              aria-label="阅读方式"
+              :value="readerMode"
+              @change="setReaderMode($event.target.value)"
+            >
+              <option value="paged">分页阅读</option>
+              <option value="continuous">连续阅读</option>
+            </select>
+            <span class="report-reader__mode-chevron" aria-hidden="true"></span>
+          </span>
+        </label>
+        <VanButton
+          v-if="chapterItems.length"
+          ref="tocButtonRef"
+          type="default"
+          plain
+          native-type="button"
+          class="report-reader__toc-toggle"
+          aria-controls="report-reader-toc"
+          :aria-expanded="tocOpen"
+          @click.stop="toggleContents"
+        >
+          查看目录
+          <span class="report-reader__chevron" :class="{ 'is-open': tocOpen }" aria-hidden="true"></span>
+        </VanButton>
       </div>
     </div>
 
-    <div class="content-card">
-      <h2>三、我如何与人相处 · 关系模式</h2>
-      <div class="section-content">
-        <h3>关系风格</h3>
-        <p>{{ report.relationshipPattern.style }}</p>
-        <div class="two-columns">
-          <div class="column">
-            <h3>优势</h3>
-            <ul class="trait-list">
-              <li v-for="(strength, index) in report.relationshipPattern.strengths" :key="index">{{ strength }}</li>
-            </ul>
-          </div>
-          <div class="column">
-            <h3>挑战</h3>
-            <ul class="trait-list">
-              <li v-for="(challenge, index) in report.relationshipPattern.challenges" :key="index">{{ challenge }}</li>
-            </ul>
-          </div>
-        </div>
-        <h3>成长方向</h3>
-        <p>{{ report.relationshipPattern.growthDirection }}</p>
+    <div v-if="tocOpen" class="report-reader__toc-scrim" @click="closeContents">
+      <div id="report-reader-toc" class="report-reader__toc-panel" role="dialog" aria-modal="true" aria-label="人生说明书目录" @click.stop>
+        <p class="report-reader__toc-heading">阅读目录</p>
+        <nav aria-label="人生说明书目录条目">
+          <ol>
+            <li v-for="item in readerTocItems" :key="item.id">
+              <button
+                type="button"
+                class="report-reader__toc-item"
+                :class="{ 'report-reader__toc-item--nested': item.depth > 0 }"
+                :style="{ '--report-toc-depth': item.depth }"
+                :aria-level="item.depth + 1"
+                :aria-current="currentPage >= item.pageIndex && currentPage < item.endPageIndex ? 'page' : undefined"
+                @click="goToTocItem(item)"
+              >
+                <span class="report-reader__toc-title">{{ item.title }}</span>
+                <span class="report-reader__toc-leader" aria-hidden="true"></span>
+                <span class="report-reader__toc-page">{{ String(item.pageNumber).padStart(2, '0') }}</span>
+              </button>
+            </li>
+          </ol>
+        </nav>
       </div>
     </div>
 
-    <div class="content-card">
-      <h2>四、我卡在哪 · 破局行动</h2>
-      <div class="action-plans">
-        <div v-for="(plan, index) in report.personalGrowth.actionPlan" :key="index" class="action-item">
-          <div class="action-header">
-            <span class="action-number">{{ index + 1 }}</span>
-            <h3>{{ plan.area }}</h3>
-          </div>
-          <p class="action-detail"><strong>具体行动：</strong>{{ plan.action }}</p>
-          <p class="action-timeline"><strong>时间建议：</strong>{{ plan.timeline }}</p>
+    <div
+      ref="pageStageRef"
+      class="report-reader__stage"
+      role="region"
+      tabindex="0"
+      :aria-label="`报告阅读页 ${currentPage + 1} / ${pageCount}。使用左右方向键翻页。`"
+      @click="advanceFromPage"
+    >
+      <article class="report-document" data-render-ready="true">
+    <section class="report-page report-page--cover" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== 0 }" data-reader-page="1" aria-label="报告封面">
+      <div class="report-cover__frame">
+        <div class="report-cover__mark" aria-hidden="true"><span></span></div>
+        <p class="report-cover__eyebrow">辰鉴 · PERSONAL MAP</p>
+        <h1 class="report-cover__title">{{ displayTitle }}</h1>
+        <div class="report-cover__rule" aria-hidden="true"></div>
+        <p v-if="displayName" class="report-cover__name">{{ displayName }}</p>
+        <p class="report-cover__intro">这不是一份命理决断，也不是一份心理诊断<br>这是一张属于你的地图</p>
+        <p class="report-cover__footer">星辰引路 · 镜子照见<br>（辰鉴出品）</p>
+      </div>
+    </section>
+
+    <section class="report-page report-page--intro" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== 1 }" data-reader-page="2" aria-labelledby="report-intro-title">
+      <div class="report-page__running"><span>序言</span><span>{{ reportIdentity }}</span></div>
+      <div class="report-page__body report-intro">
+        <p class="report-page__eyebrow">{{ reportIdentity }}</p>
+        <h2 id="report-intro-title">从这里开始，读一读自己</h2>
+        <div class="report-rule" aria-hidden="true"></div>
+        <div class="report-prose">
+          <p>这份报告把不同的观察放在同一张地图上，帮助你看见自己的特质、正在经历的议题，以及可能的下一步。</p>
+          <p>它是一份供你参考的阅读材料，不替你下定义。对你有帮助的部分，可以带回生活慢慢验证。</p>
         </div>
       </div>
+      <div v-if="reportDate" class="report-page__footer"><span>报告日期 · {{ reportDate }}</span></div>
+    </section>
+
+    <section v-if="chapterItems.length" class="report-page report-page--toc" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== 2 }" data-reader-page="3" aria-labelledby="report-toc-title">
+      <div class="report-page__running"><span>目录</span><span>{{ reportIdentity }}</span></div>
+      <div class="report-page__body">
+        <div class="report-heading report-heading--large">
+          <span class="report-heading__prefix">目 录</span>
+          <h2 id="report-toc-title">阅读路径</h2>
+        </div>
+        <ol class="report-toc">
+          <li v-for="chapter in readerTocItems" :key="chapter.id" :class="{ 'report-toc__item--nested': chapter.depth > 0 }" :style="{ '--report-toc-depth': chapter.depth }">
+            <span v-if="chapter.depth === 0" class="report-toc__index">{{ chapterNumber(chapter.chapterIndex) }}</span>
+            <span v-else class="report-toc__index report-toc__index--nested" aria-hidden="true">·</span>
+            <span class="report-toc__copy"><strong>{{ chapter.title }}</strong></span>
+            <span class="report-toc__leader" aria-hidden="true"></span>
+            <span class="report-toc__page">{{ String(chapter.pageNumber).padStart(2, '0') }}</span>
+          </li>
+        </ol>
+      </div>
+      <div class="report-page__footer"><span>辰鉴 · 个人报告</span></div>
+    </section>
+
+    <template v-for="page in reportBodyPageEntries" :key="`${page.section.id}-${page.type}-${page.pageInSection ?? page.pageIndex}`">
+      <section
+        v-if="page.type === 'chapter-cover'"
+        class="report-page report-page--chapter-cover report-page--dark"
+        :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== page.pageIndex }"
+        :data-reader-page="page.pageIndex + 1"
+        :aria-labelledby="`report-chapter-cover-${page.pageIndex}`"
+      >
+        <div class="report-chapter-cover">
+          <p class="report-chapter-cover__number">{{ page.chapterCover.number }}</p>
+          <h2 :id="`report-chapter-cover-${page.pageIndex}`" class="report-chapter-cover__title">{{ page.section.title }}</h2>
+          <p class="report-chapter-cover__subtitle">{{ page.chapterCover.subtitle }}</p>
+          <div class="report-chapter-cover__rule" aria-hidden="true"></div>
+          <p class="report-chapter-cover__excerpt">{{ page.chapterCover.excerpt }}</p>
+        </div>
+        <div class="report-page__footer"><span>{{ reportIdentity }}</span><span>{{ String(page.pageIndex + 1).padStart(2, '0') }}</span></div>
+      </section>
+
+      <section
+        v-else
+        class="report-page report-page--content"
+        :class="{
+          'report-page--foundation': page.section.kind === 'foundation',
+          'report-page--markdown': page.section.kind === 'markdown',
+          'report-page--reader-hidden': !isContinuous && currentPage !== page.pageIndex
+        }"
+        :data-reader-page="page.pageIndex + 1"
+        :aria-labelledby="`report-section-title-${page.pageIndex}`"
+      >
+        <div class="report-page__running">
+          <span>{{ chapterNumber(page.sectionIndex) }} · {{ page.section.title }}</span>
+          <span>{{ reportIdentity }}</span>
+        </div>
+        <div class="report-page__body">
+          <div class="report-heading">
+            <span class="report-heading__prefix">{{ chapterNumber(page.sectionIndex) }}</span>
+            <h2 :id="`report-section-title-${page.pageIndex}`">{{ page.section.title }}</h2>
+          </div>
+
+          <p v-if="page.pageInSection === 0 && page.section.subtitle" class="report-lead">{{ page.section.subtitle }}</p>
+          <div v-if="page.content" class="report-section-intro report-markdown-content" v-html="formatReportMarkdown(page.content)"></div>
+
+          <div v-if="page.section.kind === 'foundation'" class="report-foundation-content">
+            <div v-if="baziPillars.length" class="report-grid report-grid--four">
+              <div v-for="([label, pillar]) in baziPillars" :key="label" class="report-card report-card--center">
+                <span class="report-card__label">{{ label }}</span>
+                <strong class="report-card__value">{{ pillarText(pillar) }}</strong>
+                <small v-if="pillar.ten_god">{{ pillar.ten_god }}</small>
+              </div>
+            </div>
+            <div v-if="foundationData.bazi?.day_master" class="report-callout">
+              <span class="report-callout__label">日主</span>
+              <p>{{ foundationData.bazi.day_master }}</p>
+            </div>
+            <div v-if="foundationData.ziwei?.patterns?.length" class="report-callout">
+              <span class="report-callout__label">格局</span>
+              <p>{{ foundationData.ziwei.patterns.join(' · ') }}</p>
+            </div>
+            <div v-if="ziweiPalaces.length" class="report-card-stack">
+              <div v-for="([label, palace]) in ziweiPalaces" :key="label" class="report-card">
+                <span class="report-card__label">{{ label }}</span>
+                <p>{{ joinStars(palace) }}</p>
+              </div>
+            </div>
+            <ReportContentBlock v-if="additionalFoundation" :block="additionalFoundation" />
+          </div>
+
+          <ReportContentBlock
+            v-for="(block, blockIndex) in page.blocks"
+            :key="`${block.id}-${block.fragmentIndex ?? blockIndex}`"
+            :block="block"
+          />
+        </div>
+        <div class="report-page__footer"><span>{{ chapterNumber(page.sectionIndex) }} · {{ page.section.title }}</span></div>
+      </section>
+    </template>
+
+    <section
+      v-for="page in summaryPageEntries"
+      :key="`summary-reader-${page.pageInSection}`"
+      class="report-page report-page--ending report-page--dark"
+      :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== page.pageIndex }"
+      :data-reader-page="page.pageIndex + 1"
+      :aria-labelledby="`report-summary-title-${page.pageIndex}`"
+    >
+      <div class="report-ending">
+        <p class="report-divider__number">{{ chapterNumber(documentModel.sections.length) }}</p>
+        <h2 :id="`report-summary-title-${page.pageIndex}`">{{ documentModel.summary.title || '总结与寄语' }}</h2>
+        <div class="report-rule" aria-hidden="true"></div>
+        <ReportContentBlock
+          v-for="(block, blockIndex) in page.blocks"
+          :key="`${block.id}-${block.fragmentIndex ?? blockIndex}`"
+          :block="block"
+          class="report-ending__block"
+        />
+        <p v-if="page.pageInSection === summaryPageEntries.length - 1" class="report-ending__signature">辰鉴 · 星辰引路，镜子照见</p>
+      </div>
+    </section>
+
+    <section v-if="!hasDocumentContent" class="report-page report-page--empty" :class="{ 'report-page--reader-hidden': !isContinuous && currentPage !== 2 }" data-reader-page="3" aria-live="polite">
+      <div class="report-page__body">
+        <div class="report-heading"><h2>报告正文暂不可用</h2></div>
+      </div>
+    </section>
+      </article>
     </div>
 
-    <div class="content-card summary-card">
-      <h2>五、知其序 · 行其路</h2>
-      <p class="summary-text">{{ report.summary }}</p>
+    <div class="report-reader__pagination" role="group" aria-label="报告页码导航">
+      <VanButton
+        type="default"
+        plain
+        native-type="button"
+        class="report-reader__page-button"
+        :disabled="currentPage === 0"
+        @click="goToPage(currentPage - 1)"
+      >上一页</VanButton>
+      <label class="report-reader__page-label">
+        <span>第</span>
+        <input
+          v-model="pageInput"
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          autocomplete="off"
+          aria-label="跳转到第几页"
+          @change="jumpToPage"
+          @keydown.enter.prevent="jumpToPage"
+        >
+        <span>/ {{ pageCount }} 页</span>
+      </label>
+      <VanButton
+        type="default"
+        plain
+        native-type="button"
+        class="report-reader__page-button"
+        :disabled="currentPage >= pageCount - 1"
+        @click="goToPage(currentPage + 1)"
+      >下一页</VanButton>
     </div>
+    <p class="report-reader__hint" aria-hidden="true">{{ isContinuous ? '连续下滑阅读，也可使用左右方向键或目录跳转' : '点击报告页面或使用左右方向键翻页' }}</p>
+    <span class="report-reader__live-status" role="status" aria-live="polite">第 {{ currentPage + 1 }} 页，共 {{ pageCount }} 页</span>
   </div>
 </template>
 
-<style scoped src="../styles/report-content-base.css"></style>
-<style scoped src="../styles/report-foundation.css"></style>
-<style scoped src="../styles/report-content.css"></style>
-<style scoped src="../styles/report-content-layout.css"></style>
-<style scoped src="../styles/report-content-overrides.css"></style>
+<style src="../styles/report-document.css"></style>
+<style src="../styles/report-reader.css"></style>

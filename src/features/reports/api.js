@@ -1,12 +1,13 @@
 import apiClient from '../../utils/apiClient.js'
 
-export async function createReportTask(requestData) {
-  const response = await apiClient.post('/reports', requestData)
+// Historical task status remains readable; new generation goes through service requests.
+export async function getReportTask(taskId) {
+  const response = await apiClient.get(`/reports/tasks/${taskId}`)
   return response.data
 }
 
-export async function getReportTask(taskId) {
-  const response = await apiClient.get(`/reports/tasks/${taskId}`)
+export async function getLatestReportTask() {
+  const response = await apiClient.get('/reports/tasks/latest')
   return response.data
 }
 
@@ -18,6 +19,14 @@ export async function getUserReports(page = 1, size = 10) {
 export async function getReportDetail(reportId) {
   const response = await apiClient.get(`/reports/${reportId}`)
   return response.data
+}
+
+export async function downloadReportPdf(reportId) {
+  return apiClient.get(`/reports/${reportId}/pdf`, { responseType: 'blob' })
+}
+
+export async function downloadReportPreviewPdf(report) {
+  return apiClient.post('/reports/preview/pdf', { report }, { responseType: 'blob' })
 }
 
 export async function getLatestReportContext() {
@@ -42,11 +51,6 @@ export async function getAdminReport(reportId) {
 
 export async function getAdminReportTasks(params = {}) {
   const response = await apiClient.get('/admin/report-tasks', { params })
-  return response.data
-}
-
-export async function retryAdminReportTask(taskId) {
-  const response = await apiClient.post(`/admin/report-tasks/${taskId}/retry`)
   return response.data
 }
 

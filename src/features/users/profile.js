@@ -21,9 +21,11 @@ export function createEmptyProfile() {
     strengths: '',
     limitations: '',
     mingli_experience: [],
+    mingli_experience_other: '',
     mingli_attitude: '',
     preferred_content_depth: '',
-    default_usage_scenarios: []
+    default_usage_scenarios: [],
+    default_usage_scenarios_other: ''
   }
 }
 
@@ -50,9 +52,11 @@ export function mapUserToProfile(user) {
     strengths: user.strengths || '',
     limitations: user.limitations || '',
     mingli_experience: Array.isArray(user.mingli_experience) ? [...user.mingli_experience] : [],
+    mingli_experience_other: user.mingli_experience_other || '',
     mingli_attitude: user.mingli_attitude || '',
     preferred_content_depth: user.preferred_content_depth || '',
-    default_usage_scenarios: Array.isArray(user.default_usage_scenarios) ? [...user.default_usage_scenarios] : []
+    default_usage_scenarios: Array.isArray(user.default_usage_scenarios) ? [...user.default_usage_scenarios] : [],
+    default_usage_scenarios_other: user.default_usage_scenarios_other || ''
   }
 }
 
@@ -93,11 +97,13 @@ export function buildProfilePayload(settings) {
     'mbti',
     'strengths',
     'limitations',
+    'mingli_experience_other',
     'marital_status',
     'occupation_status',
     'highest_education',
     'mingli_attitude',
-    'preferred_content_depth'
+    'preferred_content_depth',
+    'default_usage_scenarios_other'
   ].forEach(field => {
     profile[field] = String(profile[field] || '').trim() || null
   })
@@ -105,6 +111,8 @@ export function buildProfilePayload(settings) {
   ;['personality_keywords', 'mingli_experience', 'default_usage_scenarios'].forEach(field => {
     profile[field] = Array.isArray(profile[field]) ? profile[field] : []
   })
+  if (!profile.mingli_experience.includes('other')) profile.mingli_experience_other = null
+  if (!profile.default_usage_scenarios.includes('other')) profile.default_usage_scenarios_other = null
   profile.birth_year = profile.birth_year ? Number(profile.birth_year) : null
   profile.birth_month = profile.birth_month ? Number(profile.birth_month) : null
   profile.birth_day = profile.birth_day ? Number(profile.birth_day) : null

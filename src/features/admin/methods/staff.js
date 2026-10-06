@@ -1,7 +1,7 @@
-import { createStaffInvite, updateAdminConsultantSpecialties } from '../api'
+import { createStaffInvite, updateAdminConsultantSpecialties } from '../api.js'
 
 export default {
-  async inviteStaff() { if (this.inviteSaving) return; this.inviteSaving = true; try { const response = await createStaffInvite(this.inviteForm.phone, this.inviteForm.role); this.inviteToken = response.token; this.message = '邀请链接已生成，请安全发送给对方'; await this.loadStaff() } catch (error) { this.message = this.errorText(error) } finally { this.inviteSaving = false } },
+  async inviteStaff() { if (this.inviteSaving) return; this.inviteSaving = true; try { const response = await createStaffInvite(this.inviteForm.phone, this.inviteForm.role, this.inviteForm.consultant_type); this.inviteToken = response.token; this.message = '邀请链接已生成，请安全发送给对方'; await this.loadStaff() } catch (error) { this.message = this.errorText(error) } finally { this.inviteSaving = false } },
   async updateConsultantSpecialties({ userId, specialties }) {
     if (this.consultantSpecialtySavingId) return
     this.consultantSpecialtySavingId = userId

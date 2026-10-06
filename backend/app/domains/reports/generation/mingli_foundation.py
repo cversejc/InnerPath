@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 
 from .bazi_calculator import bazi_calculator
+from .bazi_facts import calculate_bazi_facts
 
 def calculate_bazi_from_user_data(user_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -116,5 +117,10 @@ def calculate_mingli_foundation(user_data: Dict[str, Any]) -> Dict[str, Any]:
 
     if ziwei:
         result["ziwei"] = ziwei
+
+    result["bazi_facts"] = calculate_bazi_facts(user_data, bazi)
+    result["calculation_version"] = "mingli-v2"
+    result["input_assumptions"] = user_data.get("demo_assumptions") or []
+    result["limitations"] = result["bazi_facts"]["limitations"] + ([] if ziwei else ["紫微未计算，不能补造宫位星曜"])
 
     return result

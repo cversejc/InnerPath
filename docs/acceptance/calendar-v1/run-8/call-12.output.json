@@ -1,0 +1,13 @@
+{
+  "raw": "{\"approved\": false, \"issues\": [{\"code\": \"WINDOW_MONTH_PILLAR_MISMATCH\", \"severity\": \"BLOCK\", \"entry_date\": \"2026-10-08\", \"message\": \"10月8日15:00–17:00与21:00–23:00窗口在寒露14:29之后，facts月柱为戊戌，但窗口suggestion仍写“寒露前/月柱丁酉”，与固定来源不符。\"}, {\"code\": \"WINDOW_MONTH_PILLAR_MISMATCH\", \"severity\": \"BLOCK\", \"entry_date\": \"2026-10-23\", \"message\": \"10月23日霜降17:37交接，21:00–23:00窗口月柱应为戊戌（与12点同），但未标注交接后差异；窗口文案未按秒级交接核对。\"}, {\"code\": \"MONTH_TONE_INCONSISTENT\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-13\", \"message\": \"月基调为“校准，不是推进”，但10月13日、16日、26日、11月2日连续出现绿色“推进”且动作均为交付，与月度方向及色块阈值说明不一致。\"}, {\"code\": \"REPEATED_ACTION\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-16\", \"message\": \"10月13、16、19、26、11月2日多日建议均为“定最小可交付版本并按时交付”，动作与情境高度重复，缺少分层变化。\"}, {\"code\": \"SUSTAINED_DEFICIT_EMPHASIS\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-14\", \"message\": \"连续多日反复强调“怕让人失望/不能拒绝”同一缺点，缺少对已存在边界能力的正向反馈与进展标记。\"}, {\"code\": \"COLOR_TIMING_INCONSISTENT\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-14\", \"message\": \"10月14日weighted_score 0.5按阈值应为blue，但同日文案与色块说明混用“印星支持/土气偏重”两套解释，时序与色块依据不够一致。\"}, {\"code\": \"MISSING_ANALYSIS_BASIS\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-24\", \"message\": \"10月24日analysis四维分数与source_refs齐全，但summary未体现“互动稳定性偏弱”这一分析结论，逐日文案与分析依据关联不完整。\"}], \"patches\": [{\"entry_date\": \"2026-10-08\", \"windows\": [{\"period\": \"09:00–11:00\", \"label\": \"交接前收尾\", \"suggestion\": \"寒露前月柱仍为丁酉，适合处理交接前的收尾事务；重要决定尽量在14:29前完成。\"}, {\"period\": \"15:00–17:00\", \"label\": \"交接后波动\", \"suggestion\": \"寒露后月柱已转戊戌，压力感可能上升；若感到被要求，先暂停，记录身体紧张度再回应。\"}, {\"period\": \"21:00–23:00\", \"label\": \"恢复收束\", \"suggestion\": \"月柱戊戌，水气回归，适合独处恢复，用0–10刻度记录今天在变动中的透支程度。\"}]}, {\"entry_date\": \"2026-10-23\", \"windows\": [{\"period\": \"09:00–11:00\", \"label\": \"交接前整理\", \"suggestion\": \"霜降前月柱为戊戌，适合先列出本周反复出现的“请求—答应—透支—延迟表达”情境。\"}, {\"period\": \"15:00–17:00\", \"label\": \"交接前波动\", \"suggestion\": \"若感到自责，暂停复盘，改为只记录事实；交接前不新增承诺。\"}, {\"period\": \"21:00–23:00\", \"label\": \"交接后恢复\", \"suggestion\": \"霜降17:37后月柱仍为戊戌，适合独处或散步，写下被推迟的休息或不满，选一个下周的小步方向。\"}]}, {\"entry_date\": \"2026-10-16\", \"windows\": [{\"period\": \"09:00–11:00\", \"label\": \"向外\", \"suggestion\": \"先写下自动想法与证据，再定最小可交付版本。\"}, {\"period\": \"15:00–17:00\", \"label\": \"波动\", \"suggestion\": \"若想再改一遍，按约定时间先交阶段性版本。\"}, {\"period\": \"21:00–23:00\", \"label\": \"恢复\", \"suggestion\": \"记录交付后实际反馈与“担心做不好”之间的差距，只观察。\"}]}]}",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 51146,
+    "output_tokens": 1087,
+    "latency_ms": 5250,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "16895abb-d896-4c9e-99df-ba40cbe6855f"
+  }
+}

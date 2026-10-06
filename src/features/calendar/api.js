@@ -11,7 +11,7 @@ export async function getCalendarRequests() {
 }
 
 export async function createCalendarRequest(requestData) {
-  const response = await apiClient.post('/calendar/requests', requestData)
+  const response = await apiClient.post('/calendar/requests', requestData, { timeout: 150000 })
   return response.data
 }
 

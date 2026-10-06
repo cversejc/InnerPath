@@ -36,9 +36,11 @@ PROFILE_VERSION_FIELDS = {
     "strengths",
     "limitations",
     "mingli_experience",
+    "mingli_experience_other",
     "mingli_attitude",
     "preferred_content_depth",
     "default_usage_scenarios",
+    "default_usage_scenarios_other",
 }
 
 
@@ -56,6 +58,10 @@ def apply_user_profile_update(user: User, update_data: dict) -> list[str]:
         update_data["name"] = name
     if "calendar_type" in update_data and update_data["calendar_type"] is None:
         raise ValueError("calendar_type_required")
+    for field in ("mingli_experience_other", "default_usage_scenarios_other"):
+        if field in update_data:
+            value = str(update_data[field] or "").strip()
+            update_data[field] = value or None
     next_birth = {
         field: update_data.get(field, getattr(user, field, None))
         for field in ("birth_year", "birth_month", "birth_day")

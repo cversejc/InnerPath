@@ -9,24 +9,23 @@ from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.user import User
 from app.domains.reports.schemas import ReportTaskStatusResponse
-from app.domains.reports.task_service import (
-    get_report_task,
-    get_report_task_by_id,
-)
+from app.domains.reports.task_service import get_report_task, get_report_task_by_id
 from app.domains.service_requests.service import has_staff_assignment
 
 router = APIRouter()
 logger = get_logger(__name__)
 
 
-@router.post("")
-async def create_report(
-    current_user: User = Depends(get_current_active_user),
-):
-    """Retire direct generation: reports are created only on consultant delivery."""
+@router.post(
+    "",
+    status_code=status.HTTP_410_GONE,
+    deprecated=True,
+)
+async def create_report(current_user: User = Depends(get_current_active_user)):
+    """Retired legacy entry point; new reports require the consultant workflow."""
     raise HTTPException(
         status_code=status.HTTP_410_GONE,
-        detail="报告需先提交申请，由咨询师介入处理并交付。请从报告申请入口提交。",
+        detail="直接生成报告已停用，请提交报告服务申请，由咨询师协作审核后交付。",
     )
 
 

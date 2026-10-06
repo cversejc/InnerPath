@@ -1,0 +1,64 @@
+{
+  "signature": "6655213308172328132544c037a7c730bf35791e4c210886e3aac1bb352b8266",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你的能量与工作节奏：从想法到交付之间",
+    "content": "如果把注意力从“我该做多少”转到“我的精力是怎样流动的”，你会看到一条比较稳定的路径。\n\n先说资源。你提到独自散步时比较放松，这是一个直接的自我观察，不需要额外解释。由此可以提出一个待核对的假设：独处与稳定节奏可能是你恢复精力的方式。传统命理视角中，福德宫天府无煞忌的解释方向与此呼应，但这只是解释视角，不是对你人格的判定，也需要你在现实里继续验证。另一类资源来自“被支持”和“学习”：命理框架里正印透干被描述为显性资源，偏向内化规范、被支持与吸收信息；伤官透干则偏向表达与突破。这些术语可以翻译成日常语言——你既有把外部要求内化成标准的一面，也有想表达、想做出自己东西的一面。两者同时在场，可能正是你“要靠谱”与“想有自己节奏”之间的张力来源。\n\n再看耗电。你自述下班后常查看消息怕漏事，临时请求后熬夜，项目里反复修改、接近截止才赶工。这三件事有共同的形态：精力先被外部节奏带走，再在期限前集中偿还。需要说明的是，耗电并非在所有情境下都发生。你提到面对熟悉同事且有明确截止时能够协商任务边界，这说明当情境清晰、关系安全时，你有能力守住余地。这个反例比任何标签都重要，它提示问题不在“你不会拒绝”，而在“缓冲的时间差还不够”。\n\n把这条路径拆开看，会更清楚。探索入口：项目开头你有很多想法，提示想法生成比较活跃。价值判断入口：你自述要靠谱、不能让人失望，提示判断“做得好不好”时，外部认可占了较大参照。执行入口：接近截止才急着交付，提示启动与收尾的节奏偏后置。反馈入口：下班后常查看消息怕漏事，提示你在持续监测外部信号。这四段连起来，可能形成“想法多—反复修改—赶工—再监测”的循环。张力就出现在探索的活跃与执行的后置之间：想法越多，越容易觉得“还不够好”，越容易把准备当成行动。\n\n这里需要明确一个边界：你没有提供 MBTI 或八维自报，因此本节不推断你的类型，也不给任何功能分数。上面说的“探索、价值、执行、反馈”只是从你现实自述里整理出的加工路径候选，属于倾向假设，不是类型判定。如果你愿意，可以回答两个问题来校正：你更常从想法出发，还是从事实出发？做完一件事后，你通常怎样确认它已经做好了？这两个答案会直接影响下一节对“卡点”的描述方式。\n\n关于节奏，还有一处资料缺口需要标注：你没有说明睡眠与运动情况。它们与精力直接相关，目前只能留作观察项，不宜下结论。至于每周一次的复盘，那是成长实验节的内容，这里只点出方向——让被排斥的休息与不满被看见，而不是继续用“再撑一下”覆盖过去。\n\n一条可带走的线索是：你的资源并不缺，缺的是想法与交付之间那段缓冲。下一步，我们会按“请求来临—顺从答应—透支—延迟表达”的顺序，看看这段缓冲具体在哪里被跳过。",
+    "used_findings": [
+      "s1.foundation.ten_gods",
+      "s2.pattern.rest_recovery_resource",
+      "s4.action.weekly_shadow_review",
+      "s4.block.rumination_over_action"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.energy",
+      "analysis.s4.functions"
+    ],
+    "used_actions": [],
+    "transition_hint": "下一节进入“卡在哪”，按请求来临—顺从答应—透支—延迟表达的时间顺序，拆解三个卡点，并说明即时缓冲的缺口在哪里。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.energy_pattern",
+      "sequence_no": 7,
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low",
+      "new_information_role": "MANIFEST",
+      "tone": "第二人称、描述模式、不评判、不诊断",
+      "length_note": "约 900 汉字，深入详细偏好下允许加长"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.energy",
+        "status": "FULFILLED",
+        "reason": "已按分析来源给出充电/耗电清单与实际反例，说明探索→价值→执行→反馈路径及张力，并在无 MBTI/八维自报时明确不推断类型或分数；睡眠与运动缺口以观察项标注。",
+        "quote": "把这条路径拆开看，会更清楚。探索入口：项目开头你有很多想法，提示想法生成比较活跃。价值判断入口：你自述要靠谱、不能让人失望，提示判断“做得好不好”时，外部认可占了较大参照。执行入口：接近截止才急着交付，提示启动与收尾的节奏偏后置。反馈入口：下班后常查看消息怕漏事，提示你在持续监测外部信号。",
+        "follow_up_questions": [
+          "你更常从想法出发，还是从事实出发？",
+          "做完一件事后，你通常怎样确认它已经做好了？",
+          "你平时的睡眠和运动情况大致是怎样的？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 14518,
+    "output_tokens": 1243,
+    "latency_ms": 6662,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "63bc2382-b94c-4897-b7d9-982bfab8e5a5",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "7a9e608d932d572218fa7ba4160249cd40dcfe61110fe38a48194d39ae3f0b24",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

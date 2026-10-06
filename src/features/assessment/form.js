@@ -32,13 +32,16 @@ export const decisionStyleOptions = [
 export function createEmptyAssessmentContext() {
   return {
     focus_topics: [],
+    focus_topics_other: '',
     current_challenge: '',
     expected_outcomes: [],
+    expected_outcomes_other: '',
     issue_duration: '',
     impact_level: '',
     decision_status: '',
     decision_description: '',
     decision_style: [],
+    decision_style_other: '',
     additional_info: ''
   }
 }

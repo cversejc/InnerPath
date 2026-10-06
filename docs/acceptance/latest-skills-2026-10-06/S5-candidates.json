@@ -1,0 +1,215 @@
+{
+  "signature": "7f35b1f6d86ddb609aa4278f31688dbbf5face03dfcca51dbe8fbb4d0d0aa983",
+  "skill_digest": "a3dbd02fe3ee33821890674eb484fbc15201f187710750f936fba0d70566eebf",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。只用已确认BLOCK，不新增卡点。INTERNAL_ONLY仅为推导依据，不选为核心结论。",
+  "output": {
+    "candidates": [
+      {
+        "candidate_key": "candidate_arc_a_agree_to_boundary",
+        "theme": "从「先答应」到「有余地地回应」：一条关于边界如何长出来的暗线",
+        "rationale": "以用户最直接的自述困境（答应后熬夜透支）作为入口，符合「从意识到潜意识递进」的呈现原则：先让用户认出自己熟悉的场景，再逐层看见背后的情结、阴影与防御，最后落到可练习的边界能力。三个卡点按「透支—关系—自我要求」的代价递进排列，暗线统一在「答应」与「休息/真实感受」两端如何共同存在。",
+        "narrative_arc": [
+          "第一章 你是谁：从「可靠、能扛、不添麻烦」的外在角色，到「不能让人失望」的内在脚本，再到被排斥的休息与拒绝",
+          "第二章 卡在哪：先看答应后透支，再看拖延后生硬退出，最后看完美主义拖延，三者共同指向「先答应、后反噬」的循环",
+          "第三章 往哪去：把「有余地的表达」作为核心能力，结合当前辛卯运的支持性资源，落到可执行的成长实验与阶段地图"
+        ],
+        "supporting_findings": [
+          "s2.persona.reliable_observer",
+          "s2.shadow.boundary_rest",
+          "s2.complex.disappoint_others",
+          "s2.cycle.agree_then_withdraw",
+          "s4.defense.agree_then_withdraw",
+          "s3.self.pole_reliable_vs_rest",
+          "s4.action.pause_before_yes",
+          "s4.action.trigger_chain_log",
+          "s4.action.shadow_letter",
+          "s4.action.imperfect_experiment",
+          "s3.timeline.current_xinmao",
+          "s1.useful_gods.candidate",
+          "s1.ten_gods.resources",
+          "s1.day_branch.wei_qi_sha",
+          "s1.ziwei.life_palace",
+          "s1.ziwei.transformations",
+          "s3.integration.threefold",
+          "s3.bridge.seed_cycle"
+        ],
+        "deemphasized_findings": [
+          "s1.structure.cong_ge_counter",
+          "s1.hour.yin_shen_value",
+          "s1.year.bing_zi_imprint",
+          "s1.ziwei.wellbeing",
+          "s1.ziwei.body_palace",
+          "s2.authority.internal_should",
+          "s3.quadrant.cross_tension",
+          "s3.yijing.qian_metaphor",
+          "s3.timeline.next_gengyin",
+          "s3.timeline.jichou_wuzi"
+        ],
+        "priority_blocks": [
+          {
+            "title": "答应了，却把自己熬空",
+            "finding_refs": [
+              "s4.block.agree_then_overdraft"
+            ]
+          },
+          {
+            "title": "忍到最后，用生硬的方式退出",
+            "finding_refs": [
+              "s4.block.delay_then_harsh"
+            ]
+          },
+          {
+            "title": "想做到最好，结果拖到最后一刻",
+            "finding_refs": [
+              "s4.block.perfection_delay"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate_arc_b_cannot_disappoint",
+        "theme": "「不能让人失望」的底层脚本：从怕被否定，到学会在关系里留下自己的位置",
+        "rationale": "以情结与关系为暗线，把三个卡点统一解释为同一套「怕让人失望」脚本在不同场景的三种表达：对同事的临时请求、对朋友的改约、对任务的自我要求。这一脉络更贴近用户在关系中的自我感受，适合把「关系循环」与「情结命名」放在更靠前的位置。",
+        "narrative_arc": [
+          "第一章 你是谁：从「怕让人失望」的情结出发，看见它如何塑造了可靠面具，也如何把休息与真实感受推到阴影里",
+          "第二章 卡在哪：先看关系中忍到最后才生硬退出，再看答应后透支，最后看完美主义拖延，三者都是同一脚本的不同出口",
+          "第三章 往哪去：以「早期、有余地地表达真实感受」为核心能力，配合触发链记录与阴影写信，重建关系中的自我位置"
+        ],
+        "supporting_findings": [
+          "s2.complex.disappoint_others",
+          "s1.ziwei.transformations",
+          "s1.interactions.clash_harm",
+          "s1.ten_gods.conflict",
+          "s2.cycle.agree_then_withdraw",
+          "s4.defense.agree_then_withdraw",
+          "s2.persona.reliable_observer",
+          "s2.shadow.boundary_rest",
+          "s4.action.trigger_chain_log",
+          "s4.action.pause_before_yes",
+          "s4.action.shadow_letter",
+          "s4.action.imperfect_experiment",
+          "s3.self.pole_reliable_vs_rest",
+          "s1.day_branch.wei_qi_sha",
+          "s1.useful_gods.candidate",
+          "s1.ten_gods.resources",
+          "s3.integration.threefold"
+        ],
+        "deemphasized_findings": [
+          "s1.structure.cong_ge_counter",
+          "s1.year.bing_zi_imprint",
+          "s1.hour.yin_shen_value",
+          "s1.ziwei.wellbeing",
+          "s1.ziwei.body_palace",
+          "s2.authority.internal_should",
+          "s3.quadrant.cross_tension",
+          "s3.yijing.qian_metaphor",
+          "s3.timeline.next_gengyin",
+          "s3.timeline.jichou_wuzi",
+          "s3.bridge.seed_cycle"
+        ],
+        "priority_blocks": [
+          {
+            "title": "不表达不满，直到关系被自己推开",
+            "finding_refs": [
+              "s4.block.delay_then_harsh"
+            ]
+          },
+          {
+            "title": "怕让人失望，于是先答应再透支",
+            "finding_refs": [
+              "s4.block.agree_then_overdraft"
+            ]
+          },
+          {
+            "title": "怕做得不好，于是反复修改到最后一刻",
+            "finding_refs": [
+              "s4.block.perfection_delay"
+            ]
+          }
+        ]
+      },
+      {
+        "candidate_key": "candidate_arc_c_self_support_to_output",
+        "theme": "从「用输出换认可」到「用支持养出稳定的自己」：一条关于能量与自我支持的重建线",
+        "rationale": "以资源与能量为主轴，把三个卡点放在「耗身输出」与「自我支持」的张力中理解。适合把喜用候选、充电/耗电、执行节奏与成长实验结合得更紧，让用户看到的不只是三个问题，而是一套可以调节的能量结构。",
+        "narrative_arc": [
+          "第一章 你是谁：从「持续输出才安全」的世界观编码，到被耗尽的自我支持系统，再到被排斥的休息端",
+          "第二章 卡在哪：先看完美主义拖延如何消耗启动能量，再看答应后透支如何消耗恢复能量，最后看拖延后生硬退出如何消耗关系能量",
+          "第三章 往哪去：以「把支持转化为边界」为核心能力，结合当前偏印运的支持性资源与四个成长实验，重建稳定的输出节奏"
+        ],
+        "supporting_findings": [
+          "s1.month.wu_hour_climate",
+          "s1.useful_gods.candidate",
+          "s1.ten_gods.resources",
+          "s1.ten_gods.conflict",
+          "s4.defense.intellectualize_perfectionism",
+          "s4.defense.agree_then_withdraw",
+          "s2.shadow.boundary_rest",
+          "s2.persona.reliable_observer",
+          "s3.self.pole_reliable_vs_rest",
+          "s3.timeline.current_xinmao",
+          "s4.action.pause_before_yes",
+          "s4.action.imperfect_experiment",
+          "s4.action.shadow_letter",
+          "s4.action.trigger_chain_log",
+          "s1.day_branch.wei_qi_sha",
+          "s1.ziwei.life_palace",
+          "s3.integration.threefold"
+        ],
+        "deemphasized_findings": [
+          "s1.structure.cong_ge_counter",
+          "s1.year.bing_zi_imprint",
+          "s1.hour.yin_shen_value",
+          "s1.ziwei.wellbeing",
+          "s1.ziwei.body_palace",
+          "s1.ziwei.transformations",
+          "s2.authority.internal_should",
+          "s2.cycle.agree_then_withdraw",
+          "s3.quadrant.cross_tension",
+          "s3.yijing.qian_metaphor",
+          "s3.timeline.next_gengyin",
+          "s3.timeline.jichou_wuzi"
+        ],
+        "priority_blocks": [
+          {
+            "title": "担心做不好，反复修改耗掉启动能量",
+            "finding_refs": [
+              "s4.block.perfection_delay"
+            ]
+          },
+          {
+            "title": "答应之后熬夜，把恢复能量也搭进去",
+            "finding_refs": [
+              "s4.block.agree_then_overdraft"
+            ]
+          },
+          {
+            "title": "积压到最后生硬退出，关系能量一起流失",
+            "finding_refs": [
+              "s4.block.delay_then_harsh"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 56461,
+    "output_tokens": 2253,
+    "latency_ms": 9541,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "a77f9761-a21d-4652-a79c-4347db5870d8",
+    "thinking_enabled": false,
+    "skill_version_id": 79,
+    "skill_key": "report.narrative_plan",
+    "skill_version": 5,
+    "processor": "reports.narrative_candidates",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "c3c09306ab459289509610cd3c8af990bbb33b265d9c32b39920c396a8b234cb",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

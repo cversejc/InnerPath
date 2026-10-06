@@ -1,0 +1,64 @@
+{
+  "signature": "2166579466da75f2780ffda81aa2db64aa2ad52943cbc02c93ce8ee1ddca9583",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "别人眼中的你，和你自己知道的那一面",
+    "content": "在具体场景里，你呈现出来的样子其实很清晰：事情来了能接住，项目开头想法多，交付前会反复检查，同事临时请你代写方案，你会先把任务揽下来，哪怕那天本来打算休息。下班后你还会不时查看消息，怕漏掉什么。这些是你自述的事实，不需要额外解释就能辨认。\n\n你自述\"不担心别人评价，答应任务是为了换取资源\"，也提到不愿拒绝主要是因为分工规则不清楚。这是你对自己的说明，我先原样保留，不替你改写。\n\n在符号层面，有几条线索可以和这些表现对照着看，但都只是线索，不是对你的判定。时柱庚申正印，可作价值排序的参考：正印常与\"被需要、被认可为可靠\"这类安全感来源相关，也就是说，承担本身可能不只是负担，也在为你提供某种位置感。身宫落在官禄宫，主星武曲、贪狼，方向偏向务实投入与想要更多，这与\"能接事、能产出\"的外在形象方向一致。命宫廉贞化忌、破军，提示外在呈现的原则感与破旧立新之下，可能仍有内在张力；福德宫天府，则与你说\"独自散步比较放松\"这一条对得上，说明安静独处对你是可用的资源。\n\n需要说清楚的是：以上只是把符号当作理解角度，用来提出可以核对的假设，不是结论。它们和你自述的内容并不冲突，但也不能替代你的实际体验。\n\n有一个待核对的假设：在某些场景中，你可能认同\"能接事、能产出、好商量\"的角色，并且这个角色带来了一定的被需要感。这只是解释方向之一，需要你来校正——比如，在哪些场合你确实感到这个角色被认同、被需要？在哪些场合你又觉得这个角色有些吃力、甚至撑不住？如果你发现自己其实并不在意这种认同，那这条假设就需要被推翻。\n\n还要保留一个反例空间：并非所有场景都会触发这套模式。你说独自散步时比较放松，说明在部分情境里你是可以停下来、不被任务牵着走的。这些不触发的时刻，同样是理解你自己的重要材料。\n\n这一节先到这里。下一节会展开三个反复出现的卡点——先答应后撤退、反复修改与截止前急交付、休息少被允许——看看它们具体是怎么运作的。",
+    "used_findings": [
+      "s1.foundation.hour_seal_gengshen",
+      "s2.hypothesis.persona_competent_operator"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.persona",
+      "analysis.s2.ten_gods",
+      "analysis.s2.stars"
+    ],
+    "used_actions": [],
+    "transition_hint": "下一节将展开三个卡点的具体运作方式，包括先答应后撤退、反复修改与截止急交付、休息少被允许，并保留反例说明并非所有场景都触发。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.outer_self",
+      "sequence_no": 2,
+      "new_information_role": "INTRODUCE",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "length_note": "约520汉字，符合300–600区间"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.persona",
+        "status": "FULFILLED",
+        "reason": "已呈现用户可识别的外在角色（能接事、能产出、好商量），并将自述内容（不担心评价、为换取资源、分工规则不清）与符号解释（时柱正印、身宫官禄、命宫廉破、福德天府）明确分开表述，且注明符号仅为理解角度而非结论。",
+        "quote": "你自述\"不担心别人评价，答应任务是为了换取资源\"，也提到不愿拒绝主要是因为分工规则不清楚。",
+        "follow_up_questions": [
+          "在哪些具体场景你感到\"能接事、能产出\"这个角色被认同、被需要？",
+          "在哪些场景你感到这个角色有些吃力、甚至撑不住？",
+          "如果你其实并不在意这种被需要的认同，那这条假设需要被推翻——你觉得自己更接近哪一种？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 12178,
+    "output_tokens": 1007,
+    "latency_ms": 5520,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "9bbd4b78-a6b8-4448-8f4e-3b1667ff0f0b",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "3bbca28cb2820e7175e72640e55cc88c9e56cb685f90f1a9d890eda1aad770b2",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

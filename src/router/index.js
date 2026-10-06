@@ -11,6 +11,7 @@ const loadCalendar = () => import('../views/Calendar.vue')
 const loadAbout = () => import('../views/About.vue')
 const loadAdminConsole = () => import('../views/AdminConsole.vue')
 const loadStaffConsole = () => import('../views/StaffConsole.vue')
+const loadSkillStudio = () => import('../features/skills/SkillStudio.vue')
 
 const routes = [
   { path: '/', redirect: '/pages/home/home' },
@@ -27,7 +28,8 @@ const routes = [
   { path: '/pages/calendar/calendar', name: 'Calendar', component: loadCalendar, meta: { requiresAuth: true, title: '决策日历' } },
   { path: '/pages/about/about', name: 'About', component: loadAbout, meta: { requiresAuth: true, title: '关于辰鉴' } },
   { path: '/admin', name: 'AdminConsole', component: loadAdminConsole, meta: { requiresAuth: true, roles: ['admin'], title: '运营中枢' } },
-  { path: '/staff', name: 'StaffConsole', component: loadStaffConsole, meta: { requiresAuth: true, roles: ['admin', 'consultant'], title: '咨询工作台' } }
+  { path: '/staff', name: 'StaffConsole', component: loadStaffConsole, meta: { requiresAuth: true, roles: ['admin', 'consultant'], title: '咨询工作台' } },
+  { path: '/skills', name: 'SkillStudio', component: loadSkillStudio, meta: { requiresAuth: true, roles: ['admin', 'consultant'], title: '技能与示例工作台' } }
 ]
 
 const router = createRouter({
@@ -39,6 +41,10 @@ const router = createRouter({
 })
 
 router.beforeEach(async to => {
+  if (import.meta.env.DEV && to.path === '/pages/report/detail' && to.query.preview === '1') {
+    return true
+  }
+
   const user = await initializeAuth()
   if (to.meta.public) {
     if (user && to.path.startsWith('/auth/')) {

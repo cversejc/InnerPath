@@ -1,0 +1,108 @@
+.report-header--document {
+  padding: 24px 0 26px;
+  border-bottom: 1px solid rgba(139, 90, 20, 0.12);
+  background: rgba(248, 241, 230, 0.9);
+}
+
+.report-header--document .container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.report-header__copy {
+  min-width: 0;
+}
+
+.report-header__eyebrow {
+  margin: 5px 0 8px;
+  color: var(--gold-deep);
+  font-family: var(--font-ui);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+}
+
+.report-header--document h1 {
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+  font-size: var(--text-display-lg);
+  line-height: var(--leading-display);
+  letter-spacing: 0;
+}
+
+.report-header--document .btn-back {
+  margin-bottom: 0;
+  border-color: rgba(139, 90, 20, 0.16);
+  background: rgba(255, 252, 245, 0.72);
+}
+
+.report-toolbar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-toolbar__error {
+  max-width: 240px;
+  margin: 0;
+  color: var(--cinnabar-deep);
+  font-size: var(--text-body-sm);
+}
+
+.btn-print {
+  min-height: var(--button-height);
+  border-color: var(--cinnabar-deep);
+  background: var(--cinnabar-deep);
+  color: var(--paper-soft);
+}
+
+.btn-print:hover,
+.btn-print:focus-visible {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper-soft);
+}
+
+@media (max-width: 768px) {
+  .report-header--document {
+    padding: 18px 0 20px;
+  }
+
+  .report-header--document .container {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 17px;
+  }
+
+  .report-header--document h1 {
+    font-size: var(--text-display-md);
+  }
+
+  .report-toolbar,
+  .btn-print {
+    width: 100%;
+  }
+
+  .report-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .report-toolbar__error {
+    max-width: none;
+    text-align: center;
+  }
+
+  .btn-print {
+    justify-content: center;
+  }
+}
+
+@media print {
+  .report-header--document {
+    display: none !important;
+  }
+}

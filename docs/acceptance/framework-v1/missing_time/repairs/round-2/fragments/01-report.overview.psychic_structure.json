@@ -1,0 +1,61 @@
+{
+  "signature": "131c59505db5b9092b2a545bafd9688640f0b3dfeee9fcac5f929994bb723bd7",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。\n上一轮输出未通过程序校验：report_fragment_unsupported_fragment。请重新生成完整JSON。reasoning_path.resource_refs只能引用指定角色资源，不能用PERSONA代替。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "整体主线：一条从“先答应”到“再撤回”的边界循环",
+    "content": "这一节先给你一句关键结论：你反复遇到的，可能不是“不会拒绝”，而是一条从“先答应”到“再撤回”的循环——先用答应维持一个靠谱、不让人失望的形象，再用延迟、生硬回应或取消，把被压缩的休息和真实需求放回关系里。需要先说清楚：这是一条待验证的假设主线，不是对你的定论；它的成立与否，要看它在你的真实场景里是否反复出现，也要看反例是否同样成立。\n\n第一层，是向世界展示的你。你自述“我认为自己要靠谱、不能让人失望”，这让“靠谱”成为你意识层认同的角色。它带来信任，也可能让你在临时请求面前先站到承接的位置。\n\n第二层，是你以为的自己。你可能把“靠谱、负责”当成全部自我认同，而休息、拒绝和真实需求表达，可能被暂时放在自我认同之外。这里同样只是假设，不等于你有缺点。至于“要靠谱”这条应该规则从何而来，你没有提供童年或家庭经历，来源待访谈验证，不作家庭归因。\n\n第三层，是潜意识层面的自己。前面提到的假设认为：当临时请求或关系变动出现，你可能先答应，短期维持关系与形象；随后以延迟、生硬回应或撤回表达边界。如果这个假设成立，它的保护功能可能是让你维持被需要、被认可的位置，也让你避开当下的冲突；代价是恢复不足、需求不被看见。需要说明的是，你并非每次都迁就：面对熟悉同事且有明确截止时，你能够协商任务边界，这是你的反例资源。\n\n第四层，是整合后的方向。核心张力的一端是维持“靠谱、不让人失望”的承接型自我，另一端是被排除的休息、拒绝与真实需求表达。两端不是好坏之分，而是当前偏重一端、另一端转入阴影。整合的邀请是：在答应前留出停顿，让关系与自身节奏同时在场，把休息视为节律的一部分，而非懒惰或失职。\n\n本章简短系统路径图：\n向世界展示的我（靠谱、不让人失望）→ 以为的自己（承接需求、维持形象）→ 潜意识层面的自己（休息与拒绝转入阴影，以延迟、不耐烦或撤回间接出现）→ 整合后的方向（答应前留停顿，关系与自身节奏同时在场）。\n\n关于人生时序，需要暂缓：系统计算的大运为空数组，出生时间未知导致起运无法确定，因此无法按分析日期选择当前运，也不能给出后续每十年起止年份与阶段基调。这部分需要你补充出生钟表时间与起运信息后再核对。\n\n接下来，这份说明书会按“你是谁—卡在哪—往哪去”展开：先看承接型自我的形成线索，再看卡点循环如何在休息与项目场景中延伸，最后把反例作为练习缓冲与协商的起点。具体行动步骤、频率、耗时、观察与退出条件，统一放在成长实验部分。",
+    "used_findings": [
+      "s3.timeline.deferred",
+      "s4.block.boundary_cycle",
+      "s4.block.rest_shadow",
+      "s2.mapping.mask_reliable",
+      "s2.authority.should_rules",
+      "s2.shadow.rest_excluded",
+      "s3.self.pole_tension"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "从用户能够识别的外在表现开始建立共鸣。",
+    "presentation_meta": {
+      "fragment_key": "report.overview.psychic_structure",
+      "chapter": "identity",
+      "sequence_no": 1,
+      "chapter_opening": true,
+      "reading_depth": "深入详细",
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "status": "FULFILLED",
+        "reason": "正文以四层结构展开：向世界展示的我、以为的自己、潜意识层面的自己、整合后的方向，并明确标注假设与待核对边界，未展开具体卡点场景细节与实验动作。",
+        "quote": "第一层，是向世界展示的你。",
+        "follow_up_questions": [
+          "在你自己的体验里，这四个层次哪一层最贴近你？哪一层最陌生？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7879,
+    "output_tokens": 1021,
+    "latency_ms": 3819,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "ec22d672-b210-45d0-9bf1-c8270cfa656e",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "d39c60c52928ca23150dd622900bdca36ce431c87df68228436935426067cc9c",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

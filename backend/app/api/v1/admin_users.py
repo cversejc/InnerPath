@@ -85,6 +85,7 @@ async def list_users(
             "name": user.name,
             "phone": user.phone,
             "role": user.role,
+            "consultant_type": user.consultant_type,
             "user_type": user.user_type,
             "is_active": user.is_active,
             "created_at": user.created_at,
@@ -170,6 +171,15 @@ async def update_consultant_specialties(
     specialties = data.specialties
     if previous != specialties:
         user.consultant_specialties = specialties
+        user.consultant_type = (
+            "integrated"
+            if len(specialties) == 2
+            else "mingli"
+            if specialties == ["metaphysics"]
+            else "psychology"
+            if specialties == ["psychology"]
+            else None
+        )
         await record_audit(
             db,
             current_user.id,
@@ -182,7 +192,11 @@ async def update_consultant_specialties(
         )
         await db.commit()
         await db.refresh(user)
-    return {"id": user.id, "consultant_specialties": user.consultant_specialties or []}
+    return {
+        "id": user.id,
+        "consultant_specialties": user.consultant_specialties or [],
+        "consultant_type": user.consultant_type,
+    }
 
 
 @router.get("/users/{user_id}/summary", response_model=AdminUserSummaryResponse)
@@ -269,6 +283,18 @@ async def update_user_role(
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot demote the last admin")
     old_role = user.role
     user.role = request_data.role
+    if "consultant_type" in request_data.model_fields_set:
+        user.consultant_type = request_data.consultant_type
+    if user.role != "consultant":
+        user.consultant_type = None
+        user.consultant_specialties = []
+    elif "consultant_type" in request_data.model_fields_set:
+        specialty_by_type = {
+            "mingli": ["metaphysics"],
+            "psychology": ["psychology"],
+            "integrated": ["metaphysics", "psychology"],
+        }
+        user.consultant_specialties = specialty_by_type.get(user.consultant_type, [])
     await record_audit(
         db,
         current_user.id,
@@ -314,7 +340,10 @@ async def invite_staff(
     current_user: User = Depends(require_roles("admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    invite, token = await create_staff_invite(db, data.phone, data.role, current_user.id)
+    try:
+        invite, token = await create_staff_invite(db, data.phone, data.role, current_user.id, data.consultant_type)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error))
     await record_audit(
         db,
         current_user.id,
@@ -325,4 +354,4 @@ async def invite_staff(
         audit_context=audit_context_from_request(request),
     )
     await db.commit()
-    return StaffInviteResponse(id=invite.id, phone=invite.phone, role=invite.role, token=token, expires_at=invite.expires_at)
+    return StaffInviteResponse(id=invite.id, phone=invite.phone, role=invite.role, consultant_type=invite.consultant_type, token=token, expires_at=invite.expires_at)
