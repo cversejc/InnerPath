@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 
+from app.domains.audit.service import parse_audit_details
+
 _SERVICE_REQUEST_STAGES = (
     ("created_at", "申请已提交"),
     ("accepted_at", "咨询师已接单"),
@@ -28,6 +30,20 @@ _AUDIT_ACTION_LABELS = {
     "service_request.assignment.update": "管理员调整咨询师分配",
     "service_request.reject": "管理员关闭服务申请",
     "calendar_request.review": "管理员审核日历申请",
+    "workflow.step.assign": "调整报告流程负责人",
+    "workflow.step.return": "退回报告流程节点",
+    "workflow.step.reopen": "重新打开报告流程节点",
+    "report_case.info_requested": "咨询师请求补充报告资料",
+    "report_case.info_answered": "用户已补充报告资料",
+    "report_case.deliver": "咨询师交付报告",
+}
+
+_STEP_STATUS_LABELS = {
+    "WAITING_REVIEW": "等待复核",
+    "IN_REVIEW": "人工复核中",
+    "NEEDS_REVISION": "待修订",
+    "FAILED": "处理失败",
+    "CANCELLED": "已取消",
 }
 
 _RESOURCE_LABELS = {
@@ -55,6 +71,9 @@ def build_admin_user_timeline(
     calendars,
     decision_logs,
     audit_entries,
+    report_cases=(),
+    workflow_steps=(),
+    workflow_audit_entries=(),
     limit: int = 30,
 ) -> list[dict]:
     events: list[dict] = []
@@ -91,6 +110,97 @@ def build_admin_user_timeline(
                 item.id,
                 description,
             )
+
+    case_by_workflow_id = {
+        item.workflow_instance_id: item
+        for item in report_cases
+        if item.workflow_instance_id is not None
+    }
+    case_by_id = {item.id: item for item in report_cases}
+    step_by_case_and_key = {}
+    for case in report_cases:
+        description = f"报告协作流程 #{case.id}"
+        if case.service_request_id:
+            description += f" · 申请 #{case.service_request_id}"
+        add(
+            f"report-case:{case.id}:created",
+            "report_case",
+            "报告协作流程已建立",
+            case.created_at,
+            "report_case",
+            case.id,
+            description,
+        )
+
+    for step in workflow_steps:
+        case = case_by_workflow_id.get(step.workflow_instance_id)
+        if case is None:
+            continue
+        step_by_case_and_key[(case.id, step.step_key)] = step
+        step_description = (
+            f"报告协作流程 #{case.id} · 第 {step.sequence_no} 步（{step.step_key}）"
+        )
+        if case.service_request_id:
+            step_description += f" · 申请 #{case.service_request_id}"
+        executor_label = {"HUMAN": "咨询师", "AI": "AI", "HYBRID": "协作"}.get(
+            step.executor, "工作流"
+        )
+        step_events = (
+            ("activated_at", f"报告第 {step.sequence_no} 步已开放"),
+            ("started_at", f"{executor_label}开始处理报告第 {step.sequence_no} 步"),
+            ("completed_at", f"报告第 {step.sequence_no} 步已完成"),
+        )
+        for field, label in step_events:
+            add(
+                f"report-step:{step.id}:{field}",
+                "workflow_step",
+                label,
+                getattr(step, field, None),
+                "report_case",
+                case.id,
+                step_description,
+            )
+        current_status_label = _STEP_STATUS_LABELS.get(step.status)
+        if current_status_label:
+            add(
+                f"report-step:{step.id}:status:{step.status}",
+                "workflow_step",
+                f"报告第 {step.sequence_no} 步{current_status_label}",
+                step.updated_at,
+                "report_case",
+                case.id,
+                step_description,
+            )
+
+    for log, actor_name in workflow_audit_entries:
+        label = _AUDIT_ACTION_LABELS.get(log.action)
+        if not label:
+            continue
+        case_id = int(log.resource_id) if log.resource_id and log.resource_id.isdigit() else None
+        case = case_by_id.get(case_id)
+        details = parse_audit_details(log.details) or {}
+        step_key = details.get("step_key")
+        if not isinstance(step_key, str):
+            step_key = None
+        step = step_by_case_and_key.get((case_id, step_key))
+        description = f"报告协作流程 #{case_id}" if case_id is not None else "报告协作流程"
+        if case and case.service_request_id:
+            description += f" · 申请 #{case.service_request_id}"
+        if step:
+            description += f" · 第 {step.sequence_no} 步（{step_key}）"
+        elif step_key:
+            description += f" · 节点 {step_key}"
+        if actor_name:
+            description += f" · 操作人：{actor_name}"
+        add(
+            f"workflow-audit:{log.id}",
+            "workflow_action",
+            label,
+            log.created_at,
+            "report_case",
+            case_id or log.resource_id,
+            description,
+        )
 
     for item in calendar_requests:
         description = f"日历申请 #{item.id}"

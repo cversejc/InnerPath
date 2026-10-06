@@ -154,3 +154,101 @@ def test_admin_user_timeline_includes_report_and_calendar_events_safely():
     }.issubset(labels)
     assert all("sensitive" not in str(event) for event in events)
     assert all("13" not in event["key"] for event in events)
+
+
+def test_admin_user_timeline_includes_report_workflow_milestones_and_safe_audit_actions():
+    now = datetime(2026, 10, 6, 8, tzinfo=timezone.utc)
+    report_case = SimpleNamespace(
+        id=81,
+        service_request_id=17,
+        workflow_instance_id=91,
+        created_at=now - timedelta(days=5),
+    )
+    workflow_step = SimpleNamespace(
+        id=101,
+        workflow_instance_id=91,
+        step_key="S1",
+        sequence_no=1,
+        executor="HUMAN",
+        status="NEEDS_REVISION",
+        activated_at=now - timedelta(days=4),
+        started_at=now - timedelta(days=3),
+        completed_at=None,
+        updated_at=now - timedelta(days=2),
+    )
+    workflow_audit = SimpleNamespace(
+        id=121,
+        action="workflow.step.return",
+        resource_id="81",
+        details='{"step_key":"S1","reason":"private review note"}',
+        created_at=now - timedelta(days=1),
+    )
+
+    events = build_admin_user_timeline(
+        user_created_at=None,
+        service_requests=[],
+        calendar_requests=[],
+        reports=[],
+        report_tasks=[],
+        calendars=[],
+        decision_logs=[],
+        audit_entries=[],
+        report_cases=[report_case],
+        workflow_steps=[workflow_step],
+        workflow_audit_entries=[(workflow_audit, "咨询师甲")],
+    )
+
+    labels = [event["label"] for event in events]
+    assert labels == [
+        "退回报告流程节点",
+        "报告第 1 步待修订",
+        "咨询师开始处理报告第 1 步",
+        "报告第 1 步已开放",
+        "报告协作流程已建立",
+    ]
+    assert "申请 #17" in events[0]["description"]
+    assert "第 1 步（S1）" in events[0]["description"]
+    assert "咨询师甲" in events[0]["description"]
+    assert all("private review note" not in str(event) for event in events)
+
+
+def test_admin_user_timeline_keeps_business_workflow_milestones_without_audit_rows():
+    now = datetime(2026, 10, 6, 8, tzinfo=timezone.utc)
+    report_case = SimpleNamespace(
+        id=81,
+        service_request_id=17,
+        workflow_instance_id=91,
+        created_at=now - timedelta(days=2),
+    )
+    workflow_step = SimpleNamespace(
+        id=101,
+        workflow_instance_id=91,
+        step_key="S1",
+        sequence_no=1,
+        executor="AI",
+        status="COMPLETED",
+        activated_at=now - timedelta(days=1, hours=5),
+        started_at=now - timedelta(days=1, hours=4),
+        completed_at=now - timedelta(days=1),
+        updated_at=now - timedelta(days=1),
+    )
+
+    events = build_admin_user_timeline(
+        user_created_at=None,
+        service_requests=[],
+        calendar_requests=[],
+        reports=[],
+        report_tasks=[],
+        calendars=[],
+        decision_logs=[],
+        audit_entries=[],
+        report_cases=[report_case],
+        workflow_steps=[workflow_step],
+    )
+
+    assert {event["label"] for event in events} >= {
+        "报告协作流程已建立",
+        "报告第 1 步已开放",
+        "AI开始处理报告第 1 步",
+        "报告第 1 步已完成",
+    }

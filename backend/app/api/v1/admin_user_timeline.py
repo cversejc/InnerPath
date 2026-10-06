@@ -8,6 +8,7 @@ from app.domains.audit.models import AuditLog
 from app.domains.calendar.models import CalendarRequest, DecisionLog, UserCalendar
 from app.domains.reports.models import Report, ReportTask
 from app.domains.service_requests.models import ServiceRequest
+from app.domains.workflow.models import ReportCase, StepTask
 from app.models.user import User
 from app.schemas.admin import AdminUserTimelineResponse
 from app.api.v1.admin_user_timeline_support import build_admin_user_timeline
@@ -36,6 +37,51 @@ async def get_admin_user_timeline(
     report_tasks = await recent(ReportTask, ReportTask.user_id == user_id)
     calendars = await recent(UserCalendar, UserCalendar.user_id == user_id)
     decision_logs = await recent(DecisionLog, DecisionLog.user_id == user_id)
+    report_cases = await recent(ReportCase, ReportCase.user_id == user_id)
+    workflow_instance_ids = [
+        item.workflow_instance_id
+        for item in report_cases
+        if item.workflow_instance_id is not None
+    ]
+    workflow_steps = []
+    workflow_audit_entries = []
+    if workflow_instance_ids:
+        workflow_steps = list(
+            (
+                await db.scalars(
+                    select(StepTask)
+                    .where(StepTask.workflow_instance_id.in_(workflow_instance_ids))
+                    .order_by(StepTask.updated_at.desc())
+                    .limit(1000)
+                )
+            ).all()
+        )
+        case_ids = [str(item.id) for item in report_cases]
+        workflow_audit_entries = list(
+            (
+                await db.execute(
+                    select(AuditLog, User.name)
+                    .outerjoin(User, AuditLog.actor_user_id == User.id)
+                    .where(
+                        AuditLog.resource_type == "report_case",
+                        AuditLog.resource_id.in_(case_ids),
+                        AuditLog.action.in_(
+                            (
+                                "workflow.step.assign",
+                                "workflow.step.return",
+                                "workflow.step.reopen",
+                                "report_case.info_requested",
+                                "report_case.info_answered",
+                                "report_case.deliver",
+                            )
+                        ),
+                        AuditLog.target_user_id.is_(None),
+                    )
+                    .order_by(AuditLog.created_at.desc())
+                    .limit(500)
+                )
+            ).all()
+        )
     audit_entries = (await db.execute(
         select(AuditLog, User.name)
         .outerjoin(User, AuditLog.actor_user_id == User.id)
@@ -55,6 +101,9 @@ async def get_admin_user_timeline(
             calendars=calendars,
             decision_logs=decision_logs,
             audit_entries=audit_entries,
+            report_cases=report_cases,
+            workflow_steps=workflow_steps,
+            workflow_audit_entries=workflow_audit_entries,
             limit=limit,
         ),
     )
