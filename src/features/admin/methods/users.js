@@ -70,35 +70,62 @@ export default {
       }
     },
   async openUserDetail(user) {
+      const loadId = this.userDetailLoadId + 1
+      this.userDetailLoadId = loadId
       this.drawerTrigger = document.activeElement
       this.detailUser = user
       this.userPanelTab = 'overview'
       this.userPanelLoading = true
+      this.userPanelPendingRequests = 1
       this.timelineLoading = false
       this.timelineError = ''
+      this.profileSaving = false
       this.userPanelData = { timeline: null, reports: null, calendars: null, decisions: null, activity: null, applications: null }
       this.focusDrawer('userDrawer')
       try {
         const [detail, summary] = await Promise.all([getAdminUser(user.id), getAdminUserSummary(user.id)])
+        if (this.userDetailLoadId !== loadId || this.detailUser?.id !== user.id) return
         this.detailUser = detail
         this.userSummary = summary
         this.userEdit = this.toUserEdit(detail)
         this.loadUserTimeline()
-      } catch (error) { this.message = this.errorText(error); this.detailUser = null } finally { this.userPanelLoading = false }
+      } catch (error) {
+        if (this.userDetailLoadId === loadId) {
+          this.message = this.errorText(error)
+          this.detailUser = null
+          this.userPanelPendingRequests = 0
+          this.userPanelLoading = false
+        }
+      } finally {
+        if (this.userDetailLoadId === loadId && this.detailUser?.id === user.id) {
+          this.userPanelPendingRequests = Math.max(0, this.userPanelPendingRequests - 1)
+          this.userPanelLoading = this.userPanelPendingRequests > 0
+        }
+      }
     },
-  closeUserDetail({ restoreFocus = true } = {}) { this.detailUser = null; this.userSummary = null; this.timelineLoading = false; if (restoreFocus) this.restoreDrawerFocus() },
+  closeUserDetail({ restoreFocus = true } = {}) {
+      this.userDetailLoadId += 1
+      this.userPanelPendingRequests = 0
+      this.userPanelLoading = false
+      this.profileSaving = false
+      this.detailUser = null
+      this.userSummary = null
+      this.timelineLoading = false
+      if (restoreFocus) this.restoreDrawerFocus()
+    },
   async loadUserTimeline() {
       if (!this.detailUser || this.timelineLoading) return
       const userId = this.detailUser.id
+      const loadId = this.userDetailLoadId
       this.timelineLoading = true
       this.timelineError = ''
       try {
         const timeline = await getAdminUserTimeline(userId)
-        if (this.detailUser?.id === userId) this.userPanelData.timeline = timeline
+        if (this.userDetailLoadId === loadId && this.detailUser?.id === userId) this.userPanelData.timeline = timeline
       } catch (error) {
-        if (this.detailUser?.id === userId) this.timelineError = this.errorText(error)
+        if (this.userDetailLoadId === loadId && this.detailUser?.id === userId) this.timelineError = this.errorText(error)
       } finally {
-        if (this.detailUser?.id === userId) this.timelineLoading = false
+        if (this.userDetailLoadId === loadId && this.detailUser?.id === userId) this.timelineLoading = false
       }
     },
   async setUserPanelTab(tab) {
@@ -108,51 +135,75 @@ export default {
         if (!this.userPanelData.timeline && !this.timelineLoading) await this.loadUserTimeline()
         return
       }
+      const id = this.detailUser.id
+      const loadId = this.userDetailLoadId
+      this.userPanelPendingRequests += 1
       this.userPanelLoading = true
       try {
-        const id = this.detailUser.id
         if (tab === 'applications') {
           const [serviceRequests, calendarRequests] = await Promise.all([
             getAllPages(getAdminServiceRequests, { user_id: id }),
             getAllPages(getAdminCalendarRequests, { user_id: id })
           ])
+          if (this.userDetailLoadId !== loadId || this.detailUser?.id !== id) return
           this.userPanelData.applications = { serviceRequests, calendarRequests }
         }
-        if (tab === 'reports') this.userPanelData.reports = await getAllPages(
-          params => getAdminReports(params), { user_id: id }
-        )
+        if (tab === 'reports') {
+          const reports = await getAllPages(params => getAdminReports(params), { user_id: id })
+          if (this.userDetailLoadId !== loadId || this.detailUser?.id !== id) return
+          this.userPanelData.reports = reports
+        }
         if (tab === 'calendar') {
           const [calendars, decisions] = await Promise.all([
             getAdminCalendars(id),
             getAllPages(params => getAdminUserDecisionLogs(id, params), {})
           ])
+          if (this.userDetailLoadId !== loadId || this.detailUser?.id !== id) return
           this.userPanelData.calendars = calendars.items || []
           this.userPanelData.decisions = decisions
         }
-        if (tab === 'decisions') this.userPanelData.decisions = await getAllPages(
-          params => getAdminUserDecisionLogs(id, params), {}
-        )
-        if (tab === 'activity') this.userPanelData.activity = await getAllPages(
-          getAdminAuditLogs, { target_user_id: id }
-        )
-      } catch (error) { this.message = this.errorText(error) } finally { this.userPanelLoading = false }
+        if (tab === 'decisions') {
+          const decisions = await getAllPages(params => getAdminUserDecisionLogs(id, params), {})
+          if (this.userDetailLoadId !== loadId || this.detailUser?.id !== id) return
+          this.userPanelData.decisions = decisions
+        }
+        if (tab === 'activity') {
+          const activity = await getAllPages(getAdminAuditLogs, { target_user_id: id })
+          if (this.userDetailLoadId !== loadId || this.detailUser?.id !== id) return
+          this.userPanelData.activity = activity
+        }
+      } catch (error) {
+        if (this.userDetailLoadId === loadId && this.detailUser?.id === id) this.message = this.errorText(error)
+      } finally {
+        if (this.userDetailLoadId === loadId && this.detailUser?.id === id) {
+          this.userPanelPendingRequests = Math.max(0, this.userPanelPendingRequests - 1)
+          this.userPanelLoading = this.userPanelPendingRequests > 0
+        }
+      }
     },
   toUserEdit(user) {
       return { name: user.name || '', gender: user.gender || '', birth_year: user.birth_year ?? '', birth_month: user.birth_month ?? '', birth_day: user.birth_day ?? '', birth_hour: user.birth_hour ?? '', birth_minute: user.birth_minute ?? '', birth_place: user.birth_place || '', avatar_url: user.avatar_url || '' }
     },
   async saveUserProfile() {
       if (!this.detailUser || this.profileSaving) return
+      const userId = this.detailUser.id
+      const loadId = this.userDetailLoadId
       this.profileSaving = true
       try {
         const payload = { ...this.userEdit }
         payload.gender = payload.gender || null
         ;['birth_year', 'birth_month', 'birth_day', 'birth_hour', 'birth_minute'].forEach(key => { payload[key] = payload[key] === '' ? null : Number(payload[key]) })
-        const updated = await updateAdminUserProfile(this.detailUser.id, payload)
+        const updated = await updateAdminUserProfile(userId, payload)
+        if (this.userDetailLoadId !== loadId || this.detailUser?.id !== userId) return
         this.detailUser = updated
         this.userEdit = this.toUserEdit(updated)
         this.message = '用户资料已保存'
         await this.loadUsers()
-      } catch (error) { this.message = this.errorText(error) } finally { this.profileSaving = false }
+      } catch (error) {
+        if (this.userDetailLoadId === loadId && this.detailUser?.id === userId) this.message = this.errorText(error)
+      } finally {
+        if (this.userDetailLoadId === loadId && this.detailUser?.id === userId) this.profileSaving = false
+      }
     },
   async toggleUser(user) {
       try { const updated = await updateAdminUserStatus(user.id, !user.is_active); Object.assign(user, updated); this.message = '用户状态已更新'; await this.loadStaff() } catch (error) { this.message = this.errorText(error) }

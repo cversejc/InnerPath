@@ -114,6 +114,8 @@ export default {
       userSummary: null,
       userPanelTab: 'profile',
       userPanelLoading: false,
+      userPanelPendingRequests: 0,
+      userDetailLoadId: 0,
       userEdit: {},
       profileSaving: false,
       userPanelData: { timeline: null, reports: null, calendars: null, decisions: null, activity: null, applications: null },
