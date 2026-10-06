@@ -56,7 +56,7 @@ export function roleText(value) {
 }
 
 export function resourceLabel(value) {
-  return { user: '用户', calendar: '日历', calendar_request: '日历申请', report: '报告', report_task: '报告任务', decision_log: '行动记录', service_request: '服务申请', service_feedback: '服务反馈', report_quality_issue: '报告质检记录', audit_log: '审计日志', dashboard: '运营仪表盘', export: '管理数据导出', staff_invite: '成员邀请', auth: '认证' }[value] || value || '—'
+  return { user: '用户', calendar: '日历', calendar_request: '日历申请', report: '报告', report_task: '报告任务', decision_log: '行动记录', service_request: '服务申请', service_feedback: '服务反馈', report_quality_issue: '报告质检记录', audit_log: '审计日志', dashboard: '运营仪表盘', consultant_workload: '咨询师工作量', export: '管理数据导出', staff_invite: '成员邀请', auth: '认证' }[value] || value || '—'
 }
 
 export function actionLabel(value) {
@@ -69,6 +69,7 @@ export function actionLabel(value) {
     'admin.service_requests.list': '管理员浏览服务申请', 'admin.calendar_requests.list': '管理员浏览日历申请',
     'admin.calendar.read': '管理员查看用户日历', 'admin.service_feedback.list': '管理员浏览服务反馈',
     'admin.audit_logs.list': '管理员浏览审计日志', 'admin.dashboard.overview.read': '管理员查看运营仪表盘',
+    'admin.consultant_workload.read': '管理员查看咨询师工作量',
     'admin.report_quality_issues.list': '管理员浏览报告质检记录', 'admin.export.csv': '管理员导出管理数据',
     'user.role.update': '更新角色', 'user.password.reset': '重置密码', 'user.password.change': '修改密码',
     'consultant.specialties.update': '调整咨询师服务方向',

@@ -130,6 +130,39 @@ async def test_admin_user_detail_read_is_audited(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_consultant_workload_reads_are_audited_without_persisting_period_values(monkeypatch):
+    audit_events = []
+
+    async def load_workload(_db, *, period_days):
+        return {
+            "period_days": period_days,
+            "items": [{"consultant_id": 9, "active_request_preview": [{"user_name": "Private Name"}]}],
+        }
+
+    async def record_access(_db, _request, _actor, **kwargs):
+        audit_events.append(kwargs)
+
+    monkeypatch.setattr(admin_users, "get_admin_consultant_workload", load_workload)
+    monkeypatch.setattr(admin_users, "_record_admin_data_access", record_access)
+
+    result = await admin_users.consultant_workload(
+        request=SimpleNamespace(),
+        period_days=7,
+        current_user=SimpleNamespace(id=5),
+        db=SimpleNamespace(),
+    )
+
+    assert result["items"][0]["consultant_id"] == 9
+    assert audit_events[0]["action"] == "admin.consultant_workload.read"
+    assert audit_events[0]["resource_type"] == "consultant_workload"
+    assert audit_events[0]["details"] == {
+        "result_count": 1,
+        "filter_fields": ["period_days"],
+    }
+    assert "Private Name" not in json.dumps(audit_events)
+
+
+@pytest.mark.asyncio
 async def test_admin_user_read_continues_when_access_audit_raises(monkeypatch, caplog):
     async def fail_to_record(*_args, **_kwargs):
         raise RuntimeError("simulated audit failure")

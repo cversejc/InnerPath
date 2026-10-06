@@ -42,11 +42,24 @@ router.include_router(user_timeline_router)
 
 @router.get("/consultants/workload", response_model=AdminConsultantWorkloadResponse)
 async def consultant_workload(
+    request: Request,
     period_days: int = Query(30, ge=7, le=90),
     current_user: User = Depends(require_roles("admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await get_admin_consultant_workload(db, period_days=period_days)
+    response = await get_admin_consultant_workload(db, period_days=period_days)
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.consultant_workload.read",
+        resource_type="consultant_workload",
+        details=_admin_access_details(
+            result_count=len(response.get("items", [])),
+            filters={"period_days": period_days},
+        ),
+    )
+    return response
 
 
 @router.get("/users", response_model=AdminUserListResponse)
