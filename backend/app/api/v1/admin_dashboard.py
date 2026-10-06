@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,9 +9,11 @@ from app.api.v1.admin_support import (
     CALENDAR_STATUS_LABELS,
     REPORT_STATUS_LABELS,
     USER_ROLE_LABELS,
+    _admin_access_details,
     _count,
     _db_end,
     _db_start,
+    _record_admin_data_access,
 )
 from app.api.v1.admin_activity_support import _load_audits
 from app.api.v1.admin_dashboard_support import _daily_counts
@@ -235,8 +237,19 @@ async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewRes
 
 @router.get("/dashboard/overview", response_model=DashboardOverviewResponse)
 async def get_dashboard_overview(
+    request: Request,
     range_preset: str = Query("30d", alias="range", pattern="^(7d|30d|90d)$"),
     current_user: User = Depends(require_roles("admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await _dashboard_data(db, range_preset)
+    response = await _dashboard_data(db, range_preset)
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.dashboard.overview.read",
+        resource_type="dashboard",
+        resource_id="overview",
+        details=_admin_access_details(filters={"range": range_preset}),
+    )
+    return response

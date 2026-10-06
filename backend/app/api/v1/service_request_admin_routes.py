@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
+from app.api.v1.admin_support import _admin_access_details, _record_admin_data_access
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.service_requests.models import ServiceRequest
@@ -35,6 +36,7 @@ from app.domains.workflow.service import assign_step
 admin_router = APIRouter()
 @admin_router.get("", response_model=AdminServiceRequestListResponse)
 async def list_admin_requests(
+    request: Request,
     request_status: Optional[str] = Query(None, alias="status", max_length=30),
     service_type: Optional[str] = Query("report", pattern="^(report|calendar)$"),
     user_id: Optional[int] = Query(None, ge=1),
@@ -104,6 +106,29 @@ async def list_admin_requests(
                 rejected_at=item.rejected_at,
             )
         )
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.service_requests.list",
+        resource_type="service_request",
+        target_user_id=user_id,
+        details=_admin_access_details(
+            page=page,
+            page_size=size,
+            result_count=len(items),
+            filters={
+                "status": request_status,
+                "service_type": service_type,
+                "user_id": user_id,
+                "consultant_id": consultant_id,
+                "queue_filter": queue_filter,
+                "search": search,
+                "date_from": date_from,
+                "date_to": date_to,
+            },
+        ),
+    )
     return AdminServiceRequestListResponse(total=total, page=page, size=size, items=items)
 
 

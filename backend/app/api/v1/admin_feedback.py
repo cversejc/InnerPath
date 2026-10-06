@@ -11,6 +11,7 @@ from app.application.service_feedback import (
     update_admin_service_feedback,
 )
 from app.application.admin_service_quality import get_admin_service_quality_summary
+from app.api.v1.admin_support import _admin_access_details, _record_admin_data_access
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.feedback.schemas import (
@@ -36,6 +37,7 @@ async def admin_service_quality_summary_route(
 
 @router.get("/service-feedback", response_model=AdminServiceFeedbackListResponse)
 async def list_admin_service_feedback_route(
+    request: Request,
     feedback_status: Optional[str] = Query(None, alias="status", pattern="^(NEW|IN_PROGRESS|RESOLVED)$"),
     feedback_type: Optional[str] = Query(None, pattern="^(PRAISE|SUGGESTION|COMPLAINT)$"),
     service_type: Optional[str] = Query(None, pattern="^(report|calendar)$"),
@@ -59,6 +61,26 @@ async def list_admin_service_feedback_route(
         date_to=date_to,
         page=page,
         size=size,
+    )
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.service_feedback.list",
+        resource_type="service_feedback",
+        details=_admin_access_details(
+            page=page,
+            page_size=size,
+            result_count=len(items),
+            filters={
+                "status": feedback_status,
+                "feedback_type": feedback_type,
+                "service_type": service_type,
+                "search": search,
+                "date_from": date_from,
+                "date_to": date_to,
+            },
+        ),
     )
     return AdminServiceFeedbackListResponse(
         total=total,

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,6 +13,7 @@ from app.domains.workflow.models import ReportCase, StepTask
 from app.models.user import User
 from app.schemas.admin import AdminUserTimelineResponse
 from app.api.v1.admin_user_timeline_support import build_admin_user_timeline
+from app.api.v1.admin_support import _admin_access_details, _record_admin_data_access
 
 router = APIRouter()
 
@@ -20,6 +21,7 @@ router = APIRouter()
 @router.get("/users/{user_id}/timeline", response_model=AdminUserTimelineResponse)
 async def get_admin_user_timeline(
     user_id: int,
+    request: Request,
     limit: int = Query(30, ge=1, le=100),
     current_user: User = Depends(require_roles("admin")),
     db: AsyncSession = Depends(get_db),
@@ -92,7 +94,7 @@ async def get_admin_user_timeline(
         .limit(100)
     )).all()
 
-    return AdminUserTimelineResponse(
+    response = AdminUserTimelineResponse(
         user_id=user_id,
         items=build_admin_user_timeline(
             user_created_at=user.created_at,
@@ -110,3 +112,14 @@ async def get_admin_user_timeline(
             limit=limit,
         ),
     )
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.user.timeline.read",
+        resource_type="user",
+        resource_id=str(user_id),
+        target_user_id=user_id,
+        details=_admin_access_details(page_size=limit, result_count=len(response.items)),
+    )
+    return response

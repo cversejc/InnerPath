@@ -25,6 +25,14 @@ _CONSULTATION_LABELS = {
 _AUDIT_ACTION_LABELS = {
     "user.profile.update": "用户更新个人资料",
     "user.profile.update.admin": "管理员更新用户资料",
+    "admin.user.read": "管理员查看用户资料",
+    "admin.user.summary.read": "管理员查看用户统计",
+    "admin.user.timeline.read": "管理员查看用户时间线",
+    "admin.report.read": "管理员查看完整报告",
+    "admin.calendar.read": "管理员查看用户日历",
+    "admin.audit_logs.list": "管理员浏览审计日志",
+    "admin.dashboard.overview.read": "管理员查看运营仪表盘",
+    "admin.export.csv": "管理员导出管理数据",
     "user.status.update": "管理员调整账号状态",
     "user.role.update": "管理员调整账号角色",
     "user.password.reset": "管理员执行账号安全操作",
@@ -60,6 +68,9 @@ _RESOURCE_LABELS = {
     "calendar": "日历",
     "decision_log": "行动记录",
     "service_feedback": "服务反馈",
+    "audit_log": "审计日志",
+    "dashboard": "运营仪表盘",
+    "export": "管理数据导出",
 }
 
 _FEEDBACK_TYPE_LABELS = {
