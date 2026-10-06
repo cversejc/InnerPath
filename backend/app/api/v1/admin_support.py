@@ -1,5 +1,6 @@
 """Common date, count, and lookup helpers for admin routes."""
 
+import logging
 from datetime import date, datetime, time, timedelta, timezone
 from typing import Any, Optional
 from zoneinfo import ZoneInfo
@@ -18,6 +19,7 @@ REPORT_STATUS_LABELS = {"processing": "生成中", "completed": "已完成", "fa
 CALENDAR_STATUS_LABELS = {"draft": "草稿", "published": "已发布", "archived": "已归档"}
 LOCAL_ZONE = ZoneInfo("Asia/Shanghai")
 UTC = timezone.utc
+logger = logging.getLogger(__name__)
 
 
 def _admin_access_details(
@@ -58,16 +60,26 @@ async def _record_admin_data_access(
     target_user_id: int | None = None,
     details: dict[str, Any] | None = None,
 ) -> None:
-    await record_audit(
-        db,
-        actor.id,
-        action,
-        resource_type,
-        resource_id,
-        target_user_id=target_user_id,
-        details=details,
-        audit_context=audit_context_from_request(request),
-    )
+    try:
+        await record_audit(
+            db,
+            actor.id,
+            action,
+            resource_type,
+            resource_id,
+            target_user_id=target_user_id,
+            details=details,
+            audit_context=audit_context_from_request(request),
+        )
+    except Exception as error:
+        logger.warning(
+            "Admin data access audit failed; request continues "
+            "(action=%s resource_type=%s resource_id=%s error_type=%s)",
+            action,
+            resource_type,
+            resource_id,
+            type(error).__name__,
+        )
 
 
 def _db_start(date_value: date) -> datetime:

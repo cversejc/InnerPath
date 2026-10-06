@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 
 from app.api.v1 import admin_activity, admin_dashboard, admin_exports, admin_users
+from app.api.v1 import admin_support
 from app.api.v1.admin_support import (
     _admin_access_details,
     _record_admin_data_access,
@@ -126,6 +127,31 @@ async def test_admin_user_detail_read_is_audited(monkeypatch):
             "target_user_id": 23,
         }
     ]
+
+
+@pytest.mark.asyncio
+async def test_admin_user_read_continues_when_access_audit_raises(monkeypatch, caplog):
+    async def fail_to_record(*_args, **_kwargs):
+        raise RuntimeError("simulated audit failure")
+
+    monkeypatch.setattr(admin_support, "record_audit", fail_to_record)
+    user = SimpleNamespace(id=23, name="Member")
+    db = SimpleNamespace(get=AsyncMock(return_value=user))
+    request = SimpleNamespace(
+        client=SimpleNamespace(host="127.0.0.1"),
+        state=SimpleNamespace(request_id="request-43"),
+        headers={"user-agent": "admin-test"},
+    )
+
+    result = await admin_users.get_user(
+        user_id=23,
+        request=request,
+        current_user=SimpleNamespace(id=5),
+        db=db,
+    )
+
+    assert result is user
+    assert "Admin data access audit failed; request continues" in caplog.text
 
 
 @pytest.mark.asyncio
