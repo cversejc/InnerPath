@@ -1,0 +1,2355 @@
+{
+  "profile": {
+    "name": "合成验收样本-full",
+    "gender": "female",
+    "birth_year": 1996,
+    "birth_month": 6,
+    "birth_day": 15,
+    "birth_hour": 15,
+    "birth_minute": 15,
+    "calendar_type": "solar",
+    "birth_time_precision": "exact",
+    "birth_place": "山东济南",
+    "latitude": 36.65,
+    "longitude": 117.12,
+    "current_residence": "杭州",
+    "occupation_status": "项目运营",
+    "mbti": null,
+    "preferred_content_depth": "深入详细"
+  },
+  "context": {
+    "analysis_date": "2026-10-06",
+    "focus_topics": [
+      "personal_growth",
+      "career",
+      "relationships"
+    ],
+    "current_challenge": "工作中答应额外任务后常熬夜；需要拒绝时拖到最后才生硬回应；朋友邀约也先答应后取消。",
+    "concrete_events": [
+      "上周同事临时请我代写方案，我本想休息却答应，熬夜后第二天不耐烦。",
+      "朋友连续两次临时改地点，我没有表达意见，最后直接取消聚会。",
+      "项目开头有许多想法，担心做不好反复修改，接近截止才急着交付。",
+      "下班后常查看消息怕漏事，独自散步时比较放松。"
+    ],
+    "self_description": "我认为自己要靠谱、不能让人失望。拒绝后担心别人觉得我不够好。这是现在的感受，没有提供童年经历。",
+    "counterexample": "面对熟悉同事且有明确截止时，我能够协商任务边界，并非每次都迁就。",
+    "available_time": "工作日每晚5–10分钟，周末20分钟；不能增加大量写日记负担。",
+    "expected_outcomes": [
+      "理解反复出现的机制",
+      "练习有余地的表达",
+      "减少透支"
+    ],
+    "synthetic_notice": "全部人物资料及经历为开发验收编写的合成数据，不是真实客户或专业评估。"
+  },
+  "evidence": [
+    {
+      "evidence_key": "input.profile.name",
+      "source_type": "USER_PROVIDED",
+      "value": "合成验收样本-full"
+    },
+    {
+      "evidence_key": "input.profile.gender",
+      "source_type": "USER_PROVIDED",
+      "value": "female"
+    },
+    {
+      "evidence_key": "input.profile.birth_year",
+      "source_type": "USER_PROVIDED",
+      "value": 1996
+    },
+    {
+      "evidence_key": "input.profile.birth_month",
+      "source_type": "USER_PROVIDED",
+      "value": 6
+    },
+    {
+      "evidence_key": "input.profile.birth_day",
+      "source_type": "USER_PROVIDED",
+      "value": 15
+    },
+    {
+      "evidence_key": "input.profile.birth_hour",
+      "source_type": "USER_PROVIDED",
+      "value": 15
+    },
+    {
+      "evidence_key": "input.profile.birth_minute",
+      "source_type": "USER_PROVIDED",
+      "value": 15
+    },
+    {
+      "evidence_key": "input.profile.calendar_type",
+      "source_type": "USER_PROVIDED",
+      "value": "solar"
+    },
+    {
+      "evidence_key": "input.profile.birth_time_precision",
+      "source_type": "USER_PROVIDED",
+      "value": "exact"
+    },
+    {
+      "evidence_key": "input.profile.birth_place",
+      "source_type": "USER_PROVIDED",
+      "value": "山东济南"
+    },
+    {
+      "evidence_key": "input.profile.latitude",
+      "source_type": "USER_PROVIDED",
+      "value": 36.65
+    },
+    {
+      "evidence_key": "input.profile.longitude",
+      "source_type": "USER_PROVIDED",
+      "value": 117.12
+    },
+    {
+      "evidence_key": "input.profile.current_residence",
+      "source_type": "USER_PROVIDED",
+      "value": "杭州"
+    },
+    {
+      "evidence_key": "input.profile.occupation_status",
+      "source_type": "USER_PROVIDED",
+      "value": "项目运营"
+    },
+    {
+      "evidence_key": "input.profile.preferred_content_depth",
+      "source_type": "USER_PROVIDED",
+      "value": "深入详细"
+    },
+    {
+      "evidence_key": "input.context.analysis_date",
+      "source_type": "USER_PROVIDED",
+      "value": "2026-10-06"
+    },
+    {
+      "evidence_key": "input.context.focus_topics",
+      "source_type": "USER_PROVIDED",
+      "value": [
+        "personal_growth",
+        "career",
+        "relationships"
+      ]
+    },
+    {
+      "evidence_key": "input.context.current_challenge",
+      "source_type": "USER_PROVIDED",
+      "value": "工作中答应额外任务后常熬夜；需要拒绝时拖到最后才生硬回应；朋友邀约也先答应后取消。"
+    },
+    {
+      "evidence_key": "input.context.concrete_events",
+      "source_type": "USER_PROVIDED",
+      "value": [
+        "上周同事临时请我代写方案，我本想休息却答应，熬夜后第二天不耐烦。",
+        "朋友连续两次临时改地点，我没有表达意见，最后直接取消聚会。",
+        "项目开头有许多想法，担心做不好反复修改，接近截止才急着交付。",
+        "下班后常查看消息怕漏事，独自散步时比较放松。"
+      ]
+    },
+    {
+      "evidence_key": "input.context.self_description",
+      "source_type": "USER_PROVIDED",
+      "value": "我认为自己要靠谱、不能让人失望。拒绝后担心别人觉得我不够好。这是现在的感受，没有提供童年经历。"
+    },
+    {
+      "evidence_key": "input.context.counterexample",
+      "source_type": "USER_PROVIDED",
+      "value": "面对熟悉同事且有明确截止时，我能够协商任务边界，并非每次都迁就。"
+    },
+    {
+      "evidence_key": "input.context.available_time",
+      "source_type": "USER_PROVIDED",
+      "value": "工作日每晚5–10分钟，周末20分钟；不能增加大量写日记负担。"
+    },
+    {
+      "evidence_key": "input.context.expected_outcomes",
+      "source_type": "USER_PROVIDED",
+      "value": [
+        "理解反复出现的机制",
+        "练习有余地的表达",
+        "减少透支"
+      ]
+    },
+    {
+      "evidence_key": "input.context.synthetic_notice",
+      "source_type": "USER_PROVIDED",
+      "value": "全部人物资料及经历为开发验收编写的合成数据，不是真实客户或专业评估。"
+    },
+    {
+      "evidence_key": "calculated.foundation",
+      "source_type": "SYSTEM_CALCULATED",
+      "value": {
+        "bazi": {
+          "year": {
+            "stem": "丙",
+            "branch": "子",
+            "ten_god": "正财"
+          },
+          "month": {
+            "stem": "甲",
+            "branch": "午",
+            "ten_god": "伤官"
+          },
+          "day": {
+            "stem": "癸",
+            "branch": "未"
+          },
+          "day_master": "癸",
+          "hour": {
+            "stem": "庚",
+            "branch": "申",
+            "ten_god": "正印"
+          }
+        },
+        "calculation_method": "deterministic-mingli",
+        "lunar_date": "1996年四月30日",
+        "solar_date": "1996年6月15日",
+        "zodiac": "鼠",
+        "nayin": "涧下水",
+        "ziwei": {
+          "ming_zhu": "文曲",
+          "shen_zhu": "火星",
+          "wu_xing_ju": "火六局",
+          "ming_gong_branch": "酉",
+          "shen_gong_branch": "丑",
+          "ziwei_branch": "巳",
+          "yin_yang": "陽",
+          "lunar_date": "1996年四月30日",
+          "lunar_year_stem_branch": "丙子",
+          "life_palace": {
+            "branch": "酉",
+            "main_stars": [
+              "廉貞",
+              "破軍"
+            ]
+          },
+          "career_palace": {
+            "branch": "丑",
+            "main_stars": [
+              "武曲",
+              "貪狼"
+            ]
+          },
+          "wealth_palace": {
+            "branch": "巳",
+            "main_stars": [
+              "紫微",
+              "七殺"
+            ]
+          },
+          "relationship_palace": {
+            "branch": "未",
+            "main_stars": []
+          },
+          "palaces": [
+            {
+              "name": "命宫",
+              "stem": "丁",
+              "branch": "酉",
+              "main_stars": [
+                "廉貞",
+                "破軍"
+              ],
+              "aux_stars": [
+                "天鉞"
+              ],
+              "brightness": {
+                "廉貞": "陷",
+                "破軍": "得"
+              },
+              "sihua": {
+                "廉貞": "忌"
+              }
+            },
+            {
+              "name": "兄弟宫",
+              "stem": "丙",
+              "branch": "申",
+              "main_stars": [],
+              "aux_stars": [],
+              "brightness": {},
+              "sihua": {}
+            },
+            {
+              "name": "夫妻宫",
+              "stem": "乙",
+              "branch": "未",
+              "main_stars": [],
+              "aux_stars": [
+                "左輔",
+                "右弼",
+                "地劫",
+                "恩光"
+              ],
+              "brightness": {
+                "左輔": "廟",
+                "右弼": "廟"
+              },
+              "sihua": {}
+            },
+            {
+              "name": "子女宫",
+              "stem": "甲",
+              "branch": "午",
+              "main_stars": [],
+              "aux_stars": [
+                "擎羊",
+                "鈴星",
+                "天哭",
+                "天虛"
+              ],
+              "brightness": {},
+              "sihua": {}
+            },
+            {
+              "name": "财帛宫",
+              "stem": "癸",
+              "branch": "巳",
+              "main_stars": [
+                "紫微",
+                "七殺"
+              ],
+              "aux_stars": [
+                "祿存",
+                "天貴",
+                "天官"
+              ],
+              "brightness": {
+                "紫微": "廟",
+                "七殺": "得",
+                "祿存": "廟"
+              },
+              "sihua": {}
+            },
+            {
+              "name": "疾厄宫",
+              "stem": "壬",
+              "branch": "辰",
+              "main_stars": [
+                "天機",
+                "天梁"
+              ],
+              "aux_stars": [
+                "陀羅",
+                "天姚",
+                "紅鸞",
+                "龍池"
+              ],
+              "brightness": {
+                "天機": "平",
+                "天梁": "平"
+              },
+              "sihua": {
+                "天機": "權"
+              }
+            },
+            {
+              "name": "迁移宫",
+              "stem": "辛",
+              "branch": "卯",
+              "main_stars": [
+                "天相"
+              ],
+              "aux_stars": [
+                "天空"
+              ],
+              "brightness": {
+                "天相": "平"
+              },
+              "sihua": {}
+            },
+            {
+              "name": "交友宫",
+              "stem": "庚",
+              "branch": "寅",
+              "main_stars": [
+                "太陽",
+                "巨門"
+              ],
+              "aux_stars": [
+                "文昌",
+                "天馬",
+                "八座",
+                "台輔"
+              ],
+              "brightness": {
+                "太陽": "廟",
+                "巨門": "得",
+                "文昌": "旺"
+              },
+              "sihua": {
+                "文昌": "科"
+              }
+            },
+            {
+              "name": "官禄宫",
+              "stem": "辛",
+              "branch": "丑",
+              "main_stars": [
+                "武曲",
+                "貪狼"
+              ],
+              "aux_stars": [],
+              "brightness": {
+                "武曲": "旺",
+                "貪狼": "廟"
+              },
+              "sihua": {}
+            },
+            {
+              "name": "田宅宫",
+              "stem": "庚",
+              "branch": "子",
+              "main_stars": [
+                "天同",
+                "太陰"
+              ],
+              "aux_stars": [
+                "文曲",
+                "天刑",
+                "三台",
+                "天福"
+              ],
+              "brightness": {
+                "天同": "平",
+                "太陰": "廟",
+                "文曲": "得"
+              },
+              "sihua": {
+                "天同": "祿"
+              }
+            },
+            {
+              "name": "福德宫",
+              "stem": "己",
+              "branch": "亥",
+              "main_stars": [
+                "天府"
+              ],
+              "aux_stars": [
+                "天魁"
+              ],
+              "brightness": {
+                "天府": "得"
+              },
+              "sihua": {}
+            },
+            {
+              "name": "父母宫",
+              "stem": "戊",
+              "branch": "戌",
+              "main_stars": [],
+              "aux_stars": [
+                "火星",
+                "天喜",
+                "鳳閣",
+                "封誥"
+              ],
+              "brightness": {},
+              "sihua": {}
+            }
+          ],
+          "body_palace": {
+            "name": "官禄宫",
+            "stem": "辛",
+            "branch": "丑",
+            "main_stars": [
+              "武曲",
+              "貪狼"
+            ],
+            "aux_stars": [],
+            "brightness": {
+              "武曲": "旺",
+              "貪狼": "廟"
+            },
+            "sihua": {}
+          },
+          "wellbeing_palace": {
+            "name": "福德宫",
+            "stem": "己",
+            "branch": "亥",
+            "main_stars": [
+              "天府"
+            ],
+            "aux_stars": [
+              "天魁"
+            ],
+            "brightness": {
+              "天府": "得"
+            },
+            "sihua": {}
+          },
+          "life_sanfang_sizheng": [
+            {
+              "name": "命宫",
+              "stem": "丁",
+              "branch": "酉",
+              "main_stars": [
+                "廉貞",
+                "破軍"
+              ],
+              "aux_stars": [
+                "天鉞"
+              ],
+              "brightness": {
+                "廉貞": "陷",
+                "破軍": "得"
+              },
+              "sihua": {
+                "廉貞": "忌"
+              }
+            },
+            {
+              "name": "财帛宫",
+              "stem": "癸",
+              "branch": "巳",
+              "main_stars": [
+                "紫微",
+                "七殺"
+              ],
+              "aux_stars": [
+                "祿存",
+                "天貴",
+                "天官"
+              ],
+              "brightness": {
+                "紫微": "廟",
+                "七殺": "得",
+                "祿存": "廟"
+              },
+              "sihua": {}
+            },
+            {
+              "name": "官禄宫",
+              "stem": "辛",
+              "branch": "丑",
+              "main_stars": [
+                "武曲",
+                "貪狼"
+              ],
+              "aux_stars": [],
+              "brightness": {
+                "武曲": "旺",
+                "貪狼": "廟"
+              },
+              "sihua": {}
+            },
+            {
+              "name": "迁移宫",
+              "stem": "辛",
+              "branch": "卯",
+              "main_stars": [
+                "天相"
+              ],
+              "aux_stars": [
+                "天空"
+              ],
+              "brightness": {
+                "天相": "平"
+              },
+              "sihua": {}
+            }
+          ],
+          "flying_transformations": [
+            {
+              "source_palace": "命宮",
+              "source_stem": "丁",
+              "transformation": "禄",
+              "star": "太陰",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "命宮",
+              "source_stem": "丁",
+              "transformation": "权",
+              "star": "天同",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "命宮",
+              "source_stem": "丁",
+              "transformation": "科",
+              "star": "天機",
+              "target_palaces": [
+                "疾厄宮"
+              ]
+            },
+            {
+              "source_palace": "命宮",
+              "source_stem": "丁",
+              "transformation": "忌",
+              "star": "巨門",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "兄弟宮",
+              "source_stem": "丙",
+              "transformation": "禄",
+              "star": "天同",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "兄弟宮",
+              "source_stem": "丙",
+              "transformation": "权",
+              "star": "天機",
+              "target_palaces": [
+                "疾厄宮"
+              ]
+            },
+            {
+              "source_palace": "兄弟宮",
+              "source_stem": "丙",
+              "transformation": "科",
+              "star": "文昌",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "兄弟宮",
+              "source_stem": "丙",
+              "transformation": "忌",
+              "star": "廉貞",
+              "target_palaces": [
+                "命宮"
+              ]
+            },
+            {
+              "source_palace": "夫妻宮",
+              "source_stem": "乙",
+              "transformation": "禄",
+              "star": "天機",
+              "target_palaces": [
+                "疾厄宮"
+              ]
+            },
+            {
+              "source_palace": "夫妻宮",
+              "source_stem": "乙",
+              "transformation": "权",
+              "star": "天梁",
+              "target_palaces": [
+                "疾厄宮"
+              ]
+            },
+            {
+              "source_palace": "夫妻宮",
+              "source_stem": "乙",
+              "transformation": "科",
+              "star": "紫微",
+              "target_palaces": [
+                "財帛宮"
+              ]
+            },
+            {
+              "source_palace": "夫妻宮",
+              "source_stem": "乙",
+              "transformation": "忌",
+              "star": "太陰",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "子女宮",
+              "source_stem": "甲",
+              "transformation": "禄",
+              "star": "廉貞",
+              "target_palaces": [
+                "命宮"
+              ]
+            },
+            {
+              "source_palace": "子女宮",
+              "source_stem": "甲",
+              "transformation": "权",
+              "star": "破軍",
+              "target_palaces": [
+                "命宮"
+              ]
+            },
+            {
+              "source_palace": "子女宮",
+              "source_stem": "甲",
+              "transformation": "科",
+              "star": "武曲",
+              "target_palaces": [
+                "官祿宮"
+              ]
+            },
+            {
+              "source_palace": "子女宮",
+              "source_stem": "甲",
+              "transformation": "忌",
+              "star": "太陽",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "財帛宮",
+              "source_stem": "癸",
+              "transformation": "禄",
+              "star": "破軍",
+              "target_palaces": [
+                "命宮"
+              ]
+            },
+            {
+              "source_palace": "財帛宮",
+              "source_stem": "癸",
+              "transformation": "权",
+              "star": "巨門",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "財帛宮",
+              "source_stem": "癸",
+              "transformation": "科",
+              "star": "太陰",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "財帛宮",
+              "source_stem": "癸",
+              "transformation": "忌",
+              "star": "貪狼",
+              "target_palaces": [
+                "官祿宮"
+              ]
+            },
+            {
+              "source_palace": "疾厄宮",
+              "source_stem": "壬",
+              "transformation": "禄",
+              "star": "天梁",
+              "target_palaces": [
+                "疾厄宮"
+              ]
+            },
+            {
+              "source_palace": "疾厄宮",
+              "source_stem": "壬",
+              "transformation": "权",
+              "star": "紫微",
+              "target_palaces": [
+                "財帛宮"
+              ]
+            },
+            {
+              "source_palace": "疾厄宮",
+              "source_stem": "壬",
+              "transformation": "科",
+              "star": "左輔",
+              "target_palaces": [
+                "夫妻宮"
+              ]
+            },
+            {
+              "source_palace": "疾厄宮",
+              "source_stem": "壬",
+              "transformation": "忌",
+              "star": "武曲",
+              "target_palaces": [
+                "官祿宮"
+              ]
+            },
+            {
+              "source_palace": "遷移宮",
+              "source_stem": "辛",
+              "transformation": "禄",
+              "star": "巨門",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "遷移宮",
+              "source_stem": "辛",
+              "transformation": "权",
+              "star": "太陽",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "遷移宮",
+              "source_stem": "辛",
+              "transformation": "科",
+              "star": "文曲",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "遷移宮",
+              "source_stem": "辛",
+              "transformation": "忌",
+              "star": "文昌",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "交友宮",
+              "source_stem": "庚",
+              "transformation": "禄",
+              "star": "太陽",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "交友宮",
+              "source_stem": "庚",
+              "transformation": "权",
+              "star": "武曲",
+              "target_palaces": [
+                "官祿宮"
+              ]
+            },
+            {
+              "source_palace": "交友宮",
+              "source_stem": "庚",
+              "transformation": "科",
+              "star": "天府",
+              "target_palaces": [
+                "福德宮"
+              ]
+            },
+            {
+              "source_palace": "交友宮",
+              "source_stem": "庚",
+              "transformation": "忌",
+              "star": "天同",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "官祿宮",
+              "source_stem": "辛",
+              "transformation": "禄",
+              "star": "巨門",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "官祿宮",
+              "source_stem": "辛",
+              "transformation": "权",
+              "star": "太陽",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "官祿宮",
+              "source_stem": "辛",
+              "transformation": "科",
+              "star": "文曲",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "官祿宮",
+              "source_stem": "辛",
+              "transformation": "忌",
+              "star": "文昌",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "田宅宮",
+              "source_stem": "庚",
+              "transformation": "禄",
+              "star": "太陽",
+              "target_palaces": [
+                "交友宮"
+              ]
+            },
+            {
+              "source_palace": "田宅宮",
+              "source_stem": "庚",
+              "transformation": "权",
+              "star": "武曲",
+              "target_palaces": [
+                "官祿宮"
+              ]
+            },
+            {
+              "source_palace": "田宅宮",
+              "source_stem": "庚",
+              "transformation": "科",
+              "star": "天府",
+              "target_palaces": [
+                "福德宮"
+              ]
+            },
+            {
+              "source_palace": "田宅宮",
+              "source_stem": "庚",
+              "transformation": "忌",
+              "star": "天同",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "福德宮",
+              "source_stem": "己",
+              "transformation": "禄",
+              "star": "武曲",
+              "target_palaces": [
+                "官祿宮"
+              ]
+            },
+            {
+              "source_palace": "福德宮",
+              "source_stem": "己",
+              "transformation": "权",
+              "star": "貪狼",
+              "target_palaces": [
+                "官祿宮"
+              ]
+            },
+            {
+              "source_palace": "福德宮",
+              "source_stem": "己",
+              "transformation": "科",
+              "star": "天梁",
+              "target_palaces": [
+                "疾厄宮"
+              ]
+            },
+            {
+              "source_palace": "福德宮",
+              "source_stem": "己",
+              "transformation": "忌",
+              "star": "文曲",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "父母宮",
+              "source_stem": "戊",
+              "transformation": "禄",
+              "star": "貪狼",
+              "target_palaces": [
+                "官祿宮"
+              ]
+            },
+            {
+              "source_palace": "父母宮",
+              "source_stem": "戊",
+              "transformation": "权",
+              "star": "太陰",
+              "target_palaces": [
+                "田宅宮"
+              ]
+            },
+            {
+              "source_palace": "父母宮",
+              "source_stem": "戊",
+              "transformation": "科",
+              "star": "右弼",
+              "target_palaces": [
+                "夫妻宮"
+              ]
+            },
+            {
+              "source_palace": "父母宮",
+              "source_stem": "戊",
+              "transformation": "忌",
+              "star": "天機",
+              "target_palaces": [
+                "疾厄宮"
+              ]
+            }
+          ],
+          "year_transformations": {
+            "天同": "祿",
+            "天機": "權",
+            "文昌": "科",
+            "廉貞": "忌"
+          },
+          "ruleset": "project-ziwei-v1; 生年四化与宫干飞化分别呈现"
+        },
+        "bazi_facts": {
+          "pillars": {
+            "year": {
+              "stem": "丙",
+              "branch": "子",
+              "pillar": "丙子",
+              "ten_god": "正财",
+              "stem_element": "火",
+              "branch_element": "水",
+              "hidden_stems": [
+                {
+                  "stem": "癸",
+                  "element": "水",
+                  "ten_god": "比肩"
+                }
+              ],
+              "branch_ten_god": "比肩"
+            },
+            "month": {
+              "stem": "甲",
+              "branch": "午",
+              "pillar": "甲午",
+              "ten_god": "伤官",
+              "stem_element": "木",
+              "branch_element": "火",
+              "hidden_stems": [
+                {
+                  "stem": "丁",
+                  "element": "火",
+                  "ten_god": "偏财"
+                },
+                {
+                  "stem": "己",
+                  "element": "土",
+                  "ten_god": "七杀"
+                }
+              ],
+              "branch_ten_god": "偏财"
+            },
+            "day": {
+              "stem": "癸",
+              "branch": "未",
+              "pillar": "癸未",
+              "ten_god": "",
+              "stem_element": "水",
+              "branch_element": "土",
+              "hidden_stems": [
+                {
+                  "stem": "己",
+                  "element": "土",
+                  "ten_god": "七杀"
+                },
+                {
+                  "stem": "丁",
+                  "element": "火",
+                  "ten_god": "偏财"
+                },
+                {
+                  "stem": "乙",
+                  "element": "木",
+                  "ten_god": "食神"
+                }
+              ],
+              "branch_ten_god": "七杀"
+            },
+            "hour": {
+              "stem": "庚",
+              "branch": "申",
+              "pillar": "庚申",
+              "ten_god": "正印",
+              "stem_element": "金",
+              "branch_element": "金",
+              "hidden_stems": [
+                {
+                  "stem": "庚",
+                  "element": "金",
+                  "ten_god": "正印"
+                },
+                {
+                  "stem": "壬",
+                  "element": "水",
+                  "ten_god": "劫财"
+                },
+                {
+                  "stem": "戊",
+                  "element": "土",
+                  "ten_god": "正官"
+                }
+              ],
+              "branch_ten_god": "正印"
+            }
+          },
+          "day_master": {
+            "stem": "癸",
+            "element": "水",
+            "polarity": "阴"
+          },
+          "ten_god_counts": {
+            "visible": {
+              "正财": 1,
+              "伤官": 1,
+              "正印": 1
+            },
+            "hidden": {
+              "比肩": 1,
+              "偏财": 2,
+              "七杀": 2,
+              "食神": 1,
+              "正印": 1,
+              "劫财": 1,
+              "正官": 1
+            },
+            "absent": [
+              "偏印"
+            ],
+            "note": "出现次数不代表旺衰，也不能证明心理面向缺失"
+          },
+          "interactions": [
+            {
+              "type": "六冲",
+              "pillars": [
+                "year",
+                "month"
+              ],
+              "symbols": "子午"
+            },
+            {
+              "type": "六害",
+              "pillars": [
+                "year",
+                "day"
+              ],
+              "symbols": "子未"
+            },
+            {
+              "type": "天干相克",
+              "pillars": [
+                "year",
+                "day"
+              ],
+              "symbols": "丙癸"
+            },
+            {
+              "type": "天干相克",
+              "pillars": [
+                "year",
+                "hour"
+              ],
+              "symbols": "丙庚"
+            },
+            {
+              "type": "六合",
+              "pillars": [
+                "month",
+                "day"
+              ],
+              "symbols": "午未"
+            },
+            {
+              "type": "天干相克",
+              "pillars": [
+                "month",
+                "hour"
+              ],
+              "symbols": "甲庚"
+            }
+          ],
+          "dayun": [
+            {
+              "pillar": "癸巳",
+              "start_year": 1999,
+              "end_year": 2008,
+              "start_age": 4,
+              "end_age": 13,
+              "ten_god": "比肩",
+              "stem_element": "水",
+              "branch_element": "火"
+            },
+            {
+              "pillar": "壬辰",
+              "start_year": 2009,
+              "end_year": 2018,
+              "start_age": 14,
+              "end_age": 23,
+              "ten_god": "劫财",
+              "stem_element": "水",
+              "branch_element": "土"
+            },
+            {
+              "pillar": "辛卯",
+              "start_year": 2019,
+              "end_year": 2028,
+              "start_age": 24,
+              "end_age": 33,
+              "ten_god": "偏印",
+              "stem_element": "金",
+              "branch_element": "木"
+            },
+            {
+              "pillar": "庚寅",
+              "start_year": 2029,
+              "end_year": 2038,
+              "start_age": 34,
+              "end_age": 43,
+              "ten_god": "正印",
+              "stem_element": "金",
+              "branch_element": "木"
+            },
+            {
+              "pillar": "己丑",
+              "start_year": 2039,
+              "end_year": 2048,
+              "start_age": 44,
+              "end_age": 53,
+              "ten_god": "七杀",
+              "stem_element": "土",
+              "branch_element": "土"
+            },
+            {
+              "pillar": "戊子",
+              "start_year": 2049,
+              "end_year": 2058,
+              "start_age": 54,
+              "end_age": 63,
+              "ten_god": "正官",
+              "stem_element": "土",
+              "branch_element": "水"
+            },
+            {
+              "pillar": "丁亥",
+              "start_year": 2059,
+              "end_year": 2068,
+              "start_age": 64,
+              "end_age": 73,
+              "ten_god": "偏财",
+              "stem_element": "火",
+              "branch_element": "水"
+            },
+            {
+              "pillar": "丙戌",
+              "start_year": 2069,
+              "end_year": 2078,
+              "start_age": 74,
+              "end_age": 83,
+              "ten_god": "正财",
+              "stem_element": "火",
+              "branch_element": "土"
+            },
+            {
+              "pillar": "乙酉",
+              "start_year": 2079,
+              "end_year": 2088,
+              "start_age": 84,
+              "end_age": 93,
+              "ten_god": "食神",
+              "stem_element": "木",
+              "branch_element": "金"
+            }
+          ],
+          "conventions": {
+            "library": "lunar-python==1.4.8",
+            "pillars": "节气年/月柱；晚子时不换日 sect=2",
+            "dayun": "起运 sect=2，年龄为库的传统计龄",
+            "time": "中国 UTC+8 民用钟表时间；未校正真太阳时",
+            "strength_and_useful_gods": "解释性判断，必须由 AI 提候选并经咨询师确认"
+          },
+          "limitations": []
+        },
+        "calculation_version": "mingli-v2",
+        "input_assumptions": [],
+        "limitations": []
+      }
+    }
+  ],
+  "foundation_data": {
+    "bazi": {
+      "year": {
+        "stem": "丙",
+        "branch": "子",
+        "ten_god": "正财"
+      },
+      "month": {
+        "stem": "甲",
+        "branch": "午",
+        "ten_god": "伤官"
+      },
+      "day": {
+        "stem": "癸",
+        "branch": "未"
+      },
+      "day_master": "癸",
+      "hour": {
+        "stem": "庚",
+        "branch": "申",
+        "ten_god": "正印"
+      }
+    },
+    "calculation_method": "deterministic-mingli",
+    "lunar_date": "1996年四月30日",
+    "solar_date": "1996年6月15日",
+    "zodiac": "鼠",
+    "nayin": "涧下水",
+    "ziwei": {
+      "ming_zhu": "文曲",
+      "shen_zhu": "火星",
+      "wu_xing_ju": "火六局",
+      "ming_gong_branch": "酉",
+      "shen_gong_branch": "丑",
+      "ziwei_branch": "巳",
+      "yin_yang": "陽",
+      "lunar_date": "1996年四月30日",
+      "lunar_year_stem_branch": "丙子",
+      "life_palace": {
+        "branch": "酉",
+        "main_stars": [
+          "廉貞",
+          "破軍"
+        ]
+      },
+      "career_palace": {
+        "branch": "丑",
+        "main_stars": [
+          "武曲",
+          "貪狼"
+        ]
+      },
+      "wealth_palace": {
+        "branch": "巳",
+        "main_stars": [
+          "紫微",
+          "七殺"
+        ]
+      },
+      "relationship_palace": {
+        "branch": "未",
+        "main_stars": []
+      },
+      "palaces": [
+        {
+          "name": "命宫",
+          "stem": "丁",
+          "branch": "酉",
+          "main_stars": [
+            "廉貞",
+            "破軍"
+          ],
+          "aux_stars": [
+            "天鉞"
+          ],
+          "brightness": {
+            "廉貞": "陷",
+            "破軍": "得"
+          },
+          "sihua": {
+            "廉貞": "忌"
+          }
+        },
+        {
+          "name": "兄弟宫",
+          "stem": "丙",
+          "branch": "申",
+          "main_stars": [],
+          "aux_stars": [],
+          "brightness": {},
+          "sihua": {}
+        },
+        {
+          "name": "夫妻宫",
+          "stem": "乙",
+          "branch": "未",
+          "main_stars": [],
+          "aux_stars": [
+            "左輔",
+            "右弼",
+            "地劫",
+            "恩光"
+          ],
+          "brightness": {
+            "左輔": "廟",
+            "右弼": "廟"
+          },
+          "sihua": {}
+        },
+        {
+          "name": "子女宫",
+          "stem": "甲",
+          "branch": "午",
+          "main_stars": [],
+          "aux_stars": [
+            "擎羊",
+            "鈴星",
+            "天哭",
+            "天虛"
+          ],
+          "brightness": {},
+          "sihua": {}
+        },
+        {
+          "name": "财帛宫",
+          "stem": "癸",
+          "branch": "巳",
+          "main_stars": [
+            "紫微",
+            "七殺"
+          ],
+          "aux_stars": [
+            "祿存",
+            "天貴",
+            "天官"
+          ],
+          "brightness": {
+            "紫微": "廟",
+            "七殺": "得",
+            "祿存": "廟"
+          },
+          "sihua": {}
+        },
+        {
+          "name": "疾厄宫",
+          "stem": "壬",
+          "branch": "辰",
+          "main_stars": [
+            "天機",
+            "天梁"
+          ],
+          "aux_stars": [
+            "陀羅",
+            "天姚",
+            "紅鸞",
+            "龍池"
+          ],
+          "brightness": {
+            "天機": "平",
+            "天梁": "平"
+          },
+          "sihua": {
+            "天機": "權"
+          }
+        },
+        {
+          "name": "迁移宫",
+          "stem": "辛",
+          "branch": "卯",
+          "main_stars": [
+            "天相"
+          ],
+          "aux_stars": [
+            "天空"
+          ],
+          "brightness": {
+            "天相": "平"
+          },
+          "sihua": {}
+        },
+        {
+          "name": "交友宫",
+          "stem": "庚",
+          "branch": "寅",
+          "main_stars": [
+            "太陽",
+            "巨門"
+          ],
+          "aux_stars": [
+            "文昌",
+            "天馬",
+            "八座",
+            "台輔"
+          ],
+          "brightness": {
+            "太陽": "廟",
+            "巨門": "得",
+            "文昌": "旺"
+          },
+          "sihua": {
+            "文昌": "科"
+          }
+        },
+        {
+          "name": "官禄宫",
+          "stem": "辛",
+          "branch": "丑",
+          "main_stars": [
+            "武曲",
+            "貪狼"
+          ],
+          "aux_stars": [],
+          "brightness": {
+            "武曲": "旺",
+            "貪狼": "廟"
+          },
+          "sihua": {}
+        },
+        {
+          "name": "田宅宫",
+          "stem": "庚",
+          "branch": "子",
+          "main_stars": [
+            "天同",
+            "太陰"
+          ],
+          "aux_stars": [
+            "文曲",
+            "天刑",
+            "三台",
+            "天福"
+          ],
+          "brightness": {
+            "天同": "平",
+            "太陰": "廟",
+            "文曲": "得"
+          },
+          "sihua": {
+            "天同": "祿"
+          }
+        },
+        {
+          "name": "福德宫",
+          "stem": "己",
+          "branch": "亥",
+          "main_stars": [
+            "天府"
+          ],
+          "aux_stars": [
+            "天魁"
+          ],
+          "brightness": {
+            "天府": "得"
+          },
+          "sihua": {}
+        },
+        {
+          "name": "父母宫",
+          "stem": "戊",
+          "branch": "戌",
+          "main_stars": [],
+          "aux_stars": [
+            "火星",
+            "天喜",
+            "鳳閣",
+            "封誥"
+          ],
+          "brightness": {},
+          "sihua": {}
+        }
+      ],
+      "body_palace": {
+        "name": "官禄宫",
+        "stem": "辛",
+        "branch": "丑",
+        "main_stars": [
+          "武曲",
+          "貪狼"
+        ],
+        "aux_stars": [],
+        "brightness": {
+          "武曲": "旺",
+          "貪狼": "廟"
+        },
+        "sihua": {}
+      },
+      "wellbeing_palace": {
+        "name": "福德宫",
+        "stem": "己",
+        "branch": "亥",
+        "main_stars": [
+          "天府"
+        ],
+        "aux_stars": [
+          "天魁"
+        ],
+        "brightness": {
+          "天府": "得"
+        },
+        "sihua": {}
+      },
+      "life_sanfang_sizheng": [
+        {
+          "name": "命宫",
+          "stem": "丁",
+          "branch": "酉",
+          "main_stars": [
+            "廉貞",
+            "破軍"
+          ],
+          "aux_stars": [
+            "天鉞"
+          ],
+          "brightness": {
+            "廉貞": "陷",
+            "破軍": "得"
+          },
+          "sihua": {
+            "廉貞": "忌"
+          }
+        },
+        {
+          "name": "财帛宫",
+          "stem": "癸",
+          "branch": "巳",
+          "main_stars": [
+            "紫微",
+            "七殺"
+          ],
+          "aux_stars": [
+            "祿存",
+            "天貴",
+            "天官"
+          ],
+          "brightness": {
+            "紫微": "廟",
+            "七殺": "得",
+            "祿存": "廟"
+          },
+          "sihua": {}
+        },
+        {
+          "name": "官禄宫",
+          "stem": "辛",
+          "branch": "丑",
+          "main_stars": [
+            "武曲",
+            "貪狼"
+          ],
+          "aux_stars": [],
+          "brightness": {
+            "武曲": "旺",
+            "貪狼": "廟"
+          },
+          "sihua": {}
+        },
+        {
+          "name": "迁移宫",
+          "stem": "辛",
+          "branch": "卯",
+          "main_stars": [
+            "天相"
+          ],
+          "aux_stars": [
+            "天空"
+          ],
+          "brightness": {
+            "天相": "平"
+          },
+          "sihua": {}
+        }
+      ],
+      "flying_transformations": [
+        {
+          "source_palace": "命宮",
+          "source_stem": "丁",
+          "transformation": "禄",
+          "star": "太陰",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "命宮",
+          "source_stem": "丁",
+          "transformation": "权",
+          "star": "天同",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "命宮",
+          "source_stem": "丁",
+          "transformation": "科",
+          "star": "天機",
+          "target_palaces": [
+            "疾厄宮"
+          ]
+        },
+        {
+          "source_palace": "命宮",
+          "source_stem": "丁",
+          "transformation": "忌",
+          "star": "巨門",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "兄弟宮",
+          "source_stem": "丙",
+          "transformation": "禄",
+          "star": "天同",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "兄弟宮",
+          "source_stem": "丙",
+          "transformation": "权",
+          "star": "天機",
+          "target_palaces": [
+            "疾厄宮"
+          ]
+        },
+        {
+          "source_palace": "兄弟宮",
+          "source_stem": "丙",
+          "transformation": "科",
+          "star": "文昌",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "兄弟宮",
+          "source_stem": "丙",
+          "transformation": "忌",
+          "star": "廉貞",
+          "target_palaces": [
+            "命宮"
+          ]
+        },
+        {
+          "source_palace": "夫妻宮",
+          "source_stem": "乙",
+          "transformation": "禄",
+          "star": "天機",
+          "target_palaces": [
+            "疾厄宮"
+          ]
+        },
+        {
+          "source_palace": "夫妻宮",
+          "source_stem": "乙",
+          "transformation": "权",
+          "star": "天梁",
+          "target_palaces": [
+            "疾厄宮"
+          ]
+        },
+        {
+          "source_palace": "夫妻宮",
+          "source_stem": "乙",
+          "transformation": "科",
+          "star": "紫微",
+          "target_palaces": [
+            "財帛宮"
+          ]
+        },
+        {
+          "source_palace": "夫妻宮",
+          "source_stem": "乙",
+          "transformation": "忌",
+          "star": "太陰",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "子女宮",
+          "source_stem": "甲",
+          "transformation": "禄",
+          "star": "廉貞",
+          "target_palaces": [
+            "命宮"
+          ]
+        },
+        {
+          "source_palace": "子女宮",
+          "source_stem": "甲",
+          "transformation": "权",
+          "star": "破軍",
+          "target_palaces": [
+            "命宮"
+          ]
+        },
+        {
+          "source_palace": "子女宮",
+          "source_stem": "甲",
+          "transformation": "科",
+          "star": "武曲",
+          "target_palaces": [
+            "官祿宮"
+          ]
+        },
+        {
+          "source_palace": "子女宮",
+          "source_stem": "甲",
+          "transformation": "忌",
+          "star": "太陽",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "財帛宮",
+          "source_stem": "癸",
+          "transformation": "禄",
+          "star": "破軍",
+          "target_palaces": [
+            "命宮"
+          ]
+        },
+        {
+          "source_palace": "財帛宮",
+          "source_stem": "癸",
+          "transformation": "权",
+          "star": "巨門",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "財帛宮",
+          "source_stem": "癸",
+          "transformation": "科",
+          "star": "太陰",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "財帛宮",
+          "source_stem": "癸",
+          "transformation": "忌",
+          "star": "貪狼",
+          "target_palaces": [
+            "官祿宮"
+          ]
+        },
+        {
+          "source_palace": "疾厄宮",
+          "source_stem": "壬",
+          "transformation": "禄",
+          "star": "天梁",
+          "target_palaces": [
+            "疾厄宮"
+          ]
+        },
+        {
+          "source_palace": "疾厄宮",
+          "source_stem": "壬",
+          "transformation": "权",
+          "star": "紫微",
+          "target_palaces": [
+            "財帛宮"
+          ]
+        },
+        {
+          "source_palace": "疾厄宮",
+          "source_stem": "壬",
+          "transformation": "科",
+          "star": "左輔",
+          "target_palaces": [
+            "夫妻宮"
+          ]
+        },
+        {
+          "source_palace": "疾厄宮",
+          "source_stem": "壬",
+          "transformation": "忌",
+          "star": "武曲",
+          "target_palaces": [
+            "官祿宮"
+          ]
+        },
+        {
+          "source_palace": "遷移宮",
+          "source_stem": "辛",
+          "transformation": "禄",
+          "star": "巨門",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "遷移宮",
+          "source_stem": "辛",
+          "transformation": "权",
+          "star": "太陽",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "遷移宮",
+          "source_stem": "辛",
+          "transformation": "科",
+          "star": "文曲",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "遷移宮",
+          "source_stem": "辛",
+          "transformation": "忌",
+          "star": "文昌",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "交友宮",
+          "source_stem": "庚",
+          "transformation": "禄",
+          "star": "太陽",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "交友宮",
+          "source_stem": "庚",
+          "transformation": "权",
+          "star": "武曲",
+          "target_palaces": [
+            "官祿宮"
+          ]
+        },
+        {
+          "source_palace": "交友宮",
+          "source_stem": "庚",
+          "transformation": "科",
+          "star": "天府",
+          "target_palaces": [
+            "福德宮"
+          ]
+        },
+        {
+          "source_palace": "交友宮",
+          "source_stem": "庚",
+          "transformation": "忌",
+          "star": "天同",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "官祿宮",
+          "source_stem": "辛",
+          "transformation": "禄",
+          "star": "巨門",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "官祿宮",
+          "source_stem": "辛",
+          "transformation": "权",
+          "star": "太陽",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "官祿宮",
+          "source_stem": "辛",
+          "transformation": "科",
+          "star": "文曲",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "官祿宮",
+          "source_stem": "辛",
+          "transformation": "忌",
+          "star": "文昌",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "田宅宮",
+          "source_stem": "庚",
+          "transformation": "禄",
+          "star": "太陽",
+          "target_palaces": [
+            "交友宮"
+          ]
+        },
+        {
+          "source_palace": "田宅宮",
+          "source_stem": "庚",
+          "transformation": "权",
+          "star": "武曲",
+          "target_palaces": [
+            "官祿宮"
+          ]
+        },
+        {
+          "source_palace": "田宅宮",
+          "source_stem": "庚",
+          "transformation": "科",
+          "star": "天府",
+          "target_palaces": [
+            "福德宮"
+          ]
+        },
+        {
+          "source_palace": "田宅宮",
+          "source_stem": "庚",
+          "transformation": "忌",
+          "star": "天同",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "福德宮",
+          "source_stem": "己",
+          "transformation": "禄",
+          "star": "武曲",
+          "target_palaces": [
+            "官祿宮"
+          ]
+        },
+        {
+          "source_palace": "福德宮",
+          "source_stem": "己",
+          "transformation": "权",
+          "star": "貪狼",
+          "target_palaces": [
+            "官祿宮"
+          ]
+        },
+        {
+          "source_palace": "福德宮",
+          "source_stem": "己",
+          "transformation": "科",
+          "star": "天梁",
+          "target_palaces": [
+            "疾厄宮"
+          ]
+        },
+        {
+          "source_palace": "福德宮",
+          "source_stem": "己",
+          "transformation": "忌",
+          "star": "文曲",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "父母宮",
+          "source_stem": "戊",
+          "transformation": "禄",
+          "star": "貪狼",
+          "target_palaces": [
+            "官祿宮"
+          ]
+        },
+        {
+          "source_palace": "父母宮",
+          "source_stem": "戊",
+          "transformation": "权",
+          "star": "太陰",
+          "target_palaces": [
+            "田宅宮"
+          ]
+        },
+        {
+          "source_palace": "父母宮",
+          "source_stem": "戊",
+          "transformation": "科",
+          "star": "右弼",
+          "target_palaces": [
+            "夫妻宮"
+          ]
+        },
+        {
+          "source_palace": "父母宮",
+          "source_stem": "戊",
+          "transformation": "忌",
+          "star": "天機",
+          "target_palaces": [
+            "疾厄宮"
+          ]
+        }
+      ],
+      "year_transformations": {
+        "天同": "祿",
+        "天機": "權",
+        "文昌": "科",
+        "廉貞": "忌"
+      },
+      "ruleset": "project-ziwei-v1; 生年四化与宫干飞化分别呈现"
+    },
+    "bazi_facts": {
+      "pillars": {
+        "year": {
+          "stem": "丙",
+          "branch": "子",
+          "pillar": "丙子",
+          "ten_god": "正财",
+          "stem_element": "火",
+          "branch_element": "水",
+          "hidden_stems": [
+            {
+              "stem": "癸",
+              "element": "水",
+              "ten_god": "比肩"
+            }
+          ],
+          "branch_ten_god": "比肩"
+        },
+        "month": {
+          "stem": "甲",
+          "branch": "午",
+          "pillar": "甲午",
+          "ten_god": "伤官",
+          "stem_element": "木",
+          "branch_element": "火",
+          "hidden_stems": [
+            {
+              "stem": "丁",
+              "element": "火",
+              "ten_god": "偏财"
+            },
+            {
+              "stem": "己",
+              "element": "土",
+              "ten_god": "七杀"
+            }
+          ],
+          "branch_ten_god": "偏财"
+        },
+        "day": {
+          "stem": "癸",
+          "branch": "未",
+          "pillar": "癸未",
+          "ten_god": "",
+          "stem_element": "水",
+          "branch_element": "土",
+          "hidden_stems": [
+            {
+              "stem": "己",
+              "element": "土",
+              "ten_god": "七杀"
+            },
+            {
+              "stem": "丁",
+              "element": "火",
+              "ten_god": "偏财"
+            },
+            {
+              "stem": "乙",
+              "element": "木",
+              "ten_god": "食神"
+            }
+          ],
+          "branch_ten_god": "七杀"
+        },
+        "hour": {
+          "stem": "庚",
+          "branch": "申",
+          "pillar": "庚申",
+          "ten_god": "正印",
+          "stem_element": "金",
+          "branch_element": "金",
+          "hidden_stems": [
+            {
+              "stem": "庚",
+              "element": "金",
+              "ten_god": "正印"
+            },
+            {
+              "stem": "壬",
+              "element": "水",
+              "ten_god": "劫财"
+            },
+            {
+              "stem": "戊",
+              "element": "土",
+              "ten_god": "正官"
+            }
+          ],
+          "branch_ten_god": "正印"
+        }
+      },
+      "day_master": {
+        "stem": "癸",
+        "element": "水",
+        "polarity": "阴"
+      },
+      "ten_god_counts": {
+        "visible": {
+          "正财": 1,
+          "伤官": 1,
+          "正印": 1
+        },
+        "hidden": {
+          "比肩": 1,
+          "偏财": 2,
+          "七杀": 2,
+          "食神": 1,
+          "正印": 1,
+          "劫财": 1,
+          "正官": 1
+        },
+        "absent": [
+          "偏印"
+        ],
+        "note": "出现次数不代表旺衰，也不能证明心理面向缺失"
+      },
+      "interactions": [
+        {
+          "type": "六冲",
+          "pillars": [
+            "year",
+            "month"
+          ],
+          "symbols": "子午"
+        },
+        {
+          "type": "六害",
+          "pillars": [
+            "year",
+            "day"
+          ],
+          "symbols": "子未"
+        },
+        {
+          "type": "天干相克",
+          "pillars": [
+            "year",
+            "day"
+          ],
+          "symbols": "丙癸"
+        },
+        {
+          "type": "天干相克",
+          "pillars": [
+            "year",
+            "hour"
+          ],
+          "symbols": "丙庚"
+        },
+        {
+          "type": "六合",
+          "pillars": [
+            "month",
+            "day"
+          ],
+          "symbols": "午未"
+        },
+        {
+          "type": "天干相克",
+          "pillars": [
+            "month",
+            "hour"
+          ],
+          "symbols": "甲庚"
+        }
+      ],
+      "dayun": [
+        {
+          "pillar": "癸巳",
+          "start_year": 1999,
+          "end_year": 2008,
+          "start_age": 4,
+          "end_age": 13,
+          "ten_god": "比肩",
+          "stem_element": "水",
+          "branch_element": "火"
+        },
+        {
+          "pillar": "壬辰",
+          "start_year": 2009,
+          "end_year": 2018,
+          "start_age": 14,
+          "end_age": 23,
+          "ten_god": "劫财",
+          "stem_element": "水",
+          "branch_element": "土"
+        },
+        {
+          "pillar": "辛卯",
+          "start_year": 2019,
+          "end_year": 2028,
+          "start_age": 24,
+          "end_age": 33,
+          "ten_god": "偏印",
+          "stem_element": "金",
+          "branch_element": "木"
+        },
+        {
+          "pillar": "庚寅",
+          "start_year": 2029,
+          "end_year": 2038,
+          "start_age": 34,
+          "end_age": 43,
+          "ten_god": "正印",
+          "stem_element": "金",
+          "branch_element": "木"
+        },
+        {
+          "pillar": "己丑",
+          "start_year": 2039,
+          "end_year": 2048,
+          "start_age": 44,
+          "end_age": 53,
+          "ten_god": "七杀",
+          "stem_element": "土",
+          "branch_element": "土"
+        },
+        {
+          "pillar": "戊子",
+          "start_year": 2049,
+          "end_year": 2058,
+          "start_age": 54,
+          "end_age": 63,
+          "ten_god": "正官",
+          "stem_element": "土",
+          "branch_element": "水"
+        },
+        {
+          "pillar": "丁亥",
+          "start_year": 2059,
+          "end_year": 2068,
+          "start_age": 64,
+          "end_age": 73,
+          "ten_god": "偏财",
+          "stem_element": "火",
+          "branch_element": "水"
+        },
+        {
+          "pillar": "丙戌",
+          "start_year": 2069,
+          "end_year": 2078,
+          "start_age": 74,
+          "end_age": 83,
+          "ten_god": "正财",
+          "stem_element": "火",
+          "branch_element": "土"
+        },
+        {
+          "pillar": "乙酉",
+          "start_year": 2079,
+          "end_year": 2088,
+          "start_age": 84,
+          "end_age": 93,
+          "ten_god": "食神",
+          "stem_element": "木",
+          "branch_element": "金"
+        }
+      ],
+      "conventions": {
+        "library": "lunar-python==1.4.8",
+        "pillars": "节气年/月柱；晚子时不换日 sect=2",
+        "dayun": "起运 sect=2，年龄为库的传统计龄",
+        "time": "中国 UTC+8 民用钟表时间；未校正真太阳时",
+        "strength_and_useful_gods": "解释性判断，必须由 AI 提候选并经咨询师确认"
+      },
+      "limitations": []
+    },
+    "calculation_version": "mingli-v2",
+    "input_assumptions": [],
+    "limitations": []
+  }
+}

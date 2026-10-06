@@ -43,8 +43,20 @@ Calendar-specific semantic tones are scoped to `.calendar-page`:
 | Calendar ink | `#2e251d` |
 | Calendar muted | `var(--muted)` → `#7d6653` |
 | 推进 / positive | `#658f73` |
-| 观察 / neutral | `#bd9550` |
-| 收气 / caution | `#b45d58` |
+| 探索 / exploration | `#567d96` (`--calendar-blue`) |
+| 校准 / calibration | `#bd9550` |
+| 收束 / consolidation | `#b45d58` |
+
+The four tones follow [日历生成思路](../../docs/日历生成思路.md). Show text labels
+alongside color. Progress, limitations and awareness questions use body/UI tokens.
+Generated monthly guidance keeps its field labels and supports expanding each
+part. Show the actual count of contiguous tone phases; avoid a fixed phase count.
+
+Structured reports use a chapter directory and native expandable sections. Group
+labels follow [产品分析框架](../../docs/产品分析框架.md): 你是谁、卡在哪、往哪去、带回日常.
+Show the expanded section count; it is not a claim that the user has read them.
+Directory controls use UI tokens, chapter headings use display tokens, and prose
+uses the shared body size and prose line-height. The delivered text stays intact.
 
 Contrast rule: normal reading text should target at least 4.5:1. Do not use muted
 colors for long-form copy or critical labels without checking the actual background.
@@ -196,6 +208,38 @@ shapes for statuses, seals, tags and compact metadata.
   the summary stays readable.
 - **Admin:** scanable metrics, filters, tables or mobile cards, explicit loading/empty/
   error states and task-oriented drawers.
+- **Consultant report workbench:** the report overview owns the six-stage rail.
+  Selecting a node opens a viewport-height workspace with a compact client header,
+  node selector and persistent function/tool controls. Only the active work content
+  scrolls; navigation never overlays it. Long goals and responsibilities open in
+  the task dialog. The node home gives the human task and dedicated work entries.
+  Switching views resets the content scroll and reveals the selected navigation item.
+  Profile and situation inputs use a labeled field grid for comparison at a glance.
+  Collections open in a compact overview, with source-node filters and a detail reader;
+  long analysis and report inputs also support complete continuous reading. Preserve
+  the confirmed report order, complete text and source disclosures. Editing and review
+  actions retain the single-record selector with previous/next actions.
+  Stored calculations use four-pillar comparisons, count tables, a chronological
+  dayun timeline and grouped palace records. Keep calculation assumptions visible,
+  fold original JSON, and never turn occurrence counts into inferred strength scores.
+  Wide prose tables scroll inside their own region on mobile. Quality dimension
+  bars reflect the stored score and maximum without changing delivery thresholds.
+  Skills and completion checklists open in dialogs rather than permanent side columns.
+  Skill buttons invoke actual commands, show prerequisites, and keep history read-only.
+  Report overview retains the delivered report entry. See
+  `docs/consultant-analysis-implementation.md` for the decision and browser acceptance.
+- **Skill and example workbench:** organize built-in skills by report stage and
+  decision-calendar step, using clear Chinese names and descriptions. A compact header,
+  skill catalog and function navigation remain visible while only the active work
+  content scrolls. On mobile, replace the catalog with a native skill selector. Use
+  role-appropriate views for usage, examples, runs, maintenance and trial/evaluation;
+  show only role-appropriate actions. Read examples and run output as labeled Chinese
+  content, one selected record at a time. For built-in reasoning skills, let the
+  administrator edit only the AI's goal and thinking guidance; keep input/output
+  contracts, schemas, fixed prompt rules and runtime settings in the program. Trial
+  and evaluation are available as quality references and do not block direct publish.
+  Keep the originating work step in the return link. See
+  `docs/consultant-analysis-implementation.md`.
 
 ## Anti-patterns
 

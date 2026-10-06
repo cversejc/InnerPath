@@ -1,0 +1,1151 @@
+{
+  "signature": "330e592b14afe18cccf69e08358f0bd366d528db3f5ff4a11a5f6640e46277d9",
+  "skill_digest": "e552782e7352273710680e7fc507cacd145dbfcbc11cdb23117950190ba8ef6e",
+  "output": {
+    "summary": "本批为 S1 阶段候选：基于系统确定性排盘（丙子年、甲午月、癸未日、庚申时；紫微火六局，命宫酉廉贞破军、身宫官禄丑武曲贪狼），逐项整理日主、格局、月令、十神、日支、时支、年柱、刑冲合害、大运、喜忌及紫微命宫/身宫/福德/四化共14个分析片段。所有命理解释均标为解释视角，心理线索仅作待 S2 验证的 Signal，不构成诊断或定论。用户自述的'答应后透支、拒绝拖延'模式与反例（熟悉同事+明确截止时可协商）已纳入校正，未补造任何童年经历。",
+    "findings": [
+      {
+        "finding_key": "s1.foundation.day_master",
+        "claim": "日主为癸水（阴水），意象为雨露、溪泉、暗流；传统解释视角下常关联敏感、渗透、以柔应事、内蓄不外显的自我核心线索，属待验证 Signal。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "HIGH",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.profile.birth_year",
+          "input.profile.birth_month",
+          "input.profile.birth_day",
+          "input.profile.birth_hour"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "day_master": "癸",
+          "element": "水",
+          "polarity": "阴",
+          "interpretation_status": "解释视角，非客观事实"
+        }
+      },
+      {
+        "finding_key": "s1.foundation.structure_candidates",
+        "claim": "格局候选：月令午火（偏财本气+七杀中气），日主癸水生于午月失令；时柱庚申正印双透贴身生扶，年支子水比肩为根，但年支子与月支午六冲、与日支未六害，根气受扰。条件化候选：偏弱格（印为用）为主候选；从财杀格为次要候选，需满足'子水根被冲破且印星无力'条件，当前时柱庚申印星有力，故从格条件不成立。反证：若忽略时柱印星，仅按月令火土旺即判从格，与庚申双印事实不符。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "month_command": "午",
+          "month_benqi": "偏财",
+          "month_zhongqi": "七杀",
+          "primary_candidate": "偏弱格，印星为用",
+          "secondary_candidate": "从财杀格（条件不成立）",
+          "counterevidence": "时柱庚申正印双透，印星有力，从格条件不满足",
+          "note": "出现次数不代表旺衰"
+        }
+      },
+      {
+        "finding_key": "s1.foundation.month_command",
+        "claim": "月令午火，本气丁火为偏财、中气己土为七杀；气候基调为火土当令、燥热偏旺。传统解释视角下，月令偏财+七杀常关联'以外部成果与他人评价为参照'的世界观线索，属待验证 Signal。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "HIGH",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "month_branch": "午",
+          "hidden_stems": [
+            {
+              "stem": "丁",
+              "ten_god": "偏财"
+            },
+            {
+              "stem": "己",
+              "ten_god": "七杀"
+            }
+          ],
+          "climate": "火土当令，燥热"
+        }
+      },
+      {
+        "finding_key": "s1.foundation.ten_gods",
+        "claim": "十神分布：透干为正财（年丙）、伤官（月甲）、正印（时庚）；藏干含比肩、偏财×2、七杀×2、食神、正印、劫财、正官；偏印缺失。传统解释视角下，正印透干为显性资源（学习、被支持、内化规范），伤官透干为表达与突破资源，七杀藏于月日支为隐性压力源。缺失偏印不能证明人格缺陷。",
+        "kind": "FINDING",
+        "semantic_role": "RESOURCE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "visible": {
+            "正财": 1,
+            "伤官": 1,
+            "正印": 1
+          },
+          "hidden": {
+            "比肩": 1,
+            "偏财": 2,
+            "七杀": 2,
+            "食神": 1,
+            "正印": 1,
+            "劫财": 1,
+            "正官": 1
+          },
+          "absent": [
+            "偏印"
+          ],
+          "note": "出现次数不代表旺衰，缺失不能证明人格缺陷"
+        }
+      },
+      {
+        "finding_key": "s1.foundation.day_branch",
+        "claim": "日支未土，与日干癸水为克（土克水）；藏干己土七杀、丁火偏财、乙木食神。传统解释视角下，日支七杀为内在需求线索：对'被要求/被期待'高度敏感，同时食神藏于其中提示自我调节与创造出口的潜能。属待验证 Signal。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "day_branch": "未",
+          "relation_to_day_master": "土克水",
+          "hidden_stems": [
+            {
+              "stem": "己",
+              "ten_god": "七杀"
+            },
+            {
+              "stem": "丁",
+              "ten_god": "偏财"
+            },
+            {
+              "stem": "乙",
+              "ten_god": "食神"
+            }
+          ]
+        }
+      },
+      {
+        "finding_key": "s1.foundation.hour_branch",
+        "claim": "时支申金，藏干庚金正印、壬水劫财、戊土正官；时柱庚申正印透干。传统解释视角下，时柱正印为价值排序线索：重视学习、规范、被认可的专业性；劫财与正官同藏提示'独立与责任'的张力。",
+        "kind": "FINDING",
+        "semantic_role": "RESOURCE",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "hour_branch": "申",
+          "hidden_stems": [
+            {
+              "stem": "庚",
+              "ten_god": "正印"
+            },
+            {
+              "stem": "壬",
+              "ten_god": "劫财"
+            },
+            {
+              "stem": "戊",
+              "ten_god": "正官"
+            }
+          ]
+        }
+      },
+      {
+        "finding_key": "s1.foundation.year_pillar",
+        "claim": "年柱丙子，天干丙火正财、地支子水比肩（藏癸）。传统解释视角下，年柱正财+比肩为集体印记线索：早期环境可能强调'务实、可靠、不添麻烦'的规范；子水比肩为同辈/同伴资源。不编造具体家庭经历。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "year_pillar": "丙子",
+          "stem_ten_god": "正财",
+          "branch_ten_god": "比肩"
+        }
+      },
+      {
+        "finding_key": "s1.foundation.interactions",
+        "claim": "干支关系：子午六冲（年-月）、子未六害（年-日）、午未六合（月-日）、丙癸天干相克（年-日）、丙庚天干相克（年-时）、甲庚天干相克（月-时）。合与合化分开：午未为六合，是否合化需看月令与全局，当前不作合化判定。传统解释视角下，冲害并存提示'外部要求与内在需求反复拉扯'的心理冲突线索。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "HIGH",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "interactions": [
+            {
+              "type": "六冲",
+              "symbols": "子午",
+              "pillars": [
+                "year",
+                "month"
+              ]
+            },
+            {
+              "type": "六害",
+              "symbols": "子未",
+              "pillars": [
+                "year",
+                "day"
+              ]
+            },
+            {
+              "type": "六合",
+              "symbols": "午未",
+              "pillars": [
+                "month",
+                "day"
+              ]
+            },
+            {
+              "type": "天干相克",
+              "symbols": "丙癸",
+              "pillars": [
+                "year",
+                "day"
+              ]
+            },
+            {
+              "type": "天干相克",
+              "symbols": "丙庚",
+              "pillars": [
+                "year",
+                "hour"
+              ]
+            },
+            {
+              "type": "天干相克",
+              "symbols": "甲庚",
+              "pillars": [
+                "month",
+                "hour"
+              ]
+            }
+          ],
+          "note": "合与合化分开，未作合化判定"
+        }
+      },
+      {
+        "finding_key": "s1.foundation.current_dayun",
+        "claim": "按分析日期2026-10-04，当前大运为辛卯（2019–2028，24–33岁），天干辛金偏印、地支卯木。原局关系：辛金偏印与时柱庚申正印同类叠加，强化印星；卯木与日支未半合木局（卯未），与年支子相刑（子卯）。后续大运沿真实起止年份保留：庚寅2029–2038、己丑2039–2048、戊子2049–2058、丁亥2059–2068、丙戌2069–2078、乙酉2079–2088。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "HIGH",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.analysis_date"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "current_dayun": {
+            "pillar": "辛卯",
+            "start_year": 2019,
+            "end_year": 2028,
+            "start_age": 24,
+            "end_age": 33,
+            "ten_god": "偏印"
+          },
+          "subsequent": [
+            {
+              "pillar": "庚寅",
+              "start_year": 2029,
+              "end_year": 2038
+            },
+            {
+              "pillar": "己丑",
+              "start_year": 2039,
+              "end_year": 2048
+            },
+            {
+              "pillar": "戊子",
+              "start_year": 2049,
+              "end_year": 2058
+            },
+            {
+              "pillar": "丁亥",
+              "start_year": 2059,
+              "end_year": 2068
+            },
+            {
+              "pillar": "丙戌",
+              "start_year": 2069,
+              "end_year": 2078
+            },
+            {
+              "pillar": "乙酉",
+              "start_year": 2079,
+              "end_year": 2088
+            }
+          ]
+        }
+      },
+      {
+        "finding_key": "s1.foundation.useful_gods_candidates",
+        "claim": "喜忌候选（解释性判断，非确定计算结论）：主候选用神为金（正印/偏印），喜神为水（比肩/劫财），忌神为火（财）与土（杀）。取用理由：日主癸水失令于午月，时柱庚申印星贴身生扶，印为最直接调节资源；水为同类帮身。分歧：若采从财杀格视角，则火土为用、金水为忌；当前因印星有力，从格条件不成立，故以偏弱格取用为主。",
+        "kind": "FINDING",
+        "semantic_role": "USEFUL_GOD",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "MUST_INCLUDE",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "primary_useful_god": "金（印）",
+          "favorable": "水（比劫）",
+          "unfavorable": [
+            "火（财）",
+            "土（杀）"
+          ],
+          "alternative_view": "从财杀格：火土为用，金水为忌（条件不成立）",
+          "status": "解释性判断，需咨询师确认"
+        }
+      },
+      {
+        "finding_key": "s1.ziwei.life_palace",
+        "claim": "紫微命宫在酉，主星廉贞（陷）、破军（得），辅星天钺，生年四化廉贞化忌。三方四正：财帛宫巳紫微七杀+禄存，官禄宫丑武曲贪狼，迁移宫卯天相+天空。传统解释视角下，廉贞破军坐命常关联'外表守规、内在求变'的人格面具线索；廉贞化忌提示自我评价易受'是否够好'牵动。属待验证 Signal，不作诊断。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "ming_gong": "酉",
+          "main_stars": [
+            "廉貞",
+            "破軍"
+          ],
+          "brightness": {
+            "廉貞": "陷",
+            "破軍": "得"
+          },
+          "aux_stars": [
+            "天鉞"
+          ],
+          "sihua": {
+            "廉貞": "忌"
+          },
+          "sanfang_sizheng": [
+            "命宫",
+            "财帛宫",
+            "官禄宫",
+            "迁移宫"
+          ]
+        }
+      },
+      {
+        "finding_key": "s1.ziwei.body_palace",
+        "claim": "身宫在官禄宫（丑），主星武曲（旺）、贪狼（庙）。命宫在酉、身宫在丑，命身不一致。传统解释视角下，身宫落官禄提示后天方向偏向'通过工作角色确立自我'；武曲贪狼组合常关联'务实执行+欲望驱动'的双重动力。属待验证 Signal。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "shen_gong": "丑",
+          "palace": "官禄宫",
+          "main_stars": [
+            "武曲",
+            "貪狼"
+          ],
+          "ming_shen_consistency": "不一致"
+        }
+      },
+      {
+        "finding_key": "s1.ziwei.wellbeing_palace",
+        "claim": "福德宫在亥，主星天府（得），辅星天魁，无化忌、无空劫、无煞星。传统解释视角下，天府坐福德常关联'内在求稳、重储备'的心理基调；无煞忌提示内在调节资源相对完整。不能据此诊断任何心理状态。",
+        "kind": "FINDING",
+        "semantic_role": "RESOURCE",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "wellbeing_palace": "亥",
+          "main_stars": [
+            "天府"
+          ],
+          "aux_stars": [
+            "天魁"
+          ],
+          "sihua": {},
+          "note": "不能据此诊断"
+        }
+      },
+      {
+        "finding_key": "s1.ziwei.transformations",
+        "claim": "生年四化：天同化禄（田宅宫）、天机化权（疾厄宫）、文昌化科（交友宫）、廉贞化忌（命宫）。宫干飞化重点忌流向：命宫丁干巨门化忌入交友宫；财帛宫癸干贪狼化忌入官禄宫；疾厄宫壬干武曲化忌入官禄宫；福德宫己干文曲化忌入田宅宫。传统解释视角下，廉贞化忌在命宫+多宫忌入官禄/交友，提示'自我评价与外部关系/工作角色'的张力线索。其他宫位飞化需按问卷依据及人工选择调用。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "year_transformations": {
+            "天同": "祿",
+            "天機": "權",
+            "文昌": "科",
+            "廉貞": "忌"
+          },
+          "key_flying_ji": [
+            {
+              "source": "命宮",
+              "star": "巨門",
+              "target": "交友宮"
+            },
+            {
+              "source": "財帛宮",
+              "star": "貪狼",
+              "target": "官祿宮"
+            },
+            {
+              "source": "疾厄宮",
+              "star": "武曲",
+              "target": "官祿宮"
+            },
+            {
+              "source": "福德宮",
+              "star": "文曲",
+              "target": "田宅宮"
+            }
+          ]
+        }
+      },
+      {
+        "finding_key": "s1.signal.overcommitment_pattern",
+        "claim": "待 S2 验证 Signal：用户自述'答应额外任务后熬夜、拒绝拖延至生硬回应、朋友邀约先答应后取消'，与命理中'七杀藏于月日支（外部压力敏感）+正印透干（以被认可为调节）+廉贞化忌在命宫（自我评价易受牵动）'的解释视角形成呼应。反例：面对熟悉同事且有明确截止时可协商边界，说明该模式并非固定人格，而是情境依赖。不作诊断。",
+        "kind": "SIGNAL",
+        "semantic_role": "BLOCK",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "INTERNAL_ONLY",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "signal_type": "待验证心理线索",
+          "status": "S1 不写成诊断或定论",
+          "counterexample": "熟悉同事+明确截止时可协商边界"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s1.day_master",
+        "title": "1.1.1 日主",
+        "content": "日干为癸水，阴水，意象为雨露、溪泉、暗流。传统命理解释视角下，癸水常关联敏感、渗透、以柔应事、内蓄不外显的自我核心线索。结合用户自述'认为自己要靠谱、不能让人失望'，可提出待 S2 验证的 Signal：自我核心可能偏向'以顺应外部期待来维持关系安全'，但此仅为解释视角，需由用户自述与反证校正。用户未提供童年经历，不补造。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "日干、五行、阴阳、意象及待验证自我核心线索均已覆盖。",
+          "quote": "日干为癸水，阴水，意象为雨露、溪泉、暗流。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "日主信息完整，可给出解释视角与待验证 Signal。",
+          "quote": "日干为癸水，阴水，意象为雨露、溪泉、暗流。",
+          "follow_up_questions": [],
+          "details": {
+            "day_master": "癸",
+            "element": "水",
+            "polarity": "阴",
+            "imagery": "雨露、溪泉、暗流",
+            "signal": "以顺应外部期待维持关系安全的自我核心线索（待 S2 验证）"
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.day_master"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.structure",
+        "title": "1.1.2 格局",
+        "content": "月令午火，本气偏财、中气七杀，日主癸水失令。全局生扶依据：时柱庚申正印双透贴身生扶，年支子水比肩为根；克泄耗依据：月令午火偏财泄水、日支未土七杀克水、年干丙火正财耗水。条件化候选：主候选为偏弱格（印为用），次要候选为从财杀格。从格成立条件为'子水根被冲破且印星无力'，当前时柱庚申印星有力、子水根虽受冲害但未破，故从格条件不成立。反证：若仅按月令火土旺即判从格，与庚申双印事实不符。已有完整盘，不作'请人工判定'的停止分析。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "月令与全局生扶/克泄耗依据、身强弱候选、从格条件及反证均已给出。",
+          "quote": "主候选为偏弱格（印为用），次要候选为从财杀格。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "格局候选与反证完整，未用出现次数代替旺衰。",
+          "quote": "主候选为偏弱格（印为用），次要候选为从财杀格。",
+          "follow_up_questions": [],
+          "details": {
+            "month_command": "午",
+            "primary_candidate": "偏弱格，印星为用",
+            "secondary_candidate": "从财杀格（条件不成立）",
+            "support_evidence": "时柱庚申正印双透，年支子水比肩为根",
+            "drain_evidence": "月令午火偏财泄水，日支未土七杀克水，年干丙火正财耗水",
+            "counterevidence": "庚申印星有力，从格条件不满足"
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.structure_candidates"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.month",
+        "title": "1.1.3 月令",
+        "content": "月支午火，本气丁火为偏财、中气己土为七杀。气候基调为火土当令、燥热偏旺。传统解释视角下，月令偏财+七杀常关联'以外部成果与他人评价为参照'的世界观线索，属待验证 Signal。结合用户自述'拒绝后担心别人觉得我不够好'，可提出待 S2 验证的假设：世界观可能偏向'外部评价是安全感的来源'，但需由用户自述与反证校正。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "月支、生克、本气及藏干十神、气候基调与待验证世界观均已覆盖。",
+          "quote": "月支午火，本气丁火为偏财、中气己土为七杀。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "月令信息完整，可给出解释视角与待验证 Signal。",
+          "quote": "月支午火，本气丁火为偏财、中气己土为七杀。",
+          "follow_up_questions": [],
+          "details": {
+            "month_branch": "午",
+            "hidden_stems": [
+              {
+                "stem": "丁",
+                "ten_god": "偏财"
+              },
+              {
+                "stem": "己",
+                "ten_god": "七杀"
+              }
+            ],
+            "climate": "火土当令，燥热",
+            "signal": "以外部评价为安全感来源的世界观线索（待 S2 验证）"
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.month_command"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ten_gods",
+        "title": "1.1.4 十神",
+        "content": "透干：年干丙火正财、月干甲木伤官、时干庚金正印。藏干：比肩（年支子）、偏财×2（月支午、日支未）、七杀×2（月支午、日支未）、食神（日支未）、正印（时支申）、劫财（时支申）、正官（时支申）。缺失：偏印。显隐资源：正印透干为显性资源（学习、被支持、内化规范），伤官透干为表达与突破资源，七杀藏于月日支为隐性压力源。十神交战：伤官（月甲）与正印（时庚）天干相克，提示'表达冲动'与'规范内化'的张力。缺失偏印不能证明人格缺陷。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "透干/藏干、旺衰/缺失及十神交战、显隐资源均已覆盖。",
+          "quote": "透干：年干丙火正财、月干甲木伤官、时干庚金正印。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "十神信息完整，缺失项已明确不作人格缺陷推断。",
+          "quote": "透干：年干丙火正财、月干甲木伤官、时干庚金正印。",
+          "follow_up_questions": [],
+          "details": {
+            "visible": {
+              "正财": 1,
+              "伤官": 1,
+              "正印": 1
+            },
+            "hidden": {
+              "比肩": 1,
+              "偏财": 2,
+              "七杀": 2,
+              "食神": 1,
+              "正印": 1,
+              "劫财": 1,
+              "正官": 1
+            },
+            "absent": [
+              "偏印"
+            ],
+            "conflict": "伤官（月甲）与正印（时庚）天干相克",
+            "note": "缺失不能证明人格缺陷"
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.ten_gods"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.day_branch",
+        "title": "1.1.5 日支",
+        "content": "日支未土，与日干癸水为克（土克水）。藏干己土七杀、丁火偏财、乙木食神。传统解释视角下，日支七杀为内在需求线索：对'被要求/被期待'高度敏感；食神藏于其中提示自我调节与创造出口的潜能。结合用户自述'答应后熬夜、拒绝拖延'，可提出待 S2 验证的假设：内在需求可能偏向'通过满足他人来确认自身价值'，但需由用户自述与反证校正。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "日支与日干生克、藏干十神、内在需求线索均已覆盖。",
+          "quote": "日支未土，与日干癸水为克（土克水）。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "日支信息完整，可给出解释视角与待验证 Signal。",
+          "quote": "日支未土，与日干癸水为克（土克水）。",
+          "follow_up_questions": [],
+          "details": {
+            "day_branch": "未",
+            "relation_to_day_master": "土克水",
+            "hidden_stems": [
+              {
+                "stem": "己",
+                "ten_god": "七杀"
+              },
+              {
+                "stem": "丁",
+                "ten_god": "偏财"
+              },
+              {
+                "stem": "乙",
+                "ten_god": "食神"
+              }
+            ],
+            "signal": "通过满足他人确认自身价值的内在需求线索（待 S2 验证）"
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.day_branch"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.current_challenge"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.hour",
+        "title": "1.1.6 时支",
+        "content": "时支申金，藏干庚金正印、壬水劫财、戊土正官；时柱庚申正印透干。出生时间精确（15:15），时柱可确定，不暂缓。传统解释视角下，时柱正印为价值排序线索：重视学习、规范、被认可的专业性；劫财与正官同藏提示'独立与责任'的张力。结合用户职业为项目运营，可提出待 S2 验证的假设：价值排序可能偏向'以专业可靠获得认可'，但需由用户自述校正。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "时支五行/十神与价值排序已覆盖，出生时间精确故不暂缓。",
+          "quote": "时支申金，藏干庚金正印、壬水劫财、戊土正官；时柱庚申正印透干。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "时支信息完整，出生时间精确。",
+          "quote": "时支申金，藏干庚金正印、壬水劫财、戊土正官；时柱庚申正印透干。",
+          "follow_up_questions": [],
+          "details": {
+            "hour_branch": "申",
+            "hidden_stems": [
+              {
+                "stem": "庚",
+                "ten_god": "正印"
+              },
+              {
+                "stem": "壬",
+                "ten_god": "劫财"
+              },
+              {
+                "stem": "戊",
+                "ten_god": "正官"
+              }
+            ],
+            "signal": "以专业可靠获得认可的价值排序线索（待 S2 验证）"
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.hour_branch"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.profile.birth_time_precision",
+          "input.profile.occupation_status"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.year",
+        "title": "1.1.7 年柱",
+        "content": "年柱丙子，天干丙火正财、地支子水比肩（藏癸）。传统解释视角下，年柱正财+比肩为集体印记线索：早期环境可能强调'务实、可靠、不添麻烦'的规范；子水比肩为同辈/同伴资源。用户未提供家庭经历，不编造。内在权威线索：正财透干可能关联'以实际成果衡量自我'的内化标准，属待验证 Signal。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "年干支十神、集体印记和内在权威线索已覆盖，未编造家庭经历。",
+          "quote": "年柱丙子，天干丙火正财、地支子水比肩（藏癸）。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "年柱信息完整，家庭经历未编造。",
+          "quote": "年柱丙子，天干丙火正财、地支子水比肩（藏癸）。",
+          "follow_up_questions": [],
+          "details": {
+            "year_pillar": "丙子",
+            "stem_ten_god": "正财",
+            "branch_ten_god": "比肩",
+            "signal": "以实际成果衡量自我的内化标准线索（待 S2 验证）"
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.year_pillar"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.interactions",
+        "title": "1.1.8 刑冲合害",
+        "content": "六冲：子午（年-月）。六害：子未（年-日）。六合：午未（月-日），合与合化分开，当前不作合化判定。天干相克：丙癸（年-日）、丙庚（年-时）、甲庚（月-时）。无三刑、自刑、三合、三会。传统解释视角下，冲害并存提示'外部要求与内在需求反复拉扯'的心理冲突线索；午未六合提示'压力与内在需求有黏合倾向'。结合用户自述'答应后透支、拒绝拖延'，可提出待 S2 验证的假设：冲突可能表现为'先顺从后爆发'的循环，但需由用户自述与反证校正。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "六冲/六害/六合/干克均已列出，合与合化分开，心理冲突线索已给出。",
+          "quote": "六冲：子午（年-月）。六害：子未（年-日）。六合：午未（月-日），合与合化分开，当前不作合化判定。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "刑冲合害信息完整，合化未混同。",
+          "quote": "六冲：子午（年-月）。六害：子未（年-日）。六合：午未（月-日），合与合化分开，当前不作合化判定。",
+          "follow_up_questions": [],
+          "details": {
+            "interactions": [
+              {
+                "type": "六冲",
+                "symbols": "子午",
+                "pillars": [
+                  "year",
+                  "month"
+                ]
+              },
+              {
+                "type": "六害",
+                "symbols": "子未",
+                "pillars": [
+                  "year",
+                  "day"
+                ]
+              },
+              {
+                "type": "六合",
+                "symbols": "午未",
+                "pillars": [
+                  "month",
+                  "day"
+                ]
+              },
+              {
+                "type": "天干相克",
+                "symbols": "丙癸",
+                "pillars": [
+                  "year",
+                  "day"
+                ]
+              },
+              {
+                "type": "天干相克",
+                "symbols": "丙庚",
+                "pillars": [
+                  "year",
+                  "hour"
+                ]
+              },
+              {
+                "type": "天干相克",
+                "symbols": "甲庚",
+                "pillars": [
+                  "month",
+                  "hour"
+                ]
+              }
+            ],
+            "signal": "先顺从后爆发的心理冲突线索（待 S2 验证）"
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.interactions"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.current_challenge"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.dayun",
+        "title": "1.1.9 大运",
+        "content": "按分析日期2026-10-04，当前大运为辛卯（2019–2028，24–33岁），天干辛金偏印、地支卯木。原局关系：辛金偏印与时柱庚申正印同类叠加，强化印星；卯木与日支未半合木局（卯未），与年支子相刑（子卯）。顺逆势依据：女命年干丙火为阳，按传统规则阳年女命逆排，大运从月柱甲午逆推为癸巳、壬辰、辛卯……与计算结果一致。后续大运沿真实起止年份保留：庚寅2029–2038、己丑2039–2048、戊子2049–2058、丁亥2059–2068、丙戌2069–2078、乙酉2079–2088。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "当前运、干支十神/五行、原局关系、顺逆势依据及后续每十年地图均已给出。",
+          "quote": "当前大运为辛卯（2019–2028，24–33岁），天干辛金偏印、地支卯木。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "大运信息完整，起止年份真实。",
+          "quote": "当前大运为辛卯（2019–2028，24–33岁），天干辛金偏印、地支卯木。",
+          "follow_up_questions": [],
+          "details": {
+            "current_dayun": {
+              "pillar": "辛卯",
+              "start_year": 2019,
+              "end_year": 2028,
+              "ten_god": "偏印"
+            },
+            "interactions_with_natal": [
+              "辛金偏印与时柱庚申正印叠加",
+              "卯未半合木局",
+              "子卯相刑"
+            ],
+            "direction_basis": "女命阳年逆排，与计算结果一致",
+            "subsequent": [
+              {
+                "pillar": "庚寅",
+                "start_year": 2029,
+                "end_year": 2038
+              },
+              {
+                "pillar": "己丑",
+                "start_year": 2039,
+                "end_year": 2048
+              },
+              {
+                "pillar": "戊子",
+                "start_year": 2049,
+                "end_year": 2058
+              },
+              {
+                "pillar": "丁亥",
+                "start_year": 2059,
+                "end_year": 2068
+              },
+              {
+                "pillar": "丙戌",
+                "start_year": 2069,
+                "end_year": 2078
+              },
+              {
+                "pillar": "乙酉",
+                "start_year": 2079,
+                "end_year": 2088
+              }
+            ]
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.current_dayun"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.analysis_date"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.useful_gods",
+        "title": "1.1.10 喜忌",
+        "content": "根据本步格局候选（偏弱格，印为用）：用神为金（正印/偏印），喜神为水（比肩/劫财），忌神为火（财）与土（杀）。取用理由：日主癸水失令于午月，时柱庚申印星贴身生扶，印为最直接调节资源；水为同类帮身。分歧：若采从财杀格视角，则火土为用、金水为忌；当前因印星有力，从格条件不成立，故以偏弱格取用为主。此为解释性判断，非确定计算结论，需咨询师确认。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "用神、喜神、忌神及取用理由/分歧均已给出，未只说等待人工取用。",
+          "quote": "用神为金（正印/偏印），喜神为水（比肩/劫财），忌神为火（财）与土（杀）。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "喜忌候选与分歧完整。",
+          "quote": "用神为金（正印/偏印），喜神为水（比肩/劫财），忌神为火（财）与土（杀）。",
+          "follow_up_questions": [],
+          "details": {
+            "primary_useful_god": "金（印）",
+            "favorable": "水（比劫）",
+            "unfavorable": [
+              "火（财）",
+              "土（杀）"
+            ],
+            "alternative_view": "从财杀格：火土为用，金水为忌（条件不成立）",
+            "status": "解释性判断，需咨询师确认"
+          }
+        },
+        "finding_refs": [
+          "s1.foundation.useful_gods_candidates"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ziwei_life",
+        "title": "1.2.1 命宫",
+        "content": "命宫在酉，主星廉贞（陷）、破军（得），辅星天钺，生年四化廉贞化忌。三方四正：财帛宫巳紫微七杀+禄存，官禄宫丑武曲贪狼，迁移宫卯天相+天空。传统解释视角下，廉贞破军坐命常关联'外表守规、内在求变'的人格面具线索；廉贞化忌提示自我评价易受'是否够好'牵动；天钺为贵人辅助资源。属待验证 Signal，不作诊断。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "主星、吉煞/亮度与三方四正均已覆盖，人格面具线索已给出。",
+          "quote": "命宫在酉，主星廉贞（陷）、破军（得），辅星天钺，生年四化廉贞化忌。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "命宫信息完整。",
+          "quote": "命宫在酉，主星廉贞（陷）、破军（得），辅星天钺，生年四化廉贞化忌。",
+          "follow_up_questions": [],
+          "details": {
+            "ming_gong": "酉",
+            "main_stars": [
+              "廉貞",
+              "破軍"
+            ],
+            "brightness": {
+              "廉貞": "陷",
+              "破軍": "得"
+            },
+            "aux_stars": [
+              "天鉞"
+            ],
+            "sihua": {
+              "廉貞": "忌"
+            },
+            "sanfang_sizheng": [
+              "命宫",
+              "财帛宫",
+              "官禄宫",
+              "迁移宫"
+            ],
+            "signal": "外表守规、内在求变的人格面具线索（待 S2 验证）"
+          }
+        },
+        "finding_refs": [
+          "s1.ziwei.life_palace"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ziwei_body",
+        "title": "1.2.2 身宫",
+        "content": "身宫在官禄宫（丑），主星武曲（旺）、贪狼（庙）。命宫在酉、身宫在丑，命身不一致。传统解释视角下，身宫落官禄提示后天方向偏向'通过工作角色确立自我'；武曲贪狼组合常关联'务实执行+欲望驱动'的双重动力。结合用户职业为项目运营，可提出待 S2 验证的假设：后天方向可能偏向'以工作成就锚定自我价值'，但需由用户自述校正。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "身宫位置与组合、命身一致/背离及后天方向均已覆盖。",
+          "quote": "身宫在官禄宫（丑），主星武曲（旺）、贪狼（庙）。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "身宫信息完整。",
+          "quote": "身宫在官禄宫（丑），主星武曲（旺）、贪狼（庙）。",
+          "follow_up_questions": [],
+          "details": {
+            "shen_gong": "丑",
+            "palace": "官禄宫",
+            "main_stars": [
+              "武曲",
+              "貪狼"
+            ],
+            "ming_shen_consistency": "不一致",
+            "signal": "以工作成就锚定自我价值的后天方向线索（待 S2 验证）"
+          }
+        },
+        "finding_refs": [
+          "s1.ziwei.body_palace"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.profile.occupation_status"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ziwei_wellbeing",
+        "title": "1.2.3 福德",
+        "content": "福德宫在亥，主星天府（得），辅星天魁，无化忌、无空劫、无煞星。传统解释视角下，天府坐福德常关联'内在求稳、重储备'的心理基调；无煞忌提示内在调节资源相对完整。结合用户自述'独自散步时比较放松'，可提出待 S2 验证的假设：独处与稳定节奏可能是其内在恢复资源，但需由用户自述校正。不能据此诊断任何心理状态。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "主星、化忌、空劫、煞与面具张力均已覆盖，明确不诊断。",
+          "quote": "福德宫在亥，主星天府（得），辅星天魁，无化忌、无空劫、无煞星。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "福德宫信息完整，不诊断。",
+          "quote": "福德宫在亥，主星天府（得），辅星天魁，无化忌、无空劫、无煞星。",
+          "follow_up_questions": [],
+          "details": {
+            "wellbeing_palace": "亥",
+            "main_stars": [
+              "天府"
+            ],
+            "aux_stars": [
+              "天魁"
+            ],
+            "sihua": {},
+            "signal": "独处与稳定节奏为内在恢复资源的线索（待 S2 验证）",
+            "note": "不能据此诊断"
+          }
+        },
+        "finding_refs": [
+          "s1.ziwei.wellbeing_palace"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.concrete_events"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ziwei_transformations",
+        "title": "1.2.4 四化",
+        "content": "生年四化：天同化禄（田宅宫）、天机化权（疾厄宫）、文昌化科（交友宫）、廉贞化忌（命宫）。宫干飞化重点忌流向：命宫丁干巨门化忌入交友宫；财帛宫癸干贪狼化忌入官禄宫；疾厄宫壬干武曲化忌入官禄宫；福德宫己干文曲化忌入田宅宫。传统解释视角下，廉贞化忌在命宫+多宫忌入官禄/交友，提示'自我评价与外部关系/工作角色'的张力线索。其他宫位飞化需按问卷依据及人工选择调用，本片段仅列与用户自述议题（工作、关系）相关的重点忌流向。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "生年四化与宫干飞化已区分，源宫/目标宫/星曜及重点忌流向已列出，其他宫位说明需问卷依据及人工选择。",
+          "quote": "生年四化：天同化禄（田宅宫）、天机化权（疾厄宫）、文昌化科（交友宫）、廉贞化忌（命宫）。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "四化信息完整，生年与飞化分开。",
+          "quote": "生年四化：天同化禄（田宅宫）、天机化权（疾厄宫）、文昌化科（交友宫）、廉贞化忌（命宫）。",
+          "follow_up_questions": [],
+          "details": {
+            "year_transformations": {
+              "天同": "祿",
+              "天機": "權",
+              "文昌": "科",
+              "廉貞": "忌"
+            },
+            "key_flying_ji": [
+              {
+                "source": "命宮",
+                "star": "巨門",
+                "target": "交友宮"
+              },
+              {
+                "source": "財帛宮",
+                "star": "貪狼",
+                "target": "官祿宮"
+              },
+              {
+                "source": "疾厄宮",
+                "star": "武曲",
+                "target": "官祿宮"
+              },
+              {
+                "source": "福德宮",
+                "star": "文曲",
+                "target": "田宅宮"
+              }
+            ],
+            "note": "其他宫位飞化需按问卷依据及人工选择调用"
+          }
+        },
+        "finding_refs": [
+          "s1.ziwei.transformations"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.focus_topics"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "本批全部为 S1 候选，命理解释均标为解释视角，心理线索仅为待 S2 验证 Signal，不得写成诊断或定论。",
+        "references": [
+          "s1.signal.overcommitment_pattern"
+        ]
+      },
+      {
+        "message": "用户自述'没有提供童年经历'，任何权威内化或早期环境推断均不得补造具体经历。",
+        "references": [
+          "s1.foundation.year_pillar",
+          "s1.foundation.day_master"
+        ]
+      },
+      {
+        "message": "反例（熟悉同事+明确截止时可协商边界）必须纳入校正，不得将'答应后透支'写成固定人格。",
+        "references": [
+          "s1.signal.overcommitment_pattern"
+        ]
+      },
+      {
+        "message": "紫微四化中其他宫位飞化需按问卷依据及人工选择调用，本批仅列与用户自述议题相关的重点忌流向。",
+        "references": [
+          "s1.ziwei.transformations"
+        ]
+      },
+      {
+        "message": "全部资料为合成验收数据，不得冒充真实客户或专业评估。",
+        "references": [
+          "input.context.synthetic_notice"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 25167,
+    "output_tokens": 11908,
+    "latency_ms": 38937,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "ba8efb6e-2abb-4d11-98b9-1af70baa1af9",
+    "skill_version_id": 0,
+    "skill_key": "report.s1_foundation_analysis",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "b8bfcd53d581f8f68743c91a9b8cf45ace7a9378e640481de87d34117e9c281b",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

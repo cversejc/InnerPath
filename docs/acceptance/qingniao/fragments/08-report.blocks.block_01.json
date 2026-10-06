@@ -1,0 +1,72 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点一：拒绝如何多一个档位",
+    "content": "本章关键句：先辨认模式在保护什么，才更容易选择另一种回应。\n路径图：具体请求 → 可能的关系顾虑 → 迁就或生硬拒绝 → 观察实际代价 → 找到中间档位。\n\n你明确说不太会拒绝，拒绝时语言生硬，习惯迁就。假如面对一个不想接受的请求，你难以找到“愿意帮一点，但不能全接”的语言，就可能在答应与挡回去之间摆动；具体场景仍待你补充。\n\n它可能保护当时的关系气氛，让你不必马上承受分歧。长期代价则可能是自己的时间、需要或真实意愿被推后。这里没有证据说明你一定感到委屈，也不能认定朋友因此疏远。\n\n整合邀请是把回应从二选一扩为可协商的选择。具体做法留在第三章的暂停实验。",
+    "used_findings": [
+      "s4.blocks.boundary_pleasing"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这是四个卡点中的第一个。下一节看第二类：为什么你常常“有事才联系”。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_01",
+      "chapter_opening": true,
+      "sequence_no": 8,
+      "word_count": 296,
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "person": "second",
+      "data_boundary_note": "出生日期与出生地均为演示假设，须本人提供后重算；本节未使用命盘内容。",
+      "confidence_note": "用户自述内容按事实呈现；场景与感受用“可能/可以核对”表达。"
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4678,
+    "output_tokens": 436,
+    "latency_ms": 2630,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "9bc18f0a-8c7b-4762-849d-0f97e10f28d2",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "b38d7eb74d457954d00d3d48159064a0f8e2088974dd3b0ae0ed57fd1374c27c",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点一：先答应下来，再慢慢觉得不对劲",
+    "content": "你提到自己不太会拒绝，拒绝时语言又偏生硬，所以多数时候选择迁就。可以核对的常见场景是：有人向你提出请求，或一段关系需要你出面维护时，你可能先答应下来，事后才感到被占用。\n\n这条路径大致是：请求出现 → 先答应 → 关系暂时平稳 → 自己的需求被往后放 → 联系反而变少。它并不是软弱。它曾经在保护你——让场面不僵，让冲突不发生，让关系安全。\n\n代价是，长期先照顾别人，会让你越来越难判断自己真正想要什么；而靠迁就维持的关系，也容易因为疲惫而变远。\n\n整合的邀请是：让拒绝和联系都变成可以商量、可以修补的事。具体怎么练，留到后面的实验里。",
+    "used_findings": [
+      "s4.blocks.boundary_pleasing"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这是四个卡点中的第一个。下一节看第二类：为什么你常常“有事才联系”。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_01",
+      "chapter_opening": true,
+      "sequence_no": 8,
+      "word_count": 296,
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "person": "second",
+      "data_boundary_note": "出生日期与出生地均为演示假设，须本人提供后重算；本节未使用命盘内容。",
+      "confidence_note": "用户自述内容按事实呈现；场景与感受用“可能/可以核对”表达。"
+    }
+  }
+}

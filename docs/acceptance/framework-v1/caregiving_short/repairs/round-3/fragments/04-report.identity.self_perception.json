@@ -1,0 +1,65 @@
+{
+  "signature": "0cc4a1a86c8e706578e4fc8caf07fc43a97d6bb7aa8029d49c7dbb94f78530ba",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "眼中的自己",
+    "content": "上一节把命盘符号的边界放在那里：它们只是线索，不是结论。这一节看你眼中的自己——不是别人怎么评价你，而是你自己怎么识别自己。\n\n你说过一句话：“我不觉得拒绝本身有错；事情一多时，我会先等规则和时间表更清楚。”这句话里有两层：一层是你对拒绝的态度，另一层是你面对不确定时的第一反应。这节先看后者。\n\n在轮班和照护父亲这两条线同时压着的时候，你倾向以“能扛事、按规则办事”的方式被自己和别人识别——这是一个假设，需要你核对，但它和你自述的“先等规则和时间表更清楚”是吻合的。意识的这一层，是你知道自己在等；更底下可能还有一层【假设，待核对】：安排没确定之前，先不推进自己的事。上个月想报名内部培训，担心父亲复诊时间变化，连续两周没去问清课程安排，这可能与“等确定才安全”的假设有关，但需要你用经验核对，而不是已经确认的因果。\n\n与之配套的，是一组“应该/必须/不能”【假设，待核对】：必须先把该做的做完、不能漏掉交接、应该等安排确定再推进自己的事。这些要求的来源还没验证，可能来自职业交接规范、家庭照护角色，也可能来自你自己的标准；紫微里文曲忌落父母宫只是一条参考线索，不推断具体家庭经历或家庭责任来源。\n\n需要补一个反证：你已经和姐姐协商陪诊轮换并达成，说明你并非一味讨好或害怕权威，先答应再协商不等于不能协商。待核对的是：这种延迟是只在涉及父亲安排时出现，还是所有不确定场景都会出现？这些“必须”最早是从哪里学来的，在什么场景最强、什么场景最弱？",
+    "used_findings": [
+      "s2.persona.role_holder",
+      "s2.belief.wait_for_clarity",
+      "s2.shadow.rest_and_letting_go",
+      "s2.complex.responsibility_autonomy",
+      "s2.authority.internalized_should"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.mapping",
+      "analysis.s2.authority"
+    ],
+    "used_actions": [],
+    "transition_hint": "从你眼中的自己，转向那些被排在后面的部分：休息、把责任交出去、先推进自己的事。",
+    "presentation_meta": {
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "section_length": "约420字",
+      "tone": "第二人称，简洁清楚，不诊断",
+      "source_scope": "仅使用分配来源：5项finding、2个analysis片段、4项evidence",
+      "revision_notes": "已按review_issues修订：将“不指向任何家庭责任”改为“不推断具体家庭经历或家庭责任来源”；保留用户自述事实（先等规则、拒绝态度、与姐姐协商轮换）为自述，新增因果解释均标注【假设，待核对】。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_belief",
+        "status": "FULFILLED",
+        "reason": "已覆盖意识自我与底层信念（“能扛事、按规则办事”与“等确定才安全”假设）、应该/必须/不能及权威内化（职业规范、家庭照护角色、自我标准，来源待验证）、用户自我感受与反证（与姐姐协商轮换）及待补问（延迟是否只在父亲安排场景、必须的来源与强弱场景）。",
+        "quote": "待核对的是：这种延迟是只在涉及父亲安排时出现，还是所有不确定场景都会出现？",
+        "follow_up_questions": [
+          "这种延迟是只在涉及父亲安排时出现，还是所有不确定场景都会出现？",
+          "这些“必须”最早是从哪里学来的，在什么场景最强、什么场景最弱？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15599,
+    "output_tokens": 937,
+    "latency_ms": 4398,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "de26679e-200b-4b2e-966c-56bff0ad1b82",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "2e8d854ec59f29ad786446bcfbca3af16ca9b27e5f2a142c6107de724e8c8f50",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

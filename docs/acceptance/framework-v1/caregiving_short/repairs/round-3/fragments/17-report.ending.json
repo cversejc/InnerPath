@@ -1,0 +1,59 @@
+{
+  "signature": "c6ba77b6ff66ccb989c379a1cd24f21cd4060905791628b6c7b6dfc4c2e2d5c3",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "收束：把“等确定”当作起点，而不是停下的理由",
+    "content": "这一路走下来，你看到的不是“你太谨慎”或“你不够主动”这类评判，而是一条更完整的线：你习惯先等规则与安排确定，再推进自己的事。这不是缺陷，而是一种保护——它保护了交接安全、家庭运转，也保护了你在多重责任下不轻易出错。与此同时，另一端并非不存在：你曾与姐姐协商陪诊分工并达成轮换，也把手机交给同事。这些都是“先推进、允许休息与协商”的雏形。\n\n所以方向可以落在一句很朴素的话上：带着不确定，先做一小步。这不是要你推翻“等确定”，而是让两端在同一件事里同时出现——先问清课程、先谈分工，再决定要不要继续等。具体动作、频率和退出条件已经放在成长实验那一节，这里不再展开。\n\n如果把这一路收进一个更长的视角：认识，是看见“等确定”在保护什么；理解，是不把它当成缺点，也不把它当成唯一答案；行动，是从问清课程、谈好分工这样的小事开始，让改变从现实经验里长出来，而不是等命运或权威许可。道德经说“知人者智，自知者明”，放在你这里，自知不是给自己下结论，而是知道自己在什么条件下会先稳住、在什么条件下可以往前挪一步。\n\n你已经在轮班和照护之间维持了相当长的时间，也在其中做出过协商与交出的动作。接下来不必把每一步都走成“确定之后”的样子；按你的轮班表选一项先开始，用现实观察校正假设，就已经是在往前。",
+    "used_findings": [
+      "s3.self.rule_vs_autonomy",
+      "s3.bridge.self_knowing"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "全文收束完成。",
+    "presentation_meta": {
+      "chapter": "direction",
+      "fragment_key": "report.ending",
+      "sequence_no": 17,
+      "target_length": "120–200字",
+      "tone": "简洁清楚，不评判",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.ending",
+        "status": "FULFILLED",
+        "reason": "以道德经“自知”贯通认识→理解→行动三层，并给出个性化温暖寄语；署名引用仅使用核验库中的条目，未虚构引文或页码。",
+        "quote": "认识，是看见“等确定”在保护什么；理解，是不把它当成缺点，也不把它当成唯一答案；行动，是从问清课程、谈好分工这样的小事开始，让改变从现实经验里长出来，而不是等命运或权威许可。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 6516,
+    "output_tokens": 711,
+    "latency_ms": 3075,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "1c5e97ac-ad86-4628-be84-235e21a6565f",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "5005a92ecb2885e26306618c61c3178a09123fa1813499603a976b67ea536d96",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

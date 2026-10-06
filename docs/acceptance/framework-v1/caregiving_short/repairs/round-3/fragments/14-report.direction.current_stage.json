@@ -1,0 +1,58 @@
+{
+  "signature": "3c67eb4f08f6fa105bce479008172772875438108102d1d9ff2ecdb1fc988891",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "当下时义",
+    "content": "你在轮班和照顾父亲之间被压得休息变少，想转岗，却总等到所有家庭安排都确定后才行动。如果借《易经》里“屯”卦的意象来比喻，它说的是初生之难：草木要穿土而出，得先立根基，再图进展。这个比喻与你当下的匹配点在于，转岗准备和家庭安排在你这里交错在一起，像种子等待土壤稳定才发芽；而你其实已经能协商轮换、把手机交出去入睡，说明根基并不缺，缺的只是让“先推进”和“等确定”同时在场。\n\n这里有一句关键结论：屯的启示不是无限等待，而是先做能做的准备。本章的路径可以简写成：现实挤压 → 等安排确定才推进 → 保护交接与家庭运转 → 把可做的准备提前。\n\n需要说清的是，这只是哲学比喻，不是起卦结果或占卜证明；它也有不适用边界——当条件已经明确、只差行动时，继续用“时机未到”解释延迟就不再贴切。具体实践统一放在成长实验一节，这里不展开。",
+    "used_findings": [
+      "s3.yijing.qian_zhun"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.yijing"
+    ],
+    "used_actions": [],
+    "transition_hint": "当下时义已经看清，接下来把方向落到具体可做的动作上。",
+    "presentation_meta": {
+      "fragment_key": "report.direction.current_stage",
+      "chapter": "direction",
+      "sequence_no": 14,
+      "chapter_opening": true,
+      "word_count": 384,
+      "tone": "简洁清楚",
+      "metaphor_density": "low",
+      "theory_density": "medium",
+      "action_density": "low",
+      "source_visibility": "user_facing"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.timing_wisdom",
+        "status": "FULFILLED",
+        "reason": "正文说明当下境遇与屯卦比喻为何匹配、给出不适用边界，并明确不是起卦结果或占卜证明。",
+        "quote": "如果借《易经》里“屯”卦的意象来比喻，它说的是初生之难：草木要穿土而出，得先立根基，再图进展。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5763,
+    "output_tokens": 574,
+    "latency_ms": 2633,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "20426417-5ef5-482b-851b-eae3b63eae09",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "92aada226883a0b7d15dcc5556cdb7ba906ba9a1f7fe21f2c4e969e4fdf8e5c5",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

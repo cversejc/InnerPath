@@ -1,0 +1,61 @@
+{
+  "signature": "11944ce4c8267520a94db7efaf53c683d9c0df1972d84b260d490b395eb37d54",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "这份说明书的主线：先稳住，再往前",
+    "content": "你目前的核心主题可以概括为：先稳住，再往前。你习惯把“等确定”当作保护，也可以把它当作起点。\n\n向世界展示的我：在轮班物流与照顾父亲的双重节奏里，你被自己和他人识别为“能扛事、按规则办事”的可靠执行者。\n\n以为的自己：事情一多时，你会先等规则和时间表更清楚，再推进自己的安排；这种秩序感保护了交接安全与家庭运转。\n\n潜意识层面的自己：休息、把责任交出去、先推进自己的事，常被排在最后；这可能是被排斥的面向，但不等于缺陷或诊断。\n\n整合后的方向：带着不确定先做小步，让“等规则确定”与“先推进、允许休息”两端并存，而不是推翻秩序感。\n\n你已确认的资源说明另一面同样存在：与姐姐说清轮班表后改成轮流陪诊，把手机交给同事保管半小时后能睡着；协商与放松的能力并非缺失，只是在“先等确定”的模式下被延后。\n\n关键结论：你的稳定来自“先稳住”，你的推进可能来自“允许不确定先走一小步”。\n\n路径图：向世界展示的我（可靠执行者）→ 以为的自己（必须做完才安心）→ 潜意识层面的自己（休息与自主被排在最后）→ 整合后的方向（带着不确定先做小步）。",
+    "used_findings": [
+      "s3.self.rule_vs_autonomy",
+      "s3.integration.threefold",
+      "s2.resource.negotiation_capacity",
+      "s2.persona.role_holder",
+      "s2.authority.internalized_should",
+      "s2.shadow.rest_and_letting_go"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "从用户能够识别的外在表现开始建立共鸣。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.overview.psychic_structure",
+      "sequence_no": 1,
+      "chapter_opening": true,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "length_note": "约320字，符合概览150–250字偏上区间；仅概览四层关系，不展开完整触发链与保护/代价细节。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "status": "FULFILLED",
+        "reason": "已按四层关系组织：向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向；概览暗线为“先稳住，再往前”，未展开卡点、实验动作或收束金句。",
+        "quote": "向世界展示的我：在轮班物流与照顾父亲的双重节奏里，你被自己和他人识别为“能扛事、按规则办事”的可靠执行者。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 13509,
+    "output_tokens": 737,
+    "latency_ms": 3292,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "0e2c046b-bb73-412d-85c8-7498f5cf570b",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "a19ae4f52c469749665ea19d9370f5ce04a828eebb6f7ba744216bfe3a47265e",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -1,0 +1,61 @@
+{
+  "signature": "e7aa2f4a1619cd8b00383c57e865c1f2d185e18df74c231c64a12c0eab905393",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "寄语：让承担与休息，落在同一条时间线上",
+    "content": "这份报告走到收束处，想回扣的其实只有一件事：你自述“答应任务是为了换取资源”，同时你也希望减少透支、练习有余地的表达。这两端不是好与坏的对立，而是当前偏重一端、另一端少被允许。\n\n认识、理解、行动，是三个不同层次的功课，顺序并不总是从前往后。以“自知”为方向的视角，不是要你更聪明地处理关系，而是把目光从“别人怎么看我”移到“我此刻允许自己怎样”——先看见先答应的资源换取逻辑，再让被排除的休息与余地也进入判断。以“主动实践”为方向的视角，则提醒改变来自一次次具体选择，而非一次性领悟。种子发芽有其节律，改变也一样，可往返，可反复，不必因某一次又先答应、又熬夜、又生硬回应而否定自己。\n\n需要说清楚的边界是：这些只是解释视角，不是行动依据本身。行动取舍仍以你的现实自述和实际反馈为准，具体动作、频率与退出条件已在成长实验一节写明，这里不再重复。\n\n“知人者智，自知者明。”（《道德经》第三十三章）愿你慢慢地在承担与休息之间，找到属于自己的那一点余裕。",
+    "used_findings": [
+      "s3.hypothesis.core_tension_productivity_vs_rest",
+      "s3.hypothesis.bridge_self_knowing_practice"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "报告到此收束。若愿意，可回到成长实验一节，从最小动作开始试。",
+    "presentation_meta": {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "sequence_no": 17,
+      "tone": "收束、温暖、第二人称",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "quote_used": {
+        "key": "laozi-33-self-knowledge",
+        "text": "知人者智，自知者明。",
+        "attribution": "《道德经》第三十三章",
+        "status": "VERIFIED"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.ending",
+        "status": "FULFILLED",
+        "reason": "以自知与主动实践两个方向贯通认识→理解→行动，并给出个性化温暖寄语；署名引用仅采用核验库中 VERIFIED 条目并补注出处。",
+        "quote": "以“自知”为方向的视角，不是要你更聪明地处理关系，而是把目光从“别人怎么看我”移到“我此刻允许自己怎样”",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 13412,
+    "output_tokens": 674,
+    "latency_ms": 3098,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "db4abb49-858d-4b84-be72-247cfe5989e5",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "d0066f833f7b95e06e9e3453c0cfd7a58d01c114318d1c05c91913280e175917",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

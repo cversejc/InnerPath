@@ -1,0 +1,494 @@
+{
+  "signature": "dc3be97b3ef0eab1f23a62a55cb0d1f0c6d181ec8ae330df8a8c9a56bd0f8c23",
+  "skill_digest": "8b0b72c7c80436082af6f31cc14969a3ed8c9895d171c45b0e1547223766266e",
+  "output": {
+    "summary": "本阶段基于用户自述与已确认的 S1 结构，提出可审阅的心理运作模式假设。核心线索：用户自述'要靠谱、不能让人失望'，在答应额外任务后熬夜、拒绝拖延至生硬回应、朋友邀约先答应后取消；反例显示面对熟悉同事且有明确截止时可协商边界，说明该模式为情境依赖而非固定人格。命理层面，癸水日主、月令偏财七杀、正印透干、廉贞化忌在命宫等线索与'以外部评价为参照、以被认可为调节'的解释视角形成呼应，但均为待验证假设。所有心理结论均以运作模式假设呈现，不作诊断。",
+    "findings": [
+      {
+        "finding_key": "s2.pattern.overcommitment_loop",
+        "claim": "假设：用户存在'先答应—透支—延迟表达—生硬回应或取消'的循环模式。触发情境为他人临时请求或邀约；核心情绪假设为担心让人失望；自动想法假设为'拒绝后别人会觉得我不够好'；防御方式为顺从答应与延迟回避；短期保护功能为维持关系安全与'靠谱'形象；长期代价为熬夜透支、关系中的突然冷淡或取消。反例：面对熟悉同事且有明确截止时可协商边界，说明该模式情境依赖。",
+        "kind": "SIGNAL",
+        "semantic_role": "BLOCK",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.counterexample"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.signal.overcommitment_pattern"
+          }
+        ],
+        "structured_data": {
+          "trigger": "他人临时请求或邀约（同事代写方案、朋友临时改地点）",
+          "emotion_hypothesis": "担心让人失望、担心被评价为不够好",
+          "automatic_thought_hypothesis": "拒绝后别人会觉得我不够好",
+          "defense": "顺从答应、延迟表达、最终生硬回应或取消",
+          "short_term_protection": "维持关系安全与'靠谱'形象",
+          "long_term_cost": "熬夜透支、关系中的突然冷淡或取消",
+          "counterexample": "面对熟悉同事且有明确截止时可协商边界",
+          "status": "待验证假设，非诊断"
+        }
+      },
+      {
+        "finding_key": "s2.pattern.self_worth_external_reference",
+        "claim": "假设：用户的自我价值感可能以外部评价为主要参照。自述'我认为自己要靠谱、不能让人失望''拒绝后担心别人觉得我不够好'为直接表达；命理中月令偏财七杀、正印透干、廉贞化忌在命宫的解释视角与此呼应，但属解释性假设，需访谈验证。",
+        "kind": "SIGNAL",
+        "semantic_role": "SELF_DIRECTION",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.foundation.month_command"
+          },
+          {
+            "finding_key": "s1.ziwei.life_palace"
+          }
+        ],
+        "structured_data": {
+          "user_statement": "我认为自己要靠谱、不能让人失望；拒绝后担心别人觉得我不够好",
+          "interpretation_hypothesis": "自我价值感以外部评价为主要参照",
+          "status": "待验证假设，非诊断"
+        }
+      },
+      {
+        "finding_key": "s2.pattern.rest_recovery_resource",
+        "claim": "用户自述'独自散步时比较放松'，为直接表达。假设：独处与稳定节奏可能是其内在恢复资源。福德宫天府无煞忌的解释视角与此呼应，但属待验证假设。",
+        "kind": "SIGNAL",
+        "semantic_role": "RESOURCE",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "input.context.concrete_events",
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ziwei.wellbeing_palace"
+          }
+        ],
+        "structured_data": {
+          "user_statement": "独自散步时比较放松",
+          "hypothesis": "独处与稳定节奏为内在恢复资源",
+          "status": "待验证假设"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s2.mapping",
+        "title": "2.1 双层对应",
+        "content": "【意识层与潜意识层对应假设，均为待验证】\n\n日主/透干→面具：日主癸水（阴水，意象雨露、溪泉、暗流），传统解释视角下常关联敏感、渗透、以柔应事、内蓄不外显的自我核心线索。透干正印（时庚）为显性资源，常关联好学、稳重、以被认可为调节；透干伤官（月甲）为表达与突破资源；透干正财（年丙）为务实守护。意识层假设：用户可能认同'靠谱、专业、不让人失望'的角色；潜意识层假设：可能以顺应外部期待来维持关系安全。用户自述'我认为自己要靠谱、不能让人失望'为直接表达，其余为解释。\n\n月令/日支→信念：月令午火偏财+七杀，日支未土七杀。传统解释视角下常关联'以外部成果与他人评价为参照'的世界观线索。意识层假设：'我要把事情做好、不能出错'；潜意识层假设：'如果我不被需要/不被认可，关系就不安全'。属待验证假设。\n\n藏干→阴影：日支未藏食神（乙木）为自我调节与创造出口的潜能；时支申藏劫财（壬水）与正官（戊土）提示'独立与责任'的张力；偏印缺失（不能证明人格缺陷）。阴影假设：休息、游戏性、自主表达、脆弱可能被排斥或延后。\n\n交战刑冲→情结：子午六冲（年-月）、子未六害（年-日）、午未六合（月-日）、丙癸/丙庚/甲庚天干相克。传统解释视角下，冲害并存提示'外部要求与内在需求反复拉扯'；午未六合提示'压力与内在需求有黏合倾向'。情结假设：'先顺从后爆发'的循环。属待验证假设。\n\n飞忌→投射：廉贞化忌在命宫，命宫丁干巨门化忌入交友宫，财帛宫癸干贪狼化忌入官禄宫，疾厄宫壬干武曲化忌入官禄宫。传统解释视角下提示'自我评价与外部关系/工作角色'的张力线索。投射假设：可能把'我是否够好'的焦虑投射到关系与工作评价上。属待验证假设。\n\n喜忌→资源/耗能：用神候选为金（印），喜神为水（比劫），忌神为火（财）与土（杀）。解释性假设：学习、被支持、内化规范、同类陪伴可能为调节资源；外部成果压力、被要求感可能为耗能来源。此为解释性判断，需咨询师确认。\n\n反证与待核对：用户自述面对熟悉同事且有明确截止时可协商边界，说明该模式并非固定人格，而是情境依赖。待补问：在什么情境下最容易答应？答应后身体和情绪的第一反应是什么？",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "日主/透干→面具、月令/日支→信念、藏干→阴影、交战刑冲→情结、飞忌→投射、喜忌→资源/耗能六项均已覆盖，每条同时说明意识层与潜意识层，并标注为假设。",
+          "quote": "日主/透干→面具：日主癸水（阴水，意象雨露、溪泉、暗流），传统解释视角下常关联敏感、渗透、以柔应事、内蓄不外显的自我核心线索。",
+          "follow_up_questions": [
+            "在什么情境下你最容易答应别人的请求？",
+            "答应之后身体和情绪的第一反应是什么？",
+            "有没有一次你成功表达了边界且关系没有受损的经历？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "六项双层对应均已给出，意识层与潜意识层分开，均为假设。",
+          "quote": "日主/透干→面具：日主癸水（阴水，意象雨露、溪泉、暗流），传统解释视角下常关联敏感、渗透、以柔应事、内蓄不外显的自我核心线索。",
+          "follow_up_questions": [
+            "在什么情境下你最容易答应别人的请求？",
+            "答应之后身体和情绪的第一反应是什么？"
+          ],
+          "details": {
+            "self_description": "用户自述'我认为自己要靠谱、不能让人失望''拒绝后担心别人觉得我不够好'（直接表达）；命理解释视角为'以顺应外部期待维持关系安全'（假设）。",
+            "core_belief": "假设：'我必须靠谱、不能让人失望''拒绝后别人会觉得我不够好'。来源为月令偏财七杀、正印透干、廉贞化忌在命宫的解释视角，需访谈验证。",
+            "authority_origin": "用户未提供童年经历，不补造。仅依据年柱正财+比肩的集体印记线索与正印透干的内化规范线索提出假设：早期环境可能强调'务实、可靠、不添麻烦'，需访谈验证。",
+            "counterexample": "用户自述'面对熟悉同事且有明确截止时，我能够协商任务边界，并非每次都迁就'，说明该模式情境依赖。"
+          }
+        },
+        "finding_refs": [
+          "s2.pattern.overcommitment_loop",
+          "s2.pattern.self_worth_external_reference"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.ten_gods",
+        "title": "2.2 十神映射",
+        "content": "【仅分析本案例相关十神，对应表不作诊断量表】\n\n正印（时庚透干，显性资源）：机制为安全与知识滋养；荣格原型为母性原型；意识表现假设为好学稳重、以被认可为调节；阴影假设为可能用'知道/准备好'回避行动或回避冲突；正向资源为自我关怀。用户自述'要靠谱'与此呼应，属假设。\n\n伤官（月甲透干）：机制为反抗与真实表达；荣格原型为捣蛋鬼；意识表现假设为创新批判、有想法；阴影假设为可能靠否定或延迟爆发建立自我；正向资源为表达需求而不伤害关系。用户自述'需要拒绝时拖到最后才生硬回应'与此阴影假设呼应，属假设。\n\n正财（年丙透干）：机制为物质安全；荣格原型为世俗关系原型；意识表现假设为务实守护；阴影假设为可能以掌控替代连接；正向资源为稳定中保留感受。\n\n七杀（月支午、日支未藏，隐性压力源）：机制为威胁应对；荣格原型为攻击性与勇气；意识表现假设为果断抗压；阴影假设为可能过度防御或对'被要求'高度敏感；正向资源为把勇气用在保护边界。用户自述'答应额外任务后常熬夜'与'被要求敏感'的假设呼应。\n\n偏财（月支午、日支未藏）：机制为体验和机会；荣格原型为狄奥尼索斯；意识表现假设为社交敏锐；阴影假设为可能用刺激补充匮乏；正向资源为自由中的持续投入。\n\n食神（日支未藏）：机制为表达与滋养；荣格原型为心灵原型；意识表现假设为温和创造；阴影假设为可能以享受回避责任；正向资源为可分享的创造。用户自述'独自散步时比较放松'与此正向资源假设呼应。\n\n比肩（年支子藏）：机制为自我边界；荣格原型为英雄竞争面；意识表现假设为独立主见；阴影假设为可能固执难合作；正向资源为尊重双方自主性。\n\n劫财（时支申藏）：机制为竞争与行动；荣格原型为生存驱动；意识表现假设为勇于争取；阴影假设为可能冲动争夺；正向资源为有边界地行动。\n\n正官（时支申藏）：机制为规范内化；荣格原型为父性秩序；意识表现假设为责任自律；阴影假设为可能怕错与压抑；正向资源为自主选择原则。\n\n偏印缺失：不能证明人格缺陷，仅记录。\n\n十神交战：伤官（月甲）与正印（时庚）天干相克，提示'表达冲动'与'规范内化'的张力，属解释视角。\n\n反证与待核对：用户自述面对熟悉同事且有明确截止时可协商边界，说明伤官的表达资源在安全情境下可被调用。待补问：在什么情境下你更容易表达真实想法？",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按技能知识十神对应表分析本案例相关十神（正印、伤官、正财、七杀、偏财、食神、比肩、劫财、正官）的机制/原型/显性表现/阴影，并明确不作诊断量表。",
+          "quote": "正印（时庚透干，显性资源）：机制为安全与知识滋养；荣格原型为母性原型；意识表现假设为好学稳重、以被认可为调节；阴影假设为可能用'知道/准备好'回避行动或回避冲突；正向资源为自我关怀。",
+          "follow_up_questions": [
+            "在什么情境下你更容易表达真实想法？",
+            "当你'准备好'之后，是否更容易行动？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "相关十神机制/原型/显性表现/阴影均已覆盖，缺失项不作人格缺陷推断。",
+          "quote": "正印（时庚透干，显性资源）：机制为安全与知识滋养；荣格原型为母性原型；意识表现假设为好学稳重、以被认可为调节；阴影假设为可能用'知道/准备好'回避行动或回避冲突；正向资源为自我关怀。",
+          "follow_up_questions": [
+            "在什么情境下你更容易表达真实想法？"
+          ],
+          "details": {
+            "relevant_ten_gods": [
+              "正印",
+              "伤官",
+              "正财",
+              "七杀",
+              "偏财",
+              "食神",
+              "比肩",
+              "劫财",
+              "正官"
+            ],
+            "absent": [
+              "偏印"
+            ],
+            "conflict": "伤官（月甲）与正印（时庚）天干相克",
+            "note": "对应表不作诊断量表；缺失不能证明人格缺陷"
+          }
+        },
+        "finding_refs": [
+          "s2.pattern.overcommitment_loop",
+          "s2.pattern.self_worth_external_reference"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.concrete_events"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.stars",
+        "title": "2.3 星曜原型",
+        "content": "【按已确认命/身/福德与四化信息对照面具、阴影及触发点；不强行统一八字与紫微的冲突】\n\n命宫（酉）廉贞（陷）+破军（得），辅星天钺，生年四化廉贞化忌。\n- 廉贞面具：感情与原则；阴影假设：可能执着控制；触发信念：'爱需要完全占有'。廉贞化忌在命宫，传统解释视角下提示自我评价易受'是否够好'牵动。\n- 破军面具：变革开创；阴影假设：可能难持续；触发信念：'旧的必须被摧毁'。\n- 面具假设：外表守规、内在求变。与用户自述'要靠谱、不能让人失望'呼应，属假设。\n\n身宫（官禄宫丑）武曲（旺）+贪狼（庙），命身不一致。\n- 武曲面具：坚毅成果；阴影假设：忽略情感；触发信念：'只有成果有价值'。\n- 贪狼面具：体验交际；阴影假设：可能持续追求更多；触发信念：'永远不够'。\n- 假设：后天方向偏向'通过工作角色确立自我'。与用户职业为项目运营呼应，属假设。\n\n福德宫（亥）天府（得），辅星天魁，无化忌、无空劫、无煞星。\n- 天府面具：稳重管理；阴影假设：可能怕改变；触发信念：'改变会失去'。\n- 假设：内在求稳、重储备；无煞忌提示内在调节资源相对完整。与用户自述'独自散步时比较放松'呼应，属假设。不能据此诊断。\n\n四化：天同化禄（田宅宫）、天机化权（疾厄宫）、文昌化科（交友宫）、廉贞化忌（命宫）。宫干飞化重点忌流向：命宫巨门化忌入交友宫、财帛宫贪狼化忌入官禄宫、疾厄宫武曲化忌入官禄宫、福德宫文曲化忌入田宅宫。传统解释视角下提示'自我评价与外部关系/工作角色'的张力线索。\n\n八字与紫微的冲突：八字偏弱格以印为用（内敛、被支持），紫微命宫廉贞破军（外表守规、内在求变），身宫武曲贪狼（务实执行+欲望驱动）。不强行统一：可能表现为'外在守规、内在有变动力与欲望'的双层张力，属假设，需访谈验证。\n\n反证与待核对：用户自述面对熟悉同事且有明确截止时可协商边界，说明'守规'并非全面。待补问：你在工作中更认同'可靠执行者'还是'有想法推动改变的人'？",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已按十四主星对应表，对照已确认命/身/福德与四化信息分析面具、阴影及触发点，并说明八字与紫微不强行统一。",
+          "quote": "命宫（酉）廉贞（陷）+破军（得），辅星天钺，生年四化廉贞化忌。",
+          "follow_up_questions": [
+            "你在工作中更认同'可靠执行者'还是'有想法推动改变的人'？",
+            "当事情需要改变时，你的第一反应是什么？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "命/身/福德主星与四化均已对照面具、阴影及触发点，冲突未强行统一。",
+          "quote": "命宫（酉）廉贞（陷）+破军（得），辅星天钺，生年四化廉贞化忌。",
+          "follow_up_questions": [
+            "你在工作中更认同'可靠执行者'还是'有想法推动改变的人'？"
+          ],
+          "details": {
+            "life_palace_stars": [
+              "廉貞",
+              "破軍"
+            ],
+            "body_palace_stars": [
+              "武曲",
+              "貪狼"
+            ],
+            "wellbeing_palace_stars": [
+              "天府"
+            ],
+            "year_transformations": {
+              "天同": "祿",
+              "天機": "權",
+              "文昌": "科",
+              "廉貞": "忌"
+            },
+            "conflict_note": "八字偏弱格以印为用与紫微廉贞破军/武曲贪狼不强行统一，保留双层张力假设"
+          }
+        },
+        "finding_refs": [
+          "s2.pattern.self_worth_external_reference",
+          "s2.pattern.rest_recovery_resource"
+        ],
+        "evidence_refs": [
+          "calculated.foundation",
+          "input.context.self_description",
+          "input.context.concrete_events",
+          "input.profile.occupation_status"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.persona",
+        "title": "2.4.1 人格面具",
+        "content": "【区分用户自报与解释】\n\n用户自报（直接表达）：'我认为自己要靠谱、不能让人失望''拒绝后担心别人觉得我不够好'。这是用户对自身角色的直接描述。\n\n解释（假设）：自我核心为癸水（敏感、渗透、以柔应事、内蓄不外显）；透干正印（好学稳重、以被认可为调节）、正财（务实守护）、伤官（有想法、表达资源）；命宫廉贞破军（外表守规、内在求变）；身宫落官禄（通过工作角色确立自我）。综合假设：用户可能在'工作/专业角色'与'可靠的朋友'场景中最认同自己，表现为'靠谱、不让人失望、把事情做好'。\n\n场景假设：\n- 工作场景：同事临时请代写方案时答应，可能因为'专业可靠'的角色认同。\n- 关系场景：朋友邀约先答应，可能因为'不让人失望'的角色认同。\n- 独处场景：独自散步时比较放松，可能暂时卸下面具。\n\n反证：用户自述面对熟悉同事且有明确截止时可协商边界，说明面具并非在所有情境下都启动。\n\n待补问：你在什么场景下最认同自己的角色？在什么场景下最不认同？",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已覆盖自我核心/透干与命迁线索，区分用户自报与解释，并说明场景认同假设。",
+          "quote": "用户自报（直接表达）：'我认为自己要靠谱、不能让人失望''拒绝后担心别人觉得我不够好'。",
+          "follow_up_questions": [
+            "你在什么场景下最认同自己的角色？",
+            "在什么场景下最不认同？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "自报与解释已分开，场景认同假设已给出。",
+          "quote": "用户自报（直接表达）：'我认为自己要靠谱、不能让人失望''拒绝后担心别人觉得我不够好'。",
+          "follow_up_questions": [
+            "你在什么场景下最认同自己的角色？"
+          ],
+          "details": {
+            "user_self_report": "我认为自己要靠谱、不能让人失望；拒绝后担心别人觉得我不够好",
+            "interpretation_hypothesis": "在工作/专业角色与可靠朋友场景中最认同自己，表现为靠谱、不让人失望",
+            "scenes": [
+              "工作场景（同事临时请求）",
+              "关系场景（朋友邀约）",
+              "独处场景（散步时放松）"
+            ],
+            "counterexample": "面对熟悉同事且有明确截止时可协商边界"
+          }
+        },
+        "finding_refs": [
+          "s2.pattern.overcommitment_loop",
+          "s2.pattern.self_worth_external_reference"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "input.profile.occupation_status"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.shadow",
+        "title": "2.4.2 阴影",
+        "content": "【阴影不等同缺点；以下为待验证假设】\n\n缺失/受克/未透资源：偏印缺失（不能证明人格缺陷）；日支未藏食神（自我调节与创造出口）未透；时支申藏劫财（独立争取）与正官（责任）同藏，提示'独立与责任'的张力；伤官（表达）与正印（规范）天干相克。\n\n福德张力：福德宫天府无煞忌，提示内在调节资源相对完整；但用户自述'下班后常查看消息怕漏事'，提示休息与放松可能被'怕漏事'的焦虑占据。\n\n被排斥面向假设：\n- 边界：用户自述'需要拒绝时拖到最后才生硬回应'，假设'温和而及时的拒绝'可能被排斥，因为拒绝可能触发'别人觉得我不够好'的恐惧。\n- 攻击性：'熬夜后第二天不耐烦'与'直接取消聚会'，假设攻击性可能以延迟爆发或撤退形式表达，而非及时表达。\n- 欲望：用户自述'项目开头有许多想法'，假设创造与表达欲望存在，但可能因'担心做不好反复修改'被压抑。\n- 休息：'本想休息却答应'，假设休息需求可能被排在他人需求之后。\n- 脆弱：用户未直接表达脆弱，待补问。\n- 游戏性：用户未直接表达游戏性，待补问。\n\n保护功能：这些被排斥面向的压抑，短期保护了'靠谱、不让人失望'的关系安全。\n\n反证：用户自述面对熟悉同事且有明确截止时可协商边界，说明边界能力存在，只是情境依赖。\n\n待补问：你什么时候允许自己休息而不感到内疚？你什么时候会表达不满？",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已覆盖缺失/受克/未透资源与福德张力，检验边界、攻击性、欲望、休息、脆弱、游戏性等被排斥面向，并说明保护功能与反证。",
+          "quote": "缺失/受克/未透资源：偏印缺失（不能证明人格缺陷）；日支未藏食神（自我调节与创造出口）未透；时支申藏劫财（独立争取）与正官（责任）同藏，提示'独立与责任'的张力；伤官（表达）与正印（规范）天干相克。",
+          "follow_up_questions": [
+            "你什么时候允许自己休息而不感到内疚？",
+            "你什么时候会表达不满？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "被排斥面向已逐项检验，保护功能与反证已给出。",
+          "quote": "缺失/受克/未透资源：偏印缺失（不能证明人格缺陷）；日支未藏食神（自我调节与创造出口）未透；时支申藏劫财（独立争取）与正官（责任）同藏，提示'独立与责任'的张力；伤官（表达）与正印（规范）天干相克。",
+          "follow_up_questions": [
+            "你什么时候允许自己休息而不感到内疚？"
+          ],
+          "details": {
+            "excluded_aspects": [
+              "边界（温和而及时的拒绝）",
+              "攻击性（及时表达不满）",
+              "欲望（创造与表达）",
+              "休息",
+              "脆弱（待补问）",
+              "游戏性（待补问）"
+            ],
+            "protection_function": "短期保护'靠谱、不让人失望'的关系安全",
+            "counterexample": "面对熟悉同事且有明确截止时可协商边界"
+          }
+        },
+        "finding_refs": [
+          "s2.pattern.overcommitment_loop",
+          "s2.pattern.rest_recovery_resource"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.complex",
+        "title": "2.4.3 情结",
+        "content": "【必须回到真实重复情境；以下为待验证假设】\n\n参考线索：月令偏财+七杀（以外部评价为参照）、伤官与正印天干相克（表达冲动与规范内化的张力）、子午六冲与子未六害（外部要求与内在需求反复拉扯）、午未六合（压力与内在需求有黏合倾向）、廉贞化忌在命宫（自我评价易受牵动）。\n\n真实重复情境（用户自述）：\n1. 上周同事临时请代写方案，本想休息却答应，熬夜后第二天不耐烦。\n2. 朋友连续两次临时改地点，没有表达意见，最后直接取消聚会。\n3. 项目开头有许多想法，担心做不好反复修改，接近截止才急着交付。\n\n核心情绪假设：担心让人失望、担心被评价为不够好。\n核心信念假设：'如果我拒绝或表达不满，别人会觉得我不够好/关系会受损。'\n\n情结假设：'顺从—积压—爆发/撤退'的循环。短期保护关系安全，长期代价为透支与关系中的突然冷淡。\n\n反证与核对方式：用户自述面对熟悉同事且有明确截止时可协商边界，说明该情结并非在所有情境下启动。核对方式：请用户回忆一次成功表达边界的经历，观察当时的情境特征（熟悉度、截止明确度）。\n\n待补问：每次遇到什么会怎样？答应之后你的第一反应是什么？",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已回到真实重复情境，描述核心情绪及信念，并给出反证与核对方式。",
+          "quote": "上周同事临时请代写方案，本想休息却答应，熬夜后第二天不耐烦。",
+          "follow_up_questions": [
+            "每次遇到什么会怎样？",
+            "答应之后你的第一反应是什么？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "触发、情绪、自动想法、防御、保护功能、长期代价、现实核对均已覆盖。",
+          "quote": "上周同事临时请代写方案，本想休息却答应，熬夜后第二天不耐烦。",
+          "follow_up_questions": [
+            "每次遇到什么会怎样？"
+          ],
+          "details": {
+            "trigger": "他人临时请求或邀约（同事代写方案、朋友临时改地点）",
+            "emotion": "担心让人失望、担心被评价为不够好",
+            "automatic_thought": "如果我拒绝或表达不满，别人会觉得我不够好/关系会受损",
+            "defense": "顺从答应、延迟表达、最终生硬回应或取消",
+            "protection": "短期维持关系安全与'靠谱'形象",
+            "repetition_cost": "熬夜透支、关系中的突然冷淡或取消",
+            "reality_check": "面对熟悉同事且有明确截止时可协商边界；核对方式为回忆成功表达边界的经历"
+          }
+        },
+        "finding_refs": [
+          "s2.pattern.overcommitment_loop",
+          "s2.pattern.self_worth_external_reference"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.cycle",
+        "title": "2.4.4 激活路径",
+        "content": "【每一环标事实/假设/待补问，并提供可能反证】\n\n触发（事实）：他人临时请求或邀约。用户自述：'上周同事临时请我代写方案''朋友连续两次临时改地点'。\n\n阴影浮现（假设）：休息需求、边界、不满被排斥；'本想休息却答应''没有表达意见'。\n\n核心情绪/情结（假设）：担心让人失望、担心被评价为不够好；'顺从—积压—爆发/撤退'循环。\n\n防御（事实+假设）：顺从答应（事实）；延迟表达（事实）；最终生硬回应或取消（事实）；心理层面假设为回避冲突与维持关系安全。\n\n短期结果（事实）：维持了'靠谱'形象与关系表面和谐；但熬夜透支（事实）。\n\n长期重复（假设）：透支累积、关系中的突然冷淡或取消、自我评价持续依赖外部反馈。\n\n可能反证：用户自述面对熟悉同事且有明确截止时可协商边界，说明该路径并非固定；若在安全情境下能协商，则路径可被情境调节。\n\n待补问：触发时你的身体第一反应是什么？答应之后你对自己说了什么？",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "触发→阴影浮现→核心情绪/情结→防御→短期结果→长期重复六环均已覆盖，每环标注事实/假设/待补问，并提供可能反证。",
+          "quote": "触发（事实）：他人临时请求或邀约。用户自述：'上周同事临时请我代写方案''朋友连续两次临时改地点'。",
+          "follow_up_questions": [
+            "触发时你的身体第一反应是什么？",
+            "答应之后你对自己说了什么？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "六环完整，事实与假设分开，反证已给出。",
+          "quote": "触发（事实）：他人临时请求或邀约。用户自述：'上周同事临时请我代写方案''朋友连续两次临时改地点'。",
+          "follow_up_questions": [
+            "触发时你的身体第一反应是什么？"
+          ],
+          "details": {
+            "trigger": "事实：他人临时请求或邀约",
+            "shadow_emergence": "假设：休息需求、边界、不满被排斥",
+            "core_emotion_complex": "假设：担心让人失望；'顺从—积压—爆发/撤退'循环",
+            "defense": "事实：顺从答应、延迟表达、生硬回应或取消；假设：回避冲突与维持关系安全",
+            "short_term_result": "事实：维持'靠谱'形象与关系表面和谐；熬夜透支",
+            "long_term_repetition": "假设：透支累积、关系突然冷淡或取消、自我评价依赖外部反馈",
+            "counterevidence": "面对熟悉同事且有明确截止时可协商边界"
+          }
+        },
+        "finding_refs": [
+          "s2.pattern.overcommitment_loop"
+        ],
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.counterexample"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s2.authority",
+        "title": "2.4.5 权威与超我",
+        "content": "【'应该/必须/不能'来源需访谈验证；说明主权交接而非指责家庭】\n\n官杀线索：月支午藏七杀、日支未藏七杀（隐性压力源，对'被要求/被期待'高度敏感）；时支申藏正官（规范内化、责任自律）。传统解释视角下，官杀常关联'应该/必须'的内化标准。\n\n印线索：时柱庚申正印透干（内化规范、被支持、以被认可为调节）；年柱正财+比肩（集体印记线索：早期环境可能强调'务实、可靠、不添麻烦'）。用户未提供童年经历，不补造。\n\n父母宫线索：用户未提供父母相关信息，且咨询师未人工选用父母宫，故不调用父母宫飞化。\n\n'应该/必须/不能'假设：\n- '我应该靠谱、不能让人失望'（用户自述，直接表达）。\n- '我必须把事情做好'（假设，来自正印+正官线索）。\n- '我不能拒绝，否则别人会觉得我不够好'（假设，来自七杀+廉贞化忌线索）。\n\n来源需访谈验证：这些内化标准可能来自早期环境、工作文化或自我要求，需访谈确认，不指责家庭。\n\n主权交接：帮助用户区分'他人的期待'与'自己选择的原则'，把'应该'转化为'我选择'。\n\n反证：用户自述面对熟悉同事且有明确截止时可协商边界，说明主权并非完全让渡。\n\n待补问：这些'应该'最早是从哪里听到的？如果不遵守，你担心发生什么？",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已覆盖官杀/印线索，说明'应该/必须/不能'来源需访谈验证，并说明主权交接而非指责家庭；父母宫因未人工选用而不调用。",
+          "quote": "官杀线索：月支午藏七杀、日支未藏七杀（隐性压力源，对'被要求/被期待'高度敏感）；时支申藏正官（规范内化、责任自律）。",
+          "follow_up_questions": [
+            "这些'应该'最早是从哪里听到的？",
+            "如果不遵守，你担心发生什么？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "官杀/印线索、内化标准假设、访谈验证需求与主权交接均已覆盖。",
+          "quote": "官杀线索：月支午藏七杀、日支未藏七杀（隐性压力源，对'被要求/被期待'高度敏感）；时支申藏正官（规范内化、责任自律）。",
+          "follow_up_questions": [
+            "这些'应该'最早是从哪里听到的？"
+          ],
+          "details": {
+            "officer_killer_clues": "月支午藏七杀、日支未藏七杀、时支申藏正官",
+            "seal_clues": "时柱庚申正印透干；年柱正财+比肩",
+            "should_must_cannot": [
+              "我应该靠谱、不能让人失望（用户自述）",
+              "我必须把事情做好（假设）",
+              "我不能拒绝，否则别人会觉得我不够好（假设）"
+            ],
+            "interview_verification": "内化标准来源需访谈确认，不指责家庭",
+            "sovereignty_handover": "区分他人期待与自己选择的原则，把'应该'转化为'我选择'",
+            "counterexample": "面对熟悉同事且有明确截止时可协商边界"
+          }
+        },
+        "finding_refs": [
+          "s2.pattern.self_worth_external_reference",
+          "s2.pattern.overcommitment_loop"
+        ],
+        "evidence_refs": [
+          "input.context.self_description",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "本阶段所有心理结论均为待验证假设，非诊断。需由咨询师以真实事件验证，矛盾时记录冲突。",
+        "references": [
+          "s2.pattern.overcommitment_loop",
+          "s2.pattern.self_worth_external_reference",
+          "s2.pattern.rest_recovery_resource"
+        ]
+      },
+      {
+        "message": "用户未提供童年经历与父母信息，权威内化来源仅为假设，不得补造家庭经历。",
+        "references": [
+          "s2.pattern.self_worth_external_reference"
+        ]
+      },
+      {
+        "message": "用户自述反例（面对熟悉同事且有明确截止时可协商边界）说明该模式情境依赖，不得写成固定人格或必然未来。",
+        "references": [
+          "s2.pattern.overcommitment_loop"
+        ]
+      },
+      {
+        "message": "全部资料为合成验收数据，不是真实客户或专业评估，不得冒充真实案例。",
+        "references": [
+          "s2.pattern.overcommitment_loop",
+          "s2.pattern.self_worth_external_reference",
+          "s2.pattern.rest_recovery_resource"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 37244,
+    "output_tokens": 9256,
+    "latency_ms": 35092,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "36aa6792-5891-49fa-8c53-cdc28ebc26ae",
+    "skill_version_id": 0,
+    "skill_key": "report.s2_psychology_mapping",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "58ccf6d30cea0afa148d113e0994a9a83bf6917dbd2b64378773a79bbf036e77",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

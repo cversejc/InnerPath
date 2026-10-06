@@ -1,0 +1,228 @@
+{
+  "skill_key": "report.narrative_plan",
+  "output": {
+    "candidates": [
+      {
+        "candidate_key": "candidate.connection_boundary",
+        "theme": "让拒绝有温度，让联系有节奏",
+        "rationale": "以用户明确提出的三项困惑（不会拒绝、拒绝语言生硬、有事才联系导致关系疏远）为主轴，围绕'连接与边界'这一已确认中心张力展开。既回应'解决当前问题'与'认识自己'的诉求，也把'急迫'作为节奏议题纳入，而非当作缺陷。主线直接落在用户自述的独特矛盾上：一端是习惯迁就，另一端是拒绝时的生硬，中间缺的是可协商、可修复的表达方式。",
+        "supporting_findings": [
+          "s3.tension.core",
+          "s4.blocks.boundary_pleasing",
+          "s4.blocks.relationship_maintenance",
+          "s4.blocks.urgency",
+          "s4.blocks.authority_expression",
+          "s4.defense.people_pleasing",
+          "s4.defense.rationalization_avoidance",
+          "s2.shadow.boundary_need",
+          "s2.complex.authority_expression",
+          "s2.complex.relationship_distance",
+          "s4.relationships.cycle",
+          "s4.experiments.pause_before_commit",
+          "s4.experiments.low_stakes_contact",
+          "s4.experiments.emotion_naming",
+          "s4.experiments.thought_record",
+          "s4.experiments.scaling_review"
+        ],
+        "deemphasized_findings": [
+          "s1.structure.candidate_weak_officer",
+          "s1.useful_gods.candidate",
+          "s2.mapping.resource_drain",
+          "s3.integration.threefold",
+          "s3.quadrant.candidates",
+          "s4.functions.exploration_path",
+          "s1.ziwei.transformations"
+        ],
+        "priority_blocks": [
+          {
+            "title": "卡点一：以迁就换连接",
+            "finding_refs": [
+              "s4.blocks.boundary_pleasing"
+            ]
+          },
+          {
+            "title": "卡点二：有事才联系",
+            "finding_refs": [
+              "s4.blocks.relationship_maintenance"
+            ]
+          },
+          {
+            "title": "卡点三：以急迫推进",
+            "finding_refs": [
+              "s4.blocks.urgency"
+            ]
+          },
+          {
+            "title": "卡点四：权威期待与自我表达张力",
+            "finding_refs": [
+              "s4.blocks.authority_expression"
+            ]
+          },
+          {
+            "title": "关系循环：请求—迁就—疏远",
+            "finding_refs": [
+              "s4.relationships.cycle"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          "你是谁：从乙木日主与天府命宫的传统解释视角，看见'柔韧协调、稳重可靠'的自我认同线索，以及用户自报的'愿意听建议'与'权衡利弊'如何与之呼应；同时标注出生日期为演示假设，须本人提供后重算。",
+          "卡在哪：以四个已审核卡点为主轴——以迁就换连接、有事才联系、以急迫推进、权威期待与自我表达张力；呈现关系循环（请求—先答应—担心关系变差—关系维持但自我不适—关系疏远），并列出待访谈的反例问题。",
+          "往哪去：以'让拒绝与联系都变得可协商、可修复'为方向，配合五项成长实验；强调不是一次修好，而是在反复情境中每次多保留一点真实需求，呼应'太着急'的减速提示。"
+        ]
+      },
+      {
+        "candidate_key": "candidate.urgency_rhythm",
+        "theme": "把急迫转成节奏：先慢一拍，再决定",
+        "rationale": "以用户自评'太着急'与'急迫'为核心切口，把'拒绝生硬'理解为在来不及协商时被迫给出的硬回应，把'有事才联系'理解为以急迫节奏推进关系维护的结果。主线围绕'节奏'而非'边界'展开，与候选一形成差异：候选一从关系两端切入，本候选从时间感与自我调节切入，回应'方向性指引'与'每天晚上复盘'的使用场景。",
+        "supporting_findings": [
+          "s4.blocks.urgency",
+          "s4.defense.intellectualization_self_criticism",
+          "s2.shadow.rest_and_play",
+          "s3.individuation.direction",
+          "s3.bridge.individual_collective",
+          "s4.experiments.emotion_naming",
+          "s4.experiments.pause_before_commit",
+          "s4.experiments.scaling_review",
+          "s4.energy.charge_drain",
+          "s3.timeline.current",
+          "s3.timeline.subsequent",
+          "s4.blocks.boundary_pleasing",
+          "s4.blocks.relationship_maintenance"
+        ],
+        "deemphasized_findings": [
+          "s1.structure.candidate_weak_officer",
+          "s1.useful_gods.candidate",
+          "s2.mapping.resource_drain",
+          "s3.integration.threefold",
+          "s4.functions.exploration_path",
+          "s1.ziwei.transformations",
+          "s3.quadrant.candidates"
+        ],
+        "priority_blocks": [
+          {
+            "title": "卡点三：以急迫推进",
+            "finding_refs": [
+              "s4.blocks.urgency"
+            ]
+          },
+          {
+            "title": "卡点一：以迁就换连接",
+            "finding_refs": [
+              "s4.blocks.boundary_pleasing"
+            ]
+          },
+          {
+            "title": "卡点二：有事才联系",
+            "finding_refs": [
+              "s4.blocks.relationship_maintenance"
+            ]
+          },
+          {
+            "title": "卡点四：权威期待与自我表达张力",
+            "finding_refs": [
+              "s4.blocks.authority_expression"
+            ]
+          },
+          {
+            "title": "能量管理：充电与耗电方向",
+            "finding_refs": [
+              "s4.energy.charge_drain"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          "你是谁：从'无知的乐观主义、权衡利弊、急迫'三个自报关键词出发，结合正官透干与食神/偏财的映射假设，看见'想快、想对、想被认可'的内在驱力；标注映射为假设，须访谈验证。",
+          "卡在哪：以'以急迫推进'为主卡点，说明它在需要等待、协商或不确定结果时如何运作，曾保护什么（避免停滞与失控感），长期代价是什么（节奏失衡、关系张力、自我耗竭）；并把它与'拒绝生硬''有事才联系'两个卡点串成一条时间线。",
+          "往哪去：以'把急迫转为节奏，允许季节而非催促'为方向，配合情绪命名、暂停再回应、刻度复盘三项实验；强调小步、可重复、可停止，不承诺效果。"
+        ]
+      },
+      {
+        "candidate_key": "candidate.authority_sovereignty",
+        "theme": "分清哪些规则是自己的，哪些是继承的",
+        "rationale": "以'权威期待与自我表达张力'为核心，把'不会拒绝''拒绝生硬''有事才联系'理解为内在规则（应该迁就、不能生硬、必须维持关系）在关系中的现实表现。主线围绕'主权交接'展开，与候选一（关系两端）、候选二（节奏）形成差异，直接回应'验证已有判断'与'认识自己'的诉求，同时明确不指责家庭。",
+        "supporting_findings": [
+          "s4.blocks.authority_expression",
+          "s2.complex.authority_expression",
+          "s2.authority.superego_source",
+          "s2.authority.sovereignty_handover",
+          "s2.ten_gods.zhengguan",
+          "s2.persona.self_report_vs_interpretation",
+          "s3.yijing.metaphor",
+          "s4.experiments.thought_record",
+          "s4.experiments.pause_before_commit",
+          "s4.blocks.boundary_pleasing",
+          "s4.blocks.relationship_maintenance",
+          "s4.blocks.urgency",
+          "s4.relationships.cycle"
+        ],
+        "deemphasized_findings": [
+          "s1.structure.candidate_weak_officer",
+          "s1.useful_gods.candidate",
+          "s2.mapping.resource_drain",
+          "s3.integration.threefold",
+          "s4.functions.exploration_path",
+          "s1.ziwei.transformations",
+          "s3.timeline.subsequent"
+        ],
+        "priority_blocks": [
+          {
+            "title": "卡点四：权威期待与自我表达张力",
+            "finding_refs": [
+              "s4.blocks.authority_expression"
+            ]
+          },
+          {
+            "title": "卡点一：以迁就换连接",
+            "finding_refs": [
+              "s4.blocks.boundary_pleasing"
+            ]
+          },
+          {
+            "title": "卡点二：有事才联系",
+            "finding_refs": [
+              "s4.blocks.relationship_maintenance"
+            ]
+          },
+          {
+            "title": "卡点三：以急迫推进",
+            "finding_refs": [
+              "s4.blocks.urgency"
+            ]
+          },
+          {
+            "title": "关系循环：请求—迁就—疏远",
+            "finding_refs": [
+              "s4.relationships.cycle"
+            ]
+          }
+        ],
+        "narrative_arc": [
+          "你是谁：从正官透干与印星藏干的映射假设，看见'应该/必须/不能'的内在规则来源；结合用户自报'凭直觉判断+咨询家人朋友'，把'外部权威参考'与'自我主权'的张力作为认识自己的入口；标注为假设，须访谈验证，不指责家庭。",
+          "卡在哪：以'权威期待与自我表达张力'为主卡点，说明它在需要表达真实需求或拒绝时如何运作，曾保护什么（符合期待、维持形象），长期代价是什么（主权感削弱、真实需求难被听见）；并把它与其余三个卡点串成同一张力的不同侧面。",
+          "往哪去：以'分辨哪些规则是自己的、哪些是继承的'为方向，配合CBT想法记录与暂停再回应两项实验；以'谦'卦作哲学比喻——有原则的柔，但对方持续越界时不适用；强调方向为探索假设，可由现实经验修正。"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 42705,
+    "output_tokens": 2442,
+    "latency_ms": 9847,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "f85fc83d-bcb5-4fd2-a59d-553c6660b8af",
+    "skill_version_id": 0,
+    "skill_key": "report.narrative_plan",
+    "skill_version": 1,
+    "processor": "reports.narrative_candidates",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "6b9eb66ce90fbee4c10e9b9bcbe9a9426f929d1bb199be7abf37dd943b6ce2a1",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "AWAITING_DEVELOPER_REVIEW"
+  }
+}

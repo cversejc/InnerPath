@@ -1,0 +1,60 @@
+{
+  "signature": "6461740639372e7548e91c432961f575381407503beba6840c84dc4f4b9eeace",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点一：等安排确定，才推进自己的事",
+    "content": "有一件事，你可能已经重复过很多次：想报名内部培训，却担心父亲复诊时间变化，连续两周没有问清课程安排。\n\n关键结论：你把自己的事排在“等家庭安排确定”之后，短期换来了交接与照护的稳妥，长期推迟了转岗准备，也压缩了休息与自主空间。\n\n路径图：家庭安排未定 → 先等外部确定 → 自己的事暂缓 → 避免出错与冲突（短期保护）→ 转岗准备推迟、休息被挤压（长期代价）→ 带着不确定先做一小步。\n\n场景与触发：触发点往往不是“不想做”，而是外部时间表还没落定。父亲复诊时间可能变化，轮班表可能调整，姐姐可能临时需要替班——在这些变量没有排清楚之前，推进自己的事（比如问课程安排）就显得像在给家里添乱。你自述“事情一多时，我会先等规则和时间表更清楚”，这句话本身不是问题，它说明你在用秩序感保护交接安全。\n\n运作机制：你先把家庭与工作的安排稳住，再考虑自己的推进。这个顺序在轮班加照护的现实里，有它的合理性：交接漏掉会出事故，复诊错过会影响父亲，替班没接上会牵连姐姐。于是“等确定”成了一个自动化的前置条件——只要还有一项没定，自己的事就继续往后放。这里需要区分：你已说出的自我观察（先等规则和时间表更清楚）是事实层面的描述；而“等确定是在避免冲突与出错”是解释性假设，需要你用自己的经验核对。\n\n过去保护了什么：它保护的是交接安全与家庭运转。夜班后的交接、父亲的复诊、姐姐的临时请求，都属于“一旦漏掉就有现实后果”的事。先等确定，让你在这些事上少出错、少冲突，也让家人继续把你当作可靠的那个人。这不是缺陷，而是一套在高压环境里被验证过有效的策略。\n\n长期代价：代价出现在你自己的时间线上。转岗准备被推迟——培训没问、课程没报、下一步没动；休息与自主空间被压缩——轮班之外还要照护，照护之外还要等安排。更隐蔽的代价是：你越等确定，越难积累“带着不确定也能推进”的经验，于是下一次更倾向于继续等。\n\n整合邀请：这一节不展开具体做法，只留一个方向——不是让你放弃稳妥，而是让“等确定”和“先推进”在同一件事里同时出现。你已经在别处做到过：和姐姐说清轮班表后改成轮流陪诊，把手机交给同事保管半小时后能睡着。这些反例说明，协商与交出控制的能力在你身上是存在的。变化所需的下一步理解是：确定感不必在行动之前全部到位，它可以在一小步之后慢慢长出来。具体动作、频率与退出条件，统一放到成长实验节展开。",
+    "used_findings": [
+      "s4.block.delay_until_certain"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这个卡点先看到这里：等确定保护了交接与家庭运转，代价落在你的转岗准备和休息上。接下来会看另一个卡点——夜班后靠反复查群才敢休息。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_01",
+      "sequence_no": 9,
+      "chapter_opening": true,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、简洁清楚，按ISTJ自报偏好降低比喻密度，不诊断、不评判。",
+      "source_boundary": "仅使用已确认的 s4.block.delay_until_certain 及其 evidence_refs；未展开解决步骤，未引用金句。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "已按场景→触发→运作→过去保护→长期代价→整合邀请的顺序展开；本节未列解决步骤，具体动作留待成长实验节；关键结论与路径图均在正文中给出。",
+        "quote": "路径图：家庭安排未定 → 先等外部确定 → 自己的事暂缓 → 避免出错与冲突（短期保护）→ 转岗准备推迟、休息被挤压（长期代价）→ 带着不确定先做一小步。",
+        "follow_up_questions": [
+          "父亲复诊时间通常提前多久确定？如果提前一周知道，你愿意在哪个时间点先问课程安排？",
+          "除了‘担心复诊变化’，还有没有别的原因让你两周没问课程安排？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5131,
+    "output_tokens": 1121,
+    "latency_ms": 6275,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "eb6c8798-554c-4bbd-8d87-3bab6740be04",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "694610f2edcc8dc29412684de0245f9ac53d6574cdbe2433513aa34b6a702f2a",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -1,0 +1,113 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "把方向落成可以每天做一点的具体动作",
+    "content": "方向已经有了轮廓，接下来要做的不是“一次修好”，而是在反复情境里每次多保留一点真实需求。下面五项实验都来自已确认的成长方向，耗时较少：一周几分钟到十几分钟，做不动时可以停。\n\n实验一，暂停再回应（针对“以迁就换连接”）。收到低风险请求时，先说一句“我看看安排，晚些回复你”，稍后再决定同意、部分帮忙还是拒绝；每周一次，约5分钟；观察对方的实际反应，以及你自己的紧张程度。如果出现权力威胁或明显不适，先暂停，换更安全的情境。\n\n实验二，低负担联系（针对“有事才联系”）。选一位让你觉得安全的对象，发一条没有目的的问候或分享，不要求对方立刻回应，也不拿回应速度评判关系；每周一次，约10分钟；记录发出前后的感受和对方的回应。如果连续两周明显焦虑，或对方明确表示不便，先暂停，和咨询师讨论后再继续。\n\n实验三，情绪命名（针对“太着急”）。每天晚间用1–10刻度给当下的情绪打分，再写一句“我现在需要……”，看看命名前后急迫感有没有变化；每天一次，约5分钟。如果命名引发强烈不适或持续低落，暂停并寻求专业支持。\n\n实验四，想法记录（针对“权威期待与自我表达”的张力）。在拒绝或表达需求之后，记下事件、自动想法和感受，写下支持与反对它的证据，再设计一个可以反悔的小实验去验证；每周一次，约15分钟；观察想法强度和后续行为的变化。如果记录引发持续反刍或明显痛苦，先暂停。\n\n实验五，刻度复盘（针对前两个卡点）。作为可选的每周总复盘，可直接使用实验一、二已有记录，用0–10刻度评估边界与连接的状态，找出一个“比上周好一点”的例外，并记下它发生的条件；每周一次，约10分钟。如果刻度持续下降或困扰明显，暂停并寻求专业支持。\n\n节奏上可以这样排：每天晚间记录能量与情绪（5分钟）；每周写一次“今天我真实想要的是……”（约10分钟），并完成实验一、二、四、五中的一到两项；每月复盘一次触发链（约20分钟）；每季用0–10刻度回看边界与连接的方向（约30分钟）。时间不够时，优先保留实验一和实验三，其余改成每月一次即可。\n\n这些动作都不追求立刻见效，效果以你自己的现实观察为准，随时可以停。\n\n五项是可选菜单，先选一至两项，不必同时执行。",
+    "used_findings": [
+      "s4.blocks.boundary_pleasing",
+      "s4.blocks.relationship_maintenance",
+      "s3.individuation.direction",
+      "s4.experiments.pause_before_commit",
+      "s4.experiments.low_stakes_contact",
+      "s4.experiments.thought_record",
+      "s4.experiments.scaling_review",
+      "s4.experiments.emotion_naming"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.shadow_practice",
+      "analysis.s4.complex_practice",
+      "analysis.s4.experiments"
+    ],
+    "used_actions": [
+      "s4.experiments.pause_before_commit",
+      "s4.experiments.low_stakes_contact",
+      "s4.experiments.thought_record",
+      "s4.experiments.scaling_review",
+      "s4.experiments.emotion_naming"
+    ],
+    "transition_hint": "具体动作已经排好，最后收束一下：回到你最开始想解决的问题，看看这一路看清了什么。",
+    "presentation_meta": {
+      "chapter": "direction",
+      "fragment_key": "report.direction.growth_experiments",
+      "sequence_no": 15,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "contains_actions": true,
+      "contains_verified_quote": false,
+      "data_boundaries": [
+        "出生日期与出生地为演示假设，命盘内容仅作条件式参考，待本人提供后重算",
+        "未自述的情绪、自动想法与保护功能均以可能/待核对表达"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15928,
+    "output_tokens": 1073,
+    "latency_ms": 5177,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "7bf92dc2-c714-4b30-963c-313d0f5d3cb0",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "5f6fc37872d412fa54aa1ab4281fb15b20e58067fa3e45d22771983515977f8a",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "把方向落成可以每天做一点的具体动作",
+    "content": "方向已经有了轮廓，接下来要做的不是“一次修好”，而是在反复情境里每次多保留一点真实需求。下面五项实验都来自已确认的成长方向，费用很低：一周几分钟到十几分钟，做不动时可以停。\n\n实验一，暂停再回应（针对“以迁就换连接”）。收到低风险请求时，先说一句“我看看安排，晚些回复你”，稍后再决定同意、部分帮忙还是拒绝；每周一次，约5分钟；观察对方的实际反应，以及你自己的紧张程度。如果出现权力威胁或明显不适，先暂停，换更安全的情境。\n\n实验二，低负担联系（针对“有事才联系”）。选一位让你觉得安全的对象，发一条没有目的的问候或分享，不要求对方立刻回应，也不拿回应速度评判关系；每周一次，约10分钟；记录发出前后的感受和对方的回应。如果连续两周明显焦虑，或对方明确表示不便，先暂停，和咨询师讨论后再继续。\n\n实验三，情绪命名（针对“太着急”）。每天晚间用1–10刻度给当下的情绪打分，再写一句“我现在需要……”，看看命名前后急迫感有没有变化；每天一次，约5分钟。如果命名引发强烈不适或持续低落，暂停并寻求专业支持。\n\n实验四，想法记录（针对“权威期待与自我表达”的张力）。在拒绝或表达需求之后，记下事件、自动想法和感受，写下支持与反对它的证据，再设计一个可以反悔的小实验去验证；每周一次，约15分钟；观察想法强度和后续行为的变化。如果记录引发持续反刍或明显痛苦，先暂停。\n\n实验五，刻度复盘（针对前两个卡点）。每周用0–10刻度评估边界与连接的状态，找出一个“比上周好一点”的例外，并记下它发生的条件；每周一次，约10分钟。如果刻度持续下降或困扰明显，暂停并寻求专业支持。\n\n节奏上可以这样排：每天晚间记录能量与情绪（5分钟）；每周写一次“今天我真实想要的是……”（约10分钟），并完成实验一、二、四、五中的一到两项；每月复盘一次触发链（约20分钟）；每季用0–10刻度回看边界与连接的方向（约30分钟）。时间不够时，优先保留实验一和实验三，其余改成每月一次即可。\n\n关于命盘，这里只用一条已确认的关系线索作旁注：传统解释视角下，你的天干关系里同时出现“合”与“克”，可以理解为亲近与自我表达之间常有拉扯；有合不等于合化，具体成化条件需要咨询师判断。出生日期目前是演示假设，等本人提供后需要重算，所以这部分只作参考，不作为结论。\n\n这些动作都不追求立刻见效，效果以你自己的现实观察为准，随时可以停。",
+    "used_findings": [
+      "s4.blocks.boundary_pleasing",
+      "s4.blocks.relationship_maintenance",
+      "s3.individuation.direction",
+      "s4.experiments.pause_before_commit",
+      "s4.experiments.low_stakes_contact",
+      "s4.experiments.thought_record",
+      "s1.interactions.relations",
+      "s4.experiments.scaling_review",
+      "s4.experiments.emotion_naming"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.shadow_practice",
+      "analysis.s4.complex_practice",
+      "analysis.s4.experiments"
+    ],
+    "used_actions": [
+      "s4.experiments.pause_before_commit",
+      "s4.experiments.low_stakes_contact",
+      "s4.experiments.thought_record",
+      "s4.experiments.scaling_review",
+      "s4.experiments.emotion_naming"
+    ],
+    "transition_hint": "具体动作已经排好，最后收束一下：回到你最开始想解决的问题，看看这一路看清了什么。",
+    "presentation_meta": {
+      "chapter": "direction",
+      "fragment_key": "report.direction.growth_experiments",
+      "sequence_no": 15,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "contains_actions": true,
+      "contains_verified_quote": false,
+      "data_boundaries": [
+        "出生日期与出生地为演示假设，命盘内容仅作条件式参考，待本人提供后重算",
+        "未自述的情绪、自动想法与保护功能均以可能/待核对表达"
+      ]
+    }
+  }
+}

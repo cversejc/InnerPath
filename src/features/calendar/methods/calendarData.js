@@ -8,9 +8,10 @@ import {
   recordPrompts as mockRecordPrompts
 } from '../../../data/decisionCalendar.js'
 import { dateKeyFromLabel, isToday, parseDateKey, weekdays } from '../helpers.js'
+import { resolveCalendarPracticeRefs } from '../practice-actions.js'
 import { selectPublishedCalendar } from '../cover.js'
 
-const allowDemoCalendar = import.meta.env.DEV && import.meta.env.VITE_DEMO_CALENDAR === 'true'
+const allowDemoCalendar = Boolean(import.meta.env?.DEV && import.meta.env?.VITE_DEMO_CALENDAR === 'true')
 
 function createMockCalendar() {
   return {
@@ -39,44 +40,53 @@ function createMockCalendar() {
 }
 
 export default {
-  async loadCalendar() {
-      try {
-        const response = await getMyCalendars()
-        const publishedCalendar = selectPublishedCalendar(response)
-        if (publishedCalendar) {
-          this.calendarError = ''
-          this.applyCalendar(publishedCalendar, 'api')
-        } else if (allowDemoCalendar) {
-          this.applyCalendar(createMockCalendar(), 'mock')
-        } else {
-          this.calendar = null
-          this.calendarSource = 'empty'
-          this.days = []
-          this.meta = {}
-        }
-      } catch (error) {
-        if (allowDemoCalendar) {
-          this.applyCalendar(createMockCalendar(), 'mock')
-        } else {
-          this.calendar = null
-          this.calendarSource = 'empty'
-          this.days = []
-          this.meta = {}
-          this.calendarError = '暂时无法读取已交付日历，请稍后重试或先提交一份申请。'
-        }
-      } finally {
-        this.loading = false
+  async loadCalendar(fetchCalendars = getMyCalendars) {
+    try {
+      this.calendarError = ''
+      const response = await fetchCalendars()
+      const publishedCalendar = selectPublishedCalendar(response)
+      if (publishedCalendar) {
+        this.applyCalendar(publishedCalendar, 'api')
+      } else if (allowDemoCalendar) {
+        this.applyCalendar(createMockCalendar(), 'mock')
+      } else {
+        this.calendar = null
+        this.calendarSource = 'empty'
+        this.days = []
+        this.meta = {}
       }
-    },
+    } catch (error) {
+      if (allowDemoCalendar) {
+        this.calendarError = ''
+        this.applyCalendar(createMockCalendar(), 'mock')
+      } else {
+        this.calendar = null
+        this.calendarSource = 'empty'
+        this.days = []
+        this.meta = {}
+        this.calendarError = '暂时无法读取已交付日历，请重新加载或稍后再试。'
+      }
+    } finally {
+      this.loading = false
+    }
+  },
+  async retryCalendarLoad() {
+    this.loading = true
+    await this.loadCalendar()
+  },
   applyCalendar(calendar, source) {
       this.calendar = calendar
       this.calendarSource = source
+      const calendarMeta = calendar.meta_payload || calendar.metaPayload || {}
+      const practiceRhythm = calendarMeta.practice_rhythm || {}
       this.days = (calendar.entries || []).map(entry => {
         const entryDate = entry.entry_date || entry.date
         if (!entryDate) return null
         const date = parseDateKey(entryDate)
+        const dailyDetails = calendarMeta.daily_details?.[entryDate] || {}
         return {
           ...entry,
+          ...dailyDetails,
           date: entryDate,
           month: date.getMonth() + 1,
           day: date.getDate(),
@@ -89,12 +99,14 @@ export default {
           timeWindow: entry.time_window || entry.timeWindow || '按你的节奏安排，给决定留出换气空间。',
           suitable: entry.suitable || [],
           unsuitable: entry.unsuitable || [],
+          linkedPractices: resolveCalendarPracticeRefs(dailyDetails.action_refs, practiceRhythm),
+          unavailablePracticeCount: practiceRhythm.unavailable_actions?.length || 0,
+          availableMinutesPerDay: calendarMeta.available_minutes_per_day || 30,
           isPhase: entry.is_phase ?? entry.isPhase ?? false
         }
       }).filter(Boolean)
       const startDate = calendar.start_date || this.days[0]?.date || ''
       const year = startDate.slice(0, 4)
-      const calendarMeta = calendar.meta_payload || calendar.metaPayload || {}
       this.meta = source === 'mock'
         ? mockCalendarMeta
         : {
@@ -104,7 +116,9 @@ export default {
             pillars: calendarMeta.pillars || '',
             rhythm: calendarMeta.rhythm || '少说，多做，多记录',
             intro: calendarMeta.intro || '这是一张属于你的决策时机参照系，帮你在重要选择前留出观察、行动与复盘的空间。',
-            overview: Array.isArray(calendarMeta.overview) ? calendarMeta.overview : []
+            overview: Array.isArray(calendarMeta.overview) ? calendarMeta.overview : [],
+            monthly: calendarMeta.monthly || null,
+            limitations: Array.isArray(calendarMeta.limitations) ? calendarMeta.limitations : []
           }
       this.todayDate = this.days.find(day => isToday(day.date))?.date || this.days[0]?.date || null
       this.selectedDate = this.todayDate
@@ -125,13 +139,17 @@ export default {
   buildPhases() {
       const grouped = []
       for (const day of this.days) {
-        const existing = grouped.find(phase => phase.id === day.phaseId)
-        if (existing) {
+        const sourceId = day.phaseId
+        const existing = grouped[grouped.length - 1]
+        if (existing?.sourceId === sourceId) {
           existing.endDate = day.date
           existing.dateRange = `${existing.startDate}—${existing.endDate}`
+          day.phaseId = existing.id
         } else {
+          day.phaseId = `${sourceId}:${day.date}`
           grouped.push({
             id: day.phaseId,
+            sourceId,
             label: day.phaseLabel || day.shortLabel,
             tone: day.tone || 'yellow',
             startDate: day.date,

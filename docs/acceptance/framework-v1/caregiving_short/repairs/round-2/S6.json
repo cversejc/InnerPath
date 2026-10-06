@@ -1,0 +1,352 @@
+{
+  "signature": "66b5d54336415e32b2df193ebb3d4952c2951c16ea7e00f6d0b85a0d26ef2dac",
+  "skill_digest": "76151045de2c21361047ad9b21e184f7fe49c25578a6e3cc88dee3de588d10f7",
+  "runtime_instruction": "独立审核修订稿，不因已修订而加分。framework_review全16项，fragment_keys须全部归属，quote在正文中。明确区分原始自述与解释：用户说散步放松，可陈述为自我观察，不因为资源Finding是假设而否定它。明确的可能/或许/假如加上边界或反证是有效限定，不要求每句叠加‘假设可能’。不要把明确否定确定论的句子误读为确定论。引用可识别且准确的出处即可，不要求正文暴露核验流程。不同章节完成不同内容职责的必要呼应不等于完整重复：概览简述、卡点具体事件、关系反馈及共性综合需分开判断。只有同一场景、保护和代价再次完整展开才报重复；不能仅凭同一关键词出现扣分。只报实际越过来源的断言、缺内容、冲突、重复或行动错配；若仍存在这些缺陷按真实程度扣分。",
+  "output": {
+    "issues": [
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "同一核心观点（“等确定”是保护而非缺陷）在概览、眼中的自己、隐藏的自己、卡点一、共性模式、破局、收束等多处反复完整展开，超过3次。",
+        "evidence": "“这是一种保护交接安全与家庭运转的方式，而非缺陷。”",
+        "suggestion": "保留概览与卡点一各一次完整解释，其余章节改为一句承接，删除重复展开的完整段落。",
+        "target_fragment_key": "report.overview.psychic_structure"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“与姐姐协商轮换、把手机交给同事后能睡着”这一组资源证据在概览、世界看到的你、眼中的自己、隐藏的自己、自我方向、能量模式、关系循环、卡点一、卡点二、共性模式、破局、人生阶段地图、成长实验、收束中反复出现，超出必要呼应。",
+        "evidence": "“你与姐姐说清轮班表后改成轮流陪诊，把手机交给同事保管半小时后能睡着。”",
+        "suggestion": "在概览与成长实验各保留一次完整引用，其余章节仅以“已确认的协商与交托经验”一句带过。",
+        "target_fragment_key": "report.overview.psychic_structure"
+      },
+      {
+        "issue_type": "repetition",
+        "severity": "MINOR",
+        "message": "“先问清课程时间与报名截止”这一动作在隐藏的自己、自我方向、人生阶段地图、成长实验、收束中多次完整出现，行动细节重复。",
+        "evidence": "“这一步先只问清课程时间与报名截止，不要求同时解决父亲复诊安排”",
+        "suggestion": "行动细节只在成长实验节完整展开，其他章节仅保留方向性一句。",
+        "target_fragment_key": "report.identity.hidden_self"
+      },
+      {
+        "issue_type": "source_fidelity",
+        "severity": "MINOR",
+        "message": "“命盘旁注”将“身弱候选成立，用印比（木、火）为第一候选”表述为较确定结论，但已确认语义中该判断为 MEDIUM 置信、待咨询师确认的解释性候选。",
+        "evidence": "“综合为身弱候选成立，用印比（木、火）为第一候选”",
+        "suggestion": "改为“身弱为第一候选，用印比（木、火）为第一候选，属解释性判断，待确认”，避免读作已定结论。",
+        "target_fragment_key": "report.identity.foundation_notes"
+      },
+      {
+        "issue_type": "source_fidelity",
+        "severity": "MINOR",
+        "message": "“命盘旁注”将“福德宫无主星”与“面具与内在安顿之间存在张力线索”并列陈述，未在该句内标明这是解释性线索而非诊断，虽后文有声明，但该句本身易被读作事实判断。",
+        "evidence": "“福德宫在酉，无主星，辅星龙池、天官，无化忌与空劫煞星；面具与内在安顿之间存在张力线索，但不能据此诊断任何心理状况。”",
+        "suggestion": "在该句前加“解释性线索：”，明确“张力线索”是解释而非命盘事实。",
+        "target_fragment_key": "report.identity.foundation_notes"
+      },
+      {
+        "issue_type": "structure_coherence",
+        "severity": "MINOR",
+        "message": "“眼中的自己”一节在“应该/必须/不能”假设后写“也不指向任何家庭责任”，语义上可能被读作否定家庭责任的存在，与用户实际照顾父亲的情境及前文“文曲忌落父母宫可作参考线索”的表述略有张力。",
+        "evidence": "“紫微里文曲忌落父母宫只是一条参考线索，不推断具体家庭经历，也不指向任何家庭责任。”",
+        "suggestion": "改为“也不推断具体家庭经历或家庭责任来源”，避免被读作否认现实照护责任。",
+        "target_fragment_key": "report.identity.self_perception"
+      },
+      {
+        "issue_type": "block_to_action_link",
+        "severity": "MINOR",
+        "message": "“破局”节称三项动作“一一对应”三个卡点，但未在正文中说明每项动作的工具与卡点对应关系，读者需到成长实验节才能看到；作为破局推导，工具到实验的链条在本节不完整。",
+        "evidence": "“先问清课程安排，对应卡点一‘等安排确定才推进自己的事’；把手机交给同事保管，对应卡点二‘夜班后靠反复查群才敢休息’；把协商提前到答应之前，对应卡点三‘先答应请求，再补协商’。”",
+        "suggestion": "在本节每项动作后补一句工具名（短焦/ACT/依恋沟通）及调节功能，使“资源→能力→工具→实验”链条在本节可读。",
+        "target_fragment_key": "report.blocks.breakthrough"
+      },
+      {
+        "issue_type": "reading_experience",
+        "severity": "MINOR",
+        "message": "“人生阶段地图”节篇幅较长，包含当前大运、原局互动、后续三个阶段、三重对应、练习强度与补问，信息密度高，与用户“简洁清楚”的阅读偏好有落差。",
+        "evidence": "“后续阶段按库计算起止，作为条件式参考。以下阶段主题为解释性描述，非计算结论，需结合你的现实经验修正：庚午2028–2037（正财），偏资源整合与稳定经营……”",
+        "suggestion": "将后续阶段压缩为每阶段一句“基调+能力+旧模式”，原局互动与三重对应可移至旁注或精简为一句。",
+        "target_fragment_key": "report.direction.life_map"
+      }
+    ],
+    "scorecard": {
+      "dimensions": {
+        "fact_fidelity": {
+          "score": 18,
+          "reason": "正文基本忠实于已确认 Finding 与用户自述，未新增经历；但“命盘旁注”将身弱候选表述为较确定结论，且福德宫张力线索句未就地标明解释性，存在轻微越界。",
+          "fragment_keys": [
+            "report.identity.foundation_notes",
+            "report.identity.outer_self",
+            "report.identity.self_perception"
+          ],
+          "max_score": 20,
+          "label": "案例事实忠实度"
+        },
+        "personalization": {
+          "score": 18,
+          "reason": "大量使用用户自述事件（培训报名延迟、陪诊轮换、交出手机入睡）与轮班照护情境，第二人称、现实语言，贴合“简洁清楚”偏好；但人生阶段地图节信息密度偏高，个性化节奏略有损失。",
+          "fragment_keys": [
+            "report.identity.outer_self",
+            "report.identity.relationship_pattern",
+            "report.direction.life_map"
+          ],
+          "max_score": 20,
+          "label": "个性化"
+        },
+        "psychological_logic": {
+          "score": 13,
+          "reason": "情结、阴影、防御区分清楚，保护功能与长期代价对应，反证与待核对问题保留；但“等确定是保护”在多个章节重复完整展开，削弱了推导层次。",
+          "fragment_keys": [
+            "report.identity.hidden_self",
+            "report.blocks.common_pattern",
+            "report.blocks.breakthrough"
+          ],
+          "max_score": 15,
+          "label": "心理逻辑"
+        },
+        "structure_coherence": {
+          "score": 13,
+          "reason": "三章暗线清晰，概览→认识→卡点→方向→实验→收束顺序合理；但同一核心观点与资源证据跨章重复较多，破局节工具链条不完整，略有结构冗余。",
+          "fragment_keys": [
+            "report.overview.psychic_structure",
+            "report.blocks.breakthrough",
+            "report.direction.growth_experiments"
+          ],
+          "max_score": 15,
+          "label": "三章连贯性"
+        },
+        "reading_experience": {
+          "score": 8,
+          "reason": "语言平实、第二人称、关键结论与路径图清晰；但重复段落与人生阶段地图的高密度信息影响流畅度。",
+          "fragment_keys": [
+            "report.overview.psychic_structure",
+            "report.direction.life_map"
+          ],
+          "max_score": 10,
+          "label": "阅读体验"
+        },
+        "action_value": {
+          "score": 9,
+          "reason": "三项实验均含动作、频率、耗时、观察、退出条件，适配8分钟/25分钟时间预算，并给出日周月季节奏与减量方案；破局节工具对应可更明确。",
+          "fragment_keys": [
+            "report.direction.growth_experiments",
+            "report.blocks.breakthrough"
+          ],
+          "max_score": 10,
+          "label": "行动价值"
+        },
+        "uncertainty_safety": {
+          "score": 9,
+          "reason": "无诊断、无单信号强人格结论、无必然未来；假设与反证保留，命理作解释视角；仅个别句子的解释性标注可更就地。",
+          "fragment_keys": [
+            "report.identity.foundation_notes",
+            "report.identity.self_perception",
+            "report.direction.current_stage"
+          ],
+          "max_score": 10,
+          "label": "不确定性与安全"
+        }
+      },
+      "total": 88,
+      "max_score": 100,
+      "passes_threshold": true
+    },
+    "framework_review": [
+      {
+        "requirement_id": "R.psychic_structure",
+        "fragment_keys": [
+          "report.overview.psychic_structure"
+        ],
+        "status": "FULFILLED",
+        "reason": "概览按“向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向”铺出暗线，未展开卡点细节。",
+        "quote": "路径图：向世界展示的我（可靠执行者）→ 以为的自己（必须做完才安心）→ 潜意识层面的自己（休息与自主被排在最后）→ 整合后的方向（带着不确定先做小步）。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.persona",
+        "fragment_keys": [
+          "report.identity.outer_self"
+        ],
+        "status": "FULFILLED",
+        "reason": "给出可识别的外在角色“能扛事、按规则办事”，并明确区分用户自述事实与符号解释假设。",
+        "quote": "在世界眼里，你大概是一个“能扛事、按规则办事”的人：轮班物流主管，同时照顾长辈。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.self_belief",
+        "fragment_keys": [
+          "report.identity.self_perception"
+        ],
+        "status": "FULFILLED",
+        "reason": "呈现意识自我与底层信念假设，列出应该/必须/不能及权威内化线索，并给出反证与待补问。",
+        "quote": "与之配套的，是一组“应该/必须/不能”【假设，待核对】：必须先把该做的做完、不能漏掉交接、应该等安排确定再推进自己的事。",
+        "follow_up_questions": [
+          "这种延迟是只在涉及父亲安排时出现，还是所有不确定场景都会出现？",
+          "这些“必须”最早是从哪里学来的，在什么场景最强、什么场景最弱？"
+        ]
+      },
+      {
+        "requirement_id": "R.hidden_self",
+        "fragment_keys": [
+          "report.identity.hidden_self"
+        ],
+        "status": "FULFILLED",
+        "reason": "区分情结、阴影、防御及其关系，给出情绪与信念假设，并说明保护功能与现实核对方向。",
+        "quote": "情结更像反复出现的剧本——安排一变，你先承接，再协商；阴影更像被长期排除在外的选项——休息、把责任交出去、允许自己“先不管”；防御则是当下自动启动的动作——延迟询问、先答应后协商、夜班后反复查群。",
+        "follow_up_questions": [
+          "延迟是否只在涉及父亲安排时出现？",
+          "查群是否对应具体交接风险？",
+          "如果一次交接真的漏了，你预想会发生什么？"
+        ]
+      },
+      {
+        "requirement_id": "R.self_direction",
+        "fragment_keys": [
+          "report.identity.self_direction"
+        ],
+        "status": "FULFILLED",
+        "reason": "给出当前偏重的一端、被排除的另一端，并强调两端整合而非完美人格。",
+        "quote": "两端整合不是变成完美的人，而是在具体情境里让两者同时在场：比如先问清培训课程安排，再根据父亲复诊时间做调整，而不是等所有安排都确定。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.energy",
+        "fragment_keys": [
+          "report.identity.energy_pattern"
+        ],
+        "status": "FULFILLED",
+        "reason": "给出充电/耗电线索与实际反馈，画出探索→价值→执行→反馈路径及张力，并声明MBTI仅作锚点、不推断八维分数。",
+        "quote": "工作模式上，你自报MBTI为ISTJ，仅作锚点，不推断八维分数。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.relationships",
+        "fragment_keys": [
+          "report.identity.relationship_pattern"
+        ],
+        "status": "FULFILLED",
+        "reason": "描述请求/回应/感受/反馈循环，使用真实陪诊场景，给出反例与待核对问题。",
+        "quote": "把关系看成一个循环：请求出现→你怎么回应→你感受到什么→对方接收到什么并反馈。",
+        "follow_up_questions": [
+          "请求出现的那一刻，你的第一反应具体是什么？",
+          "从答应到开始协商，中间通常隔多久？",
+          "如果你在答应之前就把时间说清楚，对方一般会怎么回应？"
+        ]
+      },
+      {
+        "requirement_id": "R.blocks",
+        "fragment_keys": [
+          "report.blocks.block_01",
+          "report.blocks.block_02",
+          "report.blocks.block_03"
+        ],
+        "status": "FULFILLED",
+        "reason": "三个卡点均含场景、触发、运作、过去保护、长期代价与整合邀请，未展开解决步骤；数量为3项，证据不足处已记录理由。",
+        "quote": "路径图：家庭安排未定 → 先等外部确定 → 自己的事暂缓 → 避免出错与冲突（短期保护）→ 转岗准备推迟、休息被挤压（长期代价）→ 带着不确定先做一小步。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.common_pattern",
+        "fragment_keys": [
+          "report.blocks.common_pattern"
+        ],
+        "status": "FULFILLED",
+        "reason": "综合三个卡点，给出触发→情绪/信念→防御→短期保护→长期重复链条，并声明相关不等于因果。",
+        "quote": "把三个卡点放在一起看，会出现一条共同的运作路径：触发、情绪或信念、防御、短期保护、长期重复。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.breakthrough",
+        "fragment_keys": [
+          "report.blocks.breakthrough"
+        ],
+        "status": "FULFILLED",
+        "reason": "给出资源→调节功能→能力→现实缺口→工具→实验的推导，能力回应共性机制，动作指向第三章；工具对应可更显式。",
+        "quote": "从资源到能力，可以这样看：你自述“事情一多时，会先等规则和时间表更清楚”，这份对秩序的敏感，调节的是“怕出错、怕影响家人”的不安，转译过来，就是先获取信息、把不确定拆成可问清的一小块的能力",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.archetype",
+        "fragment_keys": [
+          "report.blocks.breakthrough"
+        ],
+        "status": "FULFILLED",
+        "reason": "中式意象“守城而不闭门”具象化，给出可学习能力与适用边界，并声明不作史实或人格诊断。",
+        "quote": "中式意象上，可以借“守城而不闭门”的守将：守住职责，也开一道门让同伴分担。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.life_map",
+        "fragment_keys": [
+          "report.direction.life_map"
+        ],
+        "status": "FULFILLED",
+        "reason": "给出真实大运起止、原局互动依据、每阶段基调/放大主题/能力/旧模式，并声明条件式未来与积极资源。",
+        "quote": "按分析日期2026-10-04，你正处于辛未大运（2018–2027，偏财）。",
+        "follow_up_questions": [
+          "在承担期你更愿意先保留哪一项最小练习？",
+          "什么信号提示你需要降低练习强度？"
+        ]
+      },
+      {
+        "requirement_id": "R.timing_wisdom",
+        "fragment_keys": [
+          "report.direction.current_stage"
+        ],
+        "status": "FULFILLED",
+        "reason": "说明当下境遇与屯卦比喻的匹配点、不适用边界，并声明不是起卦结果或占卜证明。",
+        "quote": "需要说清的是，这只是哲学比喻，不是起卦结果或占卜证明；它也有不适用边界——当条件已经明确、只差行动时，继续用“时机未到”解释延迟就不再贴切。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.experiments",
+        "fragment_keys": [
+          "report.direction.growth_experiments"
+        ],
+        "status": "FULFILLED",
+        "reason": "列出3项已确认Action，每项含动作、频率、耗时、观察、退出条件，并说明对应卡点、能力与工具，适配现实时间条件。",
+        "quote": "1. 先问清培训课程（对应卡点：等安排确定才推进自己的事）。做法：写下两个问题——课程时间、报名截止；在工作日8分钟内发消息或打电话问清；把答复记在一处，不立即决定是否报名。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.practice_rhythm",
+        "fragment_keys": [
+          "report.direction.growth_experiments"
+        ],
+        "status": "FULFILLED",
+        "reason": "给出每日能量、每周阴影、每月触发链、每季方向复盘节奏，并提供时间不足减量与可选菜单。",
+        "quote": "每日能量：记录交出手机后的入睡情况，一句话即可。每周阴影：不写长日记，用一句话记录“今天我允许了什么”",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "R.ending",
+        "fragment_keys": [
+          "report.ending"
+        ],
+        "status": "FULFILLED",
+        "reason": "以哲学贯通认识→理解→行动，给出个性化寄语，并署名引用已核验库中的《道德经》第三十三章。",
+        "quote": "道德经说“知人者智，自知者明”，放在你这里，自知不是给自己下结论，而是知道自己在什么条件下会先稳住、在什么条件下可以往前挪一步。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 84347,
+    "output_tokens": 4456,
+    "latency_ms": 15566,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "36da06ae-e6f5-4fad-8d95-dc90b42197e1",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.final_validator",
+    "skill_version": 1,
+    "processor": "reports.validator",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "e1038c072548ce01816c5d33de605e0b0d7ad1600a92a0c6016e8cf2a00cfad5",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

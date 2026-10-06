@@ -73,6 +73,70 @@ async def create_calendar(
     return calendar
 
 
+async def create_ai_calendar_for_request(
+    db: AsyncSession,
+    *,
+    calendar_request,
+    user_id: int,
+    created_by: int,
+    data: CalendarCreate,
+    audit_context: Optional[AuditContext] = None,
+) -> UserCalendar:
+    _validate_entries(data.entries, data.start_date, data.end_date)
+    if len(data.entries) != 30:
+        raise ValueError("calendar_ai_incomplete_dates")
+
+    now = datetime.utcnow()
+    calendar = UserCalendar(
+        user_id=user_id,
+        series_id=str(uuid4()),
+        version_number=1,
+        title=data.title,
+        start_date=data.start_date,
+        end_date=data.end_date,
+        status="published",
+        meta_payload=data.meta_payload,
+        created_by=created_by,
+        updated_by=created_by,
+        published_at=now,
+        calendar_request_id=calendar_request.id,
+    )
+    db.add(calendar)
+    await db.flush()
+    for entry in data.entries:
+        db.add(CalendarEntry(calendar_id=calendar.id, **entry.model_dump()))
+
+    calendar_request.status = "fulfilled"
+    snapshot = dict(calendar_request.input_snapshot or {})
+    snapshot["generation"] = {
+        **(snapshot.get("generation") or {}),
+        "status": "COMPLETED",
+        "completed_runs": len((snapshot.get("production_trace") or {}).get("skill_run_ids") or []) or 8,
+        "total_runs": len((snapshot.get("production_trace") or {}).get("skill_run_ids") or []) or 8,
+        "calendar_id": calendar.id,
+        "completed_at": now.isoformat(),
+    }
+    calendar_request.input_snapshot = snapshot
+    await record_audit(
+        db,
+        created_by,
+        "calendar.ai.deliver",
+        "calendar",
+        str(calendar.id),
+        target_user_id=user_id,
+        details={
+            "calendar_request_id": calendar_request.id,
+            "source_report_id": calendar_request.source_report_id,
+            "entry_count": len(data.entries),
+            "publication": "automatic",
+        },
+        audit_context=audit_context,
+    )
+    await db.commit()
+    await db.refresh(calendar)
+    return calendar
+
+
 
 async def update_calendar(
     db: AsyncSession,

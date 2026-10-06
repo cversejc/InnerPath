@@ -1,0 +1,910 @@
+{
+  "signature": "52b132429de9a40b3f6952c7c39bd4e73c66fc13101986060d9078b2e07697ef",
+  "skill_digest": "d0283cabc94fdef14d530fd6496c7af0c495235ee63e45ae4b1880a4b99b42a2",
+  "output": {
+    "summary": "本批为 S1 阶段内部审核候选。系统已给出确定性四柱（丙子年、甲午月、癸未日，日主癸水），但出生时间未知，故时柱、紫微命身福德四化与大运起止均无计算依据，相关条目按【暂缓】处理并附补问。可分析部分围绕日主癸水、月令午火、十神显隐、日支未土及干支刑冲合害展开，全部命理解释均标注为解释视角，心理线索仅作待验证信号，需由用户自述与反证校正，不作诊断或定论。",
+    "findings": [
+      {
+        "finding_key": "s1.dm.gui_water",
+        "claim": "日主为癸水（阴水），传统意象为雨露、溪涧、暗流之水，倾向以渗透、观察、顺势的方式回应环境；此为解释视角，可作待验证的自我核心线索，而非人格定论。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "HIGH",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [],
+        "structured_data": {
+          "day_master": "癸",
+          "element": "水",
+          "polarity": "阴",
+          "source": "bazi_facts.day_master",
+          "interpretation_status": "解释视角，非客观事实"
+        }
+      },
+      {
+        "finding_key": "s1.structure.weak_candidate",
+        "claim": "身强弱候选：癸水生于午月（火旺当令），月支午火泄水、年支子水为根但被子午冲、日支未土克水，全局生扶偏少而克泄耗偏多，故倾向判为偏弱候选；反证是年支子水为癸之禄根、年干丙火虽耗水但被日干癸水相克，若计入子水根气则弱而不从。此为条件化候选，需咨询师确认。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.dm.gui_water"
+          }
+        ],
+        "structured_data": {
+          "month_branch": "午",
+          "month_element": "火",
+          "supporting": [
+            "年支子水（比肩根）"
+          ],
+          "draining_controlling": [
+            "月支午火（偏财）",
+            "日支未土（七杀）",
+            "月干甲木（伤官）"
+          ],
+          "candidate": "偏弱",
+          "counter_evidence": "子水为癸之根，子午冲使根受损但未消失",
+          "note": "不以十神出现次数代替旺衰判断"
+        }
+      },
+      {
+        "finding_key": "s1.structure.cong_candidate",
+        "claim": "从格候选：若认定子水根被冲损殆尽、全局无有效生扶，则可讨论从财杀（从弱）的可能；但年支子水明现为比肩根、且日主癸水自坐未土仍有根气争议，故从格证据不足，倾向不成立。此为条件化候选，需人工核对。",
+        "kind": "SIGNAL",
+        "semantic_role": "STRUCTURE",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.structure.weak_candidate"
+          }
+        ],
+        "structured_data": {
+          "candidate": "从财杀（从弱）",
+          "supporting": [
+            "午月火旺",
+            "未土七杀贴身",
+            "甲木伤官透干泄水"
+          ],
+          "counter_evidence": "年支子水为比肩根，未完全被冲去",
+          "conclusion": "证据不足，倾向不从"
+        }
+      },
+      {
+        "finding_key": "s1.month.wu_fire",
+        "claim": "月令为午火，本气丁火为偏财，藏己土为七杀；午月火旺，气候基调偏燥热，癸水处其间有被蒸腾之象。传统上可作待验证的世界观线索：对外部机会与资源（财）敏感，同时承受压力与要求（杀）。此为解释视角。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "HIGH",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.dm.gui_water"
+          }
+        ],
+        "structured_data": {
+          "month_branch": "午",
+          "branch_element": "火",
+          "hidden_stems": [
+            {
+              "stem": "丁",
+              "ten_god": "偏财"
+            },
+            {
+              "stem": "己",
+              "ten_god": "七杀"
+            }
+          ],
+          "climate": "火旺燥热"
+        }
+      },
+      {
+        "finding_key": "s1.ten_gods.visible",
+        "claim": "透干十神：年干丙火为正财、月干甲木为伤官。伤官透干与正财透干并存，传统解释为表达/创造与务实求成两条线同时外显；此为资源线索，非人格定论。",
+        "kind": "FINDING",
+        "semantic_role": "RESOURCE",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.month.wu_fire"
+          }
+        ],
+        "structured_data": {
+          "visible": {
+            "正财": 1,
+            "伤官": 1
+          },
+          "note": "出现次数不代表旺衰"
+        }
+      },
+      {
+        "finding_key": "s1.ten_gods.hidden",
+        "claim": "藏干十神：比肩（年支子）、偏财（月支午、日支未）、七杀（月支午、日支未）、食神（日支未）。七杀与偏财藏而两见，传统上可作待验证信号：对压力与机会的敏感度较高；食神藏于日支，或与自我照顾、慢节奏表达相关。此为解释视角。",
+        "kind": "SIGNAL",
+        "semantic_role": "RESOURCE",
+        "confidence": "MEDIUM",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible"
+          }
+        ],
+        "structured_data": {
+          "hidden": {
+            "比肩": 1,
+            "偏财": 2,
+            "七杀": 2,
+            "食神": 1
+          },
+          "note": "出现次数不代表旺衰"
+        }
+      },
+      {
+        "finding_key": "s1.ten_gods.absent",
+        "claim": "四柱明现十神中不见偏印、劫财、正印、正官。传统上可作待验证线索：直接的支持/庇护感（印）与明确的规则框架（正官）不显于表；但缺失不能证明人格缺陷或现实能力缺失，需以自述核对。",
+        "kind": "SIGNAL",
+        "semantic_role": "SIGNAL",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.hidden"
+          }
+        ],
+        "structured_data": {
+          "absent": [
+            "偏印",
+            "劫财",
+            "正印",
+            "正官"
+          ],
+          "note": "缺失不等于人格缺陷"
+        }
+      },
+      {
+        "finding_key": "s1.day_branch.wei_earth",
+        "claim": "日支为未土，与日干癸水为土克水（七杀贴身），藏己土七杀、丁火偏财、乙木食神。传统上可作待验证的内在需求线索：在亲密/贴身层面易感到被要求与被期待，同时内在有务实与自我表达的需要。此为解释视角。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.dm.gui_water"
+          }
+        ],
+        "structured_data": {
+          "day_branch": "未",
+          "branch_element": "土",
+          "relation_to_day_master": "土克水",
+          "hidden_stems": [
+            {
+              "stem": "己",
+              "ten_god": "七杀"
+            },
+            {
+              "stem": "丁",
+              "ten_god": "偏财"
+            },
+            {
+              "stem": "乙",
+              "ten_god": "食神"
+            }
+          ]
+        }
+      },
+      {
+        "finding_key": "s1.year.bing_zi",
+        "claim": "年柱丙子：年干丙火正财、年支子水比肩。传统上可作集体印记与内在权威线索：早年环境或带有务实求成与同辈/自我支撑并存的主题；此为解释视角，不编造具体家庭经历。",
+        "kind": "SIGNAL",
+        "semantic_role": "SIGNAL",
+        "confidence": "LOW",
+        "importance": "MEDIUM",
+        "reportability": "OPTIONAL",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.ten_gods.visible"
+          }
+        ],
+        "structured_data": {
+          "year_pillar": "丙子",
+          "stem_ten_god": "正财",
+          "branch_ten_god": "比肩",
+          "note": "不编造家庭经历"
+        }
+      },
+      {
+        "finding_key": "s1.interactions.list",
+        "claim": "干支关系：子午六冲（年-月）、子未六害（年-日）、丙癸天干相克（年-日）、午未六合（月-日）。合与合化需分开：午未六合为合意，未土当令与否决定是否论化，本盘午火当令，倾向论合不化。传统上可作待验证的心理冲突线索：外部机会（财）与自我根基（比肩）之间存在拉扯，同时贴身关系（日支）又对月令有依附与调和倾向。此为解释视角。",
+        "kind": "FINDING",
+        "semantic_role": "STRUCTURE",
+        "confidence": "MEDIUM",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.structure.weak_candidate"
+          },
+          {
+            "finding_key": "s1.day_branch.wei_earth"
+          }
+        ],
+        "structured_data": {
+          "interactions": [
+            {
+              "type": "六冲",
+              "pillars": [
+                "year",
+                "month"
+              ],
+              "symbols": "子午"
+            },
+            {
+              "type": "六害",
+              "pillars": [
+                "year",
+                "day"
+              ],
+              "symbols": "子未"
+            },
+            {
+              "type": "天干相克",
+              "pillars": [
+                "year",
+                "day"
+              ],
+              "symbols": "丙癸"
+            },
+            {
+              "type": "六合",
+              "pillars": [
+                "month",
+                "day"
+              ],
+              "symbols": "午未"
+            }
+          ],
+          "combination_vs_transformation": "午未论合，午火当令倾向不化"
+        }
+      },
+      {
+        "finding_key": "s1.useful_gods.candidate",
+        "claim": "喜忌候选（基于偏弱候选）：用神倾向取金（印）生水、水（比劫）助身；忌神倾向火（财）与土（杀）过旺耗克。分歧点：若最终判为从财杀，则取用方向相反（顺火土之势）。此为解释性候选，非确定计算结论，需咨询师确认。",
+        "kind": "FINDING",
+        "semantic_role": "USEFUL_GOD",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "RECOMMENDED",
+        "evidence_refs": [
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.structure.weak_candidate"
+          },
+          {
+            "finding_key": "s1.structure.cong_candidate"
+          }
+        ],
+        "structured_data": {
+          "based_on": "偏弱候选",
+          "useful_god": "金（印）",
+          "favorable": "水（比劫）",
+          "unfavorable": "火（财）、土（杀）",
+          "divergence": "若判从财杀则取用相反",
+          "status": "解释性候选，非计算结论"
+        }
+      },
+      {
+        "finding_key": "s1.signal.boundary_pattern",
+        "claim": "待验证信号（S2 核对）：自述显示答应额外任务后熬夜、拒绝拖到最后才生硬回应、朋友邀约先答应后取消，同时反例显示面对熟悉同事且有明确截止时能协商边界。命理层面七杀贴身（日支未土）与伤官透干（月干甲木）并存，传统上可作待验证线索：在压力下先承接、后以延迟或撤回方式表达边界。此仅为待验证假设，需以自述与反证校正，不作诊断。",
+        "kind": "SIGNAL",
+        "semantic_role": "BLOCK",
+        "confidence": "LOW",
+        "importance": "HIGH",
+        "reportability": "INTERNAL_ONLY",
+        "evidence_refs": [
+          "input.context.current_challenge",
+          "input.context.concrete_events",
+          "input.context.self_description",
+          "input.context.counterexample",
+          "calculated.foundation"
+        ],
+        "relation_refs": [
+          {
+            "finding_key": "s1.day_branch.wei_earth"
+          },
+          {
+            "finding_key": "s1.ten_gods.visible"
+          }
+        ],
+        "structured_data": {
+          "status": "待 S2 验证",
+          "user_reported": [
+            "答应额外任务后熬夜",
+            "拒绝拖到最后才生硬回应",
+            "朋友邀约先答应后取消"
+          ],
+          "counterexample": "面对熟悉同事且有明确截止时能协商任务边界",
+          "note": "不作心理诊断，需自述校正"
+        }
+      }
+    ],
+    "analysis_fragments": [
+      {
+        "fragment_key": "analysis.s1.day_master",
+        "title": "1.1.1 日主",
+        "content": "日主为癸水，阴水。传统意象为雨露、溪涧、暗流之水，倾向以渗透、观察、顺势的方式回应环境，而非正面冲撞。此为解释视角，可作待验证的自我核心线索：在压力情境中可能先感知氛围再行动。需以用户自述与反证校正，不作人格定论。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已依据系统计算的日主数据完成日干、五行、阴阳与意象解释。",
+          "quote": "日主为癸水，阴水。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "日主数据由系统计算提供，解释部分标注为解释视角。",
+          "quote": "日主为癸水，阴水。",
+          "follow_up_questions": [],
+          "details": {
+            "day_master": "癸",
+            "element": "水",
+            "polarity": "阴",
+            "imagery": "雨露、溪涧、暗流之水",
+            "boundary": "意象为传统解释，非人格定论"
+          }
+        },
+        "finding_refs": [
+          "s1.dm.gui_water"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.structure",
+        "title": "1.1.2 格局",
+        "content": "月令为午火，癸水生于火旺之月，月支午火泄水、日支未土克水、月干甲木泄水，全局生扶偏少而克泄耗偏多，故倾向判为偏弱候选；反证是年支子水为癸之禄根，虽被子午冲损但未消失，故弱而不从。从格候选（从财杀）因年支子水明现根气而证据不足，倾向不成立。以上均为条件化候选，不以十神出现次数代替旺衰，需咨询师核对确认。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已给出月令与全局生扶/克泄耗依据，并列出偏弱与从格两个条件化候选及反证。",
+          "quote": "月令为午火，癸水生于火旺之月，月支午火泄水、日支未土克水、月干甲木泄水，全局生扶偏少而克泄耗偏多，故倾向判为偏弱候选；反证是年支子水为癸之禄根，虽被子午冲损但未消失，故弱而不从。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "已基于系统计算的四柱与藏干给出格局候选及反证，未以出现次数代替旺衰。",
+          "quote": "月令为午火，癸水生于火旺之月，月支午火泄水、日支未土克水、月干甲木泄水，全局生扶偏少而克泄耗偏多，故倾向判为偏弱候选；反证是年支子水为癸之禄根，虽被子午冲损但未消失，故弱而不从。",
+          "follow_up_questions": [],
+          "details": {
+            "month_branch": "午",
+            "supporting": [
+              "年支子水（比肩根）"
+            ],
+            "draining_controlling": [
+              "月支午火（偏财）",
+              "日支未土（七杀）",
+              "月干甲木（伤官）"
+            ],
+            "candidate_primary": "偏弱",
+            "candidate_secondary": "从财杀（证据不足，倾向不从）",
+            "counter_evidence": "子水为癸之根，子午冲使根受损但未消失",
+            "boundary": "解释性判断，需咨询师确认"
+          }
+        },
+        "finding_refs": [
+          "s1.structure.weak_candidate",
+          "s1.structure.cong_candidate"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.month",
+        "title": "1.1.3 月令",
+        "content": "月支为午火，本气丁火为偏财，藏己土为七杀。午月火旺，气候基调偏燥热，癸水处其间有被蒸腾之象。传统上可作待验证的世界观线索：对外部机会与资源（财）敏感，同时承受压力与要求（杀）。此为解释视角，需以自述校正。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已依据系统计算的月支、本气与藏干十神完成月令解释。",
+          "quote": "月支为午火，本气丁火为偏财，藏己土为七杀。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "月令数据由系统计算提供，解释部分标注为解释视角。",
+          "quote": "月支为午火，本气丁火为偏财，藏己土为七杀。",
+          "follow_up_questions": [],
+          "details": {
+            "month_branch": "午",
+            "branch_element": "火",
+            "hidden_stems": [
+              {
+                "stem": "丁",
+                "ten_god": "偏财"
+              },
+              {
+                "stem": "己",
+                "ten_god": "七杀"
+              }
+            ],
+            "climate": "火旺燥热",
+            "boundary": "世界观线索为待验证假设"
+          }
+        },
+        "finding_refs": [
+          "s1.month.wu_fire"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ten_gods",
+        "title": "1.1.4 十神",
+        "content": "透干十神：年干丙火正财、月干甲木伤官，表达/创造与务实求成两条线同时外显。藏干十神：比肩（年支子）、偏财（月支午、日支未）、七杀（月支午、日支未）、食神（日支未），七杀与偏财藏而两见，传统上可作待验证信号：对压力与机会的敏感度较高；食神藏于日支，或与自我照顾、慢节奏表达相关。四柱明现中不见偏印、劫财、正印、正官，传统上可作待验证线索：直接的支持/庇护感与明确规则框架不显于表，但缺失不能证明人格缺陷或现实能力缺失。以上均为解释视角，需以自述核对。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已列出透干/藏干十神、旺衰线索与缺失项，并声明缺失不等于人格缺陷。",
+          "quote": "透干十神：年干丙火正财、月干甲木伤官，表达/创造与务实求成两条线同时外显。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "十神数据由系统计算提供，解释部分标注为解释视角。",
+          "quote": "透干十神：年干丙火正财、月干甲木伤官，表达/创造与务实求成两条线同时外显。",
+          "follow_up_questions": [],
+          "details": {
+            "visible": {
+              "正财": 1,
+              "伤官": 1
+            },
+            "hidden": {
+              "比肩": 1,
+              "偏财": 2,
+              "七杀": 2,
+              "食神": 1
+            },
+            "absent": [
+              "偏印",
+              "劫财",
+              "正印",
+              "正官"
+            ],
+            "note": "出现次数不代表旺衰，缺失不等于人格缺陷"
+          }
+        },
+        "finding_refs": [
+          "s1.ten_gods.visible",
+          "s1.ten_gods.hidden",
+          "s1.ten_gods.absent"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.day_branch",
+        "title": "1.1.5 日支",
+        "content": "日支为未土，与日干癸水为土克水（七杀贴身），藏己土七杀、丁火偏财、乙木食神。传统上可作待验证的内在需求线索：在亲密/贴身层面易感到被要求与被期待，同时内在有务实与自我表达的需要。此为解释视角，需以自述校正。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已依据系统计算的日支、藏干十神与日干生克完成日支解释。",
+          "quote": "日支为未土，与日干癸水为土克水（七杀贴身），藏己土七杀、丁火偏财、乙木食神。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "日支数据由系统计算提供，解释部分标注为解释视角。",
+          "quote": "日支为未土，与日干癸水为土克水（七杀贴身），藏己土七杀、丁火偏财、乙木食神。",
+          "follow_up_questions": [],
+          "details": {
+            "day_branch": "未",
+            "branch_element": "土",
+            "relation_to_day_master": "土克水",
+            "hidden_stems": [
+              {
+                "stem": "己",
+                "ten_god": "七杀"
+              },
+              {
+                "stem": "丁",
+                "ten_god": "偏财"
+              },
+              {
+                "stem": "乙",
+                "ten_god": "食神"
+              }
+            ],
+            "boundary": "内在需求线索为待验证假设"
+          }
+        },
+        "finding_refs": [
+          "s1.day_branch.wei_earth"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.hour",
+        "title": "1.1.6 时支",
+        "content": "【暂缓】出生时间精度为 unknown，系统未计算时柱，故时支五行、十神与价值排序无依据，不能补造。现有资料仅能确认出生日期与地点（山东济南，1996-06-15），不足以推断时辰。补充问题：请提供尽量准确的出生钟表时间（几点几分）及是否接近整点/时辰交界；若无法确认，可提供出生地当时是否使用夏令时等信息供人工核对。",
+        "framework_coverage": {
+          "status": "DEFERRED",
+          "reason": "出生时间未知，系统未计算时柱，时支相关分析无输入依据。",
+          "quote": "【暂缓】出生时间精度为 unknown，系统未计算时柱，故时支五行、十神与价值排序无依据，不能补造。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？",
+            "出生地当时是否使用夏令时？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "DEFERRED",
+          "reason": "出生时间未知，系统未计算时柱，无法分析时支五行、十神与价值排序。",
+          "quote": "【暂缓】出生时间精度为 unknown，系统未计算时柱，故时支五行、十神与价值排序无依据，不能补造。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？",
+            "出生地当时是否使用夏令时？"
+          ],
+          "details": {}
+        },
+        "finding_refs": [],
+        "evidence_refs": [
+          "input.profile.birth_time_precision",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.year",
+        "title": "1.1.7 年柱",
+        "content": "年柱丙子：年干丙火正财、年支子水比肩。传统上可作集体印记与内在权威线索：早年环境或带有务实求成与同辈/自我支撑并存的主题。此为解释视角，不编造具体家庭经历，需以自述核对。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已依据系统计算的年柱干支与十神完成解释，并声明不编造家庭经历。",
+          "quote": "年柱丙子：年干丙火正财、年支子水比肩。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "年柱数据由系统计算提供，解释部分标注为解释视角。",
+          "quote": "年柱丙子：年干丙火正财、年支子水比肩。",
+          "follow_up_questions": [],
+          "details": {
+            "year_pillar": "丙子",
+            "stem_ten_god": "正财",
+            "branch_ten_god": "比肩",
+            "boundary": "不编造家庭经历，线索为待验证假设"
+          }
+        },
+        "finding_refs": [
+          "s1.year.bing_zi"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.interactions",
+        "title": "1.1.8 刑冲合害",
+        "content": "干支关系：子午六冲（年-月）、子未六害（年-日）、丙癸天干相克（年-日）、午未六合（月-日）。合与合化需分开：午未六合为合意，本盘午火当令，倾向论合不化。传统上可作待验证的心理冲突线索：外部机会（财）与自我根基（比肩）之间存在拉扯，同时贴身关系（日支）又对月令有依附与调和倾向。此为解释视角，需以自述校正。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已列出系统计算的六冲、六害、天干相克与六合，并区分合与合化。",
+          "quote": "干支关系：子午六冲（年-月）、子未六害（年-日）、丙癸天干相克（年-日）、午未六合（月-日）。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "干支关系由系统计算提供，合与合化已分开说明。",
+          "quote": "干支关系：子午六冲（年-月）、子未六害（年-日）、丙癸天干相克（年-日）、午未六合（月-日）。",
+          "follow_up_questions": [],
+          "details": {
+            "interactions": [
+              {
+                "type": "六冲",
+                "pillars": [
+                  "year",
+                  "month"
+                ],
+                "symbols": "子午"
+              },
+              {
+                "type": "六害",
+                "pillars": [
+                  "year",
+                  "day"
+                ],
+                "symbols": "子未"
+              },
+              {
+                "type": "天干相克",
+                "pillars": [
+                  "year",
+                  "day"
+                ],
+                "symbols": "丙癸"
+              },
+              {
+                "type": "六合",
+                "pillars": [
+                  "month",
+                  "day"
+                ],
+                "symbols": "午未"
+              }
+            ],
+            "combination_vs_transformation": "午未论合，午火当令倾向不化",
+            "boundary": "心理冲突线索为待验证假设"
+          }
+        },
+        "finding_refs": [
+          "s1.interactions.list"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.dayun",
+        "title": "1.1.9 大运",
+        "content": "【暂缓】系统计算的 bazi_facts.dayun 为空数组，且限制说明指出出生时间未知时不计算精确起运，故无法按分析日期（2026-10-04）选择当前运，也无法给出后续每十年地图的起止年份。现有资料不足以推断大运，不能补造年份。补充问题：请提供尽量准确的出生钟表时间，以便计算起运与排布大运；确认后可按真实起止年份补出各阶段地图。",
+        "framework_coverage": {
+          "status": "DEFERRED",
+          "reason": "系统未计算大运（dayun 为空），出生时间未知导致起运无法确定，缺少起止年份输入。",
+          "quote": "【暂缓】系统计算的 bazi_facts.dayun 为空数组，且限制说明指出出生时间未知时不计算精确起运，故无法按分析日期（2026-10-04）选择当前运，也无法给出后续每十年地图的起止年份。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "DEFERRED",
+          "reason": "系统未计算大运，出生时间未知导致起运无法确定，缺少起止年份输入，不能补造年份。",
+          "quote": "【暂缓】系统计算的 bazi_facts.dayun 为空数组，且限制说明指出出生时间未知时不计算精确起运，故无法按分析日期（2026-10-04）选择当前运，也无法给出后续每十年地图的起止年份。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ],
+          "details": {}
+        },
+        "finding_refs": [],
+        "evidence_refs": [
+          "input.context.analysis_date",
+          "input.profile.birth_time_precision",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.useful_gods",
+        "title": "1.1.10 喜忌",
+        "content": "基于偏弱候选：用神倾向取金（印）生水、水（比劫）助身；忌神倾向火（财）与土（杀）过旺耗克。分歧点：若最终判为从财杀，则取用方向相反（顺火土之势）。此为解释性候选，非确定计算结论，需咨询师确认。",
+        "framework_coverage": {
+          "status": "FULFILLED",
+          "reason": "已基于本步格局候选给出用神、喜神、忌神及取用理由与分歧，未只说等待人工取用。",
+          "quote": "基于偏弱候选：用神倾向取金（印）生水、水（比劫）助身；忌神倾向火（财）与土（杀）过旺耗克。",
+          "follow_up_questions": []
+        },
+        "structured_analysis": {
+          "status": "FULFILLED",
+          "reason": "喜忌为解释性候选，已给出取用理由与流派分歧。",
+          "quote": "基于偏弱候选：用神倾向取金（印）生水、水（比劫）助身；忌神倾向火（财）与土（杀）过旺耗克。",
+          "follow_up_questions": [],
+          "details": {
+            "based_on": "偏弱候选",
+            "useful_god": "金（印）",
+            "favorable": "水（比劫）",
+            "unfavorable": "火（财）、土（杀）",
+            "divergence": "若判从财杀则取用相反",
+            "boundary": "解释性候选，非计算结论"
+          }
+        },
+        "finding_refs": [
+          "s1.useful_gods.candidate"
+        ],
+        "evidence_refs": [
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ziwei_life",
+        "title": "1.2.1 命宫",
+        "content": "【暂缓】紫微未计算，系统限制说明指出出生时间未知时不计算紫微，故命宫主星、吉煞/亮度与三方四正（命/财/官/迁）均无依据，不能补造宫位星曜。现有资料仅能确认出生日期与地点，不足以定命宫。补充问题：请提供尽量准确的出生钟表时间，以便计算紫微命盘；确认后可补出命宫与三方四正分析。",
+        "framework_coverage": {
+          "status": "DEFERRED",
+          "reason": "紫微未计算，出生时间未知导致命宫无法确定，缺少宫位星曜输入。",
+          "quote": "【暂缓】紫微未计算，系统限制说明指出出生时间未知时不计算紫微，故命宫主星、吉煞/亮度与三方四正（命/财/官/迁）均无依据，不能补造宫位星曜。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "DEFERRED",
+          "reason": "紫微未计算，出生时间未知导致命宫无法确定，不能补造宫位星曜。",
+          "quote": "【暂缓】紫微未计算，系统限制说明指出出生时间未知时不计算紫微，故命宫主星、吉煞/亮度与三方四正（命/财/官/迁）均无依据，不能补造宫位星曜。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ],
+          "details": {}
+        },
+        "finding_refs": [],
+        "evidence_refs": [
+          "input.profile.birth_time_precision",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ziwei_body",
+        "title": "1.2.2 身宫",
+        "content": "【暂缓】紫微未计算，身宫位置与组合、命身一致/背离及后天方向均无依据，不能补造。现有资料仅能确认出生日期与地点，不足以定身宫。补充问题：请提供尽量准确的出生钟表时间，以便计算紫微命盘；确认后可补出身宫与命身关系分析。",
+        "framework_coverage": {
+          "status": "DEFERRED",
+          "reason": "紫微未计算，出生时间未知导致身宫无法确定，缺少宫位星曜输入。",
+          "quote": "【暂缓】紫微未计算，身宫位置与组合、命身一致/背离及后天方向均无依据，不能补造。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "DEFERRED",
+          "reason": "紫微未计算，出生时间未知导致身宫无法确定，不能补造。",
+          "quote": "【暂缓】紫微未计算，身宫位置与组合、命身一致/背离及后天方向均无依据，不能补造。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ],
+          "details": {}
+        },
+        "finding_refs": [],
+        "evidence_refs": [
+          "input.profile.birth_time_precision",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ziwei_wellbeing",
+        "title": "1.2.3 福德",
+        "content": "【暂缓】紫微未计算，福德宫主星、化忌、空劫、煞与面具张力均无依据，不能补造，也不能据此作任何诊断。现有资料仅能确认出生日期与地点，不足以定福德宫。补充问题：请提供尽量准确的出生钟表时间，以便计算紫微命盘；确认后可补出福德宫分析。",
+        "framework_coverage": {
+          "status": "DEFERRED",
+          "reason": "紫微未计算，出生时间未知导致福德宫无法确定，缺少宫位星曜输入。",
+          "quote": "【暂缓】紫微未计算，福德宫主星、化忌、空劫、煞与面具张力均无依据，不能补造，也不能据此作任何诊断。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "DEFERRED",
+          "reason": "紫微未计算，出生时间未知导致福德宫无法确定，不能补造，也不能据此诊断。",
+          "quote": "【暂缓】紫微未计算，福德宫主星、化忌、空劫、煞与面具张力均无依据，不能补造，也不能据此作任何诊断。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ],
+          "details": {}
+        },
+        "finding_refs": [],
+        "evidence_refs": [
+          "input.profile.birth_time_precision",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "fragment_key": "analysis.s1.ziwei_transformations",
+        "title": "1.2.4 四化",
+        "content": "【暂缓】紫微未计算，生年四化与宫干飞化均无依据，禄权科忌的源宫/目标宫/星曜及重点忌流向无法列出，不能补造。现有资料仅能确认出生日期与地点，不足以定四化。补充问题：请提供尽量准确的出生钟表时间，以便计算紫微命盘；确认后可补出四化分析。其他宫位如需调用，须说明问卷依据并由人工选择。",
+        "framework_coverage": {
+          "status": "DEFERRED",
+          "reason": "紫微未计算，出生时间未知导致四化无法确定，缺少宫位星曜输入。",
+          "quote": "【暂缓】紫微未计算，生年四化与宫干飞化均无依据，禄权科忌的源宫/目标宫/星曜及重点忌流向无法列出，不能补造。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ]
+        },
+        "structured_analysis": {
+          "status": "DEFERRED",
+          "reason": "紫微未计算，出生时间未知导致四化无法确定，不能补造。",
+          "quote": "【暂缓】紫微未计算，生年四化与宫干飞化均无依据，禄权科忌的源宫/目标宫/星曜及重点忌流向无法列出，不能补造。",
+          "follow_up_questions": [
+            "请提供尽量准确的出生钟表时间（几点几分）。",
+            "出生时间是否接近整点或时辰交界？"
+          ],
+          "details": {}
+        },
+        "finding_refs": [],
+        "evidence_refs": [
+          "input.profile.birth_time_precision",
+          "calculated.foundation"
+        ]
+      }
+    ],
+    "risk_flags": [
+      {
+        "message": "出生时间未知：时柱、紫微命身福德四化与大运起止均无计算依据，相关条目已按【暂缓】处理，禁止补造年份或宫位星曜。",
+        "references": [
+          "input.profile.birth_time_precision",
+          "calculated.foundation"
+        ]
+      },
+      {
+        "message": "本批全部资料为合成验收数据，不得冒充真实客户或专业评估；心理线索仅为待验证信号，需以用户自述与反证校正，不作诊断或定论。",
+        "references": [
+          "input.context.synthetic_notice",
+          "input.context.self_description",
+          "input.context.counterexample"
+        ]
+      },
+      {
+        "message": "身强弱与从格、喜忌均为解释性候选，存在流派分歧，需咨询师核对确认，不得作为确定计算结论输出。",
+        "references": [
+          "calculated.foundation"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 13984,
+    "output_tokens": 10136,
+    "latency_ms": 33014,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "3dcda807-c770-4157-b8fc-928b95d80fe3",
+    "skill_version_id": 0,
+    "skill_key": "report.s1_foundation_analysis",
+    "skill_version": 1,
+    "processor": "reports.analysis_draft",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "1c66f4d5cb9270ecb75745ecb350d41bdb03273d567b57f68fc3ba8294ebb54b",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

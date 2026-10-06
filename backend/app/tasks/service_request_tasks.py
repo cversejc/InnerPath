@@ -10,15 +10,17 @@ from app.core.cache import cache_set, close_redis
 from app.core.logging_config import get_logger
 from app.db.session import AsyncSessionLocal, engine
 from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
+from app.application.report_cases import (
+    ensure_legacy_service_request_allowed,
+    get_report_case_for_service_request,
+)
 from app.models.user import User  # noqa: F401 - registers user foreign keys in the worker process
-from app.services.ai_service import generate_report_with_ai
 from app.domains.audit.service import record_audit
 from app.domains.calendar.generation import generate_calendar_with_ai
 from app.domains.service_requests.repository import _append_revision
 from app.domains.service_requests.payloads import flatten_ai_input
 from app.domains.service_requests.drafts import (
     normalize_calendar_draft,
-    normalize_report_draft,
     validate_draft,
 )
 from app.tasks.celery_app import celery_app
@@ -53,6 +55,7 @@ async def _save_draft(
         task = await db.get(ServiceRequestTask, task_id)
         if service_request is None or task is None:
             raise ValueError("service_request_task_target_not_found")
+        ensure_legacy_service_request_allowed(service_request)
         validated_payload = validate_draft(service_request.service_type, ai_payload)
 
         existing = await db.scalar(
@@ -100,6 +103,7 @@ async def _run_service_request_task(task_id: str, request_id: int) -> dict[str, 
             task = await db.get(ServiceRequestTask, task_id)
             if service_request is None or task is None:
                 raise ValueError("service_request_task_target_not_found")
+            ensure_legacy_service_request_allowed(service_request)
             task.status = "processing"
             task.progress = 10
             await db.commit()
@@ -118,16 +122,14 @@ async def _run_service_request_task(task_id: str, request_id: int) -> dict[str, 
             service_type = service_request.service_type
 
         started = time.time()
-        if service_type == "report":
-            ai_result = await generate_report_with_ai(user_data)
-            ai_payload = normalize_report_draft(ai_result)
-        else:
-            ai_result = await generate_calendar_with_ai(user_data)
-            async with AsyncSessionLocal() as db:
-                service_request = await db.get(ServiceRequest, request_id)
-                if service_request is None:
-                    raise ValueError("service_request_not_found")
-                ai_payload = normalize_calendar_draft(ai_result, service_request)
+        if service_type != "calendar":
+            raise ValueError("report_case_workflow_required")
+        ai_result = await generate_calendar_with_ai(user_data)
+        async with AsyncSessionLocal() as db:
+            service_request = await db.get(ServiceRequest, request_id)
+            if service_request is None:
+                raise ValueError("service_request_not_found")
+            ai_payload = normalize_calendar_draft(ai_result, service_request)
         elapsed_ms = int((time.time() - started) * 1000)
 
         await _update_task_state(task_id, "processing", 75)
@@ -137,8 +139,7 @@ async def _run_service_request_task(task_id: str, request_id: int) -> dict[str, 
             expire=1800,
         )
 
-        # The service layer performs the strict calendar/report draft checks
-        # before the consultant can save or deliver the result.
+        # The service layer performs strict calendar draft checks before review.
         await _save_draft(request_id, task_id, ai_payload)
         await cache_set(
             f"service-request:task:{task_id}",
@@ -159,11 +160,15 @@ async def _run_service_request_task(task_id: str, request_id: int) -> dict[str, 
             async with AsyncSessionLocal() as db:
                 task = await db.get(ServiceRequestTask, task_id)
                 service_request = await db.get(ServiceRequest, request_id)
+                case_backed = bool(
+                    service_request
+                    and await get_report_case_for_service_request(db, request_id)
+                )
                 if task:
                     task.status = "failed"
                     task.progress = 0
                     task.error = error_text
-                if service_request:
+                if service_request and not case_backed:
                     service_request.status = "failed"
                     service_request.last_error = error_text
                     service_request.failed_at = datetime.utcnow()

@@ -1,0 +1,26 @@
+{
+  "report_action_count": 4,
+  "scheduled_action_ids": [
+    "s4.action.boundary_script",
+    "s4.action.enough_good_delivery",
+    "s4.action.pause_before_yes"
+  ],
+  "action_placement_counts": {
+    "s4.action.pause_before_yes": 30,
+    "s4.action.enough_good_delivery": 5,
+    "s4.action.boundary_script": 5
+  },
+  "unavailable_actions": [
+    {
+      "action_id": "s4.action.weekly_shadow_review",
+      "reason": "与其他报告练习叠加后超出每日可用时间"
+    }
+  ],
+  "unaccounted_action_ids": [],
+  "scheduled_days": 30,
+  "matching_reference_days": 30,
+  "reference_mismatches": [],
+  "available_minutes_per_day": 30,
+  "max_daily_minutes": 20,
+  "over_budget_days": []
+}

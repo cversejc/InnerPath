@@ -44,6 +44,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REPORT_EXPORT_FRONTEND_URL=${REPORT_EXPORT_FRONTEND_URL:-http://host.docker.internal:3000}
     volumes:
       - ./backend/logs:/app/logs
     command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
@@ -87,6 +88,31 @@ services:
     restart: unless-stopped
     healthcheck:
       disable: true
+
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: innerpath-celery-beat
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-innerpath}:${POSTGRES_PASSWORD:-innerpath123}@postgres:5432/${POSTGRES_DB:-innerpath}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    command: ["celery", "-A", "app.tasks.celery_app", "beat", "--loglevel=info"]
+    volumes:
+      - ./backend/logs:/app/logs
+    networks:
+      - innerpath-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    restart: unless-stopped
 
   frontend:
     build:

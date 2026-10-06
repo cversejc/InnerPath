@@ -1,0 +1,78 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点四：建议与自己的标准如何并存",
+    "content": "你做决定时会参考直觉与家人朋友的建议，也愿意听性格反馈。这可以是开放和获得支持的资源，不能直接解释为缺少主见。\n\n这一卡点证据较弱：假如面对建议时，你有一个“应该配合”的内在标准，却不容易表达不同意见，外部期待与自身判断就可能拉扯。须用真实事件核对，不能由演示命盘或职业推出这一结论。\n\n它可能保护可靠、好相处的形象；若长期如此，代价可能是越来越难分辨自己认可的原则与尚未检验的规则。若你其实经常听完建议仍自主选择，这项解释就应被弱化或撤下。\n\n整合邀请是让建议成为材料，同时保留自己的决定权。想法记录实验对应这一项。",
+    "used_findings": [
+      "s4.blocks.authority_expression"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这是四个卡点中的最后一个。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.block_04",
+      "chapter": "challenge",
+      "sequence_no": 11,
+      "new_information_role": "MANIFEST",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "reader_preference": "深入详细",
+      "boundary_notes": [
+        "出生日期与出生地仅为演示假设，命盘内容以条件式表达",
+        "未自述的感受与自动想法均以“可能/可以核对”表达",
+        "不包含解决步骤与实验动作，统一留在成长实验节",
+        "不引用收束金句"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4497,
+    "output_tokens": 830,
+    "latency_ms": 4719,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "abc836ec-a769-486d-9a22-0f966a483660",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "e6293bdb90058bcbeb1f48a6669e136a2f3c4c33b232baae044f831ea280ddee",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点四：当“权威期待”与“自我表达”同时在场",
+    "content": "这是四个卡点中的最后一个。前面三个，分别关于先答应、有事才联系、以及用急迫推进事情。第四个卡点，出现在一个更靠近“规则”的位置：当你需要说出真实需求，或者需要拒绝时。\n\n你自述不太会拒绝，拒绝时语言生硬，习惯迁就。把这两句放在一起看，会发现一个有意思的张力：不是你不会表达，而是表达常常在两个极端之间跳动——要么迁就，要么生硬。中间那条“温和但清楚”的路，似乎还没有被走熟。\n\n从传统命理的解释视角看，乙木日主常被描述为柔韧、善于协调，天府命宫常被描述为稳重、可靠、重视秩序。这是一种符号层面的线索，不是定论。它可能对应你身上一种倾向：先照顾场面，先符合期待，再考虑自己的需求要不要被听见。这里之所以用“可能”，是因为它需要你在真实场景里核对，而不是被当作已经发生的事实。\n\n运作机制大概是这样：当你面对一个需要表态的场景——比如上级临时加任务、家人提出安排、朋友开口请求——你心里可能同时出现两条规则。一条是“应该迁就，别让人难堪”，另一条是“不能生硬，生硬会伤关系”。这两条规则同时在场，就把自我表达挤到了一个很窄的缝隙里。于是你可能会选择先答应，或者用一句生硬的话快速结束。\n\n这套机制过去保护过你什么？它可能保护过你符合期待、维持形象。在需要被认可、需要关系稳定的阶段，这套顺序是有效的：它让你显得好相处、可靠、不添麻烦。\n\n长期代价是另一面：主权感削弱，真实需求难被听见。当你总是先照顾场面，别人接收到的信息是“你都可以”，而不是“你也有偏好”。久而久之，关系维持住了，但你在关系里的位置变得模糊。\n\n整合邀请是：分辨哪些规则是自己的，哪些是继承来的。不是要你推翻所有规则，而是开始区分——哪些“应该”是你真心认同的，哪些只是你默认接过来的。这个分辨本身，就是让表达从两个极端走向中间那条路的第一步。\n\n本段不列解决步骤。具体怎么练习，统一放在后面的成长实验节。\n\n四个卡点到这里就都看过了。你已经看见这套“先照顾场面”的顺序如何运作、保护了什么、又付出了什么。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "used_findings": [
+      "s4.blocks.authority_expression"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "这是四个卡点中的最后一个。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.block_04",
+      "chapter": "challenge",
+      "sequence_no": 11,
+      "new_information_role": "MANIFEST",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "reader_preference": "深入详细",
+      "boundary_notes": [
+        "出生日期与出生地仅为演示假设，命盘内容以条件式表达",
+        "未自述的感受与自动想法均以“可能/可以核对”表达",
+        "不包含解决步骤与实验动作，统一留在成长实验节",
+        "不引用收束金句"
+      ]
+    }
+  }
+}

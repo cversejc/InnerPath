@@ -1,0 +1,132 @@
+{
+  "signature": "6c6079c1de6e83ad64690a19e66d5b4de332ddeef7862128618387b749cde84c",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "命盘旁注：已审核内容的可理解版本",
+    "content": "这一节把已审核的命盘逻辑转成可读的旁注，方便你核对哪些说法有依据、哪些只是解释视角，并说明出生信息与流派差异带来的不确定性。所有符号都不当作心理证据，命理含义只是待验证线索，需要你的自述和反证来校正。\n\n出生信息与不确定性。你的出生时间为1996年6月15日15时15分（山东济南），精度为“精确”，因此时柱可确定，本节不因出生时间暂缓。但需说明：本次采用中国民用钟表时间，未校正真太阳时；排盘采用节气年/月柱与库的传统计龄方式；旺衰与喜忌属解释性判断，需经确认。不同流派在格局取用、合化判定上可能给出不同结论，因此下文凡涉及强弱、喜忌的地方，都按“候选”呈现。\n\n八字主线（已确认内容的转译）。日主为癸水，阴水，意象为雨露、溪泉、暗流。传统解释视角下，癸水常关联敏感、渗透、以柔应事、内蓄不外显的自我核心线索。月令午火，本气偏财、中气七杀，气候火土当令、燥热；传统视角下常关联“以外部成果与他人评价为参照”的世界观线索。格局候选：主候选为偏弱格（印为用），次候选为从财杀格；从格成立需满足“子水根被冲破且印星无力”，当前时柱庚申正印双透、子水根虽受冲害但未破，故从格条件不成立。反证是：若仅按月令火土旺即判从格，与庚申双印的事实不符。十神层面，透干为正财（年丙）、伤官（月甲）、正印（时庚）；藏干含比肩、偏财×2、七杀×2、食神、正印、劫财、正官；偏印缺失。显性资源为正印（学习、被支持、内化规范）与伤官（表达与突破），隐性压力源为藏于月日支的七杀；伤官与正印天干相克，提示“表达冲动”与“规范内化”的张力。缺失偏印不能证明人格缺陷，出现次数也不代表旺衰，此处以承接方式引用，不逐条重述。日支未土与日干癸水为克（土克水），藏干七杀、偏财、食神；传统视角下，日支七杀为对“被要求/被期待”高度敏感的内在需求线索，食神则提示自我调节与创造出口的潜能。时支申金，藏庚金正印、壬水劫财、戊土正官，时柱正印透干；传统视角下，时柱正印为价值排序线索：重视学习、规范、被认可的专业性，劫财与正官同藏提示“独立与责任”的张力。年柱丙子，天干正财、地支比肩；传统视角下为集体印记线索：早期环境可能强调“务实、可靠、不添麻烦”，子水比肩为同辈/同伴资源。你未提供家庭经历，本节不编造。\n\n干支关系与大运。原局关系：子午六冲（年-月）、子未六害（年-日）、午未六合（月-日），合与合化分开，当前不作合化判定；天干相克为丙癸（年-日）、丙庚（年-时）、甲庚（月-时）。传统视角下，冲害并存提示“外部要求与内在需求反复拉扯”的心理冲突线索，午未六合提示压力与内在需求有黏合倾向。结合你自述的“答应后透支、拒绝拖延”，可提出待验证假设：冲突可能表现为“先顺从后爆发”的循环，但需由你的自述与反证校正。大运方面，按分析日期2026-10-04，你当前在辛卯运（2019–2028，24–33岁），天干辛金偏印、地支卯木；与原局关系为辛金偏印与时柱庚申正印叠加、卯未半合木局、子卯相刑。顺逆势依据为女命阳年逆排，与计算结果一致。后续大运沿真实起止年份保留：庚寅2029–2038、己丑2039–2048、戊子2049–2058、丁亥2059–2068、丙戌2069–2078、乙酉2079–2088。喜忌候选（解释性判断，非确定计算结论）：主候选用神为金（正印/偏印），喜神为水（比肩/劫财），忌神为火（财）与土（杀）；理由为日主癸水失令于午月、时柱庚申印星贴身生扶，印为最直接调节资源，水为同类帮身。分歧在于：若采从财杀格视角，则火土为用、金水为忌；当前因印星有力，从格条件不成立，故以偏弱格取用为主。此类判断需咨询师确认，不作为心理结论。\n\n紫微重点（已确认内容的转译）。命宫在酉，主星廉贞（陷）、破军（得），辅星天钺，生年四化廉贞化忌；三方四正为财帛宫巳紫微七杀+禄存、官禄宫丑武曲贪狼、迁移宫卯天相+天空。传统视角下，廉贞破军坐命常关联“外表守规、内在求变”的人格面具线索；廉贞化忌提示自我评价易受“是否够好”牵动；天钺为贵人辅助资源。属待验证线索，不作诊断。身宫在官禄宫（丑），主星武曲（旺）、贪狼（庙）；命宫在酉、身宫在丑，命身不一致。传统视角下，身宫落官禄提示后天方向偏向“通过工作角色确立自我”，武曲贪狼组合常关联“务实执行+欲望驱动”的双重动力。结合你从事项目运营，可提出待验证假设：后天方向可能偏向“以工作成就锚定自我价值”，需由你自述校正。福德宫在亥，主星天府（得），辅星天魁，无化忌、无空劫、无煞星；传统视角下，天府坐福德常关联“内在求稳、重储备”的心理基调，无煞忌提示内在调节资源相对完整。你自述“独自散步时比较放松”属于你的直接陈述，本节仅作承接引用，不重复展开，也不据此诊断任何心理状态。四化方面：生年四化为天同化禄（田宅宫）、天机化权（疾厄宫）、文昌化科（交友宫）、廉贞化忌（命宫）；宫干飞化重点忌流向为命宫丁干巨门化忌入交友宫、财帛宫癸干贪狼化忌入官禄宫、疾厄宫壬干武曲化忌入官禄宫、福德宫己干文曲化忌入田宅宫。传统视角下，廉贞化忌在命宫加多宫忌入官禄/交友，提示“自我评价与外部关系/工作角色”的张力线索；其他宫位飞化需按问卷依据及人工选择调用，本片段仅列与工作、关系议题相关的重点忌流向。\n\n边界与暂缓。本节所有心理含义均为待验证线索，不是事实认定，也不替代你的自述与反证。以下内容暂缓，需你补充：一，你未提供童年与家庭经历，年柱的“集体印记”只能停留在可能性层面，无法进一步具体化；二，紫微其他宫位飞化是否纳入，需要问卷依据与人工选择；三，喜忌取用存在流派分歧，需确认后再用于后续章节。以上暂缓不影响已确认的盘面事实，但会影响心理含义的细化程度。\n\n读法建议：把这一节当作对照表，而不是结论清单。你可以圈出“像”和“不像”的部分；后续章节会按“卡在哪—往哪去”的顺序展开，本节只做旁注，不重复逐条命盘解释，也不展开任何实验动作与频率。",
+    "used_findings": [
+      "s1.foundation.current_dayun",
+      "s1.foundation.interactions",
+      "s1.foundation.useful_gods_candidates",
+      "s1.foundation.structure_candidates",
+      "s1.foundation.day_master",
+      "s1.foundation.month_command",
+      "s1.ziwei.transformations",
+      "s1.ziwei.life_palace",
+      "s1.foundation.ten_gods",
+      "s1.ziwei.body_palace",
+      "s1.foundation.day_branch",
+      "s1.ziwei.wellbeing_palace",
+      "s1.foundation.year_pillar",
+      "s1.foundation.hour_branch"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s1.day_master",
+      "analysis.s1.structure",
+      "analysis.s1.month",
+      "analysis.s1.ten_gods",
+      "analysis.s1.day_branch",
+      "analysis.s1.hour",
+      "analysis.s1.year",
+      "analysis.s1.interactions",
+      "analysis.s1.dayun",
+      "analysis.s1.useful_gods",
+      "analysis.s1.ziwei_life",
+      "analysis.s1.ziwei_body",
+      "analysis.s1.ziwei_wellbeing",
+      "analysis.s1.ziwei_transformations"
+    ],
+    "used_actions": [],
+    "transition_hint": "下一节进入“卡在哪”，按请求来临—顺从答应—透支—延迟表达的时间顺序，拆解三个卡点，并说明即时缓冲的缺口在哪里。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.foundation_notes",
+      "chapter": "identity",
+      "sequence_no": 3,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_notes": [
+        "使用第二人称",
+        "命理术语译为日常语言",
+        "心理含义以可能/待核对表达",
+        "不诊断、不评判",
+        "不展开实验动作与频率",
+        "不引用金句"
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "must_cover_1",
+        "status": "FULFILLED",
+        "reason": "正文已覆盖八字十项与紫微重点的已确认内容，并逐项注明不确定性与暂缓边界。",
+        "quote": "出生信息与不确定性。你的出生时间为1996年6月15日15时15分（山东济南），精度为“精确”，因此时柱可确定，本节不因出生时间暂缓。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_cover_2",
+        "status": "FULFILLED",
+        "reason": "正文多次明确心理含义只是待验证线索，不作为事实认定。",
+        "quote": "所有符号都不当作心理证据，命理含义只是待验证线索，需要你的自述和反证来校正。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_1",
+        "status": "FULFILLED",
+        "reason": "本节只做旁注，未重复展开后续心理章节的卡点解释。",
+        "quote": "本节只做旁注，不重复逐条命盘解释，也不展开任何实验动作与频率。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_2",
+        "status": "FULFILLED",
+        "reason": "正文未展开任何实验动作、频率或退出条件。",
+        "quote": "本节只做旁注，不重复逐条命盘解释，也不展开任何实验动作与频率。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_3",
+        "status": "FULFILLED",
+        "reason": "本节未引用收束金句。",
+        "quote": "读法建议：把这一节当作对照表，而不是结论清单。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat_4",
+        "status": "FULFILLED",
+        "reason": "十神信息以承接方式引用，未逐条重新完整解释。",
+        "quote": "缺失偏印不能证明人格缺陷，出现次数也不代表旺衰，此处以承接方式引用，不逐条重述。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "review_issue_report_coherence",
+        "status": "FULFILLED",
+        "reason": "已删除重复展开的恢复资源假设，改为引用用户自述事实并说明不重复展开。",
+        "quote": "你自述“独自散步时比较放松”属于你的直接陈述，本节仅作承接引用，不重复展开，也不据此诊断任何心理状态。",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 30209,
+    "output_tokens": 3031,
+    "latency_ms": 9794,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "d6259b40-54d0-4c84-9bb4-930c85e5eb01",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "1c6f747986ce1e1f432f5e9f460a248f22d2b1b997328bc9d75726d144d34583",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

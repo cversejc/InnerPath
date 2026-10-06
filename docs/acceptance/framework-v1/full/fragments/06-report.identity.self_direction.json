@@ -1,0 +1,72 @@
+{
+  "signature": "2048480569814226b2ce0d4c6563cdcdfef5f27753cd98740dc44d302d3326df",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "通往完整的方向：让关系关照与自我主权同时在场",
+    "content": "如果要用一句话概括你接下来可能要走的方向，那可能是：在“回应别人”和“照顾自己”之间，练习让两者同时在场，而不是二选一。\n\n关系路径可以简写成：\n请求来临 → 先答应（外部认可参照） → 透支 → 延迟表达或取消 → 事后不适 → 尝试在“答应前”插入停顿 → 关系关照与自我主权并存。\n\n先说当前较偏重的一端。从你的自述看，你在做选择时，可能较常以“外部认可与关系安全”为参照来确认自己是否做得够好——你说“我认为自己要靠谱、不能让人失望”，也提到“拒绝后担心别人觉得我不够好”。这属于你直接表达的感受，不是诊断；它更像一个待核对的假设：当请求到来时，你的第一反应可能是先确保对方不失望，再考虑自己是否还有余力。\n\n再看被排在后面的另一端。你提到“独自散步时比较放松”，也提到“本想休息却答应”，这提示“以自身节奏与真实需求为主权”这一端是存在的，只是在他人请求面前容易被放到后面。它可能不是“自私”或“不够负责”，而是一种需要被重新纳入协商的资源。\n\n这两端并不是好坏之分，也不是要你从此不再迁就。方向不是变成“完美人格”，而是练习在具体情境中同时保留关系关照与自我主权：既能看见对方的请求，也能看见自己的余量。你自述“面对熟悉同事且有明确截止时，我能够协商任务边界”，这说明这种整合能力已经存在，只是目前较依赖情境——熟悉的人、明确的截止，会让你更容易表达边界。\n\n从更整体的视角看，你身上的线索可以这样对应：意识层是你明确说出的“要靠谱、不能让人失望”；潜意识层则是一个待验证的假设——“以顺应外部期待来维持关系安全”。当前阶段（辛卯偏印，2019–2028）更像“内化与准备”的时期，主题偏向学习、沉淀与渐进，而不是立刻做出重大转向。资源方面，学习、被支持、同类陪伴可能是你较为可用的支持；而外部成果压力与被要求感，则可能是需要留意的阴影面。藏而未透的自我调节、独立争取与责任自律，则像是尚待带入意识的潜能。\n\n需要说明的是，“天命之性”“明德”“阴阳对应细节”“静观”这些部分目前资料不足，暂缓展开。如果你愿意，可以之后补充：你觉得自己天生擅长或在意的是什么？你希望自己成为什么样的人？你平时用什么方式让自己安静下来？\n\n这一节只先埋下方向的线索：下一节进入“卡在哪”，会按“请求来临—顺从答应—透支—延迟表达”的时间顺序，拆解三个卡点，并说明即时缓冲的缺口在哪里。具体的练习动作、频率与退出条件，统一放在成长实验节，这里不提前展开。",
+    "used_findings": [
+      "s3.self.core_tension",
+      "s2.pattern.self_worth_external_reference",
+      "s3.integration.correspondence"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.self",
+      "analysis.s3.integration"
+    ],
+    "used_actions": [],
+    "transition_hint": "下一节进入“卡在哪”，按请求来临—顺从答应—透支—延迟表达的时间顺序，拆解三个卡点，并说明即时缓冲的缺口在哪里。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_direction",
+      "sequence_no": 6,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_notes": [
+        "第二人称",
+        "现实语言",
+        "不诊断",
+        "命理术语已翻译为日常语言",
+        "未自述内容以可能/待核对表达"
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_direction",
+        "status": "FULFILLED",
+        "reason": "已覆盖当前倾向的一端（以外部认可与关系安全为参照）、被排除的另一端（以自身节奏与真实需求为主权），并说明整合方向是两端同时在场而非完美人格。",
+        "quote": "方向不是变成“完美人格”，而是练习在具体情境中同时保留关系关照与自我主权：既能看见对方的请求，也能看见自己的余量。",
+        "follow_up_questions": [
+          "在什么情境下你最容易答应？",
+          "答应后身体和情绪的第一反应是什么？",
+          "有没有一次你成功表达了边界且关系没有受损的经历？",
+          "你觉得自己天生擅长或在意的是什么？",
+          "你希望自己成为什么样的人？",
+          "你平时用什么方式让自己安静下来？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15118,
+    "output_tokens": 1120,
+    "latency_ms": 5204,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "a19849f9-90a1-4ddb-9cf6-a5028d4430d1",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "19fe4a1494cce65d6e82adfdbc8297489006e3f6f1a6ea42bf2d27cefeb65d85",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -7,6 +7,7 @@ import {
   saveStaffDraft,
   startStaffAIDraft
 } from '../api.js'
+import { requestReportCaseInfo } from '../../report-cases/api.js'
 import {
   buildCalendarPayload,
   buildReportPayload,
@@ -114,11 +115,18 @@ export default {
     if (!this.workspace || !this.infoReason || this.infoSaving) return
     this.infoSaving = true
     try {
-      const updated = await requestStaffInfo(this.workspace.request.id, this.infoReason)
+      const isReportCase = this.workspace.request.service_type === 'report' && this.reportCase?.id
+      const updated = isReportCase
+        ? await requestReportCaseInfo(this.reportCase.id, this.infoStepKey, this.infoReason.trim())
+        : await requestStaffInfo(this.workspace.request.id, this.infoReason)
       this.workspace.request = { ...this.workspace.request, ...updated }
-      this.message = '已标记为待用户补充，用户会在申请中心看到原因。'
+      this.message = isReportCase
+        ? '已向用户发送补充问题，当前审核节点会在收到回复后恢复。'
+        : '已标记为待用户补充，用户会在申请中心看到原因。'
       this.showInfoPanel = false
       this.infoReason = ''
+      this.infoStepKey = ''
+      if (isReportCase) await this.loadWorkspace(this.workspace.request.id)
       await this.loadRequests()
     } catch (error) {
       this.message = this.errorText(error)

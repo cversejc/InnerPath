@@ -1,0 +1,14 @@
+{
+  "raw": "{\"approved\": true, \"issues\": [{\"code\": \"MONTH_DAY_LABEL_MISMATCH\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-07\", \"field_path\": \"monthly.rhythm_changes\", \"observed_text\": \"10月5日、7日、13日、16日、25日、26日、28日等金水相生的日子\", \"message\": \"10月7日（甲寅）当日分析写“木气生发”，10月29日（丙子）写“冲害被引动”，与此处“金水相生／土气偏重”的分组用词不一致；建议改用“流通较顺／压力偏重”等中性表述。\"}, {\"code\": \"UNSUITABLE_IS_INTERNAL_NOTE\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-08\", \"field_path\": \"unsuitable.0\", \"observed_text\": \"不要在14:29交接前后把戊戌月柱的土重感套用到整个时段，按实际时间分别看待\", \"message\": \"该条是月柱时段的口径说明，不是用户可执行的“不宜”行为，与其余日期“不宜”条目风格不一致，建议改为面向用户行动的表达。\"}], \"patches\": []}",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 62389,
+    "output_tokens": 27824,
+    "latency_ms": 114655,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "8d8166e7-67fe-4498-8075-7469ad8d9909",
+    "thinking_enabled": true
+  }
+}

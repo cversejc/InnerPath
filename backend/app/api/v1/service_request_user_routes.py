@@ -15,7 +15,6 @@ from app.domains.service_requests.schemas import (
     ServiceRequestUpdate,
 )
 from app.domains.service_requests.service import (
-    create_service_request,
     get_service_request,
     get_user_service_requests,
     resubmit_service_request,
@@ -23,6 +22,11 @@ from app.domains.service_requests.service import (
     withdraw_service_request,
 )
 from app.api.v1.service_request_api_support import _raise_value_error, _serialize_public
+from app.application.report_cases import (
+    cancel_report_case_for_service_request,
+    create_user_service_request,
+    ensure_legacy_service_request_allowed,
+)
 from app.api.v1.service_request_api_support import _serialize_calendar_generation
 from app.domains.calendar.models import CalendarRequest
 
@@ -40,7 +44,7 @@ async def create_request(
             detail="日历需在报告交付后生成，请先完成报告申请。",
         )
     try:
-        service_request = await create_service_request(
+        service_request, _ = await create_user_service_request(
             db,
             current_user,
             data,
@@ -63,11 +67,16 @@ async def list_my_requests(
     if service_type in {None, "calendar"}:
         calendar_query = select(CalendarRequest).where(CalendarRequest.user_id == current_user.id)
         if request_status:
-            calendar_status = {"ai_processing": "processing", "processing": "processing"}.get(request_status, request_status)
-            if calendar_status not in {"processing", "delivered", "failed"}:
+            calendar_statuses = {
+                "ai_processing": {"queued", "generating", "processing"},
+                "processing": {"queued", "generating", "processing"},
+                "delivered": {"fulfilled", "delivered"},
+                "failed": {"failed"},
+            }.get(request_status)
+            if not calendar_statuses:
                 calendar_query = None
             else:
-                calendar_query = calendar_query.where(CalendarRequest.status == calendar_status)
+                calendar_query = calendar_query.where(CalendarRequest.status.in_(calendar_statuses))
         if calendar_query is not None:
             calendar_result = await db.execute(
                 calendar_query.order_by(CalendarRequest.created_at.desc())
@@ -108,6 +117,7 @@ async def update_my_request(
     if service_request.service_type == "calendar":
         raise HTTPException(status_code=status.HTTP_410_GONE, detail="旧日历申请流程已停用，请在报告交付后重新生成日历。")
     try:
+        ensure_legacy_service_request_allowed(service_request)
         service_request = await update_user_service_request(
             db,
             service_request,
@@ -133,6 +143,7 @@ async def resubmit_my_request(
     if service_request.service_type == "calendar":
         raise HTTPException(status_code=status.HTTP_410_GONE, detail="旧日历申请流程已停用，请在报告交付后重新生成日历。")
     try:
+        ensure_legacy_service_request_allowed(service_request)
         service_request = await resubmit_service_request(
             db,
             service_request,
@@ -155,6 +166,13 @@ async def withdraw_my_request(
     if not service_request or service_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service request not found")
     try:
+        if (
+            service_request.service_type == "report"
+            and service_request.status in {"submitted", "needs_info"}
+        ):
+            await cancel_report_case_for_service_request(
+                db, service_request.id, reason="user_withdrew_request"
+            )
         service_request = await withdraw_service_request(
             db,
             service_request,

@@ -1,0 +1,64 @@
+{
+  "signature": "2f56a92488053eeb6d7c1cc54d910ff81f4bad3f2ffcdd64bb4f94299f10caab",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "世界看到的你：那个“靠谱、不让人失望”的角色",
+    "content": "先从别人最容易看到的地方说起。你自述“我认为自己要靠谱、不能让人失望”，也自述拒绝后担心别人觉得你不够好——这是你的自报，不是我对你的解释。它指向一个可识别的外在角色：在同事和朋友眼里，你像是那个能承接、不推脱、可以把事托付的人。\n\n这个角色在什么场景里被激活，你其实已经给出线索。上周同事临时请你代写方案，你本想休息却答应，熬夜后第二天不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。临时请求和关系邀约这两类场景，似乎最容易让“靠谱”角色先站出来替你回答。\n\n但同一份自述里也有反例：面对熟悉同事、且有明确截止时，你能够协商任务边界，并非每次都迁就。这说明这个角色不是你的全部，也不是在所有关系里都同样主导。它更像一种在特定条件下被调用的应对方式，而不是一个固定的人格标签。\n\n从传统命理符号看，日主癸水、月干甲木伤官透干、年干丙火正财透干，可以作为一种解释视角：表达与务实两条线同时外显，可能让你既想做出东西，也在意结果是否被认可。符号只是探索语言，不是对你人格的判定，也需要你用真实场景去校正。\n\n还有一个待核对的线索：在压力下先承接、之后再以延迟或撤回的方式表达边界。它来自你的自述与反例，不是已证实的结论。你可以在接下来的阅读里带着它观察自己，也可以随时用反例推翻它。",
+    "used_findings": [
+      "s2.mapping.mask_reliable",
+      "s1.ten_gods.visible",
+      "s1.signal.boundary_pattern"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.persona",
+      "analysis.s2.ten_gods",
+      "analysis.s2.stars"
+    ],
+    "used_actions": [],
+    "transition_hint": "外在角色已经浮现；下一节会回到你自己，看看这个“靠谱”角色背后，你如何理解自己的核心线索，以及哪些场景会让它松动。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.outer_self",
+      "chapter": "identity",
+      "sequence_no": 2,
+      "new_information_role": "INTRODUCE",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称、现实语言；自述与符号解释分开；未自述内容以可能/待核对表达。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.persona",
+        "status": "FULFILLED",
+        "reason": "已给出用户可识别的外在角色（靠谱、能承接、不让人失望的同事与朋友），并明确区分用户自报与符号解释，同时保留反例说明该角色并非在所有场景主导。",
+        "quote": "你自述“我认为自己要靠谱、不能让人失望”，也自述拒绝后担心别人觉得你不够好——这是你的自报，不是我对你的解释。",
+        "follow_up_questions": [
+          "在哪些场景你最认同“靠谱”这个角色？",
+          "在哪些场景这个角色比较松、你更容易按自己的节奏来？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 8583,
+    "output_tokens": 807,
+    "latency_ms": 4454,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "d488111e-9af6-4caf-bc4a-3cd2f5d52e14",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "830050b452c8133c03de5faabef51bc194f7a5d26e7c34998760c16c1ce6c35f",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

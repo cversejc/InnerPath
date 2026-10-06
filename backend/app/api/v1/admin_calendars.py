@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
@@ -10,6 +12,8 @@ from app.domains.calendar.schemas import (
     CalendarCreate,
     CalendarImportRequest,
     CalendarListResponse,
+    CalendarRequestListResponse,
+    CalendarRequestResponse,
     CalendarResponse,
     CalendarUpdate,
 )
@@ -22,6 +26,9 @@ from app.domains.calendar.service import (
     update_calendar,
 )
 from app.domains.calendar.query_service import get_user_calendars, serialize_calendar
+from app.domains.calendar.requests import (
+    get_calendar_requests_for_admin,
+)
 
 router = APIRouter()
 
@@ -35,6 +42,26 @@ async def list_user_calendars(
     if not await db.get(User, user_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return CalendarListResponse(items=await get_user_calendars(db, user_id, published_only=False))
+
+@router.get("/calendar-requests", response_model=CalendarRequestListResponse)
+async def list_calendar_requests(
+    status_filter: Optional[str] = Query(None, alias="status"),
+    user_id: Optional[int] = Query(None, ge=1),
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    items = await get_calendar_requests_for_admin(db, status_filter=status_filter, user_id=user_id)
+    return CalendarRequestListResponse(items=items)
+
+@router.patch("/calendar-requests/{request_id}", status_code=status.HTTP_409_CONFLICT)
+async def review_calendar_request(
+    request_id: int,
+    current_user: User = Depends(require_roles("admin")),
+):
+    raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail="calendar_manual_review_disabled",
+    )
 
 @router.post("/users/{user_id}/calendars", response_model=CalendarResponse, status_code=status.HTTP_201_CREATED)
 async def create_user_calendar(

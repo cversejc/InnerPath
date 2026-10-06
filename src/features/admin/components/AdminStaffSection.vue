@@ -10,7 +10,7 @@ defineProps({
   staffUsers: { type: Array, default: () => [] }
 })
 
-defineEmits(['invite'])
+defineEmits(['invite', 'specialty'])
 </script>
 
 <template>
@@ -22,6 +22,7 @@ defineEmits(['invite'])
         <form class="stack-form" @submit.prevent="$emit('invite')">
           <label>手机号<input v-model.trim="inviteForm.phone" type="tel" inputmode="numeric" autocomplete="tel" required maxlength="11" placeholder="11 位手机号"></label>
           <label>角色<select v-model="inviteForm.role"><option value="consultant">咨询师</option><option value="admin">管理员</option></select></label>
+          <label v-if="inviteForm.role === 'consultant'">专业类型<select v-model="inviteForm.consultant_type" required><option value="mingli">命理咨询师</option><option value="psychology">心理咨询师</option></select></label>
           <VanButton class="primary-button" type="primary" native-type="submit" :disabled="inviteSaving" :loading="inviteSaving" loading-text="生成中…" :aria-busy="inviteSaving">生成邀请链接</VanButton>
         </form>
         <div v-if="inviteToken" class="invite-result" role="status" aria-live="polite"><span>本次令牌</span><code>{{ inviteToken }}</code><router-link :to="{ path: '/auth/invite', query: { token: inviteToken } }">打开邀请页面 →</router-link></div>
@@ -30,7 +31,7 @@ defineEmits(['invite'])
       <article class="panel-surface team-card">
         <div class="panel-heading"><div><p class="eyebrow">CURRENT TEAM</p><h3>当前成员</h3></div><span>{{ staffUsers.length }}</span></div>
         <div v-if="staffLoading" class="list-loading" aria-label="正在加载成员"><i v-for="index in 4" :key="index"></i></div>
-        <div v-else class="team-list"><div v-for="member in staffUsers" :key="member.id" class="team-row"><span class="avatar-mark">{{ member.name?.slice(0, 1) || '人' }}</span><div><strong>{{ member.name }}</strong><small>{{ roleText(member.role) }} · {{ member.phone }}</small></div><span :class="['status-badge', member.is_active ? 'success' : 'muted']">{{ member.is_active ? '正常' : '停用' }}</span></div><p v-if="!staffUsers.length" class="empty-cell">暂无后台成员。</p></div>
+        <div v-else class="team-list"><div v-for="member in staffUsers" :key="member.id" class="team-row"><span class="avatar-mark">{{ member.name?.slice(0, 1) || '人' }}</span><div><strong>{{ member.name }}</strong><small>{{ roleText(member.role) }} · {{ member.phone }}</small><label v-if="member.role === 'consultant'">专业类型<select :value="member.consultant_type || ''" @change="$emit('specialty', member, $event.target.value)"><option disabled value="">请选择专业类型</option><option value="mingli">命理咨询师</option><option value="psychology">心理咨询师</option></select></label></div><span :class="['status-badge', member.is_active ? 'success' : 'muted']">{{ member.is_active ? '正常' : '停用' }}</span></div><p v-if="!staffUsers.length" class="empty-cell">暂无后台成员。</p></div>
       </article>
     </div>
   </section>

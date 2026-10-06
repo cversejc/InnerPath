@@ -1,5 +1,6 @@
 <script setup>
 import { formatReportMarkdown } from '../report-content.js'
+import ReportChapterReader from './ReportChapterReader.vue'
 
 defineProps({
   report: { type: Object, required: true },
@@ -9,7 +10,9 @@ defineProps({
 </script>
 
 <template>
-  <div v-if="report.aiGeneratedContent" class="ai-content">
+  <ReportChapterReader v-if="report.structuredSections?.length" :sections="report.structuredSections" />
+
+  <div v-else-if="report.aiGeneratedContent" class="ai-content">
     <div class="content-card">
       <div class="ai-badge">
         <IconMark class="badge-icon" name="spark" />

@@ -1,12 +1,13 @@
 export const SERVICE_REQUEST_STATUS_LABELS = {
   submitted: '待接单',
-  accepted: '待生成初稿',
-  ai_processing: 'AI 处理中',
-  ai_ready: '待审校',
-  reviewing: '审校中',
-  needs_info: '待补资料',
-  failed: '生成失败',
+  accepted: '处理中',
+  ai_processing: '正在生成内容',
+  ai_ready: '待审核',
+  reviewing: '处理中',
+  needs_info: '等待补充',
+  failed: '需要处理',
   delivered: '已交付',
+  workflow_complete: '待交付',
   withdrawn: '已撤回',
   rejected: '已拒绝'
 }
@@ -39,7 +40,7 @@ export function topicLabel(topics) {
     growth: '个人成长',
     stress: '压力焦虑'
   }
-  return (topics || []).map(topic => labels[topic] || topic).join('、') || '综合自我探索'
+  return (topics || []).map(topic => labels[topic] || '其他关注主题').join('、') || '综合自我探索'
 }
 
 export function requestGoal(item) {

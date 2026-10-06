@@ -7,6 +7,7 @@ import AdminUsersSection from '../features/admin/components/AdminUsersSection.vu
 import AdminReportsSection from '../features/admin/components/AdminReportsSection.vue'
 import AdminActivitySection from '../features/admin/components/AdminActivitySection.vue'
 import AdminCalendarSection from '../features/admin/components/AdminCalendarSection.vue'
+import AdminCalendarRequestsSection from '../features/admin/components/AdminCalendarRequestsSection.vue'
 import AdminStaffSection from '../features/admin/components/AdminStaffSection.vue'
 import AdminDetailDrawers from '../features/admin/components/AdminDetailDrawers.vue'
 import AdminIconButton from '../features/admin/components/AdminIconButton.vue'
@@ -24,17 +25,18 @@ const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
+  components: { AdminDashboardSection, AdminUsersSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminCalendarRequestsSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
       tabs: [
         { id: 'overview', index: '01', label: '总览' },
         { id: 'users', index: '02', label: '用户' },
-        { id: 'calendar', index: '03', label: '日历' },
-        { id: 'reports', index: '04', label: '报告' },
-        { id: 'logs', index: '05', label: '日志' },
-        { id: 'staff', index: '06', label: '后台成员' }
+        { id: 'calendar-requests', index: '03', label: '日历生成记录' },
+        { id: 'calendar', index: '04', label: '日历' },
+        { id: 'reports', index: '05', label: '报告' },
+        { id: 'logs', index: '06', label: '日志' },
+        { id: 'staff', index: '07', label: '后台成员' }
       ],
       dashboardRanges: [{ id: '7d', label: '7 天' }, { id: '30d', label: '30 天' }, { id: '90d', label: '90 天' }],
       dashboardRange: '30d',
@@ -48,6 +50,9 @@ export default {
       userFilters: { search: '', role: '', is_active: '', created_from: '', created_to: '' },
       userPage: 1,
       userPageSize: 12,
+      calendarRequests: [],
+      calendarRequestsLoading: false,
+      calendarRequestStatusFilter: '',
       staffUsers: [],
       reports: { ...EMPTY_PAGE },
       reportsLoading: false,
@@ -60,7 +65,6 @@ export default {
       taskFilters: { search: '', status: '' },
       taskPage: 1,
       taskPageSize: 12,
-      reportRetryLimit: 2,
       auditLogs: { ...EMPTY_PAGE },
       auditLoading: false,
       logFilters: { search: '', action: '', resource_type: '', actor_user_id: '', target_user_id: '', date_from: '', date_to: '' },
@@ -92,7 +96,7 @@ export default {
       calendarSaving: false,
       showCalendarImport: false,
       calendarImportJson: '',
-      inviteForm: { phone: '', role: 'consultant' },
+      inviteForm: { phone: '', role: 'consultant', consultant_type: 'mingli' },
       inviteToken: '',
       inviteSaving: false,
       staffLoading: false,

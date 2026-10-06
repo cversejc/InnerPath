@@ -1,10 +1,6 @@
 import apiClient from '../../utils/apiClient.js'
 
-export async function createReportTask(requestData) {
-  const response = await apiClient.post('/reports', requestData)
-  return response.data
-}
-
+// Historical task status remains readable; new generation goes through service requests.
 export async function getReportTask(taskId) {
   const response = await apiClient.get(`/reports/tasks/${taskId}`)
   return response.data
@@ -42,11 +38,6 @@ export async function getAdminReport(reportId) {
 
 export async function getAdminReportTasks(params = {}) {
   const response = await apiClient.get('/admin/report-tasks', { params })
-  return response.data
-}
-
-export async function retryAdminReportTask(taskId) {
-  const response = await apiClient.post(`/admin/report-tasks/${taskId}/retry`)
   return response.data
 }
 

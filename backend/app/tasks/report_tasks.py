@@ -1,166 +1,55 @@
 import asyncio
-import os
-import time
-from typing import Any, Dict
 
 from app.core.cache import cache_set, close_redis
 from app.core.logging_config import get_logger
 from app.db.session import AsyncSessionLocal, engine
 from app.domains.reports.models import ReportTask
-# Import the user model so SQLAlchemy can resolve report foreign keys in the
-# standalone Celery process (which does not import the FastAPI routers).
-from app.models.user import User  # noqa: F401
-from app.services.ai_service import generate_report_with_ai
-from app.domains.reports.service import create_report
-from app.domains.audit.service import record_audit
 from app.tasks.celery_app import celery_app
 
 logger = get_logger(__name__)
+LEGACY_TASK_ERROR = "旧版直接生成报告任务已停用，请通过服务申请进入咨询师协作流程。"
 
 
-async def update_task_state(
-    task_id: str,
-    status: str,
-    progress: int,
-    report_id: int | None = None,
-    error: str | None = None,
-) -> None:
-    async with AsyncSessionLocal() as db:
-        task = await db.get(ReportTask, task_id)
-        if task:
-            task.status = status
-            task.progress = progress
-            if report_id is not None:
-                task.report_id = report_id
-            if error is not None:
-                task.error = error
-            await db.commit()
-
-
-async def _run_generate_report_task(
-    task_id: str,
-    user_id: int,
-    user_data: Dict[str, Any],
-    use_multistep: bool,
-) -> Dict[str, Any]:
-    """Run the complete report workflow on one event loop."""
+async def _mark_legacy_task_retired(task_id: str | None) -> None:
     try:
-        await update_task_state(task_id, "processing", 10)
-        await cache_set(
-            f"report:task:{task_id}",
-            {"status": "processing", "progress": 10, "message": "开始生成报告..."},
-            expire=600,
-        )
-
-        if use_multistep:
-            await cache_set(
-                f"report:task:{task_id}",
-                {"status": "processing", "progress": 15, "message": "建立先天坐标..."},
-                expire=600,
-            )
-
-        start_time = time.time()
-        report_data = await generate_report_with_ai(user_data)
-        generation_time_ms = int((time.time() - start_time) * 1000)
-
-        await update_task_state(task_id, "processing", 70)
-        await cache_set(
-            f"report:task:{task_id}",
-            {"status": "processing", "progress": 70, "message": "AI 分析完成..."},
-            expire=600,
-        )
-
-        async def save_report() -> int:
+        if task_id:
             async with AsyncSessionLocal() as db:
-                report = await create_report(
-                    db,
-                    user_id=user_id,
-                    report_data=report_data,
-                    generation_time_ms=generation_time_ms,
-                    input_data=user_data,
-                )
-                return report.id
-
-        report_id = await save_report()
-        await update_task_state(task_id, "completed", 100, report_id=report_id)
-        async with AsyncSessionLocal() as db:
-            await record_audit(
-                db,
-                None,
-                "report.task.completed",
-                "report_task",
-                task_id,
-                target_user_id=user_id,
-                details={"report_id": report_id, "generation_time_ms": generation_time_ms},
-            )
-            await db.commit()
-        await cache_set(
-            f"report:task:{task_id}",
-            {
-                "status": "completed",
-                "progress": 100,
-                "message": "报告生成完成",
-                "report_id": report_id,
-            },
-            expire=600,
-        )
-
-        return {
-            "status": "completed",
-            "report_id": report_id,
-            "generation_time_ms": generation_time_ms,
-        }
-
-    except Exception as error:
-        error_text = str(error)
-        try:
-            await update_task_state(task_id, "failed", 0, error=error_text)
-        except Exception:
-            logger.exception("报告任务失败状态写入失败 | task_id=%s", task_id)
-        try:
-            await cache_set(
-                f"report:task:{task_id}",
-                {
-                    "status": "failed",
-                    "progress": 0,
-                    "message": f"报告生成失败: {error_text}",
-                    "error": error_text,
-                },
-                expire=600,
-            )
-        except Exception:
-            logger.exception("报告任务失败缓存写入失败 | task_id=%s", task_id)
-        try:
-            async with AsyncSessionLocal() as db:
-                await record_audit(
-                    db,
-                    None,
-                    "report.task.failed",
-                    "report_task",
-                    task_id,
-                    target_user_id=user_id,
-                    details={"error_type": type(error).__name__},
-                )
-                await db.commit()
-        except Exception:
-            logger.exception("报告任务失败审计写入失败 | task_id=%s", task_id)
-        raise
+                task = await db.get(ReportTask, task_id)
+                if task:
+                    task.status = "failed"
+                    task.progress = 0
+                    task.error = LEGACY_TASK_ERROR
+                    await db.commit()
+                    try:
+                        await cache_set(
+                            f"report:task:{task_id}",
+                            {
+                                "status": "failed",
+                                "progress": 0,
+                                "error": LEGACY_TASK_ERROR,
+                            },
+                            expire=600,
+                        )
+                    except Exception:
+                        logger.exception(
+                            "Retired report task cache update failed | task_id=%s",
+                            task_id,
+                        )
     finally:
-        # AsyncEngine and redis-py async clients retain loop-bound resources.
-        # Dispose them before asyncio.run closes this task's loop so the next
-        # Celery task cannot reuse connections from a dead loop.
         try:
             await engine.dispose()
         except Exception:
-            logger.exception("报告任务数据库连接释放失败 | task_id=%s", task_id)
+            logger.exception("Retired report task DB cleanup failed")
         try:
             await close_redis()
         except Exception:
-            logger.exception("报告任务 Redis 连接释放失败 | task_id=%s", task_id)
+            logger.exception("Retired report task Redis cleanup failed")
 
 
-@celery_app.task(bind=True, name="generate_report")
-def generate_report_task(self, user_id: int, user_data: Dict[str, Any]):
+@celery_app.task(bind=True, name="generate_report", max_retries=0)
+def generate_report_task(self, _user_id: int, _user_data: dict):
+    """Consume queued legacy messages without generating a report outside a case."""
     task_id = self.request.id
-    use_multistep = os.getenv("USE_MULTISTEP_GENERATION", "false").lower() == "true"
-    return asyncio.run(_run_generate_report_task(task_id, user_id, user_data, use_multistep))
+    asyncio.run(_mark_legacy_task_retired(task_id))
+    logger.warning("Retired direct report task rejected | task_id=%s", task_id)
+    raise RuntimeError(LEGACY_TASK_ERROR)

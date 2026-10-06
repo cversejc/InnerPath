@@ -1,0 +1,67 @@
+{
+  "signature": "16b786c6f3dad7dda9fc431cae76655270ec509bdce7d1677fc4bcb6a14f486b",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "世界看到的你：可靠、能扛事、按规则办事",
+    "content": "在世界眼里，你大概是一个“能扛事、按规则办事”的人：轮班物流主管，同时照顾长辈。这个角色不是凭空贴上的标签——你说过，事情一多时，你会先等规则和时间表更清楚；你也说，你不觉得拒绝本身有错。把这两句放在一起看，你并不是不敢拒绝，而是习惯先让秩序稳定下来，再决定自己怎么动。\n\n从符号线索看，丁火日主，月柱与时柱两位甲木正印透出，年干一位己土食神；命宫廉贞、七杀，加擎羊、火星、天空，官禄宫武曲化禄。这些线索可以被读作“按规则扛事、持续照护”的角色底色：正印像“先把事情弄清楚、按规矩来”的习惯，七杀与擎羊火星像“撑住、别松手”的惯性，武曲化禄像在工作场景里把成果和责任看得重。需要说明的是，这一层是解释性假设，不是对你人格的定论；你自述的部分是事实，符号解释只是提供一个观察角度，两者不能混同。角色认同到什么程度，还需要你自己核对。\n\n同样属于事实层面的，还有你已经展现出的协商能力：姐姐临时请你替她陪诊，你先答应了；后来你和她说清轮班表，你们改成轮流陪诊。夜班后你继续查工作群，害怕漏掉交接；把手机交给同事保管半小时后，你能睡着。这两件事说明，你不只是“等确定”的人，你也能把安排谈成、把控制交出去。它们是现实中的资源证据，而不是需要被解释掉的例外。\n\n所以，这一节想先建立的是共鸣而不是结论：你被看到的样子，和你实际能做到的事，都比“总是等到所有安排确定才行动”这一句话更宽。接下来会看这种“先稳住”的模式在哪些场景里帮你，又在哪些场景里让你把自己的事排在最后。",
+    "used_findings": [
+      "s2.resource.negotiation_capacity",
+      "s1.ten_gods.visible_hidden",
+      "s2.persona.role_holder"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.persona",
+      "analysis.s2.ten_gods",
+      "analysis.s2.stars"
+    ],
+    "used_actions": [],
+    "transition_hint": "从外在角色与已展现的协商能力，转向内在信念与现实规则的核对。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.outer_self",
+      "chapter": "identity",
+      "sequence_no": 2,
+      "new_information_role": "INTRODUCE",
+      "style": {
+        "person": "second",
+        "theory_density": "medium",
+        "action_density": "none",
+        "metaphor_density": "low",
+        "length_band": "300-600字"
+      },
+      "source_boundary_note": "本节只使用分配来源；符号解释与用户自述分开呈现，不新增事实或心理结论。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.persona",
+        "status": "FULFILLED",
+        "reason": "已给出用户可识别的外在角色（轮班物流主管、同时照顾长辈、能扛事按规则办事），并将自述事实与符号解释明确分开，声明符号为解释性假设、需用户核对。",
+        "quote": "在世界眼里，你大概是一个“能扛事、按规则办事”的人：轮班物流主管，同时照顾长辈。",
+        "follow_up_questions": [
+          "在哪些场景你最能认同“可靠执行者”这个角色？",
+          "有没有场景你不想再扮演这个角色？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 14518,
+    "output_tokens": 877,
+    "latency_ms": 4215,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "2cbc9a7a-e91e-4af3-b51c-d49a2d34d0c2",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "2cc65560e74bd279decce4d9ab3e8c3f7c680b7f641812eecb2ce1434e4eacf3",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

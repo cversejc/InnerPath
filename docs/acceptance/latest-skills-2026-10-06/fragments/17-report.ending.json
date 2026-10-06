@@ -1,0 +1,67 @@
+{
+  "signature": "58e8f64af74fd6d17c67cba38d246fcfbb9274be9bc78a4aa649a1fc7480e7f6",
+  "skill_digest": "401c626a6af612fee324e7049af24cc79f57a1f53a5ce40b5c9a0d4437b700a8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "写给走在这条路上的你",
+    "content": "读到这里，你已经把三件事看了一遍：你是谁、卡在哪、往哪去。现在把它们放回一条更长的路上——不是为了给你一个结论，而是让你知道，走这一程到底是为了什么。\n\n命理里说，八字的「命」不是宿命，而是先天的能量配置，如同金花的种子；大运的「运」不是运气，而是能量流转的节律，如同金花的生长周期。你的种子偏柔韧渗透，像水一样能适应容器；而你现在所处的这段周期（辛卯偏印运，2019–2028），一边给你支持，一边把输出的要求抬了上来。这不是判决，是一个条件式的背景：支持在，输出的压力也在，旧脚本因此更容易被触发。\n\n《道德经》里有一句「知人者智，自知者明」。看清别人是聪明，看清自己才是明。这本书做的，其实一直是后一件事——不是替你算命，而是帮你把「先答应、后透支」这条暗线看见。看见本身就是转化的开始。而「反者道之动」提示的，是阴影的转化不是消灭，而是反向运动中的整合：你被排斥出去的休息与边界，恰恰是需要被重新纳入的部分。至于「命由我作，福自己求」，说的是命理是起点，不是终点，自性化是一场持续的心理重生。\n\n所以这本书的路径是：先认识（你是谁），再理解（卡在哪），最后行动（往哪去）。认识让你认出自己，理解让你不再责怪自己，行动让你把新的自己带回现实。你已经在路上了——四个动作都摆好了，它们不是任务清单，是你和自己重新建立关系的方式。\n\n不必急着变成另一个人。你不需要推翻那个「可靠、能扛、不添麻烦」的自己，她曾经保护过你，也帮你走到今天。你要做的，只是让门外那个也想休息、也想被照顾的你，走进来一起做决定。当你开始有余地地回应这个世界，你会发现，你既没有失去关系，也没有失去自己。\n\n愿你在这条路上，越走越能听见自己。",
+    "used_findings": [
+      "s3.timeline.current_xinmao",
+      "s3.bridge.seed_cycle"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "全书收束。若后续需要延展，可回到成长实验节，按自己的节奏重启其中一个动作。",
+    "presentation_meta": {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "sequence_no": 17,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "quote_used": {
+        "key": "laozi-33-self-knowledge",
+        "text": "知人者智，自知者明。",
+        "attribution": "《道德经》第三十三章",
+        "status": "VERIFIED"
+      },
+      "signature_quote_note": "署名引用逐字取自核验库 VERIFIED 条目；其余表达为不署名原创寄语。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.ending",
+        "status": "FULFILLED",
+        "reason": "以《金花的秘密》种子/周期隐喻、《道德经》自知与反向整合、《了凡四训》主动实践，贯通认识→理解→行动；给出个性化温暖寄语；署名引用仅使用核验库 VERIFIED 条目「知人者智，自知者明。」（《道德经》第三十三章）。",
+        "quote": "所以这本书的路径是：先认识（你是谁），再理解（卡在哪），最后行动（往哪去）。",
+        "follow_up_questions": [
+          "你希望「心理重生」先从哪一件小事开始？",
+          "哪些「应该」你愿意保留，哪些可以修改？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15768,
+    "output_tokens": 917,
+    "latency_ms": 4839,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "18e4d972-c06a-4e81-9112-c91607c7694a",
+    "thinking_enabled": false,
+    "skill_version_id": 80,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 7,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "e0e071215b5d5fef508b4387f02662a36e6e53db5dab643cd0871df2944a6151",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -108,6 +108,10 @@ class ReportResponse(BaseModel):
         from_attributes = True
 
 
+class ReportPdfPreviewRequest(BaseModel):
+    report: Dict[str, Any]
+
+
 class LatestReportContextResponse(BaseModel):
     report_id: Optional[int] = None
     created_at: Optional[datetime] = None

@@ -10,6 +10,7 @@
     >
       <template #leading>
         <VanButton type="default" plain native-type="button" class="btn-back" @click="goBack"><template #icon><IconMark name="arrow-left" /></template>返回</VanButton>
+        <p v-if="staffView" class="report-meta">已交付最终报告 · 与用户收到的正文一致</p>
       </template>
       <template v-if="report" #default>
         <div class="report-meta">
@@ -29,11 +30,11 @@
           :content-without-foundation="contentWithoutFoundation"
         />
 
-        <div v-if="report" class="report-actions paper-card">
+        <div v-if="report && !staffView" class="report-actions paper-card">
           <div class="report-next-copy"><p class="section-kicker">FROM INSIGHT TO ACTION</p><h2>把看见的，带回生活里</h2><p>用决策日历照看日常节奏，留下自己的行动与选择。</p></div>
           <VanButton type="primary" native-type="button" class="btn-action primary" @click="goToCalendar">
             <template #icon><IconMark class="icon" name="calendar" /></template>
-            基于这份报告生成日历
+            基于这份报告生成决策日历
           </VanButton>
         </div>
       </div>
@@ -48,6 +49,7 @@ import { Button as VanButton } from 'vant'
 import { getReportDetail } from '../api.js'
 import ReportContent from '../components/ReportContent.vue'
 import { normalizeReportData, parseLegacyReportContent } from '../report-content.js'
+import { hasRole } from '../../../stores/auth'
 
 export default {
   name: 'ReportDetail',
@@ -63,6 +65,9 @@ export default {
   },
   async mounted() {
     await this.loadReport()
+  },
+  computed: {
+    staffView() { return hasRole('admin', 'consultant') }
   },
   methods: {
     async loadReport() {
@@ -84,12 +89,18 @@ export default {
       }
     },
     goBack() {
-      this.$router.go(-1)
+      const requestId = Number(this.$route.query.request_id)
+      if (this.staffView && Number.isSafeInteger(requestId) && requestId > 0) {
+        this.$router.push({ path: '/staff', query: { request_id: String(requestId), section: 'overview' } })
+      } else this.$router.go(-1)
     },
     goToCalendar() {
+      const reportId = Number(this.$route.query.id)
       this.$router.push({
         path: '/pages/calendar/calendar',
-        query: { generate: '1', sourceReportId: String(this.$route.query.id || '') }
+        query: Number.isSafeInteger(reportId) && reportId > 0
+          ? { generate: '1', source_report_id: String(reportId) }
+          : { generate: '1' }
       })
     }
   }

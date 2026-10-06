@@ -1,0 +1,70 @@
+{
+  "signature": "ed658457eac994ccbb6b77a6ddc18861c8eb81096b32557659bccedf2736e1c3",
+  "skill_digest": "5946726477bacbc7cf9896656c449ad041ca7e9dd00489cd3f135319b7d15623",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你的能量与工作节奏：从想法到交付之间",
+    "content": "把注意力从“我该做多少”转到“我的精力是怎样流动的”，你会看到一条比较稳定的路径。这一节只概览这条主线，具体的卡点机制留到下一章展开。\n\n先说资源。你自述独自散步时比较放松，这是你直接说出的体验，可以当作一个可靠的自我观察。由此可以提出一个待核对的假设：独处与稳定节奏可能是你恢复精力的方式。传统命理视角中，福德宫天府无煞忌的解释方向与此呼应，但这只是解释视角，不是对你人格的判定，也需要你在现实里继续验证。另一类资源来自“被支持”和“学习”：命理框架里正印透干被描述为显性资源，偏向内化规范、被支持与吸收信息；伤官透干则偏向表达与突破。翻译成日常语言——你既有把外部要求内化成标准的一面，也有想表达、想做出自己东西的一面。两者同时在场，可能正是“要靠谱”与“想有自己节奏”之间张力的来源。\n\n再看耗电。你自述下班后常查看消息怕漏事，临时请求后熬夜，项目里反复修改、接近截止才赶工。这三件事有共同的形态：精力先被外部节奏带走，再在期限前集中偿还。需要说明，耗电并非在所有情境下都发生。你提到面对熟悉同事且有明确截止时能够协商任务边界，这说明当情境清晰、关系安全时，你有能力守住余地。这个反例比任何标签都重要，它提示问题可能不在“你不会拒绝”，而在“缓冲的时间差还不够”。\n\n把这条路径拆开看，会更清楚。探索入口：项目开头你有很多想法，提示想法生成比较活跃。价值判断入口：你自述要靠谱、不能让人失望，提示判断“做得好不好”时，外部认可占了较大参照。执行入口：接近截止才急着交付，提示启动与收尾的节奏偏后置。反馈入口：下班后常查看消息怕漏事，提示你在持续监测外部信号。这四段连起来，可能形成“想法多—反复修改—赶工—再监测”的循环。张力出现在探索的活跃与执行的后置之间：想法越多，越容易觉得“还不够好”，越容易把准备当成行动。\n\n这里需要明确一个边界：你没有提供 MBTI 或八维自报，因此本节不推断你的类型，也不给任何功能分数。上面说的“探索、价值、执行、反馈”只是从你现实自述里整理出的加工路径候选，属于倾向假设，不是类型判定。如果你愿意，可以回答两个问题来校正：你更常从想法出发，还是从事实出发？做完一件事后，你通常怎样确认它已经做好了？这两个答案会影响后面对“卡点”的描述方式。\n\n关于节奏，还有一处资料缺口需要标注：你没有说明睡眠与运动情况。它们与精力直接相关，目前只能留作观察项，不宜下结论。至于每周一次的复盘，那是成长实验节的内容，这里只点出方向——让被排斥的休息与不满被看见，而不是继续用“再撑一下”覆盖过去。\n\n一条可带走的线索是：你的资源并不缺，缺的是想法与交付之间那段缓冲。下一章会按“请求来临—顺从答应—透支—延迟表达”的顺序，看看这段缓冲具体在哪里被跳过。",
+    "used_findings": [
+      "s1.foundation.ten_gods",
+      "s2.pattern.rest_recovery_resource",
+      "s4.action.weekly_shadow_review",
+      "s4.block.rumination_over_action"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.energy",
+      "analysis.s4.functions"
+    ],
+    "used_actions": [],
+    "transition_hint": "下一节进入“卡在哪”，按请求来临—顺从答应—透支—延迟表达的时间顺序，拆解三个卡点，并说明即时缓冲的缺口在哪里。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.energy_pattern",
+      "chapter": "identity",
+      "sequence_no": 7,
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "review_issues_addressed": [
+        {
+          "issue_type": "fact_fidelity",
+          "severity": "MAJOR",
+          "resolution": "将“独自散步时比较放松”保留为用户自述事实，同时把“独处与稳定节奏是恢复资源”明确标注为待核对假设，并保留条件与反证。"
+        }
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.energy",
+        "status": "FULFILLED",
+        "reason": "已覆盖充电/耗电与实际反馈、探索→价值→执行→反馈路径及张力，并明确无 MBTI/八维自报时不推断类型或分数。",
+        "quote": "你自述独自散步时比较放松，这是你直接说出的体验，可以当作一个可靠的自我观察。",
+        "follow_up_questions": [
+          "你更常从想法出发，还是从事实出发？",
+          "做完一件事后，你通常怎样确认它已经做好了？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15531,
+    "output_tokens": 1213,
+    "latency_ms": 4996,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "2d9f28dc-168e-4413-87ce-79870607b925",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "272dda658ac5d05fd60c38cb6adfb5dac80b476d74a0f54b4af1bdc8eb5c1b81",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

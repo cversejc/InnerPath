@@ -1,0 +1,100 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "共同顺序：先处理外部，再听见自己",
+    "content": "四项的共同假设是：外部情境出现后，自己的需要未必及时进入回应。但各项的入口不同：第一项关乎回应请求，第二项关乎发起联系，第三项关乎等待的节奏，第四项关乎判断标准。\n\n它们不能被合并成已经证实的单一因果链。尤其“因为迁就所以朋友疏远”并未由问卷建立。请用一次真实事件看清触发、想法、感受、回应及对方反馈；如果某一环不成立，就修改模型，而非替模型寻找证据。\n\n这份共同顺序的价值，是帮助你找最先可以辨认的位置，不是再给自己增加一个标签。",
+    "used_findings": [
+      "s4.blocks.boundary_pleasing",
+      "s4.blocks.relationship_maintenance",
+      "s4.blocks.urgency",
+      "s4.blocks.authority_expression",
+      "s2.cycle.activation_path"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.cycle",
+      "analysis.s4.blocks"
+    ],
+    "used_actions": [],
+    "transition_hint": "共同模式已经看清：四个卡点共用一套“先保关系、后顾自己”的顺序。下一节把镜头拉到时间轴上，看这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.common_pattern",
+      "chapter": "challenge",
+      "sequence_no": 12,
+      "new_information_role": "SYNTHESIZE",
+      "must_cover": [
+        "共同模式",
+        "模式之间的关系"
+      ],
+      "must_not_repeat_respected": true,
+      "theory_density": "medium",
+      "action_density": "none",
+      "metaphor_density": "low",
+      "data_boundary_notes": [
+        "出生日期2004-06-15为演示假设，本片段未使用命盘或大运内容",
+        "触发环节为待补问，情绪与自动想法均以可能/可核对表达",
+        "未将每天复盘当作已形成的习惯",
+        "未复述内部来源编号"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7015,
+    "output_tokens": 736,
+    "latency_ms": 3990,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "6a05964f-c470-44a7-85c2-2c2a36dae416",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "64f9b8aed2bfc4894282f4ded08a135d5703b0a8c33a8f2e119d48929b3aa8ae",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "四个卡点的共同模式：一套“先保关系、后顾自己”的自动顺序",
+    "content": "把前面四个卡点放在一起看，它们可能不是四件独立的事，而是同一套顺序在不同场景里的不同出口。\n\n这套顺序大致是：遇到他人请求或关系维护的场合（触发，待补问）→ 某个需要被压下（假设）→ 可能出现担心关系变差或内疚（假设，可核对）→ 先答应、迁就（你自述）→ 关系当下维持住，但你自己不太舒服（假设）→ 长期关系反而疏远（你自述）。\n\n四个卡点各自站在这条链的不同位置：卡点一站“先答应”这一环，用迁就换取连接的安全；卡点二站“无事搁置”这一环，用不打扰来避免被拒绝；卡点三给整条链装上速度，用急迫跳过等待和协商的不确定；卡点四则在链的入口处设规则，把“应该迁就、不能生硬”当成默认设置。它们共享同一个保护意图——让关系不出事、让自己不出错——也共享同一个代价：真实需求越来越难被听见，关系反而慢慢变远。\n\n这套顺序是假设，不是定论。可以核对的反例是：你是否也有过温和拒绝、关系照常继续的经历？是否也有过主动联系、对方回应不错的经历？如果有，那说明这套顺序并非唯一路径，它只是目前更熟练的那一条。\n\n看清共同模式的意义在于：不必四个卡点分别去修，它们本来就共用一个开关。下一节把镜头拉到时间轴上，看这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "used_findings": [
+      "s4.blocks.boundary_pleasing",
+      "s4.blocks.relationship_maintenance",
+      "s4.blocks.urgency",
+      "s4.blocks.authority_expression",
+      "s2.cycle.activation_path"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.cycle",
+      "analysis.s4.blocks"
+    ],
+    "used_actions": [],
+    "transition_hint": "共同模式已经看清：四个卡点共用一套“先保关系、后顾自己”的顺序。下一节把镜头拉到时间轴上，看这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.common_pattern",
+      "chapter": "challenge",
+      "sequence_no": 12,
+      "new_information_role": "SYNTHESIZE",
+      "must_cover": [
+        "共同模式",
+        "模式之间的关系"
+      ],
+      "must_not_repeat_respected": true,
+      "theory_density": "medium",
+      "action_density": "none",
+      "metaphor_density": "low",
+      "data_boundary_notes": [
+        "出生日期2004-06-15为演示假设，本片段未使用命盘或大运内容",
+        "触发环节为待补问，情绪与自动想法均以可能/可核对表达",
+        "未将每天复盘当作已形成的习惯",
+        "未复述内部来源编号"
+      ]
+    }
+  }
+}

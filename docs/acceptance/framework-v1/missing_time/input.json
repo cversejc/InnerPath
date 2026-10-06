@@ -1,0 +1,503 @@
+{
+  "profile": {
+    "name": "合成验收样本-missing_time",
+    "gender": "female",
+    "birth_year": 1996,
+    "birth_month": 6,
+    "birth_day": 15,
+    "calendar_type": "solar",
+    "birth_time_precision": "unknown",
+    "birth_place": "山东济南",
+    "latitude": 36.65,
+    "longitude": 117.12,
+    "current_residence": "杭州",
+    "occupation_status": "项目运营",
+    "mbti": null,
+    "preferred_content_depth": "深入详细"
+  },
+  "context": {
+    "analysis_date": "2026-10-04",
+    "focus_topics": [
+      "personal_growth",
+      "career",
+      "relationships"
+    ],
+    "current_challenge": "工作中答应额外任务后常熬夜；需要拒绝时拖到最后才生硬回应；朋友邀约也先答应后取消。",
+    "concrete_events": [
+      "上周同事临时请我代写方案，我本想休息却答应，熬夜后第二天不耐烦。",
+      "朋友连续两次临时改地点，我没有表达意见，最后直接取消聚会。",
+      "项目开头有许多想法，担心做不好反复修改，接近截止才急着交付。",
+      "下班后常查看消息怕漏事，独自散步时比较放松。"
+    ],
+    "self_description": "我认为自己要靠谱、不能让人失望。拒绝后担心别人觉得我不够好。这是现在的感受，没有提供童年经历。",
+    "counterexample": "面对熟悉同事且有明确截止时，我能够协商任务边界，并非每次都迁就。",
+    "available_time": "工作日每晚5–10分钟，周末20分钟；不能增加大量写日记负担。",
+    "expected_outcomes": [
+      "理解反复出现的机制",
+      "练习有余地的表达",
+      "减少透支"
+    ],
+    "synthetic_notice": "全部人物资料及经历为开发验收编写的合成数据，不是真实客户或专业评估。"
+  },
+  "evidence": [
+    {
+      "evidence_key": "input.profile.name",
+      "source_type": "USER_PROVIDED",
+      "value": "合成验收样本-missing_time"
+    },
+    {
+      "evidence_key": "input.profile.gender",
+      "source_type": "USER_PROVIDED",
+      "value": "female"
+    },
+    {
+      "evidence_key": "input.profile.birth_year",
+      "source_type": "USER_PROVIDED",
+      "value": 1996
+    },
+    {
+      "evidence_key": "input.profile.birth_month",
+      "source_type": "USER_PROVIDED",
+      "value": 6
+    },
+    {
+      "evidence_key": "input.profile.birth_day",
+      "source_type": "USER_PROVIDED",
+      "value": 15
+    },
+    {
+      "evidence_key": "input.profile.calendar_type",
+      "source_type": "USER_PROVIDED",
+      "value": "solar"
+    },
+    {
+      "evidence_key": "input.profile.birth_time_precision",
+      "source_type": "USER_PROVIDED",
+      "value": "unknown"
+    },
+    {
+      "evidence_key": "input.profile.birth_place",
+      "source_type": "USER_PROVIDED",
+      "value": "山东济南"
+    },
+    {
+      "evidence_key": "input.profile.latitude",
+      "source_type": "USER_PROVIDED",
+      "value": 36.65
+    },
+    {
+      "evidence_key": "input.profile.longitude",
+      "source_type": "USER_PROVIDED",
+      "value": 117.12
+    },
+    {
+      "evidence_key": "input.profile.current_residence",
+      "source_type": "USER_PROVIDED",
+      "value": "杭州"
+    },
+    {
+      "evidence_key": "input.profile.occupation_status",
+      "source_type": "USER_PROVIDED",
+      "value": "项目运营"
+    },
+    {
+      "evidence_key": "input.profile.preferred_content_depth",
+      "source_type": "USER_PROVIDED",
+      "value": "深入详细"
+    },
+    {
+      "evidence_key": "input.context.analysis_date",
+      "source_type": "USER_PROVIDED",
+      "value": "2026-10-04"
+    },
+    {
+      "evidence_key": "input.context.focus_topics",
+      "source_type": "USER_PROVIDED",
+      "value": [
+        "personal_growth",
+        "career",
+        "relationships"
+      ]
+    },
+    {
+      "evidence_key": "input.context.current_challenge",
+      "source_type": "USER_PROVIDED",
+      "value": "工作中答应额外任务后常熬夜；需要拒绝时拖到最后才生硬回应；朋友邀约也先答应后取消。"
+    },
+    {
+      "evidence_key": "input.context.concrete_events",
+      "source_type": "USER_PROVIDED",
+      "value": [
+        "上周同事临时请我代写方案，我本想休息却答应，熬夜后第二天不耐烦。",
+        "朋友连续两次临时改地点，我没有表达意见，最后直接取消聚会。",
+        "项目开头有许多想法，担心做不好反复修改，接近截止才急着交付。",
+        "下班后常查看消息怕漏事，独自散步时比较放松。"
+      ]
+    },
+    {
+      "evidence_key": "input.context.self_description",
+      "source_type": "USER_PROVIDED",
+      "value": "我认为自己要靠谱、不能让人失望。拒绝后担心别人觉得我不够好。这是现在的感受，没有提供童年经历。"
+    },
+    {
+      "evidence_key": "input.context.counterexample",
+      "source_type": "USER_PROVIDED",
+      "value": "面对熟悉同事且有明确截止时，我能够协商任务边界，并非每次都迁就。"
+    },
+    {
+      "evidence_key": "input.context.available_time",
+      "source_type": "USER_PROVIDED",
+      "value": "工作日每晚5–10分钟，周末20分钟；不能增加大量写日记负担。"
+    },
+    {
+      "evidence_key": "input.context.expected_outcomes",
+      "source_type": "USER_PROVIDED",
+      "value": [
+        "理解反复出现的机制",
+        "练习有余地的表达",
+        "减少透支"
+      ]
+    },
+    {
+      "evidence_key": "input.context.synthetic_notice",
+      "source_type": "USER_PROVIDED",
+      "value": "全部人物资料及经历为开发验收编写的合成数据，不是真实客户或专业评估。"
+    },
+    {
+      "evidence_key": "calculated.foundation",
+      "source_type": "SYSTEM_CALCULATED",
+      "value": {
+        "bazi": {
+          "year": {
+            "stem": "丙",
+            "branch": "子",
+            "ten_god": "正财"
+          },
+          "month": {
+            "stem": "甲",
+            "branch": "午",
+            "ten_god": "伤官"
+          },
+          "day": {
+            "stem": "癸",
+            "branch": "未"
+          },
+          "day_master": "癸"
+        },
+        "calculation_method": "deterministic-mingli",
+        "lunar_date": "1996年四月30日",
+        "solar_date": "1996年6月15日",
+        "zodiac": "鼠",
+        "nayin": "涧下水",
+        "bazi_facts": {
+          "pillars": {
+            "year": {
+              "stem": "丙",
+              "branch": "子",
+              "pillar": "丙子",
+              "ten_god": "正财",
+              "stem_element": "火",
+              "branch_element": "水",
+              "hidden_stems": [
+                {
+                  "stem": "癸",
+                  "element": "水",
+                  "ten_god": "比肩"
+                }
+              ],
+              "branch_ten_god": "比肩"
+            },
+            "month": {
+              "stem": "甲",
+              "branch": "午",
+              "pillar": "甲午",
+              "ten_god": "伤官",
+              "stem_element": "木",
+              "branch_element": "火",
+              "hidden_stems": [
+                {
+                  "stem": "丁",
+                  "element": "火",
+                  "ten_god": "偏财"
+                },
+                {
+                  "stem": "己",
+                  "element": "土",
+                  "ten_god": "七杀"
+                }
+              ],
+              "branch_ten_god": "偏财"
+            },
+            "day": {
+              "stem": "癸",
+              "branch": "未",
+              "pillar": "癸未",
+              "ten_god": "",
+              "stem_element": "水",
+              "branch_element": "土",
+              "hidden_stems": [
+                {
+                  "stem": "己",
+                  "element": "土",
+                  "ten_god": "七杀"
+                },
+                {
+                  "stem": "丁",
+                  "element": "火",
+                  "ten_god": "偏财"
+                },
+                {
+                  "stem": "乙",
+                  "element": "木",
+                  "ten_god": "食神"
+                }
+              ],
+              "branch_ten_god": "七杀"
+            }
+          },
+          "day_master": {
+            "stem": "癸",
+            "element": "水",
+            "polarity": "阴"
+          },
+          "ten_god_counts": {
+            "visible": {
+              "正财": 1,
+              "伤官": 1
+            },
+            "hidden": {
+              "比肩": 1,
+              "偏财": 2,
+              "七杀": 2,
+              "食神": 1
+            },
+            "absent": [
+              "偏印",
+              "劫财",
+              "正印",
+              "正官"
+            ],
+            "note": "出现次数不代表旺衰，也不能证明心理面向缺失"
+          },
+          "interactions": [
+            {
+              "type": "六冲",
+              "pillars": [
+                "year",
+                "month"
+              ],
+              "symbols": "子午"
+            },
+            {
+              "type": "六害",
+              "pillars": [
+                "year",
+                "day"
+              ],
+              "symbols": "子未"
+            },
+            {
+              "type": "天干相克",
+              "pillars": [
+                "year",
+                "day"
+              ],
+              "symbols": "丙癸"
+            },
+            {
+              "type": "六合",
+              "pillars": [
+                "month",
+                "day"
+              ],
+              "symbols": "午未"
+            }
+          ],
+          "dayun": [],
+          "conventions": {
+            "library": "lunar-python==1.4.8",
+            "pillars": "节气年/月柱；晚子时不换日 sect=2",
+            "dayun": "起运 sect=2，年龄为库的传统计龄",
+            "time": "中国 UTC+8 民用钟表时间；未校正真太阳时",
+            "strength_and_useful_gods": "解释性判断，必须由 AI 提候选并经咨询师确认"
+          },
+          "limitations": [
+            "出生时间未知：不计算时柱、紫微和精确起运"
+          ]
+        },
+        "calculation_version": "mingli-v2",
+        "input_assumptions": [],
+        "limitations": [
+          "出生时间未知：不计算时柱、紫微和精确起运",
+          "紫微未计算，不能补造宫位星曜"
+        ]
+      }
+    }
+  ],
+  "foundation_data": {
+    "bazi": {
+      "year": {
+        "stem": "丙",
+        "branch": "子",
+        "ten_god": "正财"
+      },
+      "month": {
+        "stem": "甲",
+        "branch": "午",
+        "ten_god": "伤官"
+      },
+      "day": {
+        "stem": "癸",
+        "branch": "未"
+      },
+      "day_master": "癸"
+    },
+    "calculation_method": "deterministic-mingli",
+    "lunar_date": "1996年四月30日",
+    "solar_date": "1996年6月15日",
+    "zodiac": "鼠",
+    "nayin": "涧下水",
+    "bazi_facts": {
+      "pillars": {
+        "year": {
+          "stem": "丙",
+          "branch": "子",
+          "pillar": "丙子",
+          "ten_god": "正财",
+          "stem_element": "火",
+          "branch_element": "水",
+          "hidden_stems": [
+            {
+              "stem": "癸",
+              "element": "水",
+              "ten_god": "比肩"
+            }
+          ],
+          "branch_ten_god": "比肩"
+        },
+        "month": {
+          "stem": "甲",
+          "branch": "午",
+          "pillar": "甲午",
+          "ten_god": "伤官",
+          "stem_element": "木",
+          "branch_element": "火",
+          "hidden_stems": [
+            {
+              "stem": "丁",
+              "element": "火",
+              "ten_god": "偏财"
+            },
+            {
+              "stem": "己",
+              "element": "土",
+              "ten_god": "七杀"
+            }
+          ],
+          "branch_ten_god": "偏财"
+        },
+        "day": {
+          "stem": "癸",
+          "branch": "未",
+          "pillar": "癸未",
+          "ten_god": "",
+          "stem_element": "水",
+          "branch_element": "土",
+          "hidden_stems": [
+            {
+              "stem": "己",
+              "element": "土",
+              "ten_god": "七杀"
+            },
+            {
+              "stem": "丁",
+              "element": "火",
+              "ten_god": "偏财"
+            },
+            {
+              "stem": "乙",
+              "element": "木",
+              "ten_god": "食神"
+            }
+          ],
+          "branch_ten_god": "七杀"
+        }
+      },
+      "day_master": {
+        "stem": "癸",
+        "element": "水",
+        "polarity": "阴"
+      },
+      "ten_god_counts": {
+        "visible": {
+          "正财": 1,
+          "伤官": 1
+        },
+        "hidden": {
+          "比肩": 1,
+          "偏财": 2,
+          "七杀": 2,
+          "食神": 1
+        },
+        "absent": [
+          "偏印",
+          "劫财",
+          "正印",
+          "正官"
+        ],
+        "note": "出现次数不代表旺衰，也不能证明心理面向缺失"
+      },
+      "interactions": [
+        {
+          "type": "六冲",
+          "pillars": [
+            "year",
+            "month"
+          ],
+          "symbols": "子午"
+        },
+        {
+          "type": "六害",
+          "pillars": [
+            "year",
+            "day"
+          ],
+          "symbols": "子未"
+        },
+        {
+          "type": "天干相克",
+          "pillars": [
+            "year",
+            "day"
+          ],
+          "symbols": "丙癸"
+        },
+        {
+          "type": "六合",
+          "pillars": [
+            "month",
+            "day"
+          ],
+          "symbols": "午未"
+        }
+      ],
+      "dayun": [],
+      "conventions": {
+        "library": "lunar-python==1.4.8",
+        "pillars": "节气年/月柱；晚子时不换日 sect=2",
+        "dayun": "起运 sect=2，年龄为库的传统计龄",
+        "time": "中国 UTC+8 民用钟表时间；未校正真太阳时",
+        "strength_and_useful_gods": "解释性判断，必须由 AI 提候选并经咨询师确认"
+      },
+      "limitations": [
+        "出生时间未知：不计算时柱、紫微和精确起运"
+      ]
+    },
+    "calculation_version": "mingli-v2",
+    "input_assumptions": [],
+    "limitations": [
+      "出生时间未知：不计算时柱、紫微和精确起运",
+      "紫微未计算，不能补造宫位星曜"
+    ]
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "那些还没找到表达方式的需要",
+    "content": "你明确说自己习惯迁就，但没有说每一次都是先答应，也没有说拒绝后会内疚。这些细节需要分开。\n\n一个可核对的防御假设是：迁就可能替你挡住当场的冲突；过多权衡也可能让感受暂时退到后面。如果这一解释贴近实际，难处便不只是措辞，而是“我能不能允许自己有不同的意愿”。长期代价可能是需求被推后，急迫感累积；这不是已经证实的心理成因。\n\n所谓阴影，在这里指尚未被充分允许的拒绝、休息、被支持的需要，并非你有某种坏的隐藏人格。所谓情结，是某类情境是否会反复激活强烈反应的观察角度；没有童年、家庭事件的资料，不能解释为家庭创伤。\n\n也请寻找反例：是否曾温和拒绝而关系照常？是否有不用权衡很久就能表达需要的对象？这些经验可以推翻或限定上述假设。\n\n权衡也可能只是你的有效决策方式，并不意味着压抑感受。可以核对：分析之后，你是否更清楚自己的意愿，还是更难决定？两种结果需要不同理解。",
+    "used_findings": [
+      "s3.tension.core",
+      "s4.defense.people_pleasing",
+      "s4.defense.rationalization_avoidance",
+      "s2.shadow.boundary_need",
+      "s2.complex.authority_expression",
+      "s2.complex.relationship_distance"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.shadow",
+      "analysis.s2.complex",
+      "analysis.s4.defense"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看见这套顺序在保护什么、又付出了什么。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "section_key": "report.identity.hidden_self",
+      "chapter": "identity",
+      "sequence_no": 4,
+      "tone": "second_person_nonjudgmental",
+      "theory_density": "medium",
+      "metaphor_density": "low",
+      "length_chars_approx": 620,
+      "language": "zh-CN",
+      "data_boundary_notes": [
+        "出生日期、出生地均为演示假设，命盘与大运内容仅作条件式表达，未在本节展开。",
+        "用户未自述的情绪、自动想法与保护功能均以“可能/可以核对”表达。",
+        "用户希望每天复盘，不代表已形成该习惯，本节未据此推断。",
+        "未自述家庭、关系史或心理经历，未补造。"
+      ],
+      "quote_used": false,
+      "experiments_referenced": false
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7299,
+    "output_tokens": 774,
+    "latency_ms": 4019,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "f852d45e-5ff8-47f6-9b8d-a26c942ee1f2",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "c55f1ed584ec32a0d77b6b663442d902a62f30088505e4edd513031ac2762bc4",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "隐藏的自己：在“先照顾场面”与“保住自己”之间",
+    "content": "上一节你看到的是那套“先照顾场面、再照顾自己”的顺序。这一节往里走一层：这套顺序之所以稳固，是因为它同时服务于两个都真实的需要——维持连接，和保有自己。\n\n你自述“不太会拒绝、习惯迁就”。这可以理解为：先答应下来，是让场面不冷、让关系不紧张的一种方式。它保护的是连接，代价可能是自己的需要被推后。另一种你自述的模式是“有事才联系朋友，没事就放在那”，关系因此慢慢变远。这背后可能有一种“没事联系会打扰对方”的顾虑，也可能只是节奏没找到——这一点值得你自己核对，而不是先下结论。\n\n再往里，你自述“拒绝时语言生硬”。这提示的可能不是“不会拒绝”，而是在关系里表达真实需求这件事本身，让你不太确定该用什么语气。你自报的“权衡利弊”和“太着急”可能也在参与：用分析替代感受，用速度推动决定。这些都只是待核对的假设，不是对你的定性。\n\n所以这里的核心张力不是“连接”对“边界”二选一，而是：能不能让拒绝和联系都变得可以商量、可以修复。你不需要一次修好，只需要在一次次真实情境里，多保留一点自己的真实需求。\n\n可以带着两个反证问题往后读：你有没有过温和拒绝、关系照旧的经历？有没有过主动联系、关系维持的经历？如果有，它们和上面的假设一样重要。\n\n（命盘相关的传统解释视角、大运阶段与具体练习，分别在命盘旁注、阶段地图与成长实验三处展开，此处不重复。）",
+    "used_findings": [
+      "s3.tension.core",
+      "s4.defense.people_pleasing",
+      "s4.defense.rationalization_avoidance",
+      "s2.shadow.boundary_need",
+      "s2.complex.authority_expression",
+      "s2.complex.relationship_distance"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.shadow",
+      "analysis.s2.complex",
+      "analysis.s4.defense"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看见这套顺序在保护什么、又付出了什么。下一节把镜头拉到时间轴上：这些模式在不同阶段里如何呈现、当前阶段在邀请你练习什么。",
+    "presentation_meta": {
+      "section_key": "report.identity.hidden_self",
+      "chapter": "identity",
+      "sequence_no": 4,
+      "tone": "second_person_nonjudgmental",
+      "theory_density": "medium",
+      "metaphor_density": "low",
+      "length_chars_approx": 620,
+      "language": "zh-CN",
+      "data_boundary_notes": [
+        "出生日期、出生地均为演示假设，命盘与大运内容仅作条件式表达，未在本节展开。",
+        "用户未自述的情绪、自动想法与保护功能均以“可能/可以核对”表达。",
+        "用户希望每天复盘，不代表已形成该习惯，本节未据此推断。",
+        "未自述家庭、关系史或心理经历，未补造。"
+      ],
+      "quote_used": false,
+      "experiments_referenced": false
+    }
+  }
+}

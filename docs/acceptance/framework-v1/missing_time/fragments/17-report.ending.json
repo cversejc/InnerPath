@@ -1,0 +1,70 @@
+{
+  "signature": "6837e5daea6fe754729ab027965b2d7f50e6d9ceb80fc639cda8e1207cee1d62",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "收束：把「靠谱」从别人的评价里拿回来",
+    "content": "走到这里，你已经把那条暗线看得比较清楚了：一端是想维持「靠谱、不让人失望」的承接型自我，另一端是休息、拒绝和真实需求。这两端本身没有好坏，只是你目前更常站在前一端，后一端就容易被挤到看不见的地方。这不是要你把自己改成另一个人，而是让被排除的那一端重新有机会在场。\n\n认识、理解、行动，可以是一条线。认识，是承认「先答应、后撤回」不是意志力的问题，而是一套一直在替你维系关系的旧办法；理解，是看到这套办法确实保护过你，也让你付出了透支的代价；行动，则是从你已经做到过的地方出发——你说过，面对熟悉的同事和明确的截止时间，你是能够协商边界的。这说明余地不是没有，只是还没扩展到更多场景。\n\n种子需要合适的土壤，也需要休耕期，休息和拒绝本来就是节律的一部分，不是偷懒。把「靠谱」从外部评价慢慢转成你自己的选择，这件事不需要一次完成，也不需要在所有关系里同时做到。你愿意从哪一个小练习开始，什么时间做最可行，这些都可以由你来定；具体怎么做，成长实验那一节已经写好了，这里不再重复。\n\n《道德经》里有一句：「知人者智，自知者明。」你已经比开始时更清楚自己是怎么运转的。剩下的，是让这份清楚慢慢落到日常里，一次留半拍，一次说一句有余地的话，都算数。",
+    "used_findings": [
+      "s3.self.pole_tension",
+      "s3.bridge.practice"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.bridge"
+    ],
+    "used_actions": [],
+    "transition_hint": "三件小事先选一件开始，节奏可以随你的现实调整；这一节只做收束，具体动作回到成长实验节查看。",
+    "presentation_meta": {
+      "fragment_key": "report.ending",
+      "chapter": "direction",
+      "sequence_no": 17,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "quote_usage": {
+        "key": "laozi-33-self-knowledge",
+        "status": "VERIFIED",
+        "attribution": "《道德经》第三十三章"
+      },
+      "boundary_notes": [
+        "两端张力为候选假设，需以真实场景校正，正文以「容易被挤到看不见的地方」等非断定表达呈现。",
+        "种子与休耕期仅为比喻，不构成事实判断。",
+        "未展开任何实验动作、频率与退出条件，具体实践统一在成长实验节。"
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.ending",
+        "status": "FULFILLED",
+        "reason": "以「认识—理解—行动」贯通哲学收束：认识承认旧办法、理解其保护与代价、行动回到用户自述的反例（可协商边界）与种子休耕期比喻；署名引用仅使用核验库中 VERIFIED 的《道德经》第三十三章，并给出个性化寄语；未展开实验动作，符合 must_not_repeat。",
+        "quote": "认识，是承认「先答应、后撤回」不是意志力的问题，而是一套一直在替你维系关系的旧办法；理解，是看到这套办法确实保护过你，也让你付出了透支的代价；行动，则是从你已经做到过的地方出发——你说过，面对熟悉的同事和明确的截止时间，你是能够协商边界的。",
+        "follow_up_questions": [
+          "在「先答应、后撤回」的循环里，你更希望先从工作场景还是朋友邀约场景开始练习留余地？",
+          "你愿意从成长实验里的哪一个小练习开始，安排在一天中的什么时间最可行？",
+          "当你说出「我需要看一下再回复」时，你预计最难承受的是哪一句内心声音？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 5356,
+    "output_tokens": 929,
+    "latency_ms": 4921,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "6c093ebb-ccf6-4cf1-9b1e-7aaafcc2bd9d",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "acaa8146bc09b6a8e0973b8ee093deac94775c37985c9eaaa65fc3b879ff4238",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

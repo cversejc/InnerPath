@@ -1,0 +1,62 @@
+{
+  "signature": "57bc12647ebd6a6fb0cb1e18d7f787c141271a67b636f7519e4438b63738d6c5",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点一：先答应，后撤退",
+    "content": "你在压力下常走一条路：先接住，再想办法从里面退出来。\n\n现实里它可能长这样：同事临时请你代写方案，你本想休息，却还是答应了，熬夜做完，第二天变得不耐烦；朋友连续两次临时改地点，你当时没说什么，最后索性取消聚会；需要拒绝时，你拖到最后才给出一句生硬的回应。这里要保留一个反证：你曾明确拒绝领导，而且没有内疚。所以这不是“你不会拒绝”，而是这个循环只在某些场景被触发——通常是临时请求、计划变动、分工规则又不清楚的时刻。\n\n它的运作方式可以拆成一条链：临时请求或计划变动出现（触发）→ 你当场先答应，把关系与资源通道稳住（运作）→ 短期避开了冲突与关系破裂的风险（过去的保护）→ 但答应之后，休息被挤掉，拖延和不耐烦累积，关系里也开始出现摩擦（长期代价）。\n\n关键结论：你并不是在讨好所有人，而是在用“先承担”换取位置和通道；代价是休息与余地被排除在判断之外。\n\n本节路径图：临时请求/计划变动 → 先答应 → 短期无冲突 → 熬夜与不耐烦 → 关系摩擦 → 邀请：在答应前留出一个停顿。\n\n变化所需的下一步理解，不是立刻学会拒绝，而是先看见：你答应时，真正被放到一边的是什么。具体怎么做，留到“往哪去”那一章展开。",
+    "used_findings": [
+      "s4.block.overcommit_withdraw_loop"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "先答应后撤退的循环先看到这里。接下来进入第二个卡点：反复修改与截止前的急交付。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "chapter_opening": true,
+      "sequence_no": 9,
+      "new_information_role": "MANIFEST",
+      "style": {
+        "person": "second",
+        "theory_density": "medium",
+        "action_density": "low",
+        "metaphor_density": "low"
+      },
+      "contains_solution_steps": false,
+      "contains_growth_experiment_actions": false,
+      "contains_quote": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "已按场景、触发、运作、过去保护、长期代价、整合邀请的顺序展开该卡点，并保留用户自述的反例；本节只解释机制，未展开任何解决步骤或实验动作。",
+        "quote": "它的运作方式可以拆成一条链：临时请求或计划变动出现（触发）→ 你当场先答应，把关系与资源通道稳住（运作）→ 短期避开了冲突与关系破裂的风险（过去的保护）→ 但答应之后，休息被挤掉，拖延和不耐烦累积，关系里也开始出现摩擦（长期代价）。",
+        "follow_up_questions": [
+          "除了临时请求和计划变动，还有哪些具体场景会让你先答应？",
+          "你答应之后，最早出现的身体或情绪信号是什么？",
+          "那次明确拒绝领导且没有内疚，当时和现在的差别在哪里？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4824,
+    "output_tokens": 776,
+    "latency_ms": 4178,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "c0c74457-cb2d-48b2-bc46-706a4d09ceb2",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "979510cd3f253d2fc26616caac921411bc766fae3af19901f98ad91941a096dc",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

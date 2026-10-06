@@ -1,0 +1,40 @@
+{
+  "status": "fulfilled",
+  "request_id": 1,
+  "synthetic": true,
+  "database": "isolated-memory",
+  "source": "C:\\Users\\21815\\Desktop\\Project\\innerseek\\docs\\acceptance\\framework-v1\\full",
+  "generation": {
+    "status": "COMPLETED",
+    "attempt": 1,
+    "completed_runs": 8,
+    "total_runs": 8,
+    "started_at": "2026-10-04T12:06:21.186907",
+    "stage": "calendar.calibration",
+    "heartbeat_at": "2026-10-04T12:08:15.438758",
+    "calendar_id": 1,
+    "completed_at": "2026-10-04T12:09:00.856328"
+  },
+  "calendar_skill_bindings": {
+    "calendar.temporal_analysis": {
+      "id": 1,
+      "version": 1,
+      "sha256": "ef4e584a74df50708bbaea08ea9e1720ebd650256c51b13ee43472bfde24288f"
+    },
+    "calendar.monthly_tone": {
+      "id": 2,
+      "version": 1,
+      "sha256": "8cd0ed9f133d62fa59322b0faab24f8ed3a57fdd6bbc90a136dcd4d0e126998b"
+    },
+    "calendar.daily_authoring": {
+      "id": 3,
+      "version": 1,
+      "sha256": "6d72aa5d2840f4eaf168af08fa8a52f985f0468bd44f9902980d2b1738b097d5"
+    },
+    "calendar.calibration": {
+      "id": 4,
+      "version": 1,
+      "sha256": "b8db73d1e41cd8917fc55aba294e817b073030ddcf26976b7ec9bac1b42abf6c"
+    }
+  }
+}

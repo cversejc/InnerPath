@@ -1,0 +1,75 @@
+{
+  "signature": "88ba226775f283714e88fb9539f2c6f3d744167cf7afcbf9b85f8d35d204633b",
+  "skill_digest": "8490d95f38f0c01de1e0d1d34bd71e8cc14f4b302ea8985bf220d3533d042e8f",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "破局：让“等确定”和“先推进”同时在场",
+    "content": "三个卡点背后，其实是同一条保护逻辑：不确定时，你先稳住秩序与责任，再考虑自己的推进与休息。它不是缺陷，而是你在轮班与照护之间长出来的应对方式。现在要发展的能力，是让承担与自主同时在场——不必等所有安排都落定，也能先走一小步；不必独自消化，也能把一部分交出去。\n\n从资源到能力，可以这样看：你自述“事情一多时，会先等规则和时间表更清楚”，这份对秩序的敏感，调节的是“怕出错、怕影响家人”的不安，转译过来，就是先获取信息、把不确定拆成可问清的一小块的能力；你已经和姐姐协商出轮流陪诊，说明协商经验可以转成提前表达时间边界的能力。现实缺口也很具体：培训课程安排连续两周没问清，夜班后的消息检查还没减下来，临时请求仍容易先答应。整合任务不是变成另一个人，而是让“等确定”和“先推进”在同一件事里同时出现。\n\n中式意象上，可以借“守城而不闭门”的守将：守住职责，也开一道门让同伴分担。它对应的可学习能力，是在守住职责的同时主动分派与协商；适用边界是，当现实需要果断决策时，这个意象不适用。它只是理解工具，不作史实或人格诊断。\n\n这些能力会落到第三章的具体动作里：先问清课程安排、把手机交给同事保管、把协商提前到答应之前。这一节只指出方向，不展开步骤、频率和退出条件；具体怎么做，统一在成长实验节展开。",
+    "used_findings": [
+      "s4.block.delay_until_certain",
+      "s4.block.control_rest",
+      "s3.self.rule_vs_autonomy",
+      "s3.quadrant.holder_learner",
+      "s4.block.accept_then_negotiate"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.quadrant",
+      "analysis.s4.breakthrough"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向已经放在这里：让“等确定”和“先推进”在同一件事里同时出现。接下来看具体动作、频率和退出条件。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.breakthrough",
+      "sequence_no": 13,
+      "style": {
+        "person": "second",
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      }
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.breakthrough",
+        "status": "FULFILLED",
+        "reason": "正文按资源→调节功能→能力→现实缺口→整合任务→工具→实验的顺序推导，能力回应共性机制，动作只指向第三章，未展开步骤。",
+        "quote": "从资源到能力，可以这样看：你自述“事情一多时，会先等规则和时间表更清楚”，这份对秩序的敏感，调节的是“怕出错、怕影响家人”的不安，转译过来，就是先获取信息、把不确定拆成可问清的一小块的能力；你已经和姐姐协商出轮流陪诊，说明协商经验可以转成提前表达时间边界的能力。",
+        "follow_up_questions": [
+          "共性机制是否也出现在工作以外的场景？",
+          "哪项能力你觉得自己已经部分具备？"
+        ]
+      },
+      {
+        "requirement_id": "R.archetype",
+        "status": "FULFILLED",
+        "reason": "已具象化“守城而不闭门”的守将意象，给出可学习能力与适用边界，并声明不作史实或人格诊断。",
+        "quote": "中式意象上，可以借“守城而不闭门”的守将：守住职责，也开一道门让同伴分担。",
+        "follow_up_questions": [
+          "这个意象里，哪一部分最贴近你现在的处境？",
+          "如果开一道门让同伴分担，你最先想到谁？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 8611,
+    "output_tokens": 971,
+    "latency_ms": 5032,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "9e340915-0bb5-4c55-8b98-10a1a5ad8494",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "7ec70734ff76edd398c0aeefdbb3adb7fa406193e019a4acb2a18ee643280593",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

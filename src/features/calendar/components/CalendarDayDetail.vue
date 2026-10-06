@@ -84,6 +84,7 @@ defineExpose({ focusCloseButton, focusContainer, getFocusableItems })
       <span class="detail-phase">{{ selectedEntry.phaseLabel }}</span>
     </div>
     <div class="day-signal-card">
+      <p v-if="selectedEntry.energy_awareness" class="day-awareness">能量觉察：{{ selectedEntry.energy_awareness }}</p>
       <div class="day-signal-top">
         <div class="day-signal-copy">
           <span class="detail-section-kicker">ACTION CLIMATE</span>
@@ -125,6 +126,21 @@ defineExpose({ focusCloseButton, focusContainer, getFocusableItems })
         <ul><li v-if="!selectedEntry.unsuitable.length" class="guidance-empty">暂无特别避开事项</li><li v-for="item in visibleUnsuitable" :key="item">{{ item }}</li></ul>
       </div>
     </div>
+    <section v-if="selectedEntry.linkedPractices?.length || selectedEntry.unavailablePracticeCount" class="report-practice-card">
+      <div class="report-practice-head">
+        <strong>承接人生说明书的练习</strong>
+        <small>每日预算 {{ selectedEntry.availableMinutesPerDay }} 分钟</small>
+      </div>
+      <ul v-if="selectedEntry.linkedPractices?.length">
+        <li v-for="practice in selectedEntry.linkedPractices" :key="practice.action_id">
+          <div class="report-practice-title"><strong>{{ practice.claim }}</strong><span>{{ practice.frequency_label }} · {{ practice.duration_minutes }} 分钟</span></div>
+          <p>{{ practice.steps.join('；') }}</p>
+        </li>
+      </ul>
+      <p v-if="selectedEntry.unavailablePracticeCount" class="report-practice-note">
+        {{ selectedEntry.unavailablePracticeCount }} 项报告练习因来源信息或时间条件不足，没有排入本周期。
+      </p>
+    </section>
     <VanButton
       v-if="hiddenGuidanceCount"
       class="guidance-toggle"

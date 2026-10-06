@@ -40,7 +40,28 @@ test('assessment draft persists and restores matching profile and context', () =
 
   assert.equal(restored.profileDraft.name, '林一')
   assert.deepEqual(restored.contextDraft.focus_topics, ['career'])
+  assert.equal(restored.submissionIdempotencyKey, null)
   assert.equal(restored.draftRestored, true)
+})
+
+test('assessment draft restores a stable report submission key for retry', () => {
+  const storage = createStorage()
+  saveAssessmentDraft(storage, {
+    profileVersion: 3,
+    profile: { name: '林一' },
+    context: { ...createEmptyAssessmentContext(), current_challenge: '转行犹豫' },
+    submissionFingerprint: '{"service_type":"report"}',
+    submissionIdempotencyKey: 'assessment-retry-key-123'
+  })
+
+  const restored = restoreAssessmentDraft(storage, {
+    profileVersion: 3,
+    profileDraft: createEmptyProfile(),
+    contextDraft: createEmptyAssessmentContext()
+  })
+
+  assert.equal(restored.submissionFingerprint, '{"service_type":"report"}')
+  assert.equal(restored.submissionIdempotencyKey, 'assessment-retry-key-123')
 })
 
 test('assessment draft skips profile data from another profile version but restores context', () => {

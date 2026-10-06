@@ -1,0 +1,62 @@
+{
+  "signature": "470debd923e303f275c17de401432b6903424a456faba49f40442257aa56e69c",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "卡点二：反复修改与截止前的急交付",
+    "content": "如果说第一个卡点是你对别人的请求先答应后撤退，那第二个卡点更安静：它发生在你一个人的工作里。\n\n你提到，项目开头你会有许多想法，因为担心做不好，就反复修改；接近截止时，才急着把东西交出去。请注意，这是一条你自述的线索，不是对你工作能力的判断。它可能只在某些任务上出现，也可能在别的任务上完全不出现，这一点值得你自己核对。\n\n按这个线索往下走，可以这样看它的运作：触发点往往是任务开始与截止临近之间的时间压力；运作方式是把“判断”这件事一直往后推，用反复修改代替明确交付；短期里，你避免的是过早交付后被评判，同时给自己保留“还能再改”的空间。这就是它过去保护你的地方——不轻易把自己交出去。\n\n代价则出现在长期：节奏失控，熬夜，交付质量和身心状态同时受压。你自述的期待是理解反复出现的机制、练习有余地的表达、减少透支；从这个角度看，反复修改并不是懒或拖，而是一种把评判风险推迟到最后一刻的自我保护，只是它的成本落在了你自己的睡眠和节奏上。\n\n这里只把机制说清楚，不展开具体做法。变化所需的下一步理解是：允许阶段性交付，把“完成”和“完美”分开——这句话本身不是动作，而是一个可以慢慢接受的前提。至于怎么在现实里练，会放到后面的成长实验一节。\n\n需要说明的是，这条线索的把握程度偏低，所以上面用的是“可能”“往往”这类说法。如果它不符合你的实际，请以你的实际为准；如果你愿意，可以回想一次最近反复修改的任务：当时你在担心谁的评判？那个担心后来真的发生了吗？",
+    "used_findings": [
+      "s4.block.perfectionist_completion"
+    ],
+    "used_analysis_fragments": [],
+    "used_actions": [],
+    "transition_hint": "第二个卡点先看到这里。接下来进入第三个卡点：休息与余地少被允许。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.block_02",
+      "sequence_no": 10,
+      "block_key": "block_02",
+      "new_information_role": "MANIFEST",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "tone": "第二人称、现实语言、不诊断不评判",
+      "solution_steps_included": false,
+      "quote_used": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.blocks",
+        "status": "FULFILLED",
+        "reason": "已按场景（项目开头想法多、反复修改、临近截止急交付）→触发（任务开始与截止临近的时间压力）→运作（以反复修改替代明确交付，把判断推迟到最后一刻）→过去保护（避免过早交付被评判，保留改进空间）→长期代价（节奏失控、熬夜、交付质量与身心状态同时受压）→整合邀请（允许阶段性交付，把完成与完美分开）的顺序展开；未展开解决步骤，仅说明行动集中在后续成长实验节；因该线索把握程度偏低，正文以“可能/往往”表达并保留反例与核对空间。",
+        "quote": "按这个线索往下走，可以这样看它的运作：触发点往往是任务开始与截止临近之间的时间压力；运作方式是把“判断”这件事一直往后推，用反复修改代替明确交付；短期里，你避免的是过早交付后被评判，同时给自己保留“还能再改”的空间。",
+        "follow_up_questions": [
+          "最近一次反复修改的任务里，你具体担心的是谁的评判？",
+          "那个担心后来真的发生了吗，还是更多停留在预演里？",
+          "有没有某些任务你并不反复修改？那些任务和这些任务的区别是什么？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 4580,
+    "output_tokens": 910,
+    "latency_ms": 4828,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "764cfec3-870f-4947-bbd9-57b07ae12ce1",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "fe2c130b9403e5c1fabc8ecdd7400171886ab931f9c9892bf8f2c4d678c87891",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

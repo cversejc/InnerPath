@@ -1,0 +1,123 @@
+{
+  "signature": "1e5699f41da9e7c526b26c71e0c6a7dc28104ba1e8b1c2ef5117d7ec4da49b5c",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "命盘旁注：这些符号能说明什么，不能说明什么",
+    "content": "这一节把前面用到的命盘依据摊开来看，方便你判断哪些说法贴近你、哪些需要打问号。命盘是一套解释视角，不是关于你的心理证据，更不是诊断。\n\n先看已经能确认的部分。日主为癸水，阴水，传统意象是雨露、溪涧、暗流之水，倾向以渗透、观察、顺势的方式回应环境，而非正面冲撞。月支为午火，本气丁火为偏财，藏己土为七杀，午月火旺，癸水处其间有被蒸腾之象。透干十神为年干丙火正财、月干甲木伤官，表达/创造与务实求成两条线同时外显；藏干十神有比肩、偏财、七杀、食神，其中七杀与偏财藏而两见，食神藏于日支。日支为未土，与日干癸水为土克水，七杀贴身，藏己土七杀、丁火偏财、乙木食神。年柱丙子，年干丙火正财、年支子水比肩。四柱明现中不见偏印、劫财、正印、正官。\n\n结构上有两个候选需要说清。癸水生于午月，月支午火泄水、日支未土克水、月干甲木泄水，全局生扶偏少而克泄耗偏多，故倾向判为偏弱候选；反证是年支子水为癸之禄根，虽被子午冲损但未消失，故弱而不从。从格候选（从财杀）因年支子水明现根气而证据不足，倾向不成立。这两条都是条件化判断，需要咨询师核对确认。\n\n干支关系上，子午六冲（年-月）、子未六害（年-日）、丙癸天干相克（年-日）、午未六合（月-日）四条同时出现。午未论合，午火当令倾向不化。传统上可作待验证的心理冲突线索：外部机会与自我根基之间存在拉扯，同时贴身关系又对月令有依附与调和倾向。喜忌方面，基于偏弱候选，用神倾向取金生水、水助身，忌神倾向火与土过旺耗克；若最终判为从财杀，取用方向相反。这也是解释性候选，不是确定计算结论。\n\n有几块资料目前没有依据，需要暂缓。出生时间精度为 unknown，系统未计算时柱，故时支五行、十神与价值排序无依据；紫微未计算，命宫、身宫、福德宫与四化均无依据，不能补造宫位星曜；系统计算的 dayun 为空数组，无法按分析日期（2026-10-04）选择当前运，也无法给出后续每十年地图的起止年份。现有资料仅能确认出生日期与地点（1996-06-15，山东济南），不足以推断时辰、命宫与大运。补充问题：请提供尽量准确的出生钟表时间（几点几分）；出生时间是否接近整点或时辰交界；出生地当时是否使用夏令时。确认后可按真实起止年份补出各阶段地图与紫微相关分析。\n\n以上符号只作待验证线索，不能替代你的自述。哪些贴近你、哪些不贴近，以你自己的经验为准。",
+    "used_findings": [
+      "s1.month.wu_fire",
+      "s1.dm.gui_water",
+      "s1.structure.weak_candidate",
+      "s1.interactions.list",
+      "s1.day_branch.wei_earth",
+      "s1.useful_gods.candidate",
+      "s1.ten_gods.visible",
+      "s1.ten_gods.hidden",
+      "s1.year.bing_zi",
+      "s1.ten_gods.absent",
+      "s1.structure.cong_candidate"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s1.day_master",
+      "analysis.s1.structure",
+      "analysis.s1.month",
+      "analysis.s1.ten_gods",
+      "analysis.s1.day_branch",
+      "analysis.s1.hour",
+      "analysis.s1.year",
+      "analysis.s1.interactions",
+      "analysis.s1.dayun",
+      "analysis.s1.useful_gods",
+      "analysis.s1.ziwei_life",
+      "analysis.s1.ziwei_body",
+      "analysis.s1.ziwei_wellbeing",
+      "analysis.s1.ziwei_transformations"
+    ],
+    "used_actions": [],
+    "transition_hint": "旁注已经把命盘依据与暂缓边界摊开；下一节会回到你自己，看这些符号线索与自述“要靠谱、不能让人失望”之间，哪些贴合、哪些需要打问号。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.foundation_notes",
+      "chapter": "identity",
+      "sequence_no": 3,
+      "new_information_role": "DEEPEN",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "boundary_notes": [
+        "命盘符号作解释视角，不作心理证据或诊断",
+        "出生时间未知导致时柱、紫微与大运暂缓，已列具体补问",
+        "喜忌为解释性候选，需咨询师确认"
+      ]
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "must_cover.1",
+        "status": "FULFILLED",
+        "reason": "正文逐项覆盖八字十项已确认内容或暂缓边界，并列出紫微命宫、身宫、福德宫、四化四项暂缓边界与补问。",
+        "quote": "紫微未计算，命宫、身宫、福德宫与四化均无依据，不能补造宫位星曜",
+        "follow_up_questions": [
+          "请提供尽量准确的出生钟表时间（几点几分）？",
+          "出生时间是否接近整点或时辰交界？",
+          "出生地当时是否使用夏令时？"
+        ]
+      },
+      {
+        "requirement_id": "must_cover.2",
+        "status": "FULFILLED",
+        "reason": "正文明确命盘符号只作待验证线索，不替代自述，不作心理证据或诊断。",
+        "quote": "以上符号只作待验证线索，不能替代你的自述。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat.1",
+        "status": "FULFILLED",
+        "reason": "本节只作命盘旁注与边界说明，未展开后续心理章节的卡点机制解释。",
+        "quote": "这一节把前面用到的命盘依据摊开来看，方便你判断哪些说法贴近你、哪些需要打问号。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat.2",
+        "status": "FULFILLED",
+        "reason": "本节未展开实验动作、频率或退出条件，具体实践留待成长实验节。",
+        "quote": "确认后可按真实起止年份补出各阶段地图与紫微相关分析。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat.3",
+        "status": "FULFILLED",
+        "reason": "本节未引用任何收束金句，金句仅在寄语出现一次。",
+        "quote": "以上符号只作待验证线索，不能替代你的自述。",
+        "follow_up_questions": []
+      },
+      {
+        "requirement_id": "must_not_repeat.4",
+        "status": "FULFILLED",
+        "reason": "本节对透干十神以 REFERENCE 方式承接，仅作一句概括，未重新完整解释。",
+        "quote": "透干十神为年干丙火正财、月干甲木伤官，表达/创造与务实求成两条线同时外显",
+        "follow_up_questions": []
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 19443,
+    "output_tokens": 1887,
+    "latency_ms": 7174,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "621ed781-3eba-436b-a250-5c772b49e7d8",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "12b27142bba13ed629a7d4a9a40dae54a7dcc7fdc3a913458fc0293a8f2b696f",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

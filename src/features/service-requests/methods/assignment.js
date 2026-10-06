@@ -2,6 +2,16 @@ import { getAllAdminUsers } from '../../admin/api.js'
 import { updateAdminServiceRequestAssignment } from '../api.js'
 
 export default {
+  async assignProfessional(specialty, value) {
+    if (!this.admin || this.assignmentSaving || !this.workspace) return
+    this.assignmentSaving = true
+    try {
+      await updateAdminServiceRequestAssignment(this.workspace.request.id, value ? Number(value) : null, specialty)
+      await this.loadWorkspace(this.workspace.request.id)
+      this.message = "专业负责人已更新"
+    } catch (error) { this.message = this.errorText(error) }
+    finally { this.assignmentSaving = false }
+  },
   async loadConsultants() {
     if (!this.admin) return
     try {

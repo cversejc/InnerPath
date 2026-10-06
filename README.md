@@ -176,6 +176,13 @@ cd backend
 celery -A app.tasks.celery_app worker --loglevel=info
 ```
 
+Transactional workflow events are dispatched by Celery Beat. Run a Beat
+process alongside the worker when starting Celery manually:
+
+```bash
+celery -A app.tasks.celery_app beat --loglevel=info
+```
+
 ### 数据库迁移
 
 ```bash

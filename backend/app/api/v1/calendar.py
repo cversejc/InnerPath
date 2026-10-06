@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
+from app.application.calendar_production import queue_calendar_from_report, retry_calendar_production
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.models.user import User
@@ -25,12 +26,9 @@ from app.domains.calendar.decision_logs import (
 )
 from app.application.staff_calendar_access import get_calendar_for_staff
 from app.domains.calendar.requests import (
-    create_calendar_request,
     get_user_calendar_requests,
-    retry_calendar_generation,
     serialize_calendar_request,
 )
-from app.tasks.calendar_generation_dispatch import dispatch_calendar_generation
 
 router = APIRouter()
 
@@ -57,7 +55,7 @@ async def create_my_calendar_request(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        calendar_request = await create_calendar_request(
+        calendar_request = await queue_calendar_from_report(
             db,
             current_user,
             data,
@@ -69,24 +67,26 @@ async def create_my_calendar_request(
             "calendar_request_profile_incomplete": "请先完成个人档案中的性别和完整出生日期",
             "calendar_request_requires_date_range": "请选择完整的日历周期",
             "invalid_calendar_range": "日历开始日期不能晚于结束日期",
+            "calendar_request_requires_30_days": "请选择连续 30 天的日历周期",
             "calendar_request_requires_focus_topics": "至少选择一个关注领域",
             "calendar_request_requires_usage_scenario": "请选择日历用途",
             "calendar_request_requires_goal": "请填写当前决策目标",
             "calendar_request_requires_expected_outcomes": "至少选择一个期望输出",
+            "calendar_request_requires_source_report": "请先从一份已交付报告进入日历生成",
+            "calendar_request_source_report_mismatch": "来源报告不存在、尚未交付或不属于当前账号",
             "calendar_request_source_report_required": "请先申请报告，并等待咨询师交付后再生成日历。",
             "calendar_request_source_report_not_delivered": "请先申请报告，并等待咨询师交付后再生成日历。",
             "calendar_request_must_cover_30_days": "日历周期需覆盖 30 天，请重新选择日期。",
+            "calendar_ai_generation_failed": "AI 生成失败，请稍后重试；本次日历未交付",
         }
-        code = status.HTTP_409_CONFLICT if str(error) == "profile_version_conflict" else status.HTTP_422_UNPROCESSABLE_ENTITY
+        code = (
+            status.HTTP_409_CONFLICT
+            if str(error) == "profile_version_conflict"
+            else status.HTTP_502_BAD_GATEWAY
+            if str(error) == "calendar_ai_generation_failed"
+            else status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
         raise HTTPException(status_code=code, detail=message_map.get(str(error), str(error)))
-    try:
-        dispatch_calendar_generation(calendar_request.id, calendar_request.task_id)
-    except Exception:
-        calendar_request.status = "failed"
-        calendar_request.progress = 0
-        calendar_request.generation_error = "日历任务暂时无法启动，请稍后重试。"
-        await db.commit()
-        await db.refresh(calendar_request)
     return await serialize_calendar_request(db, calendar_request)
 
 
@@ -109,27 +109,19 @@ async def retry_my_calendar_request(
     if not calendar_request or calendar_request.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Calendar request not found")
     try:
-        calendar_request = await retry_calendar_generation(
+        calendar_request = await retry_calendar_production(
             db,
-            calendar_request,
             current_user,
+            request_id,
             audit_context=audit_context_from_request(request),
         )
     except ValueError as error:
         code = str(error)
         if code == "calendar_request_source_report_not_delivered":
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="请先申请报告，并等待咨询师交付后再生成日历。")
-        if code == "calendar_request_retry_not_allowed":
+        if code in {"calendar_request_retry_not_allowed", "calendar_request_not_failed"}:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="当前日历任务不能重试。")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Calendar request not found")
-    try:
-        dispatch_calendar_generation(calendar_request.id, calendar_request.task_id)
-    except Exception:
-        calendar_request.status = "failed"
-        calendar_request.progress = 0
-        calendar_request.generation_error = "日历任务暂时无法启动，请稍后重试。"
-        await db.commit()
-        await db.refresh(calendar_request)
     return await serialize_calendar_request(db, calendar_request)
 
 

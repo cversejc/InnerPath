@@ -6,7 +6,6 @@ const props = defineProps({
   pageSize: { type: Number, default: 12 },
   reportFilters: { type: Object, required: true },
   reportPage: { type: Number, default: 1 },
-  reportRetryLimit: { type: Number, default: 2 },
   reportSection: { type: String, default: 'reports' },
   reports: { type: Object, required: true },
   reportsLoading: { type: Boolean, default: false },
@@ -22,15 +21,10 @@ const emit = defineEmits([
   'change-task-page',
   'export',
   'open-report',
-  'retry-task',
   'search-reports',
   'search-tasks',
   'select-section'
 ])
-
-function canRetryTask(task) {
-  return task.status === 'failed' && task.has_input_snapshot && !task.has_retry && task.retry_count < props.reportRetryLimit
-}
 </script>
 
 <template>
@@ -81,10 +75,10 @@ function canRetryTask(task) {
       </div>
       <div v-if="tasksLoading" class="list-loading" aria-label="正在加载报告任务"><i v-for="index in 4" :key="index"></i></div>
       <div v-else class="table-panel">
-        <div class="table-meta"><span>共 {{ reportTasks.total }} 个任务</span><span>失败任务最多重试 {{ reportRetryLimit }} 次</span></div>
+        <div class="table-meta"><span>共 {{ reportTasks.total }} 个任务</span><span>旧版生成任务只读；新报告由服务申请工作流协作完成。</span></div>
         <div class="admin-table-wrap" tabindex="0" aria-label="数据表格，可横向滚动查看">
           <table class="admin-table">
-            <thead><tr><th>任务</th><th>用户</th><th>进度</th><th>状态</th><th>错误</th><th>操作</th></tr></thead>
+            <thead><tr><th>任务</th><th>用户</th><th>进度</th><th>状态</th><th>错误</th></tr></thead>
             <tbody>
               <tr v-for="task in reportTasks.items" :key="task.task_id">
                 <td><strong class="mono-text">{{ task.task_id.slice(0, 12) }}…</strong><small>{{ task.report_id ? `报告 #${task.report_id}` : '尚未生成报告' }} · {{ formatDateTime(task.created_at) }}</small></td>
@@ -92,9 +86,8 @@ function canRetryTask(task) {
                 <td><div class="progress-cell"><span>{{ task.progress }}%</span><i><b :style="{ width: `${task.progress}%` }"></b></i></div></td>
                 <td><span :class="['status-badge', `task-${task.status}`]">{{ reportStatusText(task.status) }}</span><small v-if="task.retry_count">第 {{ task.retry_count }} 次重试</small></td>
                 <td class="error-cell">{{ task.error || '—' }}</td>
-                <td><button v-if="canRetryTask(task)" type="button" class="row-open" @click="emit('retry-task', task)">重试 →</button><span v-else class="muted-text">{{ task.status === 'failed' && !task.has_input_snapshot ? '旧任务不可重试' : task.has_retry ? '已有重试任务' : '—' }}</span></td>
               </tr>
-              <tr v-if="!reportTasks.items.length"><td colspan="6" class="empty-cell">暂无报告任务。</td></tr>
+              <tr v-if="!reportTasks.items.length"><td colspan="5" class="empty-cell">暂无报告任务。</td></tr>
             </tbody>
           </table>
         </div>

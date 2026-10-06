@@ -1,0 +1,13 @@
+{
+  "raw": "{\"approved\": false, \"issues\": [{\"code\": \"MISSING_ANALYSIS_BASIS\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-08\", \"message\": \"流月交接日，月柱在facts中仍记丁酉，但analysis与文案按戊戌土气论述；月柱依据前后不一致，需核对。\"}, {\"code\": \"MISSING_ANALYSIS_BASIS\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-09\", \"message\": \"流月戊戌自10-09起使用，但10-08已按戊戌论述；月令交接日归属不统一，影响色块与依据。\"}, {\"code\": \"COLOR_TONE_MISMATCH\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-16\", \"message\": \"四维加权0.8为绿色，但当日主主题为内观恢复、建议以休息为主，与绿色“推进”标签语义冲突。\"}, {\"code\": \"COLOR_TONE_MISMATCH\", \"severity\": \"MAJOR\", \"entry_date\": \"2026-10-28\", \"message\": \"加权0.8为绿色，但当日主主题为内观恢复、动作以散步独处为主，绿色“推进”标签与内容不符。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-24\", \"message\": \"10-24至10-31连续多日核心动作均为“先回复需要看时间/先写草稿”，情境与动作高度重复，建议区分。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-29\", \"message\": \"与10-24、10-27的“先看余量、延后答复”动作几乎相同，缺少情境差异，易形成机械重复。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-11-02\", \"message\": \"与10-26“足够好交付标准”动作重复，且同属蓝色探索，建议区分交付场景或观察点。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-13\", \"message\": \"10-13与11-01均为“一周复盘、0–10刻度记录透支”，动作与观察点相同，仅日期不同。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-06\", \"message\": \"10-06与10-10、10-17、10-23的“最小可交付版本”动作重复出现，缺少场景区分。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-05\", \"message\": \"10-05与10-11、10-20的“先说出感受再决定是否赴约”动作重复，情境未作区分。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-07\", \"message\": \"10-07与10-15、10-25的“我可以做A，B需要另约”脚本练习重复，缺少递进设计。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-09\", \"message\": \"10-09与10-12、10-21的“先离开屏幕/深呼吸再决定”动作重复，情境与观察点未区分。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-14\", \"message\": \"10-14与10-04、10-24的“收到请求先回复需要看时间”动作重复，缺少新情境。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-30\", \"message\": \"10-30与10-22、10-27的“整理触发链/记录透支”动作重复，观察点相同。\"}, {\"code\": \"REPETITIVE_ACTION\", \"severity\": \"MINOR\", \"entry_date\": \"2026-10-31\", \"message\": \"10-31与10-18的“把回应方式调准、小步协商”动作重复，缺少具体情境差异。\"}], \"patches\": []}",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 48612,
+    "output_tokens": 1021,
+    "latency_ms": 4959,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "49a7f5f7-deda-4e7f-9b91-2dcb5bc1931f"
+  }
+}

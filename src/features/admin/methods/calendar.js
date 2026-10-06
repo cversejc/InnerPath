@@ -4,6 +4,7 @@ import {
   createAdminCalendar,
   createAdminCalendarDraft,
   getAdminCalendars,
+  getAdminCalendarRequests,
   importAdminCalendar,
   publishAdminCalendar,
   updateAdminCalendar
@@ -37,6 +38,21 @@ export default {
     },
   updateCalendarImportJson(value) { this.calendarImportJson = value },
   updateCalendarUserSearch(value) { this.calendarUserSearch = value },
+  async loadCalendarRequests() {
+      this.calendarRequestsLoading = true
+      try {
+        const response = await getAdminCalendarRequests({ status: this.calendarRequestStatusFilter || undefined })
+        this.calendarRequests = response.items || []
+      } catch (error) {
+        this.message = this.errorText(error)
+      } finally {
+        this.calendarRequestsLoading = false
+      }
+    },
+  async setCalendarRequestStatusFilter(status) {
+      this.calendarRequestStatusFilter = status
+      await this.loadCalendarRequests()
+    },
   async openCalendarForUser(user) { this.closeUserDetail({ restoreFocus: false }); this.activeTab = 'calendar'; this.selectedCalendarUser = user; this.calendarForm.visible = false; await this.loadCalendarUsers(); await this.loadCalendars(); this.syncAutoRefresh() },
   async selectCalendarUser(user) { this.selectedCalendarUser = user; this.cancelCalendarEdit(); await this.loadCalendars() },
   async loadCalendars() {

@@ -48,9 +48,10 @@ def test_auth_route_aggregator_preserves_public_paths():
         ("/api/v1/auth/staff/accept-invite", "POST"),
     }
     actual_routes = {
-        (route.path, method)
-        for route in app.routes
-        for method in getattr(route, "methods", set())
+        (path, method.upper())
+        for path, operations in app.openapi()["paths"].items()
+        for method in operations
+        if method.lower() in {"get", "post", "put", "patch", "delete", "options", "head"}
     }
 
     assert expected_routes.issubset(actual_routes)

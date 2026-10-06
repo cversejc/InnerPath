@@ -1,0 +1,67 @@
+{
+  "signature": "29375fa4ee3cd84799ac30a4648d88fbcd9282b6cf7770074a1c77a25e616fae",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "三个卡点，一条暗线：先答应、后撤回的循环如何在不同场景里换装",
+    "content": "把三个卡点放在一起看，会看到它们并不是三件互不相干的事。\n\n先看共同的那条线。触发点都落在「临时」和「变动」上：同事临时请你代写方案，朋友的邀约连续两次临时改地点，项目在开头想法很多、交付评价临近时压力陡增。接下来，一个假设性的情绪与信念会浮现——担心让人失望，担心被认为不够好，而想休息、不满与拒绝的面向在当下不易被允许。于是防御动作出现：先答应，把定稿往后推，或用不耐烦、取消来间接表达。短期看，这套动作确实有保护功能：维持关系与形象，避免当下冲突，也让自己暂时不用面对「拒绝会不会破坏关系」的不确定。长期看，代价是熬夜、透支、生硬回应、取消聚会，恢复不足，需求长期不被看见，关系也可能出现摩擦。\n\n再看三个卡点之间的关系。卡点一是主线：临时请求或关系变动时先答应、后撤回。卡点二更像是这条主线在休息场景里的延伸——他人需求与自身休息同时出现时，休息被推迟，不满以不耐烦或撤回的方式间接出现。卡点三则是它在项目与交付场景里的另一种表现——开头反复修改、接近截止才急着交付，短期避免被评价为不够好，长期压缩质量与休息空间。三者共享同一个假设性的核心信念：担心让人失望。它们不是各自独立的毛病，而是同一套「先承接、后撤回」的模式在不同场景下的换装。\n\n需要说明的是，这只是一种可能的运作模式，不是因果定论。触发、情绪、信念、防御、短期保护、长期重复，这条链上的每一环都还需要你用真实事件去核对。已有的反例也说明这条路径并非必然：面对熟悉同事且有明确截止时，你能够协商任务边界，并不是每次都迁就。这说明协商的能力已经在你身上，只是还没有在临时和变动的情境里稳定地被调用。\n\n至于在什么条件下更容易协商、每次遇到什么会怎样，这些还需要更多场景来补充。",
+    "used_findings": [
+      "s4.block.boundary_cycle",
+      "s4.block.rest_shadow",
+      "s4.block.perfection_delay",
+      "s2.complex.boundary_cycle",
+      "s2.shadow.rest_excluded"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s2.cycle",
+      "analysis.s4.blocks"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看清三个卡点共享同一条「先答应、后撤回」的暗线；下一节会从反例出发，看往哪去。",
+    "presentation_meta": {
+      "fragment_key": "report.blocks.common_pattern",
+      "chapter": "challenge",
+      "sequence_no": 12,
+      "new_information_role": "SYNTHESIZE",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "tone": "第二人称、描述模式、不评判不诊断",
+      "length_note": "约520汉字"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.common_pattern",
+        "status": "FULFILLED",
+        "reason": "正文综合了三个卡点（卡点一为主线，卡点二为休息场景延伸，卡点三为项目场景表现），按触发→情绪/信念→防御→短期保护→长期重复逐环展开，并明确说明这只是可能的运作模式、不是因果定论，同时引用了反例。",
+        "quote": "三者共享同一个假设性的核心信念：担心让人失望。它们不是各自独立的毛病，而是同一套「先承接、后撤回」的模式在不同场景下的换装。",
+        "follow_up_questions": [
+          "在什么条件下你更容易协商边界？",
+          "每次遇到临时请求时，你心里最先冒出的念头是什么？",
+          "哪个卡点最贴近你当下的体验？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 7617,
+    "output_tokens": 941,
+    "latency_ms": 4935,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "85481f3a-00ee-4608-9ad1-9aa303886b0f",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "485516af0a939f715721b73eed467368311ebbfc8a8b74986e00b5c02bd336e9",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

@@ -93,6 +93,7 @@ class UserResponse(BaseModel):
     avatar_url: Optional[str]
     user_type: str
     role: str
+    consultant_type: Optional[str] = None
     is_active: bool
     phone_verified_at: Optional[datetime]
     last_login_at: Optional[datetime]

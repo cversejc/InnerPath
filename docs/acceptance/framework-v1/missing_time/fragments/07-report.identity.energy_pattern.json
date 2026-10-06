@@ -1,0 +1,65 @@
+{
+  "signature": "c441eb7e4a45bd8ac59af8ed5ceef65a6314d68e69281b083404dd5107ac4b73",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你的能量与做事节奏：从想法涌出到交付落地",
+    "content": "如果把注意力放在你如何启动一件事、又如何把它做完，会看到一条比较清楚的路径。它有资源，也有反复出现的张力。以下描述都来自你自述的场景和已确认的符号线索，属于可能贴合的观察视角，需要你用自己的经验核对。\n\n先说资源。命盘里透出伤官与正财两条线：一条偏向表达、想法、创造，另一条偏向务实、求成、把事情落到实处。这两条线同时外显，本身不是人格定论，只是一个待验证的线索——你在项目开头常常有很多想法，说明表达和探索这一端是活跃的；你也在意“要靠谱、不能让人失望”，说明务实求成这一端同样在场。两条线都在工作，这是你的资源，不是问题。\n\n再看能量。充电的线索比较具体：你提到独自散步时比较放松，这可以当作低刺激恢复的一个观察点。符号层面提示的整理、独处、写作类活动，可以当成试验建议去试，但不承诺效果。耗电的线索同样清楚：下班后常查看消息怕漏事、答应额外任务后熬夜、反复修改到接近截止才急着交付，这些和你自述的透支反馈是一致的。这里有一个反例值得记住：面对熟悉同事且有明确截止时，你能够协商任务边界，说明这种耗电并不是不可改变的固定模式。哪些活动后精力回升、哪些活动后明显下降，还需要你用一周左右的记录去核对。\n\n把这两端放在一起，可以看到一条加工路径。探索的入口是项目开头涌出的许多想法；价值的入口是“要靠谱、不能让人失望”，外部期待在这里权重较高；执行的入口是反复修改、接近截止才交付，推进力主要来自截止压力；反馈的入口偏向外部监控，例如下班后查看消息怕漏事，而独自散步时放松则是少见的向内反馈。张力出现在探索与执行之间：中间缺少一个价值核对与停顿的环节，想法直接滑向承接，承接又直接滑向透支。这条路径是基于你的问卷与行为描述画的倾向假设，需要你用自己的实际场景校正。\n\n关于类型工具，你没有提供 MBTI 或八维自报，所以这里不推断你的类型，也不伪造任何功能分数。如果你有自报结果，可以提供，我们再对照这条路径看看哪些贴合。\n\n这一节先呈现你的能量与做事节奏长什么样。至于怎么在这个节奏里练习有余地的表达、减少透支，具体动作、频率和边界会放在后面的成长实验一节统一展开。",
+    "used_findings": [
+      "s1.ten_gods.visible",
+      "s1.ten_gods.hidden",
+      "s4.action.rest_permission",
+      "s4.block.perfection_delay",
+      "s4.action.early_draft"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.energy",
+      "analysis.s4.functions"
+    ],
+    "used_actions": [],
+    "transition_hint": "你已经看清自己能量与做事节奏的路径和张力；下一节会顺着这条线，看这个循环在真实场景里是怎么一步步跑起来的。",
+    "presentation_meta": {
+      "fragment_key": "report.identity.energy_pattern",
+      "chapter": "identity",
+      "sequence_no": 7,
+      "reading_depth": "深入详细",
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low",
+      "requires_review": true
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.energy",
+        "status": "FULFILLED",
+        "reason": "已按 analysis.s4.energy 与 analysis.s4.functions 转译充电/耗电线索、实际反馈与探索→价值→执行→反馈路径及张力，并明确无自报不推 MBTI 或八维分数；反例与待核对项均已写入正文。",
+        "quote": "充电的线索比较具体：你提到独自散步时比较放松，这可以当作低刺激恢复的一个观察点。",
+        "follow_up_questions": [
+          "哪些活动后你感到精力回升？",
+          "哪些活动后你明显感到被抽空？",
+          "你是否有 MBTI 或八维自报结果可提供？",
+          "在探索与执行之间，你通常如何做取舍？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 9603,
+    "output_tokens": 991,
+    "latency_ms": 5474,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "885e8b6b-ae42-4f63-8987-f47dcd88820e",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "860d3d23c66c5d93ec5a9cb09d00497f0f5bc49ac2ff8a79616b832a1895046d",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

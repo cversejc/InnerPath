@@ -1,0 +1,144 @@
+{
+  "skill_key": "report.fragment_authoring",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "命盘旁注：符号线索与资料边界",
+    "content": "这一节把命盘里的符号翻译成日常语言，作为旁注来读——它们提供的是待验证的线索，不是对你心理的证明。\n\n出生城市同样暂用济南，不能作为真实出生地。演示四柱为甲申、庚午、乙丑、甲申；系统按中国UTC+8民用钟表时间、精确节气与晚子时sect=2计算，未校正真太阳时。\n\n**日主与月令**\n\n先看自我核心：日干为乙木，阴木，传统上取藤蔓、花草的意象。可以把它理解为一种柔韧、借势、对关系氛围较敏感的倾向。你自报“愿意听别人对自身性格的建议”“权衡利弊”，与这种描述方向相近，但这是否贴合你，仍待你核对。需要说明：出生日期公历2004-06-15为演示假设，日主随真实出生日期可能变化，请以本人提供后重算为准。\n\n**结构与十神**\n\n再看结构：月令午火（食神、偏财），透庚正官，年时双甲劫财，日支丑土泄耗。候选倾向身偏弱，但存在反证——甲木帮身、丑中癸水可生身，若通根有力则可能转为中和偏弱。因此格局归类与喜忌（候选倾向水、木为用）都属解释性判断，最终由咨询师确认，若判定身强或从格，喜忌会反转。\n\n**干支、人生观与早期印记**\n\n日支丑土含偏财、偏印、七杀，传统视角可提供安全、内省与压力应对的观察线索，不能证明你的真实人生观；年柱甲申可提供集体印记与内在权威的符号线索，问卷没有祖辈或童年资料，早期印记明确暂缓，不补造家庭影响。\n\n干支关系上，庚乙之间既相合又相克，甲庚相克，午丑相害。这些可对应“内在权威与自我表达之间存在张力”的线索，但合不等于合化，成化条件仍需人工判断。时支申金藏正官、正印、正财，传统上可对应价值排序偏重规则、学习与积累；出生时刻你自报精确，但真太阳时未校正，时柱须咨询师核对。十神分布中出现次数不代表旺衰，缺失的伤官、比肩也不能证明人格缺陷。\n\n**命、身、福德与四化**\n\n生年四化为廉贞禄、破军权、武曲科、太阳忌。\n\n紫微部分：命宫在酉，主星天府（旺），可对应稳重、务实、善守成的人格面具；身宫落官禄宫（丑），天相（得）配陀罗、天魁，命身不一致，传统上可对应后天方向偏重职业角色与责任承担。福德宫廉贞、贪狼，带生年化禄，可对应内在欲望与享乐倾向的线索，不能据此诊断。宫干飞化中，命宫、交友宫、田宅宫三条忌流向福德宫，这里只保留经审核的飞化路径，不由这些路径新增心理结论。\n\n**起运与时序边界**\n\n最后是大运：按分析日期2026-10-04，当前大运为戊辰（2017–2026，正财，土），偏重务实取财；后续丁卯（2027–2036，食神）、丙寅（2037–2046，伤官）等阶段主题见阶段地图。顺逆势依据由库计算，须咨询师核对。你自述的边界困难、拒绝生硬、有事才联系、自评“太着急”，在这里只作为待验证信号，不作诊断，后续章节会结合具体场景展开。",
+    "used_findings": [
+      "s1.day_master.b_yi",
+      "s1.signal.boundary_urgency",
+      "s1.dayun.current_wuchen",
+      "s1.ziwei.transformations",
+      "s1.useful_gods.candidate",
+      "s1.structure.candidate_weak_officer",
+      "s1.hour.shen_metal",
+      "s1.ten_gods.visible_hidden",
+      "s1.month.wu_fire",
+      "s1.interactions.relations",
+      "s1.ziwei.wellbeing_palace",
+      "s1.ziwei.life_palace",
+      "s1.ziwei.body_palace",
+      "s1.year.jia_shen",
+      "s1.day_branch.chou_earth"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s1.day_master",
+      "analysis.s1.structure",
+      "analysis.s1.month",
+      "analysis.s1.ten_gods",
+      "analysis.s1.day_branch",
+      "analysis.s1.hour",
+      "analysis.s1.year",
+      "analysis.s1.interactions",
+      "analysis.s1.dayun",
+      "analysis.s1.useful_gods",
+      "analysis.s1.ziwei_life",
+      "analysis.s1.ziwei_body",
+      "analysis.s1.ziwei_wellbeing",
+      "analysis.s1.ziwei_transformations"
+    ],
+    "used_actions": [],
+    "transition_hint": "命盘旁注到此收束，符号只作线索。下一节进入具体场景：这套“先照顾场面”的顺序如何运作、保护了什么、又付出了什么。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.foundation_notes",
+      "sequence_no": 3,
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "tone": "第二人称、条件式表达、不评判不诊断",
+      "boundary_notes": [
+        "出生日期公历2004-06-15与出生地济南为演示假设，日主随时柱/日期可能变化，须本人提供后重算",
+        "真太阳时未校正，时柱须咨询师核对",
+        "格局、喜忌、大运顺逆势为解释性候选，须咨询师确认",
+        "紫微四化与飞化解读为传统解释视角，不能据此诊断心理",
+        "用户自述的边界困难、拒绝生硬、有事才联系、太着急仅作待验证信号"
+      ],
+      "must_cover_check": [
+        "八字十项及紫微重点的已确认内容或暂缓边界：已覆盖",
+        "心理含义只是待验证线索：已反复标注"
+      ]
+    }
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 19284,
+    "output_tokens": 1317,
+    "latency_ms": 6258,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "8fbfa021-c381-4966-bdf2-59ef111debec",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "dfc3c9bc1c74702645a28e569fb8426fa5c2fb44eb53956f4d8379eea98c701d",
+    "output_validation": "passed"
+  },
+  "review": {
+    "status": "DEVELOPER_ACCEPTED_FOR_DEMO",
+    "note": "对照问卷、已审核分析与校准意见的编辑；非真实咨询师签字。"
+  },
+  "original_model_output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "命盘旁注：你从哪里读到自己",
+    "content": "这一节把命盘里的符号翻译成日常语言，作为旁注来读——它们提供的是待验证的线索，不是对你心理的证明。\n\n先看自我核心：日干为乙木，阴木，传统上取藤蔓、花草的意象。可以把它理解为一种柔韧、借势、对关系氛围较敏感的倾向。你自报“愿意听别人对自身性格的建议”“权衡利弊”，与这种描述方向相近，但这是否贴合你，仍待你核对。需要说明：出生日期公历2004-06-15为演示假设，日主随真实出生日期可能变化，请以本人提供后重算为准。\n\n再看结构：月令午火（食神、偏财），透庚正官，年时双甲劫财，日支丑土泄耗。候选倾向身偏弱，但存在反证——甲木帮身、丑中癸水可生身，若通根有力则可能转为中和偏弱。因此格局归类与喜忌（候选倾向水、木为用）都属解释性判断，最终由咨询师确认，若判定身强或从格，喜忌会反转。\n\n干支关系上，庚乙之间既相合又相克，甲庚相克，午丑相害。这些可对应“内在权威与自我表达之间存在张力”的线索，但合不等于合化，成化条件仍需人工判断。时支申金藏正官、正印、正财，传统上可对应价值排序偏重规则、学习与积累；出生时刻你自报精确，但真太阳时未校正，时柱须咨询师核对。十神分布中出现次数不代表旺衰，缺失的伤官、比肩也不能证明人格缺陷。\n\n紫微部分：命宫在酉，主星天府（旺），可对应稳重、务实、善守成的人格面具；身宫落官禄宫（丑），天相（得）配陀罗、天魁，命身不一致，传统上可对应后天方向偏重职业角色与责任承担。福德宫廉贞、贪狼，带生年化禄，可对应内在欲望与享乐倾向的线索，不能据此诊断。宫干飞化中，命宫、交友宫、田宅宫等多条忌流向福德宫，传统上读作“内外期待容易压到内在安稳”，这同样是待验证的假设，不是结论。\n\n最后是大运：按分析日期2026-10-04，当前大运为戊辰（2017–2026，正财，土），偏重务实取财；后续丁卯（2027–2036，食神）、丙寅（2037–2046，伤官）等阶段主题见阶段地图。顺逆势依据由库计算，须咨询师核对。你自述的边界困难、拒绝生硬、有事才联系、自评“太着急”，在这里只作为待验证信号，不作诊断，后续章节会结合具体场景展开。",
+    "used_findings": [
+      "s1.day_master.b_yi",
+      "s1.structure.candidate_weak_officer",
+      "s1.month.wu_fire",
+      "s1.ten_gods.visible_hidden",
+      "s1.day_branch.chou_earth",
+      "s1.hour.shen_metal",
+      "s1.year.jia_shen",
+      "s1.interactions.relations",
+      "s1.useful_gods.candidate",
+      "s1.ziwei.life_palace",
+      "s1.ziwei.body_palace",
+      "s1.ziwei.wellbeing_palace",
+      "s1.ziwei.transformations",
+      "s1.dayun.current_wuchen",
+      "s1.signal.boundary_urgency"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s1.day_master",
+      "analysis.s1.structure",
+      "analysis.s1.month",
+      "analysis.s1.ten_gods",
+      "analysis.s1.day_branch",
+      "analysis.s1.hour",
+      "analysis.s1.year",
+      "analysis.s1.interactions",
+      "analysis.s1.dayun",
+      "analysis.s1.useful_gods",
+      "analysis.s1.ziwei_life",
+      "analysis.s1.ziwei_body",
+      "analysis.s1.ziwei_wellbeing",
+      "analysis.s1.ziwei_transformations"
+    ],
+    "used_actions": [],
+    "transition_hint": "命盘旁注到此收束，符号只作线索。下一节进入具体场景：这套“先照顾场面”的顺序如何运作、保护了什么、又付出了什么。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.foundation_notes",
+      "sequence_no": 3,
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "tone": "第二人称、条件式表达、不评判不诊断",
+      "boundary_notes": [
+        "出生日期公历2004-06-15与出生地济南为演示假设，日主随时柱/日期可能变化，须本人提供后重算",
+        "真太阳时未校正，时柱须咨询师核对",
+        "格局、喜忌、大运顺逆势为解释性候选，须咨询师确认",
+        "紫微四化与飞化解读为传统解释视角，不能据此诊断心理",
+        "用户自述的边界困难、拒绝生硬、有事才联系、太着急仅作待验证信号"
+      ],
+      "must_cover_check": [
+        "八字十项及紫微重点的已确认内容或暂缓边界：已覆盖",
+        "心理含义只是待验证线索：已反复标注"
+      ]
+    }
+  }
+}

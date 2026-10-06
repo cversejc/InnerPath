@@ -95,7 +95,10 @@
           v-else
           ref="stepContent"
           :is-generating="isGenerating"
-          @view-requests="viewRequests"
+          :gen-step="genStep"
+          :request-id="currentRequestId"
+          @view-requests="viewMyRequests"
+          @new-application="startAnotherApplication"
         />
       </div>
     </section>

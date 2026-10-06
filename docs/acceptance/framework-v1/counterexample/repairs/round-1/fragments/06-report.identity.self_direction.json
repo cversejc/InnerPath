@@ -1,0 +1,62 @@
+{
+  "signature": "113a9858e706b54c283394fb7a6d42dcf98249c097f61dc3de744212937dbfc7",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "往哪里去：让承担与休息同时在场",
+    "content": "这一节先把方向的地基说清楚，方法留在成长实验那一节。\n\n你目前更常站在的一端，可能是“以产出与承担换取位置”。你自己说，答应任务是为了换取资源；同事临时请你代写方案，你本想休息却答应，熬夜后第二天变得不耐烦；朋友连续两次临时改地点，你没有表达意见，最后直接取消聚会。这些不是性格缺陷，而是你已经熟练的一种换取位置的方式——它确实帮你被需要、被看见。\n\n另一端是休息、有余地的表达，以及被尊重的需要。你独自散步时比较放松，也明确提出想减少透支、练习有余地的表达。它并非不存在，只是目前少被允许出场：当请求或截止到来，它常常第一个被让位。\n\n整合的方向，不是变成一个既会承担又懂休息的完美的人，而是在具体情境里让两端共同存在。你已经有过一次反例：曾明确拒绝领导且没有内疚。这说明要扩展的不是“修复讨好”，而是把这份已有的拒绝能力，搬到更多场景里去。\n\n从更长的节奏看，你当前所处的阶段（约2019至2028年）带有收敛与表达之间的张力，像是边走边调整的渐进过程，而不是一次性翻篇。命盘旁注里提到的稳定资源（正印、福德天府）可以理解为：你其实有安定的底子，只是这份安定还没有被正式排进日程。\n\n以上命理与格局的对应，都只是一种解释视角，不是结论。哪些方向真的适合你，仍以你在现实中的自述和反馈为准。至于“最想活出的样子”，目前资料不足，这一节暂缓，等你补充后我们再接上。",
+    "used_findings": [
+      "s3.hypothesis.core_tension_productivity_vs_rest",
+      "s3.hypothesis.quadrant_tension_operator_vs_restrained",
+      "s3.hypothesis.integration_threefold"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.self",
+      "analysis.s3.integration"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向的地基先铺到这里，接下来看这套节奏是怎么运作的。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_direction",
+      "sequence_no": 6,
+      "new_information_role": "REFERENCE",
+      "theory_density": "medium",
+      "action_density": "low",
+      "metaphor_density": "low",
+      "person": "second",
+      "source_policy": "confirmed_semantics_only"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_direction",
+        "status": "FULFILLED",
+        "reason": "已写出当前倾向的一端（以产出与承担换取位置）、被排除的另一端（休息、有余地的表达与被尊重），并明确整合不是成为完美的人，而是让两端在具体情境中共同存在；命理对应已限定为解释视角，行动取舍以现实自述与反馈为依据。",
+        "quote": "整合的方向，不是变成一个既会承担又懂休息的完美的人，而是在具体情境里让两端共同存在。",
+        "follow_up_questions": [
+          "在哪些具体场景你曾同时做到既答应又保留余地？",
+          "你如何描述自己最想活出的样子（不依赖外部评价）？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15086,
+    "output_tokens": 799,
+    "latency_ms": 3596,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b7220b6d-76ae-4bab-83b5-06c06b6c51dc",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "8d970f1d0140fcb88591e756b95da33e3f8efb143511d162273c36cfecbfad71",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

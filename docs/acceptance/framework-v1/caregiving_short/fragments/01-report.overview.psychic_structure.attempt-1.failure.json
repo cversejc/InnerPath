@@ -1,0 +1,25 @@
+{
+  "error": "report_fragment_unsupported_fragment",
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 12295,
+    "output_tokens": 933,
+    "latency_ms": 4123,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "426214e0-76c8-4514-9afc-5cbe3400d30f",
+    "thinking_enabled": false,
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "7213b197254bd9335a5c0abcfa8014277bca888339ea587d956ae65b1bfe4845",
+    "output_validation": "failed",
+    "error_type": "ValueError"
+  },
+  "unvalidated_output": "{\n  \"status\": \"READY_FOR_REVIEW\",\n  \"title\": \"整体结构：先稳住，再往前\",\n  \"content\": \"这份说明书的主线可以概括为一句：你把“等确定”当成保护，它也确实在保护交接安全和家庭运转；而接下来要做的，是让“先推进一点自己的事”也进入这个保护范围。\\n\\n关键结论：在轮班工作与照顾父亲的现实里，你已展现出协商与放松的能力（与姐姐说清轮班表后改为轮流陪诊、把手机交给同事保管半小时后能睡着）；方向不是推翻“先稳后动”，而是带着不确定先做小步。\\n\\n关系路径图：\\n向世界展示的我（能扛事、按规则办事）→ 以为的自己（先等规则和时间表更清楚）→ 潜意识层面的自己（休息、把责任交出去、先推进自己的事常被排在最后）→ 整合后的方向（带着不确定先做小步，让自主与放松也获得位置）。\\n\\n四层关系概览如下。向世界展示的我：在轮班与照护的双重场景中，你倾向以“能扛事、按规则办事”的角色被自己和他人识别，这是基于自述的假设，角色认同程度待核对。以为的自己：事情一多时，你会先等规则和时间表更清楚；这让你在交接和家庭安排上少出错，同时也可能让转岗准备一直排在家庭安排之后。潜意识层面的自己：休息、把责任交出去、允许自己“先不管”可能是被排斥的面向；夜班后继续查群、害怕漏掉交接，提示控制感与放松之间存在张力，这不等于焦虑障碍，保护功能是防止交接失误。整合后的方向：一端是“先等规则与安排确定”的秩序感，另一端是“先推进自己的事、允许休息与协商”的自主性，两端并非好坏之分，整合点是带着不确定先做小步。\\n\\n“必须先把该做的做完、不能漏掉交接”的自我要求可能存在，其来源（职业规范、家庭角色或自我标准）尚未验证，本节仅作为待核对线索列出，不作定论。以上为概览，具体实践统一在成长实验节展开。\",\n  \"used_findings\": [\n    \"s3.self.rule_vs_autonomy\",\n    \"s3.integration.threefold\",\n    \"s2.resource.negotiation_capacity\",\n    \"s2.persona.role_holder\",\n    \"s2.authority.internalized_should\",\n    \"s2.shadow.rest_and_letting_go\"\n  ],\n  \"used_analysis_fragments\": [\n    \"analysis.s2.persona\",\n    \"analysis.s2.authority\",\n    \"analysis.s2.shadow\",\n    \"analysis.s3.self\"\n  ],\n  \"used_actions\": [],\n  \"transition_hint\": \"下一节可沿着“向世界展示的我”展开，说明承担者角色在轮班与照护场景中的具体运作。\",\n  \"presentation_meta\": {\n    \"chapter\": \"identity\",\n    \"fragment_key\": \"report.overview.psychic_structure\",\n    \"sequence_no\": 1,\n    \"chapter_opening\": true,\n    \"theory_density\": \"medium\",\n    \"action_density\": \"high\",\n    \"metaphor_density\": \"low\",\n    \"tone\": \"第二人称、现实语言、不评判不诊断\"\n  },\n  \"requirement_coverage\": [\n    {\n      \"requirement_id\": \"R.psychic_structure\",\n      \"status\": \"FULFILLED\",\n      \"reason\": \"正文按“向世界展示的我→以为的自己→潜意识层面的自己→整合后的方向”四层依次概述，并以概览方式呈现暗线，未展开卡点的触发链、保护代价与实验细节，实验动作统一留待成长实验节。\",\n      \"quote\": \"向世界展示的我（能扛事、按规则办事）→ 以为的自己（先等规则和时间表更清楚）→ 潜意识层面的自己（休息、把责任交出去、先推进自己的事常被排在最后）→ 整合后的方向（带着不确定先做小步，让自主与放松也获得位置）。\",\n      \"follow_up_questions\": []\n    }\n  ]\n}",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "signature": "dde434d58ffd981785bb11b2ded4777e091ea8cea3045dc13d49343f0e0ad61a"
+}

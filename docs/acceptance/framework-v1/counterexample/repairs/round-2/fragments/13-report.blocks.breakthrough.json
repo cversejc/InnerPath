@@ -1,0 +1,73 @@
+{
+  "signature": "3c26dd36b07cfc3f76680a32df11c6ab16f7d5e180c9f5579a25786b39adf2a2",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "从卡点到方向：让承担与休息同时在场",
+    "content": "三个卡点背后有一条共同的路径：外部请求或截止压力出现，一种被挤压的感觉和“必须马上承担”的假设升起，你用答应、反复修改或持续在线来应对，短期避开了冲突或被评判，长期却累积成透支与关系摩擦。这条路径不是你的全部——你曾明确拒绝领导且没有内疚，说明拒绝的能力已经存在，只是还没有扩展到分工规则不清的场景。\n\n方向不是把承担换成休息，而是让两端共同存在。这里先做一个解释视角的转译：时柱庚申正印与福德天府，在命理视角里可以读作“被支持与安定”的线索，这不是关于你的既定结论，而是一种可被现实反馈检验的读法。若把它转译成调节功能，就是在请求与回应之间留出缓冲、允许休息不必解释；由此需要发展的能力，是有余地的表达和阶段性交付——它回应的正是上面那条“先答应、后撤退”的共性机制。现实缺口在于：分工规则不清时缺少可用的回应脚本，也缺少阶段交付的约定。工具与卡点的对应关系是：短焦对应卡点一“先答应后撤退”，用来争取一次停顿；CBT对应卡点二“反复修改与截止急交付”，用来练习阶段交付；ACT对应卡点三“休息与余地少被允许”，用来容纳“应该做事”的想法；EFT对应触发链记录，用来给情绪命名。四项工具都按工作日五到十分钟、周末二十分钟的时间预算设计，时间不足时可以只保留前两项。这些工具的具体做法放在第三章的成长实验一节，这里不展开步骤。\n\n中式人物意象可参考“持秤的账房先生”与“山中读书人”：前者精于权衡资源与责任，可以学习的是边界与主权；后者善于沉淀，可以学习的是小步入局。两种意象分别回应“答应后透支”与“思虑替代行动”两类现实议题。需要说明的是，这只是文化意象的比喻，不是史实，也不是人格诊断；它的适用边界是——当情境需要果断止损时，意象不应被用来合理化拖延。\n\n你行为中同时呈现“角色中的承担者”（财官旺、比劫弱，自述答应任务为换取资源，身宫落官禄武曲贪狼）与“退回内在的探索者”（时柱正印有力、独处散步较放松、项目开头想法多但反复修改）两种倾向。反证同样清楚：你曾明确拒绝领导且无内疚，说明外部评价并未完全压过主体；你仍在推进项目并交付，并非以思虑完全替代行动。成长任务相应是建立原则与主权、开始小步行动，具体练习留到第三章。",
+    "used_findings": [
+      "s4.block.overcommit_withdraw_loop",
+      "s4.block.perfectionist_completion",
+      "s3.hypothesis.core_tension_productivity_vs_rest",
+      "s3.hypothesis.quadrant_tension_operator_vs_restrained",
+      "s4.block.rest_as_excluded"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.quadrant",
+      "analysis.s4.breakthrough"
+    ],
+    "used_actions": [],
+    "transition_hint": "第三章的方向先铺到这里。接下来进入当下时义，看这套节奏在时间轴上怎么展开。",
+    "presentation_meta": {
+      "chapter": "challenge",
+      "fragment_key": "report.blocks.breakthrough",
+      "sequence_no": 13,
+      "theory_density": "medium",
+      "action_density": "high",
+      "metaphor_density": "low",
+      "person": "second",
+      "contains_quote": false,
+      "contains_action_steps": false
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.breakthrough",
+        "status": "FULFILLED",
+        "reason": "已按“资源→调节功能→能力→现实缺口→工具→实验”完整推导：正印与福德天府作解释视角转译为缓冲与允许休息，落到有余地表达与阶段交付能力，指出分工规则不清与缺少交付约定的缺口，工具逐项对应卡点并说明时间预算，实验明确指向第三章。",
+        "quote": "若把它转译成调节功能，就是在请求与回应之间留出缓冲、允许休息不必解释",
+        "follow_up_questions": [
+          "四项工具中，你更愿意先从短焦还是CBT开始？",
+          "在分工规则不清的场景里，你希望先准备哪一句回应脚本？"
+        ]
+      },
+      {
+        "requirement_id": "R.archetype",
+        "status": "FULFILLED",
+        "reason": "意象具象化（持秤的账房先生、山中读书人）、可学习能力（边界与主权、小步入局）、适用边界（需果断止损时不应用来合理化拖延）与“非史实、非人格诊断”声明均已给出。",
+        "quote": "这只是文化意象的比喻，不是史实，也不是人格诊断",
+        "follow_up_questions": [
+          "在哪些场景你更像“持秤的账房先生”，哪些场景更像“山中读书人”？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15959,
+    "output_tokens": 1183,
+    "latency_ms": 5317,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "af123f2f-ee15-4dc3-abb7-db2b27fa3e4a",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "2e3ad4d2dcad3e315ee0587822e9617e460498e69d22c9c7b8d2c56f6fc50a97",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

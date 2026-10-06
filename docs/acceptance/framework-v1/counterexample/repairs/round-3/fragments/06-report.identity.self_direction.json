@@ -1,0 +1,63 @@
+{
+  "signature": "5fe4051859726cb94881e243951139264ba55bbce9bed5b54abe54fcc483c5b1",
+  "skill_digest": "5b27167ae14f15b4c96034f41297e0587df503a56a43524af20be79ec93ecf7d",
+  "runtime_instruction": "修订合成用户验收样稿，只修当前小节，不改变上游已确认语义、Action动作/频率/耗时。独立核对review_issues：用户明确自述（例如散步放松）仍作为自述事实；新增的因果解释才是假设，不将事实降格。假设在介绍时清楚限定，后续承接保留条件与反证，避免保护功能成为断言。无家庭资料不补造。正文不重复完整触发链，概览约250–400字只概览四层，机制展开留卡点；其他节约300–600字。不在每节预告卡点，不写与实际顺序错误的‘下一节’。原型须有可学习能力及适用边界。实验工具须逐项指向实际卡点，保留已确认Action的全部条件，再说明时间预算与减量菜单。用神/符号的能力转译须明确为解释视角，行动取舍以现实自述和反馈为依据。只用当前分配来源，全部analysis_refs/action_refs/required_finding_refs实际使用并记入输出；requirement_coverage逐项如实声明，quote从本输出content逐字连续摘录。不要为提高评分删核心内容。本轮必须执行编辑职责分工，不复制旧稿：概览只给4层各一句和主线，共150–250字，绝不写完整触发链、保护与代价。外在自我只讲可识别的外在角色；自我信念只讲意识自我与现实规则核对，保留一个可回答反证问题。隐藏自我只解释情结/阴影/防御区别与关系，不重述完整事件链；能量只讲充耗电与加工路径；关系节只讲朋友改约这一关系场景及请求—回应—感受—反馈，不重复同事临时任务。卡点各讲一个不同具体情境的机制、保护、代价与邀请，完整工作请求故事只在相应卡点节。共性节综合多个不同卡点之间的规则优先于需要，不复述各节故事。同一反例完整表述只出现一次；其他必要处用‘前文的反例’承接。符号能力转译每次明确为比喻性解释。命盘旁注约350–550字，保留结构、分歧、时辰边界与资料限制，把详细心理解释留后文。时序地图按当前/近两期/远期分别成段或表，保留所有已确认年份和各阶段字段，条件式观察而非事件预测。原型用一句说明人物意象的学习能力和适用边界，不把历史人物当诊断标签。结尾约120–200字，不重述循环或动作；其他章节通常250–450字，不反复预告下一节。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "往哪里去：让承担与休息同时在场",
+    "content": "这一节先把方向的地基说清楚，方法留在成长实验那一节。\n\n你目前更常站在的一端，可能是“以产出与承担换取位置”。你自己说，答应任务是为了换取资源。这句话本身是自述事实，不需要被解释成别的东西。它更像是一种你已经熟练的换取位置的方式——它确实帮你被需要、被看见。至于它是否在更多场景里也自动运行，需要你在现实里核对，而不是由命盘替你下结论。\n\n另一端是休息、有余地的表达，以及被尊重的需要。你独自散步时比较放松，也明确提出想减少透支、练习有余地的表达。它并非不存在，只是目前少被允许出场：当请求或截止到来，它可能常常第一个被让位。这里说的是“可能”，因为具体在哪些场景被让位、让位得多快，仍要看你自己的观察。\n\n从象限的线索看，你可能同时有两种倾向：一种是“角色中的承担者”，把外部评价和规则放在自己前面；另一种是“退回内在的探索者”，在独处里恢复，也容易用思考替代行动。这不是要给你贴一个类型标签，而是提示成长任务有两个方向——建立自己的原则与主权，以及开始小步行动。两条都不必一次做完。\n\n整合的方向，不是变成一个既会承担又懂休息的完美的人，而是在具体情境里让两端共同存在。你已经有过一次反例：曾明确拒绝领导且没有内疚。这说明要扩展的不是“修复讨好”，而是把这份已有的拒绝能力，搬到更多场景里去。反例在这里仍然成立，不需要被前面的描述覆盖。\n\n从更长的节奏看，你当前所处的阶段（约2019至2028年）带有收敛与表达之间的张力，像是边走边调整的渐进过程，而不是一次性翻篇。命盘旁注里提到的稳定资源（正印、福德天府）可以理解为：你其实有安定的底子，只是这份安定还没有被正式排进日程。这些命理与格局的对应，都只是一种解释视角，不是结论。哪些方向真的适合你，仍以你在现实中的自述和反馈为准。\n\n至于“最想活出的样子”，目前资料不足，这一节暂缓，等你补充后我们再接上。",
+    "used_findings": [
+      "s3.hypothesis.core_tension_productivity_vs_rest",
+      "s3.hypothesis.quadrant_tension_operator_vs_restrained",
+      "s3.hypothesis.integration_threefold"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.self",
+      "analysis.s3.integration"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向的地基已经说清楚，下一节会进入三个卡点的具体运作方式，包括先答应后撤退、反复修改与截止急交付、休息少被允许，并继续保留反例。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_direction",
+      "sequence_no": 6,
+      "new_information_role": "REFERENCE",
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "length_note": "约600字，符合其他节300–600字的区间。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_direction",
+        "status": "FULFILLED",
+        "reason": "已覆盖当前倾向的一端、被排除的另一端、两端整合而非完美人格，并保留用户反例与资料边界。",
+        "quote": "整合的方向，不是变成一个既会承担又懂休息的完美的人，而是在具体情境里让两端共同存在。",
+        "follow_up_questions": [
+          "在哪些具体场景你曾同时做到既答应又保留余地？",
+          "你如何描述自己最想活出的样子（不依赖外部评价）？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 15220,
+    "output_tokens": 922,
+    "latency_ms": 4182,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "b22bd349-d471-4dbd-bcb5-de7cf191687e",
+    "skill_version_id": 0,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 1,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "fcbd5534025af0b1ef4d6931d120a9a152977cd8132aa00f5f889f9233a1187a",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

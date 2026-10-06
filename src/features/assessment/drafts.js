@@ -15,7 +15,12 @@ export function restoreAssessmentDraft(storage, currentDraft) {
   try {
     const stored = JSON.parse(storage.getItem(ASSESSMENT_DRAFT_STORAGE_KEY) || 'null')
     if (!stored || typeof stored !== 'object') {
-      return { ...currentDraft, draftRestored: false }
+      return {
+        ...currentDraft,
+        submissionFingerprint: null,
+        submissionIdempotencyKey: null,
+        draftRestored: false
+      }
     }
 
     let profileDraft = currentDraft.profileDraft
@@ -36,14 +41,29 @@ export function restoreAssessmentDraft(storage, currentDraft) {
       draftRestored = true
     }
 
-    return { profileDraft, contextDraft, draftRestored }
+    return {
+      profileDraft,
+      contextDraft,
+      submissionFingerprint: typeof stored.submissionFingerprint === 'string'
+        ? stored.submissionFingerprint
+        : null,
+      submissionIdempotencyKey: typeof stored.submissionIdempotencyKey === 'string'
+        ? stored.submissionIdempotencyKey
+        : null,
+      draftRestored
+    }
   } catch {
     try {
       storage.removeItem(ASSESSMENT_DRAFT_STORAGE_KEY)
     } catch {
       // A broken storage implementation should not block the assessment page.
     }
-    return { ...currentDraft, draftRestored: false }
+    return {
+      ...currentDraft,
+      submissionFingerprint: null,
+      submissionIdempotencyKey: null,
+      draftRestored: false
+    }
   }
 }
 
