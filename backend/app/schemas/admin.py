@@ -102,6 +102,21 @@ class AdminUserSummaryResponse(BaseModel):
     summary: AdminUserSummary
 
 
+class AdminUserTimelineItem(BaseModel):
+    key: str
+    event_type: str
+    label: str
+    description: str
+    occurred_at: datetime
+    resource_type: str
+    resource_id: Optional[str] = None
+
+
+class AdminUserTimelineResponse(BaseModel):
+    user_id: int
+    items: list[AdminUserTimelineItem] = Field(default_factory=list)
+
+
 class AdminDecisionLogResponse(BaseModel):
     id: int
     user_id: int

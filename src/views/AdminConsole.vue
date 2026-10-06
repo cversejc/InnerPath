@@ -196,6 +196,8 @@
         :user-panel-tab="userPanelTab"
         :user-panel-tabs="userPanelTabs"
         :user-summary="userSummary"
+        :timeline-error="timelineError"
+        :timeline-loading="timelineLoading"
         @close-active="closeActiveDrawer"
         @close-log="closeLogDetail"
         @close-report="closeReportDetail"
@@ -203,6 +205,7 @@
         @open-calendar-for-user="openCalendarForUser"
         @open-log="openLogDetail"
         @open-report="openReport"
+        @retry-user-timeline="loadUserTimeline"
         @save-user-profile="saveUserProfile"
         @set-user-panel-tab="setUserPanelTab"
       />

@@ -88,7 +88,9 @@ export default {
       userPanelLoading: false,
       userEdit: {},
       profileSaving: false,
-      userPanelData: { reports: null, calendars: null, decisions: null, activity: null, applications: null },
+      userPanelData: { timeline: null, reports: null, calendars: null, decisions: null, activity: null, applications: null },
+      timelineLoading: false,
+      timelineError: '',
       reportDetail: null,
       logDetail: null,
       drawerTrigger: null,
@@ -121,6 +123,7 @@ export default {
     },
     userPanelTabs() {
       return [
+        { id: 'overview', label: '概览' },
         { id: 'profile', label: '资料' },
         { id: 'applications', label: '申请' },
         { id: 'reports', label: '报告' },

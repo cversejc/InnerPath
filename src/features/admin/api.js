@@ -31,6 +31,11 @@ export async function getAdminUserSummary(userId) {
   return response.data
 }
 
+export async function getAdminUserTimeline(userId, limit = 30) {
+  const response = await apiClient.get(`/admin/users/${userId}/timeline`, { params: { limit } })
+  return response.data
+}
+
 export async function updateAdminUserProfile(userId, data) {
   const response = await apiClient.patch(`/admin/users/${userId}`, data)
   return response.data

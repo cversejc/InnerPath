@@ -31,7 +31,9 @@ const props = defineProps({
   userPanelLoading: { type: Boolean, default: false },
   userPanelTab: { type: String, default: 'profile' },
   userPanelTabs: { type: Array, default: () => [] },
-  userSummary: { type: Object, default: null }
+  userSummary: { type: Object, default: null },
+  timelineError: { type: String, default: '' },
+  timelineLoading: { type: Boolean, default: false }
 })
 
 const emit = defineEmits([
@@ -42,6 +44,7 @@ const emit = defineEmits([
   'open-calendar-for-user',
   'open-log',
   'open-report',
+  'retry-user-timeline',
   'save-user-profile',
   'set-user-panel-tab'
 ])
@@ -143,8 +146,28 @@ defineExpose({ getDrawer })
       <div class="drawer-tabs"><button v-for="tab in userPanelTabs" :key="tab.id" type="button" :class="{ active: userPanelTab === tab.id }" @click="$emit('set-user-panel-tab', tab.id)">{{ tab.label }}</button></div>
       <div v-if="userPanelLoading" class="drawer-loading" role="status" aria-live="polite">正在整理用户资料…</div>
       <div v-else class="drawer-body">
-        <section v-if="userPanelTab === 'profile'" class="drawer-section">
+        <section v-if="userPanelTab === 'overview'" class="drawer-section">
           <div class="profile-summary"><div><span>申请</span><strong>{{ (userSummary?.summary?.report_request_count || 0) + (userSummary?.summary?.calendar_request_count || 0) }}</strong></div><div><span>报告</span><strong>{{ userSummary?.summary?.report_count ?? '—' }}</strong></div><div><span>日历版本</span><strong>{{ userSummary?.summary?.calendar_count ?? '—' }}</strong></div><div><span>行动记录</span><strong>{{ userSummary?.summary?.decision_log_count ?? '—' }}</strong></div></div>
+          <div class="section-caption"><h3>用户历程</h3><span>最近 {{ userPanelData.timeline?.items?.length || 0 }} 条</span></div>
+          <p v-if="timelineLoading" class="timeline-state" role="status" aria-live="polite">正在整理用户历程…</p>
+          <div v-else-if="timelineError" class="timeline-state timeline-error" role="alert"><span>{{ timelineError }}</span><VanButton class="secondary-button compact-button" type="default" plain native-type="button" @click="$emit('retry-user-timeline')">重试</VanButton></div>
+          <ol class="user-timeline">
+            <li v-for="item in userPanelData.timeline?.items || []" v-show="!timelineLoading && !timelineError" :key="item.key" class="user-timeline-item">
+              <span class="user-timeline-marker" aria-hidden="true"></span>
+              <div class="user-timeline-copy"><strong>{{ item.label }}</strong><p>{{ item.description || resourceLabel(item.resource_type) }}</p></div>
+              <time>{{ formatDateTime(item.occurred_at) }}</time>
+            </li>
+            <li v-if="!timelineLoading && !timelineError && !userPanelData.timeline?.items?.length" class="empty-cell">暂无历程记录。</li>
+          </ol>
+          <div class="user-overview-links" aria-label="用户详细记录">
+            <button type="button" @click="$emit('set-user-panel-tab', 'applications')">申请记录</button>
+            <button type="button" @click="$emit('set-user-panel-tab', 'reports')">报告</button>
+            <button type="button" @click="$emit('set-user-panel-tab', 'calendar')">日历</button>
+            <button type="button" @click="$emit('set-user-panel-tab', 'decisions')">行动记录</button>
+            <button type="button" @click="$emit('set-user-panel-tab', 'activity')">审计活动</button>
+          </div>
+        </section>
+        <section v-if="userPanelTab === 'profile'" class="drawer-section">
           <div class="profile-data-grid">
             <section class="profile-data-group"><h3>账号信息</h3><div class="profile-data-items"><p><span>用户 ID</span><strong>{{ detailUser.id }}</strong></p><p><span>角色 / 类型</span><strong>{{ roleText(detailUser.role) }} · {{ displayValue(detailUser.user_type) }}</strong></p><p><span>账号状态</span><strong>{{ detailUser.is_active ? '正常' : '已停用' }}</strong></p><p><span>档案完成度</span><strong>{{ detailUser.profile_completion ?? '—' }}%</strong></p><p><span>手机验证</span><strong>{{ formatDateTime(detailUser.phone_verified_at) }}</strong></p><p><span>注册时间</span><strong>{{ formatDateTime(detailUser.created_at) }}</strong></p><p><span>资料更新时间</span><strong>{{ formatDateTime(detailUser.updated_at) }}</strong></p><p><span>最近登录</span><strong>{{ formatDateTime(detailUser.last_login_at) }}</strong></p><p><span>资料版本 / 确认</span><strong>v{{ detailUser.profile_version }} · {{ formatDateTime(detailUser.profile_last_confirmed_at) }}</strong></p></div></section>
             <section class="profile-data-group"><h3>出生档案</h3><div class="profile-data-items"><p><span>性别</span><strong>{{ genderLabel(detailUser.gender) }}</strong></p><p><span>出生日期</span><strong>{{ birthDateLabel(detailUser) }}</strong></p><p><span>出生时间</span><strong>{{ birthTimeLabel(detailUser) }} · {{ precisionLabel(detailUser.birth_time_precision) }}</strong></p><p><span>出生地</span><strong>{{ displayValue(detailUser.birth_place) }}</strong></p><p><span>头像地址</span><strong class="profile-break-value">{{ displayValue(detailUser.avatar_url) }}</strong></p></div></section>

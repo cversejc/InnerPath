@@ -27,8 +27,10 @@ from app.domains.users.schemas import UserResponse
 from app.domains.users.service import apply_user_profile_update
 from app.domains.audit.service import record_audit
 from app.domains.auth.service import admin_reset_password, create_staff_invite
+from app.api.v1.admin_user_timeline import router as user_timeline_router
 
 router = APIRouter()
+router.include_router(user_timeline_router)
 
 
 @router.get("/users", response_model=AdminUserListResponse)

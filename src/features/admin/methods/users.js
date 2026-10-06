@@ -2,6 +2,7 @@ import {
   getAdminAuditLogs,
   getAdminUser,
   getAdminUserSummary,
+  getAdminUserTimeline,
   getAdminUsers,
   getAllAdminUsers,
   resetAdminUserPassword,
@@ -40,21 +41,42 @@ export default {
   async openUserDetail(user) {
       this.drawerTrigger = document.activeElement
       this.detailUser = user
-      this.userPanelTab = 'profile'
+      this.userPanelTab = 'overview'
       this.userPanelLoading = true
+      this.timelineLoading = false
+      this.timelineError = ''
+      this.userPanelData = { timeline: null, reports: null, calendars: null, decisions: null, activity: null, applications: null }
       this.focusDrawer('userDrawer')
       try {
         const [detail, summary] = await Promise.all([getAdminUser(user.id), getAdminUserSummary(user.id)])
         this.detailUser = detail
         this.userSummary = summary
         this.userEdit = this.toUserEdit(detail)
-        this.userPanelData = { reports: null, calendars: null, decisions: null, activity: null, applications: null }
+        this.loadUserTimeline()
       } catch (error) { this.message = this.errorText(error); this.detailUser = null } finally { this.userPanelLoading = false }
     },
-  closeUserDetail({ restoreFocus = true } = {}) { this.detailUser = null; this.userSummary = null; if (restoreFocus) this.restoreDrawerFocus() },
+  closeUserDetail({ restoreFocus = true } = {}) { this.detailUser = null; this.userSummary = null; this.timelineLoading = false; if (restoreFocus) this.restoreDrawerFocus() },
+  async loadUserTimeline() {
+      if (!this.detailUser || this.timelineLoading) return
+      const userId = this.detailUser.id
+      this.timelineLoading = true
+      this.timelineError = ''
+      try {
+        const timeline = await getAdminUserTimeline(userId)
+        if (this.detailUser?.id === userId) this.userPanelData.timeline = timeline
+      } catch (error) {
+        if (this.detailUser?.id === userId) this.timelineError = this.errorText(error)
+      } finally {
+        if (this.detailUser?.id === userId) this.timelineLoading = false
+      }
+    },
   async setUserPanelTab(tab) {
       this.userPanelTab = tab
       if (!this.detailUser || tab === 'profile') return
+      if (tab === 'overview') {
+        if (!this.userPanelData.timeline && !this.timelineLoading) await this.loadUserTimeline()
+        return
+      }
       this.userPanelLoading = true
       try {
         const id = this.detailUser.id
