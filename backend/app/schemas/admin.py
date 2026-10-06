@@ -334,6 +334,31 @@ class DashboardServiceSLAMetrics(BaseModel):
     items: list[DashboardServiceSLAItem] = Field(default_factory=list)
 
 
+class AdminUserGrowthChannel(BaseModel):
+    key: str
+    label: str
+    applicant_users: int = 0
+    delivered_users: int = 0
+    delivery_rate_percent: Optional[float] = None
+
+
+class AdminUserGrowthSummary(BaseModel):
+    range_start: date
+    range_end: date
+    registered_users: int = 0
+    profile_completed_users: int = 0
+    profile_completion_rate_percent: Optional[float] = None
+    applicant_users: int = 0
+    applicant_rate_percent: Optional[float] = None
+    delivered_users: int = 0
+    delivery_rate_percent: Optional[float] = None
+    active_login_users: int = 0
+    existing_user_base: int = 0
+    returning_users: int = 0
+    existing_user_login_rate_percent: Optional[float] = None
+    by_service: list[AdminUserGrowthChannel] = Field(default_factory=list)
+
+
 class DashboardOverviewResponse(BaseModel):
     range_preset: str
     start_date: date
@@ -343,6 +368,7 @@ class DashboardOverviewResponse(BaseModel):
     trends: list[DashboardTrendPoint]
     distributions: DashboardDistributionResponse
     service_sla: DashboardServiceSLAMetrics = Field(default_factory=DashboardServiceSLAMetrics)
+    user_growth: Optional[AdminUserGrowthSummary] = None
     alerts: list[DashboardAlert]
     recent_activity: list[AuditLogResponse]
 

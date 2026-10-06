@@ -1,5 +1,6 @@
 <script setup>
 import { Button as VanButton } from 'vant'
+import AdminUserGrowthPanel from './AdminUserGrowthPanel.vue'
 import {
   actionLabel,
   distributionTotal,
@@ -80,6 +81,7 @@ function formatElapsedHours(value) {
       </div>
 
       <div class="dashboard-grid">
+        <AdminUserGrowthPanel :dashboard-range="dashboardRange" :summary="dashboard.user_growth" />
         <article class="dashboard-panel trend-panel">
           <div class="panel-heading"><div><p class="eyebrow">RHYTHM / {{ dashboardRange.toUpperCase() }}</p><h3>业务流入趋势</h3></div><span class="panel-note">按上海时区聚合</span></div>
           <div class="trend-legend"><span v-for="series in trendSeries" :key="series.key"><i :style="{ background: series.color }"></i>{{ series.label }}</span></div>

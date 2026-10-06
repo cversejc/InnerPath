@@ -16,6 +16,7 @@ from app.api.v1.admin_support import (
 from app.api.v1.admin_activity_support import _load_audits
 from app.api.v1.admin_dashboard_support import _daily_counts
 from app.application.admin_service_sla import get_admin_report_request_sla
+from app.application.admin_user_growth import get_admin_user_growth_summary
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.calendar.models import CalendarRequest, DecisionLog, UserCalendar
@@ -188,6 +189,13 @@ async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewRes
         start_at=start_dt,
         end_at=end_dt,
     )
+    user_growth = await get_admin_user_growth_summary(
+        db,
+        start_at=start_dt,
+        end_at=end_dt,
+        range_start=start_date,
+        range_end=end_date,
+    )
     return DashboardOverviewResponse(
         range_preset=preset,
         start_date=start_date,
@@ -211,6 +219,7 @@ async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewRes
             calendars_by_status=distribution(calendar_rows, CALENDAR_STATUS_LABELS),
         ),
         service_sla=service_sla,
+        user_growth=user_growth,
         alerts=alerts,
         recent_activity=[AuditLogResponse.model_validate(item) for item in recent_activity],
     )
