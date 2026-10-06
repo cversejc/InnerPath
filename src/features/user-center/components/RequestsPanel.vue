@@ -26,6 +26,15 @@
         <router-link v-if="request.status === 'needs_info'" class="center-request-action" :to="requestEditPath(request)">补充资料</router-link>
         <router-link v-else-if="request.status === 'delivered' && request.result_type === 'report'" class="center-request-action" :to="`/pages/report/detail?id=${request.result_id}`">查看报告</router-link>
         <router-link v-else-if="request.status === 'delivered' && request.result_type === 'calendar'" class="center-request-action" to="/pages/calendar/calendar">打开日历</router-link>
+        <div v-if="isDeliveredReport(request) && feedbackReady" class="center-request-feedback">
+          <ServiceFeedbackControl
+            service-type="report"
+            :source-id="request.id"
+            :existing="feedbackByRequestId[request.id] || null"
+            @submitted="saveRequestFeedback(request.id, $event)"
+          />
+        </div>
+        <p v-else-if="isDeliveredReport(request) && feedbackLoadError" class="center-request-feedback-error" role="status">反馈状态暂时无法读取，请稍后刷新。</p>
       </article>
     </div>
   </section>
@@ -33,16 +42,42 @@
 
 <script>
 import { formatUserCenterDate, requestEditPath, requestStatusLabel } from '../presentation'
+import ServiceFeedbackControl from '../../service-feedback/components/ServiceFeedbackControl.vue'
+import { getMyServiceFeedback } from '../../service-feedback/api.js'
 
 export default {
   name: 'RequestsPanel',
+  components: { ServiceFeedbackControl },
   props: {
     requests: { type: Array, default: () => [] }
+  },
+  data() {
+    return { feedbackByRequestId: {}, feedbackReady: false, feedbackLoadError: false }
+  },
+  async mounted() {
+    try {
+      const response = await getMyServiceFeedback()
+      this.feedbackByRequestId = Object.fromEntries(
+        (response.items || [])
+          .filter(item => item.service_request_id)
+          .map(item => [item.service_request_id, item])
+      )
+      this.feedbackReady = true
+    } catch {
+      this.feedbackReady = false
+      this.feedbackLoadError = true
+    }
   },
   methods: {
     formatUserCenterDate,
     requestEditPath,
-    requestStatusLabel
+    requestStatusLabel,
+    isDeliveredReport(request) {
+      return request.service_type === 'report' && request.status === 'delivered' && request.result_type === 'report'
+    },
+    saveRequestFeedback(requestId, feedback) {
+      this.feedbackByRequestId = { ...this.feedbackByRequestId, [requestId]: feedback }
+    }
   }
 }
 </script>

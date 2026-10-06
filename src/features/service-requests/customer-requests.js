@@ -1,10 +1,11 @@
 import { Button as VanButton } from 'vant'
 import customerRequestMethods from './methods/customer-requests.js'
+import ServiceFeedbackControl from '../service-feedback/components/ServiceFeedbackControl.vue'
 import { confirmAction } from '../../utils/confirmAction.js'
 
 export default {
   name: 'ServiceRequests',
-  components: { VanButton },
+  components: { VanButton, ServiceFeedbackControl },
   data() {
     return {
       requests: [],
@@ -19,6 +20,9 @@ export default {
       retryingCalendarId: null,
       requestRefreshTimer: null,
       requestFetchInFlight: false,
+      feedbackByRequestId: {},
+      feedbackReady: false,
+      feedbackLoadError: false,
       filters: [
         { id: 'all', label: '全部' },
         { id: 'report', label: '报告' },
@@ -42,7 +46,7 @@ export default {
     }
   },
   async mounted() {
-    await this.loadRequests()
+    await Promise.all([this.loadRequests(), this.loadFeedback()])
     if (this.$route.query.submitted) {
       this.message = this.$route.query.kind === 'calendar'
         ? '日历生成任务已启动，成功后会自动出现在日历中。'

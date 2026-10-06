@@ -100,6 +100,29 @@
         @search="searchAdminRequests"
       />
 
+      <AdminServiceFeedbackSection
+        v-else-if="activeTab === 'feedback'"
+        :assignees="feedbackAssignees"
+        :feedback="serviceFeedback"
+        :filters="feedbackFilters"
+        :view="feedbackView"
+        :loading="feedbackLoading"
+        :quality-filters="qualityFilters"
+        :quality-issues="qualityIssues"
+        :quality-loading="qualityLoading"
+        :quality-page="qualityPage"
+        :quality-page-size="qualityPageSize"
+        :page="feedbackPage"
+        :page-size="feedbackPageSize"
+        :saving-id="feedbackSavingId"
+        @change-page="changeFeedbackPage"
+        @save="saveFeedback"
+        @search="searchFeedback"
+        @select-view="setFeedbackView"
+        @search-quality="searchQualityIssues"
+        @change-quality-page="changeQualityPage"
+      />
+
       <AdminCalendarSection
         v-else-if="activeTab === 'calendar'"
         :calendar-form="calendarForm"

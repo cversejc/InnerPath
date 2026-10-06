@@ -1,0 +1,36 @@
+.admin-shell .feedback-admin-table { min-width: 1420px; }
+.admin-shell .feedback-admin-table td { vertical-align: top; }
+.admin-shell .feedback-admin-table td small { overflow-wrap: anywhere; }
+.admin-shell .feedback-admin-table select,
+.admin-shell .feedback-admin-table textarea {
+  width: 100%;
+  min-width: 120px;
+  border: 1px solid rgba(80, 54, 32, .15);
+  border-radius: 8px;
+  padding: 8px;
+  background: rgba(255, 252, 245, .9);
+  color: #3b2d24;
+  font: inherit;
+}
+.admin-shell .feedback-admin-table select { margin-top: 7px; }
+.admin-shell .feedback-admin-table textarea { min-width: 190px; min-height: 76px; resize: vertical; line-height: 1.5; }
+.admin-shell .feedback-admin-table textarea:disabled { opacity: .7; cursor: not-allowed; }
+.admin-shell .feedback-comment-cell { min-width: 240px; max-width: 340px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6 !important; }
+.admin-shell .feedback-admin-table td:nth-child(1) { min-width: 150px; }
+.admin-shell .feedback-admin-table td:nth-child(2) { min-width: 150px; }
+.admin-shell .feedback-admin-table td:nth-child(3) { min-width: 220px; }
+.admin-shell .feedback-admin-table td:nth-child(8) { min-width: 90px; }
+.admin-shell .quality-issues-table { min-width: 1120px; }
+.admin-shell .quality-issues-table td { vertical-align: top; }
+.admin-shell .quality-issues-table td small { overflow-wrap: anywhere; }
+.admin-shell .quality-issues-table td:first-child { min-width: 135px; }
+.admin-shell .quality-issues-table td:nth-child(2) { min-width: 180px; }
+.admin-shell .quality-issues-table td:nth-child(3) { min-width: 170px; }
+.admin-shell .quality-issues-table td:nth-child(4),
+.admin-shell .quality-issues-table td:nth-child(5) { min-width: 260px; }
+.admin-shell .quality-message-cell { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6 !important; }
+.admin-shell .quality-message-cell p { margin: 0 0 5px; color: #3b2d24; line-height: 1.6; }
+.admin-shell .quality-source { margin: 5px 0 !important; }
+.admin-shell .quality-severity-block { background: #f2dddd; color: #8f352f; }
+.admin-shell .quality-severity-major { background: #fff0c9; color: #89621a; }
+.admin-shell .quality-severity-minor { background: #dcebe8; color: #39776b; }

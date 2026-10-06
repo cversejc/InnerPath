@@ -98,6 +98,15 @@
           <footer class="request-card-actions">
             <router-link v-if="item.status === 'delivered' && item.result_type === 'report'" class="primary-button compact-button" :to="`/pages/report/detail?id=${item.result_id}`">查看报告</router-link>
             <router-link v-else-if="item.status === 'delivered' && item.result_type === 'calendar'" class="primary-button compact-button" to="/pages/calendar/calendar">打开日历</router-link>
+            <ServiceFeedbackControl
+              v-if="isDeliveredReport(item) && feedbackReady"
+              class="request-feedback-control"
+              service-type="report"
+              :source-id="item.id"
+              :existing="feedbackByRequestId[item.id] || null"
+              @submitted="saveRequestFeedback(item.id, $event)"
+            />
+            <span v-else-if="isDeliveredReport(item) && feedbackLoadError" class="request-feedback-error" role="status">反馈状态暂时无法读取，请稍后刷新。</span>
             <router-link v-if="item.status === 'needs_info' && !(item.service_type === 'report' && item.report_case_id)" class="secondary-button compact-button" :to="editPath(item)">补充资料</router-link>
             <router-link v-if="item.workflow_type === 'calendar_legacy' && item.status !== 'delivered' && item.status !== 'rejected' && item.status !== 'withdrawn'" class="secondary-button compact-button" to="/pages/calendar/calendar?generate=1">重新开始</router-link>
             <VanButton v-if="item.workflow_type === 'calendar_generation' && item.status === 'failed'" type="primary" native-type="button" class="primary-button compact-button" :disabled="retryingCalendarId === item.id" :loading="retryingCalendarId === item.id" @click="retryCalendar(item)">{{ retryingCalendarId === item.id ? '重新生成中…' : '重试生成' }}</VanButton>

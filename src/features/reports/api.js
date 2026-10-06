@@ -54,6 +54,11 @@ export async function getAdminReportTasks(params = {}) {
   return response.data
 }
 
+export async function getAdminReportQualityIssues(params = {}) {
+  const response = await apiClient.get('/admin/report-quality-issues', { params })
+  return response.data
+}
+
 export async function getStaffUserReports(userId) {
   const response = await apiClient.get(`/staff/users/${userId}/reports`)
   return response.data

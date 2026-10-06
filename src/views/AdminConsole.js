@@ -9,6 +9,7 @@ import AdminReportsSection from '../features/admin/components/AdminReportsSectio
 import AdminActivitySection from '../features/admin/components/AdminActivitySection.vue'
 import AdminCalendarSection from '../features/admin/components/AdminCalendarSection.vue'
 import AdminStaffSection from '../features/admin/components/AdminStaffSection.vue'
+import AdminServiceFeedbackSection from '../features/admin/components/AdminServiceFeedbackSection.vue'
 import AdminDetailDrawers from '../features/admin/components/AdminDetailDrawers.vue'
 import AdminIconButton from '../features/admin/components/AdminIconButton.vue'
 import dashboardMethods from '../features/admin/methods/dashboard.js'
@@ -19,6 +20,7 @@ import activityMethods from '../features/admin/methods/activity.js'
 import staffMethods from '../features/admin/methods/staff.js'
 import exportsMethods from '../features/admin/methods/exports.js'
 import adminRequestsMethods from '../features/admin/methods/requests.js'
+import feedbackMethods from '../features/admin/methods/feedback.js'
 import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'vant'
 import { confirmAction } from '../utils/confirmAction.js'
 
@@ -26,7 +28,7 @@ const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
+  components: { AdminDashboardSection, AdminUsersSection, AdminRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminServiceFeedbackSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
@@ -37,7 +39,8 @@ export default {
         { id: 'calendar', index: '04', label: '日历' },
         { id: 'reports', index: '05', label: '报告' },
         { id: 'logs', index: '06', label: '日志' },
-        { id: 'staff', index: '07', label: '后台成员' }
+        { id: 'staff', index: '07', label: '后台成员' },
+        { id: 'feedback', index: '08', label: '服务反馈' }
       ],
       dashboardRanges: [{ id: '7d', label: '7 天' }, { id: '30d', label: '30 天' }, { id: '90d', label: '90 天' }],
       dashboardRange: '30d',
@@ -67,6 +70,18 @@ export default {
       assignmentSavingKey: '',
       assignmentError: '',
       retryingRequestKey: '',
+      serviceFeedback: { total: 0, page: 1, size: 20, items: [] },
+      feedbackFilters: { search: '', status: '', feedback_type: '', service_type: '', date_from: '', date_to: '' },
+      feedbackView: 'feedback',
+      feedbackPage: 1,
+      feedbackPageSize: 20,
+      feedbackLoading: false,
+      feedbackSavingId: null,
+      qualityIssues: { total: 0, page: 1, size: 20, items: [] },
+      qualityFilters: { search: '', status: 'OPEN', severity: '', source_type: '', date_from: '', date_to: '' },
+      qualityPage: 1,
+      qualityPageSize: 20,
+      qualityLoading: false,
       reports: { ...EMPTY_PAGE },
       reportsLoading: false,
       reportFilters: { search: '', status: '', ai_model: '', date_from: '', date_to: '' },
@@ -128,7 +143,7 @@ export default {
   },
   computed: {
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.assignmentSavingKey !== '' || this.retryingRequestKey !== '' || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.assignmentSavingKey !== '' || this.retryingRequestKey !== '' || this.feedbackLoading || this.feedbackSavingId !== null || this.qualityLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
     },
     dashboardViewModel() {
       return createDashboardViewModel(this.dashboard)
@@ -143,6 +158,9 @@ export default {
         { id: 'decisions', label: '行动记录' },
         { id: 'activity', label: '审计活动' }
       ]
+    },
+    feedbackAssignees() {
+      return this.staffUsers.filter(member => member.role === 'admin' && member.is_active)
     }
   },
   watch: {
@@ -173,6 +191,7 @@ export default {
     ...activityMethods,
     ...staffMethods,
     ...exportsMethods,
-    ...adminRequestsMethods
+    ...adminRequestsMethods,
+    ...feedbackMethods
   }
 }

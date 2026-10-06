@@ -23,6 +23,17 @@ def test_booking_and_course_routes_and_tables_are_removed():
     assert {"bookings", "courses", "user_courses"}.isdisjoint(Base.metadata.tables)
 
 
+def test_service_feedback_routes_and_table_are_registered():
+    route_paths = set(app.openapi()["paths"])
+    assert "/api/v1/service-feedback" in route_paths
+    assert "/api/v1/service-feedback/mine" in route_paths
+    assert "/api/v1/admin/service-feedback" in route_paths
+    assert "/api/v1/admin/service-feedback/{feedback_id}" in route_paths
+    assert "/api/v1/admin/report-quality-issues" in route_paths
+    assert set(app.openapi()["paths"]["/api/v1/admin/report-quality-issues"]) == {"get"}
+    assert "service_feedback" in Base.metadata.tables
+
+
 def test_dashboard_ranges_have_expected_number_of_days():
     for preset, expected_days in (("7d", 7), ("30d", 30), ("90d", 90)):
         start_date, end_date = _dashboard_range(preset)

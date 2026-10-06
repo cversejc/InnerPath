@@ -1,6 +1,7 @@
 import { getMyServiceRequests, withdrawServiceRequest } from '../api.js'
 import { submitReportCaseSupplement } from '../../report-cases/api.js'
 import { retryCalendarRequest } from '../../calendar/api.js'
+import { getMyServiceFeedback } from '../../service-feedback/api.js'
 import {
   canWithdrawServiceRequest,
   customerServiceRequestStatusLabel,
@@ -11,6 +12,25 @@ import {
 } from '../customer-formatters.js'
 
 export default {
+  async loadFeedback() {
+    try {
+      const response = await getMyServiceFeedback()
+      this.feedbackByRequestId = Object.fromEntries(
+        (response.items || [])
+          .filter(item => item.service_request_id)
+          .map(item => [item.service_request_id, item])
+      )
+      this.feedbackReady = true
+    } catch {
+      this.feedbackLoadError = true
+    }
+  },
+  isDeliveredReport(item) {
+    return item.service_type === 'report' && item.status === 'delivered' && item.result_type === 'report'
+  },
+  saveRequestFeedback(requestId, feedback) {
+    this.feedbackByRequestId = { ...this.feedbackByRequestId, [requestId]: feedback }
+  },
   async loadRequests(silent = false) {
     if (this.requestFetchInFlight) return
     this.requestFetchInFlight = true
