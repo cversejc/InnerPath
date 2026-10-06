@@ -62,7 +62,7 @@
         <div class="admin-topbar-actions">
           <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
           <router-link class="admin-tool-link" to="/staff"><IconMark name="group" /><span>咨询工作台</span></router-link>
-          <router-link class="admin-tool-link" to="/skills"><IconMark name="spark" /><span>技能工作台</span></router-link>
+          <router-link class="admin-tool-link" :to="{ path: '/skills', query: { return_to: '/admin' } }"><IconMark name="spark" /><span>技能工作台</span></router-link>
           <VanButton class="admin-refresh-button" type="default" plain native-type="button" :disabled="activeLoading" :loading="activeLoading" loading-text="刷新中…" :aria-busy="activeLoading" aria-label="刷新当前数据" title="刷新当前数据" @click="refreshActive">
             <template #icon><IconMark name="refresh" /></template>
           </VanButton>

@@ -1,5 +1,5 @@
 import { Button as VanButton } from "vant";
-import { hasRole } from "../../stores/auth.js";
+import { authState, hasRole, logout as logoutUser } from "../../stores/auth.js";
 import { formatDateTime } from "../../utils/dateTime.js";
 import api from "./api.js";
 import RunDetail from "./components/RunDetail.vue";
@@ -100,11 +100,19 @@ export default {
       message: "",
       messageKind: "",
       pollTimer: null,
+      mobileNavOpen: false,
+      loggingOut: false,
       RUN_STATUS_LABELS,
       VERSION_STATUS_LABELS,
     };
   },
   computed: {
+    operatorName() {
+      return authState.user?.name || (this.isAdmin ? "管理员" : "咨询师");
+    },
+    operatorInitial() {
+      return this.operatorName.slice(0, 1).toUpperCase();
+    },
     isS1Admin() {
       return this.isAdmin && this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY;
     },
@@ -181,7 +189,7 @@ export default {
       ];
     },
     studioReturnLocation() {
-      const fallback = "/staff";
+      const fallback = this.isAdmin ? "/admin" : "/staff";
       const target =
         typeof this.$route.query.return_to === "string"
           ? this.$route.query.return_to
@@ -240,6 +248,21 @@ export default {
     this.clearPoll();
   },
   methods: {
+    toggleMobileNav() {
+      this.mobileNavOpen = !this.mobileNavOpen;
+    },
+    closeMobileNav() {
+      this.mobileNavOpen = false;
+    },
+    async handleLogout() {
+      if (this.loggingOut) return;
+      this.loggingOut = true;
+      try {
+        await logoutUser();
+      } finally {
+        await this.$router.replace("/auth/login");
+      }
+    },
     async loadVersions() {
       this.loading = true;
       try {

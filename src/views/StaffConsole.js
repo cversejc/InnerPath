@@ -1,4 +1,4 @@
-import { authState, hasRole } from '../stores/auth'
+import { authState, hasRole, logout as logoutUser } from '../stores/auth'
 import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'vant'
 import {
   SERVICE_REQUEST_STATUS_LABELS,
@@ -125,11 +125,15 @@ export default {
       consultants: [],
       assignmentId: null,
       consultationType: 'integrated',
-      assignmentSaving: false
+      assignmentSaving: false,
+      mobileNavOpen: false,
+      loggingOut: false
     }
   },
   computed: {
     staffActor() { return authState.user },
+    operatorName() { return authState.user?.name || (this.admin ? '管理员' : '咨询师') },
+    operatorInitial() { return this.operatorName.slice(0, 1).toUpperCase() },
     canAcceptSelectedRequest() { return canAcceptRequest(this.selectedRequest, this.staffActor) },
     ownsSelectedRequest() { return ownsRequest(this.selectedRequest, this.staffActor) },
     specialtyLabel() { return specialtyLabels[this.staffActor?.consultant_type] || (this.admin ? "管理员" : "尚未设置专业类型") },
@@ -331,6 +335,21 @@ export default {
     if (this.reportNarrativePollTimer) clearTimeout(this.reportNarrativePollTimer)
   },
   methods: {
+    toggleMobileNav() {
+      this.mobileNavOpen = !this.mobileNavOpen
+    },
+    closeMobileNav() {
+      this.mobileNavOpen = false
+    },
+    async handleLogout() {
+      if (this.loggingOut) return
+      this.loggingOut = true
+      try {
+        await logoutUser()
+      } finally {
+        await this.$router.replace('/auth/login')
+      }
+    },
     canHandleReportStep(step) { return canHandleStep(step, this.staffActor) },
     consultantCanHandle,
     openReportInfoPanel(step) {
