@@ -71,6 +71,25 @@
         @toggle-user="toggleUser"
       />
 
+      <AdminRequestsSection
+        v-else-if="activeTab === 'requests'"
+        :calendar-filters="calendarRequestFilters"
+        :calendar-requests="adminCalendarRequests"
+        :consultants="staffUsers.filter(member => member.role === 'consultant' && member.is_active)"
+        :filters="requestFilters"
+        :loading="requestsLoading"
+        :page="requestPage"
+        :page-size="requestPageSize"
+        :request-kind="requestKind"
+        :service-requests="adminServiceRequests"
+        @change-kind="setRequestKind"
+        @change-page="changeRequestPage"
+        @open-report="openReport"
+        @open-user="openUserDetail"
+        @reset-filters="resetAdminRequestFilters"
+        @search="searchAdminRequests"
+      />
+
       <AdminCalendarSection
         v-else-if="activeTab === 'calendar'"
         :calendar-form="calendarForm"
@@ -104,9 +123,11 @@
         :invite-form="inviteForm"
         :invite-saving="inviteSaving"
         :invite-token="inviteToken"
+        :specialty-saving-id="consultantSpecialtySavingId"
         :staff-loading="staffLoading"
         :staff-users="staffUsers"
         @invite="inviteStaff"
+        @update-specialties="updateConsultantSpecialties"
       />
 
       <AdminReportsSection
@@ -181,6 +202,7 @@
         @close-report="closeReportDetail"
         @close-user="closeUserDetail"
         @open-calendar-for-user="openCalendarForUser"
+        @open-log="openLogDetail"
         @open-report="openReport"
         @save-user-profile="saveUserProfile"
         @set-user-panel-tab="setUserPanelTab"

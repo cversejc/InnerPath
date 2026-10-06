@@ -50,6 +50,11 @@ export async function getAdminCalendars(userId) {
   return response.data
 }
 
+export async function getAdminCalendarRequests(params = {}) {
+  const response = await apiClient.get('/admin/calendar-requests', { params })
+  return response.data
+}
+
 export async function createAdminCalendar(userId, data) {
   const response = await apiClient.post(`/admin/users/${userId}/calendars`, data)
   return response.data

@@ -55,7 +55,22 @@ async def get_admin_report(
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     payload = format_report_response(report)
-    payload.update({"user_id": user.id, "user_name": user.name, "user_phone": user.phone, "status": report.status, "is_deleted": report.is_deleted, "ai_model": report.ai_model, "generation_time_ms": report.generation_time_ms})
+    payload.update({
+        "user_id": user.id,
+        "user_name": user.name,
+        "user_phone": user.phone,
+        "status": report.status,
+        "is_deleted": report.is_deleted,
+        "ai_model": report.ai_model,
+        "generation_time_ms": report.generation_time_ms,
+        "request_id": report.request_id,
+        "birth_date": report.birth_date,
+        "birth_time": report.birth_time,
+        "birth_calendar_type": report.birth_calendar_type,
+        "birth_place": report.birth_place,
+        "selected_topics": report.selected_topics or [],
+        "additional_info": report.additional_info,
+    })
     return payload
 
 @router.get("/report-tasks", response_model=AdminReportTaskListResponse)

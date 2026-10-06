@@ -88,9 +88,10 @@ export async function getAdminServiceRequests(params = {}) {
   return response.data
 }
 
-export async function updateAdminServiceRequestAssignment(requestId, consultantId) {
+export async function updateAdminServiceRequestAssignment(requestId, consultantId, consultationType) {
   const response = await apiClient.patch(`/admin/service-requests/${requestId}/assignment`, {
-    consultant_id: consultantId
+    consultant_id: consultantId,
+    ...(consultationType ? { consultation_type: consultationType } : {})
   })
   return response.data
 }

@@ -33,6 +33,8 @@ def _detail_for_error(error: ValueError) -> tuple[int, str]:
         return status.HTTP_404_NOT_FOUND, "Service request not found"
     if code in {"service_request_not_assigned"}:
         return status.HTTP_403_FORBIDDEN, "Service request is not assigned to this consultant"
+    if code == "consultant_specialty_mismatch":
+        return status.HTTP_403_FORBIDDEN, "当前咨询师不具备该申请方向的能力。"
     if code in {"draft_version_conflict"}:
         return status.HTTP_409_CONFLICT, "Draft has changed; refresh before saving"
     if code in {"service_request_locked", "service_request_already_taken"}:

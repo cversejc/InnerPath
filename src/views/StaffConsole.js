@@ -3,6 +3,7 @@ import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'van
 import {
   SERVICE_REQUEST_STATUS_LABELS,
   birthSummary as formatBirthSummary,
+  consultationTypeLabel,
   errorText,
   formatDate,
   genderLabel,
@@ -54,6 +55,7 @@ export default {
       calendarEditor: calendarEditorFromPayload(),
       consultants: [],
       assignmentId: null,
+      consultationType: 'integrated',
       assignmentSaving: false
     }
   },
@@ -65,6 +67,22 @@ export default {
     },
     birthSummary() {
       return formatBirthSummary(this.workspace)
+    },
+    assignableConsultants() {
+      if (this.workspace?.request.service_type !== 'report') return this.consultants
+      const required = this.consultationType === 'integrated'
+        ? ['metaphysics', 'psychology']
+        : [this.consultationType]
+      return this.consultants.filter(consultant => required.every(
+        specialty => (consultant.consultant_specialties || []).includes(specialty)
+      ))
+    },
+    assignmentChanged() {
+      if (!this.workspace) return false
+      const request = this.workspace.request
+      return Number(this.assignmentId || 0) !== Number(request.assigned_consultant_id || 0) || (
+        request.service_type === 'report' && this.consultationType !== (request.consultation_type || 'integrated')
+      )
     }
   },
   mounted() {
@@ -99,6 +117,7 @@ export default {
     statusLabel(status) {
       return SERVICE_REQUEST_STATUS_LABELS[status] || status
     },
+    consultationTypeLabel,
     genderLabel,
     topicLabel,
     requestGoal,

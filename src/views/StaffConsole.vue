@@ -27,7 +27,7 @@
           <div class="request-list" aria-label="服务申请列表">
             <button v-for="item in requests.items" :key="item.id" type="button" class="request-item" :class="{ selected: selectedRequest?.id === item.id }" :aria-pressed="selectedRequest?.id === item.id" @click="selectRequest(item)">
               <span class="request-item-icon" :class="`type-${item.service_type}`"><IconMark :name="item.service_type === 'report' ? 'reports' : 'calendar'" /></span>
-              <span class="request-item-copy"><strong>{{ item.service_type === 'report' ? '人生说明书' : '决策日历' }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · #{{ item.id }}</small><em>{{ formatDate(item.created_at) }}</em></span>
+              <span class="request-item-copy"><strong>{{ item.service_type === 'report' ? '人生说明书' : '决策日历' }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · #{{ item.id }}</small><em>{{ item.service_type === 'report' ? `${consultationTypeLabel(item.consultation_type)} · ` : '' }}{{ formatDate(item.created_at) }}</em></span>
               <span class="request-item-status">{{ statusLabel(item.status) }}</span>
             </button>
             <div v-if="!requests.items.length" class="empty-cell">当前筛选下没有申请。</div>
@@ -45,13 +45,15 @@
 
           <div v-else-if="workspace" class="workspace-content">
             <header class="workspace-header">
-              <div><p class="eyebrow">{{ workspace.request.service_type === 'report' ? 'REPORT REVIEW' : 'CALENDAR REVIEW' }} / #{{ workspace.request.id }}</p><h2>{{ workspace.request.service_type === 'report' ? '人生说明书审校' : '决策日历审校' }}</h2><p class="workspace-user">{{ workspace.user.name }} · {{ workspace.user.phone || '未填写联系方式' }}</p></div>
+              <div><p class="eyebrow">{{ workspace.request.service_type === 'report' ? 'REPORT REVIEW' : 'CALENDAR REVIEW' }} / #{{ workspace.request.id }}</p><h2>{{ workspace.request.service_type === 'report' ? '人生说明书审校' : '决策日历审校' }}</h2><p class="workspace-user">{{ workspace.user.name }} · {{ workspace.user.phone || '未填写联系方式' }}</p><p v-if="workspace.request.service_type === 'report'" class="workspace-user">咨询方向：{{ consultationTypeLabel(workspace.request.consultation_type) }}</p></div>
               <span :class="['status-badge', `staff-status-${workspace.request.status}`]">{{ statusLabel(workspace.request.status) }}</span>
             </header>
 
             <div v-if="admin" class="assignment-row">
-              <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving" @change="assignConsultant"><option :value="null">未分配</option><option v-for="consultant in consultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
-              <small>管理员可改派；改派不会覆盖已有版本。</small>
+              <label v-if="workspace.request.service_type === 'report'">咨询方向<select v-model="consultationType" :disabled="assignmentSaving" @change="changeConsultationType"><option value="metaphysics">命理</option><option value="psychology">心理</option><option value="integrated">综合（命理 + 心理）</option></select></label>
+              <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving"><option :value="null">未分配</option><option v-for="consultant in assignableConsultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
+              <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="!assignmentChanged || assignmentSaving" :loading="assignmentSaving" loading-text="保存中…" @click="assignConsultant">保存分配</VanButton>
+              <small>仅列出具备所选方向能力的咨询师；修改不会覆盖已有版本。</small>
             </div>
 
             <div class="workspace-actions">

@@ -12,6 +12,7 @@ defineProps({
   recordError: { type: String, default: '' },
   recordFeedback: { type: String, default: '' },
   recordSource: { type: String, default: 'local' },
+  readOnly: { type: Boolean, default: false },
   rhythmSegments: { type: Array, default: () => [] },
   savingRecord: { type: Boolean, default: false },
   selectedDate: { type: String, default: '' },
@@ -78,6 +79,7 @@ defineExpose({ focusCloseButton, focusContainer, getFocusableItems })
       </div>
       <span class="status-pill" :class="`tone-${selectedEntry.tone}`">{{ selectedEntry.statusLabel }}</span>
     </div>
+    <p v-if="readOnly" class="calendar-readonly-note">用户端视图 · 记录只读</p>
 
     <div class="detail-title-row">
       <span class="detail-pillar">{{ selectedDay.dayPillar || selectedEntry.dateRange }}</span>
@@ -143,6 +145,7 @@ defineExpose({ focusCloseButton, focusContainer, getFocusableItems })
       :record-error="recordError"
       :record-feedback="recordFeedback"
       :record-source="recordSource"
+      :read-only="readOnly"
       :saving-record="savingRecord"
       :selected-date="selectedDate"
       :selected-entry="selectedEntry"

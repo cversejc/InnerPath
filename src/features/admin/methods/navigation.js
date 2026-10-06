@@ -9,6 +9,7 @@ export default {
       this.activeTab = tab
       if (tab === 'overview') await this.loadDashboard()
       if (tab === 'users') await this.loadUsers()
+      if (tab === 'requests') await this.loadAdminRequests()
       if (tab === 'calendar' && !this.calendarUsers.length) await this.loadCalendarUsers()
       if (tab === 'reports') await this.loadReports()
       if (tab === 'logs') await this.loadAuditLogs()
@@ -17,6 +18,7 @@ export default {
   async refreshActive() {
       if (this.activeTab === 'overview') return this.loadDashboard()
       if (this.activeTab === 'users') return this.loadUsers()
+      if (this.activeTab === 'requests') return this.loadAdminRequests()
       if (this.activeTab === 'calendar') return this.selectedCalendarUser ? this.loadCalendars() : this.loadCalendarUsers()
       if (this.activeTab === 'reports') return this.reportSection === 'reports' ? this.loadReports() : this.loadReportTasks()
        if (this.activeTab === 'logs') return this.logSection === 'audit' ? this.loadAuditLogs() : this.logSection === 'behavior' ? this.loadDecisionLogs() : this.loadReportTasks()

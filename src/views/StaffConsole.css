@@ -47,10 +47,10 @@
 .detail-list div { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 12px; }
 .detail-list dt { color: var(--muted, #7d6653); font-size: 13px; }
 .detail-list dd { min-width: 0; margin: 0; color: var(--ink-soft, #51463d); line-height: 1.6; word-break: break-word; }
-.assignment-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 15px; border-bottom: 1px solid rgba(80, 54, 32, .1); padding-bottom: 14px; }
-.assignment-row label { display: flex; align-items: center; gap: 8px; color: var(--ink-soft, #51463d); font-size: 13px; font-weight: var(--weight-semibold); }
+.assignment-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 12px; margin-top: 15px; border-bottom: 1px solid rgba(80, 54, 32, .1); padding-bottom: 14px; }
+.assignment-row label { display: grid; gap: 5px; color: var(--ink-soft, #51463d); font-size: 12px; font-weight: var(--weight-semibold); }
 .assignment-row select { min-height: 42px; border: 1px solid rgba(80, 54, 32, .16); border-radius: 8px; background: #fffaf0; padding: 0 9px; font: inherit; }
-.assignment-row small { color: var(--muted, #7d6653); }
+.assignment-row small { flex-basis: 100%; color: var(--muted, #7d6653); font-size: 11px; }
 .workspace-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 16px 0; }
 .deliver-button { background: linear-gradient(145deg, #658f73, #356b59); border-color: #356b59; }
 .text-button { min-height: 44px; border: 0; padding: 0 6px; background: transparent; color: var(--cinnabar-deep, #9e3f35); font: inherit; font-weight: var(--weight-semibold); cursor: pointer; }

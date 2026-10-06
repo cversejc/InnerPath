@@ -50,7 +50,7 @@ function exportUsers() {
             <tr v-for="user in users.items" :key="user.id">
               <td><div class="person-cell"><span class="avatar-mark">{{ user.name?.slice(0, 1) || '人' }}</span><span><strong>{{ user.name }}</strong><small>#{{ user.id }} · {{ user.phone }}</small></span></div></td>
               <td><select :value="user.role" @change="$emit('change-role', user, $event.target.value)"><option value="user">用户</option><option value="consultant">咨询师</option><option value="admin">管理员</option></select></td>
-              <td><div class="mini-stats"><span>报 {{ user.report_count }}</span><span>历 {{ user.calendar_count }}</span></div></td>
+              <td><div class="mini-stats"><span>申 {{ (user.report_request_count || 0) + (user.calendar_request_count || 0) }}</span><span>报 {{ user.report_count }}</span><span>历 {{ user.calendar_count }}</span></div></td>
               <td><span :class="['status-badge', user.is_active ? 'success' : 'muted']">{{ user.is_active ? '正常' : '已停用' }}</span></td>
               <td class="muted-text">{{ formatDateTime(user.last_login_at) }}</td>
               <td><div class="row-actions"><button type="button" @click="$emit('open-user', user)">详情</button><button type="button" @click="$emit('open-calendar', user)">日历</button><button type="button" @click="$emit('reset-password', user)">{{ user.is_active ? '重置密码' : '启用' }}</button><button v-if="user.is_active" type="button" class="danger-action" @click="$emit('toggle-user', user)">停用</button><button v-else type="button" @click="$emit('toggle-user', user)">启用</button></div></td>

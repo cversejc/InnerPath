@@ -1,10 +1,11 @@
 """Consultant access, queue, workspace, and response serialization."""
 
 from copy import deepcopy
-from datetime import datetime
+from datetime import date, datetime, time, timedelta
 from typing import Any, Optional
 
-from sqlalchemy import select
+from sqlalchemy import func, or_, select
+from sqlalchemy.orm import aliased
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import ServiceRequest, ServiceRequestTask
@@ -27,6 +28,8 @@ async def accept_service_request(
         return service_request
     if service_request.status != "submitted" or service_request.assigned_consultant_id is not None:
         raise ValueError("service_request_already_taken")
+    if not consultant_can_cover_specialty(consultant, service_request.consultation_type):
+        raise ValueError("consultant_specialty_mismatch")
     service_request.assigned_consultant_id = consultant.id
     service_request.status = "accepted"
     service_request.accepted_at = datetime.utcnow()
@@ -46,6 +49,23 @@ async def accept_service_request(
 
 def staff_can_access(service_request: ServiceRequest, user: User) -> bool:
     return user.role == "admin" or service_request.assigned_consultant_id == user.id
+
+
+def consultant_can_cover_specialty(consultant: User, consultation_type: Optional[str]) -> bool:
+    if consultation_type is None:
+        return True
+    specialties = set(consultant.consultant_specialties or [])
+    if consultation_type == "integrated":
+        return {"metaphysics", "psychology"}.issubset(specialties)
+    return consultation_type in specialties
+
+
+def consultant_request_types(consultant: User) -> list[str]:
+    specialties = set(consultant.consultant_specialties or [])
+    supported = specialties & {"metaphysics", "psychology"}
+    if {"metaphysics", "psychology"}.issubset(specialties):
+        supported.add("integrated")
+    return sorted(supported)
 
 
 async def has_staff_assignment(db: AsyncSession, staff_id: int, user_id: int) -> bool:
@@ -71,9 +91,14 @@ async def list_staff_service_requests(
     query = select(ServiceRequest, User).join(User, User.id == ServiceRequest.user_id)
     if user.role != "admin":
         if scope == "available":
+            request_type_conditions = [ServiceRequest.consultation_type.is_(None)]
+            supported_types = consultant_request_types(user)
+            if supported_types:
+                request_type_conditions.append(ServiceRequest.consultation_type.in_(supported_types))
             query = query.where(
                 ServiceRequest.status == "submitted",
                 ServiceRequest.assigned_consultant_id.is_(None),
+                or_(*request_type_conditions),
             )
         else:
             query = query.where(ServiceRequest.assigned_consultant_id == user.id)
@@ -90,6 +115,55 @@ async def list_staff_service_requests(
         query = query.where(ServiceRequest.service_type == service_type)
     result = await db.execute(query.order_by(ServiceRequest.created_at.desc()))
     return list(result.all())
+
+
+async def list_admin_service_requests(
+    db: AsyncSession,
+    *,
+    status: Optional[str] = None,
+    service_type: Optional[str] = None,
+    user_id: Optional[int] = None,
+    consultant_id: Optional[int] = None,
+    search: Optional[str] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    page: int = 1,
+    size: int = 20,
+) -> tuple[list[tuple[ServiceRequest, User, Optional[User]]], int]:
+    conditions = []
+    if status:
+        conditions.append(ServiceRequest.status == status)
+    if service_type:
+        conditions.append(ServiceRequest.service_type == service_type)
+    if user_id:
+        conditions.append(ServiceRequest.user_id == user_id)
+    if consultant_id:
+        conditions.append(ServiceRequest.assigned_consultant_id == consultant_id)
+    if date_from:
+        conditions.append(ServiceRequest.created_at >= datetime.combine(date_from, time.min))
+    if date_to:
+        conditions.append(ServiceRequest.created_at < datetime.combine(date_to + timedelta(days=1), time.min))
+    if search:
+        term = f"%{search.strip()}%"
+        conditions.append(or_(User.name.ilike(term), User.phone.ilike(term)))
+
+    count_query = select(func.count(ServiceRequest.id)).join(User, User.id == ServiceRequest.user_id)
+    consultant = aliased(User)
+    query = select(ServiceRequest, User, consultant).join(
+        User, User.id == ServiceRequest.user_id
+    )
+    query = query.outerjoin(consultant, consultant.id == ServiceRequest.assigned_consultant_id)
+    if conditions:
+        count_query = count_query.where(*conditions)
+        query = query.where(*conditions)
+
+    total = int(await db.scalar(count_query) or 0)
+    result = await db.execute(
+        query.order_by(ServiceRequest.created_at.desc(), ServiceRequest.id.desc())
+        .offset((page - 1) * size)
+        .limit(size)
+    )
+    return list(result.all()), total
 
 async def get_workspace(
     db: AsyncSession,
@@ -139,6 +213,7 @@ def serialize_service_request(
         "result_type": service_request.result_type,
         "result_id": service_request.result_id,
         "assigned_consultant_id": service_request.assigned_consultant_id,
+        "consultation_type": service_request.consultation_type,
         "needs_info_reason": service_request.needs_info_reason,
         "rejection_reason": service_request.rejection_reason,
         "last_error": service_request.last_error,

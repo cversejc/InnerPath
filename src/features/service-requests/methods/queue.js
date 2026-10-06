@@ -43,6 +43,9 @@ export default {
     try {
       this.workspace = await getStaffServiceRequestWorkspace(requestId)
       this.assignmentId = this.workspace.request.assigned_consultant_id ?? null
+      this.consultationType = this.workspace.request.consultation_type || (
+        this.workspace.request.service_type === 'report' ? 'integrated' : ''
+      )
       if (this.workspace.draft) {
         if (this.workspace.request.service_type === 'report') {
           this.reportEditor = reportEditorFromPayload(this.workspace.draft.editable_payload)

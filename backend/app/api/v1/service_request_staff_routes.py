@@ -61,6 +61,7 @@ async def list_staff_requests(
                 user_id=item.user_id,
                 user_name=target_user.name if target_user else None,
                 service_type=item.service_type,
+                consultation_type=item.consultation_type,
                 status=item.status,
                 request_preview={
                     "selected_topics": payload.get("selected_topics", []),

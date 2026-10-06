@@ -38,6 +38,7 @@ class User(Base, TimestampMixin):
     profile_version = Column(Integer, nullable=False, default=1)
     profile_last_confirmed_at = Column(DateTime, nullable=True)
     avatar_url = Column(String(255), nullable=True)
+    consultant_specialties = Column(JSONB, nullable=False, default=list)
     user_type = Column(String(20), default="explorer", nullable=False)
     role = Column(String(20), default="user", nullable=False, index=True)
     password_hash = Column(String(255), nullable=True)

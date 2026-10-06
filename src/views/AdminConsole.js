@@ -4,6 +4,7 @@ import adminFormatters from '../features/admin/formatters.js'
 import { createDashboardViewModel } from '../features/admin/dashboardViewModel.js'
 import AdminDashboardSection from '../features/admin/components/AdminDashboardSection.vue'
 import AdminUsersSection from '../features/admin/components/AdminUsersSection.vue'
+import AdminRequestsSection from '../features/admin/components/AdminRequestsSection.vue'
 import AdminReportsSection from '../features/admin/components/AdminReportsSection.vue'
 import AdminActivitySection from '../features/admin/components/AdminActivitySection.vue'
 import AdminCalendarSection from '../features/admin/components/AdminCalendarSection.vue'
@@ -17,6 +18,7 @@ import reportsMethods from '../features/admin/methods/reports.js'
 import activityMethods from '../features/admin/methods/activity.js'
 import staffMethods from '../features/admin/methods/staff.js'
 import exportsMethods from '../features/admin/methods/exports.js'
+import adminRequestsMethods from '../features/admin/methods/requests.js'
 import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'vant'
 import { confirmAction } from '../utils/confirmAction.js'
 
@@ -24,17 +26,18 @@ const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
+  components: { AdminDashboardSection, AdminUsersSection, AdminRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
       tabs: [
         { id: 'overview', index: '01', label: '总览' },
         { id: 'users', index: '02', label: '用户' },
-        { id: 'calendar', index: '03', label: '日历' },
-        { id: 'reports', index: '04', label: '报告' },
-        { id: 'logs', index: '05', label: '日志' },
-        { id: 'staff', index: '06', label: '后台成员' }
+        { id: 'requests', index: '03', label: '申请交付' },
+        { id: 'calendar', index: '04', label: '日历' },
+        { id: 'reports', index: '05', label: '报告' },
+        { id: 'logs', index: '06', label: '日志' },
+        { id: 'staff', index: '07', label: '后台成员' }
       ],
       dashboardRanges: [{ id: '7d', label: '7 天' }, { id: '30d', label: '30 天' }, { id: '90d', label: '90 天' }],
       dashboardRange: '30d',
@@ -49,6 +52,14 @@ export default {
       userPage: 1,
       userPageSize: 12,
       staffUsers: [],
+      requestKind: 'consultant',
+      adminServiceRequests: { ...EMPTY_PAGE },
+      adminCalendarRequests: { ...EMPTY_PAGE },
+      requestFilters: { search: '', status: '', consultant_id: '', date_from: '', date_to: '' },
+      calendarRequestFilters: { search: '', status: '', date_from: '', date_to: '' },
+      requestPage: 1,
+      requestPageSize: 20,
+      requestsLoading: false,
       reports: { ...EMPTY_PAGE },
       reportsLoading: false,
       reportFilters: { search: '', status: '', ai_model: '', date_from: '', date_to: '' },
@@ -78,7 +89,7 @@ export default {
       userPanelLoading: false,
       userEdit: {},
       profileSaving: false,
-      userPanelData: { reports: null, calendars: null, decisions: null, activity: null },
+      userPanelData: { reports: null, calendars: null, decisions: null, activity: null, applications: null },
       reportDetail: null,
       logDetail: null,
       drawerTrigger: null,
@@ -95,6 +106,7 @@ export default {
       inviteForm: { phone: '', role: 'consultant' },
       inviteToken: '',
       inviteSaving: false,
+      consultantSpecialtySavingId: null,
       staffLoading: false,
       loggingOut: false,
       passwordDialog: { visible: false, user: null, password: '', showPassword: false, error: '', submitting: false },
@@ -103,7 +115,7 @@ export default {
   },
   computed: {
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.passwordDialog.submitting
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
     },
     dashboardViewModel() {
       return createDashboardViewModel(this.dashboard)
@@ -111,6 +123,7 @@ export default {
     userPanelTabs() {
       return [
         { id: 'profile', label: '资料' },
+        { id: 'applications', label: '申请' },
         { id: 'reports', label: '报告' },
         { id: 'calendar', label: '日历' },
         { id: 'decisions', label: '行动记录' },
@@ -144,6 +157,7 @@ export default {
     ...reportsMethods,
     ...activityMethods,
     ...staffMethods,
-    ...exportsMethods
+    ...exportsMethods,
+    ...adminRequestsMethods
   }
 }

@@ -1,16 +1,44 @@
 <script setup>
+import { reactive, watch } from 'vue'
 import { Button as VanButton } from 'vant'
 import { roleText } from '../formatters.js'
 
-defineProps({
+const props = defineProps({
   inviteForm: { type: Object, required: true },
   inviteSaving: { type: Boolean, default: false },
   inviteToken: { type: String, default: '' },
+  specialtySavingId: { type: Number, default: null },
   staffLoading: { type: Boolean, default: false },
   staffUsers: { type: Array, default: () => [] }
 })
 
-defineEmits(['invite'])
+const emit = defineEmits(['invite', 'update-specialties'])
+const specialties = [
+  { id: 'metaphysics', label: '命理' },
+  { id: 'psychology', label: '心理' }
+]
+const specialtyDrafts = reactive({})
+
+watch(() => props.staffUsers, members => {
+  for (const member of members) {
+    if (member.role === 'consultant') specialtyDrafts[member.id] = [...(member.consultant_specialties || [])]
+  }
+}, { immediate: true, deep: true })
+
+function toggleSpecialty(memberId, specialty, checked) {
+  const selected = new Set(specialtyDrafts[memberId] || [])
+  if (checked) selected.add(specialty)
+  else selected.delete(specialty)
+  specialtyDrafts[memberId] = specialties.map(item => item.id).filter(item => selected.has(item))
+}
+
+function specialtiesChanged(member) {
+  return JSON.stringify(specialtyDrafts[member.id] || []) !== JSON.stringify(member.consultant_specialties || [])
+}
+
+function saveSpecialties(member) {
+  emit('update-specialties', { userId: member.id, specialties: specialtyDrafts[member.id] || [] })
+}
 </script>
 
 <template>
@@ -30,7 +58,18 @@ defineEmits(['invite'])
       <article class="panel-surface team-card">
         <div class="panel-heading"><div><p class="eyebrow">CURRENT TEAM</p><h3>当前成员</h3></div><span>{{ staffUsers.length }}</span></div>
         <div v-if="staffLoading" class="list-loading" aria-label="正在加载成员"><i v-for="index in 4" :key="index"></i></div>
-        <div v-else class="team-list"><div v-for="member in staffUsers" :key="member.id" class="team-row"><span class="avatar-mark">{{ member.name?.slice(0, 1) || '人' }}</span><div><strong>{{ member.name }}</strong><small>{{ roleText(member.role) }} · {{ member.phone }}</small></div><span :class="['status-badge', member.is_active ? 'success' : 'muted']">{{ member.is_active ? '正常' : '停用' }}</span></div><p v-if="!staffUsers.length" class="empty-cell">暂无后台成员。</p></div>
+        <div v-else class="team-list">
+          <article v-for="member in staffUsers" :key="member.id" class="team-member">
+            <div class="team-row"><span class="avatar-mark">{{ member.name?.slice(0, 1) || '人' }}</span><div><strong>{{ member.name }}</strong><small>{{ roleText(member.role) }} · {{ member.phone }}</small></div><span :class="['status-badge', member.is_active ? 'success' : 'muted']">{{ member.is_active ? '正常' : '停用' }}</span></div>
+            <fieldset v-if="member.role === 'consultant'" class="consultant-specialties">
+              <legend>可承接方向</legend>
+              <label v-for="specialty in specialties" :key="specialty.id"><input type="checkbox" :checked="(specialtyDrafts[member.id] || []).includes(specialty.id)" :disabled="specialtySavingId === member.id" @change="toggleSpecialty(member.id, specialty.id, $event.target.checked)">{{ specialty.label }}</label>
+              <span class="integrated-hint">同时选择两项即可承接综合申请</span>
+              <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="!specialtiesChanged(member) || specialtySavingId === member.id" :loading="specialtySavingId === member.id" loading-text="保存中…" @click="saveSpecialties(member)">保存能力</VanButton>
+            </fieldset>
+          </article>
+          <p v-if="!staffUsers.length" class="empty-cell">暂无后台成员。</p>
+        </div>
       </article>
     </div>
   </section>

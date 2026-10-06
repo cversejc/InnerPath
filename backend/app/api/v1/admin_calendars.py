@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from datetime import date
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
@@ -12,6 +14,7 @@ from app.domains.calendar.schemas import (
     CalendarListResponse,
     CalendarResponse,
     CalendarUpdate,
+    AdminCalendarRequestListResponse,
 )
 from app.domains.audit.service import record_audit
 from app.domains.calendar.service import (
@@ -22,8 +25,34 @@ from app.domains.calendar.service import (
     update_calendar,
 )
 from app.domains.calendar.query_service import get_user_calendars, serialize_calendar
+from app.domains.calendar.requests import get_calendar_requests_for_admin
 
 router = APIRouter()
+
+
+@router.get("/calendar-requests", response_model=AdminCalendarRequestListResponse)
+async def list_admin_calendar_requests(
+    request_status: str | None = Query(None, alias="status", max_length=30),
+    user_id: int | None = Query(None, ge=1),
+    search: str | None = Query(None, max_length=100),
+    date_from: date | None = None,
+    date_to: date | None = None,
+    page: int = Query(1, ge=1),
+    size: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await get_calendar_requests_for_admin(
+        db,
+        status_filter=request_status,
+        user_id=user_id,
+        search=search,
+        date_from=date_from,
+        date_to=date_to,
+        page=page,
+        size=size,
+    )
+    return AdminCalendarRequestListResponse(**result)
 
 
 @router.get("/users/{user_id}/calendars", response_model=CalendarListResponse)
