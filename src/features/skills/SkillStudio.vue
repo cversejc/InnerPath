@@ -19,9 +19,9 @@
         {{ message }}
       </p>
       <div class="studio-workspace">
-        <aside class="skill-catalog" aria-label="咨询流程技能">
-          <h2>咨询流程技能</h2>
-          <p>按报告节点维护方法与示例</p>
+        <aside class="skill-catalog" aria-label="AI 技能目录">
+          <h2>AI 技能目录</h2>
+          <p>覆盖报告分析与决策日历各步骤</p>
           <label class="mobile-skill-select"
             >选择技能<select
               :value="selectedSkillKey"
@@ -89,8 +89,8 @@
                 v-for="tab in studioTabs"
                 :key="tab.id"
                 type="button"
-                :aria-pressed="activeAdminTab === tab.id"
-                :class="{ selected: activeAdminTab === tab.id }"
+                :aria-pressed="studioTabIsActive(tab.id)"
+                :class="{ selected: studioTabIsActive(tab.id) }"
                 @click="changeTab(tab.id)"
               >
                 {{ tab.label }}
@@ -109,7 +109,7 @@
               class="skill-overview"
             >
               <p class="studio-intro">
-                这里维护咨询工作台使用的技能方法和参考示例。分析、审核和报告交付在对应报告节点中完成。
+                这里维护工作台各步骤的 AI 思路与参考示例。报告分析和日历生成仍在各自完整流程中运行。
               </p>
               <dl class="skill-usage">
                 <div>
@@ -151,17 +151,17 @@
               <p v-if="!isAdmin">
                 咨询师可查看已发布示例，并从本报告的运行结果推荐经验；管理员负责脱敏审核、版本维护和发布。
               </p>
-              <p v-else>
+              <p v-else-if="!isReasoningGuidanceAdmin">
                 管理员可查看报告节点反馈，也可从报告或日历运行记录载入真实输入；用草稿预览和评估后再发布技能版本。
               </p>
-              <details>
+              <details v-if="!isReasoningGuidanceAdmin">
                 <summary>技术标识</summary>
                 <code>{{ selectedSkill.key }}</code>
               </details>
             </section>
             <template v-else-if="activeAdminTab === 'skills' && isAdmin">
               <div class="panel-heading">
-                <h3>技能维护</h3>
+                <h3 v-if="!isReasoningGuidanceAdmin">技能维护</h3>
                 <VanButton
                   class="primary-button compact-button"
                   type="primary"
@@ -169,13 +169,16 @@
                   :disabled="saving || !selectedVersion"
                   :loading="saving"
                   @click="createDraft"
-                  >从当前版本创建草稿</VanButton
+                  >{{ isReasoningGuidanceAdmin ? "创建思路草稿" : "从当前版本创建草稿" }}</VanButton
                 >
               </div>
               <SkillInstructions
                 v-if="selectedVersion"
                 v-model:text="specificationText"
+                v-model:guidance="reasoningGuidance"
                 :editable="editable"
+                :intent-only="isReasoningGuidanceAdmin"
+                :error="specError"
                 ><VanButton
                   v-if="editable"
                   plain
@@ -196,87 +199,118 @@
               >
               <p v-else>当前技能暂无可维护的版本。</p>
             </template>
-            <ExamplesPanel
-              v-else-if="activeAdminTab === 'examples'"
-              :key="selectedSkillKey"
-              :admin="isAdmin"
-              :skill-key="selectedSkillKey"
-            />
+            <template v-else-if="activeAdminTab === 'examples'">
+              <nav
+                v-if="isReasoningGuidanceAdmin"
+                class="studio-tabs studio-subtabs"
+                aria-label="参考与运行记录"
+              >
+                <button type="button" :class="{ selected: activeAdminTab === 'examples' }" @click="changeTab('examples')">示例</button>
+                <button type="button" :class="{ selected: activeAdminTab === 'runs' }" @click="changeTab('runs')">运行记录</button>
+                <button v-if="!isCalendarSkillAdmin" type="button" :class="{ selected: activeAdminTab === 'feedback' }" @click="changeTab('feedback')">咨询师反馈</button>
+              </nav>
+              <section class="examples-workspace">
+                <ExamplesPanel
+                  :key="selectedSkillKey"
+                  :admin="isAdmin"
+                  :skill-key="selectedSkillKey"
+                />
+              </section>
+            </template>
             <section
               v-else-if="activeAdminTab === 'debug' && isAdmin"
               class="studio-run-panel"
             >
-              <h3>试运行技能</h3>
-              <p>
-                试运行只用于验证草稿效果，不会写入报告或日历。发布技能版本前请先完成质量评估。
-              </p>
-              <div v-if="inputPreviewSourceRun" class="feedback-preview-source">
-                <strong>实际输入来源：{{ feedbackTargetLabel(inputPreviewSourceRun) }} · 运行 {{ inputPreviewSourceRun.id }}</strong>
-                <p v-if="feedbackSourceRun"><b>咨询师反馈</b>：{{ feedbackSourceRun.runtime_instruction || "本次运行没有补充反馈。" }}</p>
-                <p>输入框已载入该次运行的实际资料；试运行只生成预览，不会改写报告或已交付日历。</p>
-                <details>
-                  <summary>查看来源运行的 AI 结果</summary>
-                  <RunDetail
-                    :run="inputPreviewSourceRun"
-                    :admin="true"
-                    :case-id="inputPreviewSourceRun.report_case_id"
-                    @preview-input="prepareRunInputPreview"
-                  />
-                </details>
+              <template v-if="isReasoningGuidanceAdmin">
+                <h3>试用与质量评估</h3>
+                <p v-if="isS1Admin">
+                  选择程序维护的固定案例，检查草稿的依据和安全边界。评估结果供质量参考，不阻止发布。
+                </p>
+                <p v-else-if="isCalendarSkillAdmin">
+                  使用系统维护的合成日历样本检查思路效果。评估结果供质量参考，不阻止发布；日历生成仍由原有流程负责。
+                </p>
+                <p v-else>
+                  选择与本技能相关的固定案例，检查分析依据、解释边界和框架覆盖。评估结果供质量参考，不阻止发布。
+                </p>
+                <EvaluationPanel
+                  :version="selectedVersion"
+                  :start-evaluation="startEvaluation"
+                  :require-full-dataset="isS1Admin"
+                />
+              </template>
+              <template v-else>
+                <h3>试运行技能</h3>
+                <p>
+                  试运行只用于验证草稿效果，不会写入报告或日历。发布技能版本前请先完成质量评估。
+                </p>
+                <div v-if="inputPreviewSourceRun" class="feedback-preview-source">
+                  <strong>实际输入来源：{{ feedbackTargetLabel(inputPreviewSourceRun) }} · 运行 {{ inputPreviewSourceRun.id }}</strong>
+                  <p v-if="feedbackSourceRun"><b>咨询师反馈</b>：{{ feedbackSourceRun.runtime_instruction || "本次运行没有补充反馈。" }}</p>
+                  <p>输入框已载入该次运行的实际资料；试运行只生成预览，不会改写报告或已交付日历。</p>
+                  <details>
+                    <summary>查看来源运行的 AI 结果</summary>
+                    <RunDetail
+                      :run="inputPreviewSourceRun"
+                      :admin="true"
+                      :case-id="inputPreviewSourceRun.report_case_id"
+                      @preview-input="prepareRunInputPreview"
+                    />
+                  </details>
+                  <VanButton
+                    v-if="feedbackSourceRun && !editable"
+                    plain
+                    native-type="button"
+                    :disabled="saving || !selectedVersion"
+                    :loading="saving"
+                    @click="prepareFeedbackPreview()"
+                    >基于此反馈创建可编辑草稿</VanButton
+                  >
+                </div>
+                <label class="json-label" for="skill-input"
+                  >测试输入资料（结构化数据）</label
+                ><textarea
+                  id="skill-input"
+                  v-model="inputText"
+                  class="json-editor input-editor"
+                  spellcheck="false"
+                ></textarea>
+                <label class="json-label" for="skill-instruction"
+                  >本次补充要求</label
+                ><textarea
+                  id="skill-instruction"
+                  v-model.trim="runtimeInstruction"
+                  class="instruction-input"
+                  maxlength="4000"
+                  rows="3"
+                  placeholder="可留空"
+                ></textarea>
+                <p v-if="inputError" class="field-error" role="alert">
+                  {{ inputError }}
+                </p>
                 <VanButton
-                  v-if="feedbackSourceRun && !editable"
-                  plain
+                  class="primary-button"
+                  type="primary"
                   native-type="button"
-                  :disabled="saving || !selectedVersion"
-                  :loading="saving"
-                  @click="prepareFeedbackPreview()"
-                  >基于此反馈创建可编辑草稿</VanButton
+                  :disabled="
+                    running ||
+                    !selectedVersion ||
+                    selectedVersion.status === 'RETIRED' ||
+                    Boolean(inputError)
+                  "
+                  :loading="running"
+                  @click="startRun"
+                  >{{ running ? "正在提交" : editable ? "保存并预览草稿" : "试运行当前版本" }}</VanButton
                 >
-              </div>
-              <label class="json-label" for="skill-input"
-                >测试输入资料（结构化数据）</label
-              ><textarea
-                id="skill-input"
-                v-model="inputText"
-                class="json-editor input-editor"
-                spellcheck="false"
-              ></textarea>
-              <label class="json-label" for="skill-instruction"
-                >本次补充要求</label
-              ><textarea
-                id="skill-instruction"
-                v-model.trim="runtimeInstruction"
-                class="instruction-input"
-                maxlength="4000"
-                rows="3"
-                placeholder="可留空"
-              ></textarea>
-              <p v-if="inputError" class="field-error" role="alert">
-                {{ inputError }}
-              </p>
-              <VanButton
-                class="primary-button"
-                type="primary"
-                native-type="button"
-                :disabled="
-                  running ||
-                  !selectedVersion ||
-                  selectedVersion.status === 'RETIRED' ||
-                  Boolean(inputError)
-                "
-                :loading="running"
-                @click="startRun"
-                >{{ running ? "正在提交" : editable ? "保存并预览草稿" : "试运行当前版本" }}</VanButton
-              >
-              <RunDetail
-                v-if="previewRun"
-                :key="previewRun.id"
-                class="feedback-preview-result"
-                :run="previewRun"
-                :admin="true"
-                :case-id="feedbackSourceRun?.report_case_id"
-                @preview-input="prepareRunInputPreview"
-              />
+                <RunDetail
+                  v-if="previewRun"
+                  :key="previewRun.id"
+                  class="feedback-preview-result"
+                  :run="previewRun"
+                  :admin="true"
+                  :case-id="feedbackSourceRun?.report_case_id"
+                  @preview-input="prepareRunInputPreview"
+                />
+              </template>
             </section>
             <EvaluationPanel
               v-else-if="activeAdminTab === 'evaluation' && isAdmin"
@@ -284,6 +318,15 @@
               :start-evaluation="startEvaluation"
             />
             <section v-else-if="activeAdminTab === 'runs'" class="runs-section">
+              <nav
+                v-if="isReasoningGuidanceAdmin && !isCalendarSkillAdmin"
+                class="studio-tabs studio-subtabs"
+                aria-label="参考与运行记录"
+              >
+                <button type="button" :class="{ selected: activeAdminTab === 'examples' }" @click="changeTab('examples')">示例</button>
+                <button type="button" :class="{ selected: activeAdminTab === 'runs' }" @click="changeTab('runs')">运行记录</button>
+                <button type="button" :class="{ selected: activeAdminTab === 'feedback' }" @click="changeTab('feedback')">咨询师反馈</button>
+              </nav>
               <details
                 v-if="!isAdmin"
                 :open="!caseId"
@@ -339,6 +382,7 @@
                 :key="selectedRun.id"
                 :run="selectedRun"
                 :admin="isAdmin"
+                :allow-input-preview="!isS1Admin"
                 :case-id="caseId"
                 @preview-input="prepareRunInputPreview"
               />
@@ -356,10 +400,20 @@
               v-else-if="activeAdminTab === 'feedback' && isAdmin"
               class="skill-feedback-inbox"
             >
+              <nav
+                v-if="isReasoningGuidanceAdmin && !isCalendarSkillAdmin"
+                class="studio-tabs studio-subtabs"
+                aria-label="参考与运行记录"
+              >
+                <button type="button" :class="{ selected: activeAdminTab === 'examples' }" @click="changeTab('examples')">示例</button>
+                <button type="button" :class="{ selected: activeAdminTab === 'runs' }" @click="changeTab('runs')">运行记录</button>
+                <button type="button" :class="{ selected: activeAdminTab === 'feedback' }" @click="changeTab('feedback')">咨询师反馈</button>
+              </nav>
               <div class="panel-heading">
                 <div>
                   <h3>咨询师反馈</h3>
-                  <p>反馈与报告案例、节点、技能版本和原始运行记录绑定，可在草稿上用该次真实输入复现。</p>
+                  <p v-if="isS1Admin">反馈用于发现改进方向；S1 试用统一使用系统维护的固定案例。</p>
+                  <p v-else>反馈与报告案例、节点、技能版本和原始运行记录绑定，可在草稿上用该次真实输入复现。</p>
                 </div>
                 <span>{{ feedbackRuns.length }} 条</span>
               </div>
@@ -371,6 +425,7 @@
                 <p class="skill-feedback-text">{{ run.runtime_instruction }}</p>
                 <div class="feedback-card-actions">
                   <VanButton
+                    v-if="!isS1Admin"
                     class="primary-button compact-button"
                     type="primary"
                     native-type="button"
@@ -385,6 +440,7 @@
                   <RunDetail
                     :run="run"
                     :admin="true"
+                    :allow-input-preview="!isS1Admin"
                     :case-id="run.report_case_id"
                     @preview-input="prepareRunInputPreview"
                   />

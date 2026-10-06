@@ -13,7 +13,6 @@ from app.domains.service_requests.schemas import (
 )
 from app.domains.service_requests.service import serialize_service_request, serialize_task
 from app.domains.calendar.requests import serialize_calendar_request
-from app.domains.service_requests.schemas import ServiceRequestResponse as PublicServiceRequestResponse
 
 
 def project_report_case_status(case_status: str, step_status: str | None, fallback: str) -> str:
@@ -149,21 +148,36 @@ async def _serialize_public(db: AsyncSession, service_request: ServiceRequest) -
                 current_step.status if current_step else None,
                 service_request.status,
             )
-    if service_request.service_type == "calendar":
+    elif service_request.service_type == "calendar":
         payload["workflow_type"] = "calendar_legacy"
     return ServiceRequestResponse.model_validate(payload)
 
 
-async def _serialize_calendar_generation(db: AsyncSession, calendar_request) -> PublicServiceRequestResponse:
+async def _serialize_calendar_generation(db: AsyncSession, calendar_request) -> ServiceRequestResponse:
     payload = await serialize_calendar_request(db, calendar_request)
-    is_current_flow = payload["status"] in {"queued", "generating", "processing", "delivered", "failed"} and bool(payload["task_id"])
-    is_delivered = payload["status"] in {"delivered", "fulfilled"} and payload["calendar_id"] is not None
-    return PublicServiceRequestResponse.model_validate(
+    generation = (calendar_request.input_snapshot or {}).get("generation") or {}
+    raw_status = payload["status"]
+    is_current_flow = raw_status in {"queued", "generating", "processing", "delivered", "fulfilled"} or (
+        raw_status == "failed" and bool(payload["task_id"] or generation)
+    )
+    is_delivered = raw_status in {"delivered", "fulfilled"} and payload["calendar_id"] is not None
+    status_value = (
+        "ai_processing"
+        if raw_status in {"queued", "generating", "processing"}
+        else "delivered"
+        if is_delivered
+        else raw_status
+    )
+    total_runs = max(int(payload.get("total_runs") or 0), 1)
+    progress = payload.get("progress") or round(
+        100 * int(payload.get("completed_runs") or 0) / total_runs
+    )
+    return ServiceRequestResponse.model_validate(
         {
             "id": payload["id"],
             "service_type": "calendar",
             "workflow_type": "calendar_generation" if is_current_flow else "calendar_legacy",
-            "status": "ai_processing" if payload["status"] in {"queued", "generating", "processing"} else "delivered" if is_delivered else payload["status"],
+            "status": status_value,
             "request_payload": {
                 "source_report_id": payload["source_report_id"],
                 "start_date": payload["start_date"],
@@ -178,7 +192,7 @@ async def _serialize_calendar_generation(db: AsyncSession, calendar_request) -> 
             "result_type": "calendar" if is_delivered else None,
             "result_id": payload["calendar_id"] if is_delivered else None,
             "last_error": payload["generation_error"],
-            "progress": payload["progress"],
+            "progress": progress,
             "created_at": payload["created_at"],
             "updated_at": payload["updated_at"],
         }

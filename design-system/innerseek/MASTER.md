@@ -229,16 +229,18 @@ shapes for statuses, seals, tags and compact metadata.
   Skill buttons invoke actual commands, show prerequisites, and keep history read-only.
   Report overview retains the delivered report entry. See
   `docs/consultant-analysis-implementation.md` for the decision and browser acceptance.
-- **Skill and example workbench:** organize skills by the six consultant report nodes,
-  using Chinese names and descriptions. A compact header, skill catalog and function
-  navigation remain visible while only the active work content scrolls. On mobile,
-  replace the catalog with a native skill selector. Use separate views for usage,
-  examples, runs, maintenance, trial runs and evaluation; show only role-appropriate
-  actions. Read examples and run output as labeled Chinese content, one selected
-  record at a time. Fold stable technical keys and original JSON behind explicit
-  disclosures. Common maintenance edits use labeled goal/method fields while
-  preserving the complete configuration. Keep the originating consultant node
-  and report in the return link. See `docs/consultant-analysis-implementation.md`.
+- **Skill and example workbench:** organize built-in skills by report stage and
+  decision-calendar step, using clear Chinese names and descriptions. A compact header,
+  skill catalog and function navigation remain visible while only the active work
+  content scrolls. On mobile, replace the catalog with a native skill selector. Use
+  role-appropriate views for usage, examples, runs, maintenance and trial/evaluation;
+  show only role-appropriate actions. Read examples and run output as labeled Chinese
+  content, one selected record at a time. For built-in reasoning skills, let the
+  administrator edit only the AI's goal and thinking guidance; keep input/output
+  contracts, schemas, fixed prompt rules and runtime settings in the program. Trial
+  and evaluation are available as quality references and do not block direct publish.
+  Keep the originating work step in the return link. See
+  `docs/consultant-analysis-implementation.md`.
 
 ## Anti-patterns
 

@@ -26,7 +26,10 @@ export function requestStatusLabel(status, workflowType) {
 }
 
 export function requestEditPath(request) {
-  return request.service_type === 'report'
-    ? `/pages/assessment/assessment?requestId=${request.id}`
-    : '/pages/user/user?tab=reports'
+  if (request.service_type === 'report') {
+    return request.report_case_id
+      ? `/pages/requests/requests#request-${request.id}-supplement`
+      : `/pages/assessment/assessment?requestId=${request.id}`
+  }
+  return '/pages/calendar/calendar?generate=1'
 }

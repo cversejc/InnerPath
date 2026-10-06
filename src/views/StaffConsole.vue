@@ -2,18 +2,13 @@
   <div class="staff-shell" :class="{ 'staff-shell-workspace': selectedRequest, 'staff-shell-node-focus': selectedReportStepKey && reportCase }">
     <BrandNav v-if="!selectedRequest" />
     <main class="staff-main" :class="{ 'staff-main-workspace': selectedRequest }">
-      <header v-if="!selectedRequest" class="staff-heading">
-        <div>
-          <p class="section-kicker">咨询师工作台</p>
-          <h1>选择一份报告</h1>
-          <p>打开报告后，将在独立工作区查看进度并完成当前任务。</p>
-        </div>
-        <div class="heading-actions">
+      <BrandPageHeader v-if="!selectedRequest" class="staff-heading" contained compact eyebrow="REVIEW ROOM" title="选择一份报告" description="打开报告后，将在独立工作区查看进度并完成当前任务。" seal="照见">
+        <template #actions>
           <router-link class="secondary-button compact-button" :to="skillStudioLocation">技能与示例工作台</router-link>
           <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading || reportAnalysisPending }"></i>{{ reportAnalysisPending ? '分析建议处理中' : pollingTask ? '内容生成中' : reportCaseLoading ? '正在打开报告' : loading ? '正在同步' : '已同步' }}</span>
           <VanButton class="secondary-button" type="default" plain native-type="button" :disabled="loading" @click="loadRequests">刷新列表</VanButton>
-        </div>
-      </header>
+        </template>
+      </BrandPageHeader>
 
       <header v-else-if="selectedReportStepKey && reportCase" class="workbench-focus-header">
         <VanButton plain native-type="button" aria-label="返回报告处理总览" @click="openReportOverview">报告总览</VanButton>
@@ -358,8 +353,8 @@
 
             <div v-if="workspace.request.service_type === 'calendar'" class="workspace-grid">
               <section class="facts-panel">
-                <div class="panel-heading"><div><p class="eyebrow">用户资料</p><h3>资料与需求</h3></div><span>申请资料</span></div>
-                <dl class="detail-list source-list"><div><dt>姓名</dt><dd>{{ workspace.user.name || workspace.request.request_payload?.profile?.name || '—' }}</dd></div><div><dt>性别</dt><dd>{{ genderLabel(workspace.user.gender || workspace.request.request_payload?.profile?.gender) }}</dd></div><div><dt>出生资料</dt><dd>{{ birthSummary }}</dd></div><div><dt>出生地</dt><dd>{{ workspace.user.birth_place || workspace.request.request_payload?.profile?.birth_place || '—' }}</dd></div><div><dt>关注议题</dt><dd>{{ topicLabel(workspace.request.request_payload?.context?.focus_topics || workspace.request.request_payload?.selected_topics) }}</dd></div><div><dt>本次困惑</dt><dd>{{ workspace.request.request_payload?.context?.current_challenge || '—' }}</dd></div><div><dt>期望结果</dt><dd>{{ (workspace.request.request_payload?.context?.expected_outcomes || []).join('、') || '—' }}</dd></div><div><dt>补充说明</dt><dd>{{ workspace.request.request_payload?.context?.additional_info || workspace.request.request_payload?.additional_info || '—' }}</dd></div></dl>
+                <div class="panel-heading"><div><p class="eyebrow">SOURCE / USER INPUT</p><h3>资料与需求</h3></div><span>申请快照</span></div>
+                <dl class="detail-list source-list"><div><dt>姓名</dt><dd>{{ workspace.user.name || workspace.request.request_payload?.profile?.name || '—' }}</dd></div><div><dt>性别</dt><dd>{{ genderLabel(workspace.user.gender || workspace.request.request_payload?.profile?.gender) }}</dd></div><div><dt>出生资料</dt><dd>{{ birthSummary }}</dd></div><div><dt>出生地</dt><dd>{{ workspace.user.birth_place || workspace.request.request_payload?.profile?.birth_place || '—' }}</dd></div><div><dt>关注议题</dt><dd>{{ topicLabel(workspace.request.request_payload?.context?.focus_topics || workspace.request.request_payload?.selected_topics) }}</dd></div><div><dt>本次困惑</dt><dd>{{ workspace.request.request_payload?.context?.current_challenge || workspace.request.request_payload?.calendar_goal || '—' }}</dd></div><div><dt>期望结果</dt><dd>{{ (workspace.request.request_payload?.context?.expected_outcomes || []).join('、') || '—' }}</dd></div><div><dt>补充说明</dt><dd>{{ workspace.request.request_payload?.context?.additional_info || workspace.request.request_payload?.additional_info || '—' }}</dd></div></dl>
               </section>
 
               <section v-if="workspace.draft" class="ai-panel">

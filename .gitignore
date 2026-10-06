@@ -57,6 +57,7 @@ backend/htmlcov/
 .claude/
 
 # Local verification artifacts
+/tmp/
 .tmp-fonts/
 .tmp-fonttools/
 .tmp-review-2/

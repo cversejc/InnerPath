@@ -28,6 +28,7 @@
           <p>用固定案例检查输出是否符合要求。</p>
         </div>
         <VanButton
+          v-if="!requireFullDataset"
           class="secondary-button compact-button"
           type="default"
           plain
@@ -44,6 +45,7 @@
           class="evaluation-case"
         >
           <input
+            v-if="!requireFullDataset"
             v-model="selectedCaseKeys"
             type="checkbox"
             :value="item.case_key"
@@ -58,7 +60,11 @@
         </p>
       </fieldset>
       <div class="evaluation-run-action">
-        <span>{{ selectedCaseKeys.length }} / {{ cases.length }} 个样本</span>
+        <span>{{
+          requireFullDataset
+            ? `固定运行全部 ${cases.length} 个样本`
+            : `${selectedCaseKeys.length} / ${cases.length} 个样本`
+        }}</span>
         <VanButton
           class="primary-button compact-button"
           type="primary"
@@ -104,6 +110,7 @@
           v-for="run in activeBatch.runs"
           :key="run.run_id"
           class="evaluation-run"
+          @toggle="$event.target.open && loadRunDetail(run.run_id)"
         >
           <summary>
             <span
@@ -136,6 +143,23 @@
           <p class="evaluation-example-note">
             参考示例：{{ run.selected_examples?.length || 0 }} 条
           </p>
+          <details
+            class="evaluation-output"
+            @toggle="$event.target.open && loadRunDetail(run.run_id)"
+          >
+            <summary>查看 AI 生成内容</summary>
+            <RunDetail
+              v-if="runDetails[run.run_id]"
+              :run="runDetails[run.run_id]"
+              :admin="true"
+              :allow-input-preview="!requireFullDataset"
+            />
+            <p v-else-if="loadingRunId === run.run_id">正在读取运行结果…</p>
+            <p v-else-if="['PENDING', 'RUNNING'].includes(run.status)">
+              案例完成后即可查看 AI 生成内容。
+            </p>
+            <p v-else>展开后读取本次运行的 AI 结果。</p>
+          </details>
         </details>
       </div>
     </section>
@@ -170,6 +194,7 @@
 <script>
 import { Button as VanButton } from "vant";
 import api from "../api.js";
+import RunDetail from "./RunDetail.vue";
 import {
   skillInfo,
   displayText,
@@ -181,10 +206,11 @@ const POLL_INTERVAL = 2500;
 
 export default {
   name: "EvaluationPanel",
-  components: { VanButton },
+  components: { VanButton, RunDetail },
   props: {
     version: { type: Object, default: null },
     startEvaluation: { type: Function, required: true },
+    requireFullDataset: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -197,6 +223,8 @@ export default {
       error: "",
       notice: "",
       pollTimer: null,
+      runDetails: {},
+      loadingRunId: null,
     };
   },
   computed: {
@@ -248,7 +276,7 @@ export default {
         this.selectedCaseKeys = this.selectedCaseKeys.filter((key) =>
           validKeys.has(key),
         );
-        if (!this.selectedCaseKeys.length)
+        if (this.requireFullDataset || !this.selectedCaseKeys.length)
           this.selectedCaseKeys = cases.map((item) => item.case_key);
         if (!this.activeBatch && batches.length) this.activeBatch = batches[0];
         if (this.activeBatch?.pass_rate === null) this.startPoll();
@@ -295,6 +323,22 @@ export default {
         else this.clearPoll();
       } catch (error) {
         this.error = error.response?.data?.detail || "无法读取评估批次。";
+      }
+    },
+    async loadRunDetail(runId) {
+      if (this.runDetails[runId] || this.loadingRunId === runId) return;
+      const run = this.activeBatch?.runs.find((item) => item.run_id === runId);
+      if (run && ["PENDING", "RUNNING"].includes(run.status)) return;
+      this.loadingRunId = runId;
+      try {
+        this.runDetails = {
+          ...this.runDetails,
+          [runId]: await api.getSkillRun(runId),
+        };
+      } catch (error) {
+        this.error = error.response?.data?.detail || "无法读取 AI 运行结果。";
+      } finally {
+        this.loadingRunId = null;
       }
     },
     startPoll() {

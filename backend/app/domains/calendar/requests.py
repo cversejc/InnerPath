@@ -70,7 +70,7 @@ async def create_calendar_request(
     if data.start_date > data.end_date:
         raise ValueError("invalid_calendar_range")
     if (data.end_date - data.start_date).days != 29:
-        raise ValueError("calendar_request_requires_30_days")
+        raise ValueError("calendar_request_must_cover_30_days")
     if not data.focus_topics:
         raise ValueError("calendar_request_requires_focus_topics")
     if not data.usage_scenario:
@@ -80,7 +80,7 @@ async def create_calendar_request(
     if not data.expected_outcomes:
         raise ValueError("calendar_request_requires_expected_outcomes")
     if data.source_report_id is None:
-        raise ValueError("calendar_request_requires_source_report")
+        raise ValueError("calendar_request_source_report_required")
     source_report = await get_delivered_source_report(db, user.id, data.source_report_id)
     if source_report is None:
         raise ValueError("calendar_request_source_report_not_delivered")
@@ -168,7 +168,7 @@ async def create_calendar_request(
         decision_description=(data.decision_description or "").strip() or None,
         expected_outcomes=data.expected_outcomes,
         additional_info=(data.additional_info or "").strip() or None,
-        status="generating",
+        status="processing",
         task_id=str(uuid4()),
         progress=0,
         input_snapshot=snapshot,

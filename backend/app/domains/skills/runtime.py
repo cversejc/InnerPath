@@ -31,8 +31,10 @@ from app.domains.skills.analysis_sop import display_topic_title
 from .definitions import (
     GLOBAL_POLICY,
     GLOBAL_POLICY_VERSION,
+    compile_reasoning_guidance_specification,
     validate_skill_specification,
 )
+from .lifecycle import require_active_skill
 
 
 @dataclass(frozen=True)
@@ -895,7 +897,12 @@ async def execute_skill(
     runtime_instruction: str | None = None,
     gateway: ModelGateway | None = None,
 ) -> SkillExecutionResult:
-    specification = validate_skill_specification(skill_version.specification_json)
+    require_active_skill(skill_version.skill_key)
+    specification = validate_skill_specification(
+        compile_reasoning_guidance_specification(
+            validate_skill_specification(skill_version.specification_json)
+        )
+    )
     context = build_context_envelope(input_data, specification)
     feedback_rerun = (input_data.get("context") or {}).get("feedback_rerun")
     if isinstance(feedback_rerun, dict):
@@ -933,7 +940,12 @@ async def execute_skill(
         raise ValueError("skill_input_contract_missing_fields")
     foundation = context.get("foundation_data")
     if processor == "calendar.production":
-        system_prompt = GLOBAL_POLICY + "\n" + json.dumps(specification["instructions"], ensure_ascii=False) + "\n输出契约：" + json.dumps(specification["output_contract"], ensure_ascii=False)
+        identity = specification["identity"]
+        system_prompt = (
+            GLOBAL_POLICY + f"\n【当前技能】{identity['skill_key']} · {identity['name']}\n"
+            + json.dumps(specification["instructions"], ensure_ascii=False)
+            + "\n输出契约：" + json.dumps(specification["output_contract"], ensure_ascii=False)
+        )
         user_prompt = json.dumps(context, ensure_ascii=False)
         if runtime_instruction:
             system_prompt += "\n" + runtime_instruction

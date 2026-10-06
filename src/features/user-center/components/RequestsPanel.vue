@@ -3,7 +3,7 @@
     <div class="requests-section-heading">
       <div>
         <h3 class="section-title">我的申请</h3>
-        <p>人生说明书由咨询师审阅；决策日历可基于已交付报告直接生成并交付</p>
+        <p>报告由咨询师处理并交付；获得报告后，可基于报告自动生成并开放日历。</p>
       </div>
       <router-link class="btn-action" to="/pages/requests/requests">查看全部</router-link>
     </div>
@@ -12,7 +12,7 @@
       <p>还没有申请记录</p>
       <div class="request-quick-actions">
         <router-link class="btn-action" to="/pages/assessment/assessment">申请报告</router-link>
-        <router-link class="btn-action secondary" to="/pages/user/user?tab=reports">查看已交付报告</router-link>
+        <router-link class="btn-action secondary" to="/pages/assessment/assessment">先申请报告</router-link>
       </div>
     </div>
     <div v-else class="center-request-list">

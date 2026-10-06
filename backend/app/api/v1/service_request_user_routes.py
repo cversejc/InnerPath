@@ -67,11 +67,16 @@ async def list_my_requests(
     if service_type in {None, "calendar"}:
         calendar_query = select(CalendarRequest).where(CalendarRequest.user_id == current_user.id)
         if request_status:
-            calendar_status = {"ai_processing": "processing", "processing": "processing"}.get(request_status, request_status)
-            if calendar_status not in {"processing", "delivered", "failed"}:
+            calendar_statuses = {
+                "ai_processing": {"queued", "generating", "processing"},
+                "processing": {"queued", "generating", "processing"},
+                "delivered": {"fulfilled", "delivered"},
+                "failed": {"failed"},
+            }.get(request_status)
+            if not calendar_statuses:
                 calendar_query = None
             else:
-                calendar_query = calendar_query.where(CalendarRequest.status == calendar_status)
+                calendar_query = calendar_query.where(CalendarRequest.status.in_(calendar_statuses))
         if calendar_query is not None:
             calendar_result = await db.execute(
                 calendar_query.order_by(CalendarRequest.created_at.desc())

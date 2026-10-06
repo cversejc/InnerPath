@@ -4,6 +4,7 @@ import {
   createAdminCalendar,
   createAdminCalendarDraft,
   getAdminCalendars,
+  getAdminCalendarRequests,
   importAdminCalendar,
   publishAdminCalendar,
   updateAdminCalendar

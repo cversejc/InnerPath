@@ -50,11 +50,11 @@ from app.domains.skills.evaluation import (
     specification_digest,
 )
 from app.domains.skills.models import AISkillVersion, SkillExample, SkillRun
+from app.domains.skills.lifecycle import RETIRED_SKILL_KEYS
 from app.domains.skills.service import (
     create_skill_draft,
     create_skill_run,
     ensure_default_narrative_skill_versions,
-    ensure_default_skill_version,
     ensure_default_validator_skill_version,
 )
 from app.domains.workflow.models import ReportCase, StepTask
@@ -223,14 +223,6 @@ REQUIRED_REPORT_SECTIONS = [
 ]
 
 SKILL_EXAMPLE_CONTENT = {
-    "report.generate": {
-        "fragment": "report.challenge",
-        "case_key": "node-s2",
-        "input": {"context": {"current_challenge": "比较稳定岗位与新方向"}},
-        "expected": {"summary": "用短周期实验降低方向选择成本。"},
-        "teaching": ["区分用户事实与分析判断", "每项建议写出可执行动作"],
-        "anti": ["把一次犹豫写成固定人格结论"],
-    },
     "report.narrative_plan": {
         "fragment": "report.identity",
         "case_key": "node-s5",
@@ -884,7 +876,6 @@ async def seed() -> None:
         admin = await _required_staff(db, ADMIN_PHONE, "admin")
         consultant = await _required_staff(db, CONSULTANT_PHONE, "consultant")
         await ensure_default_workflow_version(db)
-        await ensure_default_skill_version(db)
         await ensure_default_narrative_skill_versions(db)
         await ensure_default_validator_skill_version(db)
 
@@ -948,7 +939,8 @@ async def seed() -> None:
             (
                 await db.scalars(
                     select(AISkillVersion)
-                    .where(AISkillVersion.status.in_({"PUBLISHED", "DRAFT"}))
+                    .where(AISkillVersion.status.in_({"PUBLISHED", "DRAFT"}),
+                           AISkillVersion.skill_key.notin_(RETIRED_SKILL_KEYS))
                     .order_by(AISkillVersion.skill_key, AISkillVersion.version.desc())
                 )
             ).all()
@@ -957,7 +949,6 @@ async def seed() -> None:
         for version in versions:
             skill_versions.setdefault(version.skill_key, version)
         required_skills = {
-            "report.generate",
             "report.narrative_plan",
             "report.fragment_authoring",
             "report.final_validator",
@@ -985,20 +976,6 @@ async def seed() -> None:
             seed_runs.append(run)
             source_runs.setdefault(version.skill_key, run)
 
-        if "report.generate" in skill_versions:
-            failed = await _ensure_run(
-                db,
-                version=skill_versions["report.generate"],
-                idempotency_key="innerpath-demo-studio-run:report-generate-failed-v1",
-                output={"error_code": "OUTPUT_SCHEMA_MISMATCH", "demo_fixture": True},
-                input_snapshot={"context": {"demo_fixture": True}},
-                context_snapshot={"demo_fixture": True, "run_label": "可查看的失败诊断示例"},
-                target_type="DEBUG",
-                target_key="demo.schema-mismatch",
-                error="DEMO_SIMULATED_SCHEMA_MISMATCH: 静态样例缺少必需字段。",
-            )
-            seed_runs.append(failed)
-
         case_source_runs: dict[str, SkillRun] = {}
         for scenario in REPORT_SCENARIOS:
             key = scenario["key"]
@@ -1011,21 +988,6 @@ async def seed() -> None:
             )
             if stage >= 5:
                 await _ensure_analysis_fragment(db, case, tasks, evidence_key, consultant.id)
-
-            if key == "node-s2":
-                run = await _ensure_case_run(
-                    db,
-                    scenario=scenario,
-                    case=case,
-                    task=next(task for task in tasks if task.step_key == "S1"),
-                    version=skill_versions["report.generate"],
-                    target_type="REPORT_ANALYSIS",
-                    target_key="foundation.summary",
-                    output=_skill_output("report.generate"),
-                    context_snapshot={"seed_stage": "S1"},
-                )
-                seed_runs.append(run)
-                case_source_runs.setdefault("report.generate", run)
 
             if stage >= 5:
                 plan = await _ensure_narrative_plan(
@@ -1136,7 +1098,6 @@ async def seed() -> None:
             await db.commit()
 
         example_case_keys = {
-            "report.generate": "node-s2",
             "report.narrative_plan": "node-s5",
             "report.fragment_authoring": "node-s5",
             "report.final_validator": "node-s6-ready",

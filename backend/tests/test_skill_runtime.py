@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 import json
 from types import SimpleNamespace
@@ -8,13 +9,24 @@ from fastapi import HTTPException
 from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
+from app.api.v1.skills import _skill_version_response
 from app.db.base import Base
 from app.domains.skills.definitions import (
     DEFAULT_SKILL_KEY,
+    S2_PSYCHOLOGY_SKILL_KEY,
+    S3_INTEGRATION_SKILL_KEY,
+    S4_MECHANISM_SKILL_KEY,
+    NARRATIVE_PLAN_SKILL_KEY,
+    FRAGMENT_AUTHORING_SKILL_KEY,
+    FINAL_VALIDATOR_SKILL_KEY,
+    compile_s1_runtime_specification,
+    compile_reasoning_guidance_specification,
     default_analysis_skill_specifications,
     default_narrative_skill_specifications,
     default_skill_specification,
     default_validator_skill_specification,
+    reasoning_guidance_for_skill,
+    s1_reasoning_guidance,
     validate_skill_specification,
 )
 from app.domains.skills.models import AISkillVersion, SkillExample, SkillRun
@@ -34,9 +46,13 @@ from app.domains.skills.runtime import (
 from app.domains.skills.service import (
     create_skill_run,
     create_skill_draft,
+    ensure_default_analysis_skill_versions,
+    ensure_default_narrative_skill_versions,
     ensure_default_skill_version,
     ensure_default_validator_skill_version,
     publish_skill_version,
+    update_reasoning_guidance,
+    update_s1_reasoning_guidance,
     update_skill_draft,
 )
 from app.domains.skills.examples import (
@@ -197,13 +213,769 @@ def _profile():
     }
 
 
-def _report_text(extra=""):
-    return (
-        "## 一、我是谁\n能量类型：稳定探索型\n核心特质：认真\n\n"
-        "## 二、我卡在哪\n正在梳理选择。\n\n"
-        "## 三、我往哪去\n下周可以先完成一个小实验。\n\n"
-        "## 五、总结与寄语\n你可以保留自己的节奏。\n" + extra
+def _analysis_skill_input(step_key="S1"):
+    return {
+        "profile": _profile(),
+        "context": {
+            "focus_topics": ["career"],
+            "current_challenge": "考虑转型",
+            "expected_outcomes": ["方向指引"],
+        },
+        "analysis_context": {
+            "step_key": step_key,
+            "evidence": [],
+            "upstream_confirmed_findings": [],
+        },
+    }
+
+
+def _analysis_text(summary="候选摘要。"):
+    return json.dumps(
+        {
+            "summary": summary,
+            "findings": [],
+            "analysis_fragments": [],
+            "risk_flags": [],
+        },
+        ensure_ascii=False,
     )
+
+
+def _s1_skill_version(identity=41):
+    specification = default_analysis_skill_specifications()[0]
+    return SimpleNamespace(
+        id=identity,
+        skill_key=specification["identity"]["skill_key"],
+        name=specification["identity"]["name"],
+        category="ANALYSIS",
+        version=1,
+        status="PUBLISHED",
+        specification_json=specification,
+    )
+
+
+def test_s1_legacy_instructions_project_as_guidance_and_compile_to_same_runtime():
+    current = default_analysis_skill_specifications()[0]
+    guidance = deepcopy(current["reasoning_guidance"])
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = guidance["objective"]
+    legacy["instructions"]["methodology"] = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    exposed_guidance = s1_reasoning_guidance(
+        current["identity"]["skill_key"], legacy
+    )
+    legacy_runtime = compile_s1_runtime_specification(legacy)
+    current_runtime = compile_s1_runtime_specification(current)
+
+    assert exposed_guidance == guidance
+    assert not set(current["runtime_contract"]["system_requirements"]) & set(
+        exposed_guidance["methodology"]
+    )
+    assert legacy_runtime == current_runtime
+    assert "reasoning_guidance" not in legacy_runtime
+    assert "runtime_contract" not in legacy_runtime
+
+
+def test_s1_guidance_covers_all_fourteen_step_one_framework_topics():
+    guidance = default_analysis_skill_specifications()[0]["reasoning_guidance"]
+    method_text = "\n".join(guidance["methodology"])
+    assert all(topic in method_text for topic in (
+        "日主定性", "格局判定", "月令分析", "十神分析", "日支", "时支", "年柱",
+        "刑冲合害分析", "大运分析", "用神与喜忌", "命宫", "身宫", "福德宫", "四化飞化",
+    ))
+
+    assert all("analysis.s1." not in item for item in guidance["methodology"])
+
+
+def test_s2_guidance_covers_framework_thought_without_exposing_contract_fields():
+    specification = default_analysis_skill_specifications()[1]
+    guidance = specification["reasoning_guidance"]
+
+    assert specification["identity"]["skill_key"] == S2_PSYCHOLOGY_SKILL_KEY
+    assert len(guidance["methodology"]) >= 30
+    assert any("命理为表" in item for item in guidance["methodology"])
+    assert all(
+        phrase in "\n".join(guidance["methodology"])
+        for phrase in (
+            "命理为表", "心理为里", "意识层", "潜意识", "十神", "荣格",
+            "紫微", "星曜", "人格面具", "阴影", "情结", "激活路径",
+            "权威内化", "超我", "正印", "破军",
+        )
+    )
+    assert all(
+        topic["fragment_key"] not in "\n".join(guidance["methodology"])
+        for topic in specification["instructions"]["sop_contract"]["topics"]
+    )
+
+
+def test_s2_legacy_instructions_project_as_guidance_and_compile_to_same_runtime():
+    current = default_analysis_skill_specifications()[1]
+    guidance = deepcopy(current["reasoning_guidance"])
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = guidance["objective"]
+    legacy["instructions"]["methodology"] = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy["instructions"]["system_requirements"] = ["旧版固定运行要求"]
+    legacy["instructions"]["methodology"].append("旧版固定运行要求")
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    exposed_guidance = reasoning_guidance_for_skill(
+        current["identity"]["skill_key"], legacy
+    )
+
+    assert exposed_guidance == guidance
+    expected_runtime = compile_reasoning_guidance_specification(current)
+    expected_runtime["instructions"]["methodology"].append("旧版固定运行要求")
+    assert compile_reasoning_guidance_specification(legacy) == expected_runtime
+
+
+def test_s3_guidance_covers_framework_integration_without_contract_fields():
+    specification = default_analysis_skill_specifications()[2]
+    guidance = specification["reasoning_guidance"]
+    method_text = "\n".join(guidance["methodology"])
+
+    assert specification["identity"]["skill_key"] == S3_INTEGRATION_SKILL_KEY
+    assert len(guidance["methodology"]) >= 20
+    assert all(
+        phrase in method_text
+        for phrase in (
+            "自性化", "英雄", "原型", "四象限", "大运周期", "喜用神大运",
+            "易经时序", "金花", "道德经", "了凡四训", "命理", "心理",
+            "哲学", "多系统冲突",
+        )
+    )
+    assert all(
+        topic["fragment_key"] not in method_text
+        for topic in specification["instructions"]["sop_contract"]["topics"]
+    )
+
+
+def test_s3_legacy_instructions_project_as_guidance_and_compile_to_same_runtime():
+    current = default_analysis_skill_specifications()[2]
+    guidance = deepcopy(current["reasoning_guidance"])
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = guidance["objective"]
+    legacy["instructions"]["methodology"] = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    assert reasoning_guidance_for_skill(
+        current["identity"]["skill_key"], legacy
+    ) == guidance
+    assert compile_reasoning_guidance_specification(legacy) == (
+        compile_reasoning_guidance_specification(current)
+    )
+
+
+@pytest.mark.asyncio
+async def test_s1_reasoning_guidance_draft_publishes_and_compiles_for_runtime(skill_db):
+    versions = await ensure_default_analysis_skill_versions(skill_db)
+    published = versions[0]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+
+    updated = await update_s1_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective="从命理基础资料提出可复核的结构线索。",
+        methodology=guidance["methodology"],
+    )
+    runtime_before_publish = compile_s1_runtime_specification(
+        updated.specification_json
+    )
+    result = await publish_skill_version(skill_db, updated.id, published_by=17)
+    runtime_after_publish = compile_s1_runtime_specification(
+        result.specification_json
+    )
+
+    assert result.status == "PUBLISHED"
+    assert result.specification_json["reasoning_guidance"]["objective"] == (
+        "从命理基础资料提出可复核的结构线索。"
+    )
+    assert "objective" not in result.specification_json["instructions"]
+    assert runtime_before_publish == runtime_after_publish
+    assert runtime_after_publish["instructions"]["objective"] == (
+        "从命理基础资料提出可复核的结构线索。"
+    )
+
+
+@pytest.mark.asyncio
+async def test_s1_skill_api_returns_guidance_without_technical_specification(skill_db):
+    published = (await ensure_default_analysis_skill_versions(skill_db))[0]
+    response = _skill_version_response(published)
+
+    assert response.reasoning_guidance.model_dump() == published.specification_json[
+        "reasoning_guidance"
+    ]
+    assert response.specification_json is None
+
+
+@pytest.mark.asyncio
+async def test_s2_reasoning_guidance_draft_preserves_contract_and_compiles(skill_db):
+    published = (await ensure_default_analysis_skill_versions(skill_db))[1]
+    current_guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    objective = "依据用户经历检验心理映射假设，并明确保留不确定性。"
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=objective,
+        methodology=current_guidance["methodology"],
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+    response = _skill_version_response(updated)
+
+    assert updated.status == "DRAFT"
+    assert updated.specification_json["reasoning_guidance"]["objective"] == objective
+    assert "objective" not in updated.specification_json["instructions"]
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert runtime["instructions"]["objective"] == objective
+    assert "双层结构" in "\n".join(runtime["instructions"]["methodology"])
+    assert len(runtime["instructions"]["sop_contract"]["topics"]) == 8
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["output_contract"]["properties"]["summary"]["type"] = "number"
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            draft.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
+
+
+@pytest.mark.asyncio
+async def test_s3_reasoning_guidance_draft_preserves_contract_and_compiles(skill_db):
+    published = (await ensure_default_analysis_skill_versions(skill_db))[2]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    objective = "整合已确认的命理、心理与现实经验，保留多种可能。"
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=objective,
+        methodology=guidance["methodology"],
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+    response = _skill_version_response(updated)
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert runtime["instructions"]["objective"] == objective
+    runtime_methodology = "\n".join(runtime["instructions"]["methodology"])
+    assert "英雄" in runtime_methodology
+    assert "原型" in runtime_methodology
+    assert "四象限" in runtime_methodology
+    assert len(runtime["instructions"]["sop_contract"]["topics"]) == 6
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+
+
+def test_s4_guidance_covers_framework_thought_without_exposing_contract_fields():
+    specification = default_analysis_skill_specifications()[3]
+    guidance = specification["reasoning_guidance"]
+    method_text = "\n".join(guidance["methodology"])
+
+    assert specification["identity"]["skill_key"] == S4_MECHANISM_SKILL_KEY
+    assert len(guidance["methodology"]) >= 20
+    assert all(
+        phrase in method_text
+        for phrase in (
+            "防御机制", "保护", "能量管理", "阴影整合练习", "情结松动", "人生时序",
+            "自性", "卡点", "共性模式", "MBTI", "关系循环", "成长实验",
+        )
+    )
+    assert all(
+        topic["fragment_key"] not in method_text
+        for topic in specification["instructions"]["sop_contract"]["topics"]
+    )
+    assert not any(
+        technical_name in method_text
+        for technical_name in (
+            "structured_data", "semantic_role", "block_refs", "evidence_refs",
+            "analysis.s4.", "analysis_fragments",
+        )
+    )
+
+
+def test_s4_legacy_instructions_project_as_guidance_and_compile_to_same_runtime():
+    current = default_analysis_skill_specifications()[3]
+    guidance = deepcopy(current["reasoning_guidance"])
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = guidance["objective"]
+    legacy["instructions"]["methodology"] = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    assert reasoning_guidance_for_skill(
+        current["identity"]["skill_key"], legacy
+    ) == guidance
+    assert compile_reasoning_guidance_specification(legacy) == (
+        compile_reasoning_guidance_specification(current)
+    )
+
+
+@pytest.mark.asyncio
+async def test_s4_reasoning_guidance_draft_preserves_contract_and_compiles(skill_db):
+    published = (await ensure_default_analysis_skill_versions(skill_db))[3]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    objective = "围绕真实处境理解卡点，并寻找用户可以选择的低风险尝试。"
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=objective,
+        methodology=guidance["methodology"],
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+    response = _skill_version_response(updated)
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert runtime["instructions"]["objective"] == objective
+    assert "卡点" in "\n".join(runtime["instructions"]["methodology"])
+    assert len(runtime["instructions"]["sop_contract"]["topics"]) == 10
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+    assert any(
+        "reasoning_path" in item
+        for item in runtime["instructions"]["methodology"]
+    )
+
+
+def test_narrative_plan_guidance_covers_framework_without_technical_fields():
+    specification = default_narrative_skill_specifications()[0]
+    guidance = specification["reasoning_guidance"]
+    method_text = "\n".join(guidance["methodology"])
+
+    assert specification["identity"]["skill_key"] == NARRATIVE_PLAN_SKILL_KEY
+    assert len(guidance["methodology"]) >= 25
+    assert all(
+        phrase in method_text
+        for phrase in ("核心线索", "过去保护了什么", "你是谁", "卡在哪", "往哪去", "新的脉络")
+    )
+    assert not any(
+        technical_name in method_text
+        for technical_name in (
+            "semantic_model", "finding_key", "priority_blocks", "supporting_findings",
+            "deemphasized_findings", "reports.narrative_candidates",
+        )
+    )
+    assert any(
+        "finding_key" in item
+        for item in specification["runtime_contract"]["system_requirements"]
+    )
+
+
+def test_narrative_plan_legacy_instructions_project_as_guidance_and_compile_same_runtime():
+    current = default_narrative_skill_specifications()[0]
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = "提出 2 到 3 个彼此有差异、由确认 Finding 支持的报告叙事候选。"
+    legacy["instructions"]["methodology"] = [
+        "只选择 semantic_model.findings 中的 finding_key，不重新分析用户。",
+        "supporting_findings、deemphasized_findings 和 priority_blocks[].finding_refs 都必须逐字复制当前输入的 finding_key，不引用样例、分析片段编号或自行缩写。",
+        "不得创建事实、Finding、置信度或覆盖人工确认。",
+        "明确列出支持和弱化的 Finding，缺少依据时降低表达强度。",
+        "输出严格 JSON，不附加 Markdown 或解释文字。",
+        "总叙事：心灵结构→认识自己→隐藏部分→卡点→保护功能→共性模式→整合能力→人生方向→成长实验。",
+        "保持你是谁/卡在哪/往哪去三章分工，候选主线和标题必须围绕用户独特矛盾，避免固定模板。",
+        "按S4已审核卡点选择优先4–5项（证据不足可3项），不得为了数量发明卡点。",
+    ]
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    guidance = reasoning_guidance_for_skill(NARRATIVE_PLAN_SKILL_KEY, legacy)
+    runtime = compile_reasoning_guidance_specification(legacy)
+
+    assert "Finding" not in guidance["objective"]
+    assert "Finding" not in "\n".join(guidance["methodology"])
+    assert "finding_key" not in "\n".join(guidance["methodology"])
+    assert "semantic_model" not in "\n".join(guidance["methodology"])
+    assert any("过去保护了什么" in item for item in current["reasoning_guidance"]["methodology"])
+    assert all(
+        item in runtime["instructions"]["methodology"]
+        for item in legacy["instructions"]["methodology"]
+    )
+
+
+def test_fragment_authoring_guidance_is_human_facing_and_legacy_contract_is_preserved():
+    current = default_narrative_skill_specifications()[1]
+    guidance = current["reasoning_guidance"]
+    guidance_text = "\n".join([guidance["objective"], *guidance["methodology"]])
+
+    assert current["identity"]["skill_key"] == FRAGMENT_AUTHORING_SKILL_KEY
+    assert len(guidance["methodology"]) >= 30
+    assert all(
+        phrase in guidance_text
+        for phrase in ("已审核", "用户问卷", "照见", "描述", "潜意识", "mbti")
+    )
+    assert not any(
+        technical_name in guidance_text
+        for technical_name in (
+            "NarrativePlan", "fragment_allocation", "finding_refs", "action_refs",
+            "must_cover", "must_not_repeat", "continuity", "Case",
+            "MISSING_SEMANTIC_SUPPORT", "used_findings", "used_analysis_fragments",
+            "requirement_coverage", "required_finding_refs", "reasoning_path",
+            "INTERNAL_ONLY", "quote_library", "report.direction", "Finding",
+        )
+    )
+
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = (
+        "仅根据确认语义与已确认 NarrativePlan 写作一个完整、可审校的报告小节。"
+    )
+    legacy_methods = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+    ]
+    legacy["instructions"]["methodology"] = legacy_methods
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    exposed = reasoning_guidance_for_skill(FRAGMENT_AUTHORING_SKILL_KEY, legacy)
+    runtime = compile_reasoning_guidance_specification(legacy)
+    exposed_text = "\n".join([exposed["objective"], *exposed["methodology"]])
+
+    assert "NarrativePlan" not in exposed_text
+    assert not any(
+        technical_name in exposed_text
+        for technical_name in (
+            "fragment_allocation", "finding_refs", "action_refs", "used_findings",
+            "requirement_coverage", "reasoning_path", "quote_library", "report.direction",
+        )
+    )
+    assert all(item in runtime["instructions"]["methodology"] for item in legacy_methods)
+    assert runtime["instructions"]["objective"] == legacy["instructions"]["objective"]
+
+
+@pytest.mark.asyncio
+async def test_fragment_authoring_reasoning_draft_preserves_contract_and_runs_in_generator(skill_db):
+    published = (await ensure_default_narrative_skill_versions(skill_db))[1]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=guidance["objective"],
+        methodology=guidance["methodology"],
+    )
+    response = _skill_version_response(updated)
+    output = {
+        "status": "READY_FOR_REVIEW",
+        "title": "留一点回应的空间",
+        "content": "你提到，面对请求时有时会很快答应。",
+        "used_findings": ["finding.response"],
+        "used_analysis_fragments": [],
+        "used_actions": [],
+        "transition_hint": "",
+        "presentation_meta": {},
+    }
+    gateway = StubGateway(json.dumps(output, ensure_ascii=False))
+    result = await execute_skill(
+        skill_version=updated,
+        input_data={
+            "profile": {},
+            "context": {
+                "semantic_model": {
+                    "findings": [
+                        {"finding_key": "finding.response", "claim": "用户说自己有时很快答应请求。"}
+                    ],
+                    "analysis_fragments": [],
+                },
+                "narrative_plan": {"core_theme": "在回应请求前留出自己的空间"},
+                "fragment_request": {"fragment_key": "report.overview", "purpose": "呈现本案主线"},
+                "fragment_allocation": {
+                    "finding_refs": ["finding.response"],
+                    "analysis_refs": [],
+                    "action_refs": [],
+                    "requirements": [],
+                    "must_cover": [],
+                    "must_not_repeat": [],
+                    "new_information_role": "OVERVIEW",
+                },
+                "continuity": {},
+            },
+        },
+        gateway=gateway,
+    )
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert result.output_parsed["status"] == "READY_FOR_REVIEW"
+    assert result.output_parsed["used_findings"] == ["finding.response"]
+    assert result.model_trace["processor"] == "reports.fragment_authoring"
+    assert "【机器可读输出契约】" in gateway.last_request[0]
+    assert "NarrativePlan" not in response.reasoning_guidance.model_dump_json()
+
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["output_contract"]["properties"]["title"]["type"] = "array"
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            draft.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
+
+
+def test_validator_guidance_is_human_facing_and_legacy_contract_is_preserved():
+    current = default_validator_skill_specification()
+    guidance = current["reasoning_guidance"]
+    guidance_text = "\n".join([guidance["objective"], *guidance["methodology"]])
+
+    assert current["identity"]["skill_key"] == FINAL_VALIDATOR_SKILL_KEY
+    assert len(guidance["methodology"]) >= 10
+    assert all(
+        phrase in guidance_text
+        for phrase in ("案例事实忠实度", "个性化程度", "心理逻辑", "行动价值", "是否编造", "重复3次以上")
+    )
+    assert not any(
+        technical_name in guidance_text
+        for technical_name in (
+            "qa_input", "validation_scope", "chapter_key", "Finding", "fragment_key",
+            "issue_type", "severity", "target_fragment_key", "framework_contract",
+            "framework_review", "requirement_id", "follow_up_questions", "reasoning_contract",
+            "reasoning_path", "INTERNAL_ONLY", "scorecard_required", "scorecard.dimensions",
+            "VERIFIED", "report_fragments", "confirmed_semantics", "application_context",
+            "Evidence", "transition_hint", "fragment_keys", "strict JSON",
+        )
+    )
+
+    legacy = deepcopy(current)
+    legacy["instructions"]["objective"] = (
+        "检查报告内容是否忠实于已确认的 Finding 和用户提供情境，并评估安全、跨章节一致性、叙事质量、行动质量和个性化。"
+    )
+    legacy_methods = [
+        *guidance["methodology"],
+        *legacy["runtime_contract"]["system_requirements"],
+        "只报告有明确片段和证据的可修复问题，不重写报告。",
+        "不得根据命理或心理内容作诊断或确定性预测。",
+    ]
+    legacy["instructions"]["methodology"] = legacy_methods
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+
+    exposed = reasoning_guidance_for_skill(FINAL_VALIDATOR_SKILL_KEY, legacy)
+    runtime = compile_reasoning_guidance_specification(legacy)
+    exposed_text = "\n".join([exposed["objective"], *exposed["methodology"]])
+
+    assert "Finding" not in exposed_text
+    assert "qa_input" not in exposed_text
+    assert all(item in runtime["instructions"]["methodology"] for item in legacy_methods)
+    assert "issue_type" in "\n".join(runtime["instructions"]["methodology"])
+    assert runtime["instructions"]["objective"] == legacy["instructions"]["objective"]
+
+
+@pytest.mark.asyncio
+async def test_validator_reasoning_draft_preserves_contract_and_runs_in_generator(skill_db):
+    published = await ensure_default_validator_skill_version(skill_db)
+    guidance = default_validator_skill_specification()["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=guidance["objective"],
+        methodology=guidance["methodology"],
+    )
+    response = _skill_version_response(updated)
+    gateway = StubGateway(json.dumps({"issues": []}, ensure_ascii=False))
+    result = await execute_skill(
+        skill_version=updated,
+        input_data={"profile": {}, "context": {"qa_input": {"validation_scope": "full"}}},
+        gateway=gateway,
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert result.output_parsed == {"issues": []}
+    assert result.model_trace["processor"] == "reports.validator"
+    assert runtime["instructions"]["scoring_rubric"] == updated.specification_json[
+        "instructions"
+    ]["scoring_rubric"]
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+    assert "【机器可读输出契约】" in gateway.last_request[0]
+    assert "scorecard_required" not in response.reasoning_guidance.model_dump_json()
+
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["output_contract"]["required"] = ["scorecard"]
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            draft.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
+
+
+@pytest.mark.asyncio
+async def test_narrative_plan_reasoning_guidance_draft_preserves_contract_and_hides_spec(skill_db):
+    published = (await ensure_default_narrative_skill_versions(skill_db))[0]
+    guidance = published.specification_json["reasoning_guidance"]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=published.skill_key,
+        name=published.name,
+        category=published.category,
+        specification=published.specification_json,
+        created_by=17,
+    )
+    objective = "依据已确认判断搭建贴合本案的叙事方向，供咨询师选择。"
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective=objective,
+        methodology=guidance["methodology"],
+    )
+    runtime = compile_reasoning_guidance_specification(updated.specification_json)
+    response = _skill_version_response(updated)
+
+    assert updated.status == "DRAFT"
+    assert response.specification_json is None
+    assert response.reasoning_guidance.model_dump() == updated.specification_json[
+        "reasoning_guidance"
+    ]
+    assert runtime["instructions"]["objective"] == objective
+    assert "核心线索" in "\n".join(runtime["instructions"]["methodology"])
+    assert runtime["processor_policy"]["processor"] == "reports.narrative_candidates"
+    assert runtime["output_contract"] == published.specification_json["output_contract"]
+
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["output_contract"]["properties"]["candidates"]["type"] = "string"
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            draft.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
+
+
+@pytest.mark.asyncio
+async def test_narrative_plan_runtime_compiles_guidance_and_candidate_contract():
+    specification = default_narrative_skill_specifications()[0]
+    skill = SimpleNamespace(
+        id=75,
+        skill_key=NARRATIVE_PLAN_SKILL_KEY,
+        version=1,
+        specification_json=specification,
+    )
+    findings = [
+        {"finding_key": "finding.boundary", "claim": "用户希望保持关系，同时拥有拒绝空间。"},
+        {"finding_key": "finding.energy", "claim": "用户重视稳定节奏。"},
+        {"finding_key": "finding.block", "claim": "用户在请求面前有时快速答应。"},
+    ]
+    candidates = [
+        {
+            "candidate_key": "thread-boundary",
+            "theme": "让关心有边界，也保留自己的节奏",
+            "rationale": "从关系需要与自主空间之间的张力组织报告。",
+            "supporting_findings": ["finding.boundary", "finding.block"],
+            "deemphasized_findings": ["finding.energy"],
+            "priority_blocks": [
+                {"title": "在回应请求前留一点空间", "finding_refs": ["finding.block"]}
+            ],
+            "narrative_arc": ["认识自己的连接方式", "理解快速答应的保护", "尝试更有节奏的回应"],
+        },
+        {
+            "candidate_key": "thread-rhythm",
+            "theme": "在稳定的日常里找到自己的方向",
+            "rationale": "从稳定需要与探索意愿的并存出发安排叙事。",
+            "supporting_findings": ["finding.energy", "finding.boundary"],
+            "deemphasized_findings": ["finding.block"],
+            "priority_blocks": [],
+            "narrative_arc": ["看见自己的节奏", "理解关系中的拉扯", "安排小范围尝试"],
+        },
+    ]
+    gateway = StubGateway(json.dumps({"candidates": candidates}, ensure_ascii=False))
+
+    result = await execute_skill(
+        skill_version=skill,
+        input_data={
+            "profile": {},
+            "context": {"semantic_model": {"findings": findings}},
+        },
+        gateway=gateway,
+    )
+
+    assert len(result.output_parsed["candidates"]) == 2
+    assert "核心线索" in gateway.last_request[0]
+    assert "finding_key" in gateway.last_request[0]
+    assert '"candidate_key"' in gateway.last_request[0]
 
 
 @pytest.mark.asyncio
@@ -274,6 +1046,9 @@ async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
     assert "【机器可读输出契约】" in gateway.last_request[0]
     assert '"analysis_fragments"' in gateway.last_request[0]
     assert '"relation_refs"' in gateway.last_request[0]
+    assert "双层结构" in gateway.last_request[0]
+    assert "激活路径" in gateway.last_request[0]
+    assert "analysis.s2.mapping" in gateway.last_request[0]
     assert '"evidence_keys": ["input.context.current_challenge"]' in gateway.last_request[0]
     assert '"confirmed_finding_keys": ["foundation.balance"]' in gateway.last_request[0]
 
@@ -284,6 +1059,175 @@ async def test_analysis_skill_accepts_only_stage_matched_evidence_references():
             input_data=context,
             gateway=StubGateway(json.dumps(output, ensure_ascii=False)),
         )
+
+
+@pytest.mark.asyncio
+async def test_s3_runtime_prompt_compiles_reasoning_and_fixed_framework_topics():
+    specification = default_analysis_skill_specifications()[2]
+    skill = SimpleNamespace(
+        id=73,
+        skill_key=specification["identity"]["skill_key"],
+        version=1,
+        specification_json=specification,
+    )
+    output = {
+        "summary": "围绕稳定与探索的张力，提出可继续核对的整合方向。",
+        "findings": [
+            {
+                "finding_key": "s3.integration.stability-exploration",
+                "claim": "用户可能希望在保持稳定的同时，为探索留下空间。",
+                "kind": "FINDING",
+                "semantic_role": "CENTRAL_TENSION",
+                "confidence": "MEDIUM",
+                "importance": "HIGH",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": ["input.context.current_challenge"],
+                "relation_refs": [
+                    {"finding_key": "foundation.balance", "relation": "INTEGRATES"},
+                    {"finding_key": "s2.psychology.autonomy", "relation": "INTEGRATES"},
+                ],
+                "structured_data": {},
+            }
+        ],
+        "analysis_fragments": [
+            {
+                "fragment_key": "analysis.s3.self",
+                "title": "整合方向候选",
+                "content": "可以尝试在可预期的节奏中安排小范围探索。",
+                "finding_refs": ["s3.integration.stability-exploration"],
+                "evidence_refs": ["input.context.current_challenge"],
+            }
+        ],
+        "risk_flags": [],
+    }
+    gateway = StubGateway(json.dumps(output, ensure_ascii=False))
+    result = await execute_skill(
+        skill_version=skill,
+        input_data={
+            "profile": {},
+            "context": {"current_challenge": "在稳定岗位与新方向间权衡"},
+            "analysis_context": {
+                "step_key": "S3",
+                "evidence": [
+                    {
+                        "evidence_key": "input.context.current_challenge",
+                        "source_type": "USER_PROVIDED",
+                    }
+                ],
+                "upstream_confirmed_findings": [
+                    {"finding_key": "foundation.balance", "claim": "重视稳定。"},
+                    {"finding_key": "s2.psychology.autonomy", "claim": "重视自主。"},
+                ],
+            },
+        },
+        gateway=gateway,
+    )
+
+    assert result.output_parsed["findings"][0]["finding_key"] == (
+        "s3.integration.stability-exploration"
+    )
+    assert "英雄四象限" in gateway.last_request[0]
+    assert "自性化" in gateway.last_request[0]
+    assert "analysis.s3.quadrant" in gateway.last_request[0]
+
+
+@pytest.mark.asyncio
+async def test_s4_runtime_prompt_compiles_reasoning_and_action_contract():
+    specification = default_analysis_skill_specifications()[3]
+    skill = SimpleNamespace(
+        id=74,
+        skill_key=specification["identity"]["skill_key"],
+        version=1,
+        specification_json=specification,
+    )
+    evidence_key = "input.context.current_challenge"
+    block_key = "s4.block.boundary"
+    findings = [
+        {
+            "finding_key": block_key,
+            "short_title": "边界卡点",
+            "claim": "用户描述自己有时未充分考虑安排就先答应请求。",
+            "kind": "FINDING",
+            "semantic_role": "BLOCK",
+            "confidence": "MEDIUM",
+            "importance": "HIGH",
+            "reportability": "RECOMMENDED",
+            "evidence_refs": [evidence_key],
+            "relation_refs": [],
+            "structured_data": {},
+        }
+    ]
+    for index in range(3):
+        findings.append(
+            {
+                "finding_key": f"s4.action.pause-{index}",
+                "short_title": "预留回应时间",
+                "claim": "在低风险请求中，先预留短暂思考时间再回应。",
+                "kind": "FINDING",
+                "semantic_role": "ACTION",
+                "confidence": "MEDIUM",
+                "importance": "MEDIUM",
+                "reportability": "RECOMMENDED",
+                "evidence_refs": [evidence_key],
+                "relation_refs": [],
+                "structured_data": {
+                    "block_refs": [block_key],
+                    "method": "低风险行为实验",
+                    "steps": ["收到请求时先说明稍后回复"],
+                    "frequency": "weekly",
+                    "duration_minutes": 5,
+                    "observation": "记录自己的感受和对方的实际回应",
+                    "stop_rule": "感到明显压力时暂停并改选更安全的情境",
+                },
+            }
+        )
+    fragments = [
+        {
+            "fragment_key": topic["fragment_key"],
+            "title": topic["title"],
+            "content": "根据用户当前描述提出待审核的理解方向，并保留补问。",
+            "finding_refs": [block_key],
+            "evidence_refs": [evidence_key],
+        }
+        for topic in specification["instructions"]["sop_contract"]["topics"]
+    ]
+    output = {
+        "summary": "基于用户当前描述整理待核对的模式与低风险练习。",
+        "findings": findings,
+        "analysis_fragments": fragments,
+        "risk_flags": [],
+    }
+    gateway = StubGateway(json.dumps(output, ensure_ascii=False))
+
+    result = await execute_skill(
+        skill_version=skill,
+        input_data={
+            "profile": {},
+            "context": {"current_challenge": "有时没想好就答应请求"},
+            "analysis_context": {
+                "step_key": "S4",
+                "sop_contract": specification["instructions"]["sop_contract"],
+                "evidence": [
+                    {"evidence_key": evidence_key, "source_type": "USER_PROVIDED"}
+                ],
+                "upstream_confirmed_findings": [],
+            },
+        },
+        gateway=gateway,
+    )
+
+    assert len(result.output_parsed["analysis_fragments"]) == 10
+    assert len(
+        [
+            item
+            for item in result.output_parsed["findings"]
+            if item["semantic_role"] == "ACTION"
+        ]
+    ) == 3
+    assert "过去保护了什么" in gateway.last_request[0]
+    assert "阴影整合练习" in gateway.last_request[0]
+    assert "analysis.s4.experiments" in gateway.last_request[0]
+    assert "reasoning_path" in gateway.last_request[0]
 
 
 @pytest.mark.asyncio
@@ -435,12 +1379,12 @@ def test_skill_specification_rejects_unregistered_tools_and_processors():
 
 @pytest.mark.asyncio
 async def test_published_skill_version_is_immutable_and_next_draft_increments(skill_db):
-    published = await ensure_default_skill_version(skill_db)
+    published = (await ensure_default_analysis_skill_versions(skill_db))[0]
     draft = await create_skill_draft(
         skill_db,
-        skill_key=DEFAULT_SKILL_KEY,
+        skill_key=published.skill_key,
         name=published.name,
-        category="AUTHORING",
+        category=published.category,
         specification=published.specification_json,
         created_by=None,
     )
@@ -459,56 +1403,67 @@ async def test_published_skill_version_is_immutable_and_next_draft_increments(sk
 
 @pytest.mark.asyncio
 async def test_executor_projects_context_validates_output_and_records_trace():
-    skill = AISkillVersion(
-        id=41,
-        skill_key=DEFAULT_SKILL_KEY,
-        name="Report",
-        category="AUTHORING",
-        version=1,
-        status="PUBLISHED",
-        specification_json=default_skill_specification(),
-    )
-    gateway = StubGateway(_report_text())
+    skill = _s1_skill_version()
+    input_data = _analysis_skill_input()
+    input_data["context"]["internal_chain_of_thought"] = "must not reach the model"
+    input_data["analysis_context"]["evidence"] = [
+        {"evidence_key": "calculated.mingli_foundation.v2"}
+    ]
+    input_data["other_users"] = [{"name": "hidden"}]
+    gateway = StubGateway(_analysis_text("S1 候选分析摘要。"))
     result = await execute_skill(
         skill_version=skill,
-        input_data={
-            "profile": _profile(),
-            "context": {
-                "focus_topics": ["career"],
-                "current_challenge": "考虑转型",
-                "expected_outcomes": ["方向指引"],
-                "internal_chain_of_thought": "must not reach the model",
-            },
-            "other_users": [{"name": "hidden"}],
-        },
+        input_data=input_data,
         gateway=gateway,
     )
 
-    assert result.output_parsed["basic_info"]["name"] == "林女士"
+    assert result.output_parsed["summary"] == "S1 候选分析摘要。"
     assert result.model_trace["skill_version_id"] == 41
     assert result.model_trace["global_policy_version"] == "global-policy-v1"
+    assert result.model_trace["processor"] == "reports.analysis_draft"
     assert "must not reach the model" not in gateway.last_request[1]
     assert "other_users" not in result.context_snapshot
     assert "internal_chain_of_thought" not in result.context_snapshot["context"]
-    assert result.context_snapshot["foundation_data"]
+    assert result.context_snapshot["analysis_context"]["evidence"] == input_data[
+        "analysis_context"
+    ]["evidence"]
+    assert result.context_snapshot["foundation_data"] is None
 
 
 @pytest.mark.asyncio
 async def test_executor_fails_guardrail_instead_of_returning_fallback_output():
-    skill = AISkillVersion(
-        id=42,
-        skill_key=DEFAULT_SKILL_KEY,
-        name="Report",
-        category="AUTHORING",
-        version=1,
-        status="PUBLISHED",
-        specification_json=default_skill_specification(),
-    )
+    skill = _s1_skill_version(identity=42)
     with pytest.raises(ValueError, match="skill_guardrail_blocked"):
         await execute_skill(
             skill_version=skill,
-            input_data={"profile": _profile(), "context": {}},
-            gateway=StubGateway(_report_text("\n注定发财")),
+            input_data=_analysis_skill_input(),
+            gateway=StubGateway(_analysis_text("该结论注定发财。")),
+        )
+
+
+@pytest.mark.asyncio
+async def test_legacy_whole_report_skill_is_read_only_and_cannot_execute(skill_db):
+    with pytest.raises(ValueError, match="skill_retired"):
+        await ensure_default_skill_version(skill_db)
+
+    historical = AISkillVersion(
+        skill_key=DEFAULT_SKILL_KEY,
+        name="Legacy report generator",
+        category="AUTHORING",
+        version=1,
+        status="RETIRED",
+        specification_json=default_skill_specification(),
+        created_at=datetime.utcnow(),
+    )
+    skill_db.add(historical)
+    await skill_db.flush()
+
+    assert (await ensure_default_skill_version(skill_db)).id == historical.id
+    with pytest.raises(ValueError, match="skill_retired"):
+        await execute_skill(
+            skill_version=historical,
+            input_data=_analysis_skill_input(),
+            gateway=StubGateway(_analysis_text()),
         )
 
 
@@ -516,43 +1471,48 @@ async def test_executor_fails_guardrail_instead_of_returning_fallback_output():
 async def test_skill_run_is_idempotent_and_completion_is_reused(skill_db, monkeypatch):
     from app.application import skill_runtime
 
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
+    input_snapshot = _analysis_skill_input()
     run, created = await create_skill_run(
         skill_db,
         skill_version_id=version.id,
         idempotency_key="test-skill-run-1",
-        input_snapshot={"profile": _profile(), "context": {}},
-        context_snapshot={"profile": _profile(), "context": {}},
+        input_snapshot=input_snapshot,
+        context_snapshot=input_snapshot,
     )
     duplicate, duplicate_created = await create_skill_run(
         skill_db,
         skill_version_id=version.id,
         idempotency_key="test-skill-run-1",
-        input_snapshot={"profile": _profile(), "context": {}},
-        context_snapshot={"profile": _profile(), "context": {}},
+        input_snapshot=input_snapshot,
+        context_snapshot=input_snapshot,
     )
     assert created is True
     assert duplicate_created is False
     assert duplicate.id == run.id
 
-    gateway = StubGateway(_report_text())
+    gateway = StubGateway(_analysis_text("完成的 S1 分析。"))
     monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
     completed = await skill_runtime.execute_skill_run_record(skill_db, run.id)
     repeated = await skill_runtime.execute_skill_run_record(skill_db, run.id)
     assert completed.status == "COMPLETED"
-    assert completed.output_parsed["basic_info"]["name"] == "林女士"
+    assert completed.output_parsed["summary"] == "完成的 S1 分析。"
     assert repeated.status == "COMPLETED"
     assert gateway.calls == 1
 
 
 @pytest.mark.asyncio
-async def test_case_skill_run_records_calculated_foundation_as_evidence(
+async def test_case_foundation_calculation_is_persisted_and_reused(
     skill_db, monkeypatch
 ):
-    from app.application import skill_runtime
-    from app.domains.content.service import create_evidence_item
+    from app.application import report_analysis
 
-    version = await ensure_default_skill_version(skill_db)
+    foundation = {
+        "calculation_version": "mingli-v2",
+        "bazi": {"year": {"stem": "辛", "branch": "未"}},
+    }
+    calculator = Mock(return_value=foundation)
+    monkeypatch.setattr(report_analysis, "calculate_mingli_foundation", calculator)
     report_case = ReportCase(
         user_id=19,
         status="ACTIVE",
@@ -563,50 +1523,23 @@ async def test_case_skill_run_records_calculated_foundation_as_evidence(
     )
     skill_db.add(report_case)
     await skill_db.flush()
-    user_evidence = await create_evidence_item(
-        skill_db,
-        report_case_id=report_case.id,
-        evidence_key="input.profile.gender",
-        source_type="USER_PROVIDED",
-        source_ref="application_snapshot.profile.gender",
-        value="female",
+    evidence = await report_analysis._ensure_mingli_foundation(
+        skill_db, report_case=report_case
     )
-    run, _created = await skill_runtime._queue_run(
-        skill_db,
-        version_id=version.id,
-        idempotency_key="case-foundation-run-1",
-        input_data={"profile": _profile(), "context": {}},
-        runtime_instruction=None,
-        target_type="REPORT_CASE_STEP",
-        target_key="S5",
-        report_case=report_case,
-    )
-    gateway = StubGateway(_report_text())
-    monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
-
-    completed = await skill_runtime.execute_skill_run_record(skill_db, run.id)
-    evidence = await skill_db.scalar(
-        select(CaseEvidenceItem).where(
-            CaseEvidenceItem.report_case_id == report_case.id,
-            CaseEvidenceItem.evidence_key
-            == f"calculated.foundation.skill_run.{run.id}",
-        )
+    reused = await report_analysis._ensure_mingli_foundation(
+        skill_db, report_case=report_case
     )
 
-    assert completed.status == "COMPLETED"
+    assert evidence.evidence_key == "calculated.mingli_foundation.v2"
     assert evidence.source_type == "SYSTEM_CALCULATED"
-    assert evidence.source_skill_run_id == run.id
-    assert evidence.source_ref == f"skill_run:{run.id}:foundation_data"
-    assert evidence.value_json == completed.context_snapshot["foundation_data"]
-    evidence_refs = completed.context_snapshot["source_references"]["evidence"]
-    assert {row["evidence_key"] for row in evidence_refs} == {
-        user_evidence.evidence_key,
-        evidence.evidence_key,
-    }
+    assert evidence.source_ref == "tool:reports.calculate_mingli_foundation:v2"
+    assert evidence.value_json == foundation
+    assert reused.id == evidence.id
+    calculator.assert_called_once_with(_profile())
 
 
 @pytest.mark.asyncio
-async def test_skill_workflow_version_pins_report_authoring_skill(skill_db):
+async def test_skill_workflow_version_uses_current_s5_authoring_mode(skill_db):
     from app.application.skill_runtime import ensure_skill_workflow_version
 
     initial = await create_workflow_draft(
@@ -624,9 +1557,13 @@ async def test_skill_workflow_version_pins_report_authoring_skill(skill_db):
 
     assert result.version == 2
     assert authoring["executor"] == "HYBRID"
-    skill = await skill_db.get(AISkillVersion, authoring["config"]["skill_version_id"])
-    assert skill.skill_key == DEFAULT_SKILL_KEY and skill.version == 1
-    assert result.definition_json["skill_bindings"][DEFAULT_SKILL_KEY]["id"] == skill.id
+    assert authoring["config"]["authoring_mode"] == "NARRATIVE_FRAGMENTS"
+    assert "skill_key" not in authoring["config"]
+    assert "skill_version_id" not in authoring["config"]
+    binding = result.definition_json["skill_bindings"][FRAGMENT_AUTHORING_SKILL_KEY]
+    skill = await skill_db.get(AISkillVersion, binding["id"])
+    assert skill.skill_key == FRAGMENT_AUTHORING_SKILL_KEY
+    assert skill.version == 1
 
 
 @pytest.mark.asyncio
@@ -636,13 +1573,14 @@ async def test_outbox_skill_event_executes_once_on_duplicate_delivery(
     from app.application import skill_runtime
     from app.tasks import workflow_tasks
 
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
+    input_snapshot = _analysis_skill_input()
     run, _created = await create_skill_run(
         skill_db,
         skill_version_id=version.id,
         idempotency_key="outbox-skill-run-1",
-        input_snapshot={"profile": _profile(), "context": {}},
-        context_snapshot={"profile": _profile(), "context": {}},
+        input_snapshot=input_snapshot,
+        context_snapshot=input_snapshot,
     )
     event = WorkflowOutbox(
         aggregate_type="skill_run",
@@ -656,7 +1594,7 @@ async def test_outbox_skill_event_executes_once_on_duplicate_delivery(
     skill_db.add(event)
     await skill_db.flush()
 
-    gateway = StubGateway(_report_text())
+    gateway = StubGateway(_analysis_text())
     monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
     monkeypatch.setattr(
         workflow_tasks, "AsyncSessionLocal", lambda: SessionContext(skill_db)
@@ -673,7 +1611,7 @@ async def test_outbox_skill_event_executes_once_on_duplicate_delivery(
 async def test_case_skill_run_requires_assigned_consultant(skill_db):
     from app.application.skill_runtime import queue_case_step_skill_run
 
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
     report_case = ReportCase(
         id=81,
         user_id=19,
@@ -688,8 +1626,8 @@ async def test_case_skill_run_requires_assigned_consultant(skill_db):
     step = StepTask(
         id=303,
         workflow_instance_id=202,
-        step_key="S5",
-        sequence_no=5,
+        step_key="S1",
+        sequence_no=1,
         executor="HYBRID",
         status="READY",
         required_capability="consultant",
@@ -708,9 +1646,9 @@ async def test_case_skill_run_requires_assigned_consultant(skill_db):
     assigned = await queue_case_step_skill_run(
         assigned_db,
         case_id=report_case.id,
-        step_key="S5",
+        step_key="S1",
         actor=SimpleNamespace(id=7, role="consultant"),
-        idempotency_key="case-81-step-s5",
+        idempotency_key="case-81-step-s1",
         runtime_instruction=None,
     )
     assert assigned[0].report_case_id == 81
@@ -723,9 +1661,9 @@ async def test_case_skill_run_requires_assigned_consultant(skill_db):
         await queue_case_step_skill_run(
             unassigned_db,
             case_id=report_case.id,
-            step_key="S5",
+            step_key="S1",
             actor=SimpleNamespace(id=7, role="consultant"),
-            idempotency_key="case-81-step-s5-unassigned",
+            idempotency_key="case-81-step-s1-unassigned",
             runtime_instruction=None,
         )
 
@@ -1259,7 +2197,7 @@ def _completed_example_source(version, *, run_id=901, case_id=81):
 
 @pytest.mark.asyncio
 async def test_skill_examples_require_redaction_and_publish_as_immutable_versions(skill_db):
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
     source_run = _completed_example_source(version)
     source_run.input_snapshot["profile"].update(
         birth_place="杭州某区",
@@ -1301,12 +2239,13 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
     assert "林女士" not in candidate.expected_output["summary"]
     assert "13812345678" not in candidate.expected_output["summary"]
     assert "1992-06-18" not in candidate.expected_output["summary"]
-    assert await retrieve_skill_examples(
+    unpublished = await retrieve_skill_examples(
         skill_db,
         skill_key=version.skill_key,
         target_key=None,
         context={"focus_topics": ["career"]},
-    ) == []
+    )
+    assert candidate.id not in {item["example_id"] for item in unpublished}
 
     with pytest.raises(ValueError, match="skill_example_deidentification_required"):
         await publish_skill_example(skill_db, candidate.id, reviewed_by=1)
@@ -1345,17 +2284,22 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
         target_key=None,
         context={"focus_topics": ["career"]},
     )
-    assert selected[0]["example_id"] == published.id
-    assert selected[0]["version_no"] == 1
-    assert selected[0]["retrieval_policy"]
-    assert "scenario_tag_match" in selected[0]["selection_reasons"]
+    selected_candidate = next(
+        item for item in selected if item["example_id"] == published.id
+    )
+    assert selected_candidate["version_no"] == 1
+    assert selected_candidate["retrieval_policy"]
+    assert "scenario_tag_match" in selected_candidate["selection_reasons"]
     await skill_db.commit()
-    assert await retrieve_skill_examples(
+    other_topic_examples = await retrieve_skill_examples(
         skill_db,
         skill_key=version.skill_key,
         target_key=None,
         context={"focus_topics": ["health"]},
-    ) == []
+    )
+    assert published.id not in {
+        item["example_id"] for item in other_topic_examples
+    }
 
     with pytest.raises(ValueError, match="skill_example_immutable"):
         published.teaching_points = ["attempt to edit published content"]
@@ -1393,7 +2337,7 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
 
 @pytest.mark.asyncio
 async def test_skill_example_applicability_rejects_unsupported_or_invalid_conditions(skill_db):
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
     source_run = _completed_example_source(version)
     skill_db.add(source_run)
     await skill_db.flush()
@@ -1438,7 +2382,7 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
 ):
     from app.application import skill_runtime
 
-    published = await ensure_default_skill_version(skill_db)
+    published = (await ensure_default_analysis_skill_versions(skill_db))[0]
     source_run = _completed_example_source(published)
     skill_db.add(source_run)
     await skill_db.flush()
@@ -1447,7 +2391,7 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
         report_case_id=81,
         skill_run=source_run,
         example_type="POSITIVE",
-        scenario_tags=["career"],
+        scenario_tags=["dynamic-style-test"],
         teaching_points=["用审慎语气描述建议。"],
         expected_output={"summary": "一个脱敏后的写作示例。"},
         created_by=7,
@@ -1456,7 +2400,7 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
         skill_db,
         example_id=candidate.id,
         target_fragment_key=None,
-        scenario_tags=["career"],
+        scenario_tags=["dynamic-style-test"],
         applicability_json={},
         input_context={"context": {"focus_topics": ["career"]}},
         expected_output={"summary": "一个脱敏后的写作示例。"},
@@ -1467,24 +2411,13 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
     )
     await publish_skill_example(skill_db, candidate.id, reviewed_by=1)
 
-    specification = default_skill_specification()
-    specification["example_policy"] = {"enabled": True, "max_examples": 2}
-    draft = await create_skill_draft(
-        skill_db,
-        skill_key=published.skill_key,
-        name=published.name,
-        category="AUTHORING",
-        specification=specification,
-        created_by=1,
-    )
+    input_data = _analysis_skill_input()
+    input_data["context"]["focus_topics"] = ["dynamic-style-test"]
     run, _created = await skill_runtime.queue_debug_skill_run(
         skill_db,
-        version_id=draft.id,
+        version_id=published.id,
         idempotency_key="debug-run-with-example",
-        input_data={
-            "profile": _profile(),
-            "context": {"focus_topics": ["career"]},
-        },
+        input_data=input_data,
         runtime_instruction=None,
     )
     assert run.selected_examples[0]["example_id"] == candidate.id
@@ -1493,7 +2426,7 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
         "用审慎语气描述建议。"
     ]
 
-    gateway = StubGateway(_report_text())
+    gateway = StubGateway(_analysis_text())
     monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
     completed = await skill_runtime.execute_skill_run_record(skill_db, run.id)
     assert completed.status == "COMPLETED"
@@ -1503,26 +2436,57 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
 
 
 @pytest.mark.asyncio
-async def test_regression_batches_persist_checks_and_gate_skill_publish(skill_db):
+async def test_calendar_reasoning_guidance_publishes_without_required_evaluation(skill_db):
     from app.application.skill_evaluation import (
         ensure_evaluation_passed_before_publish,
         get_evaluation_batch,
         start_evaluation_batch,
     )
 
-    version = await ensure_default_validator_skill_version(skill_db)
-    with pytest.raises(ValueError, match="skill_evaluation_required"):
-        await ensure_evaluation_passed_before_publish(skill_db, version.id)
+    from app.domains.calendar.production import ensure_calendar_skills
 
-    batch = await start_evaluation_batch(skill_db, version_id=version.id)
+    version = (await ensure_calendar_skills(skill_db))[0]
+    draft = await create_skill_draft(
+        skill_db,
+        skill_key=version.skill_key,
+        name=version.name,
+        category=version.category,
+        specification=version.specification_json,
+        created_by=17,
+    )
+    updated = await update_reasoning_guidance(
+        skill_db,
+        draft.id,
+        objective="结合当月目标说明每天可以留意的节奏。",
+        methodology=version.specification_json["reasoning_guidance"]["methodology"],
+    )
+    response = _skill_version_response(updated)
+    assert response.specification_json is None
+    assert response.reasoning_guidance.objective == "结合当月目标说明每天可以留意的节奏。"
+    await ensure_evaluation_passed_before_publish(skill_db, updated.id)
+    changed_contract = deepcopy(updated.specification_json)
+    changed_contract["runtime_contract"]["system_requirements"][0] += " 不可编辑"
+    with pytest.raises(ValueError, match="skill_system_managed_fields_immutable"):
+        await update_skill_draft(
+            skill_db,
+            updated.id,
+            name=updated.name,
+            category=updated.category,
+            specification=changed_contract,
+        )
+    published = await publish_skill_version(
+        skill_db, updated.id, published_by=17
+    )
+    assert published.status == "PUBLISHED"
+
+    batch = await start_evaluation_batch(skill_db, version_id=published.id)
     assert batch["total"] == 1
     assert batch["completed"] == 0
     run = await skill_db.get(SkillRun, batch["runs"][0]["run_id"])
     assert run.target_type == "REGRESSION"
     assert run.context_snapshot["evaluation"]["dataset_version"]
     assert run.context_snapshot["evaluation"]["specification_sha256"]
-    with pytest.raises(ValueError, match="skill_evaluation_incomplete"):
-        await ensure_evaluation_passed_before_publish(skill_db, version.id)
+    await ensure_evaluation_passed_before_publish(skill_db, published.id)
 
     run.status = "COMPLETED"
     run.output_parsed = {"issues": []}
@@ -1538,8 +2502,7 @@ async def test_regression_batches_persist_checks_and_gate_skill_publish(skill_db
     assert failed_batch["failed"] == 0
     assert failed_batch["passed"] == 0
     assert failed_batch["pass_rate"] == 0.0
-    with pytest.raises(ValueError, match="skill_evaluation_failed"):
-        await ensure_evaluation_passed_before_publish(skill_db, version.id)
+    await ensure_evaluation_passed_before_publish(skill_db, published.id)
 
     run.context_snapshot = {
         **run.context_snapshot,
@@ -1549,7 +2512,7 @@ async def test_regression_batches_persist_checks_and_gate_skill_publish(skill_db
         },
     }
     await skill_db.flush()
-    await ensure_evaluation_passed_before_publish(skill_db, version.id)
+    await ensure_evaluation_passed_before_publish(skill_db, published.id)
 
 
 @pytest.mark.asyncio
@@ -1580,7 +2543,8 @@ async def test_builtin_validator_update_keeps_unpublished_skill_studio_draft(ski
 
     updated = await ensure_default_validator_skill_version(skill_db)
 
-    assert updated.version == 3
+    assert updated.id == published.id
+    assert updated.version == 1
     assert updated.status == "PUBLISHED"
     assert draft.status == "DRAFT"
     assert draft.specification_json == draft_specification
@@ -1640,3 +2604,55 @@ def test_regression_expectations_score_schema_paths_and_finding_boundaries():
     assert passing["passed"] is True
     assert failing["passed"] is False
     assert any(not check["passed"] for check in failing["checks"])
+
+
+def test_calendar_skills_separate_admin_reasoning_from_runtime_contracts():
+    from app.domains.calendar.skill_definitions import default_calendar_skill_specifications
+
+    specifications = default_calendar_skill_specifications()
+    assert len(specifications) == 4
+    for _category, specification in specifications:
+        skill_key = specification["identity"]["skill_key"]
+        guidance = specification["reasoning_guidance"]
+        runtime_contract = specification["runtime_contract"]
+        assert guidance["objective"].strip()
+        assert guidance["methodology"]
+        assert "objective" not in specification["instructions"]
+        assert "methodology" not in specification["instructions"]
+        assert not any(
+            marker in item
+            for item in guidance["methodology"]
+            for marker in (
+                "entry_date", "source_refs", "field_path", "输出契约", "严格JSON",
+            )
+        )
+
+        compiled = compile_reasoning_guidance_specification(specification)
+        assert compiled["instructions"]["objective"] == guidance["objective"]
+        assert compiled["instructions"]["methodology"] == [
+            *guidance["methodology"],
+            *runtime_contract["system_requirements"],
+        ]
+        assert compiled["output_contract"] == specification["output_contract"]
+        assert compiled["processor_policy"]["processor"] == "calendar.production"
+        if skill_key == "calendar.temporal_analysis":
+            assert compiled["instructions"]["tone_weights"] == {
+                "useful_support": 0.3,
+                "flow": 0.3,
+                "interaction_stability": 0.2,
+                "pattern_regulation": 0.2,
+            }
+
+    # Historical pinned calendar versions keep their original prompt shape.
+    legacy = deepcopy(specifications[0][1])
+    legacy["instructions"] = {
+        **legacy["instructions"],
+        "objective": "30天时序分析",
+        "methodology": deepcopy(legacy["runtime_contract"]["system_requirements"]),
+    }
+    legacy.pop("reasoning_guidance")
+    legacy.pop("runtime_contract")
+    assert compile_reasoning_guidance_specification(legacy) == legacy
+    assert reasoning_guidance_for_skill(
+        legacy["identity"]["skill_key"], legacy
+    ) == {"objective": "", "methodology": []}

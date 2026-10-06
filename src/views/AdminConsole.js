@@ -7,6 +7,7 @@ import AdminUsersSection from '../features/admin/components/AdminUsersSection.vu
 import AdminReportsSection from '../features/admin/components/AdminReportsSection.vue'
 import AdminActivitySection from '../features/admin/components/AdminActivitySection.vue'
 import AdminCalendarSection from '../features/admin/components/AdminCalendarSection.vue'
+import AdminCalendarRequestsSection from '../features/admin/components/AdminCalendarRequestsSection.vue'
 import AdminStaffSection from '../features/admin/components/AdminStaffSection.vue'
 import AdminDetailDrawers from '../features/admin/components/AdminDetailDrawers.vue'
 import AdminIconButton from '../features/admin/components/AdminIconButton.vue'
@@ -24,7 +25,7 @@ const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
+  components: { AdminDashboardSection, AdminUsersSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminCalendarRequestsSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
@@ -49,6 +50,9 @@ export default {
       userFilters: { search: '', role: '', is_active: '', created_from: '', created_to: '' },
       userPage: 1,
       userPageSize: 12,
+      calendarRequests: [],
+      calendarRequestsLoading: false,
+      calendarRequestStatusFilter: '',
       staffUsers: [],
       reports: { ...EMPTY_PAGE },
       reportsLoading: false,

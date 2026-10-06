@@ -3,7 +3,7 @@
     <BrandNav />
 
     <main class="requests-main">
-      <BrandPageHeader class="requests-hero" contained eyebrow="MY REQUESTS" title="我的申请" description="人生说明书申请由咨询师处理；收到交付报告后，你可以直接生成决策日历。" seal="有信">
+      <BrandPageHeader class="requests-hero" contained eyebrow="MY REQUESTS" title="我的申请" description="让每一次探索，都有回音。在这里查看申请进度，交付后即可阅读报告或打开日历。" seal="有信">
         <template #actions>
           <router-link class="secondary-button" to="/pages/assessment/assessment">申请人生说明书</router-link>
           <router-link class="primary-button" :to="calendarActionPath">{{ calendarActionLabel }}</router-link>

@@ -28,6 +28,7 @@ export default {
       savingProfile: false,
       submitting: false,
       isGenerating: false,
+      genStep: 0,
       formMessage: '',
       contextMessage: '',
       showOptionalProfile: false,

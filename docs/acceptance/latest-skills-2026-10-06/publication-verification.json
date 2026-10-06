@@ -1,0 +1,232 @@
+{
+  "verified": true,
+  "skill_source": "LATEST_PUBLISHED_DATABASE_SNAPSHOT",
+  "skills": [
+    {
+      "skill_key": "report.s1_foundation_analysis",
+      "id": 86,
+      "version": 8,
+      "latest_publication_matches": true,
+      "latest_content_matches": true,
+      "current_defaults_match": true,
+      "digest_matches": true
+    },
+    {
+      "skill_key": "report.s2_psychology_mapping",
+      "id": 76,
+      "version": 8,
+      "latest_publication_matches": true,
+      "latest_content_matches": true,
+      "current_defaults_match": true,
+      "digest_matches": true
+    },
+    {
+      "skill_key": "report.s3_integration",
+      "id": 77,
+      "version": 8,
+      "latest_publication_matches": true,
+      "latest_content_matches": true,
+      "current_defaults_match": true,
+      "digest_matches": true
+    },
+    {
+      "skill_key": "report.s4_mechanism_block_action",
+      "id": 78,
+      "version": 8,
+      "latest_publication_matches": true,
+      "latest_content_matches": true,
+      "current_defaults_match": true,
+      "digest_matches": true
+    },
+    {
+      "skill_key": "report.narrative_plan",
+      "id": 79,
+      "version": 5,
+      "latest_publication_matches": true,
+      "latest_content_matches": true,
+      "current_defaults_match": true,
+      "digest_matches": true
+    },
+    {
+      "skill_key": "report.fragment_authoring",
+      "id": 80,
+      "version": 7,
+      "latest_publication_matches": true,
+      "latest_content_matches": true,
+      "current_defaults_match": true,
+      "digest_matches": true
+    },
+    {
+      "skill_key": "report.final_validator",
+      "id": 81,
+      "version": 7,
+      "latest_publication_matches": true,
+      "latest_content_matches": true,
+      "current_defaults_match": true,
+      "digest_matches": true
+    }
+  ],
+  "calls": [
+    {
+      "file": "S1.json",
+      "request_id": "d2c1d966-972a-4e33-8469-147dfdd94ad7",
+      "skill_key": "report.s1_foundation_analysis",
+      "skill_version": 8,
+      "matches_frozen": true
+    },
+    {
+      "file": "S2.json",
+      "request_id": "4c6d138c-604d-4b73-8fe9-95eb698992c6",
+      "skill_key": "report.s2_psychology_mapping",
+      "skill_version": 8,
+      "matches_frozen": true
+    },
+    {
+      "file": "S3.json",
+      "request_id": "caf2dc74-c04d-4a6a-80e2-3e9576742ecf",
+      "skill_key": "report.s3_integration",
+      "skill_version": 8,
+      "matches_frozen": true
+    },
+    {
+      "file": "S4.json",
+      "request_id": "fb8de294-9285-4a3c-b692-b94bf145fc22",
+      "skill_key": "report.s4_mechanism_block_action",
+      "skill_version": 8,
+      "matches_frozen": true
+    },
+    {
+      "file": "S5-candidates.json",
+      "request_id": "a77f9761-a21d-4652-a79c-4347db5870d8",
+      "skill_key": "report.narrative_plan",
+      "skill_version": 5,
+      "matches_frozen": true
+    },
+    {
+      "file": "S6.json",
+      "request_id": "b94393f1-887f-4e1a-9ad9-7cb2fa4ec0fc",
+      "skill_key": "report.final_validator",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/01-report.overview.psychic_structure.json",
+      "request_id": "53c08137-72c4-4aab-9e9c-b25e55dd37a5",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/02-report.identity.outer_self.json",
+      "request_id": "026bc90c-06e7-4258-b7e8-7fdf4165becd",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/03-report.identity.foundation_notes.json",
+      "request_id": "e8c9bd92-3de7-43e4-8a73-0c2bff7282e9",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/04-report.identity.self_perception.json",
+      "request_id": "45d25491-5f4b-4b4d-8544-8208027f48ff",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/05-report.identity.hidden_self.json",
+      "request_id": "d79c0a9d-5250-4852-bafc-f1df52573da0",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/06-report.identity.self_direction.json",
+      "request_id": "cf786769-14c2-4036-833d-25c2242d5470",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/07-report.identity.energy_pattern.json",
+      "request_id": "2f6694a0-897f-4087-83ce-42afddb800cb",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/08-report.identity.relationship_pattern.json",
+      "request_id": "34b3ad0f-08e1-442c-a335-29ba165fcdc0",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/09-report.blocks.block_01.json",
+      "request_id": "e2b53860-12e0-480f-a979-e85674aca29c",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/10-report.blocks.block_02.json",
+      "request_id": "aac3ca41-6fc2-4725-97a4-b22660ef49d0",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/11-report.blocks.block_03.json",
+      "request_id": "5addebad-49cf-4f52-a52e-9e0424f3e29d",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/12-report.blocks.common_pattern.json",
+      "request_id": "9b3f40c9-4b48-40ce-bb00-d25451771aa5",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/13-report.blocks.breakthrough.json",
+      "request_id": "cb74fccb-fa8f-445e-91ad-e2b6cc88f395",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/14-report.direction.current_stage.json",
+      "request_id": "e7d2140b-5fbf-47a3-86ac-42b3334afd9f",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/15-report.direction.life_map.json",
+      "request_id": "026778aa-5719-4dfd-accf-850d33c71f45",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/16-report.direction.growth_experiments.json",
+      "request_id": "6b67ac69-8308-498d-a4aa-b31daf3a78ed",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    },
+    {
+      "file": "fragments/17-report.ending.json",
+      "request_id": "18e4d972-c06a-4e81-9112-c91607c7694a",
+      "skill_key": "report.fragment_authoring",
+      "skill_version": 7,
+      "matches_frozen": true
+    }
+  ]
+}

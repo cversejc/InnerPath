@@ -73,9 +73,15 @@ export const CALENDAR_SKILLS = [
   { key: 'calendar.calibration', name: '30天整体校准', node: '日历校准', input: '完整30天日历及分析依据', output: '重复、节奏和一致性问题及修订', task: '严重问题未解决时阻止发布。' }
 ]
 
+export const ALL_SKILLS = [...REPORT_SKILLS, ...CALENDAR_SKILLS];
+export const CALENDAR_SKILL_KEYS = new Set(CALENDAR_SKILLS.map((item) => item.key));
+export const REASONING_GUIDANCE_SKILL_KEYS = new Set(
+  ALL_SKILLS.map((item) => item.key),
+);
+
 export function skillInfo(key, fallback = "") {
   return (
-    [...REPORT_SKILLS, ...CALENDAR_SKILLS].find((item) => item.key === key) || {
+    ALL_SKILLS.find((item) => item.key === key) || {
       key,
       step: "",
       name: /[\u4e00-\u9fff]/.test(fallback)
@@ -92,8 +98,9 @@ export function skillInfo(key, fallback = "") {
 }
 
 export function buildSkillCatalog(versions = []) {
-  const catalog = [...REPORT_SKILLS, ...CALENDAR_SKILLS].map((item) => ({ ...item }));
+  const catalog = ALL_SKILLS.map((item) => ({ ...item }));
   for (const version of versions) {
+    if (version.skill_key === "report.generate") continue;
     if (!catalog.some((item) => item.key === version.skill_key))
       catalog.push(skillInfo(version.skill_key, version.name));
   }

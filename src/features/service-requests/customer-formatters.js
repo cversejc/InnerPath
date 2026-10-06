@@ -39,7 +39,7 @@ export function serviceRequestEditPath(item) {
       ? `/pages/requests/requests#request-${item.id}-supplement`
       : '/pages/assessment/assessment?requestId=' + item.id
   }
-  return '/pages/user/user?tab=reports'
+  return '/pages/calendar/calendar?generate=1'
 }
 
 export { topicLabel }

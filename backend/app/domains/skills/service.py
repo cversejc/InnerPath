@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 from typing import Any
 
@@ -7,18 +8,38 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .definitions import (
     DEFAULT_SKILL_KEY,
+    REASONING_GUIDANCE_SKILL_KEYS,
     default_analysis_skill_specifications,
     default_validator_skill_specification,
     default_narrative_skill_specifications,
-    default_skill_specification,
+    prepare_reasoning_guidance_specification,
     validate_skill_specification,
 )
 from .models import AISkillVersion, SkillRun
+from .lifecycle import require_active_skill
 from .builtin_examples import ensure_builtin_examples
 
 
 def _now() -> datetime:
     return datetime.utcnow()
+
+
+def _system_managed_projection(specification: dict[str, Any]) -> dict[str, Any]:
+    projection = deepcopy(specification)
+    projection.pop("reasoning_guidance", None)
+    instructions = projection.get("instructions")
+    if isinstance(instructions, dict):
+        instructions.pop("objective", None)
+        instructions.pop("methodology", None)
+    return projection
+
+
+def _is_reasoning_guidance_specification(specification: Any) -> bool:
+    identity = specification.get("identity") if isinstance(specification, dict) else None
+    return (
+        isinstance(identity, dict)
+        and identity.get("skill_key") in REASONING_GUIDANCE_SKILL_KEYS
+    )
 
 
 async def _ensure_published_builtin_version(
@@ -38,6 +59,45 @@ async def _ensure_published_builtin_version(
         .order_by(AISkillVersion.version.desc())
         .limit(1)
     )
+    if skill_key in REASONING_GUIDANCE_SKILL_KEYS and latest_published is not None:
+        if latest_published.specification_json == specification:
+            return latest_published
+        if (
+            latest_published.created_by is not None
+            or latest_published.published_by is not None
+        ):
+            # Administrator-maintained reasoning remains authoritative. Code
+            # defaults initialize new installations and never overwrite it.
+            return latest_published
+
+        latest_any = await db.scalar(
+            select(AISkillVersion)
+            .where(AISkillVersion.skill_key == skill_key)
+            .order_by(AISkillVersion.version.desc())
+            .limit(1)
+        )
+        if latest_any is not None and latest_any.version > latest_published.version:
+            # Do not publish over an administrator's in-progress draft during
+            # startup. Matching system-created drafts can be promoted directly.
+            if latest_any.created_by is not None:
+                return latest_published
+            if (
+                latest_any.status == "DRAFT"
+                and prepare_reasoning_guidance_specification(
+                    latest_any.specification_json
+                ).get("reasoning_guidance")
+                == prepare_reasoning_guidance_specification(specification).get(
+                    "reasoning_guidance"
+                )
+            ):
+                # Keep the administrator-owned guidance while refreshing
+                # program-owned runtime fields from the current definition.
+                latest_any.specification_json = specification
+                latest_any.status = "PUBLISHED"
+                latest_any.published_by = None
+                latest_any.published_at = _now()
+                await db.flush()
+                return latest_any
     if (
         latest_published is not None
         and (latest_published.specification_json == specification
@@ -97,21 +157,35 @@ async def create_skill_draft(
     specification: dict[str, Any],
     created_by: int | None,
 ) -> AISkillVersion:
+    require_active_skill(skill_key)
+    if _is_reasoning_guidance_specification(specification):
+        specification = prepare_reasoning_guidance_specification(specification)
     spec = validate_skill_specification(specification)
     if spec["identity"]["skill_key"] != skill_key or spec["identity"]["name"] != name:
         raise ValueError("skill_identity_mismatch")
     if category not in {"ANALYSIS", "ACTION", "AUTHORING", "VALIDATOR"}:
         raise ValueError("skill_category_invalid")
     latest = await db.scalar(
-        select(func.max(AISkillVersion.version)).where(
-            AISkillVersion.skill_key == skill_key
-        )
+        select(AISkillVersion)
+        .where(AISkillVersion.skill_key == skill_key)
+        .order_by(AISkillVersion.version.desc())
+        .limit(1)
     )
+    if skill_key in REASONING_GUIDANCE_SKILL_KEYS and latest is not None:
+        latest_spec = validate_skill_specification(
+            prepare_reasoning_guidance_specification(latest.specification_json)
+        )
+        if (
+            category != latest.category
+            or _system_managed_projection(spec)
+            != _system_managed_projection(latest_spec)
+        ):
+            raise ValueError("skill_system_managed_fields_immutable")
     version = AISkillVersion(
         skill_key=skill_key,
         name=name,
         category=category,
-        version=(latest or 0) + 1,
+        version=(latest.version if latest else 0) + 1,
         status="DRAFT",
         specification_json=spec,
         created_by=created_by,
@@ -135,8 +209,11 @@ async def update_skill_draft(
     )
     if version is None:
         raise ValueError("skill_version_not_found")
+    require_active_skill(version.skill_key)
     if version.status != "DRAFT":
         raise ValueError("skill_version_immutable")
+    if _is_reasoning_guidance_specification(specification):
+        specification = prepare_reasoning_guidance_specification(specification)
     spec = validate_skill_specification(specification)
     if (
         spec["identity"]["skill_key"] != version.skill_key
@@ -145,11 +222,74 @@ async def update_skill_draft(
         raise ValueError("skill_identity_mismatch")
     if category not in {"ANALYSIS", "ACTION", "AUTHORING", "VALIDATOR"}:
         raise ValueError("skill_category_invalid")
+    if version.skill_key in REASONING_GUIDANCE_SKILL_KEYS:
+        current_spec = validate_skill_specification(
+            prepare_reasoning_guidance_specification(version.specification_json)
+        )
+        if (
+            category != version.category
+            or _system_managed_projection(spec)
+            != _system_managed_projection(current_spec)
+        ):
+            raise ValueError("skill_system_managed_fields_immutable")
     version.name = name
     version.category = category
     version.specification_json = spec
     await db.flush()
     return version
+
+
+async def update_reasoning_guidance(
+    db: AsyncSession,
+    version_id: int,
+    *,
+    objective: str,
+    methodology: list[str],
+) -> AISkillVersion:
+    version = await db.scalar(
+        select(AISkillVersion).where(AISkillVersion.id == version_id).with_for_update()
+    )
+    if version is None:
+        raise ValueError("skill_version_not_found")
+    require_active_skill(version.skill_key)
+    if version.status != "DRAFT":
+        raise ValueError("skill_version_immutable")
+    if version.skill_key not in REASONING_GUIDANCE_SKILL_KEYS:
+        raise ValueError("skill_instruction_edit_not_supported")
+
+    objective = objective.strip()
+    methodology = [item.strip() for item in methodology if item and item.strip()]
+    if not objective or len(objective) > 1200:
+        raise ValueError("skill_instruction_objective_invalid")
+    if not methodology or len(methodology) > 40 or any(
+        len(item) > 1000 for item in methodology
+    ):
+        raise ValueError("skill_instruction_methodology_invalid")
+
+    specification = prepare_reasoning_guidance_specification(version.specification_json)
+    specification["reasoning_guidance"] = {
+        "objective": objective,
+        "methodology": methodology,
+    }
+    version.specification_json = validate_skill_specification(specification)
+    await db.flush()
+    return version
+
+
+async def update_s1_reasoning_guidance(
+    db: AsyncSession,
+    version_id: int,
+    *,
+    objective: str,
+    methodology: list[str],
+) -> AISkillVersion:
+    """Compatibility alias for callers that historically edited S1 only."""
+    return await update_reasoning_guidance(
+        db,
+        version_id,
+        objective=objective,
+        methodology=methodology,
+    )
 
 
 async def publish_skill_version(
@@ -160,6 +300,7 @@ async def publish_skill_version(
     )
     if version is None:
         raise ValueError("skill_version_not_found")
+    require_active_skill(version.skill_key)
     if version.status != "DRAFT":
         raise ValueError("skill_version_immutable")
     version.specification_json = validate_skill_specification(
@@ -173,45 +314,14 @@ async def publish_skill_version(
 
 
 async def ensure_default_skill_version(db: AsyncSession) -> AISkillVersion:
-    existing = await db.scalar(
-        select(AISkillVersion).where(
-            AISkillVersion.skill_key == DEFAULT_SKILL_KEY,
-            AISkillVersion.version == 1,
-        )
-    )
-    if existing and existing.status == "PUBLISHED":
-        return existing
-    if existing:
-        raise ValueError("default_skill_version_not_published")
-    now = _now()
-    spec = default_skill_specification()
-    version = AISkillVersion(
-        skill_key=DEFAULT_SKILL_KEY,
-        name=spec["identity"]["name"],
-        category="AUTHORING",
-        version=1,
-        status="PUBLISHED",
-        specification_json=spec,
-        created_by=None,
-        published_by=None,
-        created_at=now,
-        published_at=now,
-    )
-    try:
-        async with db.begin_nested():
-            db.add(version)
-            await db.flush()
-        return version
-    except IntegrityError:
-        existing = await db.scalar(
-            select(AISkillVersion).where(
-                AISkillVersion.skill_key == DEFAULT_SKILL_KEY,
-                AISkillVersion.version == 1,
-            )
-        )
-        if existing and existing.status == "PUBLISHED":
-            return existing
-        raise
+    """Read a historical version for old callers; never initialize this skill."""
+    existing = await db.scalar(select(AISkillVersion).where(
+        AISkillVersion.skill_key == DEFAULT_SKILL_KEY,
+        AISkillVersion.version == 1,
+    ))
+    if existing is None:
+        raise ValueError("skill_retired")
+    return existing
 
 
 async def ensure_default_narrative_skill_versions(

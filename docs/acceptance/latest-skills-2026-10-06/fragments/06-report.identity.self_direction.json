@@ -1,0 +1,64 @@
+{
+  "signature": "63b2a943a9a3dc6f0bcfc3ee03606b65188825d95b0417738b1f58e60914077b",
+  "skill_digest": "401c626a6af612fee324e7049af24cc79f57a1f53a5ce40b5c9a0d4437b700a8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "接下来要往哪走：不是变成另一个人，而是让被排除的那一端重新在场",
+    "content": "你大概已经发现一件事：这份说明书从头到尾没有劝你「别那么拼」，也没有说你「太软弱」。因为它想说的不是这个。\n\n你身上一直有一条很稳的主线——可靠、能扛、不添麻烦。这不是缺点，也不是伪装，它是真实的你，是你在很多关系里被信任、被依靠的原因。你自述「要靠谱、不能让人失望」，配合日支七杀那种「我得担起来」的责任脚本，再加上廉贞破军那种愿意扛事、愿意冲的面具，这一端被反复强化，几乎成了你默认的出场方式。\n\n但主线旁边，还有一条几乎没被主张过的支线：休息、拒绝、被照顾，还有一点点纯粹的游戏性。它没有被你主动调用——偏印在命局里缺席、印被财耗、七杀克身，这些符号在心理层面大致对应「不太习惯向人求助、不太允许自己停下来」。可它并没有消失。你说独自散步时会比较放松，这就是反证：那一端还在，只是没被允许走到台前。\n\n于是方向开始清楚了：不是把「可靠」换成「松弛」，也不是变成一个更完美、更会拿捏的人。真正的方向，是让这两端在同一件事里同时在场——在答应一个临时请求之前，先给自己留一句「我需要先看一下时间」的余地，让责任和边界一起说话，而不是先让责任把边界挤出去。\n\n从命理结构看，你现在正走在辛卯大运（2019–2028，偏印，金/木）里。辛金偏印像是一份比较温和的支持，卯木食神又要求你把内在的东西表达出来——整体是「支持中带着输出压力」。换句话说，这十年里，外部能给你的托底是有的，但真正要练的，是把这份支持转化成边界，而不是继续用「先答应、后透支」的老方式去换安全感。\n\n再往深一层，你的意识层和潜意识层其实一直在做同一件事：意识层认同「可靠、能扛」，潜意识层则替你把「休息、拒绝、被照顾」收起来，免得它们和那个认同打架。整合的方向，就是让这两层重新对话——不是谁赢谁输，而是让那个被收起来的部分，重新有机会被你自己看见、被你自己允许。\n\n这就是接下来要往哪走的起点：不是换一个人，而是让那个一直站在门外的你，也走进来。具体怎么练，会放在后面的成长实验里，这里先把方向放在这儿。",
+    "used_findings": [
+      "s3.timeline.current_xinmao",
+      "s1.dayun.xinmao_current",
+      "s3.self.pole_reliable_vs_rest",
+      "s3.integration.threefold"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s3.self",
+      "analysis.s3.integration"
+    ],
+    "used_actions": [],
+    "transition_hint": "方向放在这儿了：不是换一个人，而是让门外的你也走进来。下一章会先看这条「先答应」的脚本真正跑起来时，在工作、关系和时间里长成了哪几个反复出现的卡点。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.self_direction",
+      "sequence_no": 6,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "style_note": "第二人称，现实语言；命理术语已翻译为日常心理语言；未展开实验动作，未引用金句。"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.self_direction",
+        "status": "FULFILLED",
+        "reason": "已覆盖三项检查：当前倾向的一端（可靠、能扛、不添麻烦）、被排除的另一端（休息、拒绝、被照顾、游戏性）、两端整合而非完美人格（让两段在同一情境共同在场，非变成更完美的人）。",
+        "quote": "不是把「可靠」换成「松弛」，也不是变成一个更完美、更会拿捏的人。真正的方向，是让这两端在同一件事里同时在场",
+        "follow_up_questions": [
+          "在什么情境下你最容易先答应后反悔？",
+          "你允许自己在关系中提出需要吗？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 17728,
+    "output_tokens": 1022,
+    "latency_ms": 5849,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "cf786769-14c2-4036-833d-25c2242d5470",
+    "thinking_enabled": false,
+    "skill_version_id": 80,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 7,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "29a1fb5e7d5ee8cc8ba8dc6be645de31581d6e0a5208efec4b2763e1424dccf4",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

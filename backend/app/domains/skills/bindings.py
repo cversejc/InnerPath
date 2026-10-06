@@ -4,6 +4,7 @@ import json
 
 from .models import AISkillVersion
 from .definitions import ANALYSIS_STEPS
+from .lifecycle import require_active_skill
 from .service import (
     ensure_default_analysis_skill_versions, ensure_default_narrative_skill_versions,
     ensure_default_validator_skill_version,
@@ -32,6 +33,8 @@ async def freeze_report_skills(db, bindings=None, steps=()):
     bindings = dict(bindings)
     for step in steps:
         config = step.get("config") or {}
+        if config.get("skill_key"):
+            require_active_skill(config["skill_key"])
         version_id = config.get("skill_version_id")
         if version_id is not None:
             version = await db.get(AISkillVersion, version_id)
@@ -47,6 +50,7 @@ async def freeze_report_skills(db, bindings=None, steps=()):
             bindings[version.skill_key] = version_id
     frozen = {}
     for key, entry in bindings.items():
+        require_active_skill(key)
         version_id = entry.get("id") if isinstance(entry, dict) else entry
         if not isinstance(version_id, int) or isinstance(version_id, bool):
             raise ValueError("case_skill_binding_invalid")

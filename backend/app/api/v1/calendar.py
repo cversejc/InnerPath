@@ -24,7 +24,10 @@ from app.domains.calendar.decision_logs import (
     get_user_decision_logs,
 )
 from app.application.staff_calendar_access import get_calendar_for_staff
-from app.domains.calendar.requests import get_user_calendar_requests, serialize_calendar_request
+from app.domains.calendar.requests import (
+    get_user_calendar_requests,
+    serialize_calendar_request,
+)
 
 router = APIRouter()
 
@@ -86,14 +89,6 @@ async def create_my_calendar_request(
     return await serialize_calendar_request(db, calendar_request)
 
 
-@router.post("/requests/{request_id}/retry", response_model=CalendarRequestResponse, status_code=202)
-async def retry_my_calendar_request(request_id: int, current_user: User = Depends(get_current_active_user), db: AsyncSession = Depends(get_db)):
-    try:
-        return await serialize_calendar_request(db, await retry_calendar_production(db, current_user, request_id))
-    except ValueError as error:
-        raise HTTPException(status_code=404 if str(error) == "calendar_request_not_found" else 409, detail=str(error))
-
-
 @router.get("/requests", response_model=CalendarRequestListResponse)
 async def get_my_calendar_requests(
     current_user: User = Depends(get_current_active_user),
@@ -101,6 +96,22 @@ async def get_my_calendar_requests(
 ):
     return CalendarRequestListResponse(items=await get_user_calendar_requests(db, current_user.id))
 
+
+@router.post("/requests/{request_id}/retry", response_model=CalendarRequestResponse, status_code=status.HTTP_202_ACCEPTED)
+async def retry_my_calendar_request(
+    request_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        calendar_request = await retry_calendar_production(db, current_user, request_id)
+    except ValueError as error:
+        code = str(error)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND if code == "calendar_request_not_found" else status.HTTP_409_CONFLICT,
+            detail=code,
+        )
+    return await serialize_calendar_request(db, calendar_request)
 
 @router.get("/decision-logs", response_model=DecisionLogListResponse)
 async def get_my_decision_logs(

@@ -1,6 +1,6 @@
 <template>
   <section class="skill-instructions" aria-label="技能维护内容">
-    <p class="maintenance-note">
+    <p v-if="!intentOnly" class="maintenance-note">
       {{
         editable
           ? "修改目标与方法后保存草稿，评估通过后再发布。发布版本供咨询工作台后续运行使用。"
@@ -9,18 +9,18 @@
     </p>
     <template v-if="specification">
       <label v-if="editable"
-        >技能目标<textarea
+        >{{ intentOnly ? "目标" : "技能目标" }}<textarea
           :value="specification.instructions?.objective || ''"
           rows="3"
           @input="update({ objective: $event.target.value })"
         ></textarea>
       </label>
       <div v-else>
-        <h3>技能目标</h3>
+        <h3>{{ intentOnly ? "目标" : "技能目标" }}</h3>
         <p>{{ displayText(specification.instructions?.objective) }}</p>
       </div>
       <label v-if="editable"
-        >执行方法（每行一项）<textarea
+        >{{ intentOnly ? "分析方法（每行一项）" : "执行方法（每行一项）" }}<textarea
           :value="(specification.instructions?.methodology || []).join('\n')"
           rows="8"
           @input="
@@ -33,7 +33,7 @@
         ></textarea>
       </label>
       <div v-else>
-        <h3>执行方法</h3>
+        <h3>{{ intentOnly ? "分析方法" : "执行方法" }}</h3>
         <ol>
           <li
             v-for="(item, index) in specification.instructions?.methodology ||
@@ -44,7 +44,7 @@
           </li>
         </ol>
       </div>
-      <div class="skill-policy-summary">
+      <div v-if="!intentOnly" class="skill-policy-summary">
         <strong>示例使用</strong>
         <p>
           {{
@@ -57,16 +57,16 @@
           示例帮助学习方法与表达；用户事实须来自本次资料。报告由咨询师确认，日历通过整体校准后交付。
         </p>
       </div>
-      <details v-if="specification.instructions?.sop_contract">
+      <details v-if="!intentOnly && specification.instructions?.sop_contract">
         <summary>详细分析范围</summary>
         <ReadableData :value="specification.instructions.sop_contract" />
       </details>
-      <details v-if="specification.knowledge_policy?.snapshot?.length">
+      <details v-if="!intentOnly && specification.knowledge_policy?.snapshot?.length">
         <summary>技能知识参考</summary>
         <ReadableData :value="specification.knowledge_policy.snapshot" />
       </details>
     </template>
-    <details class="technical-config">
+    <details v-if="!intentOnly" class="technical-config">
       <summary>高级配置 · 原始结构</summary>
       <p>用于维护输入输出约束、模型参数和技术标识。字段名称须保留系统格式。</p>
       <label for="skill-specification">完整技能配置</label
@@ -89,20 +89,39 @@ import { patchInstructions, displayText } from "../presentation.js";
 import ReadableData from "./ReadableData.vue";
 export default {
   components: { ReadableData },
-  props: { text: String, editable: Boolean },
-  emits: ["update:text"],
+  props: {
+    text: String,
+    guidance: { type: Object, default: null },
+    editable: Boolean,
+    intentOnly: Boolean,
+    error: { type: String, default: "" },
+  },
+  emits: ["update:text", "update:guidance"],
   computed: {
     specification() {
-      return parseSpecification(this.text).value;
-    },
-    error() {
-      return parseSpecification(this.text).error;
+      if (this.intentOnly)
+        return {
+          instructions: this.guidance || { objective: "", methodology: [] },
+        };
+      const parsed = parseSpecification(this.text).value;
+      return parsed;
     },
   },
   methods: {
     displayText,
     update(patch) {
-      this.$emit("update:text", patchInstructions(this.text, patch));
+      if (this.intentOnly) {
+        this.$emit("update:guidance", {
+          objective: this.guidance?.objective || "",
+          methodology: Array.isArray(this.guidance?.methodology)
+            ? [...this.guidance.methodology]
+            : [],
+          ...patch,
+        });
+        return;
+      }
+      let sourceText = this.text;
+      this.$emit("update:text", patchInstructions(sourceText, patch));
     },
   },
 };
@@ -155,6 +174,9 @@ summary {
   padding: var(--space-3);
   border-left: 3px solid var(--jade);
   background: var(--surface);
+}
+.maintenance-note {
+  line-height: var(--leading-body);
 }
 .instruction-actions {
   display: flex;

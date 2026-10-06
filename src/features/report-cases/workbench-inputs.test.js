@@ -8,7 +8,9 @@ import {
   formatConsultantEvidenceValue,
   isVisibleConsultantEvidence,
   reportEvidenceTitle,
-  qualitySummaryLabel
+  qualitySummaryLabel,
+  currentReportFoundation,
+  visibleConsultantEvidence
 } from './workbench-inputs.js'
 
 function makeCase(currentStep = 'S1') {
@@ -111,7 +113,7 @@ test('report fragment headings are presented in Chinese', () => {
   assert.equal(reportFragmentTitle('report.unknown', 'unknown title'), '报告段落')
 })
 
-test('S1 displays the real application snapshot and system calculation evidence', () => {
+test('S1 application inputs stay separate from its calculation workspace', () => {
   const groups = buildWorkbenchInputGroups({
     stage: reportStage('S1'),
     reportCase: makeCase('S1'),
@@ -125,49 +127,55 @@ test('S1 displays the real application snapshot and system calculation evidence'
     }
   })
 
+  assert.deepEqual(groups.map(group => group.key), ['profile', 'context'])
   assert.equal(groups[0].items.find(item => item.title === '出生日期')?.body, '1991 年 9 月 22 日')
   assert.equal(groups[1].items.find(item => item.title === '本次主要困扰')?.body, '在稳定岗位和内部转岗之间犹豫。')
   assert.equal(groups[1].items.some(item => item.body.includes('profile_version')), false)
-  assert.equal(groups[2].items[0].title, '八字测算结果')
-  assert.match(groups[2].items[0].body, /仅供专业参考/)
 })
 
-test('system calculation evidence is summarized and duplicate calculations are collapsed', () => {
-  const calculation = {
-    bazi: {
-      year: { stem: '辛', branch: '未' },
-      month: { stem: '丁', branch: '酉' },
-      day: { stem: '乙', branch: '未' },
-      hour: { stem: '辛', branch: '巳' },
-      day_master: '乙'
-    },
-    ziwei: {
-      life_palace: { branch: '辰', main_stars: ['天同'] },
-      career_palace: { branch: '申', main_stars: ['天机', '太阴'] }
-    },
-    internal_run_id: 70
-  }
-  const groups = buildWorkbenchInputGroups({
-    stage: reportStage('S1'),
-    reportCase: makeCase('S1'),
-    content: {
-      evidence: [
-        { evidence_key: 'calculated.first', source_type: 'SYSTEM_CALCULATED', status: 'ACTIVE', value_json: calculation },
-        { evidence_key: 'calculated.duplicate', source_type: 'SYSTEM_CALCULATED', status: 'ACTIVE', value_json: structuredClone(calculation) }
-      ],
-      findings: [],
-      fragments: []
+test('S1 selects only the current mingli-v2 foundation evidence', () => {
+  const system = {
+    id: 70,
+    evidence_key: 'calculated.mingli_foundation.v2',
+    source_type: 'SYSTEM_CALCULATED',
+    status: 'ACTIVE',
+    created_at: '2026-10-01T00:00:00Z',
+    value_json: {
+      calculation_version: 'mingli-v2',
+      bazi: { year: { stem: '辛', branch: '未' } }
     }
-  })
+  }
+  const duplicate = {
+    ...system,
+    id: 71,
+    evidence_key: 'calculated.mingli_foundation.v2.r2',
+    created_at: '2026-10-02T00:00:00Z'
+  }
+  const legacy = {
+    id: 72,
+    evidence_key: 'system.bazi',
+    source_type: 'SYSTEM_CALCULATED',
+    status: 'ACTIVE',
+    value_json: { bazi: { day_master: '乙' } }
+  }
+  const correction = {
+    id: 73,
+    evidence_key: 'calculated.mingli_foundation.consultant.1',
+    source_type: 'CONSULTANT_CORRECTED',
+    status: 'ACTIVE',
+    created_at: '2026-10-03T00:00:00Z',
+    value_json: {
+      calculation_version: 'mingli-v2',
+      bazi: { year: { stem: '壬', branch: '申' } }
+    }
+  }
 
-  assert.equal(groups[2].items.length, 1)
-  assert.equal(groups[0].display, 'fields')
-  assert.equal(groups[1].display, 'fields')
-  assert.equal(groups[2].display, 'calculation')
-  assert.deepEqual(groups[2].items[0].calculation, calculation)
-  assert.match(groups[2].items[0].body, /年柱辛未、月柱丁酉、日柱乙未、时柱辛巳/)
-  assert.match(groups[2].items[0].body, /命宫：辰宫，天同/)
-  assert.doesNotMatch(groups[2].items[0].body, /internal_run_id|70/)
+  assert.equal(currentReportFoundation([legacy, system, duplicate]), duplicate)
+  assert.equal(currentReportFoundation([system, correction]), correction)
+  assert.deepEqual(
+    visibleConsultantEvidence([legacy, system, duplicate, correction]),
+    [correction]
+  )
 })
 
 test('evidence references use consultant-readable names instead of list numbers or raw keys', () => {

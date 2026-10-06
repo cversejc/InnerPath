@@ -20,9 +20,11 @@ export default {
         this.calendarRequestDraft.profile_version = user.profile_version || 1
         this.calendarRequests = requestResponse.items || []
         this.reports = reportResponse.items || []
-        const requestedReportId = Number(this.$route.query.sourceReportId)
+        const requestedReportId = Number(this.$route.query.source_report_id || this.$route.query.sourceReportId)
         const requestedReport = this.reports.find(report => report.id === requestedReportId)
-        this.calendarRequestDraft.source_report_id = requestedReport?.id || this.reports[0]?.id || ''
+        const selectedReport = this.reports.find(report => report.id === Number(this.calendarRequestDraft.source_report_id))
+        this.calendarRequestDraft.source_report_id = requestedReport?.id || selectedReport?.id || this.reports[0]?.id || ''
+        this.scheduleCalendarPolling()
         if (this.$route.query.generate === '1' && this.reports.length) this.openCalendarRequest()
         this.scheduleCalendarPolling()
       } catch (error) {
@@ -32,10 +34,6 @@ export default {
       }
     },
   openCalendarRequest() {
-      if (!this.calendarRequestDraft.source_report_id) {
-        this.goToReports()
-        return
-      }
       this.calendarRequestError = ''
       this.calendarRequestFeedback = ''
       if (!this.reports.length) {
@@ -123,9 +121,10 @@ export default {
           ? `已基于报告 #${created.source_report_id} 生成日历 #${created.calendar_id}。`
           : '已提交生成。你可以离开页面，回来后继续查看进度。'
         this.showCalendarRequestForm = false
+        const sourceReportId = this.calendarRequestDraft.source_report_id
         this.calendarRequestDraft = {
           profile_version: this.profile?.profile_version || 1,
-          source_report_id: this.calendarRequestDraft.source_report_id,
+          source_report_id: sourceReportId,
           ...defaultThirtyDayRange(),
           focus_topics: [],
           usage_scenario: '',
@@ -135,8 +134,8 @@ export default {
           decision_description: '',
           additional_info: ''
         }
-        await this.loadCalendar()
         await this.loadCalendarRequestData()
+        await this.$router.push(`/pages/requests/requests?submitted=${created.id}&kind=calendar`)
       } catch (error) {
         this.calendarRequestError = error.response?.data?.detail || '申请提交失败，请稍后再试。'
         await this.loadCalendarRequestData()

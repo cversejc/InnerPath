@@ -116,12 +116,12 @@ class CalendarRequestResponse(CalendarRequestCreate):
     reviewer_id: Optional[int] = None
     reviewed_at: Optional[datetime] = None
     review_note: Optional[str] = None
+    generation_error: Optional[str] = None
     generation_stage: Optional[str] = None
     completed_runs: int = 0
     total_runs: int = 8
     task_id: Optional[str] = None
     progress: int = 0
-    generation_error: Optional[str] = None
     retry_count: int = 0
     created_at: datetime
     updated_at: datetime

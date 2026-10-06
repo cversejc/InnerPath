@@ -10,8 +10,18 @@ export async function createSkillVersion(data) {
   return response.data
 }
 
+export async function createSkillDraft(versionId) {
+  const response = await apiClient.post(`/admin/skills/${versionId}/draft`)
+  return response.data
+}
+
 export async function updateSkillVersion(versionId, data) {
   const response = await apiClient.put(`/admin/skills/${versionId}`, data)
+  return response.data
+}
+
+export async function updateSkillReasoningGuidance(versionId, data) {
+  const response = await apiClient.put(`/admin/skills/${versionId}/reasoning-guidance`, data)
   return response.data
 }
 
@@ -105,7 +115,9 @@ export async function getSkillEvaluationBatches(versionId) {
 export default {
   getSkillVersions,
   createSkillVersion,
+  createSkillDraft,
   updateSkillVersion,
+  updateSkillReasoningGuidance,
   publishSkillVersion,
   runSkill,
   getSkillRuns,

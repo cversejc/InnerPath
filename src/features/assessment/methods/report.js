@@ -35,7 +35,8 @@ export default {
       this.saveDraft()
       let request
       if (this.editingRequestId) {
-        await updateServiceRequest(this.editingRequestId, application)
+        const { service_type: _serviceType, ...payload } = application
+        await updateServiceRequest(this.editingRequestId, payload)
         request = await resubmitServiceRequest(this.editingRequestId)
       } else {
         request = await createServiceRequest({
@@ -52,7 +53,7 @@ export default {
       await this.$router.replace(`/pages/requests/requests?submitted=${request.id}&kind=report`)
     } catch (error) {
       console.error('报告申请提交失败:', error)
-      this.formMessage = error.response?.data?.detail || error.message || '申请提交失败，请检查网络后重试。'
+      this.formMessage = error.response?.data?.detail || error.message || '报告申请提交失败，请检查网络后重试。'
       this.currentStep = 2
       this.isGenerating = false
       this.focusStepHeading()

@@ -1,0 +1,66 @@
+{
+  "signature": "d440f21027ed7e376ee471a681fd0e1b193c3816cafa6df42cbb89e8b0163762",
+  "skill_digest": "401c626a6af612fee324e7049af24cc79f57a1f53a5ce40b5c9a0d4437b700a8",
+  "runtime_instruction": "全部资料为合成验收数据。不得冒充真实客户；未给出的经历不可补造。心理假设必须接受自述和反证校正。只用已提供依据。每段通常300–600汉字，阶段地图/实验可适当加长。全部分配analysis_refs和required_finding_refs须实际使用。requirement_coverage逐项返回，不用一句空泛摘要宣称完成。暂缓内容须有具体可回答补问。",
+  "output": {
+    "status": "READY_FOR_REVIEW",
+    "title": "你的能量是怎么流动的：一份关于资源、耗电与加工路径的说明",
+    "content": "先说你的资源。你命盘里透出来的三样东西——正财、伤官、正印——翻译成日常语言，是三种你本来就有的能力：正财是「把事落成结果」的务实感，伤官是「有想法、能表达、能创造」的那股劲，正印是「学得进去、也愿意接受支持」的底色。这三样不是抽象标签，它们在你身上有具体的样子：项目开头你脑子里会冒出很多想法，这是伤官在工作；你愿意花时间学、也吃得住安静学习的场景，这是正印在工作。而偏印这一项没有显现，只说明它不是你的第一反应通道，不等于你缺了什么。\n\n再看能量。你自述独自散步时比较放松，安静学习、把边界理清楚、待在被支持的学习环境里，这些是你事后能恢复的场景。反过来，临时请求密集、熬夜输出、反复修改、频繁应酬和表面社交，是你明确反馈过的耗电场景——答应额外任务后常熬夜，下班后还常查看消息怕漏事，都是这条线上的。这里有一个重要的反例：面对熟悉的同事、并且截止时间明确时，你是能够协商边界的。这说明「耗电」不是你所有工作场景的底色，而是有条件的。真正值得观察的不是「你是不是总在透支」，而是「什么条件下你更容易透支」。可以每晚用一分钟记下今天充电和耗电各一项，连续两周再回看，比凭印象判断更可靠。需要说明的是，把散步、安静学习这类活动对应到五行上，只是一种可试验的建议，不承诺效果。\n\n接下来是加工路径。你没有提供 MBTI 或八维自报，所以这里不推断你的类型，也不给任何功能打分，只描述四条已经在你自述里出现过的倾向。探索入口：项目开头想法多，你习惯先发散再收敛。价值判断入口：你很在意「靠谱、不让人失望」，倾向于用外部评价来校准自己做得对不对。执行入口：担心做不好就反复修改，接近截止才急着交付，启动偏晚。反馈入口：下班后常查看消息怕漏事，习惯持续扫描外部反馈。\n\n这四条放在一起，张力就出来了：探索和价值判断这两个入口，都在朝外看——看别人的期待、看自己有没有让人失望；而执行和反馈这两个入口，缺少的是内部节奏——什么时候开始、什么时候算够、什么时候可以停，这些标准目前更多由外部决定。前面提到的「先答应、后生硬退出」，以及「理智化、反复修改」这两个模式，从能量角度看，都是这套路径在缺内部节奏时的自然结果：因为不知道什么时候算够，所以先答应下来，再用熬夜和反复修改去补。\n\n以上四条路径都是倾向假设，不是定论，需要你用实际经验来校正。可以问自己两个问题：你更习惯先发散还是先收敛？在什么条件下你更容易启动执行？这两个答案会比任何类型标签更贴近你。",
+    "used_findings": [
+      "s1.ten_gods.resources",
+      "s4.defense.agree_then_withdraw",
+      "s4.defense.intellectualize_perfectionism"
+    ],
+    "used_analysis_fragments": [
+      "analysis.s4.energy",
+      "analysis.s4.functions"
+    ],
+    "used_actions": [],
+    "transition_hint": "能量的账本和加工路径都摊开了。下一章会看这条「先答应」的脚本真正跑起来时，在工作、关系和时间里长成了哪几个反复出现的卡点。",
+    "presentation_meta": {
+      "chapter": "identity",
+      "fragment_key": "report.identity.energy_pattern",
+      "sequence_no": 7,
+      "reader_profile": {
+        "theory_density": "medium",
+        "action_density": "high",
+        "metaphor_density": "low"
+      },
+      "tone": "第二人称、现实语言、描述而非判断",
+      "length_note": "约 900 汉字，符合深入详细偏好"
+    },
+    "requirement_coverage": [
+      {
+        "requirement_id": "R.energy",
+        "status": "FULFILLED",
+        "reason": "已按 analysis.s4.energy 写出充电/耗电清单并对照用户自述与反例，按 analysis.s4.functions 写出探索→价值→执行→反馈四条路径及张力，并在无 MBTI/八维自报的前提下明确不推断类型与分数。",
+        "quote": "你没有提供 MBTI 或八维自报，所以这里不推断你的类型，也不给任何功能打分",
+        "follow_up_questions": [
+          "哪些活动让你事后感到恢复？",
+          "什么条件下你更容易透支？",
+          "你更习惯先发散还是先收敛？",
+          "什么条件下你更容易启动执行？"
+        ]
+      }
+    ]
+  },
+  "trace": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 17657,
+    "output_tokens": 1102,
+    "latency_ms": 5521,
+    "estimated_cost": null,
+    "finish_reason": "stop",
+    "request_id": "2f6694a0-897f-4087-83ce-42afddb800cb",
+    "thinking_enabled": false,
+    "skill_version_id": 80,
+    "skill_key": "report.fragment_authoring",
+    "skill_version": 7,
+    "processor": "reports.fragment_authoring",
+    "global_policy_version": "global-policy-v1",
+    "prompt_sha256": "1aff1d1cac4d8c3776a9e865ca1a495ae71ac5015df670da497aa561f56c060f",
+    "output_validation": "passed"
+  },
+  "review": "TECHNICAL_ACCEPTANCE_FOR_SYNTHETIC_SAMPLE; consultant review pending"
+}

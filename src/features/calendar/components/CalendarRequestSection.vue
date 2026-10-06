@@ -39,8 +39,11 @@ function requestStatusLabel(status) {
     queued: '排队中',
     processing: 'AI 生成中',
     fulfilled: '已生成并交付',
+    delivered: '已开放使用',
     failed: '生成失败',
     pending: '历史申请',
+    accepted: '旧流程已停用',
+    submitted: '旧流程已停用',
     reviewing: '历史申请',
     rejected: '已退回',
     cancelled: '已取消'
@@ -121,7 +124,7 @@ function requestStatusLabel(status) {
             </div>
             <div class="request-form-field">
               <label for="calendar-request-end">结束日期 <span class="required">*</span></label>
-              <input id="calendar-request-end" v-model="draft.end_date" type="date" required>
+              <input id="calendar-request-end" v-model="draft.end_date" type="date" required readonly aria-readonly="true">
               <small>周期必须连续 30 天</small>
             </div>
           </div>

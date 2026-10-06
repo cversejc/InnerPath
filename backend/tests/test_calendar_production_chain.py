@@ -12,6 +12,7 @@ from app.main import app  # imports the full table registry
 from app.db.base import Base
 from app.models.user import User
 from app.domains.reports.models import Report
+from app.domains.service_requests.models import ServiceRequest
 from app.domains.calendar.models import CalendarEntry, CalendarRequest, UserCalendar, DecisionLog
 from app.domains.calendar.schemas import CalendarRequestCreate
 from app.domains.calendar.production import select_tone
@@ -51,12 +52,24 @@ async def seed_report(db):
     other = User(phone="13800009902", name="其他用户", gender="female", birth_year=1990, birth_month=5, birth_day=12)
     db.add_all([user, other])
     await db.flush()
-    report = Report(user_id=user.id, birth_date=date(1990, 5, 12), energy_profile={}, career_guidance={},
+    source_request = ServiceRequest(
+        user_id=user.id,
+        service_type="report",
+        status="delivered",
+        request_payload={},
+        result_type="report",
+    )
+    db.add(source_request)
+    await db.flush()
+    report = Report(user_id=user.id, request_id=source_request.id, reviewed_at=datetime.utcnow(),
+                    birth_date=date(1990, 5, 12), energy_profile={}, career_guidance={},
                     relationship_pattern={}, personal_growth={}, summary="倾向在工作边界上反复思考，尝试小步验证。",
                     content_payload={"structured_sections": [{"fragment_key": "report.boundary", "content": "工作边界"}],
                         "mingli_foundation": {"bazi": {"day": "丁丑"}, "bazi_facts": {"dayun": [
                             {"pillar": "甲寅", "start_year": 2020, "end_year": 2029}]}}})
     db.add(report)
+    await db.flush()
+    source_request.result_id = report.id
     db.add(DecisionLog(user_id=user.id, log_date=date(2026, 9, 30), content="完成一次边界沟通"))
     await db.commit()
     data = CalendarRequestCreate(source_report_id=report.id, start_date=date(2026, 10, 4),
@@ -74,17 +87,17 @@ class CalendarGateway:
         self.calls += 1
         inputs = json.loads(user_prompt)
         facts = {f["entry_date"]: f for f in inputs["temporal_facts"].get("days", [])}
-        if "30天时序分析" in system_prompt:
+        if "calendar.temporal_analysis" in system_prompt:
             result = {"days": [{"entry_date": d, "primary_theme": "表达沟通", "secondary_theme": "关系边界",
                 "psychological_theme": "在实际工作中练习清楚表达边界", "source_refs": ["invented" if self.bad_source else "report.boundary"],
                 "dimensions": {key: {"score": 1, "reason": "已审核报告与时序的条件性支持"} for key in
                     ["useful_support", "flow", "interaction_stability", "pattern_regulation"]},
                 "windows": [{"period": w["period"], "label": "小步验证", "suggestion": "安排短沟通"}
                             for w in facts[d]["windows"][:2]]} for d in inputs["requested_dates"]]}
-        elif "30天总基调" in system_prompt:
+        elif "calendar.monthly_tone" in system_prompt:
             result = {"monthly": {key: "先以小步行动验证边界，再按实际反馈调整节奏。" for key in
                 ["direction", "growth_task", "resource", "old_pattern", "decision_principle", "rhythm_changes"]}}
-        elif "逐日决策文案" in system_prompt:
+        elif "calendar.daily_authoring" in system_prompt:
             analysis = {a["entry_date"]: a for a in inputs["temporal_analysis"]}
             def action_refs(day):
                 return inputs["practice_schedule"].get(day, [])
@@ -142,7 +155,7 @@ async def test_queued_calendar_pins_versions_publishes_30_days_and_preserves_log
     newer_request = await queue_calendar_from_report(db, user, data)
     assert newer_request.input_snapshot["calendar_examples"]["calendar.temporal_analysis"][0]["example_id"] == example.id
     assert request.input_snapshot["calendar_examples"]["calendar.temporal_analysis"] == []
-    with pytest.raises(ValueError, match="source_report_mismatch"):
+    with pytest.raises(ValueError, match="source_report_not_delivered"):
         await queue_calendar_from_report(db, other, data.model_copy(update={"profile_version": None}))
 
 
@@ -207,13 +220,13 @@ async def test_monthly_review_rewrites_monthly_and_cannot_be_fixed_by_daily_patc
             result = await super().complete(**kwargs)
             inputs = json.loads(kwargs["user_prompt"])
             output = json.loads(result.content)
-            if "30天总基调" in kwargs["system_prompt"]:
+            if "calendar.monthly_tone" in kwargs["system_prompt"]:
                 self.monthly_calls += 1
                 if self.monthly_calls == 2:
                     assert inputs["previous_monthly"]["rhythm_changes"] == wrong
                     assert inputs["quality_feedback"][0]["field_path"] == "monthly.rhythm_changes"
                 output["monthly"]["rhythm_changes"] = wrong if self.monthly_calls == 1 else corrected
-            elif "逐日决策文案" in kwargs["system_prompt"]:
+            elif "calendar.daily_authoring" in kwargs["system_prompt"]:
                 self.daily_calls += 1
             elif "30天整体校准" in kwargs["system_prompt"]:
                 self.reviews += 1
@@ -336,7 +349,8 @@ async def test_two_specialties_accept_and_hand_off_sequential_steps(chain_db):
     await db.flush()
     request, case = await create_user_service_request(db, user, ServiceRequestCreate(service_type="report",
         profile={"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
-        context={"current_challenge": "测试工作边界", "focus_topics": ["career"]}, idempotency_key="chain-request-1"))
+        context={"current_challenge": "测试工作边界", "focus_topics": ["career"],
+                 "expected_outcomes": ["明确下一步"]}, idempotency_key="chain-request-1"))
     expected_specialties = {
         "S1": "mingli", "S2": "mingli", "S3": "mingli",
         "S4": "psychology", "S5": "psychology", "S6": "psychology",
@@ -514,7 +528,8 @@ async def test_delivered_version_is_calendar_source_and_links_logs_to_case(chain
             submitted = await client.post("/api/v1/service-requests", json={
                 "service_type": "report",
                 "profile": {"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
-                "context": {"current_challenge": "测试边界", "focus_topics": ["career"]},
+                "context": {"current_challenge": "测试边界", "focus_topics": ["career"],
+                            "expected_outcomes": ["明确下一步"]},
                 "idempotency_key": "delivered-chain-http",
             })
             assert submitted.status_code == 201, submitted.text
@@ -684,7 +699,8 @@ async def test_http_application_dual_acceptance_and_step_permissions(chain_db):
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
             submitted = await client.post("/api/v1/service-requests", json={"service_type": "report",
                 "profile": {"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
-                "context": {"current_challenge": "工作边界", "focus_topics": ["career"]}, "idempotency_key": "http-chain"})
+                "context": {"current_challenge": "工作边界", "focus_topics": ["career"],
+                            "expected_outcomes": ["明确下一步"]}, "idempotency_key": "http-chain"})
             assert submitted.status_code == 201, submitted.text
             request_id = submitted.json()["id"]
             case = await chain_db.scalar(select(ReportCase).where(ReportCase.service_request_id == request_id))
