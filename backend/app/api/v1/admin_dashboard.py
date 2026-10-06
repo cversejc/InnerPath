@@ -15,6 +15,7 @@ from app.api.v1.admin_support import (
 )
 from app.api.v1.admin_activity_support import _load_audits
 from app.api.v1.admin_dashboard_support import _daily_counts
+from app.application.admin_service_sla import get_admin_report_request_sla
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.calendar.models import CalendarRequest, DecisionLog, UserCalendar
@@ -170,6 +171,11 @@ async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewRes
         alerts.append(DashboardAlert(key="failed_logins", level="danger", label="范围内失败登录", count=failed_logins, route="logs"))
 
     recent_activity, _ = await _load_audits(db, page=1, size=8)
+    service_sla = await get_admin_report_request_sla(
+        db,
+        start_at=start_dt,
+        end_at=end_dt,
+    )
     return DashboardOverviewResponse(
         range_preset=preset,
         start_date=start_date,
@@ -192,6 +198,7 @@ async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewRes
             reports_by_status=distribution(report_rows, REPORT_STATUS_LABELS),
             calendars_by_status=distribution(calendar_rows, CALENDAR_STATUS_LABELS),
         ),
+        service_sla=service_sla,
         alerts=alerts,
         recent_activity=[AuditLogResponse.model_validate(item) for item in recent_activity],
     )

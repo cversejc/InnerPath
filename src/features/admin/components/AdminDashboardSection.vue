@@ -23,6 +23,24 @@ defineProps({
 })
 
 defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab'])
+
+const consultationTypeLabels = {
+  overall: '全部报告',
+  metaphysics: '命理咨询',
+  psychology: '心理咨询',
+  integrated: '综合咨询',
+  unspecified: '未分类'
+}
+
+function consultationTypeLabel(value) {
+  return consultationTypeLabels[value] || value
+}
+
+function formatElapsedHours(value) {
+  if (value === null || value === undefined) return '—'
+  if (value < 1) return `${Math.round(value * 60)} 分钟`
+  return `${Number(value).toFixed(1)} 小时`
+}
 </script>
 
 <template>
@@ -86,6 +104,26 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
             </button>
           </div>
           <div v-else class="quiet-state"><IconMark name="spark" /><p>目前没有需要立即处理的事项。</p></div>
+        </article>
+
+        <article class="dashboard-panel service-sla-panel">
+          <div class="panel-heading"><div><p class="eyebrow">REQUEST TIMING</p><h3>申请时效</h3></div><span class="panel-note">按申请创建日期统计</span></div>
+          <div class="admin-table-wrap sla-table-wrap" tabindex="0" aria-label="报告申请时效表，可横向滚动查看">
+            <table class="admin-table service-sla-table">
+              <thead><tr><th>咨询方向</th><th>申请数</th><th>24 小时内接单率</th><th>提交 → 接单</th><th>接单 → 交付</th></tr></thead>
+              <tbody>
+                <tr v-for="item in dashboard.service_sla?.items || []" :key="item.consultation_type">
+                  <td><strong>{{ consultationTypeLabel(item.consultation_type) }}</strong></td>
+                  <td>{{ item.request_count }}</td>
+                  <td>{{ item.response_within_24h_rate === null ? '—' : `${item.response_within_24h_rate}%` }}<small>{{ item.response_sla_samples }} 个到期样本 · 超期未接单 {{ item.overdue_unaccepted }}</small></td>
+                  <td>{{ formatElapsedHours(item.response_p50_hours) }} / {{ formatElapsedHours(item.response_p90_hours) }}<small>P50 / P90</small></td>
+                  <td>{{ formatElapsedHours(item.delivery_p50_hours) }} / {{ formatElapsedHours(item.delivery_p90_hours) }}<small>{{ item.delivery_samples }} 个交付样本 · P50 / P90</small></td>
+                </tr>
+                <tr v-if="!dashboard.service_sla?.items?.length"><td colspan="5" class="empty-cell">本期没有报告申请数据。</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="service-sla-note">24 小时样本包含已接单申请及仍开放且超时未接单申请；未到期、已撤回或拒绝的申请不计入。交付时长为首次接单到交付的总时长，包含待补充资料期间。</p>
         </article>
 
         <article class="dashboard-panel distribution-panel">

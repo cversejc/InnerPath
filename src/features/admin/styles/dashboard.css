@@ -39,6 +39,12 @@
 .admin-shell .chart-label { fill: var(--muted, #7d6653); font-family: var(--font-ui); font-size: 10px; }
 .admin-shell .trend-line { fill: none; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
 .admin-shell .alert-panel { min-height: 330px; }
+.admin-shell .service-sla-panel { grid-column: 1 / -1; min-width: 0; }
+.admin-shell .service-sla-table { min-width: 760px; }
+.admin-shell .service-sla-table td { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.admin-shell .service-sla-table td strong { color: #3b2d24; }
+.admin-shell .service-sla-table td small { display: block; margin-top: 4px; color: var(--muted, #7d6653); font-size: 10px; }
+.admin-shell .service-sla-note { margin: 12px 0 0; color: var(--muted, #7d6653); font-size: 13px; line-height: 1.5; }
 .admin-shell .alert-list { display: grid; gap: 8px; margin-top: 16px; }
 .admin-shell .alert-item { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 10px; width: 100%; border: 1px solid rgba(80, 54, 32, .1); border-radius: 11px; padding: 12px; background: rgba(255, 250, 240, .6); text-align: left; cursor: pointer; }
 .admin-shell .alert-item:hover { border-color: rgba(184, 92, 80, .4); transform: translateX(2px); }

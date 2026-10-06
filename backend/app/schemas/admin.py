@@ -307,6 +307,24 @@ class DashboardAlert(BaseModel):
     route: Optional[str] = None
 
 
+class DashboardServiceSLAItem(BaseModel):
+    consultation_type: str
+    request_count: int = 0
+    accepted_samples: int = 0
+    response_sla_samples: int = 0
+    overdue_unaccepted: int = 0
+    response_within_24h_rate: Optional[float] = None
+    response_p50_hours: Optional[float] = None
+    response_p90_hours: Optional[float] = None
+    delivery_samples: int = 0
+    delivery_p50_hours: Optional[float] = None
+    delivery_p90_hours: Optional[float] = None
+
+
+class DashboardServiceSLAMetrics(BaseModel):
+    items: list[DashboardServiceSLAItem] = Field(default_factory=list)
+
+
 class DashboardOverviewResponse(BaseModel):
     range_preset: str
     start_date: date
@@ -315,6 +333,7 @@ class DashboardOverviewResponse(BaseModel):
     metrics: DashboardMetricResponse
     trends: list[DashboardTrendPoint]
     distributions: DashboardDistributionResponse
+    service_sla: DashboardServiceSLAMetrics = Field(default_factory=DashboardServiceSLAMetrics)
     alerts: list[DashboardAlert]
     recent_activity: list[AuditLogResponse]
 
