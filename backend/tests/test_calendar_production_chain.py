@@ -15,7 +15,7 @@ from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.calendar.models import CalendarEntry, CalendarRequest, UserCalendar, DecisionLog
 from app.domains.calendar.schemas import CalendarRequestCreate
-from app.domains.calendar.production import select_tone
+from app.domains.calendar.production import diversify_repeated_suitable, select_tone
 from app.domains.calendar.temporal import calculate_temporal_facts
 from app.domains.skills.models import SkillRun, AISkillVersion
 from app.domains.skills.runtime import ModelCompletion
@@ -296,6 +296,21 @@ async def test_duplicate_daily_awareness_is_repaired_before_calibration(chain_db
         await chain_db.scalar(select(UserCalendar).where(UserCalendar.calendar_request_id == request.id))
     ).meta_payload["daily_details"].values()}) == 30
     assert gateway.calls == 9
+
+
+def test_repeated_suitable_normalization_deduplicates_existing_observation_points():
+    repeated = "收到请求时先停顿，再决定是否答应；记录执行前最明显的阻力；记录执行前最明显的阻力。"
+    rows = [
+        {"entry_date": "2026-10-04", "keyword": "停顿、边界", "suitable": [repeated]},
+        {"entry_date": "2026-10-05", "keyword": "协商、反馈", "suitable": [repeated]},
+    ]
+
+    changes = diversify_repeated_suitable(rows)
+
+    assert len(changes) == 2
+    assert rows[0]["suitable"][0].count("记录执行前最明显的阻力") == 1
+    assert rows[1]["suitable"][0].count("记录执行前最明显的阻力") == 1
+    assert rows[1]["suitable"][0].endswith("记录执行前最明显的阻力。")
 
 
 @pytest.mark.asyncio

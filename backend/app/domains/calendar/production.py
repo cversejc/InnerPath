@@ -213,6 +213,44 @@ def diversify_repeated_suitable(rows, previous_rows=()):
         "记录完成后的结果与需要调整的地方。",
         "复盘今天的记录，决定下一次如何微调。",
     ]
+    progression_keys = {
+        item.rstrip("。 ").casefold(): item
+        for item in progression
+    }
+
+    def normalize_action(action, count):
+        parts = [part.strip() for part in re.split(r"[；;]", action) if part.strip()]
+        if not parts:
+            return action
+        base = parts[0]
+        extras = []
+        seen_parts = set()
+        for part in parts[1:]:
+            key = part.rstrip("。 ").casefold()
+            if key in seen_parts:
+                continue
+            seen_parts.add(key)
+            extras.append(part)
+
+        repeated_stages = [
+            progression_keys[key]
+            for key in seen_parts
+            if key in progression_keys
+        ]
+        custom_extras = [
+            part for part in extras
+            if part.rstrip("。 ").casefold() not in progression_keys
+        ]
+        if count and not custom_extras:
+            extras = [progression[(count - 1) % len(progression)]]
+        elif repeated_stages:
+            extras = custom_extras + [repeated_stages[0]]
+
+        normalized = "；".join([base, *extras]) if extras else base
+        if normalized == action:
+            return action
+        return normalized.rstrip("。 ") + "。"
+
     for source in previous_rows:
         if not isinstance(source, dict):
             continue
@@ -235,9 +273,8 @@ def diversify_repeated_suitable(rows, previous_rows=()):
                 continue
             normalized = " ".join(action.split("；", 1)[0].split()).casefold()
             count = seen.get(normalized, 0)
-            if count:
-                stage = progression[(count - 1) % len(progression)]
-                updated = action.rstrip("。 ") + "；" + stage
+            updated = normalize_action(action, count)
+            if updated != action:
                 actions[index] = updated
                 changes.append({"entry_date": source.get("entry_date"), "field": f"suitable.{index}",
                     "before": action, "after": updated, "rule": "stage_repeated_scheduled_action"})
