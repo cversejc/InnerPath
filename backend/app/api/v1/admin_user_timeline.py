@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.audit.models import AuditLog
 from app.domains.calendar.models import CalendarRequest, DecisionLog, UserCalendar
+from app.domains.feedback.models import ServiceFeedback
 from app.domains.reports.models import Report, ReportTask
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.workflow.models import ReportCase, StepTask
@@ -37,6 +38,7 @@ async def get_admin_user_timeline(
     report_tasks = await recent(ReportTask, ReportTask.user_id == user_id)
     calendars = await recent(UserCalendar, UserCalendar.user_id == user_id)
     decision_logs = await recent(DecisionLog, DecisionLog.user_id == user_id)
+    service_feedback = await recent(ServiceFeedback, ServiceFeedback.user_id == user_id)
     report_cases = await recent(ReportCase, ReportCase.user_id == user_id)
     workflow_instance_ids = [
         item.workflow_instance_id
@@ -100,6 +102,7 @@ async def get_admin_user_timeline(
             report_tasks=report_tasks,
             calendars=calendars,
             decision_logs=decision_logs,
+            service_feedback=service_feedback,
             audit_entries=audit_entries,
             report_cases=report_cases,
             workflow_steps=workflow_steps,

@@ -23,6 +23,7 @@ _CONSULTATION_LABELS = {
 }
 
 _AUDIT_ACTION_LABELS = {
+    "user.profile.update": "用户更新个人资料",
     "user.profile.update.admin": "管理员更新用户资料",
     "user.status.update": "管理员调整账号状态",
     "user.role.update": "管理员调整账号角色",
@@ -30,6 +31,11 @@ _AUDIT_ACTION_LABELS = {
     "service_request.assignment.update": "管理员调整咨询师分配",
     "service_request.reject": "管理员关闭服务申请",
     "calendar_request.review": "管理员审核日历申请",
+    "calendar.generation.retry": "用户重试日历生成",
+    "calendar.generation.completed": "日历生成已交付",
+    "calendar.generation.failed": "日历生成失败",
+    "calendar.ai.deliver": "日历生成已交付",
+    "service_feedback.update": "管理员跟进服务反馈",
     "workflow.step.assign": "调整报告流程负责人",
     "workflow.step.return": "退回报告流程节点",
     "workflow.step.reopen": "重新打开报告流程节点",
@@ -53,6 +59,19 @@ _RESOURCE_LABELS = {
     "report": "报告",
     "calendar": "日历",
     "decision_log": "行动记录",
+    "service_feedback": "服务反馈",
+}
+
+_FEEDBACK_TYPE_LABELS = {
+    "PRAISE": "表扬",
+    "SUGGESTION": "建议",
+    "COMPLAINT": "投诉",
+}
+
+_FEEDBACK_STATUS_LABELS = {
+    "NEW": "待跟进",
+    "IN_PROGRESS": "跟进中",
+    "RESOLVED": "已处理",
 }
 
 
@@ -71,6 +90,7 @@ def build_admin_user_timeline(
     calendars,
     decision_logs,
     audit_entries,
+    service_feedback=(),
     report_cases=(),
     workflow_steps=(),
     workflow_audit_entries=(),
@@ -208,6 +228,31 @@ def build_admin_user_timeline(
             "calendar_request", item.id, description)
         add(f"calendar-request:{item.id}:reviewed", "calendar_request", "日历申请已审核", item.reviewed_at,
             "calendar_request", item.id, description)
+        if item.status in {"fulfilled", "delivered", "failed"}:
+            has_generation_audit = any(
+                log.action in {
+                    "calendar.generation.completed",
+                    "calendar.generation.failed",
+                    "calendar.ai.deliver",
+                }
+                and (
+                    log.resource_id == str(item.id)
+                    or str((parse_audit_details(getattr(log, "details", None)) or {}).get("calendar_request_id"))
+                    == str(item.id)
+                )
+                for log, _ in audit_entries
+            )
+            if not has_generation_audit:
+                label = "日历生成失败" if item.status == "failed" else "日历生成已交付"
+                add(
+                    f"calendar-request:{item.id}:generation:{item.status}",
+                    "calendar_request",
+                    label,
+                    item.updated_at,
+                    "calendar_request",
+                    item.id,
+                    description,
+                )
 
     for item in reports:
         if item.is_deleted:
@@ -238,15 +283,67 @@ def build_admin_user_timeline(
         label = "决策记录已保存" if item.kind == "decision" else "行动记录已保存"
         add(f"decision-log:{item.id}:created", "decision_log", label, item.created_at,
             "decision_log", item.id, f"记录 #{item.id} · {item.log_date}")
+        updated_at = getattr(item, "updated_at", None)
+        if updated_at and _order_timestamp(updated_at) > _order_timestamp(item.created_at):
+            updated_label = "决策记录已更新" if item.kind == "decision" else "行动记录已更新"
+            add(f"decision-log:{item.id}:updated", "decision_log", updated_label, updated_at,
+                "decision_log", item.id, f"记录 #{item.id} · {item.log_date}")
+
+    feedback_by_id = {item.id: item for item in service_feedback}
+    for item in service_feedback:
+        feedback_type = _FEEDBACK_TYPE_LABELS.get(item.feedback_type, "反馈")
+        target_label = (
+            f"报告申请 #{item.service_request_id}"
+            if item.service_request_id is not None
+            else f"日历申请 #{item.calendar_request_id}"
+        )
+        description = f"反馈 #{item.id} · {target_label} · {feedback_type} · 待跟进"
+        if item.rating is not None:
+            description += f" · 评分 {item.rating}/5"
+        add(
+            f"service-feedback:{item.id}:created",
+            "service_feedback",
+            "用户提交服务反馈",
+            item.created_at,
+            "service_feedback",
+            item.id,
+            description,
+        )
 
     for log, actor_name in audit_entries:
+        if log.action == "service_feedback.submit":
+            continue
         label = _AUDIT_ACTION_LABELS.get(log.action, "后台操作")
-        resource_label = _RESOURCE_LABELS.get(log.resource_type, "记录")
-        description = f"{resource_label}{f' #{log.resource_id}' if log.resource_id else ''}"
+        details = parse_audit_details(getattr(log, "details", None)) or {}
+        resource_type = log.resource_type
+        resource_id = log.resource_id
+        if log.action == "calendar.ai.deliver":
+            resource_type = "calendar_request"
+            resource_id = str(details.get("calendar_request_id") or resource_id)
+        resource_label = _RESOURCE_LABELS.get(resource_type, "记录")
+        description = f"{resource_label}{f' #{resource_id}' if resource_id else ''}"
+        feedback_id = None
+        if log.resource_type == "service_feedback" and log.resource_id and log.resource_id.isdigit():
+            feedback_id = int(log.resource_id)
+        feedback = feedback_by_id.get(feedback_id)
+        if feedback:
+            target_label = (
+                f"报告申请 #{feedback.service_request_id}"
+                if feedback.service_request_id is not None
+                else f"日历申请 #{feedback.calendar_request_id}"
+            )
+            description += f" · {target_label} · {_FEEDBACK_TYPE_LABELS.get(feedback.feedback_type, '反馈')}"
+            if log.action == "service_feedback.update":
+                status_label = _FEEDBACK_STATUS_LABELS.get(
+                    details.get("to_status"), "状态已更新"
+                )
+                label = f"管理员跟进服务反馈（{status_label}）"
+            if feedback.rating is not None:
+                description += f" · 评分 {feedback.rating}/5"
         if actor_name:
             description += f" · 操作人：{actor_name}"
         add(f"audit:{log.id}", "audit", label, log.created_at,
-            log.resource_type, log.resource_id, description)
+            resource_type, resource_id, description)
 
     events.sort(key=lambda event: _order_timestamp(event["occurred_at"]), reverse=True)
     return events[:limit]

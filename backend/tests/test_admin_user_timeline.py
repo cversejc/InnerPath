@@ -252,3 +252,103 @@ def test_admin_user_timeline_keeps_business_workflow_milestones_without_audit_ro
         "AI开始处理报告第 1 步",
         "报告第 1 步已完成",
     }
+
+
+def test_admin_user_timeline_includes_profile_feedback_calendar_and_record_updates_safely():
+    now = datetime(2026, 10, 6, 8, tzinfo=timezone.utc)
+    calendar_requests = [
+        SimpleNamespace(
+            id=41,
+            status="fulfilled",
+            created_at=now - timedelta(days=3),
+            reviewed_at=now - timedelta(days=2),
+            updated_at=now - timedelta(days=1),
+        ),
+        SimpleNamespace(
+            id=42,
+            status="failed",
+            created_at=now - timedelta(days=2),
+            reviewed_at=now - timedelta(days=1),
+            updated_at=now - timedelta(hours=4),
+        ),
+    ]
+    decision = SimpleNamespace(
+        id=51,
+        kind="action",
+        created_at=now - timedelta(days=2),
+        updated_at=now - timedelta(hours=3),
+        log_date=now.date(),
+        content="private action text",
+        note="private note",
+    )
+    feedback = SimpleNamespace(
+        id=61,
+        service_request_id=17,
+        calendar_request_id=None,
+        feedback_type="COMPLAINT",
+        rating=2,
+        status="IN_PROGRESS",
+        created_at=now - timedelta(days=1),
+        updated_at=now - timedelta(hours=2),
+        comment="private feedback comment",
+        resolution="private resolution",
+    )
+    profile_audit = SimpleNamespace(
+        id=71,
+        action="user.profile.update",
+        resource_type="user",
+        resource_id="7",
+        details='{"changed_fields":["name"]}',
+        created_at=now - timedelta(hours=5),
+    )
+    feedback_audit = SimpleNamespace(
+        id=72,
+        action="service_feedback.update",
+        resource_type="service_feedback",
+        resource_id="61",
+        details='{"from_status":"NEW","to_status":"IN_PROGRESS"}',
+        created_at=now - timedelta(hours=2),
+    )
+    calendar_delivery_audit = SimpleNamespace(
+        id=73,
+        action="calendar.ai.deliver",
+        resource_type="calendar",
+        resource_id="88",
+        details='{"calendar_request_id":41}',
+        created_at=now - timedelta(days=1),
+    )
+
+    events = build_admin_user_timeline(
+        user_created_at=None,
+        service_requests=[],
+        calendar_requests=calendar_requests,
+        reports=[],
+        report_tasks=[],
+        calendars=[],
+        decision_logs=[decision],
+        service_feedback=[feedback],
+        audit_entries=[
+            (profile_audit, None),
+            (feedback_audit, "管理员乙"),
+            (calendar_delivery_audit, None),
+        ],
+    )
+
+    labels = [event["label"] for event in events]
+    assert "用户更新个人资料" in labels
+    assert "日历生成已交付" in labels
+    assert "日历生成失败" in labels
+    assert "行动记录已更新" in labels
+    assert "用户提交服务反馈" in labels
+    assert "管理员跟进服务反馈（跟进中）" in labels
+    calendar_delivery_events = [event for event in events if event["key"] == "audit:73"]
+    assert len(calendar_delivery_events) == 1
+    assert calendar_delivery_events[0]["resource_type"] == "calendar_request"
+    assert calendar_delivery_events[0]["resource_id"] == "41"
+    feedback_events = [event for event in events if event["resource_type"] == "service_feedback"]
+    assert all("投诉" in event["description"] and "报告申请 #17" in event["description"] for event in feedback_events)
+    assert all("2/5" in event["description"] for event in feedback_events)
+    assert all(
+        private_text not in str(events)
+        for private_text in ("private action text", "private note", "private feedback comment", "private resolution")
+    )
