@@ -9,6 +9,7 @@ import {
   serviceRequestStatusText
 } from '../formatters.js'
 import { consultationTypeLabel } from '../../service-requests/formatters.js'
+import AdminAssignmentDialog from './AdminAssignmentDialog.vue'
 
 function reportStepLabel(stepKey) {
   const number = String(stepKey || '').match(/\d+/)?.[0]
@@ -39,6 +40,9 @@ defineProps({
   calendarFilters: { type: Object, required: true },
   calendarRequests: { type: Object, required: true },
   consultants: { type: Array, default: () => [] },
+  assignmentError: { type: String, default: '' },
+  assignmentRequest: { type: Object, default: null },
+  assignmentSavingKey: { type: String, default: '' },
   filters: { type: Object, required: true },
   loading: { type: Boolean, default: false },
   page: { type: Number, default: 1 },
@@ -50,6 +54,9 @@ defineProps({
 defineEmits([
   'change-kind',
   'change-page',
+  'assign-request',
+  'close-assignment',
+  'open-assignment',
   'open-report',
   'open-user',
   'reset-filters',
@@ -111,7 +118,14 @@ defineEmits([
               <tr v-for="item in serviceRequests.items" :key="item.id">
                 <td><strong>申请 #{{ item.id }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · {{ item.user_phone || '—' }}</small><button type="button" class="detail-link" @click="$emit('open-user', { id: item.user_id, name: item.user_name })">查看用户</button></td>
                 <td class="request-summary-cell"><strong>{{ consultationTypeLabel(item.consultation_type) }}</strong><small>{{ item.request_payload?.context?.current_challenge || item.request_payload?.calendar_goal || '未填写目标' }}</small><small>{{ item.request_payload?.selected_topics?.join('、') || item.request_payload?.context?.selected_topics?.join('、') || '未选择关注主题' }}</small></td>
-                <td>{{ item.assigned_consultant_name || '待分配' }}<small v-if="item.assigned_consultant_id">#{{ item.assigned_consultant_id }}</small><small v-if="item.assigned_mingli_consultant_id">命理：{{ item.assigned_mingli_consultant_name || `#${item.assigned_mingli_consultant_id}` }}</small><small v-if="item.assigned_psychology_consultant_id">心理：{{ item.assigned_psychology_consultant_name || `#${item.assigned_psychology_consultant_id}` }}</small></td>
+                <td>
+                  <div class="request-assignee-summary">
+                    <span v-if="item.is_collaborative">命理：{{ item.assigned_mingli_consultant_name || '待分配' }}</span>
+                    <span v-if="item.is_collaborative">心理：{{ item.assigned_psychology_consultant_name || '待分配' }}</span>
+                    <span v-else>{{ item.assigned_consultant_name || '待分配' }}<small v-if="item.assigned_consultant_id">#{{ item.assigned_consultant_id }}</small></span>
+                  </div>
+                  <VanButton class="secondary-button compact-button request-assignment-button" type="default" plain native-type="button" :disabled="['delivered', 'withdrawn', 'rejected'].includes(item.status)" @click="$emit('open-assignment', item)">{{ item.is_collaborative ? '管理专业分工' : (item.assigned_consultant_id ? '改派负责人' : '分配负责人') }}</VanButton>
+                </td>
                 <td><span :class="['status-badge', `request-${item.status}`]">{{ serviceRequestStatusText(item.status) }}</span><small v-if="item.current_step_key">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><small v-if="item.report_case_status">工作流：{{ reportCaseStatusLabel(item.report_case_status) }}</small><small v-if="item.needs_info_reason" class="request-note">待补充：{{ item.needs_info_reason }}</small><small v-if="item.last_error" class="request-note error-cell">{{ item.last_error }}</small></td>
                 <td>{{ formatDateTime(item.created_at) }}</td>
                 <td>{{ formatDateTime(item.accepted_at) }}</td>
@@ -168,5 +182,13 @@ defineEmits([
         <div class="pagination"><span>第 {{ page }} / {{ pageCount(calendarRequests.total, pageSize) }} 页</span><div><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="page <= 1" @click="$emit('change-page', -1)">上一页</VanButton><VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="page >= pageCount(calendarRequests.total, pageSize)" @click="$emit('change-page', 1)">下一页</VanButton></div></div>
       </div>
     </template>
+    <AdminAssignmentDialog
+      :assignment-error="assignmentError"
+      :assignment-saving-key="assignmentSavingKey"
+      :consultants="consultants"
+      :request="assignmentRequest"
+      @close="$emit('close-assignment')"
+      @save="$emit('assign-request', $event)"
+    />
   </section>
 </template>

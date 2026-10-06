@@ -60,6 +60,9 @@ export default {
       requestPage: 1,
       requestPageSize: 20,
       requestsLoading: false,
+      assignmentRequest: null,
+      assignmentSavingKey: '',
+      assignmentError: '',
       reports: { ...EMPTY_PAGE },
       reportsLoading: false,
       reportFilters: { search: '', status: '', ai_model: '', date_from: '', date_to: '' },
@@ -116,7 +119,7 @@ export default {
   },
   computed: {
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.assignmentSavingKey !== '' || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
     },
     dashboardViewModel() {
       return createDashboardViewModel(this.dashboard)
@@ -137,7 +140,8 @@ export default {
     detailUser: 'syncDrawerBodyLock',
     reportDetail: 'syncDrawerBodyLock',
     logDetail: 'syncDrawerBodyLock',
-    'passwordDialog.visible': 'clearPasswordDialog'
+    'passwordDialog.visible': 'clearPasswordDialog',
+    activeTab(value) { if (value !== 'requests') this.assignmentRequest = null }
   },
   async mounted() {
     document.addEventListener('visibilitychange', this.handleVisibilityChange)

@@ -42,6 +42,27 @@
   vertical-align: top;
 }
 
+.admin-shell .request-assignee-summary {
+  display: grid;
+  gap: 4px;
+  min-width: 118px;
+  color: var(--ink-soft, #4c3d31);
+  line-height: 1.45;
+}
+
+.admin-shell .request-assignee-summary span {
+  overflow-wrap: anywhere;
+}
+
+.admin-shell .request-assignee-summary small {
+  display: block;
+  margin-top: 2px;
+}
+
+.admin-shell .request-assignment-button {
+  margin-top: 9px;
+}
+
 .admin-shell .request-summary-cell {
   max-width: 250px;
   white-space: normal;

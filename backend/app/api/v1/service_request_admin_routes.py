@@ -29,6 +29,7 @@ from app.api.v1.service_request_api_support import (
 )
 from app.application.report_cases import cancel_report_case_for_service_request
 from app.domains.workflow.models import ReportCase
+from app.domains.workflow.authorization import has_collaboration_contract
 from app.domains.workflow.service import assign_step
 
 admin_router = APIRouter()
@@ -131,9 +132,7 @@ async def update_request_assignment(
         case = await db.scalar(
             select(ReportCase).where(ReportCase.service_request_id == request_id)
         )
-    collaborative = bool(
-        case and (case.application_snapshot or {}).get("collaboration_contract")
-    )
+    collaborative = bool(case and has_collaboration_contract(case.application_snapshot))
     if consultant and service_request.service_type == "report" and not collaborative:
         if consultation_type is None:
             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Select a consultation direction first")

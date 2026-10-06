@@ -1,0 +1,170 @@
+.van-dialog.admin-assignment-dialog {
+  width: min(620px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  border-radius: 12px;
+  background: var(--surface-strong, #fffaf0);
+  color: var(--ink, #30241b);
+}
+
+.van-dialog.admin-assignment-dialog .van-dialog__header {
+  padding: 20px 22px 0;
+  color: var(--ink, #30241b);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: var(--weight-semibold);
+}
+
+.van-dialog.admin-assignment-dialog .van-dialog__content {
+  padding: 16px 22px 22px;
+}
+
+.admin-assignment-content {
+  display: grid;
+  gap: 16px;
+}
+
+.assignment-dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid var(--line, rgba(80, 54, 32, .12));
+  padding-bottom: 14px;
+}
+
+.assignment-dialog-heading > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.assignment-dialog-heading strong {
+  color: var(--ink, #30241b);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.assignment-dialog-heading small,
+.assignment-slot > div > small {
+  color: var(--muted, #7d6653);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.assignment-help {
+  margin: 0;
+  color: var(--muted, #7d6653);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.assignment-error {
+  margin: 0;
+  border-left: 3px solid var(--cinnabar-deep, #9e3f35);
+  padding: 9px 11px;
+  background: rgba(184, 92, 80, .1);
+  color: var(--cinnabar-deep, #9e3f35);
+  font-size: 12px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.assignment-single-form {
+  display: grid;
+  gap: 14px;
+}
+
+.assignment-single-form > label,
+.assignment-slot > label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted, #7d6653);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+}
+
+.assignment-single-form select,
+.assignment-slot select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--line, rgba(80, 54, 32, .16));
+  border-radius: 8px;
+  padding: 0 11px;
+  background: var(--surface-strong, #fffaf0);
+  color: var(--ink, #30241b);
+  font: inherit;
+  font-size: 14px;
+}
+
+.assignment-single-form select:focus-visible,
+.assignment-slot select:focus-visible {
+  outline: 3px solid rgba(181, 87, 76, .25);
+  outline-offset: 2px;
+}
+
+.assignment-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 3px;
+}
+
+.assignment-slot {
+  display: grid;
+  grid-template-columns: minmax(120px, .8fr) minmax(180px, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  border-top: 1px solid var(--line, rgba(80, 54, 32, .12));
+  padding-top: 15px;
+}
+
+.assignment-slot > div {
+  display: grid;
+  gap: 5px;
+  align-self: center;
+}
+
+.assignment-slot h3 {
+  margin: 0;
+  color: var(--ink-soft, #4c3d31);
+  font-size: 13px;
+}
+
+.assignment-slot .van-button {
+  min-height: 44px;
+  white-space: normal;
+}
+
+@media (max-width: 600px) {
+  .van-dialog.admin-assignment-dialog {
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 28px);
+  }
+
+  .van-dialog.admin-assignment-dialog .van-dialog__header {
+    padding: 17px 16px 0;
+  }
+
+  .van-dialog.admin-assignment-dialog .van-dialog__content {
+    padding: 13px 16px 18px;
+  }
+
+  .assignment-slot {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .assignment-dialog-actions > .van-button,
+  .assignment-slot > .van-button {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .assignment-single-form select,
+  .assignment-slot select {
+    font-size: 16px;
+  }
+}
