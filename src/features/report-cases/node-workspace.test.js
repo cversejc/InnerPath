@@ -6,7 +6,10 @@ import {
   resolveNodeLocation,
   nodeViews,
 } from "./node-workspace.js";
-import { nodeWorkspaceComputed, nodeWorkspaceMethods } from "./node-workspace-state.js";
+import {
+  nodeWorkspaceComputed,
+  nodeWorkspaceMethods,
+} from "./node-workspace-state.js";
 
 const steps = ["S1", "S2", "S3", "S4", "S5", "S6"].map((step_key, index) => ({
   id: index + 1,
@@ -54,7 +57,7 @@ test("node links restore the selected history without exposing unrelated functio
   );
   assert.deepEqual(
     resolveNodeLocation(steps, steps[1], { section: "evidence" }),
-    { stepKey: "S2", section: "inputs" },
+    { stepKey: "S2", section: "upstream" },
   );
   assert.equal(
     nodeViews("S5").some((view) => view.id === "quality"),
@@ -114,38 +117,25 @@ test("skills enforce historical, future, not-started, busy and narrative prerequ
   }
 });
 
-test("tool dispatch invokes the actual workflow command and opens its review destination", async () => {
-  for (const [key, action, method, destination] of [
-    ["S2", "analysis", "startReportAnalysisDraft", "suggestions"],
-    ["S5", "narrative", "generateNarrativeCandidates", "writing"],
-    ["S5", "authoring", "generateCompleteReport", "fragments"],
-    ["S6", "quality", "runReportQuality", "quality"],
-  ]) {
-    const step = {
-        ...steps.find((item) => item.step_key === key),
-        status: "IN_REVIEW",
-      },
-      calls = [];
-    const ctx = {
-      staffActor: { id: 1, role: "consultant" },
-      selectedReportStep: step,
-      currentReportStep: step,
-      reportNarrative: { current_plan: { status: "CONFIRMED" } },
-      reportContentPlan: { status: "READY" },
-      setReportWorkspaceSection: (section) => calls.push(section),
-      [method]: async () => calls.push(method),
-    };
-    await nodeWorkspaceMethods.runReportNodeTool.call(ctx, { action });
-    assert.deepEqual(calls, [destination, method]);
-  }
-  const history = {
-    selectedReportStep: steps[0],
+test("legacy node links restore the current workspace section", () => {
+  const context = {
+    reportCase: { workflow_instance: { steps } },
     currentReportStep: steps[1],
-    reportNarrative: {},
-    setReportWorkspaceSection: () => assert.fail("history must not dispatch"),
-    startReportAnalysisDraft: () => assert.fail("history must not mutate"),
+    selectedReportStepKey: "",
+    workspaceSection: "",
   };
-  await nodeWorkspaceMethods.runReportNodeTool.call(history, {
-    action: "analysis",
+
+  nodeWorkspaceMethods.restoreReportNode.call(context, {
+    step: "S1",
+    section: "evidence",
   });
+  assert.equal(context.selectedReportStepKey, "S1");
+  assert.equal(context.workspaceSection, "calculation");
+
+  nodeWorkspaceMethods.restoreReportNode.call(context, {
+    step: "S2",
+    section: "inputs",
+  });
+  assert.equal(context.selectedReportStepKey, "S2");
+  assert.equal(context.workspaceSection, "upstream");
 });

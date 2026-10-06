@@ -213,12 +213,44 @@ def _profile():
     }
 
 
-def _report_text(extra=""):
-    return (
-        "## 一、我是谁\n能量类型：稳定探索型\n核心特质：认真\n\n"
-        "## 二、我卡在哪\n正在梳理选择。\n\n"
-        "## 三、我往哪去\n下周可以先完成一个小实验。\n\n"
-        "## 五、总结与寄语\n你可以保留自己的节奏。\n" + extra
+def _analysis_skill_input(step_key="S1"):
+    return {
+        "profile": _profile(),
+        "context": {
+            "focus_topics": ["career"],
+            "current_challenge": "考虑转型",
+            "expected_outcomes": ["方向指引"],
+        },
+        "analysis_context": {
+            "step_key": step_key,
+            "evidence": [],
+            "upstream_confirmed_findings": [],
+        },
+    }
+
+
+def _analysis_text(summary="候选摘要。"):
+    return json.dumps(
+        {
+            "summary": summary,
+            "findings": [],
+            "analysis_fragments": [],
+            "risk_flags": [],
+        },
+        ensure_ascii=False,
+    )
+
+
+def _s1_skill_version(identity=41):
+    specification = default_analysis_skill_specifications()[0]
+    return SimpleNamespace(
+        id=identity,
+        skill_key=specification["identity"]["skill_key"],
+        name=specification["identity"]["name"],
+        category="ANALYSIS",
+        version=1,
+        status="PUBLISHED",
+        specification_json=specification,
     )
 
 
@@ -270,8 +302,9 @@ def test_s2_guidance_covers_framework_thought_without_exposing_contract_fields()
     assert all(
         phrase in "\n".join(guidance["methodology"])
         for phrase in (
-            "双层结构", "十神-荣格", "紫微星曜", "人格面具", "阴影", "情结",
-            "激活路径", "权威内化与超我", "正印", "破军",
+            "命理为表", "心理为里", "意识层", "潜意识", "十神", "荣格",
+            "紫微", "星曜", "人格面具", "阴影", "情结", "激活路径",
+            "权威内化", "超我", "正印", "破军",
         )
     )
     assert all(
@@ -314,8 +347,9 @@ def test_s3_guidance_covers_framework_integration_without_contract_fields():
     assert all(
         phrase in method_text
         for phrase in (
-            "自性化", "英雄原型分区", "大运周期", "喜用神大运", "易经时序",
-            "金花", "道德经", "了凡四训", "三重", "多系统冲突",
+            "自性化", "英雄", "原型", "四象限", "大运周期", "喜用神大运",
+            "易经时序", "金花", "道德经", "了凡四训", "命理", "心理",
+            "哲学", "多系统冲突",
         )
     )
     assert all(
@@ -468,7 +502,10 @@ async def test_s3_reasoning_guidance_draft_preserves_contract_and_compiles(skill
         "reasoning_guidance"
     ]
     assert runtime["instructions"]["objective"] == objective
-    assert "英雄原型分区" in "\n".join(runtime["instructions"]["methodology"])
+    runtime_methodology = "\n".join(runtime["instructions"]["methodology"])
+    assert "英雄" in runtime_methodology
+    assert "原型" in runtime_methodology
+    assert "四象限" in runtime_methodology
     assert len(runtime["instructions"]["sop_contract"]["topics"]) == 6
     assert runtime["output_contract"] == published.specification_json["output_contract"]
 
@@ -484,7 +521,7 @@ def test_s4_guidance_covers_framework_thought_without_exposing_contract_fields()
         phrase in method_text
         for phrase in (
             "防御机制", "保护", "能量管理", "阴影整合练习", "情结松动", "人生时序",
-            "自性", "卡点", "共性模式", "MBTI", "关系模式", "成长实验",
+            "自性", "卡点", "共性模式", "MBTI", "关系循环", "成长实验",
         )
     )
     assert all(
@@ -1342,12 +1379,12 @@ def test_skill_specification_rejects_unregistered_tools_and_processors():
 
 @pytest.mark.asyncio
 async def test_published_skill_version_is_immutable_and_next_draft_increments(skill_db):
-    published = await ensure_default_skill_version(skill_db)
+    published = (await ensure_default_analysis_skill_versions(skill_db))[0]
     draft = await create_skill_draft(
         skill_db,
-        skill_key=DEFAULT_SKILL_KEY,
+        skill_key=published.skill_key,
         name=published.name,
-        category="AUTHORING",
+        category=published.category,
         specification=published.specification_json,
         created_by=None,
     )
@@ -1366,56 +1403,67 @@ async def test_published_skill_version_is_immutable_and_next_draft_increments(sk
 
 @pytest.mark.asyncio
 async def test_executor_projects_context_validates_output_and_records_trace():
-    skill = AISkillVersion(
-        id=41,
-        skill_key=DEFAULT_SKILL_KEY,
-        name="Report",
-        category="AUTHORING",
-        version=1,
-        status="PUBLISHED",
-        specification_json=default_skill_specification(),
-    )
-    gateway = StubGateway(_report_text())
+    skill = _s1_skill_version()
+    input_data = _analysis_skill_input()
+    input_data["context"]["internal_chain_of_thought"] = "must not reach the model"
+    input_data["analysis_context"]["evidence"] = [
+        {"evidence_key": "calculated.mingli_foundation.v2"}
+    ]
+    input_data["other_users"] = [{"name": "hidden"}]
+    gateway = StubGateway(_analysis_text("S1 候选分析摘要。"))
     result = await execute_skill(
         skill_version=skill,
-        input_data={
-            "profile": _profile(),
-            "context": {
-                "focus_topics": ["career"],
-                "current_challenge": "考虑转型",
-                "expected_outcomes": ["方向指引"],
-                "internal_chain_of_thought": "must not reach the model",
-            },
-            "other_users": [{"name": "hidden"}],
-        },
+        input_data=input_data,
         gateway=gateway,
     )
 
-    assert result.output_parsed["basic_info"]["name"] == "林女士"
+    assert result.output_parsed["summary"] == "S1 候选分析摘要。"
     assert result.model_trace["skill_version_id"] == 41
     assert result.model_trace["global_policy_version"] == "global-policy-v1"
+    assert result.model_trace["processor"] == "reports.analysis_draft"
     assert "must not reach the model" not in gateway.last_request[1]
     assert "other_users" not in result.context_snapshot
     assert "internal_chain_of_thought" not in result.context_snapshot["context"]
-    assert result.context_snapshot["foundation_data"]
+    assert result.context_snapshot["analysis_context"]["evidence"] == input_data[
+        "analysis_context"
+    ]["evidence"]
+    assert result.context_snapshot["foundation_data"] is None
 
 
 @pytest.mark.asyncio
 async def test_executor_fails_guardrail_instead_of_returning_fallback_output():
-    skill = AISkillVersion(
-        id=42,
-        skill_key=DEFAULT_SKILL_KEY,
-        name="Report",
-        category="AUTHORING",
-        version=1,
-        status="PUBLISHED",
-        specification_json=default_skill_specification(),
-    )
+    skill = _s1_skill_version(identity=42)
     with pytest.raises(ValueError, match="skill_guardrail_blocked"):
         await execute_skill(
             skill_version=skill,
-            input_data={"profile": _profile(), "context": {}},
-            gateway=StubGateway(_report_text("\n注定发财")),
+            input_data=_analysis_skill_input(),
+            gateway=StubGateway(_analysis_text("该结论注定发财。")),
+        )
+
+
+@pytest.mark.asyncio
+async def test_legacy_whole_report_skill_is_read_only_and_cannot_execute(skill_db):
+    with pytest.raises(ValueError, match="skill_retired"):
+        await ensure_default_skill_version(skill_db)
+
+    historical = AISkillVersion(
+        skill_key=DEFAULT_SKILL_KEY,
+        name="Legacy report generator",
+        category="AUTHORING",
+        version=1,
+        status="RETIRED",
+        specification_json=default_skill_specification(),
+        created_at=datetime.utcnow(),
+    )
+    skill_db.add(historical)
+    await skill_db.flush()
+
+    assert (await ensure_default_skill_version(skill_db)).id == historical.id
+    with pytest.raises(ValueError, match="skill_retired"):
+        await execute_skill(
+            skill_version=historical,
+            input_data=_analysis_skill_input(),
+            gateway=StubGateway(_analysis_text()),
         )
 
 
@@ -1423,43 +1471,48 @@ async def test_executor_fails_guardrail_instead_of_returning_fallback_output():
 async def test_skill_run_is_idempotent_and_completion_is_reused(skill_db, monkeypatch):
     from app.application import skill_runtime
 
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
+    input_snapshot = _analysis_skill_input()
     run, created = await create_skill_run(
         skill_db,
         skill_version_id=version.id,
         idempotency_key="test-skill-run-1",
-        input_snapshot={"profile": _profile(), "context": {}},
-        context_snapshot={"profile": _profile(), "context": {}},
+        input_snapshot=input_snapshot,
+        context_snapshot=input_snapshot,
     )
     duplicate, duplicate_created = await create_skill_run(
         skill_db,
         skill_version_id=version.id,
         idempotency_key="test-skill-run-1",
-        input_snapshot={"profile": _profile(), "context": {}},
-        context_snapshot={"profile": _profile(), "context": {}},
+        input_snapshot=input_snapshot,
+        context_snapshot=input_snapshot,
     )
     assert created is True
     assert duplicate_created is False
     assert duplicate.id == run.id
 
-    gateway = StubGateway(_report_text())
+    gateway = StubGateway(_analysis_text("完成的 S1 分析。"))
     monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
     completed = await skill_runtime.execute_skill_run_record(skill_db, run.id)
     repeated = await skill_runtime.execute_skill_run_record(skill_db, run.id)
     assert completed.status == "COMPLETED"
-    assert completed.output_parsed["basic_info"]["name"] == "林女士"
+    assert completed.output_parsed["summary"] == "完成的 S1 分析。"
     assert repeated.status == "COMPLETED"
     assert gateway.calls == 1
 
 
 @pytest.mark.asyncio
-async def test_case_skill_run_records_calculated_foundation_as_evidence(
+async def test_case_foundation_calculation_is_persisted_and_reused(
     skill_db, monkeypatch
 ):
-    from app.application import skill_runtime
-    from app.domains.content.service import create_evidence_item
+    from app.application import report_analysis
 
-    version = await ensure_default_skill_version(skill_db)
+    foundation = {
+        "calculation_version": "mingli-v2",
+        "bazi": {"year": {"stem": "辛", "branch": "未"}},
+    }
+    calculator = Mock(return_value=foundation)
+    monkeypatch.setattr(report_analysis, "calculate_mingli_foundation", calculator)
     report_case = ReportCase(
         user_id=19,
         status="ACTIVE",
@@ -1470,50 +1523,23 @@ async def test_case_skill_run_records_calculated_foundation_as_evidence(
     )
     skill_db.add(report_case)
     await skill_db.flush()
-    user_evidence = await create_evidence_item(
-        skill_db,
-        report_case_id=report_case.id,
-        evidence_key="input.profile.gender",
-        source_type="USER_PROVIDED",
-        source_ref="application_snapshot.profile.gender",
-        value="female",
+    evidence = await report_analysis._ensure_mingli_foundation(
+        skill_db, report_case=report_case
     )
-    run, _created = await skill_runtime._queue_run(
-        skill_db,
-        version_id=version.id,
-        idempotency_key="case-foundation-run-1",
-        input_data={"profile": _profile(), "context": {}},
-        runtime_instruction=None,
-        target_type="REPORT_CASE_STEP",
-        target_key="S5",
-        report_case=report_case,
-    )
-    gateway = StubGateway(_report_text())
-    monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
-
-    completed = await skill_runtime.execute_skill_run_record(skill_db, run.id)
-    evidence = await skill_db.scalar(
-        select(CaseEvidenceItem).where(
-            CaseEvidenceItem.report_case_id == report_case.id,
-            CaseEvidenceItem.evidence_key
-            == f"calculated.foundation.skill_run.{run.id}",
-        )
+    reused = await report_analysis._ensure_mingli_foundation(
+        skill_db, report_case=report_case
     )
 
-    assert completed.status == "COMPLETED"
+    assert evidence.evidence_key == "calculated.mingli_foundation.v2"
     assert evidence.source_type == "SYSTEM_CALCULATED"
-    assert evidence.source_skill_run_id == run.id
-    assert evidence.source_ref == f"skill_run:{run.id}:foundation_data"
-    assert evidence.value_json == completed.context_snapshot["foundation_data"]
-    evidence_refs = completed.context_snapshot["source_references"]["evidence"]
-    assert {row["evidence_key"] for row in evidence_refs} == {
-        user_evidence.evidence_key,
-        evidence.evidence_key,
-    }
+    assert evidence.source_ref == "tool:reports.calculate_mingli_foundation:v2"
+    assert evidence.value_json == foundation
+    assert reused.id == evidence.id
+    calculator.assert_called_once_with(_profile())
 
 
 @pytest.mark.asyncio
-async def test_skill_workflow_version_pins_report_authoring_skill(skill_db):
+async def test_skill_workflow_version_uses_current_s5_authoring_mode(skill_db):
     from app.application.skill_runtime import ensure_skill_workflow_version
 
     initial = await create_workflow_draft(
@@ -1531,9 +1557,13 @@ async def test_skill_workflow_version_pins_report_authoring_skill(skill_db):
 
     assert result.version == 2
     assert authoring["executor"] == "HYBRID"
-    skill = await skill_db.get(AISkillVersion, authoring["config"]["skill_version_id"])
-    assert skill.skill_key == DEFAULT_SKILL_KEY and skill.version == 1
-    assert result.definition_json["skill_bindings"][DEFAULT_SKILL_KEY]["id"] == skill.id
+    assert authoring["config"]["authoring_mode"] == "NARRATIVE_FRAGMENTS"
+    assert "skill_key" not in authoring["config"]
+    assert "skill_version_id" not in authoring["config"]
+    binding = result.definition_json["skill_bindings"][FRAGMENT_AUTHORING_SKILL_KEY]
+    skill = await skill_db.get(AISkillVersion, binding["id"])
+    assert skill.skill_key == FRAGMENT_AUTHORING_SKILL_KEY
+    assert skill.version == 1
 
 
 @pytest.mark.asyncio
@@ -1543,13 +1573,14 @@ async def test_outbox_skill_event_executes_once_on_duplicate_delivery(
     from app.application import skill_runtime
     from app.tasks import workflow_tasks
 
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
+    input_snapshot = _analysis_skill_input()
     run, _created = await create_skill_run(
         skill_db,
         skill_version_id=version.id,
         idempotency_key="outbox-skill-run-1",
-        input_snapshot={"profile": _profile(), "context": {}},
-        context_snapshot={"profile": _profile(), "context": {}},
+        input_snapshot=input_snapshot,
+        context_snapshot=input_snapshot,
     )
     event = WorkflowOutbox(
         aggregate_type="skill_run",
@@ -1563,7 +1594,7 @@ async def test_outbox_skill_event_executes_once_on_duplicate_delivery(
     skill_db.add(event)
     await skill_db.flush()
 
-    gateway = StubGateway(_report_text())
+    gateway = StubGateway(_analysis_text())
     monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
     monkeypatch.setattr(
         workflow_tasks, "AsyncSessionLocal", lambda: SessionContext(skill_db)
@@ -1580,7 +1611,7 @@ async def test_outbox_skill_event_executes_once_on_duplicate_delivery(
 async def test_case_skill_run_requires_assigned_consultant(skill_db):
     from app.application.skill_runtime import queue_case_step_skill_run
 
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
     report_case = ReportCase(
         id=81,
         user_id=19,
@@ -1595,8 +1626,8 @@ async def test_case_skill_run_requires_assigned_consultant(skill_db):
     step = StepTask(
         id=303,
         workflow_instance_id=202,
-        step_key="S5",
-        sequence_no=5,
+        step_key="S1",
+        sequence_no=1,
         executor="HYBRID",
         status="READY",
         required_capability="consultant",
@@ -1615,9 +1646,9 @@ async def test_case_skill_run_requires_assigned_consultant(skill_db):
     assigned = await queue_case_step_skill_run(
         assigned_db,
         case_id=report_case.id,
-        step_key="S5",
+        step_key="S1",
         actor=SimpleNamespace(id=7, role="consultant"),
-        idempotency_key="case-81-step-s5",
+        idempotency_key="case-81-step-s1",
         runtime_instruction=None,
     )
     assert assigned[0].report_case_id == 81
@@ -1630,9 +1661,9 @@ async def test_case_skill_run_requires_assigned_consultant(skill_db):
         await queue_case_step_skill_run(
             unassigned_db,
             case_id=report_case.id,
-            step_key="S5",
+            step_key="S1",
             actor=SimpleNamespace(id=7, role="consultant"),
-            idempotency_key="case-81-step-s5-unassigned",
+            idempotency_key="case-81-step-s1-unassigned",
             runtime_instruction=None,
         )
 
@@ -2166,7 +2197,7 @@ def _completed_example_source(version, *, run_id=901, case_id=81):
 
 @pytest.mark.asyncio
 async def test_skill_examples_require_redaction_and_publish_as_immutable_versions(skill_db):
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
     source_run = _completed_example_source(version)
     source_run.input_snapshot["profile"].update(
         birth_place="杭州某区",
@@ -2208,12 +2239,13 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
     assert "林女士" not in candidate.expected_output["summary"]
     assert "13812345678" not in candidate.expected_output["summary"]
     assert "1992-06-18" not in candidate.expected_output["summary"]
-    assert await retrieve_skill_examples(
+    unpublished = await retrieve_skill_examples(
         skill_db,
         skill_key=version.skill_key,
         target_key=None,
         context={"focus_topics": ["career"]},
-    ) == []
+    )
+    assert candidate.id not in {item["example_id"] for item in unpublished}
 
     with pytest.raises(ValueError, match="skill_example_deidentification_required"):
         await publish_skill_example(skill_db, candidate.id, reviewed_by=1)
@@ -2252,17 +2284,22 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
         target_key=None,
         context={"focus_topics": ["career"]},
     )
-    assert selected[0]["example_id"] == published.id
-    assert selected[0]["version_no"] == 1
-    assert selected[0]["retrieval_policy"]
-    assert "scenario_tag_match" in selected[0]["selection_reasons"]
+    selected_candidate = next(
+        item for item in selected if item["example_id"] == published.id
+    )
+    assert selected_candidate["version_no"] == 1
+    assert selected_candidate["retrieval_policy"]
+    assert "scenario_tag_match" in selected_candidate["selection_reasons"]
     await skill_db.commit()
-    assert await retrieve_skill_examples(
+    other_topic_examples = await retrieve_skill_examples(
         skill_db,
         skill_key=version.skill_key,
         target_key=None,
         context={"focus_topics": ["health"]},
-    ) == []
+    )
+    assert published.id not in {
+        item["example_id"] for item in other_topic_examples
+    }
 
     with pytest.raises(ValueError, match="skill_example_immutable"):
         published.teaching_points = ["attempt to edit published content"]
@@ -2300,7 +2337,7 @@ async def test_skill_examples_require_redaction_and_publish_as_immutable_version
 
 @pytest.mark.asyncio
 async def test_skill_example_applicability_rejects_unsupported_or_invalid_conditions(skill_db):
-    version = await ensure_default_skill_version(skill_db)
+    version = (await ensure_default_analysis_skill_versions(skill_db))[0]
     source_run = _completed_example_source(version)
     skill_db.add(source_run)
     await skill_db.flush()
@@ -2345,7 +2382,7 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
 ):
     from app.application import skill_runtime
 
-    published = await ensure_default_skill_version(skill_db)
+    published = (await ensure_default_analysis_skill_versions(skill_db))[0]
     source_run = _completed_example_source(published)
     skill_db.add(source_run)
     await skill_db.flush()
@@ -2354,7 +2391,7 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
         report_case_id=81,
         skill_run=source_run,
         example_type="POSITIVE",
-        scenario_tags=["career"],
+        scenario_tags=["dynamic-style-test"],
         teaching_points=["用审慎语气描述建议。"],
         expected_output={"summary": "一个脱敏后的写作示例。"},
         created_by=7,
@@ -2363,7 +2400,7 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
         skill_db,
         example_id=candidate.id,
         target_fragment_key=None,
-        scenario_tags=["career"],
+        scenario_tags=["dynamic-style-test"],
         applicability_json={},
         input_context={"context": {"focus_topics": ["career"]}},
         expected_output={"summary": "一个脱敏后的写作示例。"},
@@ -2374,24 +2411,13 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
     )
     await publish_skill_example(skill_db, candidate.id, reviewed_by=1)
 
-    specification = default_skill_specification()
-    specification["example_policy"] = {"enabled": True, "max_examples": 2}
-    draft = await create_skill_draft(
-        skill_db,
-        skill_key=published.skill_key,
-        name=published.name,
-        category="AUTHORING",
-        specification=specification,
-        created_by=1,
-    )
+    input_data = _analysis_skill_input()
+    input_data["context"]["focus_topics"] = ["dynamic-style-test"]
     run, _created = await skill_runtime.queue_debug_skill_run(
         skill_db,
-        version_id=draft.id,
+        version_id=published.id,
         idempotency_key="debug-run-with-example",
-        input_data={
-            "profile": _profile(),
-            "context": {"focus_topics": ["career"]},
-        },
+        input_data=input_data,
         runtime_instruction=None,
     )
     assert run.selected_examples[0]["example_id"] == candidate.id
@@ -2400,7 +2426,7 @@ async def test_dynamic_examples_are_snapshotted_and_given_style_only_prompt_guid
         "用审慎语气描述建议。"
     ]
 
-    gateway = StubGateway(_report_text())
+    gateway = StubGateway(_analysis_text())
     monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
     completed = await skill_runtime.execute_skill_run_record(skill_db, run.id)
     assert completed.status == "COMPLETED"
