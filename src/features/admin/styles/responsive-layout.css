@@ -234,6 +234,16 @@
     padding-right: 0;
   }
 
+  .admin-shell .active-work-list li {
+    align-items: start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .admin-shell .active-work-age {
+    white-space: normal;
+  }
+
   .admin-shell .user-timeline-item {
     grid-template-columns: 12px minmax(0, 1fr);
   }

@@ -92,6 +92,26 @@ function saveSpecialties(member) {
                   <div><span>近 {{ workloadPeriodDays }} 天本人接单</span><strong>{{ workloadByConsultant.get(member.id)?.accepted_in_period ?? 0 }}</strong></div>
                   <div><span>近 {{ workloadPeriodDays }} 天本人交付</span><strong>{{ workloadByConsultant.get(member.id)?.delivered_in_period ?? 0 }}</strong></div>
                 </div>
+                <section class="consultant-active-work" :aria-label="`${member.name}的在办申请`">
+                  <div class="active-work-heading">
+                    <strong>当前在办</strong>
+                    <span :class="{ 'has-stale-work': workloadByConsultant.get(member.id)?.stale_active_requests }">
+                      超 24 小时未更新 {{ workloadByConsultant.get(member.id)?.stale_active_requests ?? 0 }} 份
+                    </span>
+                  </div>
+                  <ol v-if="workloadByConsultant.get(member.id)?.active_request_preview?.length" class="active-work-list">
+                    <li v-for="request in workloadByConsultant.get(member.id).active_request_preview" :key="request.request_id" :class="{ stale: request.is_stale }">
+                      <div class="work-event-main">
+                        <strong>申请 #{{ request.request_id }} · {{ request.user_name || `用户 #${request.user_id}` }}</strong>
+                        <small>{{ consultationTypeLabel(request.consultation_type) }} · {{ serviceRequestStatusText(request.current_status) }}</small>
+                        <small>提交 {{ formatDateTime(request.created_at) }} · 最近更新 {{ formatDateTime(request.updated_at) }}</small>
+                      </div>
+                      <span v-if="request.is_stale" class="active-work-age overdue">闲置 {{ request.idle_hours }} 小时</span>
+                      <span v-else class="active-work-age">申请已持续 {{ request.age_hours }} 小时</span>
+                    </li>
+                  </ol>
+                  <p v-else class="workload-empty">暂无在办申请。</p>
+                </section>
                 <details v-if="workloadByConsultant.get(member.id)?.recent_events?.length" class="consultant-work-events">
                   <summary>最近接单与交付记录</summary>
                   <ol>

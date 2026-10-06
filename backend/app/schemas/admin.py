@@ -42,12 +42,27 @@ class AdminConsultantWorkEvent(BaseModel):
     event_at: datetime
 
 
+class AdminConsultantActiveRequest(BaseModel):
+    request_id: int
+    user_id: int
+    user_name: str
+    consultation_type: Optional[str] = None
+    current_status: str
+    created_at: datetime
+    updated_at: datetime
+    age_hours: int = 0
+    idle_hours: int = 0
+    is_stale: bool = False
+
+
 class AdminConsultantWorkloadItem(BaseModel):
     consultant_id: int
     total_requests: int = 0
     active_requests: int = 0
+    stale_active_requests: int = 0
     accepted_in_period: int = 0
     delivered_in_period: int = 0
+    active_request_preview: list[AdminConsultantActiveRequest] = Field(default_factory=list)
     recent_events: list[AdminConsultantWorkEvent] = Field(default_factory=list)
 
 

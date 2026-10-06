@@ -7,12 +7,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.audit.models import AuditLog
 from app.domains.service_requests.models import ServiceRequest
+from app.domains.service_requests.staff import STALE_SERVICE_REQUEST_STATUSES
 from app.domains.workflow.models import ReportCase
 from app.models.user import User
 
 
 CLOSED_REQUEST_STATUSES = ("delivered", "withdrawn", "rejected")
 ACCEPT_ACTIONS = ("service_request.accept", "service_request.specialty.accept")
+STALE_REQUEST_HOURS = 24
+ACTIVE_REQUEST_PREVIEW_LIMIT = 5
 
 
 def consultant_request_assignments():
@@ -96,6 +99,44 @@ def consultant_work_events():
     )
 
 
+def consultant_active_request_preview(consultant_ids, *, limit=ACTIVE_REQUEST_PREVIEW_LIMIT):
+    assignments = consultant_request_assignments()
+    ranked_requests = (
+        select(
+            assignments.c.consultant_id,
+            ServiceRequest.id.label("request_id"),
+            ServiceRequest.user_id,
+            User.name.label("user_name"),
+            ServiceRequest.consultation_type,
+            ServiceRequest.status.label("current_status"),
+            ServiceRequest.created_at,
+            ServiceRequest.updated_at,
+            func.row_number()
+            .over(
+                partition_by=assignments.c.consultant_id,
+                order_by=(
+                    ServiceRequest.updated_at.asc(),
+                    ServiceRequest.created_at.asc(),
+                    ServiceRequest.id.asc(),
+                ),
+            )
+            .label("request_rank"),
+        )
+        .join(ServiceRequest, ServiceRequest.id == assignments.c.request_id)
+        .join(User, User.id == ServiceRequest.user_id)
+        .where(
+            assignments.c.consultant_id.in_(consultant_ids),
+            ServiceRequest.status.not_in(CLOSED_REQUEST_STATUSES),
+        )
+        .subquery("ranked_consultant_active_requests")
+    )
+    return (
+        select(ranked_requests)
+        .where(ranked_requests.c.request_rank <= limit)
+        .order_by(ranked_requests.c.consultant_id, ranked_requests.c.request_rank)
+    )
+
+
 async def get_admin_consultant_workload(
     db: AsyncSession,
     *,
@@ -112,6 +153,8 @@ async def get_admin_consultant_workload(
 
     consultant_ids = [consultant.id for consultant in consultants]
     assignments = consultant_request_assignments()
+    now = datetime.utcnow()
+    stale_cutoff = now - timedelta(hours=STALE_REQUEST_HOURS)
     assignment_rows = list(
         (
             await db.execute(
@@ -127,6 +170,16 @@ async def get_admin_consultant_workload(
                             else_=0,
                         )
                     ).label("active_requests"),
+                    func.sum(
+                        case(
+                            (
+                                ServiceRequest.status.in_(STALE_SERVICE_REQUEST_STATUSES)
+                                & (ServiceRequest.updated_at < stale_cutoff),
+                                1,
+                            ),
+                            else_=0,
+                        )
+                    ).label("stale_active_requests"),
                 )
                 .join(ServiceRequest, ServiceRequest.id == assignments.c.request_id)
                 .where(assignments.c.consultant_id.in_(consultant_ids))
@@ -138,11 +191,35 @@ async def get_admin_consultant_workload(
         row.consultant_id: {
             "total_requests": int(row.total_requests or 0),
             "active_requests": int(row.active_requests or 0),
+            "stale_active_requests": int(row.stale_active_requests or 0),
         }
         for row in assignment_rows
     }
 
-    cutoff = datetime.utcnow() - timedelta(days=period_days)
+    active_request_rows = list(
+        (await db.execute(consultant_active_request_preview(consultant_ids))).all()
+    )
+    active_requests_by_consultant = {}
+    for row in active_request_rows:
+        active_requests_by_consultant.setdefault(row.consultant_id, []).append(
+            {
+                "request_id": row.request_id,
+                "user_id": row.user_id,
+                "user_name": row.user_name,
+                "consultation_type": row.consultation_type,
+                "current_status": row.current_status,
+                "created_at": row.created_at,
+                "updated_at": row.updated_at,
+                "age_hours": max(0, int((now - row.created_at).total_seconds() // 3600)),
+                "idle_hours": max(0, int((now - row.updated_at).total_seconds() // 3600)),
+                "is_stale": (
+                    row.current_status in STALE_SERVICE_REQUEST_STATUSES
+                    and row.updated_at < stale_cutoff
+                ),
+            }
+        )
+
+    cutoff = now - timedelta(days=period_days)
     events = consultant_work_events()
     event_count_rows = list(
         (
@@ -230,11 +307,18 @@ async def get_admin_consultant_workload(
                 "consultant_id": consultant.id,
                 **assignment_counts.get(
                     consultant.id,
-                    {"total_requests": 0, "active_requests": 0},
+                    {
+                        "total_requests": 0,
+                        "active_requests": 0,
+                        "stale_active_requests": 0,
+                    },
                 ),
                 **event_counts.get(
                     consultant.id,
                     {"accepted_in_period": 0, "delivered_in_period": 0},
+                ),
+                "active_request_preview": active_requests_by_consultant.get(
+                    consultant.id, []
                 ),
                 "recent_events": recent_by_consultant.get(consultant.id, []),
             }
