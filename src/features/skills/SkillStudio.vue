@@ -151,10 +151,7 @@
               <p v-if="!isAdmin">
                 咨询师可查看已发布示例，并从本报告的运行结果推荐经验；管理员负责脱敏审核、版本维护和发布。
               </p>
-              <p v-else-if="isReasoningGuidanceAdmin">
-                {{ selectedSkill.name }} 只维护 AI 的工作目标和思路。输入资料、输出结构与固定校验由系统维护。
-              </p>
-              <p v-else>
+              <p v-else-if="!isReasoningGuidanceAdmin">
                 管理员可查看报告节点反馈，也可从报告或日历运行记录载入真实输入；用草稿预览和评估后再发布技能版本。
               </p>
               <details v-if="!isReasoningGuidanceAdmin">
@@ -164,7 +161,7 @@
             </section>
             <template v-else-if="activeAdminTab === 'skills' && isAdmin">
               <div class="panel-heading">
-                <h3>{{ isReasoningGuidanceAdmin ? "维护 AI 思路" : "技能维护" }}</h3>
+                <h3 v-if="!isReasoningGuidanceAdmin">技能维护</h3>
                 <VanButton
                   class="primary-button compact-button"
                   type="primary"

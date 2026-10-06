@@ -40,10 +40,6 @@ def section(document, prefix):
 
 def guidance_items(document, prefix, *, rows=False, daily=False):
     lines = section(document, prefix)
-    title = plain(re.sub(r"^#+\s*", "", lines[0]))
-    title = title.replace("（AI分析框架）", "")
-    title = title.replace("(可以同时给ai，让它谨记主旨）", "")
-    title = title.replace("Prompt", "")
     blocks, current, table_headers = [], [], None
 
     def flush():
@@ -110,12 +106,12 @@ def guidance_items(document, prefix, *, rows=False, daily=False):
         # Keep each administrator-editable item within the existing API limit.
         chunk = ""
         for part in block.split("；"):
-            if len(f"{title}：{chunk}；{part}") > 950 and chunk:
-                items.append(f"{title}：{chunk}")
+            if len(f"{chunk}；{part}") > 950 and chunk:
+                items.append(chunk)
                 chunk = ""
             chunk = f"{chunk}；{part}" if chunk else part
         if chunk:
-            items.append(f"{title}：{chunk}")
+            items.append(chunk)
     return items
 
 
