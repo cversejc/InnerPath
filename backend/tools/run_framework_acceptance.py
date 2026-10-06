@@ -133,7 +133,7 @@ async def execute_saved(spec, data, path, instruction):
     skill = SimpleNamespace(id=pinned.get("id", 0), version=pinned.get("version", 1),
         skill_key=spec["identity"]["skill_key"], specification_json=spec)
     previous_failures = list(path.parent.glob(f"{path.stem}.attempt-*.failure.json"))
-    compact_instruction = "\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote只能逐字摘录同一对象刚生成的content中连续的一句话（10–40字），不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。"
+    compact_instruction = "\n保持完整JSON并控制输出长度：summary不超过120字，Finding.claim每条40–100字，每个analysis片段content约150–250字，structured_analysis.details每个字段约25–60字；只有reasoning_contract列出的片段返回structured_analysis，其余不添加。只引用必要Evidence，不复制上游整段分析。quote必须在写完同一对象的content后，从该content中直接复制一段连续的原文（10–40字），保留原有汉字、标点、引号和破折号，不得凭记忆改写、替换标点或补句末标点；提交前逐字检查quote是否能作为content的直接子串。不能摘录未在本正文出现的问卷/上游/details。不要省掉规定片段或行动字段。"
     repair = compact_instruction if previous_failures else ""
     offset = max((int(p.name.split(".attempt-")[1].split(".")[0]) for p in previous_failures), default=0)
     for attempt in range(1, 3):

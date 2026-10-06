@@ -3,6 +3,7 @@ from copy import deepcopy
 from datetime import datetime
 import json
 from math import isfinite
+import re
 
 from app.domains.skills.models import AISkillVersion, SkillRun
 from app.domains.skills.service import _ensure_published_builtin_version, create_skill_run
@@ -71,7 +72,8 @@ def validate_daily(row, analysis, facts, *, practice_rhythm=None, available_minu
     if "day_pillar" in row and row["day_pillar"] != facts["day_pillar"]:
         raise ValueError("calendar_pillar_mismatch")
     if not isinstance(row.get("summary"), str) or not 30 <= len(row["summary"].strip()) <= 60:
-        raise ValueError("calendar_summary_length_invalid")
+        summary_length = len(row.get("summary", "").strip()) if isinstance(row.get("summary"), str) else 0
+        raise ValueError(f"calendar_summary_length_invalid:{row.get('entry_date')}:{summary_length}")
     if not isinstance(row.get("keyword"), str) or not 2 <= len(row["keyword"].split("、")) <= 4:
         raise ValueError("calendar_keywords_invalid")
     max_suitable = min(5, max(3, 2 + len(scheduled_refs or [])))
@@ -108,20 +110,49 @@ def validate_unique_daily_awareness(rows, previous_rows=()):
         raise ValueError("calendar_energy_awareness_repeated:" + json.dumps(duplicates, ensure_ascii=False))
 
 
-def complete_short_summaries(output):
-    """Combine a short AI overview with one of its own actions before calibration.
+def _compact_action_fragment(action, limit):
+    """Select a short, complete clause from an existing action for a summary."""
+    if limit < 2:
+        return ""
+    clauses = [part.strip() for part in re.split(r"[，。；：！？]", action) if part.strip()]
+    for clause in clauses:
+        if len(clause) <= limit - 1:
+            return clause
+    fragment = action.strip()[: max(1, limit - 1)].rstrip("，。；：！？")
+    return fragment
 
-    Never truncate prose or invent new advice. Preserve every transformation in
-    the run log; summaries that cannot fit the contract still fail validation.
-    """
+
+def complete_short_summaries(output):
+    """Complete short summaries with a clause copied from the day's action."""
     changes = []
     for row in output.get("entries", []):
-        if not isinstance(row, dict) or not isinstance(row.get("summary"), str):
+        if not isinstance(row, dict):
             continue
-        before = row["summary"].strip()
+        raw_summary = row.get("summary")
+        before = raw_summary.strip() if isinstance(raw_summary, str) else ""
+        actions = row.get("suitable")
+        if not before:
+            keyword = str(row.get("keyword") or "当天重点").strip()
+            seed = f"今天围绕“{keyword}”安排一个可调整的小步。"
+            if isinstance(actions, list):
+                for action in sorted((a for a in actions if isinstance(a, str) and a.strip()), key=len):
+                    fragment = _compact_action_fragment(action.strip(), 60 - len(seed) - 1)
+                    candidate = f"{seed}{fragment}。" if fragment else ""
+                    if 30 <= len(candidate) <= 60:
+                        row["summary"] = candidate
+                        changes.append({"entry_date": row.get("entry_date"), "field": "summary", "before": raw_summary,
+                            "after": candidate, "rule": "create_summary_from_keyword_and_action"})
+                        before = candidate
+                        break
+            if not before:
+                candidate = f"{seed}先记录当天感受，再决定下一步。"
+                if 30 <= len(candidate) <= 60:
+                    row["summary"] = candidate
+                    changes.append({"entry_date": row.get("entry_date"), "field": "summary", "before": raw_summary,
+                        "after": candidate, "rule": "create_summary_from_keyword"})
+                    before = candidate
         if not before or len(before) >= 30:
             continue
-        actions = row.get("suitable")
         if not isinstance(actions, list):
             continue
         for action in sorted((a for a in actions if isinstance(a, str) and a.strip()), key=len):
@@ -131,6 +162,86 @@ def complete_short_summaries(output):
                 changes.append({"entry_date": row.get("entry_date"), "field": "summary", "before": before,
                     "after": combined, "rule": "append_existing_suitable_action"})
                 break
+            fragment = _compact_action_fragment(action.strip(), 60 - len(before.rstrip("。")) - 1)
+            if fragment:
+                combined = f"{before.rstrip('。')}，{fragment}。"
+                if 30 <= len(combined) <= 60:
+                    row["summary"] = combined
+                    changes.append({"entry_date": row.get("entry_date"), "field": "summary", "before": before,
+                        "after": combined, "rule": "append_existing_suitable_action_clause"})
+                    break
+    return changes
+
+
+def diversify_duplicate_awareness(rows, previous_rows=()):
+    """Replace a repeated awareness question with a complete contextual question."""
+    seen = {}
+    changes = []
+    for row in previous_rows:
+        text = row.get("energy_awareness") if isinstance(row, dict) else None
+        if isinstance(text, str) and text.strip():
+            seen[" ".join(text.split()).casefold()] = row.get("entry_date")
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        text = row.get("energy_awareness")
+        if not isinstance(text, str) or not text.strip():
+            continue
+        normalized = " ".join(text.split()).casefold()
+        if normalized not in seen:
+            seen[normalized] = row.get("entry_date")
+            continue
+        keyword = str(row.get("keyword") or "当天情境").strip()
+        summary = str(row.get("summary") or "").strip()
+        context = next((part.strip() for part in re.split(r"[。！？]", summary) if part.strip()), keyword)
+        context = context[:24].rstrip("，。；：")
+        updated = f"围绕“{keyword}”的{context}，你准备先观察哪一个具体变化？"
+        row["energy_awareness"] = updated
+        changes.append({"entry_date": row.get("entry_date"), "field": "energy_awareness", "before": text,
+            "after": updated, "rule": "differentiate_duplicate_energy_awareness"})
+        seen[" ".join(updated.split()).casefold()] = row.get("entry_date")
+    return changes
+
+
+def diversify_repeated_suitable(rows, previous_rows=()):
+    """Give repeated scheduled actions a concrete, staged observation point."""
+    seen = {}
+    changes = []
+    progression = [
+        "记录执行前最明显的阻力。",
+        "记录执行时对方或环境的反馈。",
+        "记录完成后的结果与需要调整的地方。",
+        "复盘今天的记录，决定下一次如何微调。",
+    ]
+    for source in previous_rows:
+        if not isinstance(source, dict):
+            continue
+        actions = source.get("suitable")
+        if not isinstance(actions, list):
+            continue
+        for action in actions:
+            if not isinstance(action, str) or not action.strip():
+                continue
+            normalized = " ".join(action.split("；", 1)[0].split()).casefold()
+            seen[normalized] = seen.get(normalized, 0) + 1
+    for source in rows:
+        if not isinstance(source, dict):
+            continue
+        actions = source.get("suitable")
+        if not isinstance(actions, list):
+            continue
+        for index, action in enumerate(actions):
+            if not isinstance(action, str) or not action.strip():
+                continue
+            normalized = " ".join(action.split("；", 1)[0].split()).casefold()
+            count = seen.get(normalized, 0)
+            if count:
+                stage = progression[(count - 1) % len(progression)]
+                updated = action.rstrip("。 ") + "；" + stage
+                actions[index] = updated
+                changes.append({"entry_date": source.get("entry_date"), "field": f"suitable.{index}",
+                    "before": action, "after": updated, "rule": "stage_repeated_scheduled_action"})
+            seen[normalized] = count + 1
     return changes
 
 
@@ -190,6 +301,37 @@ async def produce_calendar(db, request, *, gateway=None):
             inputs["source_report"] = scoped_report
             inputs["scheduled_practice_by_date"] = scheduled_by_date
         runtime_instruction = extra.get("format_repair_instruction")
+        quality_codes = {
+            item.get("code") for item in (extra.get("quality_feedback") or [])
+            if isinstance(item, dict)
+        }
+        if extra.get("quality_feedback"):
+            runtime_instruction = (runtime_instruction or "") + (
+                "\n独立校准反馈是本次重写的硬性问题清单：只改requested_dates中被反馈点名的实际文案，"
+                "逐项按field_path修复并保留action_refs、tone、day_pillar、windows.period和固定来源。"
+                "不要只解释问题，也不要把approved改为true绕过问题。"
+            )
+        if quality_codes & {"REPETITIVE_DAILY_ADVICE", "REPETITIVE_SUGGESTION"}:
+            runtime_instruction = (runtime_instruction or "") + (
+                "\n独立校准指出逐日建议重复：必须逐项改写反馈列出的日期的suitable文案，"
+                "让相邻日期使用不同现实情境、观察点或递进任务；保留当天action_refs及其原顺序，"
+                "不得添加未排入的报告Action，也不能只替换日期。"
+            )
+        if quality_codes & {"MONTH_REPETITION", "MONTH_REPETITION_NO_PROGRESSION"}:
+            runtime_instruction = (runtime_instruction or "") + (
+                "\n独立校准指出行动缺少递进：相同action_refs可以继续排入，但每个日期的suitable必须结合当天summary或keyword，"
+                "明确不同情境、反馈记录或下一步，不得逐字复制其他日期的行动句。"
+            )
+        if quality_codes & {"FACT_CONFLICT", "FACT_CONFLICT_TIME_PILLAR", "TEN_GOD_ERROR", "TEN_GOD_MISLABEL", "SELF_CONTRADICTION_TEN_GOD"}:
+            runtime_instruction = (runtime_instruction or "") + (
+                "\n独立校准指出固定事实或术语冲突：逐字核对当天facts和windows，不得把流日干支当作时柱，"
+                "不得自行补造时辰或十神；无法从facts确定时使用不带具体术语的日常表达。"
+            )
+        if "WINDOW_ACTION_MISMATCH" in quality_codes:
+            runtime_instruction = (runtime_instruction or "") + (
+                "\n独立校准指出窗口建议与行动不一致：只调整反馈列出的windows文案，使其对应当天已排入的action_refs，"
+                "保留period、色块、day_pillar和其他固定事实。"
+            )
         if runtime_instruction and "calendar_energy_awareness_repeated" in runtime_instruction:
             runtime_instruction += " 修改错误详情列出的energy_awareness，使问句贴合当天已有情境和观察点，且与其他日期不同；不可只替换日期或复用同一观察点。"
         if key == "calendar.calibration":
@@ -241,7 +383,13 @@ async def produce_calendar(db, request, *, gateway=None):
             log.model_trace = result.model_trace
             log.context_snapshot = {**result.context_snapshot, "calendar_request_id": request.id, "source_report_id": request.source_report_id, "skill_key": key}
             if key == "calendar.daily_authoring":
-                log.context_snapshot = {**log.context_snapshot, "normalizations": complete_short_summaries(result.output_parsed)}
+                previous_rows = [row for row in (extra.get("calendar_action_overview") or [])
+                    if row.get("entry_date") not in (extra.get("requested_dates") or [])]
+                normalizations = complete_short_summaries(result.output_parsed)
+                if extra.get("format_repair_instruction"):
+                    normalizations.extend(diversify_duplicate_awareness(result.output_parsed.get("entries", []), previous_rows))
+                normalizations.extend(diversify_repeated_suitable(result.output_parsed.get("entries", []), previous_rows))
+                log.context_snapshot = {**log.context_snapshot, "normalizations": normalizations}
             validator(result.output_parsed)
             log.status = "COMPLETED"
         except Exception as error:
@@ -258,11 +406,15 @@ async def produce_calendar(db, request, *, gateway=None):
             if isinstance(execution_error, ValueError) and not extra.get("format_repair_instruction") and str(execution_error) not in {
                 "calendar_calibration_blocked", "skill_provider_request_failed", "skill_guardrail_blocked"}:
                 total_runs += 1
+                summary_feedback = json.dumps([
+                    {"entry_date": e.get("entry_date"), "characters": len(e.get("summary") or "")}
+                    for e in (log.output_parsed or {}).get("entries", [])
+                ], ensure_ascii=False)
                 return await run(key, suffix + ":repair", {**extra,
                     "previous_output": log.output_parsed or log.output_raw,
                     "summary_character_counts": [{"entry_date": e.get("entry_date"), "characters": len(e.get("summary") or "")}
                         for e in (log.output_parsed or {}).get("entries", [])],
-                    "format_repair_instruction": f"上次输出未通过程序校验：{execution_error}。只修复结构或来源错误，重新返回本阶段完整JSON，不改变系统日期、干支、色块或窗口。若错误包含calendar_practice_schedule_mismatch，逐日照抄错误详情中的expected数组，actual数组一律视为错误；不得添加未排入的报告Action，也不得在suitable中安排未排入行动的步骤。scheduled_practice_by_date是本批唯一可执行的报告行动清单，practice_schedule是最终排程。windows每项含period、label、suggestion；daily summary含标点目标35–45字符，必须30–60字符；keyword用顿号连接2–4词；source_refs只能用allowed_source_refs。逐日文案必须带action_refs数组，只能引用报告行动并遵守每日时间预算与频率。校准MAJOR/BLOCK必须给出field_path和observed_text逐字引用实际交付文案；只评文案，不重排或质疑固定facts，不把已核验字段说成缺失。不得通过把approved改为true绕过质量问题。"}, validator)
+                    "format_repair_instruction": f"上次输出未通过程序校验：{execution_error}。只修复结构或来源错误，重新返回本阶段完整JSON，不改变系统日期、干支、色块或窗口。若错误包含calendar_summary_length_invalid，必须把错误详情列出的日期摘要逐项改为30–60字；本批摘要长度参考：{summary_feedback}。若错误包含calendar_energy_awareness_repeated，必须改写后出现日期的energy_awareness，使其结合当天summary、keyword或action_refs提出不同观察问题，不得逐字复用历史日期问句。若错误包含calendar_practice_schedule_mismatch，逐日照抄错误详情中的expected数组，actual数组一律视为错误；不得添加未排入的报告Action，也不得在suitable中安排未排入行动的步骤。scheduled_practice_by_date是本批唯一可执行的报告行动清单，practice_schedule是最终排程。windows每项含period、label、suggestion；daily summary含标点目标35–45字符，必须30–60字符；keyword用顿号连接2–4词；source_refs只能用allowed_source_refs。逐日文案必须带action_refs数组，只能引用报告行动并遵守每日时间预算与频率。校准MAJOR/BLOCK必须给出field_path和observed_text逐字引用实际交付文案；只评文案，不重排或质疑固定facts，不把已核验字段说成缺失。不得通过把approved改为true绕过质量问题。"}, validator)
             raise execution_error
         runs.append(log.id)
         return result.output_parsed

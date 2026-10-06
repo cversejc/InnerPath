@@ -358,10 +358,10 @@ test('S6 shows report copy and open quality findings', () => {
     }
   })
 
+  const qualityGroup = groups.find(group => group.key === 'qualityIssues')
   assert.equal(groups[0].items[0].body, '先完成一次从业者访谈。')
-  const qualityIssue = groups.find(group => group.key === 'qualityIssues').items[0]
-  assert.match(qualityIssue.meta, /必须处理/)
-  assert.equal(qualityIssue.body, '补充来源或删除该句。')
+  assert.match(qualityGroup.items[0].meta, /必须处理/)
+  assert.equal(qualityGroup.items[0].body, '补充来源或删除该句。')
 })
 
 test('S6 explains repeated semantic references without exposing internal finding keys', () => {
@@ -382,11 +382,11 @@ test('S6 explains repeated semantic references without exposing internal finding
     }
   })
 
-  const qualityIssue = groups.find(group => group.key === 'qualityIssues').items[0]
-  assert.equal(qualityIssue.title, '同一专业判断被多段引用')
-  assert.match(qualityIssue.body, /各段是否各自承担不同作用/)
-  assert.match(qualityIssue.meta, /建议复核/)
-  assert.doesNotMatch(JSON.stringify(qualityIssue), /central_tension|Finding s3/)
+  const qualityGroup = groups.find(group => group.key === 'qualityIssues')
+  assert.equal(qualityGroup.items[0].title, '同一专业判断被多段引用')
+  assert.match(qualityGroup.items[0].body, /各段是否各自承担不同作用/)
+  assert.match(qualityGroup.items[0].meta, /建议复核/)
+  assert.doesNotMatch(JSON.stringify(qualityGroup.items[0]), /central_tension|Finding s3/)
 })
 
 test('completed quality checks show the open work instead of an unrun state', () => {
@@ -426,7 +426,8 @@ test('quality issues use clear Chinese action labels and severity levels', () =>
     }
   })
 
-  const issue = groups.find(group => group.key === 'qualityIssues').items[0]
+  const qualityGroup = groups.find(group => group.key === 'qualityIssues')
+  const issue = qualityGroup.items[0]
   assert.equal(issue.title, '当前职业处境 · 报告表达需要复核')
   assert.match(issue.body, /统一叙述方式/)
   assert.match(issue.meta, /需要处理 · 待处理/)
