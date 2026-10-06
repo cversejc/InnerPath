@@ -60,20 +60,31 @@ function createEntry(date = todayKey()) {
 
 export default {
   async loadCalendarUsers() {
+      const requestId = this.calendarUsersRequestId + 1
+      this.calendarUsersRequestId = requestId
       this.calendarUsersLoading = true
-      try { const response = await getAllAdminUsers({ search: this.calendarUserSearch || undefined, size: 100 }); this.calendarUsers = response.items || [] } catch (error) { this.message = this.errorText(error) } finally { this.calendarUsersLoading = false }
+      try {
+        const response = await getAllAdminUsers({ search: this.calendarUserSearch || undefined, size: 100 })
+        if (this.calendarUsersRequestId === requestId) this.calendarUsers = response.items || []
+      } catch (error) {
+        if (this.calendarUsersRequestId === requestId) this.message = this.errorText(error)
+      } finally {
+        if (this.calendarUsersRequestId === requestId) this.calendarUsersLoading = false
+      }
     },
   updateCalendarImportJson(value) { this.calendarImportJson = value },
   updateCalendarUserSearch(value) { this.calendarUserSearch = value },
   async loadCalendarRequests() {
+      const requestId = this.calendarRequestsRequestId + 1
+      this.calendarRequestsRequestId = requestId
       this.calendarRequestsLoading = true
       try {
         const response = await getAdminCalendarRequests({ status: this.calendarRequestStatusFilter || undefined })
-        this.calendarRequests = response.items || []
+        if (this.calendarRequestsRequestId === requestId) this.calendarRequests = response.items || []
       } catch (error) {
-        this.message = this.errorText(error)
+        if (this.calendarRequestsRequestId === requestId) this.message = this.errorText(error)
       } finally {
-        this.calendarRequestsLoading = false
+        if (this.calendarRequestsRequestId === requestId) this.calendarRequestsLoading = false
       }
     },
   async setCalendarRequestStatusFilter(status) {
@@ -117,8 +128,18 @@ export default {
   },
   async loadCalendars() {
       if (!this.selectedCalendarUser) return
+      const userId = this.selectedCalendarUser.id
+      const requestId = this.calendarsRequestId + 1
+      this.calendarsRequestId = requestId
       this.calendarLoading = true
-      try { this.calendars = (await getAdminCalendars(this.selectedCalendarUser.id)).items || [] } catch (error) { this.message = this.errorText(error) } finally { this.calendarLoading = false }
+      try {
+        const response = await getAdminCalendars(userId)
+        if (this.calendarsRequestId === requestId && this.selectedCalendarUser?.id === userId) this.calendars = response.items || []
+      } catch (error) {
+        if (this.calendarsRequestId === requestId && this.selectedCalendarUser?.id === userId) this.message = this.errorText(error)
+      } finally {
+        if (this.calendarsRequestId === requestId && this.selectedCalendarUser?.id === userId) this.calendarLoading = false
+      }
     },
   startNewCalendar() { this.calendarForm = { visible: true, id: null, title: '', note: '', start_date: '', end_date: '', status: 'draft', version_number: 1, entries: [] } },
   async prepareCalendarEdit(calendar) {
