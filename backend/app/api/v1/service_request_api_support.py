@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,7 +38,7 @@ def project_report_case_status(case_status: str, step_status: str | None, fallba
 
 async def report_case_progress_for_requests(
     db: AsyncSession, request_ids: list[int]
-) -> dict[int, dict[str, int | str | bool | None]]:
+) -> dict[int, dict[str, int | str | bool | datetime | None]]:
     if not request_ids:
         return {}
     cases = list(
@@ -53,10 +55,10 @@ async def report_case_progress_for_requests(
                 .where(
                     StepTask.workflow_instance_id.in_(workflow_ids),
                     StepTask.status.in_(
-                        ["READY", "IN_REVIEW", "EXECUTING", "WAITING_REVIEW"]
+                        ["READY", "IN_REVIEW", "EXECUTING", "WAITING_REVIEW", "FAILED"]
                     ),
                 )
-                .order_by(StepTask.sequence_no)
+                .order_by((StepTask.status == "FAILED").asc(), StepTask.sequence_no)
             )
         )
     current_by_workflow = {}
@@ -74,6 +76,16 @@ async def report_case_progress_for_requests(
             ),
             "current_step_status": (
                 current_by_workflow[case.workflow_instance_id].status
+                if case.workflow_instance_id in current_by_workflow
+                else None
+            ),
+            "current_step_updated_at": (
+                current_by_workflow[case.workflow_instance_id].updated_at
+                if case.workflow_instance_id in current_by_workflow
+                else None
+            ),
+            "current_step_error": (
+                current_by_workflow[case.workflow_instance_id].last_error
                 if case.workflow_instance_id in current_by_workflow
                 else None
             ),

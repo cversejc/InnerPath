@@ -23,6 +23,7 @@ from .users import (
 )
 from .staff import (
     STALE_SERVICE_REQUEST_STATUSES,
+    workflow_attention_condition,
     accept_service_request,
     assignment_incomplete_condition,
     consultant_can_cover_specialty,
@@ -45,6 +46,7 @@ from .workflow import (
 __all__ = [
     "PUBLIC_STATUS_LABELS",
     "STALE_SERVICE_REQUEST_STATUSES",
+    "workflow_attention_condition",
     "_append_revision",
     "_normalize_payload",
     "accept_service_request",

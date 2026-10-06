@@ -60,7 +60,8 @@ export default {
       const serviceQueueFilters = {
         incomplete_assignment: 'incomplete_assignment',
         incomplete_assignment_over_24h: 'incomplete_assignment_over_24h',
-        stale_service_requests: 'stale_over_24h'
+        stale_service_requests: 'stale_over_24h',
+        workflow_attention: 'workflow_attention'
       }
       if (serviceQueueFilters[alert.key] || ['failed_service_requests'].includes(alert.key)) {
         this.requestKind = 'consultant'
@@ -98,6 +99,16 @@ export default {
       }
       const target = alert.route === 'calendar' ? 'calendar' : alert.route === 'reports' ? 'reports' : 'logs'
       await this.switchTab(target)
+    },
+  openReportWorkflow(item) {
+      return this.$router.push({
+        path: '/staff',
+        query: {
+          scope: 'all',
+          request_id: String(item.id),
+          section: 'overview'
+        }
+      })
     },
   getDrawer(name) { return this.$refs.adminDetailDrawers?.getDrawer(name) },
   getOpenDrawer() { if (this.logDetail) return this.getDrawer('logDrawer'); if (this.reportDetail) return this.getDrawer('reportDrawer'); if (this.detailUser) return this.getDrawer('userDrawer'); return null },

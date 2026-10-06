@@ -35,7 +35,7 @@ from app.domains.service_requests.staff import (
     list_staff_service_requests,
     staff_can_access,
 )
-from app.domains.workflow.models import ReportCase, StepTask
+from app.domains.workflow.models import ReportCase, StepTask, WorkflowVersion
 from app.domains.workflow.authorization import validate_step_actor, STEP_SPECIALTIES
 from app.domains.workflow.service import create_report_case, start_step, complete_step
 from tests.test_workflow_foundation import SyncSessionAdapter
@@ -462,6 +462,89 @@ async def test_admin_operation_alerts_count_incomplete_and_stalled_work(chain_db
     }
     assert old_incomplete_total == 1 and old_incomplete[0][0].id == old_unassigned.id
     assert stalled["total"] == 1 and stalled["items"][0]["id"] == stalled_calendar.id
+
+
+@pytest.mark.asyncio
+async def test_admin_workflow_attention_filter_finds_failed_and_stalled_steps(chain_db):
+    db = chain_db
+    now = datetime.utcnow()
+    user, _, _, _ = await seed_report(db)
+    consultant = User(
+        phone="13800009908",
+        name="工作流测试咨询师",
+        role="consultant",
+        consultant_type="integrated",
+    )
+    db.add(consultant)
+    version = WorkflowVersion(
+        workflow_key="test.report",
+        name="测试报告流程",
+        version=1,
+        status="PUBLISHED",
+        definition_json={
+            "steps": [
+                {
+                    "step_key": "S1",
+                    "sequence_no": 1,
+                    "executor": "HUMAN",
+                    "config": {},
+                }
+            ]
+        },
+        created_at=now,
+        published_at=now,
+    )
+    db.add(version)
+    await db.flush()
+
+    requests = []
+    for step_status, step_updated_at, request_status, case_status in (
+        ("FAILED", now, "accepted", "ACTIVE"),
+        ("IN_REVIEW", now - timedelta(hours=25), "reviewing", "ACTIVE"),
+        ("READY", now - timedelta(hours=25), "needs_info", "BLOCKED"),
+    ):
+        request = ServiceRequest(
+            user_id=user.id,
+            service_type="report",
+            status=request_status,
+            assigned_consultant_id=consultant.id,
+            request_payload={},
+            created_at=now,
+            updated_at=now,
+        )
+        db.add(request)
+        await db.flush()
+        case = await create_report_case(
+            db,
+            user_id=user.id,
+            service_request_id=request.id,
+            source_report_task_id=None,
+            application_snapshot={},
+            workflow_version=version,
+        )
+        case.status = case_status
+        step = await db.scalar(
+            select(StepTask).where(
+                StepTask.workflow_instance_id == case.workflow_instance_id
+            )
+        )
+        step.status = step_status
+        step.updated_at = step_updated_at
+        if step_status == "FAILED":
+            step.last_error = "generation_failed"
+        requests.append(request)
+    await db.commit()
+
+    alerts = {item.key: item.count for item in await _operation_alerts(db, now)}
+    rows, total = await list_admin_service_requests(
+        db,
+        service_type="report",
+        queue_filter="workflow_attention",
+    )
+
+    assert alerts["workflow_attention"] == 2
+    assert total == 2
+    assert {row[0].id for row in rows} == {requests[0].id, requests[1].id}
 
 
 @pytest.mark.asyncio

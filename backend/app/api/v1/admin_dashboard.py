@@ -24,7 +24,9 @@ from app.domains.service_requests.models import ServiceRequest
 from app.domains.service_requests.service import (
     STALE_SERVICE_REQUEST_STATUSES,
     assignment_incomplete_condition,
+    workflow_attention_condition,
 )
+from app.domains.workflow.models import ReportCase
 from app.models.user import User
 from app.domains.audit.models import AuditLog
 from app.schemas.admin import (
@@ -82,6 +84,15 @@ async def _operation_alerts(db: AsyncSession, now: datetime | None = None) -> li
                 ServiceRequest.service_type == "report",
                 ServiceRequest.status.in_(STALE_SERVICE_REQUEST_STATUSES),
                 ServiceRequest.updated_at < service_cutoff,
+                ~select(ReportCase.id)
+                .where(ReportCase.service_request_id == ServiceRequest.id)
+                .exists(),
+            ),
+        ),
+        "workflow_attention": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(
+                workflow_attention_condition(current_time),
             ),
         ),
         "failed_service_requests": await _count(
@@ -107,6 +118,7 @@ async def _operation_alerts(db: AsyncSession, now: datetime | None = None) -> li
         ("incomplete_assignment", "warning", "咨询师席位未完整分配", "requests"),
         ("incomplete_assignment_over_24h", "danger", "超过 24 小时未完成分配", "requests"),
         ("stale_service_requests", "warning", "工作流超过 24 小时未更新", "requests"),
+        ("workflow_attention", "danger", "报告协作节点失败或超 24 小时未更新", "requests"),
         ("failed_service_requests", "danger", "服务申请处理失败", "requests"),
         ("failed_calendar_requests", "danger", "日历生成失败", "requests"),
         ("stalled_calendar_requests", "warning", "日历生成超过 45 分钟", "requests"),

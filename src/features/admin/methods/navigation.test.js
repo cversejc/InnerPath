@@ -73,3 +73,28 @@ test('legacy report failure alerts open the read-only failed task list', async (
   assert.equal(context.taskFilters.status, 'failed')
   assert.equal(context.activeLoads.at(-1), 'tasks')
 })
+
+test('report workflow alerts open the matching operational queue', async () => {
+  const context = createContext()
+
+  await navigationMethods.goFromAlert.call(context, {
+    key: 'workflow_attention',
+    route: 'requests'
+  })
+
+  assert.equal(context.requestKind, 'consultant')
+  assert.equal(context.requestFilters.queue_filter, 'workflow_attention')
+  assert.equal(context.activeLoads.at(-1), 'requests')
+})
+
+test('opening an exceptional request passes its id to the staff workbench', async () => {
+  let destination
+  await navigationMethods.openReportWorkflow.call({
+    $router: { push: value => { destination = value } }
+  }, { id: 37 })
+
+  assert.deepEqual(destination, {
+    path: '/staff',
+    query: { scope: 'all', request_id: '37', section: 'overview' }
+  })
+})

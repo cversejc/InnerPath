@@ -94,6 +94,7 @@
         @assign-request="assignAdminRequest"
         @close-assignment="closeAdminAssignment"
         @open-report="openReport"
+        @open-workflow="openReportWorkflow"
         @open-assignment="openAdminAssignment"
         @open-user="openUserDetail"
         @reset-filters="resetAdminRequestFilters"

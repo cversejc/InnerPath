@@ -22,7 +22,8 @@ function reportStepStatusLabel(status) {
     IN_REVIEW: '审阅中',
     EXECUTING: '处理中',
     WAITING_REVIEW: '待复核',
-    COMPLETED: '已完成'
+    COMPLETED: '已完成',
+    FAILED: '处理失败'
   }[status] || '待处理'
 }
 
@@ -59,6 +60,7 @@ defineEmits([
   'close-assignment',
   'open-assignment',
   'open-report',
+  'open-workflow',
   'open-user',
   'reset-filters',
   'retry-service-request',
@@ -109,7 +111,8 @@ defineEmits([
           <option value="">全部运营状态</option>
           <option value="incomplete_assignment">咨询师席位未完整分配</option>
           <option value="incomplete_assignment_over_24h">超过 24 小时未完成分配</option>
-          <option value="stale_over_24h">工作流超过 24 小时未更新</option>
+          <option value="stale_over_24h">旧流程申请超过 24 小时未更新</option>
+          <option value="workflow_attention">报告协作节点失败或停滞</option>
         </select>
         <label class="date-filter"><span>提交自</span><input v-model="filters.date_from" type="date"></label>
         <label class="date-filter"><span>至</span><input v-model="filters.date_to" type="date"></label>
@@ -135,7 +138,33 @@ defineEmits([
                   </div>
                   <VanButton class="secondary-button compact-button request-assignment-button" type="default" plain native-type="button" :disabled="['delivered', 'withdrawn', 'rejected'].includes(item.status)" @click="$emit('open-assignment', item)">{{ item.is_collaborative ? '管理专业分工' : (item.assigned_consultant_id ? '改派负责人' : '分配负责人') }}</VanButton>
                 </td>
-                <td><span :class="['status-badge', `request-${item.status}`]">{{ serviceRequestStatusText(item.status) }}</span><small v-if="item.current_step_key">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><small v-if="item.report_case_status">工作流：{{ reportCaseStatusLabel(item.report_case_status) }}</small><small v-if="item.needs_info_reason" class="request-note">待补充：{{ item.needs_info_reason }}</small><small v-if="item.last_error" class="request-note error-cell">{{ item.last_error }}</small><VanButton v-if="item.status === 'failed' && item.service_type === 'report' && !item.report_case_id" class="secondary-button compact-button request-retry-button" type="default" plain native-type="button" :disabled="Boolean(retryingRequestKey)" :loading="retryingRequestKey === `service-${item.id}`" @click="$emit('retry-service-request', item.id)">重试初稿</VanButton></td>
+                <td>
+                  <span :class="['status-badge', `request-${item.status}`]">{{ serviceRequestStatusText(item.status) }}</span>
+                  <small v-if="item.current_step_key">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small>
+                  <small v-if="item.current_step_updated_at">节点更新 {{ formatDateTime(item.current_step_updated_at) }}</small>
+                  <small v-if="item.current_step_error" class="request-note error-cell">{{ item.current_step_error }}</small>
+                  <small v-if="item.report_case_status">工作流：{{ reportCaseStatusLabel(item.report_case_status) }}</small>
+                  <small v-if="item.needs_info_reason" class="request-note">待补充：{{ item.needs_info_reason }}</small>
+                  <small v-if="item.last_error" class="request-note error-cell">{{ item.last_error }}</small>
+                  <VanButton
+                    v-if="item.status === 'failed' && item.service_type === 'report' && !item.report_case_id"
+                    class="secondary-button compact-button request-retry-button"
+                    type="default"
+                    plain
+                    native-type="button"
+                    :disabled="Boolean(retryingRequestKey)"
+                    :loading="retryingRequestKey === `service-${item.id}`"
+                    @click="$emit('retry-service-request', item.id)"
+                  >重试初稿</VanButton>
+                  <VanButton
+                    v-if="filters.queue_filter === 'workflow_attention' && item.report_case_id"
+                    class="secondary-button compact-button request-retry-button"
+                    type="default"
+                    plain
+                    native-type="button"
+                    @click="$emit('open-workflow', item)"
+                  >打开报告工作区</VanButton>
+                </td>
                 <td>{{ formatDateTime(item.created_at) }}</td>
                 <td>{{ formatDateTime(item.accepted_at) }}</td>
                 <td>{{ formatDateTime(item.delivered_at) }}</td>

@@ -23,6 +23,40 @@ from app.domains.workflow.models import ReportCase, StepTask
 
 
 STALE_SERVICE_REQUEST_STATUSES = ("accepted", "ai_processing", "ai_ready", "reviewing")
+WORKFLOW_ACTIVE_STEP_STATUSES = (
+    "READY",
+    "EXECUTING",
+    "WAITING_REVIEW",
+    "IN_REVIEW",
+    "NEEDS_REVISION",
+)
+
+
+def workflow_attention_condition(now: Optional[datetime] = None):
+    cutoff = (now or datetime.utcnow()) - timedelta(hours=24)
+    case_conditions = (
+        ReportCase.service_request_id == ServiceRequest.id,
+        ReportCase.status.in_(("ACTIVE", "READY_TO_DELIVER")),
+        ServiceRequest.service_type == "report",
+        ServiceRequest.status.not_in(("needs_info", "delivered", "withdrawn", "rejected")),
+    )
+    failed_step = (
+        select(StepTask.id)
+        .join(ReportCase, ReportCase.workflow_instance_id == StepTask.workflow_instance_id)
+        .where(*case_conditions, StepTask.status == "FAILED")
+        .exists()
+    )
+    stale_step = (
+        select(StepTask.id)
+        .join(ReportCase, ReportCase.workflow_instance_id == StepTask.workflow_instance_id)
+        .where(
+            *case_conditions,
+            StepTask.status.in_(WORKFLOW_ACTIVE_STEP_STATUSES),
+            StepTask.updated_at < cutoff,
+        )
+        .exists()
+    )
+    return and_(ServiceRequest.service_type == "report", or_(failed_step, stale_step))
 
 
 def assignment_incomplete_condition():
@@ -298,7 +332,12 @@ async def list_admin_service_requests(
         conditions.extend((
             ServiceRequest.status.in_(STALE_SERVICE_REQUEST_STATUSES),
             ServiceRequest.updated_at < datetime.utcnow() - timedelta(hours=24),
+            ~select(ReportCase.id)
+            .where(ReportCase.service_request_id == ServiceRequest.id)
+            .exists(),
         ))
+    elif queue_filter == "workflow_attention":
+        conditions.append(workflow_attention_condition())
     if status:
         conditions.append(ServiceRequest.status == status)
     if service_type:

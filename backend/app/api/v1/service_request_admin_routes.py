@@ -41,7 +41,7 @@ async def list_admin_requests(
     consultant_id: Optional[int] = Query(None, ge=1),
     queue_filter: Optional[str] = Query(
         None,
-        pattern="^(incomplete_assignment|incomplete_assignment_over_24h|stale_over_24h)$",
+        pattern="^(incomplete_assignment|incomplete_assignment_over_24h|stale_over_24h|workflow_attention)$",
     ),
     search: Optional[str] = Query(None, max_length=100),
     date_from: Optional[date] = None,
