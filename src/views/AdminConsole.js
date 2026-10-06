@@ -22,6 +22,7 @@ import exportsMethods from '../features/admin/methods/exports.js'
 import adminRequestsMethods from '../features/admin/methods/requests.js'
 import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'vant'
 import { confirmAction } from '../utils/confirmAction.js'
+import { authState } from '../stores/auth.js'
 
 const EMPTY_PAGE = { total: 0, items: [] }
 
@@ -32,15 +33,16 @@ export default {
     return {
       activeTab: 'overview',
       tabs: [
-        { id: 'overview', index: '01', label: '总览' },
-        { id: 'users', index: '02', label: '用户' },
-        { id: 'requests', index: '03', label: '申请交付' },
-        { id: 'calendar', index: '04', label: '日历' },
-        { id: 'reports', index: '05', label: '报告' },
-        { id: 'logs', index: '06', label: '日志' },
-        { id: 'staff', index: '07', label: '后台成员' },
-        { id: 'models', index: '08', label: '模型配置' }
+        { id: 'overview', index: '01', label: '总览', icon: 'compass', group: 'workspace', eyebrow: 'OPERATIONS OVERVIEW', description: '快速掌握用户、交付和系统运行状态。' },
+        { id: 'requests', index: '02', label: '申请交付', icon: 'inbox', group: 'workspace', eyebrow: 'REQUESTS / DELIVERY', description: '跟进用户申请、负责人和每个交付节点。' },
+        { id: 'users', index: '03', label: '用户', icon: 'person', group: 'data', eyebrow: 'USER DIRECTORY', description: '管理账户状态、角色和用户关联数据。' },
+        { id: 'calendar', index: '04', label: '日历', icon: 'calendar', group: 'data', eyebrow: 'DECISION CALENDAR', description: '维护已交付日历和用户行动计划。' },
+        { id: 'reports', index: '05', label: '报告', icon: 'reports', group: 'data', eyebrow: 'REPORT PIPELINE', description: '查看报告版本、生成状态和异常任务。' },
+        { id: 'logs', index: '06', label: '日志', icon: 'document', group: 'system', eyebrow: 'AUDIT / ACTIVITY', description: '追踪关键操作、决策记录和任务运行轨迹。' },
+        { id: 'staff', index: '07', label: '后台成员', icon: 'group', group: 'system', eyebrow: 'STAFF ACCESS', description: '管理后台成员、咨询方向和邀请权限。' },
+        { id: 'models', index: '08', label: '模型配置', icon: 'settings', group: 'system', eyebrow: 'MODEL CONTROL', description: '维护 AI 服务商、模型和运行参数。' }
       ],
+      mobileNavOpen: false,
       dashboardRanges: [{ id: '7d', label: '7 天' }, { id: '30d', label: '30 天' }, { id: '90d', label: '90 天' }],
       dashboardRange: '30d',
       dashboard: null,
@@ -115,6 +117,23 @@ export default {
     }
   },
   computed: {
+    adminNavGroups() {
+      const groups = [
+        { id: 'workspace', label: '运营工作台' },
+        { id: 'data', label: '数据管理' },
+        { id: 'system', label: '系统设置' }
+      ]
+      return groups.map(group => ({ ...group, items: this.tabs.filter(tab => tab.group === group.id) }))
+    },
+    activeTabInfo() {
+      return this.tabs.find(tab => tab.id === this.activeTab) || this.tabs[0]
+    },
+    operatorName() {
+      return authState.user?.name || '管理员'
+    },
+    operatorInitial() {
+      return this.operatorName.slice(0, 1).toUpperCase()
+    },
     activeLoading() {
       return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
     },

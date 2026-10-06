@@ -40,7 +40,7 @@ const router = createRouter({
   }
 })
 
-router.beforeEach(async to => {
+router.beforeEach(async (to, from) => {
   if (import.meta.env.DEV && to.path === '/pages/report/detail' && to.query.preview === '1') {
     return true
   }
@@ -51,6 +51,9 @@ router.beforeEach(async to => {
       return user.role === 'admin' ? '/admin' : user.role === 'consultant' ? '/staff' : '/pages/home/home'
     }
     return true
+  }
+  if (user?.role === 'admin' && to.name === 'Home' && from.path === '/') {
+    return '/admin'
   }
   if (to.meta.requiresAuth && !user) {
     return {

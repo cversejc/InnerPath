@@ -1,40 +1,91 @@
 <template>
   <div class="admin-shell">
-    <BrandNav />
-    <main class="admin-main">
-      <BrandPageHeader contained compact eyebrow="OPERATIONS ROOM" title="辰鉴运营中枢" description="把每一个用户、申请与交付，整理成可以被照看的全局。" seal="有序">
-        <template #actions>
-          <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
-          <router-link class="secondary-button compact-button" to="/staff">申请工作台</router-link>
-          <router-link class="secondary-button compact-button" to="/skills">技能与示例工作台</router-link>
-          <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="activeLoading" :loading="activeLoading" loading-text="刷新中…" :aria-busy="activeLoading" @click="refreshActive">
-            <template #icon><IconMark name="refresh" /></template>
-            刷新
-          </VanButton>
-          <VanButton class="admin-account-button" type="default" plain native-type="button" :disabled="loggingOut" :loading="loggingOut" loading-text="退出中…" :aria-busy="loggingOut" @click="handleLogout">
-            <template #icon><IconMark name="logout" /></template>
-            退出登录
-          </VanButton>
-        </template>
-      </BrandPageHeader>
+    <aside class="admin-rail" :class="{ 'is-open': mobileNavOpen }" aria-label="管理员工作台导航">
+      <div class="admin-rail-brand">
+        <router-link to="/admin" class="admin-brand-lockup" aria-label="返回运营中枢" @click="closeMobileNav">
+          <picture>
+            <source srcset="/brand-emblem.webp" type="image/webp">
+            <img src="/brand-emblem.png" alt="" width="214" height="256" decoding="async">
+          </picture>
+          <span>
+            <strong>辰鉴</strong>
+            <small>运营中枢</small>
+          </span>
+        </router-link>
+        <span class="admin-rail-status"><i></i>ADMIN CONSOLE</span>
+      </div>
 
-      <nav class="admin-tabs" aria-label="管理后台导航">
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          type="button"
-          :class="['admin-tab', { active: activeTab === tab.id }]"
-          :aria-pressed="activeTab === tab.id"
-          @click="switchTab(tab.id)">
-          <span class="tab-index">{{ tab.index }}</span>
-          <span>{{ tab.label }}</span>
-        </button>
+      <nav class="admin-rail-nav" aria-label="后台功能">
+        <div v-for="group in adminNavGroups" :key="group.id" class="admin-nav-group">
+          <p class="admin-nav-group-label">{{ group.label }}</p>
+          <button
+            v-for="tab in group.items"
+            :key="tab.id"
+            type="button"
+            :class="['admin-rail-item', { active: activeTab === tab.id }]"
+            :aria-current="activeTab === tab.id ? 'page' : undefined"
+            @click="switchTab(tab.id)"
+          >
+            <IconMark :name="tab.icon" />
+            <span>{{ tab.label }}</span>
+            <b v-if="tab.id === 'overview'" class="admin-rail-item-index">{{ tab.index }}</b>
+          </button>
+        </div>
       </nav>
 
-      <div v-if="message" class="console-message" role="status" aria-live="polite">
-        <span>{{ message }}</span>
-        <AdminIconButton icon="close" label="关闭提示" @click="message = ''" />
+      <div class="admin-rail-footer">
+        <div class="admin-operator">
+          <span class="admin-operator-avatar">{{ operatorInitial }}</span>
+          <span><strong>{{ operatorName }}</strong><small>系统管理员</small></span>
+        </div>
+        <VanButton class="admin-rail-logout" type="default" plain native-type="button" :disabled="loggingOut" :loading="loggingOut" loading-text="退出中…" :aria-busy="loggingOut" @click="handleLogout">
+          <template #icon><IconMark name="logout" /></template>
+          退出登录
+        </VanButton>
       </div>
+    </aside>
+
+    <button v-if="mobileNavOpen" type="button" class="admin-rail-scrim" aria-label="关闭后台导航" @click="closeMobileNav"></button>
+
+    <div class="admin-app">
+      <header class="admin-topbar">
+        <div class="admin-topbar-leading">
+          <VanButton class="admin-menu-toggle" type="default" plain native-type="button" aria-label="打开后台导航" :aria-expanded="mobileNavOpen" @click="toggleMobileNav">
+            <template #icon><IconMark name="settings" /></template>
+          </VanButton>
+          <div class="admin-breadcrumb" aria-label="当前位置">
+            <span>运营中枢</span>
+            <IconMark name="arrow" />
+            <strong>{{ activeTabInfo.label }}</strong>
+          </div>
+        </div>
+        <div class="admin-topbar-actions">
+          <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
+          <router-link class="admin-tool-link" to="/staff"><IconMark name="group" /><span>咨询工作台</span></router-link>
+          <router-link class="admin-tool-link" to="/skills"><IconMark name="spark" /><span>技能工作台</span></router-link>
+          <VanButton class="admin-refresh-button" type="default" plain native-type="button" :disabled="activeLoading" :loading="activeLoading" loading-text="刷新中…" :aria-busy="activeLoading" aria-label="刷新当前数据" title="刷新当前数据" @click="refreshActive">
+            <template #icon><IconMark name="refresh" /></template>
+          </VanButton>
+        </div>
+      </header>
+
+      <main class="admin-main">
+        <BrandPageHeader
+          class="admin-page-header"
+          contained
+          compact
+          :eyebrow="activeTabInfo.eyebrow"
+          :title="activeTabInfo.label"
+          :description="activeTabInfo.description"
+          :seal="activeTabInfo.index"
+        >
+          <span class="admin-header-meta"><strong>内部工作台</strong><small>数据仅对管理员可见</small></span>
+        </BrandPageHeader>
+
+        <div v-if="message" class="console-message" role="status" aria-live="polite">
+          <span>{{ message }}</span>
+          <AdminIconButton icon="close" label="关闭提示" @click="message = ''" />
+        </div>
 
       <AdminDashboardSection
         v-if="activeTab === 'overview'"
@@ -208,7 +259,8 @@
         @save-user-profile="saveUserProfile"
         @set-user-panel-tab="setUserPanelTab"
       />
-    </main>
+      </main>
+    </div>
 
     <VanDialog
       v-model:show="passwordDialog.visible"
