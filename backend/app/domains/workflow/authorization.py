@@ -14,6 +14,22 @@ SPECIALTY_FIELDS = {
 }
 
 
+def consultant_capabilities(consultant):
+    capabilities = set()
+    consultant_type = getattr(consultant, "consultant_type", None)
+    if consultant_type in SPECIALTY_FIELDS:
+        capabilities.add(consultant_type)
+    elif consultant_type == "integrated":
+        capabilities.update(SPECIALTY_FIELDS)
+
+    for specialty in getattr(consultant, "consultant_specialties", None) or []:
+        if specialty in SPECIALTY_FIELDS:
+            capabilities.add(specialty)
+        elif specialty == "metaphysics":
+            capabilities.add("mingli")
+    return capabilities
+
+
 def assignment_condition(staff_id):
     return or_(
         ServiceRequest.assigned_consultant_id == staff_id,
@@ -39,7 +55,7 @@ def validate_step_actor(step, actor):
     if capability and capability not in {*SPECIALTY_FIELDS, "consultant"}:
         raise ValueError("step_specialty_required")
     if capability in SPECIALTY_FIELDS:
-        if getattr(actor, "consultant_type", None) != capability:
+        if capability not in consultant_capabilities(actor):
             raise ValueError("step_specialty_required")
         if step.assignee_id != actor.id:
             raise ValueError("step_assigned_to_another_consultant")

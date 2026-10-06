@@ -8,6 +8,8 @@ from app.domains.reports.schemas import ReportContext
 
 
 ServiceType = Literal["report", "calendar"]
+ConsultationType = Literal["metaphysics", "psychology", "integrated"]
+ConsultantSpecialty = Literal["metaphysics", "psychology"]
 
 
 class ServiceProfileSnapshot(BaseModel):
@@ -66,6 +68,7 @@ class ServiceRequestResponse(BaseModel):
     result_type: Optional[str] = None
     result_id: Optional[int] = None
     assigned_consultant_id: Optional[int] = None
+    consultation_type: Optional[ConsultationType] = None
     assigned_mingli_consultant_id: Optional[int] = None
     assigned_psychology_consultant_id: Optional[int] = None
     needs_info_reason: Optional[str] = None
@@ -99,6 +102,7 @@ class StaffServiceRequestListItem(BaseModel):
     user_id: int
     user_name: Optional[str] = None
     service_type: ServiceType
+    consultation_type: Optional[ConsultationType] = None
     status: str
     request_preview: Dict[str, Any] = Field(default_factory=dict)
     assigned_consultant_id: Optional[int] = None
@@ -118,6 +122,50 @@ class StaffServiceRequestListItem(BaseModel):
 class StaffServiceRequestListResponse(BaseModel):
     total: int
     items: List[StaffServiceRequestListItem]
+
+
+class AdminServiceRequestListItem(BaseModel):
+    id: int
+    user_id: int
+    user_name: Optional[str] = None
+    user_phone: Optional[str] = None
+    service_type: ServiceType
+    status: str
+    request_payload: Dict[str, Any] = Field(default_factory=dict)
+    assigned_consultant_id: Optional[int] = None
+    assigned_mingli_consultant_id: Optional[int] = None
+    assigned_psychology_consultant_id: Optional[int] = None
+    consultation_type: Optional[ConsultationType] = None
+    assigned_consultant_name: Optional[str] = None
+    assigned_mingli_consultant_name: Optional[str] = None
+    assigned_psychology_consultant_name: Optional[str] = None
+    report_case_id: Optional[int] = None
+    report_case_status: Optional[str] = None
+    current_step_key: Optional[str] = None
+    current_step_status: Optional[str] = None
+    result_type: Optional[str] = None
+    result_id: Optional[int] = None
+    needs_info_reason: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    last_error: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    accepted_at: Optional[datetime] = None
+    ai_started_at: Optional[datetime] = None
+    ai_completed_at: Optional[datetime] = None
+    reviewing_at: Optional[datetime] = None
+    needs_info_at: Optional[datetime] = None
+    failed_at: Optional[datetime] = None
+    delivered_at: Optional[datetime] = None
+    withdrawn_at: Optional[datetime] = None
+    rejected_at: Optional[datetime] = None
+
+
+class AdminServiceRequestListResponse(BaseModel):
+    total: int
+    page: int
+    size: int
+    items: List[AdminServiceRequestListItem]
 
 
 class ServiceRequestTaskResponse(BaseModel):
@@ -162,7 +210,8 @@ class ServiceRequestInfoInput(BaseModel):
 
 class ServiceRequestAssignmentUpdate(BaseModel):
     consultant_id: Optional[int] = None
-    consultant_type: Optional[Literal["mingli", "psychology"]] = None
+    consultation_type: Optional[ConsultationType] = None
+    consultant_type: Optional[Literal["mingli", "psychology", "integrated"]] = None
 
 
 class ServiceRequestRegenerateInput(BaseModel):

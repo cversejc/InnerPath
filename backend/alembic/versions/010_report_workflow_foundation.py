@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 
-revision = "010a"
-down_revision = "010"
+revision = "010_report_workflow_foundation"
+down_revision = "010_profile_other_details"
 branch_labels = None
 depends_on = None
 

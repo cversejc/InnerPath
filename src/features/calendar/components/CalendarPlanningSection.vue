@@ -18,6 +18,7 @@ const props = defineProps({
   recordError: { type: String, default: '' },
   recordFeedback: { type: String, default: '' },
   recordSource: { type: String, default: 'local' },
+  readOnly: { type: Boolean, default: false },
   rhythmSegments: { type: Array, default: () => [] },
   savingRecord: { type: Boolean, default: false },
   selectedDate: { type: String, default: '' },
@@ -154,6 +155,7 @@ defineExpose({ focusCloseButton, focusContainer, focusTrigger, getFocusableItems
           :record-error="recordError"
           :record-feedback="recordFeedback"
           :record-source="recordSource"
+          :read-only="readOnly"
           :rhythm-segments="rhythmSegments"
           :saving-record="savingRecord"
           :selected-date="selectedDate"

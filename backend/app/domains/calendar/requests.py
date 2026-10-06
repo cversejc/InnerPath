@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime, time, timedelta
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.calendar.models import CalendarRequest, UserCalendar, DecisionLog
@@ -224,6 +224,7 @@ async def serialize_calendar_request(db: AsyncSession, calendar_request: Calenda
         "task_id": calendar_request.task_id,
         "progress": calendar_request.progress,
         "retry_count": calendar_request.retry_count,
+        "input_snapshot": calendar_request.input_snapshot,
         "calendar_id": await _linked_calendar_id(db, calendar_request.id),
         "reviewer_id": calendar_request.reviewer_id,
         "reviewed_at": calendar_request.reviewed_at,
@@ -256,15 +257,43 @@ async def get_calendar_requests_for_admin(
     db: AsyncSession,
     status_filter: Optional[str] = None,
     user_id: Optional[int] = None,
-    limit: int = 100,
-) -> list[dict]:
-    query = select(CalendarRequest).order_by(CalendarRequest.created_at.desc()).limit(limit)
+    search: Optional[str] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    page: int = 1,
+    size: int = 20,
+) -> dict:
+    conditions = []
     if status_filter:
-        query = query.where(CalendarRequest.status == status_filter)
+        conditions.append(CalendarRequest.status == status_filter)
     if user_id:
-        query = query.where(CalendarRequest.user_id == user_id)
-    result = await db.execute(query)
-    return [await serialize_calendar_request(db, item) for item in result.scalars().all()]
+        conditions.append(CalendarRequest.user_id == user_id)
+    if date_from:
+        conditions.append(CalendarRequest.created_at >= datetime.combine(date_from, time.min))
+    if date_to:
+        conditions.append(CalendarRequest.created_at < datetime.combine(date_to + timedelta(days=1), time.min))
+    if search:
+        term = f"%{search.strip()}%"
+        conditions.append(or_(User.name.ilike(term), User.phone.ilike(term)))
+
+    count_query = select(func.count(CalendarRequest.id)).join(User, User.id == CalendarRequest.user_id)
+    query = select(CalendarRequest, User).join(User, User.id == CalendarRequest.user_id)
+    if conditions:
+        count_query = count_query.where(*conditions)
+        query = query.where(*conditions)
+    total = int(await db.scalar(count_query) or 0)
+    result = await db.execute(
+        query.order_by(CalendarRequest.created_at.desc(), CalendarRequest.id.desc())
+        .offset((page - 1) * size)
+        .limit(size)
+    )
+    items = []
+    for item, user in result.all():
+        serialized = await serialize_calendar_request(db, item)
+        serialized["user_name"] = user.name
+        serialized["user_phone"] = user.phone
+        items.append(serialized)
+    return {"total": total, "page": page, "size": size, "items": items}
 
 
 async def retry_calendar_generation(

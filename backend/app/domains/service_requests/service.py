@@ -23,8 +23,11 @@ from .users import (
 )
 from .staff import (
     accept_service_request,
+    consultant_can_cover_specialty,
+    consultant_request_types,
     get_workspace,
     has_staff_assignment,
+    list_admin_service_requests,
     list_staff_service_requests,
     serialize_service_request,
     serialize_staff_user,
@@ -42,6 +45,8 @@ __all__ = [
     "_append_revision",
     "_normalize_payload",
     "accept_service_request",
+    "consultant_can_cover_specialty",
+    "consultant_request_types",
     "create_service_request",
     "create_ai_draft_task",
     "flatten_ai_input",
@@ -49,6 +54,7 @@ __all__ = [
     "get_user_service_requests",
     "get_workspace",
     "has_staff_assignment",
+    "list_admin_service_requests",
     "list_staff_service_requests",
     "normalize_calendar_draft",
     "normalize_report_draft",

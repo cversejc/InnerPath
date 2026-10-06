@@ -31,6 +31,14 @@ export function genderLabel(gender) {
   return { male: '男', female: '女' }[gender] || '—'
 }
 
+export function consultationTypeLabel(type) {
+  return {
+    metaphysics: '命理',
+    psychology: '心理',
+    integrated: '综合（命理 + 心理）'
+  }[type] || '方向待确认'
+}
+
 export function topicLabel(topics) {
   const labels = {
     career: '职业发展',

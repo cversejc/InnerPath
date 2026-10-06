@@ -7,6 +7,7 @@ const props = defineProps({
   recordError: { type: String, default: '' },
   recordFeedback: { type: String, default: '' },
   recordSource: { type: String, default: 'local' },
+  readOnly: { type: Boolean, default: false },
   savingRecord: { type: Boolean, default: false },
   selectedDate: { type: String, default: '' },
   selectedEntry: { type: Object, required: true },
@@ -52,22 +53,22 @@ function updateDraft(field, value) {
       </div>
       <span class="actual-count">{{ selectedRecords.length }} 条</span>
     </div>
-    <p class="actual-records-intro">把建议和真实发生的事并排保存，日后才能看见自己的节奏。</p>
+    <p class="actual-records-intro">{{ readOnly ? '管理员只读查看用户已保存的行动与决策记录。' : '把建议和真实发生的事并排保存，日后才能看见自己的节奏。' }}</p>
 
     <div v-if="selectedRecords.length" class="actual-record-list">
       <article v-for="record in selectedRecords" :key="record.id" class="actual-record-item">
         <div class="actual-record-meta">
           <span class="record-kind" :class="`kind-${record.kind}`">{{ record.kind === 'decision' ? '决策' : '行动' }}</span>
           <span class="record-status" :class="`status-${record.status}`">{{ statusText(record.status) }}</span>
-          <VanButton class="record-delete" type="default" plain size="mini" native-type="button" @click.stop="emit('remove-record', record)">删除</VanButton>
+          <VanButton v-if="!readOnly" class="record-delete" type="default" plain size="mini" native-type="button" @click.stop="emit('remove-record', record)">删除</VanButton>
         </div>
         <p>{{ record.content }}</p>
         <small v-if="record.note">{{ record.note }}</small>
       </article>
     </div>
-    <p v-else class="actual-record-empty">还没有记录。可以从下面的建议开始，也可以写下一件今天真实发生的事。</p>
+    <p v-else class="actual-record-empty">{{ readOnly ? '这一天还没有记录。' : '还没有记录。可以从下面的建议开始，也可以写下一件今天真实发生的事。' }}</p>
 
-    <div v-if="selectedEntry.suitable?.length" class="quick-records">
+    <div v-if="!readOnly && selectedEntry.suitable?.length" class="quick-records">
       <div class="quick-records-head"><span>从今日建议记一笔</span><small>已经做过的可以直接加入</small></div>
       <VanButton
         v-for="item in selectedEntry.suitable"
@@ -84,11 +85,11 @@ function updateDraft(field, value) {
       </VanButton>
     </div>
 
-    <VanButton v-if="!showRecordForm" class="record-add-button" native-type="button" @click="emit('open-record-form')">
+    <VanButton v-if="!readOnly && !showRecordForm" class="record-add-button" native-type="button" @click="emit('open-record-form')">
       <span>＋</span> 记录一件事 / 一个决定
     </VanButton>
 
-    <form v-else class="record-form" :aria-describedby="recordError ? 'record-error' : undefined" @submit.prevent="emit('save-record')">
+    <form v-else-if="!readOnly" class="record-form" :aria-describedby="recordError ? 'record-error' : undefined" @submit.prevent="emit('save-record')">
       <div class="record-form-head">
         <span>新记录</span>
         <VanButton native-type="button" plain size="small" @click="emit('close-record-form')">收起</VanButton>
@@ -128,6 +129,6 @@ function updateDraft(field, value) {
       <p v-if="recordError" id="record-error" class="record-error" role="alert" aria-live="assertive">{{ recordError }}</p>
     </form>
     <p v-if="recordFeedback" class="record-feedback" role="status" aria-live="polite">{{ recordFeedback }}</p>
-    <p class="record-storage-note"><i></i>{{ recordSource === 'api' ? '已同步到你的账号' : '当前暂存于本设备' }}</p>
+    <p class="record-storage-note"><i></i>{{ readOnly ? '记录只读' : recordSource === 'api' ? '已同步到你的账号' : '当前暂存于本设备' }}</p>
   </section>
 </template>

@@ -1,4 +1,4 @@
-from typing import Optional
+from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,10 +12,9 @@ from app.domains.calendar.schemas import (
     CalendarCreate,
     CalendarImportRequest,
     CalendarListResponse,
-    CalendarRequestListResponse,
-    CalendarRequestResponse,
     CalendarResponse,
     CalendarUpdate,
+    AdminCalendarRequestListResponse,
 )
 from app.domains.audit.service import record_audit
 from app.domains.calendar.service import (
@@ -26,11 +25,34 @@ from app.domains.calendar.service import (
     update_calendar,
 )
 from app.domains.calendar.query_service import get_user_calendars, serialize_calendar
-from app.domains.calendar.requests import (
-    get_calendar_requests_for_admin,
-)
+from app.domains.calendar.requests import get_calendar_requests_for_admin
 
 router = APIRouter()
+
+
+@router.get("/calendar-requests", response_model=AdminCalendarRequestListResponse)
+async def list_admin_calendar_requests(
+    request_status: str | None = Query(None, alias="status", max_length=30),
+    user_id: int | None = Query(None, ge=1),
+    search: str | None = Query(None, max_length=100),
+    date_from: date | None = None,
+    date_to: date | None = None,
+    page: int = Query(1, ge=1),
+    size: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await get_calendar_requests_for_admin(
+        db,
+        status_filter=request_status,
+        user_id=user_id,
+        search=search,
+        date_from=date_from,
+        date_to=date_to,
+        page=page,
+        size=size,
+    )
+    return AdminCalendarRequestListResponse(**result)
 
 
 @router.get("/users/{user_id}/calendars", response_model=CalendarListResponse)
@@ -42,16 +64,6 @@ async def list_user_calendars(
     if not await db.get(User, user_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return CalendarListResponse(items=await get_user_calendars(db, user_id, published_only=False))
-
-@router.get("/calendar-requests", response_model=CalendarRequestListResponse)
-async def list_calendar_requests(
-    status_filter: Optional[str] = Query(None, alias="status"),
-    user_id: Optional[int] = Query(None, ge=1),
-    current_user: User = Depends(require_roles("admin")),
-    db: AsyncSession = Depends(get_db),
-):
-    items = await get_calendar_requests_for_admin(db, status_filter=status_filter, user_id=user_id)
-    return CalendarRequestListResponse(items=items)
 
 @router.patch("/calendar-requests/{request_id}", status_code=status.HTTP_409_CONFLICT)
 async def review_calendar_request(

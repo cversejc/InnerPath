@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 
 
 revision = "011"
-down_revision = "010a"
+down_revision = "010_report_workflow_foundation"
 branch_labels = None
 depends_on = None
 

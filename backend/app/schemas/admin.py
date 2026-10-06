@@ -1,8 +1,8 @@
 from datetime import date, datetime, time
 from decimal import Decimal
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.domains.reports.schemas import ReportListItem, ReportResponse
 from app.domains.users.schemas import UserResponse
@@ -14,11 +14,22 @@ class UserStatusUpdate(BaseModel):
 
 class UserRoleUpdate(BaseModel):
     role: str = Field(..., pattern="^(user|consultant|admin)$")
-    consultant_type: Optional[str] = Field(None, pattern="^(mingli|psychology)$")
+    consultant_type: Optional[str] = Field(None, pattern="^(mingli|psychology|integrated)$")
 
 
 class AdminPasswordResetRequest(BaseModel):
     new_password: str = Field(..., min_length=8, max_length=128)
+
+
+class AdminConsultantSpecialtiesUpdate(BaseModel):
+    specialties: list[Literal["metaphysics", "psychology"]] = Field(default_factory=list, max_length=2)
+
+    @field_validator("specialties")
+    @classmethod
+    def specialties_are_unique(cls, value: list[str]) -> list[str]:
+        if len(value) != len(set(value)):
+            raise ValueError("Consultant specialties must be unique")
+        return value
 
 
 class AdminUserUpdate(BaseModel):
@@ -62,6 +73,9 @@ class AdminUserListItem(BaseModel):
     last_login_at: Optional[datetime]
     report_count: int = 0
     calendar_count: int = 0
+    report_request_count: int = 0
+    calendar_request_count: int = 0
+    consultant_specialties: list[str] = Field(default_factory=list)
 
     class Config:
         from_attributes = True
@@ -79,6 +93,8 @@ class AdminUserSummary(BaseModel):
     calendar_count: int = 0
     published_calendar_count: int = 0
     decision_log_count: int = 0
+    report_request_count: int = 0
+    calendar_request_count: int = 0
 
 
 class AdminUserSummaryResponse(BaseModel):
@@ -165,6 +181,13 @@ class AdminReportResponse(ReportResponse):
     is_deleted: bool = False
     ai_model: Optional[str] = None
     generation_time_ms: Optional[int] = None
+    request_id: Optional[int] = None
+    birth_date: Optional[date] = None
+    birth_time: Optional[time] = None
+    birth_calendar_type: Optional[str] = None
+    birth_place: Optional[str] = None
+    selected_topics: list[str] = Field(default_factory=list)
+    additional_info: Optional[str] = None
 
 
 class AdminReportTaskResponse(BaseModel):

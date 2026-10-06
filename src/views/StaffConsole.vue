@@ -20,7 +20,7 @@
         <div class="workbench-client-heading">
           <p class="section-kicker">人生说明书处理</p>
           <h1>{{ workspace?.user?.name || selectedRequest.user_name || '未填写姓名' }}</h1>
-          <p>{{ workspace?.user?.phone || '未填写联系方式' }} · 申请编号 {{ selectedRequest.id }}</p>
+          <p>{{ workspace?.user?.phone || '未填写联系方式' }} · 申请编号 {{ selectedRequest.id }} · {{ consultationTypeLabel(workspace?.request?.consultation_type) }}</p>
         </div>
         <div class="workbench-header-actions">
           <VanButton class="secondary-button compact-button workbench-overview-button" type="default" plain native-type="button" aria-label="返回报告处理总览" @click="openReportOverview">回到处理总览</VanButton>
@@ -52,7 +52,7 @@
           <div class="request-list" aria-label="服务申请列表">
             <button v-for="item in requests.items" :key="item.id" type="button" class="request-item" :class="{ selected: selectedRequest?.id === item.id }" :aria-pressed="selectedRequest?.id === item.id" @click="selectRequest(item)">
               <span class="request-item-icon"><IconMark name="reports" /></span>
-              <span class="request-item-copy"><strong>{{ item.user_name || '未填写姓名' }}</strong><small>申请编号 {{ item.id }} · {{ formatDate(item.created_at) }}</small><small v-if="item.current_step_key" class="request-item-step">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><em>{{ topicLabel(item.request_preview?.selected_topics) }}</em></span>
+              <span class="request-item-copy"><strong>{{ item.user_name || `用户 #${item.user_id}` }}</strong><small>申请编号 {{ item.id }} · {{ formatDate(item.created_at) }}</small><small v-if="item.current_step_key" class="request-item-step">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><em>{{ consultationTypeLabel(item.consultation_type) }} · {{ topicLabel(item.request_preview?.selected_topics) }}</em></span>
               <span class="request-item-status">{{ statusLabel(item.status) }}</span>
             </button>
             <div v-if="!requests.items.length" class="empty-cell">当前筛选下没有申请。</div>
@@ -72,11 +72,14 @@
           <div v-else-if="workspace" class="workspace-content">
             <DeliveredReportSummary v-if="!selectedReportStepKey" :request="workspace.request" @view-analysis="selectReportNode('S1')" />
             <div v-if="admin && !selectedReportStepKey && reportCase?.application_snapshot?.collaboration_contract" class="assignment-row">
-              <label v-for="specialty in ['mingli', 'psychology']" :key="specialty">{{ specialty === 'mingli' ? '命理负责人' : '心理负责人' }}<select :value="workspace.request['assigned_' + specialty + '_consultant_id'] || ''" :disabled="assignmentSaving" @change="assignProfessional(specialty, $event.target.value)"><option value="">待接单</option><option v-for="consultant in consultants.filter(item => item.consultant_type === specialty)" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
+              <label>咨询方向<select v-model="consultationType" :disabled="assignmentSaving" @change="saveConsultationType"><option value="metaphysics">命理</option><option value="psychology">心理</option><option value="integrated">综合（命理 + 心理）</option></select></label>
+              <label v-for="specialty in ['mingli', 'psychology']" :key="specialty">{{ specialty === 'mingli' ? '命理负责人' : '心理负责人' }}<select :value="workspace.request['assigned_' + specialty + '_consultant_id'] || ''" :disabled="assignmentSaving" @change="assignProfessional(specialty, $event.target.value)"><option value="">待接单</option><option v-for="consultant in consultants.filter(item => consultantCanHandle(item, specialty))" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
             </div>
             <div v-else-if="admin && !selectedReportStepKey" class="assignment-row">
-              <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving" @change="assignConsultant"><option :value="null">未分配</option><option v-for="consultant in consultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
-              <small>管理员可改派；改派不会覆盖已有版本。</small>
+              <label v-if="workspace.request.service_type === 'report'">咨询方向<select v-model="consultationType" :disabled="assignmentSaving" @change="changeConsultationType"><option value="metaphysics">命理</option><option value="psychology">心理</option><option value="integrated">综合（命理 + 心理）</option></select></label>
+              <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving"><option :value="null">未分配</option><option v-for="consultant in assignableConsultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
+              <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="!assignmentChanged || assignmentSaving" :loading="assignmentSaving" loading-text="保存中…" @click="assignConsultant">保存分配</VanButton>
+              <small>可按咨询方向分配咨询师；修改不会覆盖已有报告版本。</small>
             </div>
 
             <section v-if="workspace.request.service_type === 'report'" class="report-case-workspace" aria-label="人生说明书处理工作区">

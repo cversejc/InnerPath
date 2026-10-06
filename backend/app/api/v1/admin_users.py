@@ -9,11 +9,13 @@ from app.api.audit_context import audit_context_from_request
 from app.api.v1.admin_support import _count, _date_filter
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.domains.calendar.models import DecisionLog, UserCalendar
+from app.domains.calendar.models import CalendarRequest, DecisionLog, UserCalendar
 from app.domains.reports.models import Report
+from app.domains.service_requests.models import ServiceRequest
 from app.models.user import User
 from app.schemas.admin import (
     AdminPasswordResetRequest,
+    AdminConsultantSpecialtiesUpdate,
     AdminUserListResponse,
     AdminUserSummaryResponse,
     AdminUserUpdate,
@@ -52,12 +54,24 @@ async def list_users(
 
     report_count = select(func.count(Report.id)).where(Report.user_id == User.id, Report.is_deleted.is_(False)).correlate(User).scalar_subquery()
     calendar_count = select(func.count(UserCalendar.id)).where(UserCalendar.user_id == User.id).correlate(User).scalar_subquery()
+    report_request_count = select(func.count(ServiceRequest.id)).where(
+        ServiceRequest.user_id == User.id, ServiceRequest.service_type == "report"
+    ).correlate(User).scalar_subquery()
+    calendar_request_count = select(func.count(CalendarRequest.id)).where(
+        CalendarRequest.user_id == User.id
+    ).correlate(User).scalar_subquery()
     count_statement = select(func.count(User.id))
     if conditions:
         count_statement = count_statement.where(*conditions)
     total = await _count(db, count_statement)
     statement = (
-        select(User, report_count.label("report_count"), calendar_count.label("calendar_count"))
+        select(
+            User,
+            report_count.label("report_count"),
+            calendar_count.label("calendar_count"),
+            report_request_count.label("report_request_count"),
+            calendar_request_count.label("calendar_request_count"),
+        )
         .order_by(User.created_at.desc())
         .offset((page - 1) * size)
         .limit(size)
@@ -78,8 +92,11 @@ async def list_users(
             "last_login_at": user.last_login_at,
             "report_count": int(report_count_value or 0),
             "calendar_count": int(calendar_count_value or 0),
+            "report_request_count": int(report_request_count_value or 0),
+            "calendar_request_count": int(calendar_request_count_value or 0),
+            "consultant_specialties": user.consultant_specialties or [],
         }
-        for user, report_count_value, calendar_count_value in rows
+        for user, report_count_value, calendar_count_value, report_request_count_value, calendar_request_count_value in rows
     ]
     return AdminUserListResponse(total=total, page=page, size=size, items=items)
 
@@ -136,6 +153,52 @@ async def update_user_profile_by_admin(
         await db.refresh(user)
     return user
 
+@router.patch("/users/{user_id}/consultant-specialties")
+async def update_consultant_specialties(
+    user_id: int,
+    data: AdminConsultantSpecialtiesUpdate,
+    request: Request,
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    user = await db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    if user.role != "consultant":
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User is not a consultant")
+
+    previous = user.consultant_specialties or []
+    specialties = data.specialties
+    if previous != specialties:
+        user.consultant_specialties = specialties
+        user.consultant_type = (
+            "integrated"
+            if len(specialties) == 2
+            else "mingli"
+            if specialties == ["metaphysics"]
+            else "psychology"
+            if specialties == ["psychology"]
+            else None
+        )
+        await record_audit(
+            db,
+            current_user.id,
+            "consultant.specialties.update",
+            "user",
+            str(user.id),
+            target_user_id=user.id,
+            details={"previous": previous, "specialties": specialties},
+            audit_context=audit_context_from_request(request),
+        )
+        await db.commit()
+        await db.refresh(user)
+    return {
+        "id": user.id,
+        "consultant_specialties": user.consultant_specialties or [],
+        "consultant_type": user.consultant_type,
+    }
+
+
 @router.get("/users/{user_id}/summary", response_model=AdminUserSummaryResponse)
 async def get_user_summary(
     user_id: int,
@@ -149,6 +212,15 @@ async def get_user_summary(
     calendar_count = await _count(db, select(func.count(UserCalendar.id)).where(UserCalendar.user_id == user_id))
     published_calendar_count = await _count(db, select(func.count(UserCalendar.id)).where(UserCalendar.user_id == user_id, UserCalendar.status == "published"))
     decision_log_count = await _count(db, select(func.count(DecisionLog.id)).where(DecisionLog.user_id == user_id))
+    report_request_count = await _count(
+        db,
+        select(func.count(ServiceRequest.id)).where(
+            ServiceRequest.user_id == user_id, ServiceRequest.service_type == "report"
+        ),
+    )
+    calendar_request_count = await _count(
+        db, select(func.count(CalendarRequest.id)).where(CalendarRequest.user_id == user_id)
+    )
     return {
         "user": user,
         "summary": {
@@ -156,6 +228,8 @@ async def get_user_summary(
             "calendar_count": calendar_count,
             "published_calendar_count": published_calendar_count,
             "decision_log_count": decision_log_count,
+            "report_request_count": report_request_count,
+            "calendar_request_count": calendar_request_count,
         },
     }
 
@@ -213,6 +287,14 @@ async def update_user_role(
         user.consultant_type = request_data.consultant_type
     if user.role != "consultant":
         user.consultant_type = None
+        user.consultant_specialties = []
+    elif "consultant_type" in request_data.model_fields_set:
+        specialty_by_type = {
+            "mingli": ["metaphysics"],
+            "psychology": ["psychology"],
+            "integrated": ["metaphysics", "psychology"],
+        }
+        user.consultant_specialties = specialty_by_type.get(user.consultant_type, [])
     await record_audit(
         db,
         current_user.id,

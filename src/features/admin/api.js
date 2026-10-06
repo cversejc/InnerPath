@@ -46,8 +46,17 @@ export async function updateAdminUserRole(userId, role, consultantType) {
   return response.data
 }
 
+export async function updateAdminConsultantSpecialties(userId, specialties) {
+  const response = await apiClient.patch(`/admin/users/${userId}/consultant-specialties`, { specialties })
+  return response.data
+}
+
 export async function createStaffInvite(phone, role, consultantType) {
-  const response = await apiClient.post('/admin/staff/invites', { phone, role, consultant_type: role === 'consultant' ? consultantType : null })
+  const response = await apiClient.post('/admin/staff/invites', {
+    phone,
+    role,
+    consultant_type: role === 'consultant' ? consultantType : null
+  })
   return response.data
 }
 

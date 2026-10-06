@@ -40,6 +40,7 @@ async def create_service_request(
     service_request = ServiceRequest(
         user_id=user.id,
         service_type=data.service_type,
+        consultation_type="integrated" if data.service_type == "report" else None,
         status="submitted",
         request_payload=payload,
         idempotency_key=idempotency_key,

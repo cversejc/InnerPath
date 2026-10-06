@@ -499,10 +499,15 @@ async def assign_step(
     task = _find_step(tasks, step_key)
     from app.models.user import User
     from app.domains.service_requests.models import ServiceRequest
-    from .authorization import SPECIALTY_FIELDS
+    from .authorization import SPECIALTY_FIELDS, consultant_capabilities
     if task.required_capability in SPECIALTY_FIELDS:
         assignee = await db.get(User, assignee_id) if assignee_id is not None else None
-        if assignee_id is not None and (assignee is None or assignee.role != "consultant" or not assignee.is_active or assignee.consultant_type != task.required_capability):
+        if assignee_id is not None and (
+            assignee is None
+            or assignee.role != "consultant"
+            or not assignee.is_active
+            or task.required_capability not in consultant_capabilities(assignee)
+        ):
             raise ValueError("step_specialty_required")
         affected = [item for item in tasks if item.required_capability == task.required_capability]
         if any(item.status in {"IN_REVIEW", "COMPLETED"} and item.assignee_id != assignee_id for item in affected):

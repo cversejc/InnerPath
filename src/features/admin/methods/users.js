@@ -9,8 +9,19 @@ import {
   updateAdminUserRole,
   updateAdminUserStatus
 } from '../api.js'
-import { getAdminCalendars, getAdminUserDecisionLogs } from '../../calendar/api.js'
+import { getAdminCalendarRequests, getAdminCalendars, getAdminUserDecisionLogs } from '../../calendar/api.js'
 import { getAdminReports } from '../../reports/api.js'
+import { getAdminServiceRequests } from '../../service-requests/api.js'
+
+async function getAllPages(fetchPage, params, size = 100) {
+  const first = await fetchPage({ ...params, page: 1, size })
+  const pageCount = Math.ceil((first.total || 0) / size)
+  if (pageCount <= 1) return first
+  const remaining = await Promise.all(
+    Array.from({ length: pageCount - 1 }, (_, index) => fetchPage({ ...params, page: index + 2, size }))
+  )
+  return { ...first, items: [first.items || [], ...remaining.map(page => page.items || [])].flat() }
+}
 
 export default {
   async loadUsers() {
@@ -37,7 +48,7 @@ export default {
         this.detailUser = detail
         this.userSummary = summary
         this.userEdit = this.toUserEdit(detail)
-      this.userPanelData = { reports: null, calendars: null, decisions: null, activity: null }
+        this.userPanelData = { reports: null, calendars: null, decisions: null, activity: null, applications: null }
       } catch (error) { this.message = this.errorText(error); this.detailUser = null } finally { this.userPanelLoading = false }
     },
   closeUserDetail({ restoreFocus = true } = {}) { this.detailUser = null; this.userSummary = null; if (restoreFocus) this.restoreDrawerFocus() },
@@ -47,10 +58,30 @@ export default {
       this.userPanelLoading = true
       try {
         const id = this.detailUser.id
-        if (tab === 'reports') this.userPanelData.reports = await getAdminReports({ user_id: id, page: 1, size: 100 })
-        if (tab === 'calendar') this.userPanelData.calendars = (await getAdminCalendars(id)).items || []
-        if (tab === 'decisions') this.userPanelData.decisions = await getAdminUserDecisionLogs(id, { page: 1, size: 100 })
-        if (tab === 'activity') this.userPanelData.activity = await getAdminAuditLogs({ target_user_id: id, page: 1, size: 100 })
+        if (tab === 'applications') {
+          const [serviceRequests, calendarRequests] = await Promise.all([
+            getAllPages(getAdminServiceRequests, { user_id: id }),
+            getAllPages(getAdminCalendarRequests, { user_id: id })
+          ])
+          this.userPanelData.applications = { serviceRequests, calendarRequests }
+        }
+        if (tab === 'reports') this.userPanelData.reports = await getAllPages(
+          params => getAdminReports(params), { user_id: id }
+        )
+        if (tab === 'calendar') {
+          const [calendars, decisions] = await Promise.all([
+            getAdminCalendars(id),
+            getAllPages(params => getAdminUserDecisionLogs(id, params), {})
+          ])
+          this.userPanelData.calendars = calendars.items || []
+          this.userPanelData.decisions = decisions
+        }
+        if (tab === 'decisions') this.userPanelData.decisions = await getAllPages(
+          params => getAdminUserDecisionLogs(id, params), {}
+        )
+        if (tab === 'activity') this.userPanelData.activity = await getAllPages(
+          getAdminAuditLogs, { target_user_id: id }
+        )
       } catch (error) { this.message = this.errorText(error) } finally { this.userPanelLoading = false }
     },
   toUserEdit(user) {

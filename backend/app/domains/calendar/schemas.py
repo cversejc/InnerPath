@@ -134,6 +134,19 @@ class CalendarRequestListResponse(BaseModel):
     items: List[CalendarRequestResponse]
 
 
+class AdminCalendarRequestResponse(CalendarRequestResponse):
+    user_name: Optional[str] = None
+    user_phone: Optional[str] = None
+    input_snapshot: Optional[Dict[str, Any]] = None
+
+
+class AdminCalendarRequestListResponse(BaseModel):
+    total: int
+    page: int
+    size: int
+    items: List[AdminCalendarRequestResponse]
+
+
 class CalendarRequestAdminUpdate(BaseModel):
     status: str = Field(..., pattern="^(pending|reviewing|fulfilled|rejected|cancelled)$")
     review_note: Optional[str] = Field(None, max_length=1000)

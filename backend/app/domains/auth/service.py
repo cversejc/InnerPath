@@ -203,7 +203,7 @@ async def revoke_auth_session(db: AsyncSession, raw_token: str) -> Optional[int]
 
 async def create_staff_invite(db: AsyncSession, phone: str, role: str, invited_by: int, consultant_type: str | None = None) -> tuple[StaffInvite, str]:
     raw_token = secrets.token_urlsafe(32)
-    if role == "consultant" and consultant_type not in {"mingli", "psychology"}:
+    if role == "consultant" and consultant_type not in {"mingli", "psychology", "integrated"}:
         raise ValueError("consultant_specialty_required")
     invite = StaffInvite(
         consultant_type=consultant_type if role == "consultant" else None,
@@ -243,6 +243,11 @@ async def accept_staff_invite(
     user.name = name
     user.role = invite.role
     user.consultant_type = invite.consultant_type
+    user.consultant_specialties = {
+        "mingli": ["metaphysics"],
+        "psychology": ["psychology"],
+        "integrated": ["metaphysics", "psychology"],
+    }.get(invite.consultant_type, [])
     user.password_hash = get_password_hash(password)
     invite.accepted_at = datetime.utcnow()
     await db.commit()

@@ -3,6 +3,7 @@ import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'van
 import {
   SERVICE_REQUEST_STATUS_LABELS,
   birthSummary as formatBirthSummary,
+  consultationTypeLabel,
   errorText,
   formatDate,
   genderLabel,
@@ -14,7 +15,7 @@ import {
   calendarEditorFromPayload,
   reportEditorFromPayload
 } from '../features/service-requests/payloads.js'
-import { canHandleStep, canAcceptRequest, ownsRequest, specialtyLabels } from '../features/report-cases/professional-ownership.js'
+import { canHandleStep, canAcceptRequest, ownsRequest, specialtyLabels, consultantCanHandle } from '../features/report-cases/professional-ownership.js'
 import assignmentMethods from '../features/service-requests/methods/assignment.js'
 import queueMethods from '../features/service-requests/methods/queue.js'
 import workflowMethods from '../features/service-requests/methods/workflow.js'
@@ -122,6 +123,7 @@ export default {
       calendarEditor: calendarEditorFromPayload(),
       consultants: [],
       assignmentId: null,
+      consultationType: 'integrated',
       assignmentSaving: false
     }
   },
@@ -158,6 +160,22 @@ export default {
     },
     birthSummary() {
       return formatBirthSummary(this.workspace)
+    },
+    assignableConsultants() {
+      if (this.workspace?.request.service_type !== 'report') return this.consultants
+      const required = this.consultationType === 'integrated'
+        ? ['mingli', 'psychology']
+        : [this.consultationType === 'metaphysics' ? 'mingli' : 'psychology']
+      return this.consultants.filter(consultant => required.every(
+        specialty => consultantCanHandle(consultant, specialty)
+      ))
+    },
+    assignmentChanged() {
+      if (!this.workspace) return false
+      const request = this.workspace.request
+      return Number(this.assignmentId || 0) !== Number(request.assigned_consultant_id || 0) || (
+        request.service_type === 'report' && this.consultationType !== (request.consultation_type || 'integrated')
+      )
     },
     reportContentPlan() {
       return this.reportNarrative.current_plan?.plan_json?.content_plan || null
@@ -284,6 +302,7 @@ export default {
   },
   methods: {
     canHandleReportStep(step) { return canHandleStep(step, this.staffActor) },
+    consultantCanHandle,
     openReportInfoPanel(step) {
       this.infoStepKey = step?.step_key || this.currentReportStep?.step_key || ''
       this.infoReason = ''
@@ -570,6 +589,7 @@ export default {
     errorText(error) {
       return this.staffErrorText(error)
     },
+    consultationTypeLabel,
     genderLabel,
     topicLabel,
     requestGoal,

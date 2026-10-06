@@ -12,11 +12,22 @@
 .admin-shell .drawer-body { padding: 24px 28px 50px; }
 .admin-shell .drawer-loading { padding: 60px 28px; color: var(--muted, #7d6653); text-align: center; }
 .admin-shell .drawer-section { display: grid; gap: 18px; }
-.admin-shell .profile-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.admin-shell .profile-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
 .admin-shell .profile-summary div { border-radius: 9px; padding: 10px; background: rgba(234, 217, 191, .42); }
 .admin-shell .profile-summary span, .admin-shell .profile-summary strong { display: block; }
 .admin-shell .profile-summary span { color: var(--muted, #7d6653); font-size: 10px; }
 .admin-shell .profile-summary strong { margin-top: 4px; color: #3b2d24; font-family: var(--font-ui); font-size: 18px; }
+.admin-shell .profile-data-grid { display: grid; gap: 12px; }
+.admin-shell .profile-data-group { border-top: 1px solid rgba(80, 54, 32, .1); padding-top: 12px; }
+.admin-shell .profile-data-group h3 { margin: 0 0 9px; color: #3b2d24; font-size: 13px; }
+.admin-shell .profile-data-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
+.admin-shell .profile-data-items p { display: grid; grid-template-columns: minmax(72px, .38fr) minmax(0, 1fr); gap: 8px; margin: 0; }
+.admin-shell .profile-data-items span { color: var(--muted, #7d6653); font-size: 10px; }
+.admin-shell .profile-data-items strong { color: #3b2d24; font-size: 11px; font-weight: var(--weight-medium); overflow-wrap: anywhere; }
+.admin-shell .profile-data-items .profile-break-value { overflow-wrap: anywhere; }
+.admin-shell .audit-activity-item { width: 100%; border: 0; color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; }
+.admin-shell .audit-activity-item:hover { background: rgba(184, 92, 80, .06); }
+.admin-shell .audit-activity-item:focus-visible { outline: 2px solid var(--accent, #b85c50); outline-offset: 2px; }
 .admin-shell .detail-facts { border-top: 1px solid rgba(80, 54, 32, .1); padding-top: 16px; }
 .admin-shell .section-caption { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .admin-shell .section-caption h3 { margin: 0; color: #3b2d24; font-size: 18px; }
@@ -29,6 +40,35 @@
 .admin-shell .drawer-list-item > .status-badge { flex: 0 0 auto; }
 .admin-shell .drawer-body .stack-form { margin-top: 0; }
 .admin-shell .drawer-body .primary-button { justify-self: stretch; }
-.admin-shell .report-drawer, .admin-shell .log-drawer { width: min(560px, 100%); }
+.admin-shell .request-history-group { display: grid; gap: 9px; }
+.admin-shell .request-history-card { display: grid; gap: 9px; border: 1px solid rgba(80, 54, 32, .12); border-radius: 10px; padding: 12px; background: rgba(255, 250, 240, .62); }
+.admin-shell .request-history-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+.admin-shell .request-history-head strong { color: #3b2d24; font-size: 13px; }
+.admin-shell .request-history-head small,
+.admin-shell .request-history-card > small { display: block; margin-top: 4px; color: var(--muted, #7d6653); font-size: 10px; line-height: 1.5; }
+.admin-shell .request-history-goal { margin: 0; color: #3b2d24; font-size: 12px; line-height: 1.6; }
+.admin-shell .request-history-timeline { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.admin-shell .request-history-timeline p { display: grid; gap: 3px; margin: 0; border-radius: 7px; padding: 7px; background: rgba(234, 217, 191, .32); }
+.admin-shell .request-history-timeline span { color: var(--muted, #7d6653); font-size: 9px; }
+.admin-shell .request-history-timeline strong { color: #3b2d24; font-size: 10px; font-weight: var(--weight-medium); }
+.admin-shell .calendar-record-card { align-items: start; }
+.admin-shell .calendar-record-card > div { min-width: 0; flex: 1; }
+.admin-shell .calendar-record-card .request-payload-details { margin-top: 7px; }
+.admin-shell .report-drawer { width: min(920px, 100%); }
+.admin-shell .log-drawer { width: min(560px, 100%); }
 .admin-shell .report-body { padding-top: 22px; }
+.admin-shell .report-view-switch { display: inline-flex; gap: 3px; border: 1px solid rgba(80, 54, 32, .13); border-radius: 8px; padding: 3px; background: rgba(234, 217, 191, .3); }
+.admin-shell .report-view-switch button { min-height: 38px; border: 0; border-radius: 5px; padding: 0 14px; background: transparent; color: var(--muted, #7d6653); font: inherit; font-size: 12px; font-weight: var(--weight-semibold); cursor: pointer; }
+.admin-shell .report-view-switch button.active { background: #fffaf0; color: var(--cinnabar-deep, #9e3f35); box-shadow: 0 1px 3px rgba(47, 36, 27, .1); }
+.admin-shell .report-user-view { max-width: 850px; margin: 20px auto 0; }
+.admin-shell .report-user-meta { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 16px; color: var(--ink-soft, #51463d); font-size: 13px; }
+.admin-shell .report-admin-view { display: grid; gap: 14px; margin-top: 18px; }
+.admin-shell .calendar-record-actions { display: grid; justify-items: end; gap: 8px; flex: 0 0 auto; }
+.admin-shell .calendar-preview-panel { display: grid; gap: 16px; border-top: 1px solid rgba(80, 54, 32, .12); padding-top: 18px; }
+.admin-shell .calendar-preview-panel > .section-caption { align-items: center; }
+.admin-shell .calendar-admin-preview { background: transparent; }
+@media (max-width: 640px) {
+  .admin-shell .calendar-record-card { align-items: flex-start; flex-direction: column; }
+  .admin-shell .calendar-record-actions { display: flex; width: 100%; align-items: center; justify-content: space-between; }
+}
 @keyframes drawer-in { from { transform: translateX(24px); opacity: .6; } to { transform: translateX(0); opacity: 1; } }
