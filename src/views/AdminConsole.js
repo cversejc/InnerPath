@@ -74,6 +74,10 @@ export default {
       serviceFeedback: { total: 0, page: 1, size: 20, items: [] },
       feedbackFilters: { search: '', status: '', feedback_type: '', service_type: '', date_from: '', date_to: '' },
       feedbackView: 'feedback',
+      serviceQualitySummary: null,
+      serviceQualityPeriodDays: 30,
+      serviceQualityLoading: false,
+      serviceQualityError: '',
       feedbackPage: 1,
       feedbackPageSize: 20,
       feedbackLoading: false,
@@ -144,7 +148,7 @@ export default {
   },
   computed: {
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.assignmentSavingKey !== '' || this.retryingRequestKey !== '' || this.feedbackLoading || this.feedbackSavingId !== null || this.qualityLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.consultantWorkloadLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.assignmentSavingKey !== '' || this.retryingRequestKey !== '' || this.feedbackLoading || this.serviceQualityLoading || this.feedbackSavingId !== null || this.qualityLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.consultantWorkloadLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
     },
     dashboardViewModel() {
       return createDashboardViewModel(this.dashboard)

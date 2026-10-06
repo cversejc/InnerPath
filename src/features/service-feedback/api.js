@@ -15,6 +15,13 @@ export async function getAdminServiceFeedback(params = {}) {
   return response.data
 }
 
+export async function getAdminServiceQualitySummary(periodDays = 30) {
+  const response = await apiClient.get('/admin/service-feedback/summary', {
+    params: { period_days: periodDays }
+  })
+  return response.data
+}
+
 export async function updateAdminServiceFeedback(feedbackId, data) {
   const response = await apiClient.patch(`/admin/service-feedback/${feedbackId}`, data)
   return response.data

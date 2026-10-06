@@ -10,9 +10,11 @@ from app.application.service_feedback import (
     list_admin_service_feedback,
     update_admin_service_feedback,
 )
+from app.application.admin_service_quality import get_admin_service_quality_summary
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.feedback.schemas import (
+    AdminServiceQualitySummary,
     AdminServiceFeedbackItem,
     AdminServiceFeedbackListResponse,
     AdminServiceFeedbackStateResponse,
@@ -21,6 +23,15 @@ from app.domains.feedback.schemas import (
 from app.models.user import User
 
 router = APIRouter()
+
+
+@router.get("/service-feedback/summary", response_model=AdminServiceQualitySummary)
+async def admin_service_quality_summary_route(
+    period_days: int = Query(30, ge=7, le=90),
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await get_admin_service_quality_summary(db, period_days=period_days)
 
 
 @router.get("/service-feedback", response_model=AdminServiceFeedbackListResponse)

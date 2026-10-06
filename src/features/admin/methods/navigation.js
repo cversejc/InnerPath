@@ -12,7 +12,7 @@ export default {
       if (tab === 'requests') await this.loadAdminRequests()
       if (tab === 'feedback') {
         if (this.feedbackView === 'quality') await this.loadQualityIssues()
-        else await this.loadServiceFeedback()
+        else await Promise.all([this.loadServiceFeedback(), this.loadServiceQualitySummary()])
       }
       if (tab === 'calendar' && !this.calendarUsers.length) await this.loadCalendarUsers()
       if (tab === 'reports') {
@@ -26,7 +26,7 @@ export default {
       if (this.activeTab === 'overview') return this.loadDashboard()
       if (this.activeTab === 'users') return this.loadUsers()
       if (this.activeTab === 'requests') return this.loadAdminRequests()
-      if (this.activeTab === 'feedback') return this.feedbackView === 'quality' ? this.loadQualityIssues() : this.loadServiceFeedback()
+      if (this.activeTab === 'feedback') return this.feedbackView === 'quality' ? this.loadQualityIssues() : Promise.all([this.loadServiceFeedback(), this.loadServiceQualitySummary()])
       if (this.activeTab === 'calendar') return this.selectedCalendarUser ? this.loadCalendars() : this.loadCalendarUsers()
       if (this.activeTab === 'reports') return this.reportSection === 'reports' ? this.loadReports() : this.loadReportTasks()
        if (this.activeTab === 'logs') return this.logSection === 'audit' ? this.loadAuditLogs() : this.logSection === 'behavior' ? this.loadDecisionLogs() : this.loadReportTasks()

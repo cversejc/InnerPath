@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -70,6 +70,50 @@ class AdminServiceFeedbackListResponse(BaseModel):
     page: int
     size: int
     items: list[AdminServiceFeedbackItem]
+
+
+class AdminServiceQualityMetrics(BaseModel):
+    feedback_count: int = 0
+    rated_count: int = 0
+    average_rating: Optional[float] = None
+    complaint_count: int = 0
+    resolved_count: int = 0
+    resolution_rate_percent: Optional[float] = None
+    resolution_p50_hours: Optional[float] = None
+    resolution_p90_hours: Optional[float] = None
+
+
+class AdminServiceQualityGroup(AdminServiceQualityMetrics):
+    key: str
+    label: str
+
+
+class AdminServiceQualityConsultantGroup(BaseModel):
+    consultant_id: int
+    consultant_name: str
+    feedback_count: int = 0
+    rated_count: int = 0
+    average_rating: Optional[float] = None
+    complaint_count: int = 0
+
+
+class AdminServiceQualityTrendPoint(BaseModel):
+    week_start: date
+    feedback_count: int = 0
+    rated_count: int = 0
+    average_rating: Optional[float] = None
+    complaint_count: int = 0
+
+
+class AdminServiceQualitySummary(BaseModel):
+    period_days: int
+    range_start: date
+    range_end: date
+    totals: AdminServiceQualityMetrics
+    by_service: list[AdminServiceQualityGroup] = Field(default_factory=list)
+    by_specialty: list[AdminServiceQualityGroup] = Field(default_factory=list)
+    by_consultant: list[AdminServiceQualityConsultantGroup] = Field(default_factory=list)
+    weekly_trend: list[AdminServiceQualityTrendPoint] = Field(default_factory=list)
 
 
 class AdminServiceFeedbackUpdate(BaseModel):

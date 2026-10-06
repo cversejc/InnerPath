@@ -1,5 +1,6 @@
 import {
   getAdminServiceFeedback,
+  getAdminServiceQualitySummary,
   updateAdminServiceFeedback
 } from '../../service-feedback/api.js'
 import { getAdminReportQualityIssues } from '../../reports/api.js'
@@ -23,6 +24,24 @@ export default {
       this.feedbackLoading = false
     }
   },
+  async loadServiceQualitySummary(periodDays = this.serviceQualityPeriodDays) {
+    this.serviceQualityLoading = true
+    this.serviceQualityError = ''
+    try {
+      const result = await getAdminServiceQualitySummary(periodDays)
+      this.serviceQualitySummary = result
+      this.serviceQualityPeriodDays = result.period_days || periodDays
+    } catch (error) {
+      this.serviceQualityError = this.errorText(error)
+    } finally {
+      this.serviceQualityLoading = false
+    }
+  },
+  async changeServiceQualityPeriod(periodDays) {
+    const days = Number(periodDays)
+    if (![7, 30, 90].includes(days) || this.serviceQualityLoading) return
+    await this.loadServiceQualitySummary(days)
+  },
   async searchFeedback() {
     this.feedbackPage = 1
     await this.loadServiceFeedback()
@@ -40,7 +59,7 @@ export default {
       this.qualityPage = 1
       await this.loadQualityIssues()
     } else {
-      await this.loadServiceFeedback()
+      await Promise.all([this.loadServiceFeedback(), this.loadServiceQualitySummary()])
     }
   },
   async loadQualityIssues() {
@@ -81,7 +100,7 @@ export default {
         assigned_to: change.assigned_to ? Number(change.assigned_to) : null,
         resolution: change.resolution || null
       })
-      await this.loadServiceFeedback()
+      await Promise.all([this.loadServiceFeedback(), this.loadServiceQualitySummary()])
       this.message = `反馈 #${change.id} 已更新。`
     } catch (error) {
       this.message = this.errorText(error)

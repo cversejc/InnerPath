@@ -2,11 +2,16 @@
 import { ref, watch } from 'vue'
 import { Button as VanButton } from 'vant'
 import AdminReportQualityIssuesSection from './AdminReportQualityIssuesSection.vue'
+import AdminServiceQualitySummary from './AdminServiceQualitySummary.vue'
 import { formatDateTime, pageCount } from '../formatters.js'
 
 const props = defineProps({
   assignees: { type: Array, default: () => [] },
   feedback: { type: Object, required: true },
+  qualitySummary: { type: Object, default: null },
+  summaryPeriodDays: { type: Number, default: 30 },
+  summaryLoading: { type: Boolean, default: false },
+  summaryError: { type: String, default: '' },
   filters: { type: Object, required: true },
   view: { type: String, default: 'feedback' },
   loading: { type: Boolean, default: false },
@@ -20,7 +25,7 @@ const props = defineProps({
   savingId: { type: Number, default: null }
 })
 
-const emit = defineEmits(['change-page', 'save', 'search', 'select-view', 'search-quality', 'change-quality-page'])
+const emit = defineEmits(['change-page', 'save', 'search', 'select-view', 'search-quality', 'change-quality-page', 'change-summary-period'])
 const editById = ref({})
 
 watch(() => props.feedback.items, items => {
@@ -82,6 +87,13 @@ function saveItem(item) {
     </div>
 
     <template v-if="view === 'feedback'">
+    <AdminServiceQualitySummary
+      :period-days="summaryPeriodDays"
+      :summary="qualitySummary"
+      :loading="summaryLoading"
+      :error="summaryError"
+      @change-period="emit('change-summary-period', $event)"
+    />
     <form class="filter-bar" @submit.prevent="emit('search')">
       <input v-model.trim="filters.search" aria-label="搜索用户、反馈或记录编号" placeholder="搜索姓名、手机号、反馈内容或编号">
       <select v-model="filters.service_type" aria-label="按服务类型筛选">

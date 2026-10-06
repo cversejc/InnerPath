@@ -107,6 +107,10 @@
         :feedback="serviceFeedback"
         :filters="feedbackFilters"
         :view="feedbackView"
+        :quality-summary="serviceQualitySummary"
+        :summary-period-days="serviceQualityPeriodDays"
+        :summary-loading="serviceQualityLoading"
+        :summary-error="serviceQualityError"
         :loading="feedbackLoading"
         :quality-filters="qualityFilters"
         :quality-issues="qualityIssues"
@@ -120,6 +124,7 @@
         @save="saveFeedback"
         @search="searchFeedback"
         @select-view="setFeedbackView"
+        @change-summary-period="changeServiceQualityPeriod"
         @search-quality="searchQualityIssues"
         @change-quality-page="changeQualityPage"
       />
