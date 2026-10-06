@@ -1,12 +1,18 @@
 <script setup>
+import { computed } from 'vue'
 import { Button as VanButton } from 'vant'
 import AdminIconButton from './AdminIconButton.vue'
+import CalendarReadOnlyPreview from './CalendarReadOnlyPreview.vue'
 import { calendarStatusText, formatDate } from '../formatters.js'
 
-defineProps({
+const props = defineProps({
   calendarForm: { type: Object, required: true },
   calendarImportJson: { type: String, default: '' },
   calendarLoading: { type: Boolean, default: false },
+  calendarPreviewDecisionLogs: { type: Array, default: () => [] },
+  calendarPreviewError: { type: String, default: '' },
+  calendarPreviewId: { type: Number, default: null },
+  calendarPreviewLoading: { type: Boolean, default: false },
   calendarSaving: { type: Boolean, default: false },
   calendarUserSearch: { type: String, default: '' },
   calendarUsers: { type: Array, default: () => [] },
@@ -15,10 +21,13 @@ defineProps({
   showCalendarImport: { type: Boolean, default: false }
 })
 
+const previewCalendar = computed(() => props.calendars.find(calendar => calendar.id === props.calendarPreviewId) || null)
+
 defineEmits([
   'add-entry',
   'archive-calendar',
   'cancel-edit',
+  'toggle-calendar-preview',
   'export-calendar',
   'import-json',
   'load-users',
@@ -60,10 +69,17 @@ defineEmits([
           <article v-for="calendar in calendars" :key="calendar.id" class="calendar-card" :class="{ selected: calendarForm.id === calendar.id }">
             <div class="calendar-card-top"><div><strong>{{ calendar.title }}</strong><small>v{{ calendar.version_number }} · {{ calendar.entries?.length || 0 }} 天 · 更新于 {{ formatDate(calendar.updated_at) }}</small></div><span :class="['status-badge', `calendar-${calendar.status}`]">{{ calendarStatusText(calendar.status) }}</span></div>
             <div class="calendar-card-preview"><span v-for="entry in (calendar.entries || []).slice(0, 4)" :key="entry.id">{{ formatDate(entry.entry_date) }} · {{ entry.keyword || entry.status_label || '未命名' }}</span></div>
-            <div class="row-actions"><button type="button" @click="$emit('prepare-edit', calendar)">{{ calendar.status === 'draft' ? '编辑' : '创建编辑版本' }}</button><button type="button" @click="$emit('export-calendar', calendar)">JSON</button><button v-if="calendar.status === 'draft'" type="button" @click="$emit('publish-calendar', calendar)">发布</button><button v-if="calendar.status === 'published'" type="button" class="danger-action" @click="$emit('archive-calendar', calendar)">归档</button></div>
+            <div class="row-actions"><button type="button" :aria-pressed="calendarPreviewId === calendar.id" @click="$emit('toggle-calendar-preview', calendar)">{{ calendarPreviewId === calendar.id ? '关闭用户视图' : '用户视图' }}</button><button type="button" @click="$emit('prepare-edit', calendar)">{{ calendar.status === 'draft' ? '编辑' : '创建编辑版本' }}</button><button type="button" @click="$emit('export-calendar', calendar)">JSON</button><button v-if="calendar.status === 'draft'" type="button" @click="$emit('publish-calendar', calendar)">发布</button><button v-if="calendar.status === 'published'" type="button" class="danger-action" @click="$emit('archive-calendar', calendar)">归档</button></div>
           </article>
           <p v-if="!calendars.length" class="empty-cell">暂无日历，可以从右上角创建草稿。</p>
         </div>
+
+        <section v-if="previewCalendar && selectedCalendarUser" class="calendar-preview-panel">
+          <div class="section-caption"><div><h3>{{ previewCalendar.title }}</h3><span>v{{ previewCalendar.version_number }} · 用户端只读视图</span></div><VanButton class="filter-reset" type="default" plain native-type="button" @click="$emit('toggle-calendar-preview', previewCalendar)">关闭预览</VanButton></div>
+          <p v-if="calendarPreviewError" class="calendar-preview-error" role="alert">{{ calendarPreviewError }}</p>
+          <p v-else-if="calendarPreviewLoading" class="drawer-loading" role="status" aria-live="polite">正在加载日历和行动记录…</p>
+          <CalendarReadOnlyPreview v-else :calendar="previewCalendar" :decision-logs="calendarPreviewDecisionLogs" />
+        </section>
 
         <form v-if="calendarForm.visible" class="calendar-editor-form" @submit.prevent="$emit('save-calendar')">
           <div class="editor-banner"><span>{{ calendarForm.id ? `编辑 v${calendarForm.version_number}` : '新建草稿' }}</span><span v-if="calendarForm.status">{{ calendarStatusText(calendarForm.status) }}</span></div>
