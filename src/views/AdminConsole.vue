@@ -1,73 +1,26 @@
 <template>
-  <div class="admin-shell">
-    <aside class="admin-rail" :class="{ 'is-open': mobileNavOpen }" aria-label="管理员工作台导航">
-      <div class="admin-rail-brand">
-        <router-link to="/admin" class="admin-brand-lockup" aria-label="返回运营中枢" @click="closeMobileNav">
-          <picture>
-            <source srcset="/brand-emblem.webp" type="image/webp">
-            <img src="/brand-emblem.png" alt="" width="214" height="256" decoding="async">
-          </picture>
-          <span>
-            <strong>辰鉴</strong>
-            <small>运营中枢</small>
-          </span>
-        </router-link>
-        <span class="admin-rail-status"><i></i>ADMIN CONSOLE</span>
-      </div>
-
-      <nav class="admin-rail-nav" aria-label="后台功能">
-        <div v-for="group in adminNavGroups" :key="group.id" class="admin-nav-group">
-          <p class="admin-nav-group-label">{{ group.label }}</p>
-          <button
-            v-for="tab in group.items"
-            :key="tab.id"
-            type="button"
-            :class="['admin-rail-item', { active: activeTab === tab.id }]"
-            :aria-current="activeTab === tab.id ? 'page' : undefined"
-            @click="switchTab(tab.id)"
-          >
-            <IconMark :name="tab.icon" />
-            <span>{{ tab.label }}</span>
-            <b v-if="tab.id === 'overview'" class="admin-rail-item-index">{{ tab.index }}</b>
-          </button>
-        </div>
-      </nav>
-
-      <div class="admin-rail-footer">
-        <div class="admin-operator">
-          <span class="admin-operator-avatar">{{ operatorInitial }}</span>
-          <span><strong>{{ operatorName }}</strong><small>系统管理员</small></span>
-        </div>
-        <VanButton class="admin-rail-logout" type="default" plain native-type="button" :disabled="loggingOut" :loading="loggingOut" loading-text="退出中…" :aria-busy="loggingOut" @click="handleLogout">
-          <template #icon><IconMark name="logout" /></template>
-          退出登录
+  <div class="admin-console-view">
+    <OperationsShell
+      shell-class="admin-shell"
+      app-class="admin-app"
+      brand-subtitle="运营中心"
+      brand-to="/admin"
+      :current-label="activeTabInfo.label"
+      :logging-out="loggingOut"
+      :nav-groups="operationsNavGroups"
+      :operator-name="operatorName"
+      operator-role="系统管理员"
+      section-label="运营中心"
+      status-label="ADMIN OPERATIONS"
+      @select="switchTab"
+      @logout="handleLogout"
+    >
+      <template #topbar-actions>
+        <span class="sync-state" role="status" aria-live="polite"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
+        <VanButton class="operations-refresh-button" type="default" plain native-type="button" :disabled="activeLoading" :loading="activeLoading" :aria-busy="activeLoading" aria-label="刷新当前数据" title="刷新当前数据" @click="refreshActive">
+          <template #icon><IconMark name="refresh" /></template>
         </VanButton>
-      </div>
-    </aside>
-
-    <button v-if="mobileNavOpen" type="button" class="admin-rail-scrim" aria-label="关闭后台导航" @click="closeMobileNav"></button>
-
-    <div class="admin-app">
-      <header class="admin-topbar">
-        <div class="admin-topbar-leading">
-          <VanButton class="admin-menu-toggle" type="default" plain native-type="button" aria-label="打开后台导航" :aria-expanded="mobileNavOpen" @click="toggleMobileNav">
-            <template #icon><IconMark name="settings" /></template>
-          </VanButton>
-          <div class="admin-breadcrumb" aria-label="当前位置">
-            <span>运营中枢</span>
-            <IconMark name="arrow" />
-            <strong>{{ activeTabInfo.label }}</strong>
-          </div>
-        </div>
-        <div class="admin-topbar-actions">
-          <span class="sync-state"><i :class="{ live: dashboardLoading }"></i>{{ dashboardLoading ? '正在同步' : lastUpdated ? `更新于 ${lastUpdated}` : '等待同步' }}</span>
-          <router-link class="admin-tool-link" to="/staff"><IconMark name="group" /><span>咨询工作台</span></router-link>
-          <router-link class="admin-tool-link" :to="{ path: '/skills', query: { return_to: '/admin' } }"><IconMark name="spark" /><span>技能工作台</span></router-link>
-          <VanButton class="admin-refresh-button" type="default" plain native-type="button" :disabled="activeLoading" :loading="activeLoading" loading-text="刷新中…" :aria-busy="activeLoading" aria-label="刷新当前数据" title="刷新当前数据" @click="refreshActive">
-            <template #icon><IconMark name="refresh" /></template>
-          </VanButton>
-        </div>
-      </header>
+      </template>
 
       <main class="admin-main">
         <BrandPageHeader
@@ -260,7 +213,7 @@
         @set-user-panel-tab="setUserPanelTab"
       />
       </main>
-    </div>
+    </OperationsShell>
 
     <VanDialog
       v-model:show="passwordDialog.visible"

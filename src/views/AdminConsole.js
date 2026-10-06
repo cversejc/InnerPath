@@ -12,6 +12,7 @@ import AdminStaffSection from '../features/admin/components/AdminStaffSection.vu
 import AdminLLMSection from '../features/admin/components/AdminLLMSection.vue'
 import AdminDetailDrawers from '../features/admin/components/AdminDetailDrawers.vue'
 import AdminIconButton from '../features/admin/components/AdminIconButton.vue'
+import OperationsShell from '../components/OperationsShell.vue'
 import dashboardMethods from '../features/admin/methods/dashboard.js'
 import usersMethods from '../features/admin/methods/users.js'
 import calendarMethods from '../features/admin/methods/calendar.js'
@@ -28,7 +29,7 @@ const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminLLMSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
+  components: { AdminDashboardSection, AdminUsersSection, AdminRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminLLMSection, AdminDetailDrawers, AdminIconButton, OperationsShell, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
@@ -42,7 +43,6 @@ export default {
         { id: 'staff', index: '07', label: '后台成员', icon: 'group', group: 'system', eyebrow: 'STAFF ACCESS', description: '管理后台成员、咨询方向和邀请权限。' },
         { id: 'models', index: '08', label: '模型配置', icon: 'settings', group: 'system', eyebrow: 'MODEL CONTROL', description: '维护 AI 服务商、模型和运行参数。' }
       ],
-      mobileNavOpen: false,
       dashboardRanges: [{ id: '7d', label: '7 天' }, { id: '30d', label: '30 天' }, { id: '90d', label: '90 天' }],
       dashboardRange: '30d',
       dashboard: null,
@@ -125,14 +125,30 @@ export default {
       ]
       return groups.map(group => ({ ...group, items: this.tabs.filter(tab => tab.group === group.id) }))
     },
+    operationsNavGroups() {
+      return [
+        ...this.adminNavGroups.map(group => ({
+          ...group,
+          items: group.items.map(item => ({
+            ...item,
+            active: this.activeTab === item.id
+          }))
+        })),
+        {
+          id: 'workbenches',
+          label: '协作工作台',
+          items: [
+            { id: 'consultant-workbench', label: '咨询师工作台', icon: 'group', to: '/staff' },
+            { id: 'skill-studio', label: '技能工作台', icon: 'spark', to: { path: '/skills', query: { return_to: '/admin' } } }
+          ]
+        }
+      ]
+    },
     activeTabInfo() {
       return this.tabs.find(tab => tab.id === this.activeTab) || this.tabs[0]
     },
     operatorName() {
       return authState.user?.name || '管理员'
-    },
-    operatorInitial() {
-      return this.operatorName.slice(0, 1).toUpperCase()
     },
     activeLoading() {
       return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting

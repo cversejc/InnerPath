@@ -332,11 +332,11 @@
 
 /* Role-specific shell: the consultant queue is an internal workbench, not a user-facing page. */
 .staff-shell {
-  --staff-rail-width: 238px;
+  --staff-rail-width: 248px;
   min-height: 100dvh;
   background:
-    linear-gradient(90deg, rgba(111, 159, 147, .035) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(111, 159, 147, .03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 90, 20, .035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(139, 90, 20, .03) 1px, transparent 1px),
     var(--paper-scene) center top / cover;
 }
 
@@ -708,4 +708,22 @@
   .staff-breadcrumb .icon-mark { display: none; }
   .staff-breadcrumb strong { font-size: 14px; }
   .staff-shell:not(.staff-shell-workspace) .staff-heading .brand-page-header-inner { padding: var(--space-5) var(--space-4); }
+}
+
+/* Report processing stays inside the same shell while using the available work area. */
+.staff-shell .staff-main.staff-main-workspace {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 0 48px;
+}
+
+.staff-shell-node-focus .staff-main.staff-main-workspace {
+  height: calc(100dvh - var(--operations-topbar-height, 76px));
+}
+
+@media (max-width: 820px) {
+  .staff-shell-node-focus .staff-main.staff-main-workspace {
+    height: calc(100dvh - 68px);
+  }
 }

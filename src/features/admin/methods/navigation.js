@@ -7,7 +7,6 @@ export default {
     },
   async switchTab(tab) {
       this.activeTab = tab
-      this.mobileNavOpen = false
       if (tab === 'overview') await this.loadDashboard()
       if (tab === 'users') await this.loadUsers()
       if (tab === 'requests') await this.loadAdminRequests()
@@ -15,12 +14,6 @@ export default {
       if (tab === 'reports') await this.loadReports()
       if (tab === 'logs') await this.loadAuditLogs()
       this.syncAutoRefresh()
-    },
-  toggleMobileNav() {
-      this.mobileNavOpen = !this.mobileNavOpen
-    },
-  closeMobileNav() {
-      this.mobileNavOpen = false
     },
   async refreshActive() {
       if (this.activeTab === 'overview') return this.loadDashboard()

@@ -42,10 +42,11 @@ import {
   visibleConsultantEvidence
 } from '../features/report-cases/workbench-inputs.js'
 import { confirmAction } from '../utils/confirmAction.js'
+import OperationsShell from '../components/OperationsShell.vue'
 
 export default {
   name: 'StaffConsole',
-  components: { VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, FoundationCalculationPanel, DeliveredReportSummary, WorkbenchRecordPicker, QualityScorecard, ReportFragmentReview, QualityIssueReview, EvidenceReferencePicker },
+  components: { OperationsShell, VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, FoundationCalculationPanel, DeliveredReportSummary, WorkbenchRecordPicker, QualityScorecard, ReportFragmentReview, QualityIssueReview, EvidenceReferencePicker },
   data() {
     const admin = hasRole('admin')
     return {
@@ -126,14 +127,21 @@ export default {
       assignmentId: null,
       consultationType: 'integrated',
       assignmentSaving: false,
-      mobileNavOpen: false,
       loggingOut: false
     }
   },
   computed: {
     staffActor() { return authState.user },
     operatorName() { return authState.user?.name || (this.admin ? '管理员' : '咨询师') },
-    operatorInitial() { return this.operatorName.slice(0, 1).toUpperCase() },
+    operationsNavGroups() {
+      const items = [
+        { id: 'staff-workbench', label: '咨询师工作台', icon: 'reports', active: true },
+        { id: 'skill-studio', label: '技能工作台', icon: 'spark', to: this.skillStudioLocation }
+      ]
+      if (this.admin) items.push({ id: 'admin-console', label: '运营总览', icon: 'compass', to: '/admin' })
+      return [{ id: 'workbenches', label: '工作台', items }]
+    },
+    workspaceCurrentLabel() { return this.selectedRequest ? '报告处理' : '报告申请' },
     canAcceptSelectedRequest() { return canAcceptRequest(this.selectedRequest, this.staffActor) },
     ownsSelectedRequest() { return ownsRequest(this.selectedRequest, this.staffActor) },
     specialtyLabel() { return specialtyLabels[this.staffActor?.consultant_type] || (this.admin ? "管理员" : "尚未设置专业类型") },
@@ -335,12 +343,6 @@ export default {
     if (this.reportNarrativePollTimer) clearTimeout(this.reportNarrativePollTimer)
   },
   methods: {
-    toggleMobileNav() {
-      this.mobileNavOpen = !this.mobileNavOpen
-    },
-    closeMobileNav() {
-      this.mobileNavOpen = false
-    },
     async handleLogout() {
       if (this.loggingOut) return
       this.loggingOut = true

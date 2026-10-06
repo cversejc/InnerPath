@@ -6,6 +6,7 @@ import RunDetail from "./components/RunDetail.vue";
 import ExamplesPanel from "./components/ExamplesPanel.vue";
 import EvaluationPanel from "./components/EvaluationPanel.vue";
 import SkillInstructions from "./components/SkillInstructions.vue";
+import OperationsShell from "../../components/OperationsShell.vue";
 import {
   ALL_SKILLS,
   CALENDAR_SKILL_KEYS,
@@ -37,6 +38,7 @@ function reasoningGuidanceFromVersion(version) {
 export default {
   name: "SkillStudio",
   components: {
+    OperationsShell,
     RunDetail,
     ExamplesPanel,
     EvaluationPanel,
@@ -100,7 +102,6 @@ export default {
       message: "",
       messageKind: "",
       pollTimer: null,
-      mobileNavOpen: false,
       loggingOut: false,
       RUN_STATUS_LABELS,
       VERSION_STATUS_LABELS,
@@ -110,8 +111,17 @@ export default {
     operatorName() {
       return authState.user?.name || (this.isAdmin ? "管理员" : "咨询师");
     },
-    operatorInitial() {
-      return this.operatorName.slice(0, 1).toUpperCase();
+    operationsNavGroups() {
+      const items = [
+        { id: "staff-workbench", label: "咨询师工作台", icon: "reports", to: "/staff" },
+        { id: "skill-studio", label: "技能工作台", icon: "spark", active: true },
+      ];
+      if (this.isAdmin)
+        items.push({ id: "admin-console", label: "运营总览", icon: "compass", to: "/admin" });
+      return [{ id: "workbenches", label: "工作台", items }];
+    },
+    workspaceCurrentLabel() {
+      return this.isAdmin ? "技能维护" : "技能参考";
     },
     isS1Admin() {
       return this.isAdmin && this.selectedSkillKey === S1_FOUNDATION_SKILL_KEY;
@@ -248,12 +258,6 @@ export default {
     this.clearPoll();
   },
   methods: {
-    toggleMobileNav() {
-      this.mobileNavOpen = !this.mobileNavOpen;
-    },
-    closeMobileNav() {
-      this.mobileNavOpen = false;
-    },
     async handleLogout() {
       if (this.loggingOut) return;
       this.loggingOut = true;

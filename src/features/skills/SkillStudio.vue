@@ -1,55 +1,22 @@
 <template>
-  <div class="skill-studio-shell" :class="{ 'is-mobile-nav-open': mobileNavOpen }">
-    <aside class="studio-rail" :class="{ 'is-open': mobileNavOpen }" aria-label="技能工作台导航">
-      <div class="studio-rail-brand">
-        <router-link class="studio-brand-lockup" :to="studioReturnLocation" :aria-label="`返回${isAdmin ? '运营中枢' : '咨询工作台'}`" @click="closeMobileNav">
-          <picture>
-            <source srcset="/brand-emblem.webp" type="image/webp">
-            <img src="/brand-emblem.png" alt="" width="214" height="256" decoding="async">
-          </picture>
-          <span><strong>辰鉴</strong><small>技能工作台</small></span>
-        </router-link>
-        <span class="studio-rail-status"><i></i>{{ isAdmin ? 'ADMIN STUDIO' : 'CONSULTANT STUDIO' }}</span>
-      </div>
-      <nav class="studio-rail-nav" aria-label="工作台切换">
-        <p class="studio-rail-label">工作台切换</p>
-        <router-link class="studio-rail-item active" :to="studioReturnLocation" @click="closeMobileNav">
-          <IconMark name="arrow-left" /><span>返回{{ isAdmin ? '运营中枢' : '咨询工作台' }}</span>
-        </router-link>
-        <router-link v-if="isAdmin" class="studio-rail-item" to="/staff" @click="closeMobileNav">
-          <IconMark name="reports" /><span>咨询工作台</span>
-        </router-link>
-        <router-link v-else class="studio-rail-item" to="/staff" @click="closeMobileNav">
-          <IconMark name="reports" /><span>报告申请</span>
-        </router-link>
-      </nav>
-      <div class="studio-rail-footer">
-        <div class="studio-operator">
-          <span class="studio-operator-avatar">{{ operatorInitial }}</span>
-          <span><strong>{{ operatorName }}</strong><small>{{ isAdmin ? '系统管理员' : '咨询师' }}</small></span>
-        </div>
-        <VanButton class="studio-rail-logout" type="default" plain native-type="button" :disabled="loggingOut" :loading="loggingOut" loading-text="退出中…" :aria-busy="loggingOut" @click="handleLogout">
-          <template #icon><IconMark name="logout" /></template>
-          退出登录
-        </VanButton>
-      </div>
-    </aside>
-    <button v-if="mobileNavOpen" type="button" class="studio-rail-scrim" aria-label="关闭技能工作台导航" @click="closeMobileNav"></button>
-
-    <div class="skill-studio-app">
+  <OperationsShell
+    shell-class="skill-studio-shell"
+    app-class="skill-studio-app"
+    brand-subtitle="运营中心"
+    :brand-to="isAdmin ? '/admin' : '/staff'"
+    :current-label="workspaceCurrentLabel"
+    :logging-out="loggingOut"
+    :nav-groups="operationsNavGroups"
+    :operator-name="operatorName"
+    :operator-role="isAdmin ? '系统管理员' : '咨询师'"
+    section-label="技能工作台"
+    :status-label="isAdmin ? 'ADMIN OPERATIONS' : 'CONSULTANT OPERATIONS'"
+    @logout="handleLogout"
+  >
       <main class="skill-studio-main">
       <header class="studio-heading">
-        <div class="studio-heading-leading">
-          <VanButton class="studio-menu-toggle" type="default" plain native-type="button" aria-label="打开技能工作台导航" :aria-expanded="mobileNavOpen" @click="toggleMobileNav">
-            <template #icon><IconMark name="settings" /></template>
-          </VanButton>
-          <div class="studio-breadcrumb" aria-label="当前位置"><span>技能工作台</span><IconMark name="arrow" /><strong>{{ isAdmin ? '管理员维护' : '咨询师参考' }}</strong></div>
-        </div>
         <h1>技能与示例工作台</h1>
-        <div class="studio-heading-actions">
-          <span class="studio-role-chip">{{ isAdmin ? "管理员维护" : "咨询师参考" }}</span>
-          <router-link class="studio-return-link" :to="studioReturnLocation">返回{{ isAdmin ? '运营中枢' : '咨询工作台' }}</router-link>
-        </div>
+        <span class="studio-role-chip">{{ isAdmin ? '管理员维护' : '咨询师参考' }}</span>
       </header>
       <p
         v-if="message"
@@ -499,8 +466,7 @@
         </section>
       </div>
     </main>
-    </div>
-  </div>
+  </OperationsShell>
 </template>
 
 <script src="./studio-workspace.js"></script>

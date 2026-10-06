@@ -1,57 +1,25 @@
 <template>
-  <div class="staff-shell" :class="{ 'staff-shell-workspace': selectedRequest, 'staff-shell-node-focus': selectedReportStepKey && reportCase }">
-    <aside v-if="!selectedRequest" class="staff-rail" :class="{ 'is-open': mobileNavOpen }" aria-label="咨询师工作台导航">
-      <div class="staff-rail-brand">
-        <router-link to="/staff" class="staff-brand-lockup" aria-label="返回咨询师工作台" @click="closeMobileNav">
-          <picture>
-            <source srcset="/brand-emblem.webp" type="image/webp">
-            <img src="/brand-emblem.png" alt="" width="214" height="256" decoding="async">
-          </picture>
-          <span><strong>辰鉴</strong><small>咨询工作台</small></span>
-        </router-link>
-        <span class="staff-rail-status"><i></i>{{ admin ? 'ADMIN REVIEW' : 'CONSULTANT ROOM' }}</span>
-      </div>
-      <nav class="staff-rail-nav" aria-label="工作台功能">
-        <p class="staff-rail-label">当前工作</p>
-        <button type="button" class="staff-rail-item active" aria-current="page" @click="closeMobileNav">
-          <IconMark name="reports" /><span>报告申请</span>
-        </button>
-        <router-link class="staff-rail-item" :to="skillStudioLocation" @click="closeMobileNav">
-          <IconMark name="spark" /><span>技能工作台</span>
-        </router-link>
-        <router-link v-if="admin" class="staff-rail-item" to="/admin" @click="closeMobileNav">
-          <IconMark name="compass" /><span>运营中枢</span>
-        </router-link>
-      </nav>
-      <div class="staff-rail-footer">
-        <div class="staff-operator">
-          <span class="staff-operator-avatar">{{ operatorInitial }}</span>
-          <span><strong>{{ operatorName }}</strong><small>{{ admin ? '系统管理员' : specialtyLabel }}</small></span>
-        </div>
-        <VanButton class="staff-rail-logout" type="default" plain native-type="button" :disabled="loggingOut" :loading="loggingOut" loading-text="退出中…" :aria-busy="loggingOut" @click="handleLogout">
-          <template #icon><IconMark name="logout" /></template>
-          退出登录
+  <div class="staff-console-view" :class="{ 'staff-shell-node-focus': selectedReportStepKey && reportCase }">
+    <OperationsShell
+      shell-class="staff-shell"
+      app-class="staff-app"
+      brand-subtitle="运营中心"
+      brand-to="/staff"
+      :current-label="workspaceCurrentLabel"
+      :logging-out="loggingOut"
+      :nav-groups="operationsNavGroups"
+      :operator-name="operatorName"
+      :operator-role="admin ? '系统管理员' : specialtyLabel"
+      section-label="咨询师工作台"
+      :status-label="admin ? 'ADMIN OPERATIONS' : 'CONSULTANT OPERATIONS'"
+      @logout="handleLogout"
+    >
+      <template #topbar-actions>
+        <span v-if="!selectedRequest" class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading || reportAnalysisPending }"></i>{{ reportAnalysisPending ? '分析建议处理中' : pollingTask ? '内容生成中' : reportCaseLoading ? '正在打开报告' : loading ? '正在同步' : '已同步' }}</span>
+        <VanButton v-if="!selectedRequest" class="operations-refresh-button" type="default" plain native-type="button" :disabled="loading" :loading="loading" aria-label="刷新报告申请" title="刷新报告申请" @click="loadRequests">
+          <template #icon><IconMark name="refresh" /></template>
         </VanButton>
-      </div>
-    </aside>
-    <button v-if="mobileNavOpen" type="button" class="staff-rail-scrim" aria-label="关闭咨询师导航" @click="closeMobileNav"></button>
-
-    <div class="staff-app">
-      <header v-if="!selectedRequest" class="staff-topbar">
-        <div class="staff-topbar-leading">
-          <VanButton class="staff-menu-toggle" type="default" plain native-type="button" aria-label="打开咨询师导航" :aria-expanded="mobileNavOpen" @click="toggleMobileNav">
-            <template #icon><IconMark name="settings" /></template>
-          </VanButton>
-          <div class="staff-breadcrumb" aria-label="当前位置"><span>咨询工作台</span><IconMark name="arrow" /><strong>报告申请</strong></div>
-        </div>
-        <div class="staff-topbar-actions">
-          <span class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading || reportAnalysisPending }"></i>{{ reportAnalysisPending ? '分析建议处理中' : pollingTask ? '内容生成中' : reportCaseLoading ? '正在打开报告' : loading ? '正在同步' : '已同步' }}</span>
-          <router-link class="staff-tool-link" :to="skillStudioLocation"><IconMark name="spark" /><span>技能工作台</span></router-link>
-          <VanButton class="staff-refresh-button" type="default" plain native-type="button" :disabled="loading" :loading="loading" aria-label="刷新报告申请" title="刷新报告申请" @click="loadRequests">
-            <template #icon><IconMark name="refresh" /></template>
-          </VanButton>
-        </div>
-      </header>
+      </template>
 
     <main class="staff-main" :class="{ 'staff-main-workspace': selectedRequest }">
       <BrandPageHeader v-if="!selectedRequest" class="staff-heading" contained compact eyebrow="REVIEW ROOM" title="选择一份报告" description="打开报告后，将在独立工作区查看进度并完成当前任务。" seal="照见">
@@ -75,7 +43,6 @@
         <div class="workbench-header-actions">
           <VanButton class="secondary-button compact-button workbench-overview-button" type="default" plain native-type="button" aria-label="返回报告处理总览" @click="openReportOverview">回到处理总览</VanButton>
           <span :class="['status-badge', workbenchStatusClass]">{{ workbenchStatusLabel }}</span>
-          <router-link class="secondary-button compact-button" :to="skillStudioLocation">技能与示例工作台</router-link>
         </div>
       </header>
 
@@ -463,7 +430,7 @@
         </section>
       </section>
     </main>
-    </div>
+    </OperationsShell>
 
     <VanDialog
       v-model:show="rejectDialog.visible"
