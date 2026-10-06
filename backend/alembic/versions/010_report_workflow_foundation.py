@@ -1,7 +1,7 @@
 """Add ReportCase and sequential workflow persistence.
 
-Revision ID: 010
-Revises: 009
+Revision ID: 010a
+Revises: 010
 Create Date: 2026-10-03
 """
 
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 
-revision = "010"
-down_revision = "009"
+revision = "010a"
+down_revision = "010"
 branch_labels = None
 depends_on = None
 

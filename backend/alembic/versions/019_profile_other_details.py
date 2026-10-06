@@ -1,7 +1,7 @@
 """Store descriptions for optional profile choices.
 
-Revision ID: 010
-Revises: 009
+Revision ID: 019
+Revises: 018
 Create Date: 2026-10-05
 """
 
@@ -9,8 +9,8 @@ from alembic import op
 import sqlalchemy as sa
 
 
-revision = "010"
-down_revision = "009"
+revision = "019"
+down_revision = "018"
 branch_labels = None
 depends_on = None
 

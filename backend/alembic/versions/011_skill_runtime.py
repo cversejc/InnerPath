@@ -1,7 +1,7 @@
 """Add versioned AI skills and skill run tracing.
 
 Revision ID: 011
-Revises: 010
+Revises: 010a
 Create Date: 2026-10-03
 """
 
@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 
 
 revision = "011"
-down_revision = "010"
+down_revision = "010a"
 branch_labels = None
 depends_on = None
 
