@@ -13,9 +13,9 @@
         <span class="calendar-empty-seal" aria-hidden="true"><IconMark name="calendar" /></span>
         <p class="section-kicker">A NEW RHYTHM</p>
         <h2>为接下来的三十天，留一点从容</h2>
-        <p>{{ calendarError || '提交申请后，咨询师会基于你的起始日期和关注目标，完成一段 30 天的 AI 初稿与人工审校。' }}</p>
+        <p>{{ calendarError || (reports.length ? '选择一份已交付报告，补充这 30 天的目标。生成成功后，日历会自动开放使用。' : '请先申请报告并等待咨询师交付。获得报告后，回到这里即可生成决策日历。') }}</p>
         <div class="calendar-empty-actions">
-          <router-link class="primary-button" to="/pages/requests/new?type=calendar">申请决策日历</router-link>
+          <router-link class="primary-button" :to="reports.length ? '/pages/calendar/calendar?generate=1' : '/pages/assessment/assessment'">{{ reports.length ? '基于报告生成日历' : '先申请报告' }}</router-link>
           <router-link class="secondary-button" to="/pages/requests/requests">查看我的申请</router-link>
         </div>
       </div>
@@ -178,8 +178,9 @@
     </main>
 
     <CalendarRequestSection
-      v-if="!loading"
+      v-if="!loading && (reports.length || calendar)"
       :calendar-requests="calendarRequests"
+      :reports="reports"
       :show-form="showCalendarRequestForm"
       :draft="calendarRequestDraft"
       :profile="profile"

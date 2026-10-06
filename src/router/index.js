@@ -6,7 +6,6 @@ const loadHome = () => import('../views/Home.vue')
 const loadAssessment = () => import('../views/Assessment.vue')
 const loadUserCenter = () => import('../views/UserCenter.vue')
 const loadServiceRequests = () => import('../views/ServiceRequests.vue')
-const loadServiceRequestForm = () => import('../views/ServiceRequestForm.vue')
 const loadReportDetail = () => import('../features/reports/pages/ReportDetail.vue')
 const loadCalendar = () => import('../views/Calendar.vue')
 const loadAbout = () => import('../views/About.vue')
@@ -23,7 +22,7 @@ const routes = [
   { path: '/pages/assessment/assessment', name: 'Assessment', component: loadAssessment, meta: { requiresAuth: true, title: '人生说明书' } },
   { path: '/pages/user/user', name: 'UserCenter', component: loadUserCenter, meta: { requiresAuth: true, title: '个人空间' } },
   { path: '/pages/requests/requests', name: 'ServiceRequests', component: loadServiceRequests, meta: { requiresAuth: true, title: '我的申请' } },
-  { path: '/pages/requests/new', name: 'ServiceRequestForm', component: loadServiceRequestForm, meta: { requiresAuth: true, title: '申请决策日历' } },
+  { path: '/pages/requests/new', redirect: { path: '/pages/calendar/calendar', query: { generate: '1' } }, meta: { requiresAuth: true } },
   { path: '/pages/report/detail', name: 'ReportDetail', component: loadReportDetail, meta: { requiresAuth: true, title: '个人报告' } },
   { path: '/pages/calendar/calendar', name: 'Calendar', component: loadCalendar, meta: { requiresAuth: true, title: '决策日历' } },
   { path: '/pages/about/about', name: 'About', component: loadAbout, meta: { requiresAuth: true, title: '关于辰鉴' } },

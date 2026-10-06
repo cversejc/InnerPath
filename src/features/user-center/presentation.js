@@ -2,11 +2,19 @@ export function formatUserCenterDate(value) {
   return value ? new Date(value).toLocaleDateString('zh-CN') : '—'
 }
 
-export function requestStatusLabel(status) {
+export function requestStatusLabel(status, workflowType) {
+  if (workflowType === 'calendar_generation') {
+    return {
+      ai_processing: '日历生成中',
+      delivered: '已开放使用',
+      failed: '生成失败'
+    }[status] || status
+  }
   return {
     submitted: '等待接单',
     accepted: '已接单',
     ai_processing: '准备分析',
+    processing: '日历生成中',
     ai_ready: '等待审校',
     reviewing: '审校中',
     needs_info: '需补资料',
@@ -20,5 +28,5 @@ export function requestStatusLabel(status) {
 export function requestEditPath(request) {
   return request.service_type === 'report'
     ? `/pages/assessment/assessment?requestId=${request.id}`
-    : `/pages/requests/new?type=calendar&requestId=${request.id}`
+    : '/pages/calendar/calendar?generate=1'
 }

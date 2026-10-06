@@ -31,7 +31,7 @@
               </li>
               <li class="progress-step" :class="{ active: currentStep === 3 }" :aria-current="currentStep === 3 ? 'step' : undefined">
                 <span class="progress-step-index" aria-hidden="true">03</span>
-                <span class="progress-step-name">生成说明书</span>
+                <span class="progress-step-name">提交申请</span>
               </li>
             </ol>
           </div>
@@ -78,6 +78,7 @@
           :profile-version="profileVersion"
           :show-advanced-context="showAdvancedContext"
           :submitting="submitting"
+          :is-editing-request="Boolean(editingRequestId)"
           :topics="topics"
           @edit-profile="editProfile"
           @reuse-context="reusePreviousContext"
@@ -93,11 +94,8 @@
         <AssessmentResultStep
           v-else
           ref="stepContent"
-          :gen-step="genStep"
           :is-generating="isGenerating"
-          :report-preview="reportPreview"
-          @go-to-calendar="goToCalendar"
-          @view-report="viewFullReport"
+          @view-requests="viewRequests"
         />
       </div>
     </section>

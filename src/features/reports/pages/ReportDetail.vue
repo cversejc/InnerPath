@@ -33,7 +33,7 @@
           <div class="report-next-copy"><p class="section-kicker">FROM INSIGHT TO ACTION</p><h2>把看见的，带回生活里</h2><p>用决策日历照看日常节奏，留下自己的行动与选择。</p></div>
           <VanButton type="primary" native-type="button" class="btn-action primary" @click="goToCalendar">
             <template #icon><IconMark class="icon" name="calendar" /></template>
-            打开决策日历
+            基于这份报告生成日历
           </VanButton>
         </div>
       </div>
@@ -87,7 +87,10 @@ export default {
       this.$router.go(-1)
     },
     goToCalendar() {
-      this.$router.push('/pages/calendar/calendar')
+      this.$router.push({
+        path: '/pages/calendar/calendar',
+        query: { generate: '1', sourceReportId: String(this.$route.query.id || '') }
+      })
     }
   }
 }

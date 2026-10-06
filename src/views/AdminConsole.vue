@@ -71,16 +71,6 @@
         @toggle-user="toggleUser"
       />
 
-      <AdminCalendarRequestsSection
-        v-else-if="activeTab === 'calendar-requests'"
-        :calendar-requests="calendarRequests"
-        :loading="calendarRequestsLoading"
-        :status-filter="calendarRequestStatusFilter"
-        @refresh="loadCalendarRequests"
-        @review="reviewCalendarRequest"
-        @update-status-filter="setCalendarRequestStatusFilter"
-      />
-
       <AdminCalendarSection
         v-else-if="activeTab === 'calendar'"
         :calendar-form="calendarForm"

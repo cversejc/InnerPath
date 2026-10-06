@@ -1,4 +1,4 @@
-"""AI generation for a private, consultant-reviewed decision calendar draft."""
+"""AI generation for a user-ready calendar based on a delivered report."""
 
 import json
 from typing import Any, Dict
@@ -62,8 +62,12 @@ def build_calendar_prompt(user_data: Dict[str, Any]) -> str:
                 "end_date": user_data.get("end_date"),
                 "selected_topics": user_data.get("selected_topics", []),
                 "goal": user_data.get("calendar_goal"),
+                "usage_scenario": user_data.get("usage_scenario"),
+                "expected_outcomes": user_data.get("expected_outcomes", []),
+                "decision_description": user_data.get("decision_description"),
                 "additional_info": user_data.get("additional_info"),
             },
+            "source_report": user_data.get("source_report") or {},
         },
         ensure_ascii=False,
         indent=2,
@@ -71,12 +75,12 @@ def build_calendar_prompt(user_data: Dict[str, Any]) -> str:
 
 
 async def generate_calendar_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]:
-    """Generate strict JSON that is validated again before it becomes a draft."""
+    """Generate a user-ready calendar for a delivered report."""
 
     prompt = build_calendar_prompt(user_data)
-    system_prompt = """你是辰鉴的决策日历初稿助手。
+    system_prompt = """你是辰鉴的个人决策日历生成助手。
 
-你的工作是根据用户资料与指定的 30 天范围，生成一份供咨询师审校的日历初稿。
+你的工作是依据用户资料、已交付报告和本次目标，生成一份可直接交付用户的 30 天个人日历。
 这不是命运预测，也不是医疗、法律或财务建议。请使用温和、具体、保留主体性的表达，
 把每天的内容写成观察、行动、等待和复盘的参照，不使用绝对因果或恐吓表达。
 
@@ -103,12 +107,12 @@ async def generate_calendar_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]
       "suitable": ["适合事项"],
       "unsuitable": ["不适合事项"],
       "time_window": "时间节奏建议",
-      "admin_note": "给咨询师的内部备注，可为空"
+      "admin_note": "留空字符串"
     }
   ]
 }
 
-必须覆盖输入的全部 30 天，日期不能重复，也不能超出范围。"""
+必须覆盖输入的全部 30 天，日期不能重复，也不能超出范围。结合已交付报告的具体特质与本次目标，避免照搬通用建议。不得声称报告以外的诊断或事实；每条建议都要保持可选择、可调整。"""
 
     logger.info("开始生成决策日历 AI 初稿 | start=%s", user_data.get("start_date"))
     async with httpx.AsyncClient(timeout=settings.DEEPSEEK_TIMEOUT_SECONDS) as client:

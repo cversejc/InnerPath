@@ -1,5 +1,6 @@
 import { getLatestReportContext } from '../reports/api.js'
 import { getCurrentUser } from '../users/service.js'
+import { getMyServiceRequest } from '../service-requests/api.js'
 import AssessmentProfileStep from './components/AssessmentProfileStep.vue'
 import AssessmentContextStep from './components/AssessmentContextStep.vue'
 import AssessmentResultStep from './components/AssessmentResultStep.vue'
@@ -26,7 +27,6 @@ export default {
       savingProfile: false,
       submitting: false,
       isGenerating: false,
-      genStep: 0,
       formMessage: '',
       contextMessage: '',
       showOptionalProfile: false,
@@ -43,9 +43,9 @@ export default {
       draftSavedAt: null,
       lastContext: null,
       lastContextReportId: null,
-      reportPreview: { energyType: '综合型', coreTraits: '独特的个人特质', talents: '多元发展' },
-      generatedReport: null,
-      currentReportId: null,
+      currentRequestId: null,
+      editingRequestId: null,
+      reportIdempotencyKey: null,
       topics: assessmentTopics,
       expectedOutcomeOptions,
       decisionStyleOptions
@@ -59,7 +59,7 @@ export default {
       return Object.values(this.contextErrors)
     },
     currentStepLabel() {
-      return ['个人档案', '本次问题', '生成说明书'][this.currentStep - 1] || '申请'
+      return ['个人档案', '本次问题', '提交申请'][this.currentStep - 1] || '申请'
     },
     stepProgress() {
       return Math.round((this.currentStep / 3) * 100)
@@ -77,6 +77,24 @@ export default {
       this.profileLastConfirmedAt = user.profile_last_confirmed_at || null
       this.hasExistingProfile = Number(user.profile_completion || 0) >= 100
       this.restoreDraft()
+      const requestId = Number(this.$route.query.requestId)
+      if (requestId) {
+        const request = await getMyServiceRequest(requestId)
+        if (request.service_type !== 'report' || request.status !== 'needs_info') {
+          this.formMessage = '这份报告申请当前不需要补充资料。'
+        } else {
+          const context = request.request_payload?.context || {}
+          this.editingRequestId = request.id
+          this.currentStep = 2
+          this.contextDraft = {
+            ...createEmptyAssessmentContext(),
+            ...context,
+            focus_topics: [...(context.focus_topics || [])],
+            expected_outcomes: [...(context.expected_outcomes || [])],
+            decision_style: [...(context.decision_style || [])]
+          }
+        }
+      }
     } catch (error) {
       this.formMessage = error.response?.data?.detail || '暂时无法读取个人档案，请刷新后重试。'
     }

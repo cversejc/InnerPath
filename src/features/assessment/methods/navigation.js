@@ -11,10 +11,7 @@ export default {
     const text = String(value || '')
     return text.length > length ? text.slice(0, length) + '…' : text
   },
-  viewFullReport() {
-    if (this.currentReportId) this.$router.push('/pages/report/detail?id=' + this.currentReportId)
-  },
-  goToCalendar() {
-    this.$router.push('/pages/calendar/calendar')
+  viewRequests() {
+    this.$router.push('/pages/requests/requests')
   }
 }

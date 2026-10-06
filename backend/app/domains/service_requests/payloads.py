@@ -1,13 +1,14 @@
 """Normalize submitted report and calendar request payloads."""
 
 from copy import deepcopy
-from datetime import date
+from datetime import date, timedelta
 from typing import Any, Optional
 
 from .models import SERVICE_REQUEST_TYPES, ServiceRequest
 from app.models.user import User
 from app.domains.users.lunar_calendar import solar_date_for_birth
 from .schemas import (
+    ReportContext,
     ServiceProfileSnapshot,
     ServiceRequestCreate,
     ServiceRequestUpdate,
@@ -52,6 +53,8 @@ def _normalize_payload(
     additional_info: Optional[str],
     calendar_goal: Optional[str],
     start_date: Optional[date | str],
+    context: Optional[dict[str, Any]] = None,
+    profile_version: Optional[int] = None,
 ) -> dict[str, Any]:
     ensure_service_type(service_type)
     profile_model = ServiceProfileSnapshot.model_validate(profile)
@@ -75,7 +78,22 @@ def _normalize_payload(
         end = None
         calendar_goal = None
 
-    return {
+    normalized_context = None
+    if service_type == "report":
+        normalized_context = ReportContext.model_validate(context or {}).model_dump(mode="json")
+        for field in ("current_challenge", "decision_description", "additional_info"):
+            value = normalized_context.get(field)
+            normalized_context[field] = value.strip() or None if isinstance(value, str) else value
+        if not normalized_context["focus_topics"]:
+            raise ValueError("report_request_requires_focus_topics")
+        if not normalized_context["current_challenge"]:
+            raise ValueError("report_request_requires_current_challenge")
+        if not normalized_context["expected_outcomes"]:
+            raise ValueError("report_request_requires_expected_outcomes")
+        if profile_version is not None and int(profile_version) < 1:
+            raise ValueError("invalid_profile_version")
+
+    normalized = {
         "profile": profile_payload,
         "selected_topics": list(selected_topics or []),
         "additional_info": additional_info or None,
@@ -83,11 +101,20 @@ def _normalize_payload(
         "start_date": start.isoformat() if start else None,
         "end_date": end.isoformat() if end else None,
     }
+    if normalized_context is not None:
+        normalized["context"] = normalized_context
+        normalized["selected_topics"] = normalized_context["focus_topics"]
+        normalized["additional_info"] = normalized_context["additional_info"]
+    if profile_version is not None:
+        normalized["profile_version"] = int(profile_version)
+    return normalized
 
 
 def payload_from_create(
     data: ServiceRequestCreate, user: User
 ) -> tuple[dict[str, Any], Optional[str]]:
+    if data.profile_version is not None and int(data.profile_version) != int(user.profile_version or 1):
+        raise ValueError("profile_version_conflict")
     profile = data.profile.model_dump()
     if not profile.get("name"):
         profile["name"] = user.name
@@ -99,6 +126,8 @@ def payload_from_create(
             data.additional_info,
             data.calendar_goal,
             data.start_date,
+            data.context.model_dump() if data.context is not None else None,
+            data.profile_version or user.profile_version or 1,
         ),
         data.idempotency_key,
     )
@@ -109,6 +138,8 @@ def payload_from_update(
     data: ServiceRequestUpdate,
     user: User,
 ) -> dict[str, Any]:
+    if data.profile_version is not None and int(data.profile_version) != int(user.profile_version or 1):
+        raise ValueError("profile_version_conflict")
     current = deepcopy(request.request_payload or {})
     current_profile = deepcopy(current.get("profile") or {})
     if data.profile is not None:
@@ -134,6 +165,16 @@ def payload_from_update(
     start_date = (
         current.get("start_date") if data.start_date is None else data.start_date
     )
+    context = (
+        current.get("context")
+        if data.context is None
+        else data.context.model_dump()
+    )
+    profile_version = (
+        current.get("profile_version")
+        if data.profile_version is None
+        else data.profile_version
+    )
     return _normalize_payload(
         request.service_type,
         current_profile,
@@ -141,6 +182,8 @@ def payload_from_update(
         additional_info,
         calendar_goal,
         start_date,
+        context,
+        profile_version or user.profile_version or 1,
     )
 
 
@@ -150,6 +193,7 @@ def flatten_ai_input(request: ServiceRequest) -> dict[str, Any]:
     profile["name"] = profile.get("name") or "用户"
     profile["selected_topics"] = payload.get("selected_topics", [])
     profile["additional_info"] = payload.get("additional_info")
+    profile["context"] = deepcopy(payload.get("context") or {})
     if request.service_type == "calendar":
         profile["calendar_goal"] = payload.get("calendar_goal")
         profile["start_date"] = payload.get("start_date")

@@ -22,6 +22,8 @@ async def create_service_request(
     data: ServiceRequestCreate,
     audit_context: Optional[AuditContext] = None,
 ) -> ServiceRequest:
+    if data.service_type == "calendar":
+        raise ValueError("calendar_service_request_retired")
     payload, idempotency_key = payload_from_create(data, user)
     if idempotency_key:
         existing = await db.scalar(
@@ -133,6 +135,9 @@ async def resubmit_service_request(
     service_request = locked_request
     if service_request.status != "needs_info":
         raise ValueError("service_request_not_waiting_for_info")
+    submitted_profile_version = (service_request.request_payload or {}).get("profile_version")
+    if submitted_profile_version is not None and int(submitted_profile_version) != int(user.profile_version or 1):
+        raise ValueError("profile_version_conflict")
     _normalize_payload(
         service_request.service_type,
         (service_request.request_payload or {}).get("profile") or {},
@@ -140,6 +145,8 @@ async def resubmit_service_request(
         (service_request.request_payload or {}).get("additional_info"),
         (service_request.request_payload or {}).get("calendar_goal"),
         (service_request.request_payload or {}).get("start_date"),
+        (service_request.request_payload or {}).get("context"),
+        (service_request.request_payload or {}).get("profile_version"),
     )
     old_draft = await _get_draft(db, service_request.id)
     if old_draft:

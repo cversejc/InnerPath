@@ -4,6 +4,7 @@ export const CUSTOMER_SERVICE_REQUEST_STATUS_LABELS = {
   submitted: '等待咨询师接单',
   accepted: '咨询师已接单',
   ai_processing: '正在准备分析',
+  processing: '处理中',
   ai_ready: '等待咨询师审校',
   reviewing: '咨询师审校中',
   needs_info: '需要补充资料',
@@ -34,7 +35,7 @@ export function canWithdrawServiceRequest(status) {
 export function serviceRequestEditPath(item) {
   return item.service_type === 'report'
     ? '/pages/assessment/assessment?requestId=' + item.id
-    : '/pages/requests/new?type=calendar&requestId=' + item.id
+    : '/pages/calendar/calendar?generate=1'
 }
 
 export { topicLabel }

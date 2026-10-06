@@ -7,6 +7,7 @@ import calendarDataMethods from '../features/calendar/methods/calendarData.js'
 import selectionMethods from '../features/calendar/methods/selection.js'
 import recordsMethods, { createRecordDraft } from '../features/calendar/methods/records.js'
 import { confirmAction } from '../utils/confirmAction.js'
+import { getUserReports } from '../features/reports/api.js'
 
 const mobileDetailMediaQuery = typeof window === 'undefined' ? null : window.matchMedia('(max-width: 900px)')
 
@@ -39,6 +40,7 @@ export default {
       recordFeedback: '',
       savingRecord: false,
       profile: null,
+      reports: [],
       calendarRequests: [],
       showCalendarRequestForm: false,
       submittingCalendarRequest: false,
@@ -46,6 +48,7 @@ export default {
       calendarRequestFeedback: '',
       calendarRequestDraft: {
         profile_version: null,
+        source_report_id: '',
         start_date: '',
         end_date: '',
         focus_topics: [],
@@ -167,6 +170,14 @@ export default {
         })),
         ...emptyCells.slice(leading)
       ]
+    }
+  },
+  watch: {
+    'calendarRequestDraft.start_date'(start) {
+      this.setCalendarEndDate(start)
+    },
+    '$route.query.generate'(requested) {
+      if (requested === '1' && this.reports.length) this.openCalendarRequest()
     }
   },
   async mounted() {

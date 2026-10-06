@@ -15,6 +15,11 @@ export async function createCalendarRequest(requestData) {
   return response.data
 }
 
+export async function retryCalendarRequest(requestId) {
+  const response = await apiClient.post(`/calendar/requests/${requestId}/retry`)
+  return response.data
+}
+
 export async function getMyDecisionLogs(params = {}) {
   const response = await apiClient.get('/calendar/decision-logs', { params })
   return response.data
@@ -42,16 +47,6 @@ export async function getAdminUserDecisionLogs(userId, params = {}) {
 
 export async function getAdminCalendars(userId) {
   const response = await apiClient.get(`/admin/users/${userId}/calendars`)
-  return response.data
-}
-
-export async function getAdminCalendarRequests(params = {}) {
-  const response = await apiClient.get('/admin/calendar-requests', { params })
-  return response.data
-}
-
-export async function updateAdminCalendarRequest(requestId, data) {
-  const response = await apiClient.patch(`/admin/calendar-requests/${requestId}`, data)
   return response.data
 }
 

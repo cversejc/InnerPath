@@ -1,4 +1,5 @@
 import { getMyServiceRequests, withdrawServiceRequest } from '../api.js'
+import { retryCalendarRequest } from '../../calendar/api.js'
 import {
   canWithdrawServiceRequest,
   customerServiceRequestStatusLabel,
@@ -9,23 +10,56 @@ import {
 } from '../customer-formatters.js'
 
 export default {
-  async loadRequests() {
-    this.loading = true
+  async loadRequests(silent = false) {
+    if (this.requestFetchInFlight) return
+    this.requestFetchInFlight = true
+    if (!silent) this.loading = true
     try {
       const response = await getMyServiceRequests()
       this.requests = response.items || []
     } catch (error) {
-      this.message = this.errorText(error)
-      this.messageType = 'error'
+      if (!silent) {
+        this.message = this.errorText(error)
+        this.messageType = 'error'
+      }
     } finally {
-      this.loading = false
+      this.requestFetchInFlight = false
+      if (!silent) this.loading = false
+      this.syncRequestPolling()
+    }
+  },
+  syncRequestPolling() {
+    const active = this.requests.some(item =>
+      item.workflow_type === 'calendar_generation'
+        ? item.status === 'ai_processing'
+        : item.workflow_type !== 'calendar_legacy' && ['submitted', 'accepted', 'ai_processing', 'ai_ready', 'reviewing'].includes(item.status)
+    )
+    if (active && !this.requestRefreshTimer) {
+      this.requestRefreshTimer = window.setInterval(() => this.loadRequests(true), 5000)
+    } else if (!active && this.requestRefreshTimer) {
+      window.clearInterval(this.requestRefreshTimer)
+      this.requestRefreshTimer = null
     }
   },
   payload(item) {
     return item.request_payload || {}
   },
-  serviceTypeLabel: customerServiceTypeLabel,
-  statusLabel: customerServiceRequestStatusLabel,
+  serviceTypeLabel(item) {
+    return item.workflow_type === 'calendar_generation'
+      ? '日历生成'
+      : item.workflow_type === 'calendar_legacy'
+        ? '历史日历申请'
+      : customerServiceTypeLabel(item.service_type)
+  },
+  statusLabel(item) {
+    if (item.workflow_type === 'calendar_generation') {
+      if (item.status === 'ai_processing') return '日历生成中'
+      if (item.status === 'delivered') return '已开放使用'
+      if (item.status === 'failed') return '生成失败'
+    }
+    if (item.workflow_type === 'calendar_legacy' && ['submitted', 'accepted', 'ai_processing', 'ai_ready', 'reviewing', 'pending'].includes(item.status)) return '旧流程已停用'
+    return customerServiceRequestStatusLabel(item.status)
+  },
   topicLabel,
   formatDateTime: formatCustomerServiceRequestDateTime,
   canWithdraw: canWithdrawServiceRequest,
@@ -41,7 +75,7 @@ export default {
     this.withdrawnId = item.id
     try {
       const updated = await withdrawServiceRequest(item.id)
-      const index = this.requests.findIndex(request => request.id === item.id)
+      const index = this.requests.findIndex(request => request.id === item.id && request.service_type === item.service_type && request.workflow_type === item.workflow_type)
       if (index > -1) this.requests.splice(index, 1, updated)
       this.message = '申请已撤回'
       this.messageType = 'info'
@@ -50,6 +84,21 @@ export default {
       this.messageType = 'error'
     } finally {
       this.withdrawnId = null
+    }
+  },
+  async retryCalendar(item) {
+    if (this.retryingCalendarId || item.workflow_type !== 'calendar_generation' || item.status !== 'failed') return
+    this.retryingCalendarId = item.id
+    try {
+      await retryCalendarRequest(item.id)
+      this.message = '已重新启动日历生成，成功后会自动开放。'
+      this.messageType = 'info'
+      await this.loadRequests()
+    } catch (error) {
+      this.message = error.response?.data?.detail || this.errorText(error)
+      this.messageType = 'error'
+    } finally {
+      this.retryingCalendarId = null
     }
   },
   errorText(error) {

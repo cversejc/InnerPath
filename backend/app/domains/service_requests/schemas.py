@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field, model_validator
 
 from app.domains.users.lunar_calendar import solar_date_for_birth
+from app.domains.reports.schemas import ReportContext
 
 
 ServiceType = Literal["report", "calendar"]
@@ -12,7 +13,7 @@ ServiceType = Literal["report", "calendar"]
 class ServiceProfileSnapshot(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=50)
     gender: str = Field(..., pattern="^(male|female)$")
-    birth_year: int = Field(..., ge=1900, le=2026)
+    birth_year: int = Field(..., ge=1900, le=date.today().year)
     birth_month: int = Field(..., ge=1, le=12)
     birth_day: int = Field(..., ge=1, le=31)
     birth_is_leap_month: bool = False
@@ -37,6 +38,8 @@ class ServiceProfileSnapshot(BaseModel):
 class ServiceRequestCreate(BaseModel):
     service_type: ServiceType
     profile: ServiceProfileSnapshot
+    profile_version: Optional[int] = Field(None, ge=1)
+    context: Optional[ReportContext] = None
     selected_topics: List[str] = Field(default_factory=list, max_length=12)
     additional_info: Optional[str] = Field(None, max_length=4000)
     calendar_goal: Optional[str] = Field(None, max_length=500)
@@ -46,6 +49,8 @@ class ServiceRequestCreate(BaseModel):
 
 class ServiceRequestUpdate(BaseModel):
     profile: Optional[ServiceProfileSnapshot] = None
+    profile_version: Optional[int] = Field(None, ge=1)
+    context: Optional[ReportContext] = None
     selected_topics: Optional[List[str]] = Field(None, max_length=12)
     additional_info: Optional[str] = Field(None, max_length=4000)
     calendar_goal: Optional[str] = Field(None, max_length=500)
@@ -55,6 +60,7 @@ class ServiceRequestUpdate(BaseModel):
 class ServiceRequestResponse(BaseModel):
     id: int
     service_type: ServiceType
+    workflow_type: Optional[str] = None
     status: str
     request_payload: Dict[str, Any]
     result_type: Optional[str] = None
@@ -73,6 +79,7 @@ class ServiceRequestResponse(BaseModel):
     needs_info_at: Optional[datetime] = None
     failed_at: Optional[datetime] = None
     delivered_at: Optional[datetime] = None
+    progress: Optional[int] = None
     withdrawn_at: Optional[datetime] = None
     rejected_at: Optional[datetime] = None
 
