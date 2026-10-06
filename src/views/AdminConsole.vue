@@ -165,12 +165,14 @@
         :consultant-workloads="consultantWorkloads"
         :workload-period-days="consultantWorkloadPeriodDays"
         :workload-error="consultantWorkloadError"
+        :workload-loading="consultantWorkloadLoading"
         :specialty-saving-id="consultantSpecialtySavingId"
         :staff-loading="staffLoading"
         :staff-users="staffUsers"
         @invite="inviteStaff"
         @open-activity="openConsultantActivity"
         @open-requests="openConsultantServiceRequests"
+        @change-workload-period="changeConsultantWorkloadPeriod"
         @update-specialties="updateConsultantSpecialties"
       />
 

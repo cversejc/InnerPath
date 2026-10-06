@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import apiClient from '../../../utils/apiClient.js'
 import usersMethods from './users.js'
 
 test('password reset opens a dialog for an active account', async () => {
@@ -64,4 +65,55 @@ test('closing the password dialog clears sensitive input', () => {
   assert.equal(context.passwordDialog.password, '')
   assert.equal(context.passwordDialog.showPassword, false)
   assert.equal(context.passwordDialog.error, '')
+})
+
+test('consultant workload period changes fetch read-only metrics and update the selected range', async () => {
+  const originalGet = apiClient.get
+  const calls = []
+  apiClient.get = async (url, options) => {
+    calls.push({ url, params: options.params })
+    return { data: { period_days: options.params.period_days, items: [{ consultant_id: 4 }] } }
+  }
+  const context = {
+    consultantWorkloadLoading: false,
+    consultantWorkloadError: '',
+    consultantWorkloads: [],
+    consultantWorkloadPeriodDays: 30,
+    errorText: error => error.message
+  }
+
+  try {
+    await usersMethods.changeConsultantWorkloadPeriod.call(context, 7)
+  } finally {
+    apiClient.get = originalGet
+  }
+
+  assert.deepEqual(calls, [{ url: '/admin/consultants/workload', params: { period_days: 7 } }])
+  assert.equal(context.consultantWorkloadPeriodDays, 7)
+  assert.deepEqual(context.consultantWorkloads, [{ consultant_id: 4 }])
+  assert.equal(context.consultantWorkloadLoading, false)
+})
+
+test('failed consultant workload refresh preserves existing data and exposes a retryable error', async () => {
+  const originalGet = apiClient.get
+  apiClient.get = async () => { throw new Error('network unavailable') }
+  const existingWorkload = [{ consultant_id: 4 }]
+  const context = {
+    consultantWorkloadLoading: false,
+    consultantWorkloadError: '',
+    consultantWorkloads: existingWorkload,
+    consultantWorkloadPeriodDays: 30,
+    errorText: error => error.message
+  }
+
+  try {
+    await usersMethods.changeConsultantWorkloadPeriod.call(context, 90)
+  } finally {
+    apiClient.get = originalGet
+  }
+
+  assert.equal(context.consultantWorkloadPeriodDays, 30)
+  assert.equal(context.consultantWorkloads, existingWorkload)
+  assert.equal(context.consultantWorkloadError, 'network unavailable')
+  assert.equal(context.consultantWorkloadLoading, false)
 })

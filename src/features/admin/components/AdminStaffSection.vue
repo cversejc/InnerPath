@@ -11,16 +11,18 @@ const props = defineProps({
   consultantWorkloads: { type: Array, default: () => [] },
   workloadPeriodDays: { type: Number, default: 30 },
   workloadError: { type: String, default: '' },
+  workloadLoading: { type: Boolean, default: false },
   specialtySavingId: { type: Number, default: null },
   staffLoading: { type: Boolean, default: false },
   staffUsers: { type: Array, default: () => [] }
 })
 
-const emit = defineEmits(['invite', 'open-activity', 'open-requests', 'update-specialties'])
+const emit = defineEmits(['invite', 'open-activity', 'open-requests', 'update-specialties', 'change-workload-period'])
 const specialties = [
   { id: 'metaphysics', label: '命理' },
   { id: 'psychology', label: '心理' }
 ]
+const workloadPeriods = [7, 30, 90]
 const specialtyDrafts = reactive({})
 const workloadByConsultant = computed(() => new Map(
   props.consultantWorkloads.map(item => [item.consultant_id, item])
@@ -54,6 +56,11 @@ function specialtiesChanged(member) {
 function saveSpecialties(member) {
   emit('update-specialties', { userId: member.id, specialties: specialtyDrafts[member.id] || [] })
 }
+
+function formatCycleHours(value) {
+  if (value === null || value === undefined) return '—'
+  return value >= 24 ? `${(value / 24).toFixed(1)} 天` : `${value} 小时`
+}
 </script>
 
 <template>
@@ -72,7 +79,7 @@ function saveSpecialties(member) {
       </article>
 
       <article class="panel-surface team-card">
-        <div class="panel-heading"><div><p class="eyebrow">CURRENT TEAM</p><h3>当前成员与工作量</h3></div><span>{{ staffUsers.length }}</span></div>
+        <div class="panel-heading team-panel-heading"><div><p class="eyebrow">CURRENT TEAM</p><h3>当前成员与工作量</h3></div><div class="team-heading-tools"><div class="workload-period" role="group" aria-label="咨询师工作量统计周期"><button v-for="days in workloadPeriods" :key="days" type="button" :aria-pressed="workloadPeriodDays === days" :disabled="workloadLoading" @click="emit('change-workload-period', days)">{{ days }} 天</button></div><span>{{ staffUsers.length }}</span></div></div>
         <div v-if="staffLoading" class="list-loading" aria-label="正在加载成员"><i v-for="index in 4" :key="index"></i></div>
         <div v-else class="team-list">
           <article v-for="member in staffUsers" :key="member.id" class="team-member">
@@ -86,12 +93,23 @@ function saveSpecialties(member) {
             <section v-if="member.role === 'consultant'" class="consultant-workload" :aria-label="`${member.name}的咨询工作量`">
               <p v-if="workloadError" class="workload-error" role="alert">{{ workloadError }}</p>
               <template v-else>
+                <p v-if="workloadLoading" class="workload-refreshing" role="status" aria-live="polite">正在更新统计…</p>
                 <div class="workload-metrics">
                   <div><span>当前未结</span><strong>{{ workloadByConsultant.get(member.id)?.active_requests ?? 0 }}</strong></div>
                   <div><span>当前名下申请</span><strong>{{ workloadByConsultant.get(member.id)?.total_requests ?? 0 }}</strong></div>
                   <div><span>近 {{ workloadPeriodDays }} 天本人接单</span><strong>{{ workloadByConsultant.get(member.id)?.accepted_in_period ?? 0 }}</strong></div>
                   <div><span>近 {{ workloadPeriodDays }} 天本人交付</span><strong>{{ workloadByConsultant.get(member.id)?.delivered_in_period ?? 0 }}</strong></div>
                 </div>
+                <section v-if="workloadByConsultant.get(member.id)?.active_by_status?.length" class="consultant-stage-breakdown" :aria-label="`${member.name}的在办阶段分布`">
+                  <div class="active-work-heading"><strong>在办阶段</strong><span>按当前负责的申请统计</span></div>
+                  <ul>
+                    <li v-for="stage in workloadByConsultant.get(member.id).active_by_status" :key="stage.status"><span>{{ serviceRequestStatusText(stage.status) }}</span><strong>{{ stage.request_count }}</strong></li>
+                  </ul>
+                </section>
+                <section class="consultant-delivery-cycle" :aria-label="`${member.name}的名下交付周期统计`">
+                  <div class="active-work-heading"><strong>近 {{ workloadPeriodDays }} 天名下交付周期</strong><span>{{ workloadByConsultant.get(member.id)?.delivered_cycle_samples ?? 0 }} 个样本 · 从申请创建到交付</span></div>
+                  <div class="delivery-cycle-values"><div><span>P50 中位</span><strong>{{ formatCycleHours(workloadByConsultant.get(member.id)?.delivery_cycle_p50_hours) }}</strong></div><div><span>P90</span><strong>{{ formatCycleHours(workloadByConsultant.get(member.id)?.delivery_cycle_p90_hours) }}</strong></div></div>
+                </section>
                 <section class="consultant-active-work" :aria-label="`${member.name}的在办申请`">
                   <div class="active-work-heading">
                     <strong>当前在办</strong>

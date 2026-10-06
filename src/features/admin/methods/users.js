@@ -42,7 +42,7 @@ export default {
         const [admins, consultants, workload] = await Promise.all([
           getAllAdminUsers({ role: 'admin', size: 100 }),
           getAllAdminUsers({ role: 'consultant', size: 100 }),
-          getAdminConsultantWorkload().then(data => ({ data })).catch(error => ({ error }))
+          getAdminConsultantWorkload(this.consultantWorkloadPeriodDays).then(data => ({ data })).catch(error => ({ error }))
         ])
         this.staffUsers = [...(admins.items || []), ...(consultants.items || [])].sort((a, b) => a.id - b.id)
         if (workload.error) {
@@ -53,6 +53,21 @@ export default {
           this.consultantWorkloadPeriodDays = workload.data.period_days || 30
         }
       } catch (error) { this.message = this.errorText(error) } finally { this.staffLoading = false }
+    },
+  async changeConsultantWorkloadPeriod(periodDays) {
+      const days = Number(periodDays)
+      if (![7, 30, 90].includes(days) || this.consultantWorkloadLoading) return
+      this.consultantWorkloadLoading = true
+      this.consultantWorkloadError = ''
+      try {
+        const workload = await getAdminConsultantWorkload(days)
+        this.consultantWorkloads = workload.items || []
+        this.consultantWorkloadPeriodDays = workload.period_days || days
+      } catch (error) {
+        this.consultantWorkloadError = this.errorText(error)
+      } finally {
+        this.consultantWorkloadLoading = false
+      }
     },
   async openUserDetail(user) {
       this.drawerTrigger = document.activeElement

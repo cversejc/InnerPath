@@ -215,6 +215,16 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .admin-shell .team-panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-shell .team-heading-tools {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .admin-shell .workload-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 10px;

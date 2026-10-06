@@ -1,6 +1,7 @@
 """Admin read model for consultant load and consultant-performed work events."""
 
 from datetime import datetime, timedelta
+from statistics import median, quantiles
 
 from sqlalchemy import String, case, cast, func, literal, select, union_all
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,6 +17,67 @@ CLOSED_REQUEST_STATUSES = ("delivered", "withdrawn", "rejected")
 ACCEPT_ACTIONS = ("service_request.accept", "service_request.specialty.accept")
 STALE_REQUEST_HOURS = 24
 ACTIVE_REQUEST_PREVIEW_LIMIT = 5
+ACTIVE_REQUEST_STATUS_ORDER = (
+    "submitted",
+    "accepted",
+    "ai_processing",
+    "ai_ready",
+    "reviewing",
+    "needs_info",
+    "failed",
+)
+
+
+def consultant_active_status_counts(consultant_ids):
+    assignments = consultant_request_assignments()
+    return (
+        select(
+            assignments.c.consultant_id,
+            ServiceRequest.status,
+            func.count(ServiceRequest.id).label("request_count"),
+        )
+        .join(ServiceRequest, ServiceRequest.id == assignments.c.request_id)
+        .where(
+            assignments.c.consultant_id.in_(consultant_ids),
+            ServiceRequest.status.not_in(CLOSED_REQUEST_STATUSES),
+        )
+        .group_by(assignments.c.consultant_id, ServiceRequest.status)
+    )
+
+
+def consultant_delivered_request_cycles(consultant_ids, *, cutoff):
+    assignments = consultant_request_assignments()
+    return (
+        select(
+            assignments.c.consultant_id,
+            ServiceRequest.created_at,
+            ServiceRequest.delivered_at,
+        )
+        .join(ServiceRequest, ServiceRequest.id == assignments.c.request_id)
+        .where(
+            assignments.c.consultant_id.in_(consultant_ids),
+            ServiceRequest.service_type == "report",
+            ServiceRequest.status == "delivered",
+            ServiceRequest.delivered_at >= cutoff,
+            ServiceRequest.created_at.is_not(None),
+        )
+    )
+
+
+def summarize_delivery_cycles(hours: list[float]) -> dict:
+    ordered = sorted(value for value in hours if value >= 0)
+    if not ordered:
+        return {
+            "delivered_cycle_samples": 0,
+            "delivery_cycle_p50_hours": None,
+            "delivery_cycle_p90_hours": None,
+        }
+    p90 = quantiles(ordered, n=10, method="inclusive")[8] if len(ordered) > 1 else ordered[0]
+    return {
+        "delivered_cycle_samples": len(ordered),
+        "delivery_cycle_p50_hours": round(median(ordered), 1),
+        "delivery_cycle_p90_hours": round(p90, 1),
+    }
 
 
 def consultant_request_assignments():
@@ -196,6 +258,18 @@ async def get_admin_consultant_workload(
         for row in assignment_rows
     }
 
+    status_rows = list(
+        (await db.execute(consultant_active_status_counts(consultant_ids))).all()
+    )
+    active_statuses_by_consultant = {}
+    for row in status_rows:
+        active_statuses_by_consultant.setdefault(row.consultant_id, []).append(
+            {"status": row.status, "request_count": int(row.request_count or 0)}
+        )
+    status_order = {status: index for index, status in enumerate(ACTIVE_REQUEST_STATUS_ORDER)}
+    for statuses in active_statuses_by_consultant.values():
+        statuses.sort(key=lambda item: status_order.get(item["status"], len(status_order)))
+
     active_request_rows = list(
         (await db.execute(consultant_active_request_preview(consultant_ids))).all()
     )
@@ -220,6 +294,21 @@ async def get_admin_consultant_workload(
         )
 
     cutoff = now - timedelta(days=period_days)
+    delivery_cycle_rows = list(
+        (
+            await db.execute(
+                consultant_delivered_request_cycles(consultant_ids, cutoff=cutoff)
+            )
+        ).all()
+    )
+    delivery_cycles_by_consultant = {}
+    for row in delivery_cycle_rows:
+        if row.created_at is None or row.delivered_at is None:
+            continue
+        duration = (row.delivered_at - row.created_at).total_seconds() / 3600
+        if duration >= 0:
+            delivery_cycles_by_consultant.setdefault(row.consultant_id, []).append(duration)
+
     events = consultant_work_events()
     event_count_rows = list(
         (
@@ -316,6 +405,12 @@ async def get_admin_consultant_workload(
                 **event_counts.get(
                     consultant.id,
                     {"accepted_in_period": 0, "delivered_in_period": 0},
+                ),
+                "active_by_status": active_statuses_by_consultant.get(
+                    consultant.id, []
+                ),
+                **summarize_delivery_cycles(
+                    delivery_cycles_by_consultant.get(consultant.id, [])
                 ),
                 "active_request_preview": active_requests_by_consultant.get(
                     consultant.id, []

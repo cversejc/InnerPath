@@ -55,6 +55,11 @@ class AdminConsultantActiveRequest(BaseModel):
     is_stale: bool = False
 
 
+class AdminConsultantWorkloadStageCount(BaseModel):
+    status: str
+    request_count: int = 0
+
+
 class AdminConsultantWorkloadItem(BaseModel):
     consultant_id: int
     total_requests: int = 0
@@ -62,6 +67,10 @@ class AdminConsultantWorkloadItem(BaseModel):
     stale_active_requests: int = 0
     accepted_in_period: int = 0
     delivered_in_period: int = 0
+    active_by_status: list[AdminConsultantWorkloadStageCount] = Field(default_factory=list)
+    delivered_cycle_samples: int = 0
+    delivery_cycle_p50_hours: Optional[float] = None
+    delivery_cycle_p90_hours: Optional[float] = None
     active_request_preview: list[AdminConsultantActiveRequest] = Field(default_factory=list)
     recent_events: list[AdminConsultantWorkEvent] = Field(default_factory=list)
 

@@ -112,6 +112,13 @@
 .admin-shell .section-switch { justify-self: start; }
 .admin-shell .section-switch button { min-width: 100px; }
 .admin-shell .staff-grid { display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 18px; }
+.admin-shell .team-panel-heading { align-items: center; }
+.admin-shell .team-heading-tools { display: flex; align-items: center; gap: 10px; }
+.admin-shell .workload-period { display: inline-flex; gap: 2px; border: 1px solid rgba(80, 54, 32, .14); border-radius: 8px; padding: 2px; background: rgba(234, 217, 191, .24); }
+.admin-shell .workload-period button { min-width: 50px; min-height: 44px; border: 0; border-radius: 6px; padding: 0 7px; background: transparent; color: var(--ink-soft, #614d3d); font: inherit; font-size: 10px; cursor: pointer; }
+.admin-shell .workload-period button[aria-pressed="true"] { background: var(--surface-strong, #fffaf0); color: var(--cinnabar-deep, #9e3f35); box-shadow: 0 1px 3px rgba(47, 36, 27, .12); }
+.admin-shell .workload-period button:disabled { cursor: wait; opacity: .65; }
+.admin-shell .workload-period button:focus-visible { outline: 2px solid var(--cinnabar-deep, #9e3f35); outline-offset: 2px; }
 .admin-shell .invite-card h3, .admin-shell .team-card h3 { margin: 0; color: #3b2d24; font-size: 20px; }
 .admin-shell .stack-form { display: grid; gap: 13px; margin-top: 18px; }
 .admin-shell .stack-form .primary-button { justify-self: start; }
@@ -131,6 +138,16 @@
 .admin-shell .workload-metrics > div:last-child { border-right: 0; padding-right: 0; }
 .admin-shell .workload-metrics span { color: var(--muted, #7d6653); font-size: 10px; line-height: 1.45; }
 .admin-shell .workload-metrics strong { color: var(--ink, #30241b); font-size: 17px; font-weight: var(--weight-semibold); }
+.admin-shell .workload-refreshing { margin: 0; color: var(--muted, #7d6653); font-size: 11px; }
+.admin-shell .consultant-stage-breakdown,
+.admin-shell .consultant-delivery-cycle { display: grid; gap: 7px; border-top: 1px solid rgba(80, 54, 32, .08); padding-top: 9px; }
+.admin-shell .consultant-stage-breakdown ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.admin-shell .consultant-stage-breakdown li { display: flex; min-height: 30px; align-items: center; gap: 7px; border: 1px solid rgba(80, 54, 32, .1); border-radius: 6px; padding: 3px 8px; color: var(--ink-soft, #614d3d); font-size: 10px; }
+.admin-shell .consultant-stage-breakdown li strong { color: var(--ink, #30241b); font-size: 12px; font-weight: var(--weight-semibold); }
+.admin-shell .delivery-cycle-values { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.admin-shell .delivery-cycle-values > div { display: grid; gap: 3px; border-left: 2px solid var(--jade, #6f9f93); padding-left: 8px; }
+.admin-shell .delivery-cycle-values span { color: var(--muted, #7d6653); font-size: 10px; }
+.admin-shell .delivery-cycle-values strong { color: var(--ink, #30241b); font-size: 13px; font-weight: var(--weight-semibold); }
 .admin-shell .consultant-active-work { display: grid; gap: 7px; border-top: 1px solid rgba(80, 54, 32, .08); padding-top: 9px; }
 .admin-shell .active-work-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 5px 12px; }
 .admin-shell .active-work-heading strong { color: var(--ink-soft, #4c3d31); font-size: 11px; }
