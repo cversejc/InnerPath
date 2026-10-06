@@ -3,25 +3,30 @@ import { getAdminServiceRequests, retryStaffAIDraft, updateAdminServiceRequestAs
 
 export default {
   async loadAdminRequests() {
+    const requestId = this.requestsRequestId + 1
+    const requestKind = this.requestKind
+    this.requestsRequestId = requestId
     this.requestsLoading = true
     try {
-      if (this.requestKind === 'calendar') {
-        this.adminCalendarRequests = await getAdminCalendarRequests({
+      if (requestKind === 'calendar') {
+        const requests = await getAdminCalendarRequests({
           ...this.cleanParams(this.calendarRequestFilters),
           page: this.requestPage,
           size: this.requestPageSize
         })
+        if (this.requestsRequestId === requestId && this.requestKind === requestKind) this.adminCalendarRequests = requests
       } else {
-        this.adminServiceRequests = await getAdminServiceRequests({
+        const requests = await getAdminServiceRequests({
           ...this.cleanParams(this.requestFilters),
           page: this.requestPage,
           size: this.requestPageSize
         })
+        if (this.requestsRequestId === requestId && this.requestKind === requestKind) this.adminServiceRequests = requests
       }
     } catch (error) {
-      this.message = this.errorText(error)
+      if (this.requestsRequestId === requestId) this.message = this.errorText(error)
     } finally {
-      this.requestsLoading = false
+      if (this.requestsRequestId === requestId) this.requestsLoading = false
     }
   },
   async setRequestKind(kind) {
@@ -74,6 +79,7 @@ export default {
   },
   async assignAdminRequest(change) {
     if (this.assignmentSavingKey) return
+    const requestKind = this.requestKind
     const key = `${change.requestId}:${change.mode || 'single'}`
     this.assignmentSavingKey = key
     this.assignmentError = ''
@@ -85,10 +91,12 @@ export default {
         change.consultationType
       )
       await this.loadAdminRequests()
-      if (change.mode === 'mingli' || change.mode === 'psychology') {
-        this.assignmentRequest = this.adminServiceRequests.items.find(item => item.id === change.requestId) || null
-      } else {
-        this.assignmentRequest = null
+      if (this.requestKind === requestKind && this.requestKind === 'consultant' && this.activeTab === 'requests') {
+        if (change.mode === 'mingli' || change.mode === 'psychology') {
+          this.assignmentRequest = this.adminServiceRequests.items.find(item => item.id === change.requestId) || null
+        } else {
+          this.assignmentRequest = null
+        }
       }
       if (change.mode === 'mingli') this.message = change.consultantId ? '命理负责人已更新。' : '命理席位已清空。'
       else if (change.mode === 'psychology') this.message = change.consultantId ? '心理负责人已更新。' : '心理席位已清空。'
