@@ -23,6 +23,7 @@ from app.domains.reports.schemas import (
 from app.domains.reports.service import (
     delete_report,
     format_report_response,
+    delivered_report_clause,
     get_report_by_id,
     get_user_reports,
 )
@@ -146,7 +147,12 @@ async def get_latest_report_context(
 ):
     result = await db.execute(
         select(Report)
-        .where(Report.user_id == current_user.id, Report.is_deleted.is_(False))
+        .where(
+            Report.user_id == current_user.id,
+            Report.is_deleted.is_(False),
+            Report.status == "completed",
+            delivered_report_clause(),
+        )
         .order_by(Report.created_at.desc())
         .limit(1)
     )

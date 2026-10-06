@@ -4,7 +4,6 @@ import adminFormatters from '../features/admin/formatters.js'
 import { createDashboardViewModel } from '../features/admin/dashboardViewModel.js'
 import AdminDashboardSection from '../features/admin/components/AdminDashboardSection.vue'
 import AdminUsersSection from '../features/admin/components/AdminUsersSection.vue'
-import AdminCalendarRequestsSection from '../features/admin/components/AdminCalendarRequestsSection.vue'
 import AdminReportsSection from '../features/admin/components/AdminReportsSection.vue'
 import AdminActivitySection from '../features/admin/components/AdminActivitySection.vue'
 import AdminCalendarSection from '../features/admin/components/AdminCalendarSection.vue'
@@ -25,7 +24,7 @@ const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminCalendarRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
+  components: { AdminDashboardSection, AdminUsersSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminDetailDrawers, AdminIconButton, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
@@ -88,9 +87,6 @@ export default {
       selectedCalendarUser: null,
       calendars: [],
       calendarLoading: false,
-      calendarRequests: [],
-      calendarRequestsLoading: false,
-      calendarRequestStatusFilter: '',
       calendarUsersLoading: false,
       calendarForm: { visible: false, id: null, title: '', note: '', start_date: '', end_date: '', status: '', version_number: 1, entries: [] },
       calendarSaving: false,
@@ -107,7 +103,7 @@ export default {
   },
   computed: {
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.calendarRequestsLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.passwordDialog.submitting
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.passwordDialog.submitting
     },
     dashboardViewModel() {
       return createDashboardViewModel(this.dashboard)

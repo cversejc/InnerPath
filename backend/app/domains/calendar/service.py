@@ -206,6 +206,7 @@ async def clone_calendar_as_draft(
         created_by=created_by,
         updated_by=created_by,
         calendar_request_id=calendar.calendar_request_id,
+        source_report_id=calendar.source_report_id,
     )
     db.add(draft)
     await db.flush()

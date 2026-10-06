@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Optional
+from uuid import uuid4
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domains.calendar.models import CalendarRequest, UserCalendar, DecisionLog
 from app.domains.calendar.practices import project_report_practices
 from app.domains.reports.models import Report
+from app.domains.service_requests.models import ServiceRequest
 from app.models.user import User
 from app.domains.calendar.schemas import CalendarRequestAdminUpdate, CalendarRequestCreate
 from app.domains.audit.context import AuditContext
@@ -16,6 +18,31 @@ from app.domains.audit.service import record_audit
 from app.services.intake_service import build_intake_snapshot
 from app.domains.delivery.models import ReportVersion
 from copy import deepcopy
+
+
+async def get_delivered_source_report(
+    db: AsyncSession, user_id: int, report_id: int
+) -> Optional[Report]:
+    """Return only reports delivered to this user through consultant review."""
+    return await db.scalar(
+        select(Report)
+        .join(
+            ServiceRequest,
+            (ServiceRequest.id == Report.request_id)
+            & (ServiceRequest.result_id == Report.id),
+        )
+        .where(
+            Report.id == report_id,
+            Report.user_id == user_id,
+            Report.status == "completed",
+            Report.is_deleted.is_(False),
+            Report.reviewed_at.is_not(None),
+            ServiceRequest.user_id == user_id,
+            ServiceRequest.service_type == "report",
+            ServiceRequest.status == "delivered",
+            ServiceRequest.result_type == "report",
+        )
+    )
 
 def _calendar_request_context(data: CalendarRequestCreate) -> dict:
     return {
@@ -54,16 +81,9 @@ async def create_calendar_request(
         raise ValueError("calendar_request_requires_expected_outcomes")
     if data.source_report_id is None:
         raise ValueError("calendar_request_requires_source_report")
-    source_report = await db.scalar(
-        select(Report).where(
-            Report.id == data.source_report_id,
-            Report.user_id == user.id,
-            Report.status == "completed",
-            Report.is_deleted.is_(False),
-        )
-    )
+    source_report = await get_delivered_source_report(db, user.id, data.source_report_id)
     if source_report is None:
-        raise ValueError("calendar_request_source_report_mismatch")
+        raise ValueError("calendar_request_source_report_not_delivered")
 
     report_content = source_report.content_payload or {}
     source_report_snapshot = {
@@ -149,6 +169,8 @@ async def create_calendar_request(
         expected_outcomes=data.expected_outcomes,
         additional_info=(data.additional_info or "").strip() or None,
         status="generating",
+        task_id=str(uuid4()),
+        progress=0,
         input_snapshot=snapshot,
     )
     db.add(calendar_request)
@@ -199,11 +221,15 @@ async def serialize_calendar_request(db: AsyncSession, calendar_request: Calenda
         ),
         "status": calendar_request.status,
         "source_report_id": calendar_request.source_report_id,
+        "task_id": calendar_request.task_id,
+        "progress": calendar_request.progress,
+        "retry_count": calendar_request.retry_count,
         "calendar_id": await _linked_calendar_id(db, calendar_request.id),
         "reviewer_id": calendar_request.reviewer_id,
         "reviewed_at": calendar_request.reviewed_at,
         "review_note": calendar_request.review_note,
-        "generation_error": (calendar_request.input_snapshot or {}).get("generation", {}).get("error_code"),
+        "generation_error": calendar_request.generation_error
+        or (calendar_request.input_snapshot or {}).get("generation", {}).get("error_code"),
         "generation_stage": (calendar_request.input_snapshot or {}).get("generation", {}).get("stage"),
         "completed_runs": (calendar_request.input_snapshot or {}).get("generation", {}).get("completed_runs", 0),
         "total_runs": (calendar_request.input_snapshot or {}).get("generation", {}).get("total_runs", 8),
@@ -239,6 +265,38 @@ async def get_calendar_requests_for_admin(
         query = query.where(CalendarRequest.user_id == user_id)
     result = await db.execute(query)
     return [await serialize_calendar_request(db, item) for item in result.scalars().all()]
+
+
+async def retry_calendar_generation(
+    db: AsyncSession,
+    calendar_request: CalendarRequest,
+    user: User,
+    audit_context: Optional[AuditContext] = None,
+) -> CalendarRequest:
+    if calendar_request.user_id != user.id:
+        raise ValueError("calendar_request_not_found")
+    if calendar_request.status != "failed":
+        raise ValueError("calendar_request_retry_not_allowed")
+    if await get_delivered_source_report(db, user.id, calendar_request.source_report_id) is None:
+        raise ValueError("calendar_request_source_report_not_delivered")
+    calendar_request.status = "processing"
+    calendar_request.task_id = str(uuid4())
+    calendar_request.progress = 0
+    calendar_request.generation_error = None
+    calendar_request.retry_count = (calendar_request.retry_count or 0) + 1
+    await record_audit(
+        db,
+        user.id,
+        "calendar.generation.retry",
+        "calendar_request",
+        str(calendar_request.id),
+        target_user_id=user.id,
+        details={"source_report_id": calendar_request.source_report_id},
+        audit_context=audit_context,
+    )
+    await db.commit()
+    await db.refresh(calendar_request)
+    return calendar_request
 
 
 async def update_calendar_request(

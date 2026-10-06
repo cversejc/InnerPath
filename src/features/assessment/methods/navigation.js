@@ -34,5 +34,8 @@ export default {
   },
   goToCalendar() {
     this.$router.push('/pages/calendar/calendar')
+  },
+  viewRequests() {
+    this.viewMyRequests()
   }
 }

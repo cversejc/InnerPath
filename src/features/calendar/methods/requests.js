@@ -1,5 +1,6 @@
 import { authState } from '../../../stores/auth'
 import { getCurrentUser } from '../../users/service.js'
+import { getUserReports } from '../../reports/api.js'
 import { createCalendarRequest, getCalendarRequests, retryCalendarRequest } from '../api.js'
 import {
   buildCalendarRequestPayload,
@@ -10,14 +11,24 @@ import {
 export default {
   async loadCalendarRequestData() {
       try {
-        const [user, requestResponse] = await Promise.all([getCurrentUser(), getCalendarRequests()])
+        const [user, requestResponse, reportResponse] = await Promise.all([
+          getCurrentUser(),
+          getCalendarRequests(),
+          getUserReports(1, 100)
+        ])
         this.profile = user
         this.calendarRequestDraft.profile_version = user.profile_version || 1
         this.calendarRequests = requestResponse.items || []
+        this.reports = reportResponse.items || []
+        const requestedReportId = Number(this.$route.query.sourceReportId)
+        const requestedReport = this.reports.find(report => report.id === requestedReportId)
+        this.calendarRequestDraft.source_report_id = requestedReport?.id || this.reports[0]?.id || ''
+        if (this.$route.query.generate === '1' && this.reports.length) this.openCalendarRequest()
         this.scheduleCalendarPolling()
       } catch (error) {
         this.profile = this.profile || authState.user
         this.calendarRequests = []
+        this.reports = []
       }
     },
   openCalendarRequest() {
@@ -27,12 +38,29 @@ export default {
       }
       this.calendarRequestError = ''
       this.calendarRequestFeedback = ''
+      if (!this.reports.length) {
+        this.calendarRequestError = '请先申请报告，并等待咨询师交付后再生成日历。'
+        return
+      }
       this.showCalendarRequestForm = true
       this.calendarRequestDraft.profile_version = this.profile?.profile_version || authState.user?.profile_version || 1
       if (!this.calendarRequestDraft.start_date || !this.calendarRequestDraft.end_date) {
         Object.assign(this.calendarRequestDraft, defaultThirtyDayRange())
       }
+      if (!this.reports.some(report => report.id === Number(this.calendarRequestDraft.source_report_id))) {
+        this.calendarRequestDraft.source_report_id = this.reports[0]?.id || ''
+      }
       this.$nextTick(() => document.getElementById('calendar-request-start')?.focus())
+    },
+  setCalendarEndDate(start) {
+      if (!start) {
+        this.calendarRequestDraft.end_date = ''
+        return
+      }
+      const end = new Date(`${start}T00:00:00`)
+      if (Number.isNaN(end.getTime())) return
+      end.setDate(end.getDate() + 29)
+      this.calendarRequestDraft.end_date = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
     },
   closeCalendarRequest() {
       this.showCalendarRequestForm = false
@@ -65,6 +93,7 @@ export default {
       if (!draft.start_date || !draft.end_date) return '请选择完整的日历周期。'
       if (draft.start_date > draft.end_date) return '日历开始日期不能晚于结束日期。'
       if (!isThirtyDayRange(draft.start_date, draft.end_date)) return '日历周期需要连续 30 天。'
+      if (!this.reports.some(report => report.id === Number(draft.source_report_id))) return '请先选择一份已交付报告。'
       if (!draft.usage_scenario) return '请选择日历用途。'
       if (!draft.focus_topics.length) return '至少选择一个关注领域。'
       if (!draft.goal.trim()) return '请填写当前决策目标。'
@@ -118,14 +147,14 @@ export default {
   scheduleCalendarPolling() {
       clearTimeout(this.calendarPollTimer)
       if (this.calendarPollingDisposed) return
-      if (!this.calendarRequests.some(item => ['queued', 'generating'].includes(item.status))) return
+      if (!this.calendarRequests.some(item => ['queued', 'generating', 'processing'].includes(item.status))) return
       this.calendarPollTimer = window.setTimeout(async () => {
         try {
           const old = this.calendarRequests
           const response = await getCalendarRequests()
           if (this.calendarPollingDisposed) return
           this.calendarRequests = response.items || []
-          if (this.calendarRequests.some(item => item.status === 'fulfilled' && old.find(row => row.id === item.id)?.status !== 'fulfilled')) {
+          if (this.calendarRequests.some(item => ['fulfilled', 'delivered'].includes(item.status) && !['fulfilled', 'delivered'].includes(old.find(row => row.id === item.id)?.status))) {
             this.calendarRequestFeedback = '日历已生成并交付，可以选择日期查看建议。'
             await this.loadCalendar()
           }

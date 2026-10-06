@@ -22,6 +22,7 @@ const props = defineProps({
   profileVersion: { type: Number, default: 1 },
   showAdvancedContext: { type: Boolean, default: false },
   submitting: { type: Boolean, default: false },
+  isEditingRequest: { type: Boolean, default: false },
   topics: { type: Array, default: () => [] }
 })
 
@@ -235,7 +236,8 @@ defineExpose({ focusStepHeading })
       </div>
       <p v-if="formMessage" class="form-message" role="alert" aria-live="assertive">{{ formMessage }}</p>
       <div class="button-row form-submit-bar">
-        <VanButton type="primary" native-type="submit" class="primary-button" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : '生成我的说明书' }}</VanButton>
+        <VanButton type="default" native-type="button" class="secondary-button" @click="emit('edit-profile')">修改档案</VanButton>
+        <VanButton type="primary" native-type="submit" class="primary-button" :disabled="submitting" :aria-busy="submitting">{{ submitting ? '提交中…' : isEditingRequest ? '更新并重新提交' : '提交报告申请' }}</VanButton>
       </div>
     </form>
   </div>

@@ -41,6 +41,7 @@
           <button v-for="item in scopeOptions" :key="item.id" type="button" role="tab" :aria-selected="scope === item.id" :class="{ active: scope === item.id }" @click="changeScope(item.id)">{{ item.label }}</button>
         </div>
         <div class="staff-filters">
+          <label><span>类型</span><select v-model="serviceType" @change="loadRequests"><option value="">全部报告申请</option><option value="report">报告</option></select></label>
           <label><span>状态</span><select v-model="statusFilter" @change="loadRequests"><option value="">全部状态</option><option v-for="status in statusOptions" :key="status" :value="status">{{ statusLabel(status) }}</option></select></label>
         </div>
       </section>
@@ -358,7 +359,7 @@
             <div v-if="workspace.request.service_type === 'calendar'" class="workspace-grid">
               <section class="facts-panel">
                 <div class="panel-heading"><div><p class="eyebrow">用户资料</p><h3>资料与需求</h3></div><span>申请资料</span></div>
-                <dl class="detail-list source-list"><div><dt>姓名</dt><dd>{{ workspace.user.name || workspace.request.request_payload?.profile?.name || '—' }}</dd></div><div><dt>性别</dt><dd>{{ genderLabel(workspace.user.gender || workspace.request.request_payload?.profile?.gender) }}</dd></div><div><dt>出生资料</dt><dd>{{ birthSummary }}</dd></div><div><dt>出生地</dt><dd>{{ workspace.user.birth_place || workspace.request.request_payload?.profile?.birth_place || '—' }}</dd></div><div><dt>关注议题</dt><dd>{{ workspace.request.service_type === 'report' ? topicLabel(workspace.request.request_payload?.selected_topics) : workspace.request.request_payload?.calendar_goal || '—' }}</dd></div><div><dt>补充说明</dt><dd>{{ workspace.request.request_payload?.additional_info || '—' }}</dd></div></dl>
+                <dl class="detail-list source-list"><div><dt>姓名</dt><dd>{{ workspace.user.name || workspace.request.request_payload?.profile?.name || '—' }}</dd></div><div><dt>性别</dt><dd>{{ genderLabel(workspace.user.gender || workspace.request.request_payload?.profile?.gender) }}</dd></div><div><dt>出生资料</dt><dd>{{ birthSummary }}</dd></div><div><dt>出生地</dt><dd>{{ workspace.user.birth_place || workspace.request.request_payload?.profile?.birth_place || '—' }}</dd></div><div><dt>关注议题</dt><dd>{{ topicLabel(workspace.request.request_payload?.context?.focus_topics || workspace.request.request_payload?.selected_topics) }}</dd></div><div><dt>本次困惑</dt><dd>{{ workspace.request.request_payload?.context?.current_challenge || '—' }}</dd></div><div><dt>期望结果</dt><dd>{{ (workspace.request.request_payload?.context?.expected_outcomes || []).join('、') || '—' }}</dd></div><div><dt>补充说明</dt><dd>{{ workspace.request.request_payload?.context?.additional_info || workspace.request.request_payload?.additional_info || '—' }}</dd></div></dl>
               </section>
 
               <section v-if="workspace.draft" class="ai-panel">

@@ -51,7 +51,9 @@ async def list_staff_requests(
 ):
     if current_user.role == "consultant" and scope == "all":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Consultants cannot list all requests")
-    rows = await list_staff_service_requests(db, current_user, request_status, service_type, scope)
+    # Calendar generation is user-facing and automated; only report applications
+    # belong in the consultant review queue.
+    rows = await list_staff_service_requests(db, current_user, request_status, "report", scope)
     items = []
     progress_by_request = await report_case_progress_for_requests(
         db, [item.id for item, _target_user in rows]
@@ -72,6 +74,8 @@ async def list_staff_requests(
                 status=item.status,
                 request_preview={
                     "selected_topics": payload.get("selected_topics", []),
+                    "current_challenge": (payload.get("context") or {}).get("current_challenge"),
+                    "expected_outcomes": (payload.get("context") or {}).get("expected_outcomes", []),
                     "calendar_goal": payload.get("calendar_goal"),
                     "start_date": payload.get("start_date"),
                     "additional_info": payload.get("additional_info") if scope != "available" or current_user.role == "admin" else None,

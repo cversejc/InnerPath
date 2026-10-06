@@ -1,4 +1,4 @@
-"""Generate and validate a decision calendar for direct user delivery."""
+"""AI generation for a user-ready calendar based on a delivered report."""
 
 import json
 from datetime import date, timedelta
@@ -70,7 +70,7 @@ def build_calendar_prompt(user_data: Dict[str, Any]) -> str:
                 "expected_outcomes": user_data.get("expected_outcomes", []),
                 "additional_info": user_data.get("additional_info"),
             },
-            "source_report": user_data.get("source_report"),
+            "source_report": user_data.get("source_report") or {},
         },
         ensure_ascii=False,
         indent=2,
@@ -81,12 +81,13 @@ async def generate_calendar_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]
     """Generate strict JSON for a calendar that is validated before delivery."""
 
     prompt = build_calendar_prompt(user_data)
-    system_prompt = """你是辰鉴的决策日历生成助手。用户已经收到来源报告，并主动点击生成。
+    system_prompt = """你是辰鉴的个人决策日历生成助手。用户已经收到来源报告，并主动点击生成。
 
 你的工作是以来源报告中的已交付内容为依据，结合用户本次填写的目标与指定 30 天范围，
 生成可以直接交付给用户使用的决策日历。不要增加报告没有支持的人格判断或结论。
 这不是命运预测，也不是医疗、法律或财务建议。请使用温和、具体、保留主体性的表达，
 把每天的内容写成观察、行动、等待和复盘的参照，不使用绝对因果、恐吓或保证结果的表达。
+不得声称报告以外的诊断或事实；每条建议都要保持可选择、可调整。
 
 只返回合法 JSON，不要 Markdown 代码块，不要额外解释。JSON 结构必须为：
 {
@@ -111,12 +112,12 @@ async def generate_calendar_with_ai(user_data: Dict[str, Any]) -> Dict[str, Any]
       "suitable": ["适合事项"],
       "unsuitable": ["不适合事项"],
       "time_window": "时间节奏建议",
-      "admin_note": "给咨询师的内部备注，可为空"
+      "admin_note": "留空字符串"
     }
   ]
 }
 
-必须覆盖输入的全部 30 天，日期不能重复，也不能超出范围。"""
+必须覆盖输入的全部 30 天，日期不能重复，也不能超出范围。结合已交付报告的具体特质与本次目标，避免照搬通用建议。不得声称报告以外的诊断或事实；每条建议都要保持可选择、可调整。"""
 
     logger.info("开始生成决策日历 AI 初稿 | start=%s", user_data.get("start_date"))
     async with httpx.AsyncClient(timeout=settings.DEEPSEEK_TIMEOUT_SECONDS) as client:

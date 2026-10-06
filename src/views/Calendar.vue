@@ -189,8 +189,9 @@
     </main>
 
     <CalendarRequestSection
-      v-if="!loading"
+      v-if="!loading && (reports.length || calendar)"
       :calendar-requests="calendarRequests"
+      :reports="reports"
       :show-form="showCalendarRequestForm"
       :draft="calendarRequestDraft"
       :profile="profile"

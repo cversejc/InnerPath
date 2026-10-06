@@ -3,7 +3,6 @@ import {
   archiveAdminCalendar,
   createAdminCalendar,
   createAdminCalendarDraft,
-  getAdminCalendarRequests,
   getAdminCalendars,
   importAdminCalendar,
   publishAdminCalendar,

@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import { Button as VanButton } from 'vant'
 
 defineProps({
   genStep: { type: Number, default: 0 },
@@ -44,6 +43,7 @@ defineExpose({ focusStepHeading })
       <div class="button-row">
         <VanButton type="primary" native-type="button" class="primary-button" @click="emit('view-requests')">我的申请</VanButton>
         <VanButton type="default" native-type="button" class="secondary-button" @click="emit('new-application')">提交另一份申请</VanButton>
+        <router-link class="secondary-button" to="/pages/user/user?tab=reports">我的报告</router-link>
       </div>
     </div>
   </div>

@@ -33,7 +33,7 @@ async def list_admin_requests(
     current_user: User = Depends(require_roles("admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    rows = await list_staff_service_requests(db, current_user, request_status, service_type, "all")
+    rows = await list_staff_service_requests(db, current_user, request_status, "report", "all")
     items = []
     progress_by_request = await report_case_progress_for_requests(
         db, [item.id for item, _target_user in rows]

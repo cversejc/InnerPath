@@ -2,14 +2,28 @@ import re
 from datetime import datetime, time as dt_time
 from typing import List, Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+from sqlalchemy import desc, exists, func, select
 from app.config import settings
 from app.domains.reports.models import Report
+from app.domains.service_requests.models import ServiceRequest
 from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.core.logging_config import get_logger
 from app.services.intake_service import normalize_context
 
 logger = get_logger(__name__)
+
+
+def delivered_report_clause():
+    return Report.reviewed_at.is_not(None) & exists(
+        select(ServiceRequest.id).where(
+            ServiceRequest.id == Report.request_id,
+            ServiceRequest.user_id == Report.user_id,
+            ServiceRequest.service_type == "report",
+            ServiceRequest.status == "delivered",
+            ServiceRequest.result_type == "report",
+            ServiceRequest.result_id == Report.id,
+        )
+    )
 
 
 async def create_report(
@@ -84,8 +98,12 @@ async def get_report_by_id(db: AsyncSession, report_id: int, user_id: Optional[i
     logger.debug(f"查询报告 | 报告ID: {report_id} | 用户ID: {user_id}")
 
     query = select(Report).where(Report.id == report_id, Report.is_deleted == False)
-    if user_id:
-        query = query.where(Report.user_id == user_id, Report.status == "completed")
+    if user_id is not None:
+        query = query.where(
+            Report.user_id == user_id,
+            Report.status == "completed",
+            delivered_report_clause(),
+        )
 
     result = await db.execute(query)
     report = result.scalar_one_or_none()
@@ -105,20 +123,22 @@ async def get_user_reports(
     limit: int = 10
 ) -> tuple[List[Report], int]:
     """Get user's reports with pagination"""
-    # Get total count
-    count_query = select(Report).where(
+    # Only a consultant-delivered report belongs in the user's report library.
+    visible_report = delivered_report_clause()
+    count_query = select(func.count(Report.id)).where(
         Report.user_id == user_id,
-        Report.is_deleted == False,
+        Report.is_deleted.is_(False),
         Report.status == "completed",
+        visible_report,
     )
-    count_result = await db.execute(count_query)
-    total = len(count_result.all())
+    total = await db.scalar(count_query) or 0
 
     # Get reports
     query = select(Report).where(
         Report.user_id == user_id,
-        Report.is_deleted == False,
+        Report.is_deleted.is_(False),
         Report.status == "completed",
+        visible_report,
     ).order_by(desc(Report.created_at)).offset(skip).limit(limit)
 
     result = await db.execute(query)

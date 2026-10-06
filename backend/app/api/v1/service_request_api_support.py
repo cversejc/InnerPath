@@ -12,6 +12,8 @@ from app.domains.service_requests.schemas import (
     ServiceRequestWorkspaceResponse,
 )
 from app.domains.service_requests.service import serialize_service_request, serialize_task
+from app.domains.calendar.requests import serialize_calendar_request
+from app.domains.service_requests.schemas import ServiceRequestResponse as PublicServiceRequestResponse
 
 
 def project_report_case_status(case_status: str, step_status: str | None, fallback: str) -> str:
@@ -82,14 +84,24 @@ async def report_case_progress_for_requests(
 
 def _detail_for_error(error: ValueError) -> tuple[int, str]:
     code = str(error)
+    if code == "profile_version_conflict":
+        return status.HTTP_409_CONFLICT, "个人档案已更新，请刷新后确认最新资料再提交。"
+    if code == "calendar_service_request_retired":
+        return status.HTTP_410_GONE, "日历需在报告交付后生成，请先完成报告申请。"
+    if code == "report_request_requires_focus_topics":
+        return status.HTTP_422_UNPROCESSABLE_ENTITY, "至少选择一个报告关注议题。"
+    if code == "report_request_requires_current_challenge":
+        return status.HTTP_422_UNPROCESSABLE_ENTITY, "请填写这次希望咨询师关注的问题。"
+    if code == "report_request_requires_expected_outcomes":
+        return status.HTTP_422_UNPROCESSABLE_ENTITY, "至少选择一个期望获得的结果。"
+    if code == "calendar_request_must_cover_30_days":
+        return status.HTTP_422_UNPROCESSABLE_ENTITY, "日历周期需覆盖 30 天，请重新选择日期。"
     if code in {"service_request_not_found", "service_request_draft_not_found"}:
         return status.HTTP_404_NOT_FOUND, "Service request not found"
     if code in {"service_request_not_assigned"}:
         return status.HTTP_403_FORBIDDEN, "Service request is not assigned to this consultant"
     if code in {"draft_version_conflict"}:
         return status.HTTP_409_CONFLICT, "Draft has changed; refresh before saving"
-    if code == "profile_version_conflict":
-        return status.HTTP_409_CONFLICT, "Profile has changed; refresh before submitting"
     if code in {"service_request_locked", "service_request_already_taken"}:
         return status.HTTP_409_CONFLICT, code
     if code == "report_case_workflow_required":
@@ -137,7 +149,40 @@ async def _serialize_public(db: AsyncSession, service_request: ServiceRequest) -
                 current_step.status if current_step else None,
                 service_request.status,
             )
+    if service_request.service_type == "calendar":
+        payload["workflow_type"] = "calendar_legacy"
     return ServiceRequestResponse.model_validate(payload)
+
+
+async def _serialize_calendar_generation(db: AsyncSession, calendar_request) -> PublicServiceRequestResponse:
+    payload = await serialize_calendar_request(db, calendar_request)
+    is_current_flow = payload["status"] in {"queued", "generating", "processing", "delivered", "failed"} and bool(payload["task_id"])
+    is_delivered = payload["status"] in {"delivered", "fulfilled"} and payload["calendar_id"] is not None
+    return PublicServiceRequestResponse.model_validate(
+        {
+            "id": payload["id"],
+            "service_type": "calendar",
+            "workflow_type": "calendar_generation" if is_current_flow else "calendar_legacy",
+            "status": "ai_processing" if payload["status"] in {"queued", "generating", "processing"} else "delivered" if is_delivered else payload["status"],
+            "request_payload": {
+                "source_report_id": payload["source_report_id"],
+                "start_date": payload["start_date"],
+                "end_date": payload["end_date"],
+                "focus_topics": payload["focus_topics"],
+                "selected_topics": payload["focus_topics"],
+                "usage_scenario": payload["usage_scenario"],
+                "calendar_goal": payload["goal"],
+                "additional_info": payload["additional_info"],
+                "expected_outcomes": payload["expected_outcomes"],
+            },
+            "result_type": "calendar" if is_delivered else None,
+            "result_id": payload["calendar_id"] if is_delivered else None,
+            "last_error": payload["generation_error"],
+            "progress": payload["progress"],
+            "created_at": payload["created_at"],
+            "updated_at": payload["updated_at"],
+        }
+    )
 
 
 def _workspace_response(workspace: dict) -> ServiceRequestWorkspaceResponse:

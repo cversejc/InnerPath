@@ -1,4 +1,8 @@
-import { createServiceRequest } from '../../service-requests/api.js'
+import {
+  createServiceRequest,
+  resubmitServiceRequest,
+  updateServiceRequest
+} from '../../service-requests/api.js'
 import { clearAssessmentDraft } from '../drafts.js'
 import { buildReportApplication, createIdempotencyKey } from '../submission.js'
 
@@ -29,16 +33,23 @@ export default {
         this.submissionIdempotencyKey = createIdempotencyKey()
       }
       this.saveDraft()
-      const request = await createServiceRequest({
-        ...application,
-        idempotency_key: this.submissionIdempotencyKey
-      })
+      let request
+      if (this.editingRequestId) {
+        await updateServiceRequest(this.editingRequestId, application)
+        request = await resubmitServiceRequest(this.editingRequestId)
+      } else {
+        request = await createServiceRequest({
+          ...application,
+          idempotency_key: this.submissionIdempotencyKey
+        })
+      }
       this.genStep = 3
       this.currentRequestId = request.id
       this.isGenerating = false
       clearAssessmentDraft(window.sessionStorage)
       this.draftStatus = ''
       this.draftRestored = false
+      await this.$router.replace(`/pages/requests/requests?submitted=${request.id}&kind=report`)
     } catch (error) {
       console.error('报告申请提交失败:', error)
       this.formMessage = error.response?.data?.detail || error.message || '申请提交失败，请检查网络后重试。'

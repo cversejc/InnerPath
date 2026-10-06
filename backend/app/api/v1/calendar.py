@@ -71,6 +71,9 @@ async def create_my_calendar_request(
             "calendar_request_requires_source_report": "请先从一份已交付报告进入日历生成",
             "calendar_request_source_report_mismatch": "来源报告不存在、尚未交付或不属于当前账号",
             "calendar_ai_generation_failed": "AI 生成失败，请稍后重试；本次日历未交付",
+            "calendar_request_source_report_required": "请先申请报告，并等待咨询师交付后再生成日历。",
+            "calendar_request_source_report_not_delivered": "请先申请报告，并等待咨询师交付后再生成日历。",
+            "calendar_request_must_cover_30_days": "日历周期需覆盖 30 天，请重新选择日期。",
         }
         code = (
             status.HTTP_409_CONFLICT
