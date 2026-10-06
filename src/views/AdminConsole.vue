@@ -82,6 +82,7 @@
         :assignment-error="assignmentError"
         :assignment-request="assignmentRequest"
         :assignment-saving-key="assignmentSavingKey"
+        :consultant-workloads="consultantWorkloads"
         :filters="requestFilters"
         :loading="requestsLoading"
         :page="requestPage"

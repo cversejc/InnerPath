@@ -110,6 +110,82 @@ def consultant_request_assignments():
     ).distinct().subquery("consultant_request_assignments")
 
 
+def consultant_specialty_request_assignments():
+    assignments = union_all(
+        select(
+            ServiceRequest.assigned_consultant_id.label("consultant_id"),
+            literal("mingli").label("specialty"),
+            ServiceRequest.id.label("request_id"),
+        ).where(
+            ServiceRequest.service_type == "report",
+            ServiceRequest.assigned_consultant_id.is_not(None),
+            ServiceRequest.consultation_type.in_(("metaphysics", "integrated")),
+        ),
+        select(
+            ServiceRequest.assigned_consultant_id.label("consultant_id"),
+            literal("psychology").label("specialty"),
+            ServiceRequest.id.label("request_id"),
+        ).where(
+            ServiceRequest.service_type == "report",
+            ServiceRequest.assigned_consultant_id.is_not(None),
+            ServiceRequest.consultation_type.in_(("psychology", "integrated")),
+        ),
+        select(
+            ServiceRequest.assigned_mingli_consultant_id.label("consultant_id"),
+            literal("mingli").label("specialty"),
+            ServiceRequest.id.label("request_id"),
+        ).where(
+            ServiceRequest.service_type == "report",
+            ServiceRequest.assigned_mingli_consultant_id.is_not(None),
+        ),
+        select(
+            ServiceRequest.assigned_psychology_consultant_id.label("consultant_id"),
+            literal("psychology").label("specialty"),
+            ServiceRequest.id.label("request_id"),
+        ).where(
+            ServiceRequest.service_type == "report",
+            ServiceRequest.assigned_psychology_consultant_id.is_not(None),
+        ),
+    ).subquery("consultant_specialty_request_slots")
+    return select(
+        assignments.c.consultant_id,
+        assignments.c.specialty,
+        assignments.c.request_id,
+    ).distinct().subquery("consultant_specialty_request_assignments")
+
+
+def consultant_specialty_load_counts(consultant_ids, *, stale_cutoff):
+    assignments = consultant_specialty_request_assignments()
+    return (
+        select(
+            assignments.c.consultant_id,
+            assignments.c.specialty,
+            func.sum(
+                case(
+                    (
+                        ServiceRequest.status.not_in(CLOSED_REQUEST_STATUSES),
+                        1,
+                    ),
+                    else_=0,
+                )
+            ).label("active_requests"),
+            func.sum(
+                case(
+                    (
+                        ServiceRequest.status.in_(STALE_SERVICE_REQUEST_STATUSES)
+                        & (ServiceRequest.updated_at < stale_cutoff),
+                        1,
+                    ),
+                    else_=0,
+                )
+            ).label("stale_active_requests"),
+        )
+        .join(ServiceRequest, ServiceRequest.id == assignments.c.request_id)
+        .where(assignments.c.consultant_id.in_(consultant_ids))
+        .group_by(assignments.c.consultant_id, assignments.c.specialty)
+    )
+
+
 def consultant_work_events():
     accepted = select(
         AuditLog.actor_user_id.label("consultant_id"),
@@ -257,6 +333,23 @@ async def get_admin_consultant_workload(
         }
         for row in assignment_rows
     }
+
+    specialty_rows = list(
+        (
+            await db.execute(
+                consultant_specialty_load_counts(
+                    consultant_ids,
+                    stale_cutoff=stale_cutoff,
+                )
+            )
+        ).all()
+    )
+    specialty_loads = {}
+    for row in specialty_rows:
+        specialty_loads.setdefault(row.consultant_id, {})[row.specialty] = {
+            "active_requests": int(row.active_requests or 0),
+            "stale_active_requests": int(row.stale_active_requests or 0),
+        }
 
     status_rows = list(
         (await db.execute(consultant_active_status_counts(consultant_ids))).all()
@@ -409,6 +502,16 @@ async def get_admin_consultant_workload(
                 "active_by_status": active_statuses_by_consultant.get(
                     consultant.id, []
                 ),
+                "specialty_load": [
+                    {
+                        "specialty": specialty,
+                        **specialty_loads.get(consultant.id, {}).get(
+                            specialty,
+                            {"active_requests": 0, "stale_active_requests": 0},
+                        ),
+                    }
+                    for specialty in ("mingli", "psychology")
+                ],
                 **summarize_delivery_cycles(
                     delivery_cycles_by_consultant.get(consultant.id, [])
                 ),

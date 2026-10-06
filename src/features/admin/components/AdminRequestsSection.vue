@@ -46,6 +46,7 @@ defineProps({
   assignmentSavingKey: { type: String, default: '' },
   filters: { type: Object, required: true },
   loading: { type: Boolean, default: false },
+  consultantWorkloads: { type: Array, default: () => [] },
   page: { type: Number, default: 1 },
   pageSize: { type: Number, default: 20 },
   requestKind: { type: String, default: 'consultant' },
@@ -227,6 +228,7 @@ defineEmits([
       :assignment-error="assignmentError"
       :assignment-saving-key="assignmentSavingKey"
       :consultants="consultants"
+      :consultant-workloads="consultantWorkloads"
       :request="assignmentRequest"
       @close="$emit('close-assignment')"
       @save="$emit('assign-request', $event)"

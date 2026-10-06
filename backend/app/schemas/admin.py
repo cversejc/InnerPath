@@ -60,6 +60,12 @@ class AdminConsultantWorkloadStageCount(BaseModel):
     request_count: int = 0
 
 
+class AdminConsultantSpecialtyLoad(BaseModel):
+    specialty: Literal["mingli", "psychology"]
+    active_requests: int = 0
+    stale_active_requests: int = 0
+
+
 class AdminConsultantWorkloadItem(BaseModel):
     consultant_id: int
     total_requests: int = 0
@@ -68,6 +74,7 @@ class AdminConsultantWorkloadItem(BaseModel):
     accepted_in_period: int = 0
     delivered_in_period: int = 0
     active_by_status: list[AdminConsultantWorkloadStageCount] = Field(default_factory=list)
+    specialty_load: list[AdminConsultantSpecialtyLoad] = Field(default_factory=list)
     delivered_cycle_samples: int = 0
     delivery_cycle_p50_hours: Optional[float] = None
     delivery_cycle_p90_hours: Optional[float] = None

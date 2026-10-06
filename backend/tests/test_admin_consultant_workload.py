@@ -12,6 +12,7 @@ from app.application.admin_consultant_workload import (
     consultant_active_request_preview,
     consultant_delivered_request_cycles,
     consultant_request_assignments,
+    consultant_specialty_load_counts,
     consultant_work_events,
     get_admin_consultant_workload,
     summarize_delivery_cycles,
@@ -70,6 +71,24 @@ def test_consultant_stage_counts_only_include_open_work():
     assert "in (4, 7)" in sql
 
 
+def test_consultant_specialty_load_counts_cover_single_and_collaborative_assignments():
+    sql = compile_sql(
+        consultant_specialty_load_counts(
+            [4, 7],
+            stale_cutoff=datetime(2026, 10, 1),
+        )
+    ).lower()
+
+    assert "assigned_consultant_id" in sql
+    assert "assigned_mingli_consultant_id" in sql
+    assert "assigned_psychology_consultant_id" in sql
+    assert "consultation_type in ('metaphysics', 'integrated')" in sql
+    assert "consultation_type in ('psychology', 'integrated')" in sql
+    assert "select distinct" in sql
+    assert "group by consultant_specialty_request_assignments.consultant_id, consultant_specialty_request_assignments.specialty" in sql
+    assert "service_requests.updated_at < '2026-10-01 00:00:00'" in sql
+
+
 def test_consultant_delivery_cycles_use_delivered_reports_in_selected_period():
     sql = compile_sql(
         consultant_delivered_request_cycles([4], cutoff=datetime(2026, 10, 1))
@@ -106,6 +125,13 @@ def test_consultant_workload_schema_includes_stalled_work_preview():
             "delivered_cycle_samples": 3,
             "delivery_cycle_p50_hours": 30.5,
             "delivery_cycle_p90_hours": 48,
+            "specialty_load": [
+                {
+                    "specialty": "psychology",
+                    "active_requests": 2,
+                    "stale_active_requests": 1,
+                }
+            ],
             "active_request_preview": [
                 {
                     "request_id": 31,
@@ -128,6 +154,9 @@ def test_consultant_workload_schema_includes_stalled_work_preview():
     assert item.active_by_status[0].status == "reviewing"
     assert item.delivered_cycle_samples == 3
     assert item.delivery_cycle_p90_hours == 48
+    assert item.specialty_load[0].specialty == "psychology"
+    assert item.specialty_load[0].active_requests == 2
+    assert item.specialty_load[0].stale_active_requests == 1
 
 
 class StubRows:
@@ -160,6 +189,7 @@ async def test_consultant_workload_is_read_only_and_combines_stage_and_cycle_met
     now = datetime.utcnow()
     session = StubSession([
         [SimpleNamespace(consultant_id=9, total_requests=4, active_requests=2, stale_active_requests=1)],
+        [SimpleNamespace(consultant_id=9, specialty="psychology", active_requests=2, stale_active_requests=1)],
         [
             SimpleNamespace(consultant_id=9, status="reviewing", request_count=1),
             SimpleNamespace(consultant_id=9, status="accepted", request_count=1),
@@ -204,5 +234,9 @@ async def test_consultant_workload_is_read_only_and_combines_stage_and_cycle_met
     assert response.items[0].delivered_cycle_samples == 1
     assert response.items[0].delivery_cycle_p50_hours == 24
     assert response.items[0].delivery_cycle_p90_hours == 24
-    assert len(session.statements) == 7
+    assert [item.model_dump() for item in response.items[0].specialty_load] == [
+        {"specialty": "mingli", "active_requests": 0, "stale_active_requests": 0},
+        {"specialty": "psychology", "active_requests": 2, "stale_active_requests": 1},
+    ]
+    assert len(session.statements) == 8
     assert not session.query_rows

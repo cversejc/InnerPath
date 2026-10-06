@@ -104,6 +104,14 @@
   outline-offset: 2px;
 }
 
+.assignment-suggestion {
+  color: var(--muted, #7d6653);
+  font-size: 12px;
+  font-weight: var(--weight-regular);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
 .assignment-dialog-actions {
   display: flex;
   justify-content: flex-end;
