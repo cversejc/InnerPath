@@ -16,6 +16,7 @@ from app.main import app  # register models without starting the app
 from app.db.base import Base
 from app.models.user import User
 from app.domains.reports.models import Report
+from app.domains.service_requests.models import ServiceRequest
 from app.domains.calendar.models import UserCalendar
 from app.domains.calendar.query_service import serialize_calendar
 from app.domains.calendar.schemas import CalendarRequestCreate
@@ -187,8 +188,19 @@ async def seed_delivered_report(db, user, inputs, authored, plan_artifact, stage
     await db.flush()
 
     birth_date = date(profile["birth_year"], profile["birth_month"], profile["birth_day"])
+    service_request = ServiceRequest(
+        user_id=case.user_id,
+        service_type="report",
+        status="delivered",
+        request_payload={"profile": profile, "context": context},
+        result_type="report",
+        delivered_at=now,
+    )
+    db.add(service_request)
+    await db.flush()
     report = Report(
-        user_id=case.user_id, birth_date=birth_date, birth_calendar_type=profile.get("calendar_type", "solar"),
+        user_id=case.user_id, request_id=service_request.id, reviewed_at=now,
+        birth_date=birth_date, birth_calendar_type=profile.get("calendar_type", "solar"),
         birth_place=profile.get("birth_place"), input_snapshot={
             "profile": profile, "context": context, "report_version": {"id": version.id},
             "acceptance_fixture": True,
@@ -197,6 +209,8 @@ async def seed_delivered_report(db, user, inputs, authored, plan_artifact, stage
         status="completed",
     )
     db.add(report)
+    await db.flush()
+    service_request.result_id = report.id
     await db.commit()
     return report, case, version, findings
 

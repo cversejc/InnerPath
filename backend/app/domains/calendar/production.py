@@ -88,6 +88,26 @@ def validate_daily(row, analysis, facts, *, practice_rhythm=None, available_minu
     validate_practice_entry(row, practice_rhythm or {}, available_minutes_per_day, scheduled_refs)
 
 
+def validate_unique_daily_awareness(rows, previous_rows=()):
+    seen = {}
+    duplicates = []
+    for row in previous_rows:
+        text = row.get("energy_awareness")
+        if isinstance(text, str) and text.strip():
+            seen[" ".join(text.split()).casefold()] = row.get("entry_date")
+    for row in rows:
+        text = row.get("energy_awareness")
+        if not isinstance(text, str) or not text.strip():
+            continue
+        normalized = " ".join(text.split()).casefold()
+        if normalized in seen:
+            duplicates.append({"entry_date": row.get("entry_date"), "duplicate_of": seen[normalized]})
+        else:
+            seen[normalized] = row.get("entry_date")
+    if duplicates:
+        raise ValueError("calendar_energy_awareness_repeated:" + json.dumps(duplicates, ensure_ascii=False))
+
+
 def complete_short_summaries(output):
     """Combine a short AI overview with one of its own actions before calibration.
 
@@ -169,6 +189,9 @@ async def produce_calendar(db, request, *, gateway=None):
             )
             inputs["source_report"] = scoped_report
             inputs["scheduled_practice_by_date"] = scheduled_by_date
+        runtime_instruction = extra.get("format_repair_instruction")
+        if runtime_instruction and "calendar_energy_awareness_repeated" in runtime_instruction:
+            runtime_instruction += " 修改错误详情列出的energy_awareness，使问句贴合当天已有情境和观察点，且与其他日期不同；不可只替换日期或复用同一观察点。"
         if key == "calendar.calibration":
             analysis_map = {a["entry_date"]: a for a in inputs.pop("temporal_analysis")}
             facts_map = {f["entry_date"]: f for f in inputs["temporal_facts"].pop("days")}
@@ -197,7 +220,7 @@ async def produce_calendar(db, request, *, gateway=None):
                 "source_report_id": request.source_report_id, "skill_key": key},
             target_type="CALENDAR_PRODUCTION", target_key=str(request.id), report_case_id=report.get("report_case_id"),
             selected_examples=examples, run_type="VALIDATE" if key.endswith("calibration") else "INITIAL")
-        log.runtime_instruction = extra.get("format_repair_instruction")
+        log.runtime_instruction = runtime_instruction
         all_runs.append(log.id)
         if log.status == "COMPLETED":
             validator(log.output_parsed)
@@ -213,7 +236,7 @@ async def produce_calendar(db, request, *, gateway=None):
         execution_error = None
         try:
             result = await execute_skill(skill_version=version, input_data=inputs, gateway=gateway,
-                runtime_instruction=extra.get("format_repair_instruction"))
+                runtime_instruction=runtime_instruction)
             log.output_raw, log.output_parsed = result.output_raw, result.output_parsed
             log.model_trace = result.model_trace
             log.context_snapshot = {**result.context_snapshot, "calendar_request_id": request.id, "source_report_id": request.source_report_id, "skill_key": key}
@@ -283,7 +306,7 @@ async def produce_calendar(db, request, *, gateway=None):
     base["monthly"] = monthly
     def action_overview(rows):
         return [{k: row.get(k) for k in ("entry_date", "keyword", "suitable", "energy_awareness", "action_refs")} for row in rows]
-    def validate_daily_batch(output, dates):
+    def validate_daily_batch(output, dates, previous_entries=()):
         require_dates(output.get("entries"), dates)
         mismatches = []
         for entry in output["entries"]:
@@ -296,13 +319,17 @@ async def produce_calendar(db, request, *, gateway=None):
             validate_daily(canonical, analysis_by_date[day], fact_by_date[day],
                 practice_rhythm=practice_rhythm, available_minutes_per_day=available_minutes,
                 scheduled_refs=expected, require_action_refs=require_action_refs)
+        validate_unique_daily_awareness(
+            output["entries"],
+            [row for row in previous_entries if row.get("entry_date") not in dates],
+        )
         if mismatches:
             raise ValueError("calendar_practice_schedule_mismatch:" + json.dumps(mismatches, ensure_ascii=False, separators=(",", ":")))
 
     entries = []
     for batch_no, dates in enumerate(batches):
         def validate_entries(output):
-            validate_daily_batch(output, dates)
+            validate_daily_batch(output, dates, entries)
         entries.extend((await run("calendar.daily_authoring", str(batch_no),
             {"requested_dates": dates, "calendar_action_overview": action_overview(entries)}, validate_entries))["entries"])
     original = {e["entry_date"]: e for e in entries}
@@ -374,7 +401,7 @@ async def produce_calendar(db, request, *, gateway=None):
                 base["monthly"] = monthly
             for batch_no, dates in enumerate(batches if daily_feedback else []):
                 def validate_rewrite(output):
-                    validate_daily_batch(output, dates)
+                    validate_daily_batch(output, dates, original.values())
                 rewritten = await run("calendar.daily_authoring", f"review:{review_round}:{batch_no}",
                     {"requested_dates": dates, "quality_feedback": daily_feedback,
                      "calendar_action_overview": action_overview(original.values()),

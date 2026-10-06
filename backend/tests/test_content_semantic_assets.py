@@ -1,7 +1,8 @@
 from datetime import datetime
 
 import pytest
-from sqlalchemy import create_engine, func, select
+from sqlalchemy import ARRAY, JSON, create_engine, func, select
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
 
 from app.db.base import Base
@@ -48,7 +49,7 @@ class SyncSessionAdapter:
 
 
 @pytest.fixture
-def content_db():
+def content_db(monkeypatch):
     tables = [
         ReportCase.__table__,
         User.__table__,
@@ -57,6 +58,10 @@ def content_db():
         ContentFragmentRevision.__table__,
         NarrativePlan.__table__,
     ]
+    for table in tables:
+        for column in table.columns:
+            if isinstance(column.type, (JSONB, ARRAY)):
+                monkeypatch.setattr(column, "type", JSON())
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine, tables=tables)
     with Session(engine, expire_on_commit=False) as session:

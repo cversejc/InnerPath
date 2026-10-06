@@ -105,7 +105,7 @@ class CalendarGateway:
             result = {"entries": [{"entry_date": d, "keyword": "边界、沟通",
                 "summary": f"第{d[-2:]}天先记录一件需要澄清的小事，再选择一个轻量沟通动作，并为当天的真实反馈留出复盘空间。",
                 "suitable": [f"记录{d}的实际沟通目标", "向相关同事确认一项具体安排"], "unsuitable": [],
-                "energy_awareness": "今天哪个动作能帮助我表达边界？", "tone_explanation": "综合四项条件支持小步推进，仍需核对现实反馈。",
+                "energy_awareness": f"第{d[-2:]}日复盘时，我是否为表达边界留出了空间？", "tone_explanation": "综合四项条件支持小步推进，仍需核对现实反馈。",
                 "windows": analysis[d]["windows"], "action_refs": action_refs(d)} for d in inputs["requested_dates"]]}
         else:
             result = {"approved": not self.reject, "issues": [], "patches": []}
@@ -269,6 +269,33 @@ async def test_format_repair_preserves_both_raw_outputs(chain_db):
     assert len(request.input_snapshot["production_trace"]["skill_run_ids"]) == 9
     repaired = await chain_db.scalar(select(SkillRun).where(SkillRun.idempotency_key.like("%:repair")))
     assert repaired.runtime_instruction and repaired.input_snapshot["previous_output"]
+
+
+@pytest.mark.asyncio
+async def test_duplicate_daily_awareness_is_repaired_before_calibration(chain_db):
+    class DuplicateAwarenessGateway(CalendarGateway):
+        async def complete(self, **kwargs):
+            result = await super().complete(**kwargs)
+            if self.calls == 5:
+                output = json.loads(result.content)
+                output["entries"][1]["energy_awareness"] = output["entries"][0]["energy_awareness"]
+                return ModelCompletion(json.dumps(output, ensure_ascii=False), {})
+            return result
+
+    user, _, _, data = await seed_report(chain_db)
+    request = await queue_calendar_from_report(chain_db, user, data)
+    gateway = DuplicateAwarenessGateway()
+    assert (await execute_calendar_production(chain_db, request.id, 1, gateway=gateway))["status"] == "fulfilled"
+    runs = list(await chain_db.scalars(select(SkillRun).order_by(SkillRun.id)))
+    failed = next(run for run in runs if run.status == "FAILED")
+    repaired = next(run for run in runs if run.runtime_instruction)
+    assert failed.error.startswith("calendar_energy_awareness_repeated:")
+    assert "不可只替换日期" in repaired.runtime_instruction
+    assert repaired.input_snapshot["previous_output"]["entries"][0]["energy_awareness"] == repaired.input_snapshot["previous_output"]["entries"][1]["energy_awareness"]
+    assert len({detail["energy_awareness"] for detail in (
+        await chain_db.scalar(select(UserCalendar).where(UserCalendar.calendar_request_id == request.id))
+    ).meta_payload["daily_details"].values()}) == 30
+    assert gateway.calls == 9
 
 
 @pytest.mark.asyncio
@@ -511,7 +538,8 @@ async def test_delivered_version_is_calendar_source_and_links_logs_to_case(chain
     user, other, _, data = await seed_report(db)
     mingli = User(phone="13800009911", name="合成命理", role="consultant", consultant_type="mingli")
     psychology = User(phone="13800009912", name="合成心理", role="consultant", consultant_type="psychology")
-    db.add_all([mingli, psychology])
+    admin = User(phone="13800009913", name="合成管理员", role="admin")
+    db.add_all([mingli, psychology, admin])
     await db.flush()
     actor = user
 
@@ -630,11 +658,18 @@ async def test_delivered_version_is_calendar_source_and_links_logs_to_case(chain
             assert user_report.status_code == 200 and user_report.json()["id"] == delivered.id
             assert user_report.json()["content_payload"]["structured_sections"][0]["content"] == "先协商一项具体分工。"
 
+            actor = admin
+            admin_case = await client.get(f"/api/v1/report-cases/{case.id}")
+            assert admin_case.status_code == 200 and admin_case.json()["id"] == case.id
+            admin_report = await client.get(f"/api/v1/reports/{delivered.id}")
+            assert admin_report.status_code == 200 and admin_report.json()["id"] == delivered.id
+
             # The mutable user-facing projection must never overwrite the signed snapshot.
             delivered.summary = "后来改写的投影"
             delivered.content_payload = {"structured_sections": [{"fragment_key": "changed", "content": "changed"}]}
             await db.commit()
             calendar_data = data.model_copy(update={"source_report_id": delivered.id})
+            actor = user
             calendar_response = await client.post("/api/v1/calendar/requests", json=calendar_data.model_dump(mode="json"))
             assert calendar_response.status_code == 202, calendar_response.text
             calendar_request_id = calendar_response.json()["id"]
@@ -661,6 +696,17 @@ async def test_delivered_version_is_calendar_source_and_links_logs_to_case(chain
                 for details in calendar.meta_payload["daily_details"].values()) == 5
             runs = list(await db.scalars(select(SkillRun).where(SkillRun.target_type == "CALENDAR_PRODUCTION")))
             assert len(runs) == 8 and all(run.report_case_id == case.id for run in runs)
+            actor = admin
+            admin_requests = await client.get(
+                "/api/v1/admin/calendar-requests", params={"user_id": user.id}
+            )
+            assert admin_requests.status_code == 200
+            assert any(item["id"] == calendar_request.id for item in admin_requests.json()["items"])
+            admin_calendars = await client.get(
+                f"/api/v1/admin/users/{user.id}/calendars"
+            )
+            assert admin_calendars.status_code == 200
+            assert any(item["id"] == calendar.id for item in admin_calendars.json()["items"])
             actor = other
             assert (await client.get(f"/api/v1/reports/{delivered.id}")).status_code == 404
             assert (await client.get("/api/v1/calendar/me")).json()["items"] == []
