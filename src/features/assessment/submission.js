@@ -1,13 +1,16 @@
 export function buildReportApplication(profile, context, profileVersion) {
   const contextSnapshot = {
     focus_topics: [...context.focus_topics],
+    focus_topics_other: context.focus_topics_other,
     current_challenge: context.current_challenge,
     expected_outcomes: [...context.expected_outcomes],
+    expected_outcomes_other: context.expected_outcomes_other,
     issue_duration: context.issue_duration,
     impact_level: context.impact_level,
     decision_status: context.decision_status,
     decision_description: context.decision_description,
     decision_style: [...context.decision_style],
+    decision_style_other: context.decision_style_other,
     additional_info: context.additional_info
   }
 
