@@ -53,9 +53,9 @@ def _normalize_payload(
     additional_info: Optional[str],
     calendar_goal: Optional[str],
     start_date: Optional[date | str],
+    *,
     context: Optional[dict[str, Any]] = None,
     profile_version: Optional[int] = None,
-    *,
 ) -> dict[str, Any]:
     ensure_service_type(service_type)
     profile_model = ServiceProfileSnapshot.model_validate(profile)
