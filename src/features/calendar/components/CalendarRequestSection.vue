@@ -5,6 +5,7 @@ import ProfileSummary from '../../../components/ProfileSummary.vue'
 import ServiceFeedbackControl from '../../service-feedback/components/ServiceFeedbackControl.vue'
 import { getMyServiceFeedback } from '../../service-feedback/api.js'
 import { calendarGenerationText } from '../generation-progress.js'
+import { CALENDAR_REQUEST_STATUS_LABELS } from '../../../utils/displayLabels.js'
 
 defineProps({
   calendarRequests: { type: Array, default: () => [] },
@@ -50,7 +51,7 @@ function requestStatusLabel(status) {
     reviewing: '历史申请',
     rejected: '已退回',
     cancelled: '已取消'
-  }[status] || status
+  }[status] || CALENDAR_REQUEST_STATUS_LABELS[status] || status
 }
 
 const feedbackByCalendarRequestId = ref({})

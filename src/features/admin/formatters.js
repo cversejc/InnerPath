@@ -1,3 +1,13 @@
+import {
+  CALENDAR_REQUEST_STATUS_LABELS,
+  CALENDAR_STATUS_LABELS,
+  DECISION_STATUS_LABELS,
+  REPORT_CASE_STATUS_LABELS,
+  REPORT_STATUS_LABELS,
+  ROLE_LABELS,
+  SERVICE_REQUEST_STATUS_LABELS
+} from '../../utils/displayLabels.js'
+
 export function pageCount(total, size) {
   return Math.max(1, Math.ceil((total || 0) / size))
 }
@@ -24,35 +34,39 @@ export function formatDateTime(value) {
 }
 
 export function reportStatusText(value) {
-  return { processing: '生成中', completed: '已完成', failed: '失败' }[value] || value || '—'
+  return REPORT_STATUS_LABELS[value] || value || '—'
 }
 
 export function calendarStatusText(value) {
-  return { draft: '草稿', published: '已发布', archived: '已归档' }[value] || value || '—'
+  return CALENDAR_STATUS_LABELS[value] || value || '—'
 }
 
 export function decisionStatusText(value) {
-  return { done: '已完成', doing: '进行中', skipped: '已跳过' }[value] || value || '—'
+  return DECISION_STATUS_LABELS[value] || value || '—'
 }
 
 export function serviceRequestStatusText(value) {
-  return {
-    submitted: '待接单', accepted: '已接单', ai_processing: '生成初稿', ai_ready: '待审校',
-    reviewing: '审校中', needs_info: '待补充', failed: '处理失败', delivered: '已交付',
-    withdrawn: '已撤回', rejected: '已关闭'
-  }[value] || value || '—'
+  return SERVICE_REQUEST_STATUS_LABELS[value] || value || '—'
 }
 
 export function calendarRequestStatusText(value) {
-  return {
-      pending: '待生成', queued: '排队中', generating: '生成中', processing: '旧版处理中',
-      delivered: '已交付', reviewing: '审核中', failed: '生成失败',
-      fulfilled: '已完成', rejected: '已退回', cancelled: '已取消'
-  }[value] || value || '—'
+  return CALENDAR_REQUEST_STATUS_LABELS[value] || value || '—'
 }
 
 export function roleText(value) {
-  return { user: '用户', consultant: '咨询师', admin: '管理员' }[value] || value || '—'
+  return ROLE_LABELS[value] || value || '—'
+}
+
+export function reportCaseStatusText(value) {
+  return REPORT_CASE_STATUS_LABELS[value] || value || '—'
+}
+
+export function timezoneText(value) {
+  return {
+    'Asia/Shanghai': '中国标准时间（上海）',
+    'Asia/Chongqing': '中国标准时间（重庆）',
+    'Asia/Beijing': '中国标准时间（北京）'
+  }[value] || value || '—'
 }
 
 export function resourceLabel(value) {
@@ -111,6 +125,8 @@ export default {
   decisionStatusText,
   serviceRequestStatusText,
   calendarRequestStatusText,
+  reportCaseStatusText,
+  timezoneText,
   roleText,
   resourceLabel,
   actionLabel,

@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue'
 import { Button as VanButton } from 'vant'
 import { submitServiceFeedback } from '../api.js'
+import { FEEDBACK_STATUS_LABELS } from '../../../utils/displayLabels.js'
 
 const props = defineProps({
   serviceType: { type: String, required: true },
@@ -23,10 +24,9 @@ const feedbackTypes = [
   { value: 'PRAISE', label: '表扬' }
 ]
 
-const statusLabels = {
-  NEW: '已提交 · 待处理',
-  IN_PROGRESS: '处理中',
-  RESOLVED: '已处理'
+function feedbackStatusLabel(value) {
+  const label = FEEDBACK_STATUS_LABELS[value]
+  return value === 'NEW' && label ? `已提交 · ${label}` : label || '已提交反馈'
 }
 
 async function submit() {
@@ -71,7 +71,7 @@ async function submit() {
         :aria-expanded="showExisting"
         @click="showExisting = !showExisting"
       >
-        {{ statusLabels[existing.status] || '已提交反馈' }}
+        {{ feedbackStatusLabel(existing.status) }}
       </button>
       <div v-if="showExisting" class="service-feedback-summary">
         <span>{{ feedbackTypes.find(item => item.value === existing.feedback_type)?.label || '反馈' }}</span>

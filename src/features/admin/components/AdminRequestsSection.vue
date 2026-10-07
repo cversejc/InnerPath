@@ -10,6 +10,15 @@ import {
 } from '../formatters.js'
 import { consultationTypeLabel } from '../../service-requests/formatters.js'
 import AdminAssignmentDialog from './AdminAssignmentDialog.vue'
+import { firstNonEmptyArray, topicLabel, usageScenarioLabel } from '../../../utils/displayLabels.js'
+
+function requestTopicValues(payload) {
+  return firstNonEmptyArray(
+    payload?.selected_topics,
+    payload?.context?.focus_topics,
+    payload?.context?.selected_topics
+  )
+}
 
 function reportStepLabel(stepKey) {
   const number = String(stepKey || '').match(/\d+/)?.[0]
@@ -130,7 +139,7 @@ defineEmits([
             <tbody>
               <tr v-for="item in serviceRequests.items" :key="item.id">
                 <td><strong>申请 #{{ item.id }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · {{ item.user_phone || '—' }}</small><button type="button" class="detail-link" @click="$emit('open-user', { id: item.user_id, name: item.user_name })">查看用户</button></td>
-                <td class="request-summary-cell"><strong>{{ consultationTypeLabel(item.consultation_type) }}</strong><small>{{ item.request_payload?.context?.current_challenge || item.request_payload?.calendar_goal || '未填写目标' }}</small><small>{{ item.request_payload?.selected_topics?.join('、') || item.request_payload?.context?.selected_topics?.join('、') || '未选择关注主题' }}</small></td>
+                <td class="request-summary-cell"><strong>{{ consultationTypeLabel(item.consultation_type) }}</strong><small>{{ item.request_payload?.context?.current_challenge || item.request_payload?.calendar_goal || '未填写目标' }}</small><small>{{ topicLabel(requestTopicValues(item.request_payload), '未选择关注主题') }}</small></td>
                 <td>
                   <div class="request-assignee-summary">
                     <span v-if="item.is_collaborative">命理：{{ item.assigned_mingli_consultant_name || '待分配' }}</span>
@@ -210,8 +219,8 @@ defineEmits([
             <tbody>
               <tr v-for="item in calendarRequests.items" :key="item.id">
                 <td><strong>申请 #{{ item.id }}</strong><small>{{ item.user_name || `用户 #${item.user_id}` }} · {{ item.user_phone || '—' }}</small><button type="button" class="detail-link" @click="$emit('open-user', { id: item.user_id, name: item.user_name })">查看用户</button></td>
-                <td>{{ formatDate(item.start_date) }} — {{ formatDate(item.end_date) }}<small>{{ item.focus_topics?.join('、') || '未选择关注领域' }}</small></td>
-                <td class="request-summary-cell"><strong>{{ item.goal || '未填写目标' }}</strong><small>{{ item.usage_scenario || '未填写用途' }}</small></td>
+                <td>{{ formatDate(item.start_date) }} — {{ formatDate(item.end_date) }}<small>{{ topicLabel(item.focus_topics, '未选择关注领域') }}</small></td>
+                <td class="request-summary-cell"><strong>{{ item.goal || '未填写目标' }}</strong><small>{{ usageScenarioLabel(item.usage_scenario, '未填写用途') }}</small></td>
                 <td><span :class="['status-badge', `calendar-request-${item.status}`]">{{ calendarRequestStatusText(item.status) }}</span><small v-if="item.status === 'generating'">{{ item.progress }}% · 第 {{ item.retry_count + 1 }} 次</small><small v-if="item.generation_error" class="request-note error-cell">{{ item.generation_error }}</small></td>
                 <td>{{ item.source_report_id ? `报告 #${item.source_report_id}` : '—' }}</td>
                 <td>{{ formatDateTime(item.created_at) }}<small>更新 {{ formatDateTime(item.updated_at) }}</small></td>

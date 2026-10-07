@@ -22,6 +22,7 @@ import {
   sampleInput,
   VERSION_STATUS_LABELS,
 } from "./studio.js";
+import { reportFragmentTitle } from "../report-cases/stages.js";
 
 const POLL_INTERVAL = 2500;
 const S1_FOUNDATION_SKILL_KEY = REPORT_SKILLS.find((item) => item.step === "S1")?.key;
@@ -636,13 +637,14 @@ export default {
     },
     feedbackTargetLabel(run) {
       const skill = this.catalog.find((item) => item.key === runSkillKey(run));
+      const fragmentTitle = run.target_key ? reportFragmentTitle(run.target_key) : "内容片段";
       const target = {
-        REPORT_ANALYSIS_DRAFT: `分析建议 · ${run.target_key || "当前节点"}`,
-        NARRATIVE_CANDIDATES: "S5 报告主线候选",
-        REPORT_FRAGMENT: `S5 报告段落 · ${run.target_key || "内容片段"}`,
-        REPORT_QA: "S6 交付前检查",
+        REPORT_ANALYSIS_DRAFT: "分析建议",
+        NARRATIVE_CANDIDATES: "报告主线候选",
+        REPORT_FRAGMENT: fragmentTitle === "报告段落" ? "报告段落" : `报告段落 · ${fragmentTitle}`,
+        REPORT_QA: "交付前检查",
         CALENDAR_PRODUCTION: `日历生产 · 请求 ${run.target_key || "当前"}`,
-      }[run.target_type] || run.target_key || "节点运行";
+      }[run.target_type] || "节点运行";
       return skill ? `${skill.node} · ${target}` : target;
     },
     showMessage(message, kind = "") {

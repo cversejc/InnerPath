@@ -8,8 +8,10 @@ import {
   distributionWidth,
   formatDate,
   formatDateTime,
-  resourceLabel
+  resourceLabel,
+  timezoneText
 } from '../formatters.js'
+import { CONSULTATION_TYPE_LABELS } from '../../../utils/displayLabels.js'
 
 defineProps({
   autoRefresh: { type: Boolean, default: false },
@@ -27,16 +29,9 @@ defineProps({
 
 defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'retry-dashboard', 'switch-tab'])
 
-const consultationTypeLabels = {
-  overall: '全部报告',
-  metaphysics: '命理咨询',
-  psychology: '心理咨询',
-  integrated: '综合咨询',
-  unspecified: '未分类'
-}
-
 function consultationTypeLabel(value) {
-  return consultationTypeLabels[value] || value
+  if (value === 'overall') return '全部报告'
+  return CONSULTATION_TYPE_LABELS[value] || '未分类'
 }
 
 function formatElapsedHours(value) {
@@ -52,7 +47,7 @@ function formatElapsedHours(value) {
       <div>
         <p class="eyebrow">GLOBAL SIGNALS</p>
         <h2>全局数据</h2>
-        <p v-if="dashboard">{{ formatDate(dashboard.start_date) }} — {{ formatDate(dashboard.end_date) }} · {{ dashboard.timezone }}</p>
+        <p v-if="dashboard">{{ formatDate(dashboard.start_date) }} — {{ formatDate(dashboard.end_date) }} · {{ timezoneText(dashboard.timezone) }}</p>
       </div>
       <div class="toolbar-controls">
         <div class="range-switch" role="group" aria-label="数据范围">

@@ -1,6 +1,14 @@
 <script setup>
 import { Button as VanButton } from 'vant'
 import { formatDateTime, pageCount } from '../formatters.js'
+import {
+  QUALITY_SEVERITY_LABELS,
+  QUALITY_SOURCE_LABELS,
+  QUALITY_STATUS_LABELS,
+  REPORT_CASE_STATUS_LABELS,
+  REPORT_ISSUE_TYPE_LABELS
+} from '../../../utils/displayLabels.js'
+import { reportFragmentTitle } from '../../report-cases/stages.js'
 
 defineProps({
   filters: { type: Object, required: true },
@@ -12,10 +20,11 @@ defineProps({
 
 const emit = defineEmits(['change-page', 'search'])
 
-const severityText = value => ({ BLOCK: '阻断', MAJOR: '主要', MINOR: '提示' }[value] || value)
-const issueStatusText = value => ({ OPEN: '待处理', RESOLVED: '已解决', ACCEPTED: '已接受', DISMISSED: '已忽略' }[value] || value)
-const sourceTypeText = value => ({ PROGRAMMATIC: '规则检查', VALIDATOR: '语义检查' }[value] || value)
-const caseStatusText = value => ({ CREATED: '新建', ACTIVE: '处理中', BLOCKED: '受阻', READY_TO_DELIVER: '待交付', DELIVERED: '已交付', CANCELLED: '已取消' }[value] || value)
+const severityText = value => QUALITY_SEVERITY_LABELS[value] || value || '提示'
+const issueStatusText = value => QUALITY_STATUS_LABELS[value] || value || '待处理'
+const sourceTypeText = value => QUALITY_SOURCE_LABELS[value] || value || '其他检查'
+const caseStatusText = value => REPORT_CASE_STATUS_LABELS[value] || value || '处理中'
+const issueTypeText = value => REPORT_ISSUE_TYPE_LABELS[value] || value || '报告内容需要复核'
 </script>
 
 <template>
@@ -68,8 +77,8 @@ const caseStatusText = value => ({ CREATED: '新建', ACTIVE: '处理中', BLOCK
                 <small v-if="item.service_request_id">报告申请 #{{ item.service_request_id }}</small>
               </td>
               <td>
-                <strong>{{ item.issue_type }}</strong>
-                <small>{{ item.target_fragment_key || '全篇' }}</small>
+                <strong>{{ issueTypeText(item.issue_type) }}</strong>
+                <small>{{ item.target_fragment_key ? reportFragmentTitle(item.target_fragment_key) : '全篇' }}</small>
                 <small>问题 #{{ item.id }}</small>
               </td>
               <td class="quality-message-cell">

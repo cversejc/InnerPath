@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { Button as VanButton, Dialog as VanDialog } from 'vant'
 import AdminIconButton from './AdminIconButton.vue'
 import { consultantOptionLabel, consultantsForDirection, consultantsForSpecialty } from '../assignment.js'
+import { CONSULTATION_TYPE_LABELS } from '../../../utils/displayLabels.js'
 
 const props = defineProps({
   assignmentError: { type: String, default: '' },
@@ -38,6 +39,10 @@ watch(() => props.request, request => {
 
 function idValue(value) {
   return value === null || value === undefined ? '' : String(value)
+}
+
+function consultationTypeLabel(value) {
+  return CONSULTATION_TYPE_LABELS[value] || '方向待确认'
 }
 
 function optionLabel(consultant, candidates, specialty) {
@@ -104,7 +109,7 @@ function saveSpecialty(specialty) {
   >
     <div v-if="request" class="admin-assignment-content">
       <div class="assignment-dialog-heading">
-        <div><strong>{{ request.user_name || `用户 #${request.user_id}` }}</strong><small>{{ request.user_phone || '—' }} · {{ request.consultation_type ? ({ metaphysics: '命理', psychology: '心理', integrated: '综合' }[request.consultation_type]) : '方向待确认' }}</small></div>
+        <div><strong>{{ request.user_name || `用户 #${request.user_id}` }}</strong><small>{{ request.user_phone || '—' }} · {{ consultationTypeLabel(request.consultation_type) }}</small></div>
         <AdminIconButton icon="close" label="关闭分配窗口" :disabled="isSaving" @click="emit('close')" />
       </div>
 

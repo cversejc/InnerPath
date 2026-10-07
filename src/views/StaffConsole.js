@@ -34,6 +34,18 @@ import { nodeWorkspaceComputed, nodeWorkspaceMethods } from '../features/report-
 import DeliveredReportSummary from '../features/report-cases/components/DeliveredReportSummary.vue'
 import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
 import {
+  CONFIDENCE_LABELS,
+  EDIT_KIND_LABELS,
+  EXPECTED_OUTCOME_LABELS,
+  firstNonEmptyArray,
+  IMPORTANCE_LABELS,
+  labelList,
+  QUALITY_SEVERITY_LABELS,
+  QUALITY_STATUS_LABELS,
+  REPORT_ASSET_STATUS_LABELS,
+  REPORT_ISSUE_TYPE_LABELS
+} from '../utils/displayLabels.js'
+import {
   buildApplicationContextItems,
   buildApplicationProfileItems,
   formatConsultantEvidenceValue,
@@ -502,40 +514,22 @@ export default {
       return option?.label || '综合观察'
     },
     confidenceLabel(value) {
-      return { LOW: '较低', MEDIUM: '一般', HIGH: '较高' }[value] || '一般'
+      return CONFIDENCE_LABELS[value] || '一般'
     },
     importanceLabel(value) {
-      return { LOW: '普通', MEDIUM: '关注', HIGH: '重要', CRITICAL: '优先' }[value] || '普通'
+      return IMPORTANCE_LABELS[value] || '普通'
     },
     editKindLabel(value) {
-      return { STYLE: '表达调整', SEMANTIC: '内容调整' }[value] || '内容调整'
+      return EDIT_KIND_LABELS[value] || '内容调整'
     },
     assetStatusLabel(status) {
-      return {
-        ACTIVE: '可用', CONFIRMED: '已确认', PROPOSED: '待审核', REJECTED: '已拒绝',
-        STALE: '需要重新审核', OPEN: '待处理', RESOLVED: '已处理', ACCEPTED: '已接受',
-        DISMISSED: '已忽略', PENDING: '待开始', RUNNING: '正在处理', COMPLETED: '已完成', FAILED: '暂时失败',
-        READY: '待开始', BLOCKED: '需要处理', NOT_RUN: '尚未检查', PASSED: '检查通过',
-        PROGRAMMATIC_BLOCKED: '发现必须处理的问题', IN_PROGRESS: '正在生成', NEEDS_REVISION: '需要修改',
-        READY_FOR_REVIEW: '待审核', CREATED: '待开始', DELIVERED: '已交付', CANCELLED: '已关闭'
-      }[status] || ''
+      return REPORT_ASSET_STATUS_LABELS[status] || ''
     },
     qualityStatusLabel(status) {
-      return {
-        NOT_RUN: '尚未检查', PASSED: '检查通过', PROGRAMMATIC_BLOCKED: '发现必须处理的问题',
-        BLOCKED: '暂不能交付', READY: '可以进行最终复核',
-        COMPLETED: '检查已完成，请核对评分与问题', RUNNING: '正在检查', PENDING: '等待检查', FAILED: '检查暂时失败'
-      }[status] || '尚未检查'
+      return QUALITY_STATUS_LABELS[status] || '尚未检查'
     },
     qualityIssueLabel(type) {
-      const labels = {
-        MISSING_REPORT_CONTENT: '报告内容不完整', MISSING_SEMANTIC_SUPPORT: '内容缺少判断依据',
-        SOURCE_COVERAGE_GAP: '部分内容缺少来源说明', DUPLICATE_CONTENT: '内容存在重复',
-        UNSUPPORTED_CLAIM: '发现缺少依据的表述', INCONSISTENT_NARRATIVE: '前后表达不一致',
-        SAFETY_LANGUAGE: '需要检查建议表达', USER_CONTEXT_MISMATCH: '内容与用户情况不匹配',
-        FINDING_OVER_REPEATED: '同一专业判断被多段引用'
-      }
-      return labels[type] || '报告内容需要检查'
+      return REPORT_ISSUE_TYPE_LABELS[type] || '报告内容需要复核'
     },
     qualityIssueMessage(issue) {
       if (issue?.issue_type === 'FINDING_OVER_REPEATED') {
@@ -553,7 +547,7 @@ export default {
       return this.qualityIssueLabel(type)
     },
     issueSeverityLabel(severity) {
-      return { BLOCK: '必须处理', WARN: '建议处理', INFO: '提示' }[severity] || '提示'
+      return QUALITY_SEVERITY_LABELS[severity] || '提示'
     },
     consultantText(value, fallback = '请查看相关说明，并按建议处理。') {
       const text = String(value || '').trim()
@@ -592,6 +586,16 @@ export default {
     consultationTypeLabel,
     genderLabel,
     topicLabel,
+    requestTopicLabel(payload) {
+      return topicLabel(firstNonEmptyArray(
+        payload?.context?.focus_topics,
+        payload?.selected_topics,
+        payload?.context?.selected_topics
+      ))
+    },
+    expectedOutcomeLabel(payload) {
+      return labelList(firstNonEmptyArray(payload?.context?.expected_outcomes, payload?.expected_outcomes), EXPECTED_OUTCOME_LABELS, '—')
+    },
     requestGoal,
     formatDate,
     pretty: prettyJson

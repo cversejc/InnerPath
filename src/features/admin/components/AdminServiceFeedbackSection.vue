@@ -4,6 +4,12 @@ import { Button as VanButton } from 'vant'
 import AdminReportQualityIssuesSection from './AdminReportQualityIssuesSection.vue'
 import AdminServiceQualitySummary from './AdminServiceQualitySummary.vue'
 import { formatDateTime, pageCount } from '../formatters.js'
+import {
+  CALENDAR_REQUEST_STATUS_LABELS,
+  FEEDBACK_STATUS_LABELS,
+  FEEDBACK_TYPE_LABELS,
+  SERVICE_REQUEST_STATUS_LABELS
+} from '../../../utils/displayLabels.js'
 
 const props = defineProps({
   assignees: { type: Array, default: () => [] },
@@ -36,17 +42,9 @@ watch(() => props.feedback.items, items => {
   }]))
 }, { immediate: true })
 
-const feedbackTypeText = value => ({
-  PRAISE: '表扬',
-  SUGGESTION: '建议',
-  COMPLAINT: '投诉'
-}[value] || value)
+const feedbackTypeText = value => FEEDBACK_TYPE_LABELS[value] || value || '其他反馈'
 
-const feedbackStatusText = value => ({
-  NEW: '待处理',
-  IN_PROGRESS: '处理中',
-  RESOLVED: '已结案'
-}[value] || value)
+const feedbackStatusText = value => FEEDBACK_STATUS_LABELS[value] || value || '未知状态'
 
 function serviceTarget(item) {
   if (item.service_type === 'report') {
@@ -56,7 +54,7 @@ function serviceTarget(item) {
 }
 
 function sourceStatusText(status) {
-  return { delivered: '已交付', fulfilled: '已完成' }[status] || status
+  return SERVICE_REQUEST_STATUS_LABELS[status] || CALENDAR_REQUEST_STATUS_LABELS[status] || status || '—'
 }
 
 function saveItem(item) {
