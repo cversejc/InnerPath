@@ -7,6 +7,7 @@ from typing import Any, Optional
 from .models import SERVICE_REQUEST_TYPES, ServiceRequest
 from app.models.user import User
 from app.domains.users.lunar_calendar import solar_date_for_birth
+from app.services.intake_service import profile_snapshot
 from .schemas import (
     ReportContext,
     ServiceProfileSnapshot,
@@ -26,6 +27,39 @@ PUBLIC_STATUS_LABELS = {
     "withdrawn": "已撤回",
     "rejected": "暂未受理",
 }
+
+
+def _merge_profile(
+    user: Optional[User],
+    *sources: Optional[dict[str, Any]],
+) -> dict[str, Any]:
+    """Build a complete request profile while preserving explicit request values.
+
+    The user profile is the fallback for older clients that only submit birth
+    details.  Existing request values are applied before a new update so an
+    already captured application profile is not silently replaced by newer
+    account data.
+    """
+    merged = deepcopy(profile_snapshot(user)) if user is not None else {}
+    for source in sources:
+        if not source:
+            continue
+        merged.update(deepcopy(source))
+
+    # Older clients call this field time_accuracy; current user profiles use
+    # birth_time_precision. Keep both names in every stored snapshot.
+    for source in sources:
+        if not source:
+            continue
+        if "time_accuracy" in source and "birth_time_precision" not in source:
+            merged["birth_time_precision"] = source.get("time_accuracy")
+        elif "birth_time_precision" in source and "time_accuracy" not in source:
+            merged["time_accuracy"] = source.get("birth_time_precision")
+    if merged.get("time_accuracy") in (None, ""):
+        merged["time_accuracy"] = merged.get("birth_time_precision") or "unknown"
+    if merged.get("birth_time_precision") in (None, ""):
+        merged["birth_time_precision"] = merged.get("time_accuracy") or "unknown"
+    return merged
 
 
 def ensure_service_type(service_type: str) -> None:
@@ -57,7 +91,16 @@ def _normalize_payload(
     profile_version: Optional[int] = None,
 ) -> dict[str, Any]:
     ensure_service_type(service_type)
-    profile_model = ServiceProfileSnapshot.model_validate(profile)
+    normalized_profile = deepcopy(profile or {})
+    if normalized_profile.get("time_accuracy") in (None, ""):
+        normalized_profile["time_accuracy"] = (
+            normalized_profile.get("birth_time_precision") or "unknown"
+        )
+    if normalized_profile.get("birth_time_precision") in (None, ""):
+        normalized_profile["birth_time_precision"] = (
+            normalized_profile.get("time_accuracy") or "unknown"
+        )
+    profile_model = ServiceProfileSnapshot.model_validate(normalized_profile)
     profile_payload = profile_model.model_dump(mode="json")
     _validate_birth_date(profile_payload)
 
@@ -119,7 +162,7 @@ def payload_from_create(
         and int(data.profile_version) != int(user.profile_version or 1)
     ):
         raise ValueError("profile_version_conflict")
-    profile = data.profile.model_dump()
+    profile = _merge_profile(user, data.profile.model_dump(exclude_unset=True))
     if not profile.get("name"):
         profile["name"] = user.name
     return (
@@ -149,9 +192,15 @@ def payload_from_update(
     ):
         raise ValueError("profile_version_conflict")
     current = deepcopy(request.request_payload or {})
-    current_profile = deepcopy(current.get("profile") or {})
-    if data.profile is not None:
-        current_profile.update(data.profile.model_dump(exclude_unset=True))
+    current_profile = _merge_profile(
+        user,
+        current.get("profile") or {},
+        (
+            data.profile.model_dump(exclude_unset=True)
+            if data.profile is not None
+            else None
+        ),
+    )
     if not current_profile.get("name"):
         current_profile["name"] = user.name
 

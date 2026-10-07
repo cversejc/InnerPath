@@ -20,6 +20,7 @@ from app.domains.workflow.authorization import (
     is_assigned,
 )
 from app.domains.workflow.models import ReportCase, StepTask
+from app.services.intake_service import profile_snapshot
 
 
 async def accept_service_request(
@@ -324,18 +325,18 @@ async def get_workspace(
 def serialize_staff_user(user: Optional[User]) -> dict[str, Any]:
     if user is None:
         return {}
+    snapshot = profile_snapshot(user)
     return {
         "id": user.id,
-        "name": user.name,
         "phone": user.phone,
-        "gender": user.gender,
-        "birth_year": user.birth_year,
-        "birth_month": user.birth_month,
-        "birth_day": user.birth_day,
-        "birth_hour": user.birth_hour,
-        "birth_minute": user.birth_minute,
-        "birth_place": user.birth_place,
         "role": user.role,
+        "user_type": user.user_type,
+        "consultant_type": user.consultant_type,
+        "is_active": user.is_active,
+        "profile_version": user.profile_version,
+        "profile_last_confirmed_at": user.profile_last_confirmed_at,
+        "profile_completion": user.profile_completion,
+        **snapshot,
     }
 
 def serialize_service_request(

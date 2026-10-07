@@ -44,7 +44,10 @@ const PROFILE_LABELS = {
   birth_is_leap_month: '是否闰月',
   mbti: '自报 MBTI', highest_education: '最高学历', occupation_status: '职业状态', marital_status: '婚姻状况',
   current_residence: '现居地', strengths: '自述优势', limitations: '自述限制', personality_keywords: '性格关键词',
-  birth_time_precision: '出生时间精度', preferred_content_depth: '期待内容深度', demo_assumptions: '演示假设'
+  birth_time_precision: '出生时间精度', preferred_content_depth: '期待内容深度',
+  mingli_experience: '命理 / 玄学体验', mingli_experience_other: '其他命理体验',
+  mingli_attitude: '对命理 / 玄学的态度', default_usage_scenarios: '常用使用场景',
+  default_usage_scenarios_other: '其他使用场景', demo_assumptions: '演示假设'
 }
 
 const EVIDENCE_KEY_LABELS = {
@@ -235,7 +238,7 @@ function profileItems(profile = {}) {
   if (!profile || typeof profile !== 'object') return []
   const birthDate = [profile.birth_year, profile.birth_month, profile.birth_day]
     .every(value => value !== null && value !== undefined && value !== '')
-    ? `${profile.birth_year} 年 ${profile.birth_month} 月 ${profile.birth_day} 日`
+    ? `${profile.birth_year} 年 ${profile.birth_is_leap_month ? '闰' : ''}${profile.birth_month} 月 ${profile.birth_day} 日`
     : profile.birth_date
   const birthTime = profile.birth_hour !== null && profile.birth_hour !== undefined
     ? `${String(profile.birth_hour).padStart(2, '0')} 时${profile.birth_minute !== null && profile.birth_minute !== undefined ? `${String(profile.birth_minute).padStart(2, '0')} 分` : ''}`
@@ -248,7 +251,12 @@ function profileItems(profile = {}) {
     ['birth_place', profile.birth_place],
     ['calendar_type', profile.calendar_type],
     ['time_accuracy', profile.time_accuracy || profile.birth_time_precision],
-    ...['current_residence', 'occupation_status', 'highest_education', 'marital_status', 'mbti', 'strengths', 'limitations', 'personality_keywords', 'preferred_content_depth', 'demo_assumptions'].map(key => [key, profile[key]])
+    ...[
+      'current_residence', 'occupation_status', 'highest_education', 'marital_status',
+      'mbti', 'strengths', 'limitations', 'personality_keywords', 'mingli_experience',
+      'mingli_experience_other', 'mingli_attitude', 'preferred_content_depth',
+      'default_usage_scenarios', 'default_usage_scenarios_other', 'demo_assumptions'
+    ].map(key => [key, profile[key]])
   ]
   return entries
     .filter(([, value]) => value !== null && value !== undefined && value !== '')

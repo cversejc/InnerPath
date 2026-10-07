@@ -24,6 +24,23 @@ class ServiceProfileSnapshot(BaseModel):
     birth_place: Optional[str] = Field(None, max_length=100)
     calendar_type: str = Field("solar", pattern="^(solar|lunar)$")
     time_accuracy: str = Field("unknown", pattern="^(unknown|approximate|exact)$")
+    birth_time_precision: Optional[str] = Field(
+        None, pattern="^(unknown|approximate|exact)$"
+    )
+    current_residence: Optional[str] = Field(None, max_length=100)
+    marital_status: Optional[str] = Field(None, max_length=30)
+    occupation_status: Optional[str] = Field(None, max_length=30)
+    highest_education: Optional[str] = Field(None, max_length=30)
+    mbti: Optional[str] = Field(None, pattern=r"^[A-Za-z]{4}$")
+    personality_keywords: List[str] = Field(default_factory=list, max_length=5)
+    strengths: Optional[str] = Field(None, max_length=500)
+    limitations: Optional[str] = Field(None, max_length=500)
+    mingli_experience: List[str] = Field(default_factory=list, max_length=3)
+    mingli_experience_other: Optional[str] = Field(None, max_length=500)
+    mingli_attitude: Optional[str] = Field(None, max_length=30)
+    preferred_content_depth: Optional[str] = Field(None, max_length=30)
+    default_usage_scenarios: List[str] = Field(default_factory=list, max_length=6)
+    default_usage_scenarios_other: Optional[str] = Field(None, max_length=500)
 
     @model_validator(mode="after")
     def validate_birth_date(self):
