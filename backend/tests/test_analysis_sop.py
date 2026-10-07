@@ -65,14 +65,22 @@ def test_s3_covers_four_quadrants_timeline_and_philosophy():
 
 
 def test_s4_experiments_must_be_observable_and_reversible():
-    block = {"finding_key": "block.boundary", "semantic_role": "BLOCK"}
-    data = {"block_refs": ["block.boundary"], "method": "行为实验", "steps": ["先延迟回答"], "frequency": "weekly", "duration_minutes": 5, "observation": "实际回应", "stop_rule": "不适时暂停"}
-    actions = [{"finding_key": f"action.{n}", "semantic_role": "ACTION", "structured_data": dict(data)} for n in range(3)]
-    validate_growth_experiments([block, *actions])
+    blocks = [{"finding_key": f"block.{n}", "semantic_role": "BLOCK"} for n in range(3)]
+    data = {"method": "行为实验", "steps": ["先延迟回答"], "frequency": "weekly", "duration_minutes": 5, "observation": "实际回应", "stop_rule": "不适时暂停"}
+    actions = [{"finding_key": f"action.{n}", "semantic_role": "ACTION", "structured_data": {**data, "block_refs": [blocks[n]["finding_key"]]}} for n in range(3)]
+    validate_growth_experiments([*blocks, *actions])
+    actions[2]["structured_data"]["block_refs"] = [blocks[0]["finding_key"]]
+    with pytest.raises(ValueError, match="block_coverage_invalid"):
+        validate_growth_experiments([*blocks, *actions])
+    actions[2]["structured_data"]["block_refs"] = [blocks[2]["finding_key"]]
     actions[0]["structured_data"]["block_refs"] = ["invented"]
     with pytest.raises(ValueError, match="experiment_invalid"):
-        validate_growth_experiments([block, *actions])
-    actions[0]["structured_data"] = {**data, "stop_rule": ""}
+        validate_growth_experiments([*blocks, *actions])
+    actions[0]["structured_data"] = {**data, "block_refs": [blocks[0]["finding_key"]], "stop_rule": ""}
     with pytest.raises(ValueError, match="experiment_invalid"):
-        validate_growth_experiments([block, *actions])
+        validate_growth_experiments([*blocks, *actions])
     assert len(stage_contract("S4")["topics"]) == 10
+    experiments = next(topic["task"] for topic in stage_contract("S4")["topics"] if topic["fragment_key"] == "analysis.s4.experiments")
+    assert "只引用本批次 semantic_role 恰为 BLOCK" in experiments
+    assert "不得引用 COMPLEX、SHADOW" in experiments
+    assert "合计覆盖至少3个不同的BLOCK" in experiments

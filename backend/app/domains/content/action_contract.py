@@ -8,6 +8,7 @@ def validate_growth_experiments(findings, upstream_keys=(), *, require_actions=T
     actions = [item for item in findings if item.get("semantic_role", "").upper() == "ACTION"]
     if check_count and (actions or require_actions) and not 3 <= len(actions) <= 5:
         raise ValueError("report_analysis_experiment_count_invalid")
+    addressed_blocks = set()
     for action in actions:
         data = action.get("structured_data") or {}
         refs, steps, duration = data.get("block_refs"), data.get("steps"), data.get("duration_minutes")
@@ -19,3 +20,6 @@ def validate_growth_experiments(findings, upstream_keys=(), *, require_actions=T
                 or any(not isinstance(data.get(key), str) or not data[key].strip()
                        for key in ("method", "observation", "stop_rule"))):
             raise ValueError("report_analysis_experiment_invalid")
+        addressed_blocks.update(refs)
+    if check_count and actions and len(addressed_blocks) < 3:
+        raise ValueError("report_analysis_experiment_block_coverage_invalid")

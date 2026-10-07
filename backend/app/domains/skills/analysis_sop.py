@@ -77,7 +77,7 @@ SOP_STAGES = {
             ("breakthrough", "4.2 共性与破局", "共性路径与中式原型可学习资源；用神→本案调节功能→心理能力→现实缺口→工具→实验，不靠命盘替代现实；总结两端整合后的方向。"),
             ("functions", "4.3 八维路径", "有MBTI/八维自报作为锚点，没自报不得推类型；MBTI不能伪造功能分数。画探索/价值/执行/反馈路径并标倾向假设。"),
             ("relationships", "4.4 关系循环", "问卷+关系结构+加工倾向，描述请求/回应/感受/反馈循环；明确反例与要访谈的问题。"),
-            ("experiments", "4.5 成长实验与日历", "选择CBT/ACT/短焦/EFT情绪命名/依恋沟通中的3–5个日常练习（非治疗），生成 semantic_role=ACTION 的 Finding。structured_data 必含 block_refs（对应卡点ID数组）、method、steps（动作字符串数组）、frequency（daily/weekly/monthly/quarterly）、duration_minutes（1–60整数）、observation、stop_rule。分析片段包含每日能量/每周阴影/每月触发链/每季方向复盘；时间充裕度不足时减量。"),
+            ("experiments", "4.5 成长实验与日历", "选择CBT/ACT/短焦/EFT情绪命名/依恋沟通中的3–5个日常练习（非治疗），生成 semantic_role=ACTION 的 Finding。structured_data 必含 block_refs（只引用本批次 semantic_role 恰为 BLOCK 的 finding_key；不得引用 COMPLEX、SHADOW、DEFENSE、ENERGY 等其他角色），method、steps（动作字符串数组）、frequency（daily/weekly/monthly/quarterly）、duration_minutes（1–60整数）、observation、stop_rule。3–5个ACTION须合计覆盖至少3个不同的BLOCK finding_key，避免所有行动重复覆盖相同两项；reasoning_path.block_refs 必须与 structured_data.block_refs 逐项完全一致。分析片段包含每日能量/每周阴影/每月触发链/每季方向复盘；时间充裕度不足时减量。"),
         ],
     },
 }

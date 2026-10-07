@@ -93,6 +93,8 @@ def _normalize_payload(
 ) -> dict[str, Any]:
     ensure_service_type(service_type)
     normalized_profile = deepcopy(profile or {})
+    if normalized_profile.get("birth_is_leap_month") is None:
+        normalized_profile["birth_is_leap_month"] = False
     if normalized_profile.get("time_accuracy") in (None, ""):
         normalized_profile["time_accuracy"] = (
             normalized_profile.get("birth_time_precision") or "unknown"

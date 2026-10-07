@@ -59,7 +59,7 @@ async def _resolve_config(configuration_id: int | None) -> RuntimeLLMConfig:
     try:
         async with AsyncSessionLocal() as db:
             return await resolve_runtime_config(db, configuration_id=configuration_id)
-    except (SQLAlchemyError, RuntimeError):
+    except (SQLAlchemyError, RuntimeError, OSError):
         if configuration_id is not None:
             raise
         logger.warning("LLM configuration storage is unavailable; using environment fallback")

@@ -1141,7 +1141,7 @@ async def test_s4_runtime_prompt_compiles_reasoning_and_action_contract():
         specification_json=specification,
     )
     evidence_key = "input.context.current_challenge"
-    block_key = "s4.block.boundary"
+    block_keys = ["s4.block.boundary", "s4.block.overcommit", "s4.block.delay"]
     findings = [
         {
             "finding_key": block_key,
@@ -1156,6 +1156,7 @@ async def test_s4_runtime_prompt_compiles_reasoning_and_action_contract():
             "relation_refs": [],
             "structured_data": {},
         }
+        for block_key in block_keys
     ]
     for index in range(3):
         findings.append(
@@ -1171,7 +1172,7 @@ async def test_s4_runtime_prompt_compiles_reasoning_and_action_contract():
                 "evidence_refs": [evidence_key],
                 "relation_refs": [],
                 "structured_data": {
-                    "block_refs": [block_key],
+                    "block_refs": [block_keys[index]],
                     "method": "低风险行为实验",
                     "steps": ["收到请求时先说明稍后回复"],
                     "frequency": "weekly",
@@ -1186,7 +1187,7 @@ async def test_s4_runtime_prompt_compiles_reasoning_and_action_contract():
             "fragment_key": topic["fragment_key"],
             "title": topic["title"],
             "content": "根据用户当前描述提出待审核的理解方向，并保留补问。",
-            "finding_refs": [block_key],
+            "finding_refs": [block_keys[0]],
             "evidence_refs": [evidence_key],
         }
         for topic in specification["instructions"]["sop_contract"]["topics"]
@@ -1228,6 +1229,7 @@ async def test_s4_runtime_prompt_compiles_reasoning_and_action_contract():
     assert "阴影整合练习" in gateway.last_request[0]
     assert "analysis.s4.experiments" in gateway.last_request[0]
     assert "reasoning_path" in gateway.last_request[0]
+    assert "至少3个不同的BLOCK" in gateway.last_request[0]
 
 
 @pytest.mark.asyncio

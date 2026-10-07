@@ -3,13 +3,13 @@ import argparse
 import asyncio
 from contextlib import asynccontextmanager
 from datetime import date, datetime, timedelta
-from app.core.time import utc_now_naive
 from html import escape
 import json
 from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from app.core.time import utc_now_naive
 from sqlalchemy import create_engine, JSON, ARRAY, select
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
@@ -33,6 +33,18 @@ class IsolatedSession:
     def __init__(self, session):
         self.session = session
 
+    @property
+    def new(self):
+        return self.session.new
+
+    @property
+    def dirty(self):
+        return self.session.dirty
+
+    @property
+    def deleted(self):
+        return self.session.deleted
+
     def add(self, row):
         self.session.add(row)
 
@@ -53,8 +65,8 @@ class IsolatedSession:
     async def get(self, model, key):
         return self.session.get(model, key)
 
-    async def flush(self):
-        self.session.flush()
+    async def flush(self, objects=None):
+        self.session.flush(objects)
 
     async def commit(self):
         self.session.commit()

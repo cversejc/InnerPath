@@ -13,7 +13,7 @@ test('customer request formatters keep customer-facing status and type labels', 
   assert.equal(customerServiceRequestStatusLabel('needs_info'), '需要补充资料')
   assert.equal(customerServiceRequestStatusLabel('future_status'), 'future_status')
   assert.equal(customerServiceTypeLabel('calendar'), '决策日历申请')
-  assert.equal(customerServiceTypeLabel('report'), '报告申请')
+  assert.equal(customerServiceTypeLabel('report'), '人生说明书申请')
 })
 
 test('customer request formatters reuse topic labels and build edit routes', () => {
