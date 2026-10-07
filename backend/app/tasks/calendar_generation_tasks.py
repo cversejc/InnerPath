@@ -8,6 +8,7 @@ from sqlalchemy import func, select
 
 from app.core.cache import close_redis
 from app.core.logging_config import get_logger
+from app.core.time import utc_now_naive
 from app.db.session import AsyncSessionLocal, engine
 from app.domains.audit.service import record_audit
 from app.domains.calendar.generation import generate_calendar_with_ai
@@ -133,7 +134,7 @@ async def _run_calendar_generation(task_id: str, request_id: int) -> dict[str, A
                 meta_payload=validated.get("meta_payload") or {},
                 created_by=calendar_request.user_id,
                 updated_by=calendar_request.user_id,
-                published_at=datetime.utcnow(),
+                published_at=utc_now_naive(),
                 calendar_request_id=calendar_request.id,
                 source_report_id=calendar_request.source_report_id,
             )

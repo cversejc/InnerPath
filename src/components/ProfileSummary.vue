@@ -28,7 +28,7 @@
       </div>
     </div>
     <p class="profile-summary-meta">
-      档案版本 v{{ profileVersion || profile.profile_version || 1 }}<span v-if="lastConfirmedAt"> · 最近确认于 {{ formatDate(lastConfirmedAt) }}</span>
+      档案版本 v{{ profileVersion || profile.profile_version || 1 }}<span v-if="lastConfirmedAt"> · 最近确认于 {{ formatDateTime(lastConfirmedAt) }}</span>
       · 之后修改档案不会改变历史报告
     </p>
   </section>
@@ -36,6 +36,7 @@
 
 <script>
 import { Button as VanButton } from 'vant'
+import { formatDateTime } from '../utils/dateTime.js'
 
 export default {
   name: 'ProfileSummary',
@@ -70,11 +71,7 @@ export default {
       return `${this.profile.birth_hour}时${String(this.profile.birth_minute).padStart(2, '0')}分 · ${labels[precision]}`
     }
   },
-  methods: {
-    formatDate(value) {
-      return value ? new Date(value).toLocaleDateString('zh-CN') : '—'
-    }
-  }
+  methods: { formatDateTime }
 }
 </script>
 

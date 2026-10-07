@@ -1,3 +1,5 @@
+import { addDaysToDateKey, shanghaiDateKey, shanghaiYear } from '../../utils/dateTime.js'
+
 export const CALENDAR_TIME_OPTIONS = [
   { value: 'unknown', label: '不知道' },
   { value: 'approximate', label: '大概时间' },
@@ -5,14 +7,11 @@ export const CALENDAR_TIME_OPTIONS = [
 ]
 
 export function localDateKey(date = new Date()) {
-  const pad = value => String(value).padStart(2, '0')
-  return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate())
+  return shanghaiDateKey(date)
 }
 
 export function addCalendarDays(dateKey, days) {
-  const date = new Date(dateKey + 'T12:00:00')
-  date.setDate(date.getDate() + days)
-  return localDateKey(date)
+  return addDaysToDateKey(dateKey, days)
 }
 
 export function createCalendarRequestForm() {
@@ -34,7 +33,7 @@ export function createCalendarRequestForm() {
   }
 }
 
-export function validateCalendarRequestForm(form, currentYear = 2026) {
+export function validateCalendarRequestForm(form, currentYear = shanghaiYear()) {
   const errors = {}
   if (!form.name) errors.name = '请填写姓名'
   if (!form.gender) errors.gender = '请选择性别'
@@ -47,8 +46,8 @@ export function validateCalendarRequestForm(form, currentYear = 2026) {
     errors.birth = '出生日期格式不正确'
   } else if (form.calendar_type === 'solar') {
     if (form.birth_is_leap_month) errors.birth = '公历日期不能选择闰月'
-    const value = new Date(year, month - 1, day)
-    if (value.getFullYear() !== year || value.getMonth() !== month - 1 || value.getDate() !== day) {
+    const value = new Date(Date.UTC(year, month - 1, day))
+    if (value.getUTCFullYear() !== year || value.getUTCMonth() !== month - 1 || value.getUTCDate() !== day) {
       errors.birth = '出生日期不存在'
     }
   } else if (day > 30) {

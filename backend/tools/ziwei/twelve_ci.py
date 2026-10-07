@@ -22,7 +22,7 @@ import math
 import streamlit as st
 import swisseph as swe
 from dataclasses import dataclass, field
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from typing import Optional
 
 from astro.i18n import t, get_lang
@@ -465,7 +465,7 @@ def compute_twelve_ci_chart(
     jupiter_ci = TWELVE_CI[jupiter_planet.ci_index] if jupiter_planet else None
 
     # Transit Jupiter (current moment)
-    now = datetime.now(tz=None)  # UTC-naive datetime; swisseph expects UT
+    now = datetime.now(timezone.utc)
     jd_now = swe.julday(now.year, now.month, now.day,
                         now.hour + now.minute / 60.0)
     transit_jup = _compute_planet_ci("Jupiter", jd_now)

@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
+from app.core.schemas import APIModel as BaseModel
 
 
 class ReportVersionResponse(BaseModel):

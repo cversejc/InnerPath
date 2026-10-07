@@ -1,5 +1,6 @@
 import { Button as VanButton } from "vant";
 import { hasRole } from "../../stores/auth.js";
+import { formatDateTime } from "../../utils/dateTime.js";
 import api from "./api.js";
 import RunDetail from "./components/RunDetail.vue";
 import ExamplesPanel from "./components/ExamplesPanel.vue";
@@ -629,11 +630,7 @@ export default {
       if (this.pollTimer) window.clearInterval(this.pollTimer);
       this.pollTimer = null;
     },
-    formatDate(value) {
-      return value
-        ? new Date(value).toLocaleString("zh-CN", { hour12: false })
-        : "—";
-    },
+    formatDateTime,
     feedbackTargetLabel(run) {
       const skill = this.catalog.find((item) => item.key === runSkillKey(run));
       const target = {

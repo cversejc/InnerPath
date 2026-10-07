@@ -373,7 +373,7 @@
                   >
                     记录 {{ run.id }} ·
                     {{ RUN_STATUS_LABELS[run.status] || "未知状态" }} ·
-                    {{ formatDate(run.created_at) }}
+                    {{ formatDateTime(run.created_at) }}
                   </option>
                 </select></label
               >
@@ -420,7 +420,7 @@
               <article v-for="run in feedbackRuns" :key="run.id" class="skill-feedback-card">
                 <header>
                   <strong>案例 {{ run.report_case_id }} · {{ feedbackTargetLabel(run) }} · 运行 {{ run.id }}</strong>
-                  <small>{{ RUN_STATUS_LABELS[run.status] || run.status }} · {{ formatDate(run.created_at) }}</small>
+                  <small>{{ RUN_STATUS_LABELS[run.status] || run.status }} · {{ formatDateTime(run.created_at) }}</small>
                 </header>
                 <p class="skill-feedback-text">{{ run.runtime_instruction }}</p>
                 <div class="feedback-card-actions">

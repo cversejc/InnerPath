@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import AISkillVersion, SkillExample, SkillRun
 from .builtin_examples import EXAMPLES
+from app.core.time import utc_now_naive
 
 
 RETRIEVAL_POLICY = "tag-scenario-quality-v2"
@@ -172,7 +173,7 @@ async def create_example_candidate(
     skill = await db.get(AISkillVersion, skill_run.skill_version_id)
     if skill is None:
         raise ValueError("skill_version_not_found")
-    now = datetime.utcnow()
+    now = utc_now_naive()
     known_names = _known_names(skill_run)
     known_locations = _known_locations(skill_run)
     input_context = scrub_example_data(
@@ -307,7 +308,7 @@ async def create_example_revision(
         source_skill_run_id=source.source_skill_run_id,
         deidentified=False,
         created_by=created_by,
-        created_at=datetime.utcnow(),
+        created_at=utc_now_naive(),
     )
     db.add(row)
     await db.flush()
@@ -352,7 +353,7 @@ async def publish_skill_example(
         )
         .with_for_update()
     )
-    now = datetime.utcnow()
+    now = utc_now_naive()
     for version in previous:
         version.status = "RETIRED"
     await db.flush()

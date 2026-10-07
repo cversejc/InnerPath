@@ -1,11 +1,12 @@
 import { getAdminDashboard } from '../api'
+import { formatDateTime } from '../../../utils/dateTime.js'
 
 export default {
   async loadDashboard(silent = false) {
       if (!silent) this.dashboardLoading = true
       try {
         this.dashboard = await getAdminDashboard(this.dashboardRange)
-        this.lastUpdated = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+        this.lastUpdated = formatDateTime(new Date())
       } catch (error) {
         if (!silent) this.message = this.errorText(error)
       } finally {

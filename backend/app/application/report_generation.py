@@ -3,6 +3,7 @@ import hashlib
 import json
 from copy import deepcopy
 from datetime import datetime
+from app.core.time import api_datetime, utc_now_iso
 from typing import Any
 
 from sqlalchemy import select
@@ -479,7 +480,7 @@ async def start_case_report_generation(
     generation["status"] = "IN_PROGRESS"
     generation["attempt"] = int(generation.get("attempt") or 0) + 1
     generation["request_key"] = idempotency_key
-    generation["started_at"] = datetime.utcnow().isoformat()
+    generation["started_at"] = utc_now_iso()
     generation["completed_at"] = None
     generation["error"] = None
     generation["issues"] = []
@@ -650,7 +651,7 @@ async def advance_case_report_generation(db: AsyncSession, run_id: int) -> Narra
             if is_coherence
             else "report_fragment_generation_failed"
         )
-        generation["completed_at"] = datetime.utcnow().isoformat()
+        generation["completed_at"] = utc_now_iso()
         generation["active_run_id"] = None
         generation.setdefault("issues", []).append(
             {
@@ -794,7 +795,7 @@ async def advance_case_report_generation(db: AsyncSession, run_id: int) -> Narra
             for issue in issues
         ]
         blocked = any(issue.get("severity") == "BLOCK" for issue in issues)
-        completed_at = datetime.utcnow().isoformat()
+        completed_at = utc_now_iso()
         generation["active_run_id"] = None
         if is_chapter:
             chapter_checks[chapter_key] = {
@@ -913,7 +914,7 @@ async def advance_case_report_generation(db: AsyncSession, run_id: int) -> Narra
     if output.get("status") == "MISSING_SEMANTIC_SUPPORT":
         generation["status"] = "NEEDS_INPUT"
         generation["active_run_id"] = None
-        generation["completed_at"] = datetime.utcnow().isoformat()
+        generation["completed_at"] = utc_now_iso()
         generation.setdefault("issues", []).append(
             {
                 "type": "MISSING_SEMANTIC_SUPPORT",
@@ -947,7 +948,7 @@ async def advance_case_report_generation(db: AsyncSession, run_id: int) -> Narra
                 "fragment_key": run.target_key,
                 "sequence_no": sequence_no,
                 "status": "COMPLETED",
-                "completed_at": run.completed_at.isoformat() if run.completed_at else None,
+                "completed_at": api_datetime(run.completed_at),
             }
         )
     if run.target_key not in generation.setdefault("completed_fragment_keys", []):

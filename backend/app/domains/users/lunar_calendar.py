@@ -4,6 +4,7 @@ from datetime import date
 from typing import Optional
 
 from lunar_python import Lunar, LunarYear, Solar
+from app.core.time import shanghai_today
 
 
 MIN_BIRTH_YEAR = 1900
@@ -11,7 +12,7 @@ MONTH_NAMES = ("正", "二", "三", "四", "五", "六", "七", "八", "九", "�
 
 
 def lunar_year_options(year: int, today: Optional[date] = None) -> dict:
-    current_date = today or date.today()
+    current_date = today or shanghai_today()
     lunar_today = Solar.fromYmd(
         current_date.year, current_date.month, current_date.day
     ).getLunar()
@@ -52,7 +53,7 @@ def lunar_year_options(year: int, today: Optional[date] = None) -> dict:
 
 
 def lunar_calendar_options(today: Optional[date] = None) -> dict:
-    current_date = today or date.today()
+    current_date = today or shanghai_today()
     current_lunar_year = Solar.fromYmd(
         current_date.year, current_date.month, current_date.day
     ).getLunar().getYear()
@@ -77,7 +78,7 @@ def solar_date_for_birth(
     is_leap_month: bool = False,
     today: Optional[date] = None,
 ) -> date:
-    current_date = today or date.today()
+    current_date = today or shanghai_today()
     if year < MIN_BIRTH_YEAR or year > current_date.year or not 1 <= month <= 12:
         raise ValueError("birth_date_invalid")
 

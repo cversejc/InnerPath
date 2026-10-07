@@ -17,6 +17,7 @@ from .report_content_plan import (
     build_report_content_plan,
     validate_report_content_plan,
 )
+from app.core.time import utc_now_naive
 
 
 async def get_current_narrative_plan(
@@ -199,7 +200,7 @@ async def confirm_narrative_plan(
     if current is not None:
         current.is_current = False
         current.status = "SUPERSEDED"
-    now = datetime.utcnow()
+    now = utc_now_naive()
     plan = NarrativePlan(
         report_case_id=report_case_id,
         version_no=(latest_version or 0) + 1,

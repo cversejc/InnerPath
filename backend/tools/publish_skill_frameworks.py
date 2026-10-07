@@ -8,6 +8,7 @@ Normal initialization continues to protect administrator-maintained skills.
 import argparse
 import asyncio
 from datetime import datetime
+from app.core.time import utc_now_naive
 
 from sqlalchemy import func, select
 
@@ -44,7 +45,7 @@ async def publish_current_frameworks(*, publish=False, replace_admin=False):
                 AISkillVersion.skill_key == key)) or 0
             results.append((key, maximum + 1, "PUBLISHED" if publish else "PREVIEW"))
             if publish:
-                now = datetime.utcnow()
+                now = utc_now_naive()
                 # A fresh immutable publication preserves frozen cases/runs.
                 # It uses current code contracts, not an old version's payload.
                 db.add(AISkillVersion(skill_key=key, name=spec["identity"]["name"],

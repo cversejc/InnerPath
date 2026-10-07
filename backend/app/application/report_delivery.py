@@ -1,6 +1,7 @@
 from app.domains.workflow.authorization import validate_step_actor
 from copy import deepcopy
 from datetime import datetime
+from app.core.time import api_datetime, utc_now_naive, utc_now_iso
 from typing import Optional
 
 from sqlalchemy import select
@@ -67,9 +68,9 @@ async def snapshot_case_skill_runs(
                 "model_trace": deepcopy(run.model_trace or {}),
                 "error": run.error,
                 "retry_count": run.retry_count,
-                "created_at": run.created_at.isoformat() if run.created_at else None,
-                "started_at": run.started_at.isoformat() if run.started_at else None,
-                "completed_at": run.completed_at.isoformat() if run.completed_at else None,
+                "created_at": api_datetime(run.created_at),
+                "started_at": api_datetime(run.started_at),
+                "completed_at": api_datetime(run.completed_at),
             }
         )
     return snapshots
@@ -108,7 +109,7 @@ async def approve_case_final_gate(
         "validator_run_id": run.id,
         "qa_fingerprint": (run.context_snapshot or {}).get("qa_fingerprint"),
         "attested_by": actor.id,
-        "attested_at": datetime.utcnow().isoformat(),
+        "attested_at": utc_now_iso(),
         "note": (note or "").strip() or None,
     }
     return await complete_case_step(
@@ -229,7 +230,7 @@ async def deliver_report_case(
         },
         "personal_growth": {"action_plan": []},
     }
-    now = datetime.utcnow()
+    now = utc_now_naive()
     report = Report(
         user_id=locked_case.user_id,
         request_id=locked_case.service_request_id,

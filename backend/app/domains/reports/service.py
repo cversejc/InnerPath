@@ -8,6 +8,7 @@ from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.core.logging_config import get_logger
+from app.core.time import shanghai_date_for
 from app.services.intake_service import normalize_context
 
 logger = get_logger(__name__)
@@ -242,7 +243,7 @@ def format_report_response(report: Report) -> Dict[str, Any]:
             "solar_birth_date": report.birth_date.isoformat(),
             "calendar_type": birth_profile.get("calendar_type", report.birth_calendar_type),
             "birth_is_leap_month": bool(birth_profile.get("birth_is_leap_month", False)),
-            "report_date": report.created_at.date().isoformat(),
+            "report_date": shanghai_date_for(report.created_at).isoformat(),
             "generated_by": "咨询师审校 + AI 初稿" if report.reviewed_at else ("AI" if report.ai_raw_content else "Basic Algorithm")
         },
         "energy_profile": report.energy_profile,

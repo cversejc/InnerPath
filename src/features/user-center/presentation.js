@@ -1,5 +1,7 @@
+import { formatDateTime } from '../../utils/dateTime.js'
+
 export function formatUserCenterDate(value) {
-  return value ? new Date(value).toLocaleDateString('zh-CN') : '—'
+  return formatDateTime(value)
 }
 
 export function requestStatusLabel(status, workflowType) {

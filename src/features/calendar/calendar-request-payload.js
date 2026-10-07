@@ -1,14 +1,8 @@
-export function defaultThirtyDayRange(today = new Date()) {
-  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-  const end = new Date(start)
-  end.setDate(end.getDate() + 29)
-  const toDateKey = date => [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0')
-  ].join('-')
+import { addDaysToDateKey, shanghaiDateKey } from '../../utils/dateTime.js'
 
-  return { start_date: toDateKey(start), end_date: toDateKey(end) }
+export function defaultThirtyDayRange(today = new Date()) {
+  const start = shanghaiDateKey(today)
+  return { start_date: start, end_date: addDaysToDateKey(start, 29) }
 }
 
 export function isThirtyDayRange(startDate, endDate) {

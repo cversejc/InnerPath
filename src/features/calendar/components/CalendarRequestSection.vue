@@ -2,6 +2,7 @@
 import { Button as VanButton } from 'vant'
 import ProfileSummary from '../../../components/ProfileSummary.vue'
 import { calendarGenerationText } from '../generation-progress.js'
+import { formatDateTime } from '../../../utils/dateTime.js'
 
 defineProps({
   calendarRequests: { type: Array, default: () => [] },
@@ -112,7 +113,7 @@ function requestStatusLabel(status) {
             <label for="calendar-source-report">已交付报告 <span class="required">*</span></label>
             <select id="calendar-source-report" v-model="draft.source_report_id" required>
               <option value="">请选择一份已交付报告</option>
-              <option v-for="report in reports" :key="report.id" :value="report.id">{{ report.title }} · {{ report.created_at ? new Date(report.created_at).toLocaleDateString('zh-CN') : '已交付' }}</option>
+              <option v-for="report in reports" :key="report.id" :value="report.id">{{ report.title }} · {{ report.created_at ? formatDateTime(report.created_at) : '已交付' }}</option>
             </select>
             <small>日历将结合这份报告与下面填写的目标生成。</small>
           </div>

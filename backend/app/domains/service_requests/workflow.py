@@ -21,6 +21,7 @@ from .repository import (
     _get_latest_task,
     _get_request_for_update,
 )
+from app.core.time import utc_now_naive
 from .staff import staff_can_access
 
 
@@ -80,7 +81,7 @@ async def create_ai_draft_task(
     )
     db.add(task)
     service_request.status = "ai_processing"
-    service_request.ai_started_at = datetime.utcnow()
+    service_request.ai_started_at = utc_now_naive()
     service_request.failed_at = None
     service_request.last_error = None
     service_request.updated_by = actor.id
@@ -130,7 +131,7 @@ async def save_service_request_draft(
     draft.content_version += 1
     draft.updated_by = actor.id
     service_request.status = "reviewing"
-    service_request.reviewing_at = service_request.reviewing_at or datetime.utcnow()
+    service_request.reviewing_at = service_request.reviewing_at or utc_now_naive()
     service_request.updated_by = actor.id
     await record_audit(
         db,
@@ -166,7 +167,7 @@ async def request_more_info(
         raise ValueError("request_info_not_allowed")
     service_request.status = "needs_info"
     service_request.needs_info_reason = data.reason
-    service_request.needs_info_at = datetime.utcnow()
+    service_request.needs_info_at = utc_now_naive()
     service_request.updated_by = actor.id
     await record_audit(
         db,

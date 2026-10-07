@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from datetime import datetime
+from app.core.time import utc_now_naive
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -106,7 +107,7 @@ async def request_report_case_info(
     )
     request.status = "needs_info"
     request.needs_info_reason = clean_reason
-    request.needs_info_at = request.updated_at = datetime.utcnow()
+    request.needs_info_at = request.updated_at = utc_now_naive()
     request.updated_by = actor.id
     report_case.status = "BLOCKED"
     report_case.updated_at = request.updated_at
@@ -198,7 +199,7 @@ async def submit_report_case_supplement(
     evidence_key = f"user.follow_up.{cycle:03d}"
     question = request.needs_info_reason
     active_step.activation_no += 1
-    active_step.updated_at = datetime.utcnow()
+    active_step.updated_at = utc_now_naive()
     response = {
         "response_key": response_key,
         "cycle": cycle,
@@ -229,7 +230,7 @@ async def submit_report_case_supplement(
     request.status = "accepted"
     request.needs_info_reason = None
     request.updated_by = user.id
-    request.updated_at = datetime.utcnow()
+    request.updated_at = utc_now_naive()
     report_case.status = "ACTIVE"
     report_case.updated_at = request.updated_at
     instance.status = "RUNNING"

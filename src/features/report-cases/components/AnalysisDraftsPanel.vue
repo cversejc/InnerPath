@@ -13,7 +13,7 @@
       还没有 AI 分析结果。核对上游输入{{ stepKey === 'S1' ? '和程序计算' : '及前序已确认内容' }}后，可以运行分析并生成候选判断与分析内容。
     </div>
 
-    <label v-if="stageRuns.length" class="analysis-run-select">AI 分析记录<select v-model="activeRunId" :disabled="reviewBusy || saving"><option v-for="(record, index) in stageRuns" :key="record.id" :value="String(record.id)">记录 {{ stageRuns.length - index }} · {{ formatDate(record.created_at) }} · {{ runStatusLabel(record.status) }}</option></select></label>
+    <label v-if="stageRuns.length" class="analysis-run-select">AI 分析记录<select v-model="activeRunId" :disabled="reviewBusy || saving"><option v-for="(record, index) in stageRuns" :key="record.id" :value="String(record.id)">记录 {{ stageRuns.length - index }} · {{ formatDateTime(record.created_at) }} · {{ runStatusLabel(record.status) }}</option></select></label>
     <form v-if="!readOnly && currentStep" class="analysis-feedback" @submit.prevent="submitAnalysis">
       <label for="analysis-feedback">分析要求或本次调整意见</label>
       <p v-if="!analysisReady" class="analysis-prerequisite-note">请先完成程序计算并核对结果，再开始 S1 分析。</p>
@@ -44,7 +44,7 @@
           <span class="analysis-run-state" :class="`run-${String(run.status).toLowerCase()}`">{{ runStatusLabel(run.status) }}</span>
           <small v-if="run.context_snapshot?.analysis_feedback_source_run_id">根据运行记录 {{ run.context_snapshot.analysis_feedback_source_run_id }} 的结果重跑</small>
         </div>
-        <small v-if="run.created_at">生成于 {{ formatDate(run.created_at) }}</small>
+        <small v-if="run.created_at">生成于 {{ formatDateTime(run.created_at) }}</small>
       </header>
 
       <details v-if="run.runtime_instruction" class="analysis-run-feedback">
@@ -83,7 +83,7 @@
 import { Button as VanButton, Field as VanField } from 'vant'
 import AnalysisDirectionReview from './AnalysisDirectionReview.vue'
 import { currentReportFoundation, reportEvidenceTitle } from '../workbench-inputs.js'
-import { formatDate } from '../../service-requests/formatters.js'
+import { formatDateTime } from '../../../utils/dateTime.js'
 
 export default {
   name: 'AnalysisDraftsPanel',
@@ -103,7 +103,7 @@ export default {
   },
   emits: ['review-candidate', 'go-overview', 'run-analysis', 'go-calculation', 'busy'],
   methods: {
-    formatDate,
+    formatDateTime,
     submitAnalysis() {
       const feedback = this.feedbackText.trim()
       if (this.readOnly || !this.currentStep || this.feedbackSaving || this.reviewBusy || !this.analysisReady) return

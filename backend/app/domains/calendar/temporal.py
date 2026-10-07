@@ -1,6 +1,7 @@
 """Calculate future calendar facts without recalculating the natal chart."""
 from datetime import date, datetime, timedelta
 from lunar_python import Solar
+from app.core.time import SHANGHAI
 
 
 def calculate_temporal_facts(start: date, foundation: dict):
@@ -24,7 +25,7 @@ def calculate_temporal_facts(start: date, foundation: dict):
             after = solar.getLunar().getEightChar()
             before.setSect(2)
             after.setSect(2)
-            transitions.append({"solar_term": name, "at": moment.isoformat(),
+            transitions.append({"solar_term": name, "at": moment.replace(tzinfo=SHANGHAI).isoformat(timespec="seconds"),
                 "before": {"year_pillar": before.getYear(), "month_pillar": before.getMonth()},
                 "after": {"year_pillar": after.getYear(), "month_pillar": after.getMonth()}})
         dayun = next((d for d in facts.get("dayun", []) if d["start_year"] <= current.year <= d["end_year"]), None)

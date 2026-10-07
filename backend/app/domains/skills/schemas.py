@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Field, field_validator
+from app.core.schemas import APIModel as BaseModel
 
 
 class SkillVersionCreate(BaseModel):

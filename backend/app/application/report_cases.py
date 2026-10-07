@@ -1,4 +1,5 @@
 from datetime import datetime
+from app.core.time import utc_now_naive
 from typing import Optional
 
 from sqlalchemy import select
@@ -58,8 +59,8 @@ async def ensure_default_workflow_version(db: AsyncSession) -> WorkflowVersion:
         definition_json=default_workflow_definition(),
         created_by=None,
         published_by=None,
-        created_at=datetime.utcnow(),
-        published_at=datetime.utcnow(),
+        created_at=utc_now_naive(),
+        published_at=utc_now_naive(),
     )
     try:
         async with db.begin_nested():

@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domains.users.schemas import UserUpdate
 from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.models.user import User
+from app.core.time import utc_now_naive
 
 
 PROFILE_LIST_FIELDS = {
@@ -128,9 +129,9 @@ def apply_user_profile_update(user: User, update_data: dict) -> list[str]:
 
     if any(field in PROFILE_VERSION_FIELDS for field in changed_fields):
         user.profile_version = int(user.profile_version or 1) + 1
-        user.profile_last_confirmed_at = datetime.utcnow()
+        user.profile_last_confirmed_at = utc_now_naive()
     elif any(field in PROFILE_VERSION_FIELDS for field in update_data):
-        user.profile_last_confirmed_at = datetime.utcnow()
+        user.profile_last_confirmed_at = utc_now_naive()
 
     return changed_fields
 

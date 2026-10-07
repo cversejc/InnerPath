@@ -1,5 +1,6 @@
 """User submission and worker orchestration for report-based calendars."""
 from datetime import datetime, timedelta
+from app.core.time import utc_now_naive, utc_now_iso
 from sqlalchemy import select
 
 from app.domains.calendar.models import CalendarRequest
@@ -15,7 +16,7 @@ from app.domains.skills.examples import retrieve_skill_examples
 
 async def recover_stalled_calendar_requests(db):
     # Longer than the worker hard limit: a live task cannot still publish.
-    cutoff = datetime.utcnow() - timedelta(minutes=45)
+    cutoff = utc_now_naive() - timedelta(minutes=45)
     rows = await db.scalars(select(CalendarRequest).where(CalendarRequest.status == "generating",
         CalendarRequest.updated_at < cutoff).with_for_update(skip_locked=True))
     count = 0
@@ -28,7 +29,7 @@ async def recover_stalled_calendar_requests(db):
             SkillRun.target_type == "CALENDAR_PRODUCTION", SkillRun.target_key == str(request.id),
             SkillRun.status.in_({"PENDING", "RUNNING"})).with_for_update())
         for run in interrupted_runs:
-            run.status, run.error, run.completed_at = "FAILED", "calendar_worker_interrupted", datetime.utcnow()
+            run.status, run.error, run.completed_at = "FAILED", "calendar_worker_interrupted", utc_now_naive()
         await record_audit(db, request.user_id, "calendar.ai.interrupted", "calendar_request", str(request.id),
                            target_user_id=request.user_id, details={"recovery": "retry_available"})
         count += 1
@@ -92,7 +93,7 @@ async def execute_calendar_production(db, request_id, attempt, *, gateway=None):
         return {"status": "running"}
     request.status = "generating"
     request.input_snapshot = {**request.input_snapshot, "generation": {**generation,
-        "status": "RUNNING", "started_at": datetime.utcnow().isoformat()}}
+        "status": "RUNNING", "started_at": utc_now_iso()}}
     await db.commit()
     try:
         data = await produce_calendar(db, request, gateway=gateway)

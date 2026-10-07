@@ -1,4 +1,5 @@
 import { topicLabel } from './formatters.js'
+import { formatDateTime } from '../../utils/dateTime.js'
 
 export const CUSTOMER_SERVICE_REQUEST_STATUS_LABELS = {
   submitted: '等待咨询师接单',
@@ -23,11 +24,7 @@ export function customerServiceRequestStatusLabel(status) {
   return CUSTOMER_SERVICE_REQUEST_STATUS_LABELS[status] || status
 }
 
-export function formatCustomerServiceRequestDateTime(value) {
-  return value
-    ? new Date(value).toLocaleString('zh-CN', { dateStyle: 'medium', timeStyle: 'short' })
-    : '—'
-}
+export { formatDateTime as formatCustomerServiceRequestDateTime }
 
 export function canWithdrawServiceRequest(status) {
   return status === 'submitted' || status === 'needs_info'

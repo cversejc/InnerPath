@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict, Field
+from app.core.schemas import APIModel as BaseModel
 
 
 EvidenceSourceType = Literal[

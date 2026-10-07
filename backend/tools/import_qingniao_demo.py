@@ -10,6 +10,7 @@ import hashlib
 import json
 import secrets
 from datetime import datetime
+from app.core.time import utc_now_naive
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -55,7 +56,7 @@ async def suppress_demo_dispatch(db, case_id, run_id=None):
     for row in rows:
         payload = row.payload_json or {}
         if payload.get("report_case_id") == case_id or (run_id is not None and payload.get("skill_run_id") == run_id):
-            row.status, row.published_at = "PUBLISHED", datetime.utcnow()
+            row.status, row.published_at = "PUBLISHED", utc_now_naive()
 
 
 async def import_demo(artifacts):
@@ -75,7 +76,7 @@ async def import_demo(artifacts):
             raise RuntimeError("This demo was already imported; no account or password was changed")
         if await db.scalar(select(User).where(User.phone.in_([CONSULTANT_PHONE, CLIENT_PHONE]))):
             raise RuntimeError("Demo phone collision; no existing account was changed")
-        consultant = User(phone=CONSULTANT_PHONE, name="青鸟流程演示咨询师", role="consultant", is_active=True, password_hash=get_password_hash(password), phone_verified_at=datetime.utcnow())
+        consultant = User(phone=CONSULTANT_PHONE, name="青鸟流程演示咨询师", role="consultant", is_active=True, password_hash=get_password_hash(password), phone_verified_at=utc_now_naive())
         client = User(phone=CLIENT_PHONE, name="青鸟 · 出生信息为演示假设", role="user", is_active=True)
         db.add_all([consultant, client])
         await db.flush()
@@ -101,7 +102,7 @@ async def import_demo(artifacts):
             run, _ = await create_skill_run(db, skill_version_id=skill.id, report_case_id=case.id, step_task_id=step.id, workflow_instance_id=case.workflow_instance_id, idempotency_key=f"{DEMO_KEY}-{step.step_key}", input_snapshot={"profile": data["profile"], "context": data["context"]}, context_snapshot={"analysis_activation_no": 1, "demo_review": record["review"]}, target_type="REPORT_ANALYSIS_DRAFT", target_key=step.step_key)
             run.status, run.output_parsed, run.model_trace = "COMPLETED", record["output"], {**record["trace"], "replayed_for_local_demo": True}
             run.output_raw = json.dumps(record.get("original_model_output", record["output"]), ensure_ascii=False)
-            run.completed_at = datetime.utcnow()
+            run.completed_at = utc_now_naive()
             for finding in record["output"]["findings"]:
                 await create_finding_revision(db, report_case_id=case.id, status="CONFIRMED", owner_step_task_id=step.id, source_skill_run_id=run.id, created_by=consultant.id, **finding)
             for fragment in record["output"]["analysis_fragments"]:
@@ -109,14 +110,14 @@ async def import_demo(artifacts):
             gate = await get_analysis_step_completion_gate(db, case_id=case.id, step_key=step.step_key, actor=consultant)
             if not gate["can_complete"]:
                 raise ValueError(f"{step.step_key} coverage gate failed")
-            step.status, step.completed_at = "COMPLETED", datetime.utcnow()
+            step.status, step.completed_at = "COMPLETED", utc_now_naive()
             step.result_json = {"demo_review": "开发者验收回放，不是真实咨询师签字"}
         planner = (await ensure_default_narrative_skill_versions(db))[0]
         model = await load_case_semantic_model(db, case.id)
         candidate_record = read("S5-candidates.json")
         candidate, _ = await create_skill_run(db, skill_version_id=planner.id, report_case_id=case.id, step_task_id=steps[4].id, idempotency_key=f"{DEMO_KEY}-plan", input_snapshot={}, context_snapshot={"semantic_source_snapshot": semantic_source_snapshot(model)}, target_type="NARRATIVE_CANDIDATES", target_key="S5")
         candidate.status, candidate.output_parsed = "COMPLETED", candidate_record["output"]
-        candidate.model_trace, candidate.completed_at = candidate_record["trace"], datetime.utcnow()
+        candidate.model_trace, candidate.completed_at = candidate_record["trace"], utc_now_naive()
         selected = read("S5-plan.json")["plan"]
         plan = await confirm_narrative_plan(db, report_case_id=case.id, skill_run_id=candidate.id, candidate_key=selected["selected_candidate"], overrides={"priority_blocks": selected["priority_blocks"]}, actor_id=consultant.id)
         print(json.dumps({"case_id": case.id, "status": "IMPORTING"}, ensure_ascii=False), flush=True)
@@ -132,7 +133,7 @@ async def import_demo(artifacts):
             await create_content_fragment_revision(db, report_case_id=case.id, fragment_key=row.fragment_key, fragment_type="REPORT", content=row.content, title=row.title, status="CONFIRMED", edit_kind="STYLE", created_by=consultant.id)
         plan.plan_json = {**plan.plan_json, "generation": {"status": "READY_FOR_REVIEW", "issues": []}}
         steps[4].status, steps[5].status = "COMPLETED", "IN_REVIEW"
-        steps[4].completed_at = datetime.utcnow()
+        steps[4].completed_at = utc_now_naive()
         queued = await queue_case_quality_run(db, report_case=case, actor_id=consultant.id, idempotency_key=f"{DEMO_KEY}-qa")
         if queued["status"] == "PROGRAMMATIC_BLOCKED":
             raise ValueError("Programmatic quality gate failed")

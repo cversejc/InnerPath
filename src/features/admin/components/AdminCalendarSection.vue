@@ -1,7 +1,7 @@
 <script setup>
 import { Button as VanButton } from 'vant'
 import AdminIconButton from './AdminIconButton.vue'
-import { calendarStatusText, formatDate } from '../formatters.js'
+import { calendarStatusText, formatDate, formatDateTime } from '../formatters.js'
 
 defineProps({
   calendarForm: { type: Object, required: true },
@@ -58,7 +58,7 @@ defineEmits([
         <div v-if="calendarLoading" class="list-loading" aria-label="正在加载日历"><i v-for="index in 4" :key="index"></i></div>
         <div v-else-if="selectedCalendarUser" class="calendar-list">
           <article v-for="calendar in calendars" :key="calendar.id" class="calendar-card" :class="{ selected: calendarForm.id === calendar.id }">
-            <div class="calendar-card-top"><div><strong>{{ calendar.title }}</strong><small>v{{ calendar.version_number }} · {{ calendar.entries?.length || 0 }} 天 · 更新于 {{ formatDate(calendar.updated_at) }}</small></div><span :class="['status-badge', `calendar-${calendar.status}`]">{{ calendarStatusText(calendar.status) }}</span></div>
+            <div class="calendar-card-top"><div><strong>{{ calendar.title }}</strong><small>v{{ calendar.version_number }} · {{ calendar.entries?.length || 0 }} 天 · 更新于 {{ formatDateTime(calendar.updated_at) }}</small></div><span :class="['status-badge', `calendar-${calendar.status}`]">{{ calendarStatusText(calendar.status) }}</span></div>
             <div class="calendar-card-preview"><span v-for="entry in (calendar.entries || []).slice(0, 4)" :key="entry.id">{{ formatDate(entry.entry_date) }} · {{ entry.keyword || entry.status_label || '未命名' }}</span></div>
             <div class="row-actions"><button type="button" @click="$emit('prepare-edit', calendar)">{{ calendar.status === 'draft' ? '编辑' : '创建编辑版本' }}</button><button type="button" @click="$emit('export-calendar', calendar)">JSON</button><button v-if="calendar.status === 'draft'" type="button" @click="$emit('publish-calendar', calendar)">发布</button><button v-if="calendar.status === 'published'" type="button" class="danger-action" @click="$emit('archive-calendar', calendar)">归档</button></div>
           </article>

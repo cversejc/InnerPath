@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Button as VanButton } from 'vant'
-import { formatDate } from '../../service-requests/formatters.js'
+import { formatDateTime } from '../../../utils/dateTime.js'
 
 const props = defineProps({ request: { type: Object, required: true } })
 defineEmits(['view-analysis'])
@@ -16,7 +16,7 @@ const hasReport = computed(() => props.request.result_type === 'report'
       <p class="section-kicker">交付成果</p>
       <h2>最终报告已交付</h2>
       <p>这里打开的是用户收到的最终正文。分析依据与审核记录仍保留在工作台中。</p>
-      <small v-if="request.delivered_at">交付时间：{{ formatDate(request.delivered_at) }}</small>
+      <small v-if="request.delivered_at">交付时间：{{ formatDateTime(request.delivered_at) }}</small>
     </div>
     <div class="delivery-links">
       <router-link v-if="hasReport" class="primary-button" :to="{ path: '/pages/report/detail', query: { id: String(reportId), request_id: String(request.id) } }">查看最终报告</router-link>

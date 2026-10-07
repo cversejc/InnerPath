@@ -8,6 +8,7 @@ from sqlalchemy import select
 
 from app.core.cache import cache_set, close_redis
 from app.core.logging_config import get_logger
+from app.core.time import utc_now_naive
 from app.db.session import AsyncSessionLocal, engine
 from app.domains.service_requests.models import ServiceRequest, ServiceRequestDraft, ServiceRequestTask
 from app.application.report_cases import (
@@ -80,7 +81,7 @@ async def _save_draft(
             await db.flush()
         await _append_revision(db, request_id, "ai_generated", validated_payload, None)
         service_request.status = "ai_ready"
-        service_request.ai_completed_at = datetime.utcnow()
+        service_request.ai_completed_at = utc_now_naive()
         service_request.last_error = None
         task.status = "completed"
         task.progress = 100
@@ -171,7 +172,7 @@ async def _run_service_request_task(task_id: str, request_id: int) -> dict[str, 
                 if service_request and not case_backed:
                     service_request.status = "failed"
                     service_request.last_error = error_text
-                    service_request.failed_at = datetime.utcnow()
+                    service_request.failed_at = utc_now_naive()
                 await record_audit(
                     db,
                     None,

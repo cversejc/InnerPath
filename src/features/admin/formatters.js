@@ -1,3 +1,7 @@
+import { formatDate, formatDateTime } from '../../utils/dateTime.js'
+
+export { formatDate, formatDateTime }
+
 export function pageCount(total, size) {
   return Math.max(1, Math.ceil((total || 0) / size))
 }
@@ -11,16 +15,8 @@ export function distributionWidth(item, items) {
   return (item.value / max) * 100
 }
 
-export function formatDate(value) {
-  return value ? new Date(`${String(value).slice(0, 10)}T00:00:00`).toLocaleDateString('zh-CN') : '—'
-}
-
 export function formatShortDate(value) {
   return value ? `${String(value).slice(5, 7)}/${String(value).slice(8, 10)}` : '—'
-}
-
-export function formatDateTime(value) {
-  return value ? new Date(value).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'
 }
 
 export function reportStatusText(value) {

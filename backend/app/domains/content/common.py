@@ -5,10 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.skills.models import SkillRun
 from app.domains.workflow.models import ReportCase, StepTask
+from app.core.time import utc_now_naive
 
 
 def now() -> datetime:
-    return datetime.utcnow()
+    return utc_now_naive()
 
 
 def same_json(left, right) -> bool:

@@ -1,6 +1,7 @@
 """Traceable calendar generation with frozen skills and independent calibration."""
 from copy import deepcopy
 from datetime import datetime
+from app.core.time import utc_now_naive, utc_now_iso
 import json
 from math import isfinite
 import re
@@ -405,10 +406,10 @@ async def produce_calendar(db, request, *, gateway=None):
             validator(log.output_parsed)
             runs.append(log.id)
             return log.output_parsed
-        log.status, log.started_at = "RUNNING", datetime.utcnow()
+        log.status, log.started_at = "RUNNING", utc_now_naive()
         progress = dict(request.input_snapshot or {})
         progress["generation"] = {**(progress.get("generation") or {}), "status": "RUNNING", "attempt": attempt, "stage": key,
-                                  "heartbeat_at": datetime.utcnow().isoformat(),
+                                  "heartbeat_at": utc_now_iso(),
                                   "completed_runs": len(all_runs) - 1, "total_runs": total_runs}
         request.input_snapshot = progress
         await db.commit()
@@ -437,7 +438,7 @@ async def produce_calendar(db, request, *, gateway=None):
                 log.output_raw = error.output_raw
             execution_error = error
         finally:
-            log.completed_at = datetime.utcnow()
+            log.completed_at = utc_now_naive()
             await db.commit()
         if execution_error is not None:
             if isinstance(execution_error, ValueError) and not extra.get("format_repair_instruction") and str(execution_error) not in {

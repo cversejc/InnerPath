@@ -1,4 +1,5 @@
 import { authState } from '../../../stores/auth'
+import { addDaysToDateKey } from '../../../utils/dateTime.js'
 import { getCurrentUser } from '../../users/service.js'
 import { getUserReports } from '../../reports/api.js'
 import { createCalendarRequest, getCalendarRequests, retryCalendarRequest } from '../api.js'
@@ -55,10 +56,7 @@ export default {
         this.calendarRequestDraft.end_date = ''
         return
       }
-      const end = new Date(`${start}T00:00:00`)
-      if (Number.isNaN(end.getTime())) return
-      end.setDate(end.getDate() + 29)
-      this.calendarRequestDraft.end_date = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`
+      this.calendarRequestDraft.end_date = addDaysToDateKey(start, 29) || ''
     },
   closeCalendarRequest() {
       this.showCalendarRequestForm = false

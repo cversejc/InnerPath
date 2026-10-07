@@ -5,7 +5,7 @@ import {
   birthSummary as formatBirthSummary,
   consultationTypeLabel,
   errorText,
-  formatDate,
+  formatDateTime,
   genderLabel,
   prettyJson,
   requestGoal,
@@ -623,7 +623,7 @@ export default {
     genderLabel,
     topicLabel,
     requestGoal,
-    formatDate,
+    formatDateTime,
     pretty: prettyJson
   }
 }

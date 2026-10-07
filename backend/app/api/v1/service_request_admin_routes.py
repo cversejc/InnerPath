@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.audit_context import audit_context_from_request
 from app.db.session import get_db
 from app.dependencies import require_roles
+from app.core.time import utc_now_naive
 from app.domains.service_requests.models import ServiceRequest
 from app.models.user import User
 from app.domains.service_requests.schemas import (
@@ -181,7 +182,7 @@ async def update_request_assignment(
         service_request.assigned_consultant_id = data.consultant_id
     if consultant and service_request.status == "submitted":
         service_request.status = "accepted"
-        service_request.accepted_at = datetime.utcnow()
+        service_request.accepted_at = utc_now_naive()
     elif consultant is None and service_request.assigned_consultant_id is None and service_request.status == "accepted":
         service_request.status = "submitted"
     service_request.updated_by = current_user.id
@@ -223,7 +224,7 @@ async def reject_request(
         )
     service_request.status = "rejected"
     service_request.rejection_reason = data.reason
-    service_request.rejected_at = datetime.utcnow()
+    service_request.rejected_at = utc_now_naive()
     service_request.updated_by = current_user.id
     await record_audit(
         db,

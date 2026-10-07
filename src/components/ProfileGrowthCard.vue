@@ -34,7 +34,7 @@
       <VanButton native-type="button" class="secondary-button growth-action" @click="$emit('edit')">
         {{ safeCompletion >= 100 ? '查看 / 更新画像' : '完善本人画像' }}
       </VanButton>
-      <span v-if="lastConfirmedAt" class="growth-meta">最近确认：{{ formatDate(lastConfirmedAt) }}</span>
+      <span v-if="lastConfirmedAt" class="growth-meta">最近确认：{{ formatDateTime(lastConfirmedAt) }}</span>
       <span v-else class="growth-meta">核心资料确认后即可跨场景复用</span>
     </div>
   </section>
@@ -42,6 +42,7 @@
 
 <script>
 import { Button as VanButton } from 'vant'
+import { formatDateTime } from '../utils/dateTime.js'
 
 export default {
   name: 'ProfileGrowthCard',
@@ -78,13 +79,7 @@ export default {
       return hints.slice(0, 2)
     }
   },
-  methods: {
-    formatDate(value) {
-      const date = new Date(value)
-      if (Number.isNaN(date.getTime())) return '—'
-      return date.toLocaleDateString('zh-CN')
-    }
-  }
+  methods: { formatDateTime }
 }
 </script>
 

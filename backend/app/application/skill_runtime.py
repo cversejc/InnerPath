@@ -1,4 +1,5 @@
 from datetime import datetime
+from app.core.time import utc_now_naive
 from copy import deepcopy
 from typing import Any
 
@@ -319,7 +320,7 @@ async def _queue_run(
             payload_json={"skill_run_id": run.id},
             status="PENDING",
             retry_count=0,
-            created_at=datetime.utcnow(),
+            created_at=utc_now_naive(),
         )
         db.add(event)
         await db.flush()
@@ -848,17 +849,17 @@ async def execute_skill_run_record(
     if skill_version is None:
         run.status = "FAILED"
         run.error = "skill_version_not_found"
-        run.completed_at = datetime.utcnow()
+        run.completed_at = utc_now_naive()
         await db.commit()
         return run
     if skill_version.skill_key == "report.generate" or skill_version.status == "RETIRED":
         run.status = "FAILED"
         run.error = "skill_retired"
-        run.completed_at = datetime.utcnow()
+        run.completed_at = utc_now_naive()
         await db.commit()
         return run
     run.status = "RUNNING"
-    run.started_at = datetime.utcnow()
+    run.started_at = utc_now_naive()
     await db.commit()
     try:
         result = await execute_skill(
@@ -976,7 +977,7 @@ async def execute_skill_run_record(
         }
         run.context_snapshot = {**(run.context_snapshot or {}), "evaluation": evaluation}
         flag_modified(run, "context_snapshot")
-    run.completed_at = datetime.utcnow()
+    run.completed_at = utc_now_naive()
     await db.commit()
     await db.refresh(run)
     return run

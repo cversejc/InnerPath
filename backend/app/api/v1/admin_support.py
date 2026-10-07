@@ -1,28 +1,24 @@
 """Common date, count, and lookup helpers for admin routes."""
 
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import date, datetime
 from typing import Optional
-from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.calendar.models import UserCalendar
+from app.core.time import utc_naive_for_shanghai_date
 
 
 USER_ROLE_LABELS = {"user": "用户", "consultant": "咨询师", "admin": "管理员"}
 REPORT_STATUS_LABELS = {"processing": "生成中", "completed": "已完成", "failed": "失败"}
 CALENDAR_STATUS_LABELS = {"draft": "草稿", "published": "已发布", "archived": "已归档"}
-LOCAL_ZONE = ZoneInfo("Asia/Shanghai")
-UTC = timezone.utc
-
-
 def _db_start(date_value: date) -> datetime:
-    return datetime.combine(date_value, time.min, tzinfo=LOCAL_ZONE).astimezone(UTC).replace(tzinfo=None)
+    return utc_naive_for_shanghai_date(date_value)
 
 
 def _db_end(date_value: date) -> datetime:
-    return datetime.combine(date_value + timedelta(days=1), time.min, tzinfo=LOCAL_ZONE).astimezone(UTC).replace(tzinfo=None)
+    return utc_naive_for_shanghai_date(date_value, end=True)
 
 
 async def _count(db: AsyncSession, statement) -> int:

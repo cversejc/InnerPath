@@ -13,6 +13,7 @@ from typing import Any, Mapping, Optional
 
 from app.models.user import User
 from app.domains.users.lunar_calendar import solar_date_for_birth
+from app.core.time import shanghai_today
 
 
 PROFILE_SNAPSHOT_FIELDS = (
@@ -124,7 +125,7 @@ def calculate_age(
     if not all(value is not None for value in (birth_year, birth_month, birth_day)):
         return None
     try:
-        current = today or date.today()
+        current = today or shanghai_today()
         birthday = solar_date_for_birth(
             int(birth_year),
             int(birth_month),

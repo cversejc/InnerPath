@@ -25,7 +25,7 @@
     <template v-else>
       <p class="calculation-provenance">
         {{ evidence.source_type === 'CONSULTANT_CORRECTED' ? `人工修订版本 ${evidence.value_json?._consultant_correction?.revision || ''}` : '系统生成的测算版本' }}
-        <template v-if="evidence.created_at"> · {{ evidence.created_at }}</template>
+        <template v-if="evidence.created_at"> · {{ formatDateTime(evidence.created_at) }}</template>
       </p>
       <p v-if="evidence.value_json?._consultant_correction?.reason && !editing" class="calculation-correction-reason">
         最近修订原因：{{ evidence.value_json._consultant_correction.reason }}
@@ -67,6 +67,7 @@
 <script>
 import { Button as VanButton } from 'vant'
 import FoundationEvidence from './FoundationEvidence.vue'
+import { formatDateTime } from '../../../utils/dateTime.js'
 
 export default {
   name: 'FoundationCalculationPanel',
@@ -85,6 +86,7 @@ export default {
     }
   },
   methods: {
+    formatDateTime,
     beginEdit() {
       this.draftValue = JSON.parse(JSON.stringify(this.evidence?.value_json || {}))
       this.reason = ''

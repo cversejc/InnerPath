@@ -19,6 +19,7 @@ from app.domains.workflow.authorization import (
     consultant_capabilities,
     is_assigned,
 )
+from app.core.time import utc_now_naive, utc_naive_for_shanghai_date
 from app.domains.workflow.models import ReportCase, StepTask
 from app.services.intake_service import profile_snapshot
 
@@ -70,7 +71,7 @@ async def accept_service_request(
         service_request.assigned_consultant_id = service_request.assigned_consultant_id or consultant.id
         if service_request.status == "submitted":
             service_request.status = "accepted"
-        service_request.accepted_at = service_request.accepted_at or datetime.utcnow()
+        service_request.accepted_at = service_request.accepted_at or utc_now_naive()
         service_request.updated_by = consultant.id
         await record_audit(db, consultant.id, "service_request.specialty.accept", "service_request",
                            str(request_id), target_user_id=service_request.user_id,
@@ -86,7 +87,7 @@ async def accept_service_request(
         raise ValueError("consultant_specialty_mismatch")
     service_request.assigned_consultant_id = consultant.id
     service_request.status = "accepted"
-    service_request.accepted_at = datetime.utcnow()
+    service_request.accepted_at = utc_now_naive()
     service_request.updated_by = consultant.id
     await record_audit(
         db,
@@ -269,9 +270,9 @@ async def list_admin_service_requests(
             )
         )
     if date_from:
-        conditions.append(ServiceRequest.created_at >= datetime.combine(date_from, time.min))
+        conditions.append(ServiceRequest.created_at >= utc_naive_for_shanghai_date(date_from))
     if date_to:
-        conditions.append(ServiceRequest.created_at < datetime.combine(date_to + timedelta(days=1), time.min))
+        conditions.append(ServiceRequest.created_at < utc_naive_for_shanghai_date(date_to, end=True))
     if search:
         term = f"%{search.strip()}%"
         conditions.append(or_(User.name.ilike(term), User.phone.ilike(term)))

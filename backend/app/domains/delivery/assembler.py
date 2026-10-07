@@ -13,6 +13,7 @@ from app.domains.workflow.models import (
     WorkflowInstance,
     WorkflowVersion,
 )
+from app.core.time import api_datetime, utc_now_naive
 
 
 SECTION_ORDER = (("identity", "你是谁"), ("challenge", "卡在哪"), ("direction", "往哪去"))
@@ -155,7 +156,7 @@ async def assemble_report_version(
             ReportVersion.report_case_id == report_case.id
         )
     )
-    now = datetime.utcnow()
+    now = utc_now_naive()
     version = ReportVersion(
         report_case_id=report_case.id,
         version_no=(latest_version or 0) + 1,
@@ -183,11 +184,7 @@ async def assemble_report_version(
             "final_gate": {
                 "step_task_id": final_gate.id,
                 "activation_no": final_gate.activation_no,
-                "completed_at": (
-                    final_gate.completed_at.isoformat()
-                    if final_gate.completed_at
-                    else None
-                ),
+                "completed_at": api_datetime(final_gate.completed_at),
                 "result_json": final_gate.result_json or {},
             },
         },

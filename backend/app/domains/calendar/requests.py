@@ -16,6 +16,7 @@ from app.domains.calendar.schemas import CalendarRequestAdminUpdate, CalendarReq
 from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from app.services.intake_service import build_intake_snapshot
+from app.core.time import utc_now_naive, utc_naive_for_shanghai_date
 from app.domains.delivery.models import ReportVersion
 from copy import deepcopy
 
@@ -269,9 +270,9 @@ async def get_calendar_requests_for_admin(
     if user_id:
         conditions.append(CalendarRequest.user_id == user_id)
     if date_from:
-        conditions.append(CalendarRequest.created_at >= datetime.combine(date_from, time.min))
+        conditions.append(CalendarRequest.created_at >= utc_naive_for_shanghai_date(date_from))
     if date_to:
-        conditions.append(CalendarRequest.created_at < datetime.combine(date_to + timedelta(days=1), time.min))
+        conditions.append(CalendarRequest.created_at < utc_naive_for_shanghai_date(date_to, end=True))
     if search:
         term = f"%{search.strip()}%"
         conditions.append(or_(User.name.ilike(term), User.phone.ilike(term)))
@@ -358,7 +359,7 @@ async def update_calendar_request(
     calendar_request.status = data.status
     calendar_request.review_note = (data.review_note or "").strip() or None
     calendar_request.reviewer_id = reviewer_id
-    calendar_request.reviewed_at = datetime.utcnow()
+    calendar_request.reviewed_at = utc_now_naive()
     await record_audit(
         db,
         reviewer_id,

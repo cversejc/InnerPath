@@ -10,10 +10,11 @@ from app.domains.workflow.models import ReportCase
 
 from .models import QAIssue
 from .programmatic import collect_programmatic_issues
+from app.core.time import utc_now_naive
 
 
 def _now() -> datetime:
-    return datetime.utcnow()
+    return utc_now_naive()
 
 
 async def run_programmatic_qa(

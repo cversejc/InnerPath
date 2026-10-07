@@ -16,10 +16,11 @@ from .models import (
     WorkflowOutbox,
     WorkflowVersion,
 )
+from app.core.time import utc_now_naive
 
 
 def _now() -> datetime:
-    return datetime.utcnow()
+    return utc_now_naive()
 
 
 async def latest_published_version(

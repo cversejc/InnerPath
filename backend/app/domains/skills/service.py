@@ -16,12 +16,13 @@ from .definitions import (
     validate_skill_specification,
 )
 from .models import AISkillVersion, SkillRun
+from app.core.time import utc_now_naive
 from .lifecycle import require_active_skill
 from .builtin_examples import ensure_builtin_examples
 
 
 def _now() -> datetime:
-    return datetime.utcnow()
+    return utc_now_naive()
 
 
 def _system_managed_projection(specification: dict[str, Any]) -> dict[str, Any]:

@@ -19,9 +19,9 @@ const days = computed(() => (props.calendar.entries || []).map(entry => {
   return {
     ...entry,
     date: entryDate,
-    month: date.getMonth() + 1,
-    day: date.getDate(),
-    weekday: weekdays[date.getDay()],
+    month: date.getUTCMonth() + 1,
+    day: date.getUTCDate(),
+    weekday: weekdays[date.getUTCDay()],
     dayPillar: entry.day_pillar || entry.dayPillar || '',
     statusLabel: entry.status_label || entry.statusLabel || '',
     shortLabel: entry.keyword || entry.shortLabel || entry.status_label || entry.statusLabel || '查看',

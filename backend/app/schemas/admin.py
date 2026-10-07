@@ -2,11 +2,12 @@ from datetime import date, datetime, time
 from decimal import Decimal
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, field_validator
+from app.core.schemas import APIModel as BaseModel
+from app.core.time import shanghai_today
 
 from app.domains.reports.schemas import ReportListItem, ReportResponse
 from app.domains.users.schemas import UserResponse
-
 
 class UserStatusUpdate(BaseModel):
     is_active: bool
@@ -35,7 +36,7 @@ class AdminConsultantSpecialtiesUpdate(BaseModel):
 class AdminUserUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=50)
     gender: Optional[str] = Field(None, pattern="^(male|female)$")
-    birth_year: Optional[int] = Field(None, ge=1900, le=2026)
+    birth_year: Optional[int] = Field(None, ge=1900)
     birth_month: Optional[int] = Field(None, ge=1, le=12)
     birth_day: Optional[int] = Field(None, ge=1, le=31)
     birth_is_leap_month: Optional[bool] = None
@@ -59,6 +60,13 @@ class AdminUserUpdate(BaseModel):
     default_usage_scenarios: Optional[list[str]] = Field(None, max_length=6)
     default_usage_scenarios_other: Optional[str] = Field(None, max_length=500)
     avatar_url: Optional[str] = None
+
+    @field_validator("birth_year")
+    @classmethod
+    def validate_birth_year(cls, value: Optional[int]) -> Optional[int]:
+        if value is not None and value > shanghai_today().year:
+            raise ValueError("birth_year_cannot_be_in_the_future")
+        return value
 
 
 class AdminUserListItem(BaseModel):

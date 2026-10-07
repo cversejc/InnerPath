@@ -1,7 +1,9 @@
 from datetime import date, datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import Field, model_validator
+from app.core.schemas import APIModel as BaseModel
+from app.core.time import shanghai_today
 
 from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.domains.reports.schemas import ReportContext
@@ -15,7 +17,7 @@ ConsultantSpecialty = Literal["metaphysics", "psychology"]
 class ServiceProfileSnapshot(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=50)
     gender: str = Field(..., pattern="^(male|female)$")
-    birth_year: int = Field(..., ge=1900, le=date.today().year)
+    birth_year: int = Field(..., ge=1900)
     birth_month: int = Field(..., ge=1, le=12)
     birth_day: int = Field(..., ge=1, le=31)
     birth_is_leap_month: bool = False
@@ -44,6 +46,8 @@ class ServiceProfileSnapshot(BaseModel):
 
     @model_validator(mode="after")
     def validate_birth_date(self):
+        if self.birth_year > shanghai_today().year:
+            raise ValueError("birth_year_cannot_be_in_the_future")
         solar_date_for_birth(
             self.birth_year,
             self.birth_month,

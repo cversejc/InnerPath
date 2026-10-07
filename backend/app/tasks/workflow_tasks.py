@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import select
 
 from app.core.logging_config import get_logger
+from app.core.time import utc_now_naive
 from app.db.session import AsyncSessionLocal, engine
 from app.domains.workflow.models import StepTask, WorkflowOutbox
 from app.tasks.celery_app import celery_app
@@ -42,7 +43,7 @@ async def _dispatch_pending_events(batch_size: int = 100) -> int:
                     task_id=f"workflow-outbox-{event.id}",
                 )
                 event.status = "PUBLISHED"
-                event.published_at = datetime.utcnow()
+                event.published_at = utc_now_naive()
                 published += 1
             except Exception:
                 event.retry_count += 1

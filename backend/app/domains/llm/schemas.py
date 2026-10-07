@@ -1,7 +1,8 @@
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Field, field_validator
+from app.core.schemas import APIModel as BaseModel
 
 
 ProviderName = Literal["deepseek", "openai_compatible"]

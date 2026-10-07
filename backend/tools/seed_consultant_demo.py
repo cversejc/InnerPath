@@ -11,6 +11,7 @@ import json
 import logging
 from copy import deepcopy
 from datetime import date, datetime
+from app.core.time import utc_now_naive, shanghai_today
 from uuid import NAMESPACE_URL, uuid5
 
 from sqlalchemy import select
@@ -251,7 +252,7 @@ SKILL_EXAMPLE_CONTENT = {
 
 
 def _now() -> datetime:
-    return datetime.utcnow()
+    return utc_now_naive()
 
 
 def _require_local_database() -> None:
@@ -323,7 +324,7 @@ def _service_request_data(user: User, scenario: dict, service_type: str) -> Serv
     }
     if service_type == "calendar":
         data["calendar_goal"] = scenario["challenge"]
-        data["start_date"] = date.today()
+        data["start_date"] = shanghai_today()
     return ServiceRequestCreate.model_validate(data)
 
 

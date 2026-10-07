@@ -1,3 +1,5 @@
+import { shanghaiYear } from '../../utils/dateTime.js'
+
 export function createEmptyProfile() {
   return {
     name: '',
@@ -60,7 +62,7 @@ export function mapUserToProfile(user) {
   }
 }
 
-export function validateProfile(profile, currentYear = new Date().getFullYear()) {
+export function validateProfile(profile, currentYear = shanghaiYear()) {
   const errors = {}
   if (!String(profile.name || '').trim()) errors.name = '请填写称呼。'
   if (!profile.gender) errors.gender = '请选择性别。'
@@ -72,8 +74,8 @@ export function validateProfile(profile, currentYear = new Date().getFullYear())
   if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期。'
   if (profile.calendar_type === 'solar' && year && month && day) {
     if (profile.birth_is_leap_month) errors.birth_date = '公历日期不能选择闰月。'
-    const date = new Date(year, month - 1, day)
-    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    const date = new Date(Date.UTC(year, month - 1, day))
+    if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
       errors.birth_date = '公历出生日期不存在，请检查日期。'
     }
   }

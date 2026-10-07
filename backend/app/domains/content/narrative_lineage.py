@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import ContentFragmentRevision, NarrativePlan
+from app.core.time import utc_now_naive
 
 
 def _plan_source_refs(
@@ -295,7 +296,7 @@ async def carry_forward_unchanged_report_fragments(
                 source_narrative_plan_id=current.id,
                 stale_reason=None,
                 created_by=actor_id,
-                created_at=datetime.utcnow(),
+                created_at=utc_now_naive(),
             )
         )
     await db.flush()

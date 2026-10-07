@@ -1,4 +1,5 @@
 import { getAllAdminUsers } from '../api.js'
+import { addDaysToDateKey, shanghaiDateKey } from '../../../utils/dateTime.js'
 import {
   archiveAdminCalendar,
   createAdminCalendar,
@@ -11,8 +12,7 @@ import {
 } from '../../calendar/api.js'
 
 function todayKey() {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  return shanghaiDateKey()
 }
 
 function createEntry(date = todayKey()) {
@@ -72,7 +72,7 @@ export default {
       this.calendarForm = { visible: true, id: calendar.id, title: calendar.title, note: '', start_date: calendar.start_date || '', end_date: calendar.end_date || '', status: calendar.status, version_number: calendar.version_number || 1, entries: (calendar.entries || []).map(entry => ({ ...createEntry(entry.entry_date), ...entry, _key: `entry-${entry.id || Date.now()}-${Math.random()}`, suitableText: (entry.suitable || []).join('，'), unsuitableText: (entry.unsuitable || []).join('，') })) }
     },
   cancelCalendarEdit() { this.calendarForm = { visible: false, id: null, title: '', note: '', start_date: '', end_date: '', status: '', version_number: 1, entries: [] } },
-  addCalendarEntry() { const last = this.calendarForm.entries[this.calendarForm.entries.length - 1]?.entry_date; let next = this.calendarForm.start_date || todayKey(); if (last) { const date = new Date(`${last}T00:00:00`); date.setDate(date.getDate() + 1); next = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` } this.calendarForm.entries.push(createEntry(next)) },
+  addCalendarEntry() { const last = this.calendarForm.entries[this.calendarForm.entries.length - 1]?.entry_date; const next = addDaysToDateKey(last, 1) || this.calendarForm.start_date || todayKey(); this.calendarForm.entries.push(createEntry(next)) },
   removeCalendarEntry(index) { this.calendarForm.entries.splice(index, 1) },
   splitEntryText(value) { return (value || '').split(/[,，、\n]/).map(item => item.trim()).filter(Boolean) },
   validateCalendarEntries(entries, startDate, endDate) {

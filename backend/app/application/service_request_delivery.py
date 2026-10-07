@@ -1,6 +1,7 @@
 """Create and deliver final report or calendar artifacts."""
 
 from datetime import date, datetime
+from app.core.time import utc_now_naive
 from typing import Optional
 from uuid import uuid4
 
@@ -64,7 +65,7 @@ async def _create_final_calendar(
         meta_payload=payload.get("meta_payload") or {},
         created_by=actor.id,
         updated_by=actor.id,
-        published_at=datetime.utcnow(),
+        published_at=utc_now_naive(),
     )
     db.add(calendar)
     await db.flush()
@@ -109,7 +110,7 @@ async def deliver_service_request(
     locked.status = "delivered"
     locked.result_type = result_type
     locked.result_id = result.id
-    locked.delivered_at = datetime.utcnow()
+    locked.delivered_at = utc_now_naive()
     locked.updated_by = actor.id
     await _append_revision(db, locked.id, "delivered", draft.editable_payload, actor.id)
     await record_audit(

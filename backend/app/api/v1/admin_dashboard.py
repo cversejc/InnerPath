@@ -1,5 +1,4 @@
-from datetime import date, datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
+from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
@@ -21,6 +20,7 @@ from app.domains.calendar.models import DecisionLog, UserCalendar
 from app.domains.reports.models import Report, ReportTask
 from app.models.user import User
 from app.domains.audit.models import AuditLog
+from app.core.time import shanghai_today
 from app.schemas.admin import (
     AuditLogResponse,
     DashboardAlert,
@@ -32,12 +32,8 @@ from app.schemas.admin import (
 )
 
 router = APIRouter()
-LOCAL_ZONE = ZoneInfo("Asia/Shanghai")
-UTC = timezone.utc
-
-
 def _local_today() -> date:
-    return datetime.now(LOCAL_ZONE).date()
+    return shanghai_today()
 
 def _dashboard_range(preset: str) -> tuple[date, date]:
     days = {"7d": 7, "30d": 30, "90d": 90}.get(preset)

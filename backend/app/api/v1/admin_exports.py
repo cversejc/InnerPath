@@ -18,6 +18,7 @@ from app.config import settings
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
+from app.core.time import api_datetime
 
 router = APIRouter()
 
@@ -65,18 +66,18 @@ async def export_admin_resource(
         if conditions:
             statement = statement.where(*conditions)
         users = (await db.execute(statement)).scalars().all()
-        rows = [[user.id, user.name, user.phone, USER_ROLE_LABELS.get(user.role, user.role), "正常" if user.is_active else "已停用", user.created_at, user.last_login_at] for user in users]
+        rows = [[user.id, user.name, user.phone, USER_ROLE_LABELS.get(user.role, user.role), "正常" if user.is_active else "已停用", api_datetime(user.created_at), api_datetime(user.last_login_at)] for user in users]
         return _csv_response("users.csv", ["ID", "姓名", "手机号", "角色", "状态", "注册时间", "最近登录"], rows)
     if resource == "reports":
         items, _ = await _load_admin_reports(db, report_status=record_status, user_id=user_id, search=search, ai_model=ai_model, date_from=date_from, date_to=date_to, page=1, size=limit)
-        rows = [[item["id"], item["user_name"], item["user_phone"], item["title"], REPORT_STATUS_LABELS.get(item["status"], item["status"]), item["ai_model"], item["generation_time_ms"], item["created_at"]] for item in items]
+        rows = [[item["id"], item["user_name"], item["user_phone"], item["title"], REPORT_STATUS_LABELS.get(item["status"], item["status"]), item["ai_model"], item["generation_time_ms"], api_datetime(item["created_at"])] for item in items]
         return _csv_response("reports.csv", ["ID", "用户", "联系方式", "标题", "状态", "模型", "生成耗时(ms)", "创建时间"], rows)
     if resource == "decision-logs":
         items, _ = await _load_decision_logs(db, user_id=user_id, log_status=record_status, search=search, date_from=date_from, date_to=date_to, page=1, size=limit)
-        rows = [[item["id"], item["user_id"], item["user_name"], item["log_date"], item["kind"], item["status"], item["content"], item["note"], item["created_at"]] for item in items]
+        rows = [[item["id"], item["user_id"], item["user_name"], item["log_date"], item["kind"], item["status"], item["content"], item["note"], api_datetime(item["created_at"])] for item in items]
         return _csv_response("decision-logs.csv", ["ID", "用户ID", "用户", "记录日期", "类型", "状态", "内容", "备注", "创建时间"], rows)
     if resource == "audit-logs":
         items, _ = await _load_audits(db, action=action, resource_type=resource_type, actor_user_id=actor_user_id, target_user_id=target_user_id, search=search, date_from=date_from, date_to=date_to, page=1, size=limit)
-        rows = [[item["id"], item["created_at"], item["action"], item["resource_type"], item["resource_id"], item["actor_name"] or item["actor_user_id"], item["target_user_name"] or item["target_user_id"], item["ip_address"], item["request_id"], item["details"]] for item in items]
+        rows = [[item["id"], api_datetime(item["created_at"]), item["action"], item["resource_type"], item["resource_id"], item["actor_name"] or item["actor_user_id"], item["target_user_name"] or item["target_user_id"], item["ip_address"], item["request_id"], item["details"]] for item in items]
         return _csv_response("audit-logs.csv", ["ID", "时间", "操作", "资源类型", "资源ID", "操作者", "目标用户", "IP", "请求ID", "详情"], rows)
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unsupported export resource")

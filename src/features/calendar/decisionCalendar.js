@@ -1,5 +1,6 @@
 import { calendarMeta, dailyDetails, phaseDefinitions } from '../../data/decisionCalendarContent.js'
 import { formatDateKey, parseDateKey, weekdays } from './helpers.js'
+import { shanghaiDateKey } from '../../utils/dateTime.js'
 
 function phaseForDate(dateKey) {
   return phaseDefinitions.find(phase => dateKey >= phase.startDate && dateKey <= phase.endDate)
@@ -41,19 +42,19 @@ export function createCalendarDays() {
     const entry = getDateEntry(date)
     days.push({
       date,
-      day: cursor.getDate(),
-      month: cursor.getMonth() + 1,
-      weekday: weekdays[cursor.getDay()],
+      day: cursor.getUTCDate(),
+      month: cursor.getUTCMonth() + 1,
+      weekday: weekdays[cursor.getUTCDay()],
       ...entry
     })
-    cursor.setDate(cursor.getDate() + 1)
+    cursor.setUTCDate(cursor.getUTCDate() + 1)
   }
 
   return days
 }
 
 export function resolveDefaultDate(now = new Date()) {
-  const today = formatDateKey(now)
+  const today = shanghaiDateKey(now)
 
   if (today < calendarMeta.startDate) {
     return calendarMeta.startDate

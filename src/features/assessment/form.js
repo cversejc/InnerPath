@@ -1,3 +1,5 @@
+import { shanghaiYear } from '../../utils/dateTime.js'
+
 export const assessmentTopics = [
   { id: 'career', title: '事业发展', desc: '职业选择、转型与瓶颈突破' },
   { id: 'relationship', title: '感情关系', desc: '恋爱、婚姻与关系模式' },
@@ -46,7 +48,7 @@ export function createEmptyAssessmentContext() {
   }
 }
 
-export function validateAssessmentProfile(profile, currentYear = new Date().getFullYear()) {
+export function validateAssessmentProfile(profile, currentYear = shanghaiYear()) {
   const errors = {}
   if (!String(profile.name || '').trim()) errors.name = '请填写称呼。'
   if (!profile.gender) errors.gender = '请选择性别。'
@@ -59,8 +61,8 @@ export function validateAssessmentProfile(profile, currentYear = new Date().getF
   else if (!month || month < 1 || month > 12 || !day || day < 1 || day > 31) errors.birth_date = '请填写完整的出生日期。'
   else if (profile.calendar_type === 'solar') {
     if (profile.birth_is_leap_month) errors.birth_date = '公历日期不能选择闰月。'
-    const date = new Date(year, month - 1, day)
-    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期。'
+    const date = new Date(Date.UTC(year, month - 1, day))
+    if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) errors.birth_date = '公历出生日期不存在，请检查日期。'
   } else if (day > 30) errors.birth_date = '农历日期的日期不能超过 30。'
 
   if (!['unknown', 'approximate', 'exact'].includes(profile.birth_time_precision)) {

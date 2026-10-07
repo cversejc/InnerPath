@@ -7,6 +7,7 @@ import {
   Popup as VanPopup
 } from 'vant'
 import { getLunarCalendarOptions } from '../../features/users/api.js'
+import { shanghaiDateKey, shanghaiYear } from '../../utils/dateTime.js'
 
 const props = defineProps({
   profile: { type: Object, required: true },
@@ -23,8 +24,9 @@ const lunarPickerValue = ref([])
 const lunarLoading = ref(false)
 const pickerError = ref('')
 const minDate = new Date(1900, 0, 1)
-const maxDate = new Date()
-const currentYear = maxDate.getFullYear()
+const [todayYear, todayMonth, todayDay] = shanghaiDateKey().split('-').map(Number)
+const maxDate = new Date(todayYear, todayMonth - 1, todayDay, 23, 59, 59, 999)
+const currentYear = shanghaiYear()
 const lunarYearPickerOptions = computed(() => (lunarOptions.value?.years || [])
   .slice()
   .reverse()

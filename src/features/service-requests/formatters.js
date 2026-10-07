@@ -1,3 +1,7 @@
+import { formatDate, formatDateTime } from '../../utils/dateTime.js'
+
+export { formatDate, formatDateTime }
+
 export const SERVICE_REQUEST_STATUS_LABELS = {
   submitted: '待接单',
   accepted: '处理中',
@@ -55,10 +59,6 @@ export function requestGoal(item) {
   return item.service_type === 'calendar'
     ? item.request_preview?.calendar_goal || '—'
     : topicLabel(item.request_preview?.selected_topics)
-}
-
-export function formatDate(value) {
-  return value ? new Date(value).toLocaleDateString('zh-CN') : '—'
 }
 
 export function prettyJson(value) {

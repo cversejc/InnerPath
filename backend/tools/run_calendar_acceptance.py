@@ -3,6 +3,7 @@ import argparse
 import asyncio
 from contextlib import asynccontextmanager
 from datetime import date, datetime, timedelta
+from app.core.time import utc_now_naive
 from html import escape
 import json
 from pathlib import Path
@@ -85,7 +86,7 @@ class CapturingGateway:
 
 async def seed_delivered_report(db, user, inputs, authored, plan_artifact, stage_outputs):
     """Freeze the archived synthetic report as a delivered ReportVersion fixture."""
-    now = datetime.utcnow()
+    now = utc_now_naive()
     profile = inputs["profile"]
     context = inputs["context"]
     application_snapshot = {"profile": profile, "context": context, "acceptance_fixture": True}

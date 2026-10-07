@@ -16,6 +16,7 @@ from app.domains.calendar.schemas import (
 from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from app.domains.calendar.query_service import load_calendar_entries
+from app.core.time import api_datetime, utc_now_naive
 
 
 def _validate_entries(
@@ -86,7 +87,7 @@ async def create_ai_calendar_for_request(
     if len(data.entries) != 30:
         raise ValueError("calendar_ai_incomplete_dates")
 
-    now = datetime.utcnow()
+    now = utc_now_naive()
     calendar = UserCalendar(
         user_id=user_id,
         series_id=str(uuid4()),
@@ -114,7 +115,7 @@ async def create_ai_calendar_for_request(
         "completed_runs": len((snapshot.get("production_trace") or {}).get("skill_run_ids") or []) or 8,
         "total_runs": len((snapshot.get("production_trace") or {}).get("skill_run_ids") or []) or 8,
         "calendar_id": calendar.id,
-        "completed_at": now.isoformat(),
+        "completed_at": api_datetime(now),
     }
     calendar_request.input_snapshot = snapshot
     await record_audit(
@@ -261,7 +262,7 @@ async def publish_calendar(db: AsyncSession, calendar: UserCalendar, updated_by:
         old_calendar.status = "archived"
         old_calendar.updated_by = updated_by
     calendar.status = "published"
-    calendar.published_at = datetime.utcnow()
+    calendar.published_at = utc_now_naive()
     calendar.updated_by = updated_by
     await record_audit(
         db,

@@ -14,6 +14,7 @@ from app.domains.audit.context import AuditContext
 from app.domains.audit.service import record_audit
 from .payloads import _normalize_payload, payload_from_create, payload_from_update
 from .repository import _append_revision, _get_draft, _get_request_for_update
+from app.core.time import utc_now_naive
 
 
 async def create_service_request(
@@ -158,7 +159,7 @@ async def resubmit_service_request(
         await db.delete(old_draft)
     service_request.status = "accepted" if service_request.assigned_consultant_id else "submitted"
     if service_request.assigned_consultant_id:
-        service_request.accepted_at = datetime.utcnow()
+        service_request.accepted_at = utc_now_naive()
     service_request.needs_info_reason = None
     service_request.last_error = None
     service_request.updated_by = user.id
@@ -190,7 +191,7 @@ async def withdraw_service_request(
     if service_request.status not in {"submitted", "needs_info"}:
         raise ValueError("service_request_cannot_withdraw")
     service_request.status = "withdrawn"
-    service_request.withdrawn_at = datetime.utcnow()
+    service_request.withdrawn_at = utc_now_naive()
     service_request.updated_by = user.id
     await record_audit(
         db,

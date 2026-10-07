@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from .models import SkillExample
+from app.core.time import utc_now_naive
 
 EXAMPLES = {
     "report.final_validator": ("review-reader-copy-v1", {"report_fragments": [{"fragment_key": "demo.boundaries", "content": "没有家庭资料，早期印记暂缓。"}], "confirmed_analysis": "分析内部多次提醒不作诊断，不指责家庭。"}, {"issues": []}, ["只数读者正文，不把内部分析的重复警示当正文重复", "暂缓缺资料不等于编造经历", "问题证据须逐字来自定位正文；不在正文的引文交人工核查", "必要的资料前提与导航不是同一机制的反复完整解释"]),
@@ -23,7 +24,7 @@ async def ensure_builtin_examples(db, skill_key):
     # Once edited or retired in the studio, never recreate the bundled version.
     if await db.scalar(select(SkillExample.id).where(SkillExample.example_key == key)):
         return
-    now = datetime.utcnow()
+    now = utc_now_naive()
     row = SkillExample(skill_key=skill_key, example_key=key, version_no=1, status="PUBLISHED", example_type="POSITIVE", scenario_tags=[], applicability_json={}, input_context=input_context, expected_output=expected_output, teaching_points=teaching_points, anti_patterns=["复制样例事实到当前用户", "未审核候选当作事实"], quality_score=0.9, deidentified=True, created_at=now, published_at=now)
     try:
         async with db.begin_nested():

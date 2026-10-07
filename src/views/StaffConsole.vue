@@ -52,7 +52,7 @@
           <div class="request-list" aria-label="服务申请列表">
             <button v-for="item in requests.items" :key="item.id" type="button" class="request-item" :class="{ selected: selectedRequest?.id === item.id }" :aria-pressed="selectedRequest?.id === item.id" @click="selectRequest(item)">
               <span class="request-item-icon"><IconMark name="reports" /></span>
-              <span class="request-item-copy"><strong>{{ item.user_name || `用户 #${item.user_id}` }}</strong><small>申请编号 {{ item.id }} · {{ formatDate(item.created_at) }}</small><small v-if="item.current_step_key" class="request-item-step">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><em>{{ consultationTypeLabel(item.consultation_type) }} · {{ topicLabel(item.request_preview?.selected_topics) }}</em></span>
+              <span class="request-item-copy"><strong>{{ item.user_name || `用户 #${item.user_id}` }}</strong><small>申请编号 {{ item.id }} · {{ formatDateTime(item.created_at) }}</small><small v-if="item.current_step_key" class="request-item-step">{{ reportStepLabel(item.current_step_key) }} · {{ reportStepStatusLabel(item.current_step_status) }}</small><em>{{ consultationTypeLabel(item.consultation_type) }} · {{ topicLabel(item.request_preview?.selected_topics) }}</em></span>
               <span class="request-item-status">{{ statusLabel(item.status) }}</span>
             </button>
             <div v-if="!requests.items.length" class="empty-cell">当前筛选下没有申请。</div>

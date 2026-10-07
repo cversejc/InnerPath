@@ -1,5 +1,6 @@
 from copy import deepcopy
 from datetime import datetime
+from app.core.time import api_datetime, utc_now_naive
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -213,7 +214,7 @@ async def queue_case_quality_run(
                 payload_json={"skill_run_id": run.id},
                 status="PENDING",
                 retry_count=0,
-                created_at=datetime.utcnow(),
+                created_at=utc_now_naive(),
             )
         )
         await db.flush()
@@ -287,7 +288,7 @@ async def quality_state(
                     "quality_feedback_source_run_id"
                 ),
                 "model_trace": run.model_trace,
-                "completed_at": run.completed_at,
+                "completed_at": api_datetime(run.completed_at),
                 "scorecard": (run.output_parsed or {}).get("scorecard") if fingerprint_matches else None,
                 "framework_review": (run.output_parsed or {}).get("framework_review") if fingerprint_matches else None,
             }

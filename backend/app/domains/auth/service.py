@@ -7,6 +7,7 @@ from app.models.user import User
 from app.core.security import create_refresh_token, get_password_hash, hash_refresh_token, verify_password
 from app.core.cache import cache_delete, cache_get, cache_increment
 from app.config import settings
+from app.core.time import utc_now_naive
 import secrets
 
 
@@ -53,7 +54,7 @@ async def register_user(
         phone=phone,
         name=name,
         password_hash=get_password_hash(password),
-        phone_verified_at=datetime.utcnow() if phone_verified else None,
+        phone_verified_at=utc_now_naive() if phone_verified else None,
         role="user",
         is_active=True,
     )
@@ -84,7 +85,7 @@ async def revoke_all_auth_sessions(db: AsyncSession, user_id: int) -> None:
     result = await db.execute(
         select(AuthSession).where(AuthSession.user_id == user_id, AuthSession.revoked_at.is_(None))
     )
-    now = datetime.utcnow()
+    now = utc_now_naive()
     for session in result.scalars().all():
         session.revoked_at = now
     await db.commit()
@@ -95,13 +96,13 @@ async def change_user_phone(db: AsyncSession, user: User, new_phone: str) -> Use
     if result.scalar_one_or_none():
         raise ValueError("phone_already_registered")
     user.phone = new_phone
-    user.phone_verified_at = datetime.utcnow()
+    user.phone_verified_at = utc_now_naive()
     return user
 
 
 async def deactivate_user_account(db: AsyncSession, user: User) -> None:
     """Disable an account and revoke its sessions without deleting retained data."""
-    now = datetime.utcnow()
+    now = utc_now_naive()
     user.is_active = False
     result = await db.execute(
         select(AuthSession).where(
@@ -115,7 +116,7 @@ async def deactivate_user_account(db: AsyncSession, user: User) -> None:
 
 async def admin_reset_password(db: AsyncSession, user: User, password: str) -> User:
     user.password_hash = get_password_hash(password)
-    user.updated_at = datetime.utcnow()
+    user.updated_at = utc_now_naive()
     await db.commit()
     await revoke_all_auth_sessions(db, user.id)
     await db.refresh(user)
@@ -131,14 +132,14 @@ async def change_user_password(
     if not user.password_hash or not verify_password(current_password, user.password_hash):
         raise ValueError("invalid_current_password")
     user.password_hash = get_password_hash(new_password)
-    user.updated_at = datetime.utcnow()
+    user.updated_at = utc_now_naive()
     await db.commit()
     await db.refresh(user)
     return user
 
 
 async def reset_password_with_code(db: AsyncSession, user: User, password: str) -> User:
-    now = datetime.utcnow()
+    now = utc_now_naive()
     user.password_hash = get_password_hash(password)
     user.phone_verified_at = user.phone_verified_at or now
     user.updated_at = now
@@ -164,12 +165,12 @@ async def create_auth_session(
     session = AuthSession(
         user_id=user.id,
         token_hash=hash_refresh_token(raw_token),
-        expires_at=datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
+        expires_at=utc_now_naive() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
         user_agent=user_agent,
         ip_address=ip_address,
     )
     db.add(session)
-    user.last_login_at = datetime.utcnow()
+    user.last_login_at = utc_now_naive()
     await db.commit()
     return raw_token
 
@@ -184,9 +185,9 @@ async def rotate_auth_session(db: AsyncSession, raw_token: str) -> tuple[User, s
     if not row:
         return None
     session, user = row
-    if session.revoked_at or session.expires_at <= datetime.utcnow() or not user.is_active:
+    if session.revoked_at or session.expires_at <= utc_now_naive() or not user.is_active:
         return None
-    session.revoked_at = datetime.utcnow()
+    session.revoked_at = utc_now_naive()
     new_token = await create_auth_session(db, user)
     return user, new_token
 
@@ -195,7 +196,7 @@ async def revoke_auth_session(db: AsyncSession, raw_token: str) -> Optional[int]
     result = await db.execute(select(AuthSession).where(AuthSession.token_hash == hash_refresh_token(raw_token)))
     session = result.scalar_one_or_none()
     if session and not session.revoked_at:
-        session.revoked_at = datetime.utcnow()
+        session.revoked_at = utc_now_naive()
         await db.commit()
         return session.user_id
     return None
@@ -210,7 +211,7 @@ async def create_staff_invite(db: AsyncSession, phone: str, role: str, invited_b
         phone=phone,
         role=role,
         token_hash=hash_refresh_token(raw_token),
-        expires_at=datetime.utcnow() + timedelta(days=2),
+        expires_at=utc_now_naive() + timedelta(days=2),
         invited_by=invited_by,
     )
     db.add(invite)
@@ -230,7 +231,7 @@ async def accept_staff_invite(
         select(StaffInvite).where(StaffInvite.token_hash == hash_refresh_token(token))
     )
     invite = result.scalar_one_or_none()
-    if not invite or invite.accepted_at or invite.expires_at <= datetime.utcnow() or invite.phone != phone:
+    if not invite or invite.accepted_at or invite.expires_at <= utc_now_naive() or invite.phone != phone:
         raise ValueError("invalid_invite")
 
     result = await db.execute(select(User).where(User.phone == phone))
@@ -249,7 +250,7 @@ async def accept_staff_invite(
         "integrated": ["metaphysics", "psychology"],
     }.get(invite.consultant_type, [])
     user.password_hash = get_password_hash(password)
-    invite.accepted_at = datetime.utcnow()
+    invite.accepted_at = utc_now_naive()
     await db.commit()
     await db.refresh(user)
     return user
