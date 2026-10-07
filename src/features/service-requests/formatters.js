@@ -1,20 +1,11 @@
 import { formatDate, formatDateTime } from '../../utils/dateTime.js'
+import {
+  CONSULTATION_TYPE_LABELS,
+  SERVICE_REQUEST_STATUS_LABELS,
+  topicLabel as formatTopicLabel
+} from '../../utils/displayLabels.js'
 
-export { formatDate, formatDateTime }
-
-export const SERVICE_REQUEST_STATUS_LABELS = {
-  submitted: '待接单',
-  accepted: '处理中',
-  ai_processing: '正在生成内容',
-  ai_ready: '待审核',
-  reviewing: '处理中',
-  needs_info: '等待补充',
-  failed: '需要处理',
-  delivered: '已交付',
-  workflow_complete: '待交付',
-  withdrawn: '已撤回',
-  rejected: '已拒绝'
-}
+export { formatDate, formatDateTime, SERVICE_REQUEST_STATUS_LABELS }
 
 export function birthSummary(workspace) {
   const profile = workspace?.request?.request_payload?.profile || {}
@@ -36,23 +27,12 @@ export function genderLabel(gender) {
 }
 
 export function consultationTypeLabel(type) {
-  return {
-    metaphysics: '命理',
-    psychology: '心理',
-    integrated: '综合（命理 + 心理）'
-  }[type] || '方向待确认'
+  return CONSULTATION_TYPE_LABELS[type] || '方向待确认'
 }
 
 export function topicLabel(topics) {
-  const labels = {
-    career: '职业发展',
-    relationship: '亲密关系',
-    family: '家庭议题',
-    self: '自我价值',
-    growth: '个人成长',
-    stress: '压力焦虑'
-  }
-  return (topics || []).map(topic => labels[topic] || '其他关注主题').join('、') || '综合自我探索'
+  if (!Array.isArray(topics) || !topics.length) return '综合自我探索'
+  return formatTopicLabel(topics, '其他关注主题')
 }
 
 export function requestGoal(item) {

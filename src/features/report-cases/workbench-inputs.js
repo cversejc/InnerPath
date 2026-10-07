@@ -1,4 +1,13 @@
 import { reportFragmentTitle, reportFragmentOrder } from './stages.js'
+import {
+  DECISION_STYLE_LABELS,
+  EXPECTED_OUTCOME_LABELS,
+  PROFILE_VALUE_LABELS,
+  QUALITY_SEVERITY_LABELS,
+  QUALITY_STATUS_LABELS,
+  REPORT_ISSUE_TYPE_LABELS,
+  USAGE_SCENARIO_LABELS
+} from '../../utils/displayLabels.js'
 
 const CONTEXT_LABELS = {
   focus_topics: '关注主题',
@@ -22,6 +31,10 @@ const CONTEXT_LABELS = {
 }
 
 const VALUE_LABELS = {
+  ...PROFILE_VALUE_LABELS,
+  ...EXPECTED_OUTCOME_LABELS,
+  ...DECISION_STYLE_LABELS,
+  ...USAGE_SCENARIO_LABELS,
   male: '男', female: '女', solar: '公历', lunar: '农历',
   career: '职业发展', relationship: '亲密关系', family: '家庭议题',
   relationships: '人际关系', personal_growth: '个人成长',
@@ -86,6 +99,7 @@ const EVIDENCE_KEY_LABELS = {
 }
 
 const STATUS_LABELS = {
+  ...QUALITY_STATUS_LABELS,
   CONFIRMED: '已确认', PROPOSED: '待审核', STALE: '需要复核',
   REJECTED: '已拒绝', OPEN: '待处理', RESOLVED: '已处理',
   ACCEPTED: '已接受', DISMISSED: '已忽略', PASSED: '检查通过',
@@ -103,6 +117,7 @@ const ROLE_LABELS = {
 }
 
 const QUALITY_ISSUE_LABELS = {
+  ...REPORT_ISSUE_TYPE_LABELS,
   quality_score_below_threshold: '报告质量评分未达交付门槛',
   FINDING_OVER_REPEATED: '同一专业判断被多段引用',
   source_fidelity: '用户经历需要核对',
@@ -443,6 +458,7 @@ function qualityCards(quality = {}, content = {}) {
       || consultantText(issue.suggestion, '对照报告正文和对应资料，记录处理结论后再继续。')
     const count = issue.evidence_json?.fragment_count
     const severityLabel = {
+      ...QUALITY_SEVERITY_LABELS,
       BLOCK: '必须处理',
       MAJOR: '需要处理',
       MINOR: '建议复核',

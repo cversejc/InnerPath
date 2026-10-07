@@ -1,5 +1,6 @@
 import { topicLabel } from './formatters.js'
 import { formatDateTime } from '../../utils/dateTime.js'
+import { SERVICE_TYPE_LABELS } from '../../utils/displayLabels.js'
 
 export const CUSTOMER_SERVICE_REQUEST_STATUS_LABELS = {
   submitted: '等待咨询师接单',
@@ -17,7 +18,7 @@ export const CUSTOMER_SERVICE_REQUEST_STATUS_LABELS = {
 }
 
 export function customerServiceTypeLabel(type) {
-  return type === 'calendar' ? '决策日历申请' : '报告申请'
+  return type === 'calendar' ? `${SERVICE_TYPE_LABELS.calendar}申请` : `${SERVICE_TYPE_LABELS.report}申请`
 }
 
 export function customerServiceRequestStatusLabel(status) {

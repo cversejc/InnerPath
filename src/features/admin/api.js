@@ -63,6 +63,11 @@ export async function getAdminUserSummary(userId) {
   return response.data
 }
 
+export async function getAdminUserTimeline(userId, limit = 30) {
+  const response = await apiClient.get(`/admin/users/${userId}/timeline`, { params: { limit } })
+  return response.data
+}
+
 export async function updateAdminUserProfile(userId, data) {
   const response = await apiClient.patch(`/admin/users/${userId}`, data)
   return response.data
@@ -80,6 +85,13 @@ export async function updateAdminUserRole(userId, role, consultantType) {
 
 export async function updateAdminConsultantSpecialties(userId, specialties) {
   const response = await apiClient.patch(`/admin/users/${userId}/consultant-specialties`, { specialties })
+  return response.data
+}
+
+export async function getAdminConsultantWorkload(periodDays = 30) {
+  const response = await apiClient.get('/admin/consultants/workload', {
+    params: { period_days: periodDays }
+  })
   return response.data
 }
 

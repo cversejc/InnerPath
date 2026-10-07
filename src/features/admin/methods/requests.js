@@ -1,31 +1,37 @@
-import { getAdminCalendarRequests } from '../../calendar/api.js'
-import { getAdminServiceRequests } from '../../service-requests/api.js'
+import { getAdminCalendarRequests, retryAdminCalendarRequest as retryCalendarRequest } from '../../calendar/api.js'
+import { getAdminServiceRequests, retryStaffAIDraft, updateAdminServiceRequestAssignment } from '../../service-requests/api.js'
 
 export default {
   async loadAdminRequests() {
+    const requestId = this.requestsRequestId + 1
+    const requestKind = this.requestKind
+    this.requestsRequestId = requestId
     this.requestsLoading = true
     try {
-      if (this.requestKind === 'calendar') {
-        this.adminCalendarRequests = await getAdminCalendarRequests({
+      if (requestKind === 'calendar') {
+        const requests = await getAdminCalendarRequests({
           ...this.cleanParams(this.calendarRequestFilters),
           page: this.requestPage,
           size: this.requestPageSize
         })
+        if (this.requestsRequestId === requestId && this.requestKind === requestKind) this.adminCalendarRequests = requests
       } else {
-        this.adminServiceRequests = await getAdminServiceRequests({
+        const requests = await getAdminServiceRequests({
           ...this.cleanParams(this.requestFilters),
           page: this.requestPage,
           size: this.requestPageSize
         })
+        if (this.requestsRequestId === requestId && this.requestKind === requestKind) this.adminServiceRequests = requests
       }
     } catch (error) {
-      this.message = this.errorText(error)
+      if (this.requestsRequestId === requestId) this.message = this.errorText(error)
     } finally {
-      this.requestsLoading = false
+      if (this.requestsRequestId === requestId) this.requestsLoading = false
     }
   },
   async setRequestKind(kind) {
     if (this.requestKind === kind) return
+    this.assignmentRequest = null
     this.requestKind = kind
     this.requestPage = 1
     await this.loadAdminRequests()
@@ -36,9 +42,9 @@ export default {
   },
   resetAdminRequestFilters() {
     if (this.requestKind === 'calendar') {
-      this.calendarRequestFilters = { search: '', status: '', date_from: '', date_to: '' }
+      this.calendarRequestFilters = { search: '', status: '', stalled_only: false, date_from: '', date_to: '' }
     } else {
-      this.requestFilters = { search: '', status: '', consultant_id: '', date_from: '', date_to: '' }
+      this.requestFilters = { search: '', status: '', consultant_id: '', queue_filter: '', date_from: '', date_to: '' }
     }
     this.searchAdminRequests()
   },
@@ -48,5 +54,83 @@ export default {
     if (next < 1 || next > this.pageCount(data.total, this.requestPageSize)) return
     this.requestPage = next
     await this.loadAdminRequests()
+  },
+  async openConsultantServiceRequests(consultantId) {
+    this.assignmentRequest = null
+    this.requestKind = 'consultant'
+    this.requestFilters = {
+      search: '',
+      status: '',
+      consultant_id: String(consultantId),
+      queue_filter: '',
+      date_from: '',
+      date_to: ''
+    }
+    this.requestPage = 1
+    this.activeTab = 'requests'
+    await this.loadAdminRequests()
+  },
+  openAdminAssignment(request) {
+    this.assignmentRequest = request
+    this.assignmentError = ''
+  },
+  closeAdminAssignment() {
+    if (!this.assignmentSavingKey) this.assignmentRequest = null
+  },
+  async assignAdminRequest(change) {
+    if (this.assignmentSavingKey) return
+    const requestKind = this.requestKind
+    const key = `${change.requestId}:${change.mode || 'single'}`
+    this.assignmentSavingKey = key
+    this.assignmentError = ''
+    try {
+      await updateAdminServiceRequestAssignment(
+        change.requestId,
+        change.consultantId,
+        change.consultantType,
+        change.consultationType
+      )
+      await this.loadAdminRequests()
+      if (this.requestKind === requestKind && this.requestKind === 'consultant' && this.activeTab === 'requests') {
+        if (change.mode === 'mingli' || change.mode === 'psychology') {
+          this.assignmentRequest = this.adminServiceRequests.items.find(item => item.id === change.requestId) || null
+        } else {
+          this.assignmentRequest = null
+        }
+      }
+      if (change.mode === 'mingli') this.message = change.consultantId ? '命理负责人已更新。' : '命理席位已清空。'
+      else if (change.mode === 'psychology') this.message = change.consultantId ? '心理负责人已更新。' : '心理席位已清空。'
+      else this.message = change.consultantId ? '咨询方向与负责人已保存。' : '咨询方向已保存，申请当前未分配。'
+    } catch (error) {
+      this.assignmentError = this.errorText(error)
+    } finally {
+      this.assignmentSavingKey = ''
+    }
+  },
+  async retryAdminServiceRequest(requestId) {
+    if (this.retryingRequestKey) return
+    this.retryingRequestKey = `service-${requestId}`
+    try {
+      await retryStaffAIDraft(requestId)
+      await this.loadAdminRequests()
+      this.message = `申请 #${requestId} 已重新提交 AI 初稿。`
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.retryingRequestKey = ''
+    }
+  },
+  async retryAdminCalendarRequest(requestId) {
+    if (this.retryingRequestKey) return
+    this.retryingRequestKey = `calendar-${requestId}`
+    try {
+      await retryCalendarRequest(requestId)
+      await this.loadAdminRequests()
+      this.message = `日历申请 #${requestId} 已重新排队。`
+    } catch (error) {
+      this.message = this.errorText(error)
+    } finally {
+      this.retryingRequestKey = ''
+    }
   }
 }

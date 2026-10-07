@@ -6,7 +6,12 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
-from app.api.v1.admin_support import _count, _date_filter
+from app.api.v1.admin_support import (
+    _admin_access_details,
+    _count,
+    _date_filter,
+    _record_admin_data_access,
+)
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.domains.calendar.models import CalendarRequest, DecisionLog, UserCalendar
@@ -16,6 +21,7 @@ from app.models.user import User
 from app.schemas.admin import (
     AdminPasswordResetRequest,
     AdminConsultantSpecialtiesUpdate,
+    AdminConsultantWorkloadResponse,
     AdminUserListResponse,
     AdminUserSummaryResponse,
     AdminUserUpdate,
@@ -27,12 +33,38 @@ from app.domains.users.schemas import UserResponse
 from app.domains.users.service import apply_user_profile_update
 from app.domains.audit.service import record_audit
 from app.domains.auth.service import admin_reset_password, create_staff_invite
+from app.api.v1.admin_user_timeline import router as user_timeline_router
+from app.application.admin_consultant_workload import get_admin_consultant_workload
 
 router = APIRouter()
+router.include_router(user_timeline_router)
+
+
+@router.get("/consultants/workload", response_model=AdminConsultantWorkloadResponse)
+async def consultant_workload(
+    request: Request,
+    period_days: int = Query(30, ge=7, le=90),
+    current_user: User = Depends(require_roles("admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    response = await get_admin_consultant_workload(db, period_days=period_days)
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.consultant_workload.read",
+        resource_type="consultant_workload",
+        details=_admin_access_details(
+            result_count=len(response.get("items", [])),
+            filters={"period_days": period_days},
+        ),
+    )
+    return response
 
 
 @router.get("/users", response_model=AdminUserListResponse)
 async def list_users(
+    request: Request,
     search: Optional[str] = Query(None, max_length=100),
     role: Optional[str] = Query(None, pattern="^(user|consultant|admin)$"),
     is_active: Optional[bool] = None,
@@ -98,17 +130,46 @@ async def list_users(
         }
         for user, report_count_value, calendar_count_value, report_request_count_value, calendar_request_count_value in rows
     ]
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.users.list",
+        resource_type="user",
+        details=_admin_access_details(
+            page=page,
+            page_size=size,
+            result_count=len(items),
+            filters={
+                "search": search,
+                "role": role,
+                "is_active": is_active,
+                "created_from": created_from,
+                "created_to": created_to,
+            },
+        ),
+    )
     return AdminUserListResponse(total=total, page=page, size=size, items=items)
 
 @router.get("/users/{user_id}", response_model=UserResponse)
 async def get_user(
     user_id: int,
+    request: Request,
     current_user: User = Depends(require_roles("admin")),
     db: AsyncSession = Depends(get_db),
 ):
     user = await db.get(User, user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.user.read",
+        resource_type="user",
+        resource_id=str(user.id),
+        target_user_id=user.id,
+    )
     return user
 
 @router.patch("/users/{user_id}", response_model=UserResponse)
@@ -202,6 +263,7 @@ async def update_consultant_specialties(
 @router.get("/users/{user_id}/summary", response_model=AdminUserSummaryResponse)
 async def get_user_summary(
     user_id: int,
+    request: Request,
     current_user: User = Depends(require_roles("admin")),
     db: AsyncSession = Depends(get_db),
 ):
@@ -220,6 +282,16 @@ async def get_user_summary(
     )
     calendar_request_count = await _count(
         db, select(func.count(CalendarRequest.id)).where(CalendarRequest.user_id == user_id)
+    )
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.user.summary.read",
+        resource_type="user",
+        resource_id=str(user.id),
+        target_user_id=user.id,
+        details={"report_count": report_count, "calendar_count": calendar_count},
     )
     return {
         "user": user,

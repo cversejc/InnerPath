@@ -46,6 +46,8 @@
 .report-supplement-form p { margin: 0; color: var(--muted, #7d6653); font-size: var(--text-caption, 12px); line-height: 1.5; }
 .report-supplement-form :deep(button) { min-height: 44px; justify-self: start; }
 .request-card-actions { margin-left: 62px; }
+.request-feedback-control { flex: 1 1 100%; margin-top: 2px; }
+.request-feedback-error { color: var(--cinnabar-deep, #9e3f35); font-size: 12px; }
 .text-button { height: auto; min-height: 44px; border: 0; padding: 0 4px; background: transparent; font: inherit; font-weight: var(--weight-medium); cursor: pointer; }
 .danger-text { color: var(--cinnabar-deep, #9e3f35); }
 .text-button:disabled { opacity: .55; cursor: wait; }

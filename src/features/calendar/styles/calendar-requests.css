@@ -2,6 +2,10 @@
   background: linear-gradient(180deg, rgba(255, 250, 240, .58), rgba(234, 217, 191, .26));
 }
 
+.calendar-page .calendar-feedback-control,
+.calendar-page .calendar-feedback-load-error { flex-basis: 100%; }
+.calendar-page .calendar-feedback-load-error { margin: 0; color: var(--cinnabar-deep); font-size: 12px; }
+
 .calendar-page .request-heading {
   align-items: start;
 }
@@ -263,6 +267,7 @@
 
 .calendar-page .request-history-item {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;

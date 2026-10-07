@@ -33,6 +33,61 @@ class AdminConsultantSpecialtiesUpdate(BaseModel):
         return value
 
 
+class AdminConsultantWorkEvent(BaseModel):
+    request_id: int
+    user_id: int
+    user_name: str
+    consultation_type: Optional[str] = None
+    current_status: str
+    event_type: Literal["accepted", "delivered"]
+    event_at: datetime
+
+
+class AdminConsultantActiveRequest(BaseModel):
+    request_id: int
+    user_id: int
+    user_name: str
+    consultation_type: Optional[str] = None
+    current_status: str
+    created_at: datetime
+    updated_at: datetime
+    age_hours: int = 0
+    idle_hours: int = 0
+    is_stale: bool = False
+
+
+class AdminConsultantWorkloadStageCount(BaseModel):
+    status: str
+    request_count: int = 0
+
+
+class AdminConsultantSpecialtyLoad(BaseModel):
+    specialty: Literal["mingli", "psychology"]
+    active_requests: int = 0
+    stale_active_requests: int = 0
+
+
+class AdminConsultantWorkloadItem(BaseModel):
+    consultant_id: int
+    total_requests: int = 0
+    active_requests: int = 0
+    stale_active_requests: int = 0
+    accepted_in_period: int = 0
+    delivered_in_period: int = 0
+    active_by_status: list[AdminConsultantWorkloadStageCount] = Field(default_factory=list)
+    specialty_load: list[AdminConsultantSpecialtyLoad] = Field(default_factory=list)
+    delivered_cycle_samples: int = 0
+    delivery_cycle_p50_hours: Optional[float] = None
+    delivery_cycle_p90_hours: Optional[float] = None
+    active_request_preview: list[AdminConsultantActiveRequest] = Field(default_factory=list)
+    recent_events: list[AdminConsultantWorkEvent] = Field(default_factory=list)
+
+
+class AdminConsultantWorkloadResponse(BaseModel):
+    period_days: int
+    items: list[AdminConsultantWorkloadItem]
+
+
 class AdminUserUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=50)
     gender: Optional[str] = Field(None, pattern="^(male|female)$")
@@ -108,6 +163,21 @@ class AdminUserSummary(BaseModel):
 class AdminUserSummaryResponse(BaseModel):
     user: UserResponse
     summary: AdminUserSummary
+
+
+class AdminUserTimelineItem(BaseModel):
+    key: str
+    event_type: str
+    label: str
+    description: str
+    occurred_at: datetime
+    resource_type: str
+    resource_id: Optional[str] = None
+
+
+class AdminUserTimelineResponse(BaseModel):
+    user_id: int
+    items: list[AdminUserTimelineItem] = Field(default_factory=list)
 
 
 class AdminDecisionLogResponse(BaseModel):
@@ -261,6 +331,87 @@ class DashboardAlert(BaseModel):
     route: Optional[str] = None
 
 
+class DashboardServiceSLAItem(BaseModel):
+    consultation_type: str
+    request_count: int = 0
+    accepted_samples: int = 0
+    response_sla_samples: int = 0
+    overdue_unaccepted: int = 0
+    response_within_24h_rate: Optional[float] = None
+    response_p50_hours: Optional[float] = None
+    response_p90_hours: Optional[float] = None
+    delivery_samples: int = 0
+    delivery_p50_hours: Optional[float] = None
+    delivery_p90_hours: Optional[float] = None
+
+
+class DashboardServiceSLAMetrics(BaseModel):
+    items: list[DashboardServiceSLAItem] = Field(default_factory=list)
+
+
+class AdminUserGrowthChannel(BaseModel):
+    key: str
+    label: str
+    applicant_users: int = 0
+    delivered_users: int = 0
+    delivery_rate_percent: Optional[float] = None
+
+
+class AdminUserGrowthSummary(BaseModel):
+    range_start: date
+    range_end: date
+    registered_users: int = 0
+    profile_completed_users: int = 0
+    profile_completion_rate_percent: Optional[float] = None
+    applicant_users: int = 0
+    applicant_rate_percent: Optional[float] = None
+    delivered_users: int = 0
+    delivery_rate_percent: Optional[float] = None
+    active_login_users: int = 0
+    existing_user_base: int = 0
+    returning_users: int = 0
+    existing_user_login_rate_percent: Optional[float] = None
+    by_service: list[AdminUserGrowthChannel] = Field(default_factory=list)
+
+
+class AdminGenerationStage(BaseModel):
+    stage_key: str
+    label: str
+    active_runs: int = 0
+    completed_runs: int = 0
+    failed_runs: int = 0
+    retry_attempts: int = 0
+    p50_duration_hours: Optional[float] = None
+    p90_duration_hours: Optional[float] = None
+
+
+class AdminGenerationSummary(BaseModel):
+    range_start: date
+    range_end: date
+    active_runs: int = 0
+    completed_runs: int = 0
+    failed_runs: int = 0
+    success_rate_percent: Optional[float] = None
+    retry_attempts: int = 0
+    stages: list[AdminGenerationStage] = Field(default_factory=list)
+    report_cases_created: int = 0
+    report_cases_active: int = 0
+    report_cases_blocked: int = 0
+    report_cases_ready_to_deliver: int = 0
+    report_cases_delivered: int = 0
+    report_cases_cancelled: int = 0
+    calendar_queued: int = 0
+    calendar_generating: int = 0
+    calendar_failed: int = 0
+    calendar_delivered: int = 0
+    calendar_stalled: int = 0
+    outbox_pending: int = 0
+    outbox_pending_over_5m: int = 0
+    outbox_failed: int = 0
+    outbox_published: int = 0
+    outbox_retry_attempts: int = 0
+
+
 class DashboardOverviewResponse(BaseModel):
     range_preset: str
     start_date: date
@@ -269,6 +420,9 @@ class DashboardOverviewResponse(BaseModel):
     metrics: DashboardMetricResponse
     trends: list[DashboardTrendPoint]
     distributions: DashboardDistributionResponse
+    service_sla: DashboardServiceSLAMetrics = Field(default_factory=DashboardServiceSLAMetrics)
+    user_growth: Optional[AdminUserGrowthSummary] = None
+    generation: Optional[AdminGenerationSummary] = None
     alerts: list[DashboardAlert]
     recent_activity: list[AuditLogResponse]
 

@@ -8,3 +8,5 @@
 @import "../features/admin/styles/requests.css";
 @import "../features/admin/styles/llm.css";
 @import "../features/admin/styles/shell.css";
+@import "../features/admin/styles/assignment.css";
+@import "../features/admin/styles/feedback.css";

@@ -162,8 +162,11 @@ class AdminServiceRequestListItem(BaseModel):
     assigned_psychology_consultant_name: Optional[str] = None
     report_case_id: Optional[int] = None
     report_case_status: Optional[str] = None
+    is_collaborative: bool = False
     current_step_key: Optional[str] = None
     current_step_status: Optional[str] = None
+    current_step_updated_at: Optional[datetime] = None
+    current_step_error: Optional[str] = None
     result_type: Optional[str] = None
     result_id: Optional[int] = None
     needs_info_reason: Optional[str] = None

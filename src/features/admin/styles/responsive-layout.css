@@ -215,6 +215,54 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .admin-shell .team-panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-shell .team-heading-tools {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .admin-shell .workload-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 10px;
+  }
+
+  .admin-shell .workload-metrics > div:nth-child(2) {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .admin-shell .workload-metrics > div:nth-child(3) {
+    border-right: 1px solid rgba(80, 54, 32, .1);
+    padding-left: 0;
+  }
+
+  .admin-shell .workload-metrics > div:nth-child(4) {
+    padding-right: 0;
+  }
+
+  .admin-shell .active-work-list li {
+    align-items: start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .admin-shell .active-work-age {
+    white-space: normal;
+  }
+
+  .admin-shell .user-timeline-item {
+    grid-template-columns: 12px minmax(0, 1fr);
+  }
+
+  .admin-shell .user-timeline-item time {
+    grid-column: 2;
+    text-align: left;
+  }
+
   .admin-shell .detail-facts p {
     grid-template-columns: minmax(64px, .38fr) minmax(0, 1fr);
   }

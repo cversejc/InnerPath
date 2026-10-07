@@ -14,6 +14,10 @@ SPECIALTY_FIELDS = {
 }
 
 
+def has_collaboration_contract(application_snapshot):
+    return bool((application_snapshot or {}).get("collaboration_contract"))
+
+
 def consultant_capabilities(consultant):
     capabilities = set()
     consultant_type = getattr(consultant, "consultant_type", None)

@@ -65,21 +65,59 @@ async def queue_calendar_from_report(db, user, data, *, audit_context=None):
     return request
 
 
-async def retry_calendar_production(db, user, request_id):
-    request = await db.scalar(select(CalendarRequest).where(CalendarRequest.id == request_id,
-                        CalendarRequest.user_id == user.id).with_for_update())
-    if request is None:
+async def _queue_calendar_retry(db, actor, request_id, *, target_user_id=None, audit_context=None):
+    request = await db.scalar(
+        select(CalendarRequest).where(CalendarRequest.id == request_id).with_for_update()
+    )
+    if request is None or (target_user_id is not None and request.user_id != target_user_id):
         raise ValueError("calendar_request_not_found")
     if request.status != "failed":
         raise ValueError("calendar_request_not_failed")
     snapshot = dict(request.input_snapshot or {})
-    attempt = snapshot.get("generation", {}).get("attempt", 1) + 1
+    attempt = int(snapshot.get("generation", {}).get("attempt", 1)) + 1
     snapshot["generation"] = {"status": "QUEUED", "attempt": attempt, "completed_runs": 0, "total_runs": 8}
     request.input_snapshot, request.status = snapshot, "queued"
+    request.generation_error = None
+    request.progress = 0
     await enqueue_outbox_event(db, aggregate_type="calendar_request", aggregate_id=request.id,
         event_type="calendar.generation.requested", payload={"calendar_request_id": request.id, "attempt": attempt})
+    await record_audit(
+        db,
+        actor.id,
+        "calendar.generation.retry",
+        "calendar_request",
+        str(request.id),
+        target_user_id=request.user_id,
+        details={
+            "source_report_id": request.source_report_id,
+            **({"initiated_by_admin": True} if target_user_id is None else {}),
+        },
+        audit_context=audit_context,
+    )
     await db.commit()
+    await db.refresh(request)
     return request
+
+
+async def retry_calendar_production(db, user, request_id, *, audit_context=None):
+    return await _queue_calendar_retry(
+        db,
+        user,
+        request_id,
+        target_user_id=user.id,
+        audit_context=audit_context,
+    )
+
+
+async def retry_calendar_production_for_admin(db, admin, request_id, *, audit_context=None):
+    if admin.role != "admin":
+        raise ValueError("admin_required")
+    return await _queue_calendar_retry(
+        db,
+        admin,
+        request_id,
+        audit_context=audit_context,
+    )
 
 
 async def execute_calendar_production(db, request_id, attempt, *, gateway=None):

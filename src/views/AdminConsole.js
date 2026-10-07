@@ -10,6 +10,7 @@ import AdminActivitySection from '../features/admin/components/AdminActivitySect
 import AdminCalendarSection from '../features/admin/components/AdminCalendarSection.vue'
 import AdminStaffSection from '../features/admin/components/AdminStaffSection.vue'
 import AdminLLMSection from '../features/admin/components/AdminLLMSection.vue'
+import AdminServiceFeedbackSection from '../features/admin/components/AdminServiceFeedbackSection.vue'
 import AdminDetailDrawers from '../features/admin/components/AdminDetailDrawers.vue'
 import AdminIconButton from '../features/admin/components/AdminIconButton.vue'
 import OperationsShell from '../components/OperationsShell.vue'
@@ -21,6 +22,7 @@ import activityMethods from '../features/admin/methods/activity.js'
 import staffMethods from '../features/admin/methods/staff.js'
 import exportsMethods from '../features/admin/methods/exports.js'
 import adminRequestsMethods from '../features/admin/methods/requests.js'
+import feedbackMethods from '../features/admin/methods/feedback.js'
 import { Button as VanButton, Dialog as VanDialog, Field as VanField } from 'vant'
 import { confirmAction } from '../utils/confirmAction.js'
 import { authState } from '../stores/auth.js'
@@ -29,7 +31,7 @@ const EMPTY_PAGE = { total: 0, items: [] }
 
 export default {
   name: 'AdminConsole',
-  components: { AdminDashboardSection, AdminUsersSection, AdminRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminLLMSection, AdminDetailDrawers, AdminIconButton, OperationsShell, VanButton, VanDialog, VanField },
+  components: { AdminDashboardSection, AdminUsersSection, AdminRequestsSection, AdminReportsSection, AdminActivitySection, AdminCalendarSection, AdminStaffSection, AdminLLMSection, AdminServiceFeedbackSection, AdminDetailDrawers, AdminIconButton, OperationsShell, VanButton, VanDialog, VanField },
   data() {
     return {
       activeTab: 'overview',
@@ -41,12 +43,16 @@ export default {
         { id: 'reports', index: '05', label: '报告', icon: 'reports', group: 'data', eyebrow: 'REPORT PIPELINE', description: '查看报告版本、生成状态和异常任务。' },
         { id: 'logs', index: '06', label: '日志', icon: 'document', group: 'system', eyebrow: 'AUDIT / ACTIVITY', description: '追踪关键操作、决策记录和任务运行轨迹。' },
         { id: 'staff', index: '07', label: '后台成员', icon: 'group', group: 'system', eyebrow: 'STAFF ACCESS', description: '管理后台成员、咨询方向和邀请权限。' },
-        { id: 'models', index: '08', label: '模型配置', icon: 'settings', group: 'system', eyebrow: 'MODEL CONTROL', description: '维护 AI 服务商、模型和运行参数。' }
+        { id: 'feedback', index: '08', label: '服务反馈', icon: 'document', group: 'workspace', eyebrow: 'SERVICE FEEDBACK', description: '处理用户反馈、服务质量和报告质检问题。' },
+        { id: 'models', index: '09', label: '模型配置', icon: 'settings', group: 'system', eyebrow: 'MODEL CONTROL', description: '维护 AI 服务商、模型和运行参数。' }
       ],
       dashboardRanges: [{ id: '7d', label: '7 天' }, { id: '30d', label: '30 天' }, { id: '90d', label: '90 天' }],
       dashboardRange: '30d',
       dashboard: null,
       dashboardLoading: false,
+      dashboardRequestInFlight: false,
+      dashboardRequestId: 0,
+      dashboardLoadError: false,
       lastUpdated: '',
       autoRefresh: true,
       refreshTimer: null,
@@ -59,19 +65,46 @@ export default {
       requestKind: 'consultant',
       adminServiceRequests: { ...EMPTY_PAGE },
       adminCalendarRequests: { ...EMPTY_PAGE },
-      requestFilters: { search: '', status: '', consultant_id: '', date_from: '', date_to: '' },
-      calendarRequestFilters: { search: '', status: '', date_from: '', date_to: '' },
+      requestFilters: { search: '', status: '', consultant_id: '', queue_filter: '', date_from: '', date_to: '' },
+      calendarRequestFilters: { search: '', status: '', stalled_only: false, date_from: '', date_to: '' },
       requestPage: 1,
       requestPageSize: 20,
+      requestsRequestId: 0,
       requestsLoading: false,
+      consultantWorkloads: [],
+      consultantWorkloadPeriodDays: 30,
+      consultantWorkloadError: '',
+      consultantWorkloadLoading: false,
+      assignmentRequest: null,
+      assignmentSavingKey: '',
+      assignmentError: '',
+      retryingRequestKey: '',
+      serviceFeedback: { total: 0, page: 1, size: 20, items: [] },
+      feedbackFilters: { search: '', status: '', feedback_type: '', service_type: '', date_from: '', date_to: '' },
+      feedbackView: 'feedback',
+      serviceQualitySummary: null,
+      serviceQualityPeriodDays: 30,
+      serviceQualityLoading: false,
+      serviceQualityError: '',
+      feedbackPage: 1,
+      feedbackPageSize: 20,
+      feedbackLoading: false,
+      feedbackSavingId: null,
+      qualityIssues: { total: 0, page: 1, size: 20, items: [] },
+      qualityFilters: { search: '', status: 'OPEN', severity: '', source_type: '', date_from: '', date_to: '' },
+      qualityPage: 1,
+      qualityPageSize: 20,
+      qualityLoading: false,
       reports: { ...EMPTY_PAGE },
       reportsLoading: false,
       reportFilters: { search: '', status: '', ai_model: '', date_from: '', date_to: '' },
       reportPage: 1,
       reportPageSize: 12,
+      reportListRequestId: 0,
       reportSection: 'reports',
       reportTasks: { ...EMPTY_PAGE },
       tasksLoading: false,
+      reportTaskRequestId: 0,
       taskFilters: { search: '', status: '' },
       taskPage: 1,
       taskPageSize: 12,
@@ -90,18 +123,31 @@ export default {
       userSummary: null,
       userPanelTab: 'profile',
       userPanelLoading: false,
+      userPanelPendingRequests: 0,
+      userDetailLoadId: 0,
       userEdit: {},
       profileSaving: false,
-      userPanelData: { reports: null, calendars: null, decisions: null, activity: null, applications: null },
+      userPanelData: { timeline: null, reports: null, calendars: null, decisions: null, activity: null, applications: null },
+      timelineLoading: false,
+      timelineError: '',
       reportDetail: null,
+      reportDetailRequestId: 0,
       logDetail: null,
       drawerTrigger: null,
       calendarUsers: [],
+      calendarUsersRequestId: 0,
       calendarUserSearch: '',
       selectedCalendarUser: null,
       calendars: [],
+      calendarsRequestId: 0,
+      calendarRequestsRequestId: 0,
       calendarLoading: false,
       calendarUsersLoading: false,
+      calendarPreviewId: null,
+      calendarPreviewDecisionLogs: [],
+      calendarPreviewError: '',
+      calendarPreviewLoading: false,
+      calendarPreviewRequestId: 0,
       calendarForm: { visible: false, id: null, title: '', note: '', start_date: '', end_date: '', status: '', version_number: 1, entries: [] },
       calendarSaving: false,
       showCalendarImport: false,
@@ -151,13 +197,14 @@ export default {
       return authState.user?.name || '管理员'
     },
     activeLoading() {
-      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
+      return this.dashboardLoading || this.calendarSaving || this.userPanelLoading || this.usersLoading || this.requestsLoading || this.assignmentSavingKey !== '' || this.retryingRequestKey !== '' || this.feedbackLoading || this.serviceQualityLoading || this.feedbackSavingId !== null || this.qualityLoading || this.reportsLoading || this.tasksLoading || this.auditLoading || this.decisionLoading || this.calendarLoading || this.calendarUsersLoading || this.staffLoading || this.consultantWorkloadLoading || this.profileSaving || this.inviteSaving || this.consultantSpecialtySavingId !== null || this.passwordDialog.submitting
     },
     dashboardViewModel() {
       return createDashboardViewModel(this.dashboard)
     },
     userPanelTabs() {
       return [
+        { id: 'overview', label: '概览' },
         { id: 'profile', label: '资料' },
         { id: 'applications', label: '申请' },
         { id: 'reports', label: '报告' },
@@ -165,13 +212,17 @@ export default {
         { id: 'decisions', label: '行动记录' },
         { id: 'activity', label: '审计活动' }
       ]
+    },
+    feedbackAssignees() {
+      return this.staffUsers.filter(member => member.role === 'admin' && member.is_active)
     }
   },
   watch: {
     detailUser: 'syncDrawerBodyLock',
     reportDetail: 'syncDrawerBodyLock',
     logDetail: 'syncDrawerBodyLock',
-    'passwordDialog.visible': 'clearPasswordDialog'
+    'passwordDialog.visible': 'clearPasswordDialog',
+    activeTab(value) { if (value !== 'requests') this.assignmentRequest = null }
   },
   async mounted() {
     document.addEventListener('visibilitychange', this.handleVisibilityChange)
@@ -194,6 +245,7 @@ export default {
     ...activityMethods,
     ...staffMethods,
     ...exportsMethods,
-    ...adminRequestsMethods
+    ...adminRequestsMethods,
+    ...feedbackMethods
   }
 }

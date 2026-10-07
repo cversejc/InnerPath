@@ -1,4 +1,5 @@
 from datetime import date
+from contextlib import asynccontextmanager
 from types import SimpleNamespace
 
 import pytest
@@ -70,11 +71,30 @@ async def test_password_reset_route_records_audit_with_request_context(monkeypat
             self.events = []
             self.commit_count = 0
 
+        @property
+        def new(self):
+            return ()
+
+        @property
+        def dirty(self):
+            return ()
+
+        @property
+        def deleted(self):
+            return ()
+
+        @asynccontextmanager
+        async def begin_nested(self):
+            yield
+
         async def execute(self, _query):
             return FakeResult()
 
         def add(self, event):
             self.events.append(event)
+
+        async def flush(self, _objects=None):
+            return None
 
         async def commit(self):
             self.commit_count += 1

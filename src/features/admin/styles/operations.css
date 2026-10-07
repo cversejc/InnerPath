@@ -83,6 +83,7 @@
 .admin-shell .calendar-card-preview { display: flex; flex-wrap: wrap; gap: 6px; margin: 11px 0; }
 .admin-shell .calendar-card-preview span { border-radius: 999px; padding: 4px 7px; background: rgba(234, 217, 191, .55); color: var(--muted, #7d6653); font-size: 9px; }
 .admin-shell .calendar-card .row-actions { justify-content: end; }
+.admin-shell .calendar-preview-error { margin: 0; border-left: 3px solid #9e3f35; padding: 10px 12px; background: rgba(158, 63, 53, .07); color: #8f352f; font-size: 12px; line-height: 1.5; }
 .admin-shell .calendar-editor-form { margin-top: 18px; border-top: 1px solid rgba(80, 54, 32, .11); padding-top: 18px; }
 .admin-shell .editor-banner { margin-bottom: 14px; color: #8f352f; font-size: 12px; font-weight: var(--weight-semibold); }
 .admin-shell .editor-banner span:last-child { color: var(--muted, #7d6653); font-size: 10px; font-weight: var(--weight-regular); }
@@ -111,6 +112,13 @@
 .admin-shell .section-switch { justify-self: start; }
 .admin-shell .section-switch button { min-width: 100px; }
 .admin-shell .staff-grid { display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 18px; }
+.admin-shell .team-panel-heading { align-items: center; }
+.admin-shell .team-heading-tools { display: flex; align-items: center; gap: 10px; }
+.admin-shell .workload-period { display: inline-flex; gap: 2px; border: 1px solid rgba(80, 54, 32, .14); border-radius: 8px; padding: 2px; background: rgba(234, 217, 191, .24); }
+.admin-shell .workload-period button { min-width: 50px; min-height: 44px; border: 0; border-radius: 6px; padding: 0 7px; background: transparent; color: var(--ink-soft, #614d3d); font: inherit; font-size: 10px; cursor: pointer; }
+.admin-shell .workload-period button[aria-pressed="true"] { background: var(--surface-strong, #fffaf0); color: var(--cinnabar-deep, #9e3f35); box-shadow: 0 1px 3px rgba(47, 36, 27, .12); }
+.admin-shell .workload-period button:disabled { cursor: wait; opacity: .65; }
+.admin-shell .workload-period button:focus-visible { outline: 2px solid var(--cinnabar-deep, #9e3f35); outline-offset: 2px; }
 .admin-shell .invite-card h3, .admin-shell .team-card h3 { margin: 0; color: #3b2d24; font-size: 20px; }
 .admin-shell .stack-form { display: grid; gap: 13px; margin-top: 18px; }
 .admin-shell .stack-form .primary-button { justify-self: start; }
@@ -119,8 +127,54 @@
 .admin-shell .invite-result code { color: #8f352f; overflow-wrap: anywhere; }
 .admin-shell .invite-result a { color: #8f352f; font-size: 12px; font-weight: var(--weight-semibold); }
 .admin-shell .team-list { display: grid; gap: 8px; margin-top: 18px; }
+.admin-shell .team-member { border-bottom: 1px solid rgba(80, 54, 32, .1); padding-bottom: 13px; }
+.admin-shell .team-member:last-of-type { border-bottom: 0; padding-bottom: 0; }
 .admin-shell .team-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; border-bottom: 1px solid rgba(80, 54, 32, .08); padding: 9px 0; }
 .admin-shell .team-row strong { color: #3b2d24; font-size: 13px; }
+.admin-shell .consultant-workload { display: grid; gap: 12px; margin-top: 12px; border-top: 1px solid rgba(80, 54, 32, .1); padding-top: 12px; }
+.admin-shell .workload-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+.admin-shell .workload-metrics > div { display: grid; align-content: start; gap: 4px; min-width: 0; border-right: 1px solid rgba(80, 54, 32, .1); padding: 0 10px; }
+.admin-shell .workload-metrics > div:first-child { padding-left: 0; }
+.admin-shell .workload-metrics > div:last-child { border-right: 0; padding-right: 0; }
+.admin-shell .workload-metrics span { color: var(--muted, #7d6653); font-size: 10px; line-height: 1.45; }
+.admin-shell .workload-metrics strong { color: var(--ink, #30241b); font-size: 17px; font-weight: var(--weight-semibold); }
+.admin-shell .workload-refreshing { margin: 0; color: var(--muted, #7d6653); font-size: 11px; }
+.admin-shell .consultant-stage-breakdown,
+.admin-shell .consultant-delivery-cycle { display: grid; gap: 7px; border-top: 1px solid rgba(80, 54, 32, .08); padding-top: 9px; }
+.admin-shell .consultant-stage-breakdown ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.admin-shell .consultant-stage-breakdown li { display: flex; min-height: 30px; align-items: center; gap: 7px; border: 1px solid rgba(80, 54, 32, .1); border-radius: 6px; padding: 3px 8px; color: var(--ink-soft, #614d3d); font-size: 10px; }
+.admin-shell .consultant-stage-breakdown li strong { color: var(--ink, #30241b); font-size: 12px; font-weight: var(--weight-semibold); }
+.admin-shell .delivery-cycle-values { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.admin-shell .delivery-cycle-values > div { display: grid; gap: 3px; border-left: 2px solid var(--jade, #6f9f93); padding-left: 8px; }
+.admin-shell .delivery-cycle-values span { color: var(--muted, #7d6653); font-size: 10px; }
+.admin-shell .delivery-cycle-values strong { color: var(--ink, #30241b); font-size: 13px; font-weight: var(--weight-semibold); }
+.admin-shell .consultant-active-work { display: grid; gap: 7px; border-top: 1px solid rgba(80, 54, 32, .08); padding-top: 9px; }
+.admin-shell .active-work-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 5px 12px; }
+.admin-shell .active-work-heading strong { color: var(--ink-soft, #4c3d31); font-size: 11px; }
+.admin-shell .active-work-heading span { color: var(--muted, #7d6653); font-size: 10px; }
+.admin-shell .active-work-heading .has-stale-work { color: var(--cinnabar-deep, #9e3f35); font-weight: var(--weight-semibold); }
+.admin-shell .active-work-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.admin-shell .active-work-list li { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid rgba(80, 54, 32, .07); padding: 9px 0; }
+.admin-shell .active-work-list li.stale { border-left: 2px solid var(--cinnabar, #b5574c); padding-left: 9px; }
+.admin-shell .active-work-list .work-event-main { gap: 3px; }
+.admin-shell .active-work-age { flex: 0 0 auto; color: var(--muted, #7d6653); font-size: 10px; white-space: nowrap; }
+.admin-shell .active-work-age.overdue { color: var(--cinnabar-deep, #9e3f35); font-weight: var(--weight-semibold); }
+.admin-shell .consultant-work-events { border-top: 1px solid rgba(80, 54, 32, .08); padding-top: 8px; }
+.admin-shell .consultant-work-events summary { display: flex; min-height: 40px; align-items: center; color: var(--cinnabar-deep, #9e3f35); font-size: 12px; font-weight: var(--weight-semibold); cursor: pointer; }
+.admin-shell .consultant-work-events ol { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.admin-shell .consultant-work-events li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 5px 10px; border-top: 1px solid rgba(80, 54, 32, .08); padding: 9px 0; }
+.admin-shell .work-event-main { display: grid; min-width: 0; gap: 3px; }
+.admin-shell .work-event-main strong { color: var(--ink-soft, #4c3d31); font-size: 11px; overflow-wrap: anywhere; }
+.admin-shell .work-event-main small { color: var(--muted, #7d6653); font-size: 10px; }
+.admin-shell .work-event-type { border-radius: 5px; padding: 4px 6px; font-size: 10px; white-space: nowrap; }
+.admin-shell .work-event-accepted { background: rgba(106, 133, 158, .14); color: #496c81; }
+.admin-shell .work-event-delivered { background: rgba(111, 159, 147, .18); color: #477366; }
+.admin-shell .consultant-work-events time { grid-column: 1 / -1; color: var(--muted, #7d6653); font-size: 10px; }
+.admin-shell .workload-empty,
+.admin-shell .workload-error { margin: 0; font-size: 11px; line-height: 1.5; }
+.admin-shell .workload-empty { color: var(--muted, #7d6653); }
+.admin-shell .workload-error { color: var(--cinnabar-deep, #9e3f35); overflow-wrap: anywhere; }
+.admin-shell .workload-record-link { justify-self: start; }
 .admin-shell .decision-list { display: grid; gap: 9px; }
 .admin-shell .decision-list > div { display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid rgba(80, 54, 32, .09); padding: 11px 0; }
 .admin-shell .decision-list strong { color: #3b2d24; font-size: 12px; }

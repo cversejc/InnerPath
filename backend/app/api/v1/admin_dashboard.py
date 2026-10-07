@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,16 +8,28 @@ from app.api.v1.admin_support import (
     CALENDAR_STATUS_LABELS,
     REPORT_STATUS_LABELS,
     USER_ROLE_LABELS,
+    _admin_access_details,
     _count,
     _db_end,
     _db_start,
+    _record_admin_data_access,
 )
 from app.api.v1.admin_activity_support import _load_audits
 from app.api.v1.admin_dashboard_support import _daily_counts
+from app.application.admin_service_sla import get_admin_report_request_sla
+from app.application.admin_generation_observability import load_admin_generation_summary
+from app.application.admin_user_growth import get_admin_user_growth_summary
 from app.db.session import get_db
 from app.dependencies import require_roles
-from app.domains.calendar.models import DecisionLog, UserCalendar
+from app.domains.calendar.models import CalendarRequest, DecisionLog, UserCalendar
 from app.domains.reports.models import Report, ReportTask
+from app.domains.service_requests.models import ServiceRequest
+from app.domains.service_requests.service import (
+    STALE_SERVICE_REQUEST_STATUSES,
+    assignment_incomplete_condition,
+    workflow_attention_condition,
+)
+from app.domains.workflow.models import ReportCase
 from app.models.user import User
 from app.domains.audit.models import AuditLog
 from app.core.time import shanghai_today
@@ -41,6 +53,81 @@ def _dashboard_range(preset: str) -> tuple[date, date]:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Invalid dashboard range")
     end_date = _local_today()
     return end_date - timedelta(days=days - 1), end_date
+
+
+async def _operation_alerts(db: AsyncSession, now: datetime | None = None) -> list[DashboardAlert]:
+    current_time = now or datetime.utcnow()
+    service_cutoff = current_time - timedelta(hours=24)
+    calendar_cutoff = current_time - timedelta(minutes=45)
+    open_report_request = (
+        ServiceRequest.service_type == "report",
+        ServiceRequest.status.not_in(("delivered", "withdrawn", "rejected")),
+    )
+    incomplete_assignment = assignment_incomplete_condition()
+
+    counts = {
+        "incomplete_assignment": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(*open_report_request, incomplete_assignment),
+        ),
+        "incomplete_assignment_over_24h": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(
+                *open_report_request,
+                incomplete_assignment,
+                ServiceRequest.created_at < service_cutoff,
+            ),
+        ),
+        "stale_service_requests": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(
+                ServiceRequest.service_type == "report",
+                ServiceRequest.status.in_(STALE_SERVICE_REQUEST_STATUSES),
+                ServiceRequest.updated_at < service_cutoff,
+                ~select(ReportCase.id)
+                .where(ReportCase.service_request_id == ServiceRequest.id)
+                .exists(),
+            ),
+        ),
+        "workflow_attention": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(
+                workflow_attention_condition(current_time),
+            ),
+        ),
+        "failed_service_requests": await _count(
+            db,
+            select(func.count(ServiceRequest.id)).where(
+                ServiceRequest.service_type == "report",
+                ServiceRequest.status == "failed",
+            ),
+        ),
+        "failed_calendar_requests": await _count(
+            db,
+            select(func.count(CalendarRequest.id)).where(CalendarRequest.status == "failed"),
+        ),
+        "stalled_calendar_requests": await _count(
+            db,
+            select(func.count(CalendarRequest.id)).where(
+                CalendarRequest.status == "generating",
+                CalendarRequest.updated_at < calendar_cutoff,
+            ),
+        ),
+    }
+    definitions = (
+        ("incomplete_assignment", "warning", "咨询师席位未完整分配", "requests"),
+        ("incomplete_assignment_over_24h", "danger", "超过 24 小时未完成分配", "requests"),
+        ("stale_service_requests", "warning", "工作流超过 24 小时未更新", "requests"),
+        ("workflow_attention", "danger", "报告协作节点失败或超 24 小时未更新", "requests"),
+        ("failed_service_requests", "danger", "服务申请处理失败", "requests"),
+        ("failed_calendar_requests", "danger", "日历生成失败", "requests"),
+        ("stalled_calendar_requests", "warning", "日历生成超过 45 分钟", "requests"),
+    )
+    return [
+        DashboardAlert(key=key, level=level, label=label, count=counts[key], route=route)
+        for key, level, label, route in definitions
+        if counts[key]
+    ]
 
 async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewResponse:
     start_date, end_date = _dashboard_range(preset)
@@ -87,7 +174,7 @@ async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewRes
     failed_logins = await _count(db, select(func.count(AuditLog.id)).where(
         AuditLog.action == "auth.login.failure", AuditLog.created_at >= start_dt, AuditLog.created_at < end_dt
     ))
-    alerts = []
+    alerts = await _operation_alerts(db)
     if report_failed:
         alerts.append(DashboardAlert(key="failed_reports", level="danger", label="报告任务失败", count=report_failed, route="reports"))
     if draft_calendars:
@@ -96,6 +183,25 @@ async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewRes
         alerts.append(DashboardAlert(key="failed_logins", level="danger", label="范围内失败登录", count=failed_logins, route="logs"))
 
     recent_activity, _ = await _load_audits(db, page=1, size=8)
+    service_sla = await get_admin_report_request_sla(
+        db,
+        start_at=start_dt,
+        end_at=end_dt,
+    )
+    user_growth = await get_admin_user_growth_summary(
+        db,
+        start_at=start_dt,
+        end_at=end_dt,
+        range_start=start_date,
+        range_end=end_date,
+    )
+    generation = await load_admin_generation_summary(
+        db,
+        start_at=start_dt,
+        end_at=end_dt,
+        range_start=start_date,
+        range_end=end_date,
+    )
     return DashboardOverviewResponse(
         range_preset=preset,
         start_date=start_date,
@@ -118,14 +224,28 @@ async def _dashboard_data(db: AsyncSession, preset: str) -> DashboardOverviewRes
             reports_by_status=distribution(report_rows, REPORT_STATUS_LABELS),
             calendars_by_status=distribution(calendar_rows, CALENDAR_STATUS_LABELS),
         ),
+        service_sla=service_sla,
+        user_growth=user_growth,
+        generation=generation,
         alerts=alerts,
         recent_activity=[AuditLogResponse.model_validate(item) for item in recent_activity],
     )
 
 @router.get("/dashboard/overview", response_model=DashboardOverviewResponse)
 async def get_dashboard_overview(
+    request: Request,
     range_preset: str = Query("30d", alias="range", pattern="^(7d|30d|90d)$"),
     current_user: User = Depends(require_roles("admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    return await _dashboard_data(db, range_preset)
+    response = await _dashboard_data(db, range_preset)
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.dashboard.overview.read",
+        resource_type="dashboard",
+        resource_id="overview",
+        details=_admin_access_details(filters={"range": range_preset}),
+    )
+    return response

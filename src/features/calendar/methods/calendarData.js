@@ -10,6 +10,7 @@ import {
 import { dateKeyFromLabel, isToday, parseDateKey, weekdays } from '../helpers.js'
 import { selectPublishedCalendar } from '../cover.js'
 import { resolveCalendarPracticeRefs } from '../practice-actions.js'
+import { calendarToneLabel } from '../../../utils/displayLabels.js'
 
 const allowDemoCalendar = Boolean(import.meta.env?.DEV && import.meta.env?.VITE_DEMO_CALENDAR === 'true')
 
@@ -95,7 +96,7 @@ export default {
           statusLabel: entry.status_label || entry.statusLabel || '',
           shortLabel: entry.keyword || entry.shortLabel || entry.status_label || entry.statusLabel || '查看',
           phaseId: entry.phase_id || entry.phaseId || entry.tone || 'default',
-          phaseLabel: entry.phase_label || entry.phaseLabel || entry.status_label || entry.statusLabel || entry.tone || '',
+          phaseLabel: entry.phase_label || entry.phaseLabel || entry.status_label || entry.statusLabel || calendarToneLabel(entry.tone, ''),
           timeWindow: entry.time_window || entry.timeWindow || '按你的节奏安排，给决定留出换气空间。',
           suitable: entry.suitable || [],
           unsuitable: entry.unsuitable || [],

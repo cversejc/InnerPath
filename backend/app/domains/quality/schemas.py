@@ -51,3 +51,32 @@ class ReportQualityResponse(BaseModel):
     blocking_count: int
     open_count: int
     qa_fingerprint_current: Optional[str] = None
+
+
+class AdminQAIssueItem(BaseModel):
+    id: int
+    is_current: bool
+    report_case_id: int
+    report_case_status: str
+    user_id: int
+    user_name: Optional[str] = None
+    user_phone: Optional[str] = None
+    service_request_id: Optional[int] = None
+    source_type: str
+    source_ref_id: Optional[int] = None
+    issue_type: str
+    severity: str
+    status: str
+    target_fragment_key: Optional[str] = None
+    message: str
+    suggestion: Optional[str] = None
+    resolution: Optional[str] = None
+    resolved_at: Optional[datetime] = None
+    created_at: datetime
+
+
+class AdminQAIssueListResponse(BaseModel):
+    total: int
+    page: int
+    size: int
+    items: list[AdminQAIssueItem]

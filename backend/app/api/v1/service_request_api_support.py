@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +15,7 @@ from app.domains.service_requests.schemas import (
 )
 from app.domains.service_requests.service import serialize_service_request, serialize_task
 from app.domains.calendar.requests import serialize_calendar_request
+from app.domains.workflow.authorization import has_collaboration_contract
 
 
 def project_report_case_status(case_status: str, step_status: str | None, fallback: str) -> str:
@@ -35,7 +38,7 @@ def project_report_case_status(case_status: str, step_status: str | None, fallba
 
 async def report_case_progress_for_requests(
     db: AsyncSession, request_ids: list[int]
-) -> dict[int, dict[str, int | str | None]]:
+) -> dict[int, dict[str, int | str | bool | datetime | None]]:
     if not request_ids:
         return {}
     cases = list(
@@ -52,10 +55,10 @@ async def report_case_progress_for_requests(
                 .where(
                     StepTask.workflow_instance_id.in_(workflow_ids),
                     StepTask.status.in_(
-                        ["READY", "IN_REVIEW", "EXECUTING", "WAITING_REVIEW"]
+                        ["READY", "IN_REVIEW", "EXECUTING", "WAITING_REVIEW", "FAILED"]
                     ),
                 )
-                .order_by(StepTask.sequence_no)
+                .order_by((StepTask.status == "FAILED").asc(), StepTask.sequence_no)
             )
         )
     current_by_workflow = {}
@@ -65,6 +68,7 @@ async def report_case_progress_for_requests(
         case.service_request_id: {
             "report_case_id": case.id,
             "report_case_status": case.status,
+            "is_collaborative": has_collaboration_contract(case.application_snapshot),
             "current_step_key": (
                 current_by_workflow[case.workflow_instance_id].step_key
                 if case.workflow_instance_id in current_by_workflow
@@ -72,6 +76,16 @@ async def report_case_progress_for_requests(
             ),
             "current_step_status": (
                 current_by_workflow[case.workflow_instance_id].status
+                if case.workflow_instance_id in current_by_workflow
+                else None
+            ),
+            "current_step_updated_at": (
+                current_by_workflow[case.workflow_instance_id].updated_at
+                if case.workflow_instance_id in current_by_workflow
+                else None
+            ),
+            "current_step_error": (
+                current_by_workflow[case.workflow_instance_id].last_error
                 if case.workflow_instance_id in current_by_workflow
                 else None
             ),

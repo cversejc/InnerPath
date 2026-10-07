@@ -6,10 +6,37 @@ import {
   createAdminCalendarDraft,
   getAdminCalendars,
   getAdminCalendarRequests,
+  getAdminUserDecisionLogs,
   importAdminCalendar,
   publishAdminCalendar,
   updateAdminCalendar
 } from '../../calendar/api.js'
+
+const CALENDAR_DECISION_PAGE_SIZE = 200
+
+export async function loadCalendarDecisionLogs(userId, calendar, fetchPage = getAdminUserDecisionLogs) {
+  const entryDates = (calendar.entries || [])
+    .map(entry => String(entry.entry_date || entry.date || '').slice(0, 10))
+    .filter(date => /^\d{4}-\d{2}-\d{2}$/.test(date))
+    .sort()
+  const dateFrom = String(calendar.start_date || entryDates[0] || '').slice(0, 10)
+  const dateTo = String(calendar.end_date || entryDates[entryDates.length - 1] || '').slice(0, 10)
+  const params = {
+    date_from: dateFrom || undefined,
+    date_to: dateTo || undefined,
+    page: 1,
+    size: CALENDAR_DECISION_PAGE_SIZE
+  }
+  const firstPage = await fetchPage(userId, params)
+  const pageCount = Math.ceil((firstPage.total || 0) / CALENDAR_DECISION_PAGE_SIZE)
+  if (pageCount <= 1) return firstPage.items || []
+
+  const remainingPages = await Promise.all(Array.from(
+    { length: pageCount - 1 },
+    (_, index) => fetchPage(userId, { ...params, page: index + 2 })
+  ))
+  return [firstPage.items || [], ...remainingPages.map(page => page.items || [])].flat()
+}
 
 function todayKey() {
   return shanghaiDateKey()
@@ -33,32 +60,86 @@ function createEntry(date = todayKey()) {
 
 export default {
   async loadCalendarUsers() {
+      const requestId = this.calendarUsersRequestId + 1
+      this.calendarUsersRequestId = requestId
       this.calendarUsersLoading = true
-      try { const response = await getAllAdminUsers({ search: this.calendarUserSearch || undefined, size: 100 }); this.calendarUsers = response.items || [] } catch (error) { this.message = this.errorText(error) } finally { this.calendarUsersLoading = false }
+      try {
+        const response = await getAllAdminUsers({ search: this.calendarUserSearch || undefined, size: 100 })
+        if (this.calendarUsersRequestId === requestId) this.calendarUsers = response.items || []
+      } catch (error) {
+        if (this.calendarUsersRequestId === requestId) this.message = this.errorText(error)
+      } finally {
+        if (this.calendarUsersRequestId === requestId) this.calendarUsersLoading = false
+      }
     },
   updateCalendarImportJson(value) { this.calendarImportJson = value },
   updateCalendarUserSearch(value) { this.calendarUserSearch = value },
   async loadCalendarRequests() {
+      const requestId = this.calendarRequestsRequestId + 1
+      this.calendarRequestsRequestId = requestId
       this.calendarRequestsLoading = true
       try {
         const response = await getAdminCalendarRequests({ status: this.calendarRequestStatusFilter || undefined })
-        this.calendarRequests = response.items || []
+        if (this.calendarRequestsRequestId === requestId) this.calendarRequests = response.items || []
       } catch (error) {
-        this.message = this.errorText(error)
+        if (this.calendarRequestsRequestId === requestId) this.message = this.errorText(error)
       } finally {
-        this.calendarRequestsLoading = false
+        if (this.calendarRequestsRequestId === requestId) this.calendarRequestsLoading = false
       }
     },
   async setCalendarRequestStatusFilter(status) {
       this.calendarRequestStatusFilter = status
       await this.loadCalendarRequests()
     },
-  async openCalendarForUser(user) { this.closeUserDetail({ restoreFocus: false }); this.activeTab = 'calendar'; this.selectedCalendarUser = user; this.calendarForm.visible = false; await this.loadCalendarUsers(); await this.loadCalendars(); this.syncAutoRefresh() },
-  async selectCalendarUser(user) { this.selectedCalendarUser = user; this.cancelCalendarEdit(); await this.loadCalendars() },
+  async openCalendarForUser(user) { this.clearCalendarPreview(); this.closeUserDetail({ restoreFocus: false }); this.activeTab = 'calendar'; this.selectedCalendarUser = user; this.calendarForm.visible = false; await this.loadCalendarUsers(); await this.loadCalendars(); this.syncAutoRefresh() },
+  async selectCalendarUser(user) { this.clearCalendarPreview(); this.selectedCalendarUser = user; this.cancelCalendarEdit(); await this.loadCalendars() },
+  clearCalendarPreview() {
+    this.calendarPreviewRequestId += 1
+    this.calendarPreviewId = null
+    this.calendarPreviewDecisionLogs = []
+    this.calendarPreviewError = ''
+    this.calendarPreviewLoading = false
+  },
+  async toggleCalendarPreview(calendar) {
+    if (this.calendarPreviewId === calendar.id) {
+      this.clearCalendarPreview()
+      return
+    }
+    const userId = this.selectedCalendarUser?.id
+    if (!userId) return
+
+    const requestId = ++this.calendarPreviewRequestId
+    this.calendarPreviewId = calendar.id
+    this.calendarPreviewDecisionLogs = []
+    this.calendarPreviewError = ''
+    this.calendarPreviewLoading = true
+    try {
+      const decisionLogs = await loadCalendarDecisionLogs(userId, calendar)
+      if (this.calendarPreviewRequestId === requestId && this.selectedCalendarUser?.id === userId && this.calendarPreviewId === calendar.id) {
+        this.calendarPreviewDecisionLogs = decisionLogs
+      }
+    } catch (error) {
+      if (this.calendarPreviewRequestId === requestId && this.selectedCalendarUser?.id === userId && this.calendarPreviewId === calendar.id) {
+        this.calendarPreviewError = this.errorText(error)
+      }
+    } finally {
+      if (this.calendarPreviewRequestId === requestId) this.calendarPreviewLoading = false
+    }
+  },
   async loadCalendars() {
       if (!this.selectedCalendarUser) return
+      const userId = this.selectedCalendarUser.id
+      const requestId = this.calendarsRequestId + 1
+      this.calendarsRequestId = requestId
       this.calendarLoading = true
-      try { this.calendars = (await getAdminCalendars(this.selectedCalendarUser.id)).items || [] } catch (error) { this.message = this.errorText(error) } finally { this.calendarLoading = false }
+      try {
+        const response = await getAdminCalendars(userId)
+        if (this.calendarsRequestId === requestId && this.selectedCalendarUser?.id === userId) this.calendars = response.items || []
+      } catch (error) {
+        if (this.calendarsRequestId === requestId && this.selectedCalendarUser?.id === userId) this.message = this.errorText(error)
+      } finally {
+        if (this.calendarsRequestId === requestId && this.selectedCalendarUser?.id === userId) this.calendarLoading = false
+      }
     },
   startNewCalendar() { this.calendarForm = { visible: true, id: null, title: '', note: '', start_date: '', end_date: '', status: 'draft', version_number: 1, entries: [] } },
   async prepareCalendarEdit(calendar) {

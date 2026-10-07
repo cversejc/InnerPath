@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Button as VanButton, Field as VanField } from 'vant'
+import { DECISION_STATUS_LABELS } from '../../../utils/displayLabels.js'
 
 const props = defineProps({
   recordDraft: { type: Object, required: true },
@@ -36,7 +37,7 @@ function isQuickRecordSaved(item) {
 }
 
 function statusText(status) {
-  return { done: '已完成', doing: '进行中', skipped: '已跳过' }[status] || '已记录'
+  return DECISION_STATUS_LABELS[status] || '已记录'
 }
 
 function updateDraft(field, value) {

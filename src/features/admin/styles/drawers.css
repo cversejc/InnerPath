@@ -17,6 +17,17 @@
 .admin-shell .profile-summary span, .admin-shell .profile-summary strong { display: block; }
 .admin-shell .profile-summary span { color: var(--muted, #7d6653); font-size: 10px; }
 .admin-shell .profile-summary strong { margin-top: 4px; color: #3b2d24; font-family: var(--font-ui); font-size: 18px; }
+.admin-shell .user-timeline { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.admin-shell .user-timeline-item { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: start; gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(80, 54, 32, .1); }
+.admin-shell .user-timeline-marker { width: 8px; height: 8px; margin-top: 5px; border: 2px solid #fffaf0; border-radius: 50%; background: #b85c50; box-shadow: 0 0 0 1px rgba(184, 92, 80, .35); }
+.admin-shell .user-timeline-copy { min-width: 0; }
+.admin-shell .user-timeline-copy strong { color: #3b2d24; font-size: 12px; }
+.admin-shell .user-timeline-copy p { margin: 4px 0 0; color: var(--muted, #7d6653); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.admin-shell .user-timeline-item time { color: var(--muted, #7d6653); font-size: 10px; text-align: right; white-space: nowrap; }
+.admin-shell .user-overview-links { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 3px; }
+.admin-shell .user-overview-links button { min-height: 40px; border: 1px solid rgba(80, 54, 32, .16); border-radius: 5px; padding: 0 11px; background: rgba(255, 250, 240, .7); color: #51463d; font: inherit; font-size: 11px; cursor: pointer; }
+.admin-shell .user-overview-links button:hover { border-color: rgba(184, 92, 80, .5); color: #8f352f; }
+.admin-shell .user-overview-links button:focus-visible { outline: 2px solid var(--accent, #b85c50); outline-offset: 2px; }
 .admin-shell .profile-data-grid { display: grid; gap: 12px; }
 .admin-shell .profile-data-group { border-top: 1px solid rgba(80, 54, 32, .1); padding-top: 12px; }
 .admin-shell .profile-data-group h3 { margin: 0 0 9px; color: #3b2d24; font-size: 13px; }

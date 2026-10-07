@@ -8,12 +8,15 @@ from sqlalchemy import JSON, ARRAY, create_engine, select, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
 
+from app.api.v1.admin_dashboard import _operation_alerts
 from app.main import app  # imports the full table registry
 from app.db.base import Base
+from app.domains.audit.models import AuditLog
 from app.models.user import User
 from app.domains.reports.models import Report
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.calendar.models import CalendarEntry, CalendarRequest, UserCalendar, DecisionLog
+from app.domains.calendar.requests import get_calendar_requests_for_admin
 from app.domains.calendar.schemas import CalendarRequestCreate
 from app.domains.calendar.production import diversify_repeated_suitable, select_tone
 from app.domains.calendar.temporal import calculate_temporal_facts
@@ -22,12 +25,17 @@ from app.domains.skills.runtime import ModelCompletion
 from app.domains.skills.examples import create_example_candidate, publish_skill_example, update_example_redaction
 from app.application.calendar_production import (
     queue_calendar_from_report, execute_calendar_production, retry_calendar_production,
-    recover_stalled_calendar_requests,
+    retry_calendar_production_for_admin, recover_stalled_calendar_requests,
 )
 from app.application.report_cases import create_user_service_request, ensure_collaborative_workflow_version
 from app.domains.service_requests.schemas import ServiceRequestCreate
-from app.domains.service_requests.staff import accept_service_request, list_staff_service_requests, staff_can_access
-from app.domains.workflow.models import StepTask
+from app.domains.service_requests.staff import (
+    accept_service_request,
+    list_admin_service_requests,
+    list_staff_service_requests,
+    staff_can_access,
+)
+from app.domains.workflow.models import ReportCase, StepTask, WorkflowVersion
 from app.domains.workflow.authorization import validate_step_actor, STEP_SPECIALTIES
 from app.domains.workflow.service import create_report_case, start_step, complete_step
 from tests.test_workflow_foundation import SyncSessionAdapter
@@ -378,6 +386,236 @@ async def test_invented_sources_and_stalled_worker_do_not_publish(chain_db):
     assert await recover_stalled_calendar_requests(chain_db) == 1
     assert request.status == "failed"
     assert orphan.status == "FAILED" and orphan.error == "calendar_worker_interrupted" and orphan.completed_at
+
+
+@pytest.mark.asyncio
+async def test_admin_operation_alerts_count_incomplete_and_stalled_work(chain_db):
+    db = chain_db
+    now = datetime.utcnow()
+    user, _, report, _ = await seed_report(db)
+    consultant = User(phone="13800009906", name="在岗咨询师", role="consultant", consultant_type="integrated")
+    db.add(consultant)
+    await db.flush()
+
+    old_unassigned = ServiceRequest(
+        user_id=user.id,
+        service_type="report",
+        status="submitted",
+        consultation_type="metaphysics",
+        request_payload={},
+        created_at=now - timedelta(hours=25),
+        updated_at=now - timedelta(hours=25),
+    )
+    partial_collaboration = ServiceRequest(
+        user_id=user.id,
+        service_type="report",
+        status="accepted",
+        consultation_type="integrated",
+        assigned_mingli_consultant_id=consultant.id,
+        request_payload={},
+        created_at=now - timedelta(hours=3),
+        updated_at=now - timedelta(hours=1),
+    )
+    stale_request = ServiceRequest(
+        user_id=user.id,
+        service_type="report",
+        status="reviewing",
+        consultation_type="psychology",
+        assigned_consultant_id=consultant.id,
+        request_payload={},
+        created_at=now - timedelta(days=2),
+        updated_at=now - timedelta(hours=25),
+    )
+    failed_request = ServiceRequest(
+        user_id=user.id,
+        service_type="report",
+        status="failed",
+        consultation_type="integrated",
+        assigned_consultant_id=consultant.id,
+        request_payload={},
+    )
+    db.add_all([old_unassigned, partial_collaboration, stale_request, failed_request])
+    await db.flush()
+    db.add(ReportCase(
+        user_id=user.id,
+        service_request_id=partial_collaboration.id,
+        status="ACTIVE",
+        application_snapshot={"collaboration_contract": {"mode": "dual_specialty"}},
+        application_submitted_at=partial_collaboration.created_at,
+        created_at=partial_collaboration.created_at,
+        updated_at=partial_collaboration.updated_at,
+    ))
+    failed_calendar = CalendarRequest(
+        user_id=user.id,
+        source_report_id=report.id,
+        profile_version=1,
+        status="failed",
+        input_snapshot={"generation": {"status": "FAILED"}},
+    )
+    stalled_calendar = CalendarRequest(
+        user_id=user.id,
+        source_report_id=report.id,
+        profile_version=1,
+        status="generating",
+        progress=35,
+        input_snapshot={"generation": {"status": "RUNNING"}},
+        created_at=now - timedelta(hours=1),
+        updated_at=now - timedelta(minutes=46),
+    )
+    queued_calendar = CalendarRequest(
+        user_id=user.id,
+        source_report_id=report.id,
+        profile_version=1,
+        status="queued",
+        input_snapshot={"generation": {"status": "QUEUED"}},
+        created_at=now - timedelta(hours=2),
+        updated_at=now - timedelta(hours=2),
+    )
+    db.add_all([failed_calendar, stalled_calendar, queued_calendar])
+    await db.commit()
+
+    alerts = {alert.key: alert.count for alert in await _operation_alerts(db, now)}
+    incomplete, incomplete_total = await list_admin_service_requests(
+        db,
+        service_type="report",
+        queue_filter="incomplete_assignment",
+    )
+    old_incomplete, old_incomplete_total = await list_admin_service_requests(
+        db,
+        service_type="report",
+        queue_filter="incomplete_assignment_over_24h",
+    )
+    stalled = await get_calendar_requests_for_admin(
+        db,
+        stalled_only=True,
+    )
+
+    assert alerts == {
+        "incomplete_assignment": 2,
+        "incomplete_assignment_over_24h": 1,
+        "stale_service_requests": 1,
+        "failed_service_requests": 1,
+        "failed_calendar_requests": 1,
+        "stalled_calendar_requests": 1,
+    }
+    assert incomplete_total == 2 and {row[0].id for row in incomplete} == {
+        old_unassigned.id,
+        partial_collaboration.id,
+    }
+    assert old_incomplete_total == 1 and old_incomplete[0][0].id == old_unassigned.id
+    assert stalled["total"] == 1 and stalled["items"][0]["id"] == stalled_calendar.id
+
+
+@pytest.mark.asyncio
+async def test_admin_workflow_attention_filter_finds_failed_and_stalled_steps(chain_db):
+    db = chain_db
+    now = datetime.utcnow()
+    user, _, _, _ = await seed_report(db)
+    consultant = User(
+        phone="13800009908",
+        name="工作流测试咨询师",
+        role="consultant",
+        consultant_type="integrated",
+    )
+    db.add(consultant)
+    version = WorkflowVersion(
+        workflow_key="test.report",
+        name="测试报告流程",
+        version=1,
+        status="PUBLISHED",
+        definition_json={
+            "steps": [
+                {
+                    "step_key": "S1",
+                    "sequence_no": 1,
+                    "executor": "HUMAN",
+                    "config": {},
+                }
+            ]
+        },
+        created_at=now,
+        published_at=now,
+    )
+    db.add(version)
+    await db.flush()
+
+    requests = []
+    for step_status, step_updated_at, request_status, case_status in (
+        ("FAILED", now, "accepted", "ACTIVE"),
+        ("IN_REVIEW", now - timedelta(hours=25), "reviewing", "ACTIVE"),
+        ("READY", now - timedelta(hours=25), "needs_info", "BLOCKED"),
+    ):
+        request = ServiceRequest(
+            user_id=user.id,
+            service_type="report",
+            status=request_status,
+            assigned_consultant_id=consultant.id,
+            request_payload={},
+            created_at=now,
+            updated_at=now,
+        )
+        db.add(request)
+        await db.flush()
+        case = await create_report_case(
+            db,
+            user_id=user.id,
+            service_request_id=request.id,
+            source_report_task_id=None,
+            application_snapshot={},
+            workflow_version=version,
+        )
+        case.status = case_status
+        step = await db.scalar(
+            select(StepTask).where(
+                StepTask.workflow_instance_id == case.workflow_instance_id
+            )
+        )
+        step.status = step_status
+        step.updated_at = step_updated_at
+        if step_status == "FAILED":
+            step.last_error = "generation_failed"
+        requests.append(request)
+    await db.commit()
+
+    alerts = {item.key: item.count for item in await _operation_alerts(db, now)}
+    rows, total = await list_admin_service_requests(
+        db,
+        service_type="report",
+        queue_filter="workflow_attention",
+    )
+
+    assert alerts["workflow_attention"] == 2
+    assert total == 2
+    assert {row[0].id for row in rows} == {requests[0].id, requests[1].id}
+
+
+@pytest.mark.asyncio
+async def test_admin_calendar_retry_requeues_and_records_admin_actor(chain_db):
+    db = chain_db
+    user, _, _, data = await seed_report(db)
+    calendar_request = await queue_calendar_from_report(db, user, data)
+    result = await execute_calendar_production(
+        db,
+        calendar_request.id,
+        1,
+        gateway=CalendarGateway(bad_source=True),
+    )
+    assert result["status"] == "failed"
+
+    admin = User(phone="13800009907", name="管理员", role="admin")
+    db.add(admin)
+    await db.flush()
+    retried = await retry_calendar_production_for_admin(db, admin, calendar_request.id)
+    audit = await db.scalar(select(AuditLog).where(
+        AuditLog.action == "calendar.generation.retry",
+        AuditLog.resource_id == str(calendar_request.id),
+    ))
+
+    assert retried.status == "queued"
+    assert retried.input_snapshot["generation"]["attempt"] == 2
+    assert retried.generation_error is None and retried.progress == 0
+    assert audit.actor_user_id == admin.id and audit.target_user_id == user.id
+    assert json.loads(audit.details)["initiated_by_admin"] is True
 
 
 @pytest.mark.asyncio

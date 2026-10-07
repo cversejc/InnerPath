@@ -1,10 +1,11 @@
 from datetime import date
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.admin_report_support import _load_admin_reports, _load_admin_tasks
+from app.api.v1.admin_support import _admin_access_details, _record_admin_data_access
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.models.user import User
@@ -20,6 +21,7 @@ router = APIRouter()
 
 @router.get("/reports", response_model=AdminReportListResponse)
 async def list_admin_reports(
+    request: Request,
     report_status: Optional[str] = Query(None, alias="status", pattern="^(processing|completed|failed)$"),
     user_id: Optional[int] = None,
     search: Optional[str] = Query(None, max_length=100),
@@ -32,11 +34,33 @@ async def list_admin_reports(
     db: AsyncSession = Depends(get_db),
 ):
     items, total = await _load_admin_reports(db, report_status=report_status, user_id=user_id, search=search, ai_model=ai_model, date_from=date_from, date_to=date_to, page=page, size=size)
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.reports.list",
+        resource_type="report",
+        target_user_id=user_id,
+        details=_admin_access_details(
+            page=page,
+            page_size=size,
+            result_count=len(items),
+            filters={
+                "status": report_status,
+                "user_id": user_id,
+                "search": search,
+                "ai_model": ai_model,
+                "date_from": date_from,
+                "date_to": date_to,
+            },
+        ),
+    )
     return AdminReportListResponse(total=total, page=page, size=size, items=items)
 
 @router.get("/reports/{report_id}", response_model=AdminReportResponse)
 async def get_admin_report(
     report_id: int,
+    request: Request,
     current_user: User = Depends(require_roles("admin")),
     db: AsyncSession = Depends(get_db),
 ):
@@ -63,10 +87,20 @@ async def get_admin_report(
         "selected_topics": report.selected_topics or [],
         "additional_info": report.additional_info,
     })
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.report.read",
+        resource_type="report",
+        resource_id=str(report.id),
+        target_user_id=user.id,
+    )
     return payload
 
 @router.get("/report-tasks", response_model=AdminReportTaskListResponse)
 async def list_admin_report_tasks(
+    request: Request,
     task_status: Optional[str] = Query(None, alias="status", pattern="^(processing|completed|failed)$"),
     user_id: Optional[int] = None,
     search: Optional[str] = Query(None, max_length=100),
@@ -78,6 +112,26 @@ async def list_admin_report_tasks(
     db: AsyncSession = Depends(get_db),
 ):
     items, total = await _load_admin_tasks(db, task_status=task_status, user_id=user_id, search=search, date_from=date_from, date_to=date_to, page=page, size=size)
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.report_tasks.list",
+        resource_type="report_task",
+        target_user_id=user_id,
+        details=_admin_access_details(
+            page=page,
+            page_size=size,
+            result_count=len(items),
+            filters={
+                "status": task_status,
+                "user_id": user_id,
+                "search": search,
+                "date_from": date_from,
+                "date_to": date_to,
+            },
+        ),
+    )
     return AdminReportTaskListResponse(total=total, page=page, size=size, items=items)
 
 @router.post(

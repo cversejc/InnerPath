@@ -100,11 +100,17 @@ async def get_my_calendar_requests(
 @router.post("/requests/{request_id}/retry", response_model=CalendarRequestResponse, status_code=status.HTTP_202_ACCEPTED)
 async def retry_my_calendar_request(
     request_id: int,
+    request: Request,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        calendar_request = await retry_calendar_production(db, current_user, request_id)
+        calendar_request = await retry_calendar_production(
+            db,
+            current_user,
+            request_id,
+            audit_context=audit_context_from_request(request),
+        )
     except ValueError as error:
         code = str(error)
         raise HTTPException(

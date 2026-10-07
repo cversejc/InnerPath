@@ -1,8 +1,12 @@
 <script setup>
+import { onMounted, ref } from 'vue'
 import { Button as VanButton } from 'vant'
 import ProfileSummary from '../../../components/ProfileSummary.vue'
+import ServiceFeedbackControl from '../../service-feedback/components/ServiceFeedbackControl.vue'
+import { getMyServiceFeedback } from '../../service-feedback/api.js'
 import { calendarGenerationText } from '../generation-progress.js'
 import { formatDateTime } from '../../../utils/dateTime.js'
+import { CALENDAR_REQUEST_STATUS_LABELS } from '../../../utils/displayLabels.js'
 
 defineProps({
   calendarRequests: { type: Array, default: () => [] },
@@ -48,7 +52,33 @@ function requestStatusLabel(status) {
     reviewing: '历史申请',
     rejected: '已退回',
     cancelled: '已取消'
-  }[status] || status
+  }[status] || CALENDAR_REQUEST_STATUS_LABELS[status] || status
+}
+
+const feedbackByCalendarRequestId = ref({})
+const feedbackReady = ref(false)
+const feedbackLoadError = ref(false)
+
+onMounted(async () => {
+  try {
+    const response = await getMyServiceFeedback()
+    feedbackByCalendarRequestId.value = Object.fromEntries(
+      (response.items || [])
+        .filter(item => item.calendar_request_id)
+        .map(item => [item.calendar_request_id, item])
+    )
+    feedbackReady.value = true
+  } catch {
+    feedbackReady.value = false
+    feedbackLoadError.value = true
+  }
+})
+
+function saveCalendarFeedback(requestId, feedback) {
+  feedbackByCalendarRequestId.value = {
+    ...feedbackByCalendarRequestId.value,
+    [requestId]: feedback
+  }
 }
 </script>
 
@@ -213,6 +243,15 @@ function requestStatusLabel(status) {
             <div><strong>{{ formatRequestDate(item.start_date, item.end_date) }}</strong><span>{{ item.goal }}</span></div>
             <span class="request-status" :class="`status-${item.status}`" role="status">{{ calendarGenerationText(item) }}<small v-if="item.calendar_id"> · 日历 #{{ item.calendar_id }}</small></span>
             <VanButton v-if="item.status === 'failed'" plain native-type="button" :disabled="submitting" @click="$emit('retry', item.id)">重试生成</VanButton>
+            <ServiceFeedbackControl
+              v-if="feedbackReady && ['fulfilled', 'delivered'].includes(item.status) && item.calendar_id"
+              class="calendar-feedback-control"
+              service-type="calendar"
+              :source-id="item.id"
+              :existing="feedbackByCalendarRequestId[item.id] || null"
+              @submitted="saveCalendarFeedback(item.id, $event)"
+            />
+            <p v-else-if="feedbackLoadError && ['fulfilled', 'delivered'].includes(item.status) && item.calendar_id" class="calendar-feedback-load-error" role="status">反馈状态暂时无法读取，请稍后刷新。</p>
           </article>
         </div>
       </div>

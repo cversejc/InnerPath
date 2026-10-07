@@ -2,6 +2,8 @@
 import { computed, ref, watch } from 'vue'
 import CalendarPlanningSection from '../../calendar/components/CalendarPlanningSection.vue'
 import { isToday, parseDateKey, weekdays } from '../../calendar/helpers.js'
+import { calendarStatusText } from '../formatters.js'
+import { calendarToneLabel } from '../../../utils/displayLabels.js'
 import '../../../views/Calendar.css'
 
 const props = defineProps({
@@ -26,7 +28,7 @@ const days = computed(() => (props.calendar.entries || []).map(entry => {
     statusLabel: entry.status_label || entry.statusLabel || '',
     shortLabel: entry.keyword || entry.shortLabel || entry.status_label || entry.statusLabel || '查看',
     phaseId: entry.phase_id || entry.phaseId || entry.tone || 'default',
-    phaseLabel: entry.phase_label || entry.phaseLabel || entry.status_label || entry.statusLabel || entry.tone || '',
+    phaseLabel: entry.phase_label || entry.phaseLabel || entry.status_label || entry.statusLabel || calendarToneLabel(entry.tone, ''),
     timeWindow: entry.time_window || entry.timeWindow || '按你的节奏安排，给决定留出换气空间。',
     suitable: entry.suitable || [],
     unsuitable: entry.unsuitable || [],
@@ -166,7 +168,7 @@ function selectDate(date) {
   <div class="calendar-page calendar-admin-preview">
     <div class="calendar-preview-banner">
       <span class="calendar-preview-mark" aria-hidden="true">辰</span>
-      <div><strong>用户端日历视图</strong><span>管理员只读 · {{ calendar.status === 'published' ? '已发布' : calendar.status || '日历' }}</span></div>
+      <div><strong>用户端日历视图</strong><span>管理员只读 · {{ calendarStatusText(calendar.status) === '—' ? '日历' : calendarStatusText(calendar.status) }}</span></div>
     </div>
     <CalendarPlanningSection
       v-if="days.length"

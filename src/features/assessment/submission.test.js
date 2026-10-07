@@ -18,9 +18,13 @@ test('report application contains the confirmed profile version and full context
   }
   const context = {
     ...createEmptyAssessmentContext(),
-    focus_topics: ['career'],
+    focus_topics: ['career', 'other'],
+    focus_topics_other: '团队调整',
     current_challenge: '考虑转行',
-    expected_outcomes: ['方向指引'],
+    expected_outcomes: ['方向指引', '其他'],
+    expected_outcomes_other: '梳理行动顺序',
+    decision_style: ['other'],
+    decision_style_other: '先进行小范围试验',
     decision_description: '已开始收集信息'
   }
 
@@ -31,7 +35,7 @@ test('report application contains the confirmed profile version and full context
   assert.equal(payload.profile.time_accuracy, 'approximate')
   assert.equal(payload.profile_version, 9)
   assert.deepEqual(payload.context, context)
-  assert.deepEqual(payload.selected_topics, ['career'])
+  assert.deepEqual(payload.selected_topics, ['career', 'other'])
   assert.match(payload.additional_info, /考虑转行/)
 })
 

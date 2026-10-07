@@ -6,12 +6,15 @@ diagnosing infrastructure and programming errors.
 """
 
 import json
+import logging
 from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.audit.context import AuditContext
 from app.domains.audit.models import AuditLog
+
+logger = logging.getLogger(__name__)
 
 
 _SECRET_KEYS = {
@@ -71,10 +74,11 @@ async def record_audit(
     ip_address: Optional[str] = None,
     user_agent: Optional[str] = None,
 ) -> AuditLog:
-    """Add an audit event to the current transaction.
+    """Best-effort add an audit event without aborting business writes.
 
-    Callers own the transaction so that a business mutation and its audit
-    event commit or roll back together.
+    Existing business changes are flushed first so their errors remain visible
+    to the caller. The audit insert then runs inside a savepoint; recoverable
+    audit-row failures roll back only that savepoint and are logged.
     """
 
     context_ip = audit_context.ip_address if audit_context else None
@@ -92,5 +96,20 @@ async def record_audit(
         request_id=resolved_request_id[:64] if resolved_request_id else None,
         user_agent=resolved_user_agent[:500] if resolved_user_agent else None,
     )
-    db.add(event)
+    if db.new or db.dirty or db.deleted:
+        await db.flush()
+
+    try:
+        async with db.begin_nested():
+            db.add(event)
+            await db.flush([event])
+    except Exception as error:
+        logger.warning(
+            "Audit write failed; business operation continues "
+            "(action=%s resource_type=%s resource_id=%s error_type=%s)",
+            action,
+            resource_type,
+            resource_id,
+            type(error).__name__,
+        )
     return event

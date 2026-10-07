@@ -1,6 +1,7 @@
 <script setup>
 import { Button as VanButton } from 'vant'
-import { formatDateTime } from '../formatters.js'
+import { calendarRequestStatusText, formatDateTime } from '../formatters.js'
+import { topicLabel, usageScenarioLabel } from '../../../utils/displayLabels.js'
 
 defineProps({
   calendarRequests: { type: Array, default: () => [] },
@@ -22,7 +23,7 @@ function statusLabel(status) {
     reviewing: '历史申请',
     rejected: '已退回',
     cancelled: '已取消'
-  }[status] || status
+  }[status] || calendarRequestStatusText(status)
 }
 </script>
 
@@ -42,7 +43,7 @@ function statusLabel(status) {
     <div v-else class="calendar-request-admin-list">
       <article v-for="item in calendarRequests" :key="item.id" class="panel-surface calendar-request-admin-card">
         <div class="calendar-request-admin-head"><div><p class="eyebrow">REQUEST #{{ item.id }} · USER #{{ item.user_id }}</p><h3>{{ item.start_date }} — {{ item.end_date }}</h3><span>档案版本 v{{ item.profile_version }} · 提交于 {{ formatDateTime(item.created_at) }}</span></div><span :class="['status-badge', `request-${item.status}`]">{{ statusLabel(item.status) }}</span></div>
-        <div class="calendar-request-admin-body"><div><span>来源报告</span><strong>#{{ item.source_report_id || '—' }}</strong></div><div><span>交付日历</span><strong>#{{ item.calendar_id || '—' }}</strong></div><div><span>关注领域</span><strong>{{ item.focus_topics?.join('、') || '—' }}</strong></div><div><span>日历用途</span><strong>{{ item.usage_scenario || '—' }}</strong></div><div class="request-goal"><span>当前决策目标</span><p>{{ item.goal || '—' }}</p></div><div class="request-goal"><span>生成状态</span><p>{{ item.generation_error || statusLabel(item.status) }}</p></div></div>
+        <div class="calendar-request-admin-body"><div><span>来源报告</span><strong>#{{ item.source_report_id || '—' }}</strong></div><div><span>交付日历</span><strong>#{{ item.calendar_id || '—' }}</strong></div><div><span>关注领域</span><strong>{{ topicLabel(item.focus_topics, '—') }}</strong></div><div><span>日历用途</span><strong>{{ usageScenarioLabel(item.usage_scenario, '—') }}</strong></div><div class="request-goal"><span>当前决策目标</span><p>{{ item.goal || '—' }}</p></div><div class="request-goal"><span>生成状态</span><p>{{ item.generation_error || statusLabel(item.status) }}</p></div></div>
       </article>
       <p v-if="!calendarRequests.length" class="empty-cell">暂无符合条件的日历申请。</p>
     </div>

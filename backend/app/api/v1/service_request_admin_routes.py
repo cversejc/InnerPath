@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.audit_context import audit_context_from_request
+from app.api.v1.admin_support import _admin_access_details, _record_admin_data_access
 from app.db.session import get_db
 from app.dependencies import require_roles
 from app.core.time import utc_now_naive
@@ -30,15 +31,21 @@ from app.api.v1.service_request_api_support import (
 )
 from app.application.report_cases import cancel_report_case_for_service_request
 from app.domains.workflow.models import ReportCase
+from app.domains.workflow.authorization import has_collaboration_contract
 from app.domains.workflow.service import assign_step
 
 admin_router = APIRouter()
 @admin_router.get("", response_model=AdminServiceRequestListResponse)
 async def list_admin_requests(
+    request: Request,
     request_status: Optional[str] = Query(None, alias="status", max_length=30),
     service_type: Optional[str] = Query("report", pattern="^(report|calendar)$"),
     user_id: Optional[int] = Query(None, ge=1),
     consultant_id: Optional[int] = Query(None, ge=1),
+    queue_filter: Optional[str] = Query(
+        None,
+        pattern="^(incomplete_assignment|incomplete_assignment_over_24h|stale_over_24h|workflow_attention)$",
+    ),
     search: Optional[str] = Query(None, max_length=100),
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
@@ -53,6 +60,7 @@ async def list_admin_requests(
         service_type=service_type,
         user_id=user_id,
         consultant_id=consultant_id,
+        queue_filter=queue_filter,
         search=search,
         date_from=date_from,
         date_to=date_to,
@@ -99,6 +107,29 @@ async def list_admin_requests(
                 rejected_at=item.rejected_at,
             )
         )
+    await _record_admin_data_access(
+        db,
+        request,
+        current_user,
+        action="admin.service_requests.list",
+        resource_type="service_request",
+        target_user_id=user_id,
+        details=_admin_access_details(
+            page=page,
+            page_size=size,
+            result_count=len(items),
+            filters={
+                "status": request_status,
+                "service_type": service_type,
+                "user_id": user_id,
+                "consultant_id": consultant_id,
+                "queue_filter": queue_filter,
+                "search": search,
+                "date_from": date_from,
+                "date_to": date_to,
+            },
+        ),
+    )
     return AdminServiceRequestListResponse(total=total, page=page, size=size, items=items)
 
 
@@ -132,9 +163,7 @@ async def update_request_assignment(
         case = await db.scalar(
             select(ReportCase).where(ReportCase.service_request_id == request_id)
         )
-    collaborative = bool(
-        case and (case.application_snapshot or {}).get("collaboration_contract")
-    )
+    collaborative = bool(case and has_collaboration_contract(case.application_snapshot))
     if consultant and service_request.service_type == "report" and not collaborative:
         if consultation_type is None:
             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Select a consultation direction first")

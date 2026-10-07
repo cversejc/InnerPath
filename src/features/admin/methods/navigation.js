@@ -1,4 +1,4 @@
-import { logout as logoutUser } from '../../../stores/auth'
+import { logout as logoutUser } from '../../../stores/auth.js'
 
 export default {
   syncDrawerBodyLock() {
@@ -10,8 +10,15 @@ export default {
       if (tab === 'overview') await this.loadDashboard()
       if (tab === 'users') await this.loadUsers()
       if (tab === 'requests') await this.loadAdminRequests()
+      if (tab === 'feedback') {
+        if (this.feedbackView === 'quality') await this.loadQualityIssues()
+        else await Promise.all([this.loadServiceFeedback(), this.loadServiceQualitySummary()])
+      }
       if (tab === 'calendar' && !this.calendarUsers.length) await this.loadCalendarUsers()
-      if (tab === 'reports') await this.loadReports()
+      if (tab === 'reports') {
+        if (this.reportSection === 'tasks') await this.loadReportTasks()
+        else await this.loadReports()
+      }
       if (tab === 'logs') await this.loadAuditLogs()
       this.syncAutoRefresh()
     },
@@ -19,6 +26,7 @@ export default {
       if (this.activeTab === 'overview') return this.loadDashboard()
       if (this.activeTab === 'users') return this.loadUsers()
       if (this.activeTab === 'requests') return this.loadAdminRequests()
+      if (this.activeTab === 'feedback') return this.feedbackView === 'quality' ? this.loadQualityIssues() : Promise.all([this.loadServiceFeedback(), this.loadServiceQualitySummary()])
       if (this.activeTab === 'calendar') return this.selectedCalendarUser ? this.loadCalendars() : this.loadCalendarUsers()
       if (this.activeTab === 'reports') return this.reportSection === 'reports' ? this.loadReports() : this.loadReportTasks()
        if (this.activeTab === 'logs') return this.logSection === 'audit' ? this.loadAuditLogs() : this.logSection === 'behavior' ? this.loadDecisionLogs() : this.loadReportTasks()
@@ -48,9 +56,59 @@ export default {
   handleVisibilityChange() {
       this.syncAutoRefresh()
     },
-  goFromAlert(alert) {
+  async goFromAlert(alert) {
+      const serviceQueueFilters = {
+        incomplete_assignment: 'incomplete_assignment',
+        incomplete_assignment_over_24h: 'incomplete_assignment_over_24h',
+        stale_service_requests: 'stale_over_24h',
+        workflow_attention: 'workflow_attention'
+      }
+      if (serviceQueueFilters[alert.key] || ['failed_service_requests'].includes(alert.key)) {
+        this.requestKind = 'consultant'
+        this.requestFilters = {
+          search: '',
+          status: alert.key === 'failed_service_requests' ? 'failed' : '',
+          consultant_id: '',
+          queue_filter: serviceQueueFilters[alert.key] || '',
+          date_from: '',
+          date_to: ''
+        }
+        this.requestPage = 1
+        await this.switchTab('requests')
+        return
+      }
+      if (['failed_calendar_requests', 'stalled_calendar_requests'].includes(alert.key)) {
+        this.requestKind = 'calendar'
+        this.calendarRequestFilters = {
+          search: '',
+          status: alert.key === 'failed_calendar_requests' ? 'failed' : '',
+          stalled_only: alert.key === 'stalled_calendar_requests',
+          date_from: '',
+          date_to: ''
+        }
+        this.requestPage = 1
+        await this.switchTab('requests')
+        return
+      }
+      if (alert.key === 'failed_reports') {
+        this.reportSection = 'tasks'
+        this.taskFilters = { search: '', status: 'failed' }
+        this.taskPage = 1
+        await this.switchTab('reports')
+        return
+      }
       const target = alert.route === 'calendar' ? 'calendar' : alert.route === 'reports' ? 'reports' : 'logs'
-      this.switchTab(target)
+      await this.switchTab(target)
+    },
+  openReportWorkflow(item) {
+      return this.$router.push({
+        path: '/staff',
+        query: {
+          scope: 'all',
+          request_id: String(item.id),
+          section: 'overview'
+        }
+      })
     },
   getDrawer(name) { return this.$refs.adminDetailDrawers?.getDrawer(name) },
   getOpenDrawer() { if (this.logDetail) return this.getDrawer('logDrawer'); if (this.reportDetail) return this.getDrawer('reportDrawer'); if (this.detailUser) return this.getDrawer('userDrawer'); return null },

@@ -1,18 +1,23 @@
 <script setup>
 import { Button as VanButton } from 'vant'
+import AdminGenerationObservabilityPanel from './AdminGenerationObservabilityPanel.vue'
+import AdminUserGrowthPanel from './AdminUserGrowthPanel.vue'
 import {
   actionLabel,
   distributionTotal,
   distributionWidth,
   formatDate,
   formatDateTime,
-  resourceLabel
+  resourceLabel,
+  timezoneText
 } from '../formatters.js'
+import { CONSULTATION_TYPE_LABELS } from '../../../utils/displayLabels.js'
 
 defineProps({
   autoRefresh: { type: Boolean, default: false },
   chartGridLines: { type: Array, default: () => [] },
   dashboard: { type: Object, default: null },
+  dashboardLoadError: { type: Boolean, default: false },
   dashboardLoading: { type: Boolean, default: false },
   dashboardRange: { type: String, required: true },
   dashboardRanges: { type: Array, default: () => [] },
@@ -22,7 +27,18 @@ defineProps({
   trendTicks: { type: Array, default: () => [] }
 })
 
-defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab'])
+defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'retry-dashboard', 'switch-tab'])
+
+function consultationTypeLabel(value) {
+  if (value === 'overall') return '全部报告'
+  return CONSULTATION_TYPE_LABELS[value] || '未分类'
+}
+
+function formatElapsedHours(value) {
+  if (value === null || value === undefined) return '—'
+  if (value < 1) return `${Math.round(value * 60)} 分钟`
+  return `${Number(value).toFixed(1)} 小时`
+}
 </script>
 
 <template>
@@ -31,7 +47,7 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
       <div>
         <p class="eyebrow">GLOBAL SIGNALS</p>
         <h2>全局数据</h2>
-        <p v-if="dashboard">{{ formatDate(dashboard.start_date) }} — {{ formatDate(dashboard.end_date) }} · {{ dashboard.timezone }}</p>
+        <p v-if="dashboard">{{ formatDate(dashboard.start_date) }} — {{ formatDate(dashboard.end_date) }} · {{ timezoneText(dashboard.timezone) }}</p>
       </div>
       <div class="toolbar-controls">
         <div class="range-switch" role="group" aria-label="数据范围">
@@ -53,6 +69,10 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
     </div>
 
     <template v-else-if="dashboard">
+      <div v-if="dashboardLoadError" class="dashboard-load-error" role="status" aria-live="polite">
+        <span>本次总览刷新失败，当前仍显示上次成功数据。</span>
+        <VanButton class="panel-link" type="default" plain native-type="button" :disabled="dashboardLoading" :loading="dashboardLoading" loading-text="刷新中…" :aria-busy="dashboardLoading" @click="$emit('retry-dashboard')">重试</VanButton>
+      </div>
       <div class="metric-grid">
         <article v-for="metric in metricCards" :key="metric.key" class="metric-card" :class="`metric-${metric.tone}`">
           <div class="metric-top"><span>{{ metric.label }}</span><b>{{ metric.mark }}</b></div>
@@ -62,6 +82,8 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
       </div>
 
       <div class="dashboard-grid">
+        <AdminGenerationObservabilityPanel :dashboard-range="dashboardRange" :loading="dashboardLoading" :summary="dashboard.generation" @retry="$emit('retry-dashboard')" />
+        <AdminUserGrowthPanel :dashboard-range="dashboardRange" :summary="dashboard.user_growth" />
         <article class="dashboard-panel trend-panel">
           <div class="panel-heading"><div><p class="eyebrow">RHYTHM / {{ dashboardRange.toUpperCase() }}</p><h3>业务流入趋势</h3></div><span class="panel-note">按上海时区聚合</span></div>
           <div class="trend-legend"><span v-for="series in trendSeries" :key="series.key"><i :style="{ background: series.color }"></i>{{ series.label }}</span></div>
@@ -88,6 +110,26 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
           <div v-else class="quiet-state"><IconMark name="spark" /><p>目前没有需要立即处理的事项。</p></div>
         </article>
 
+        <article class="dashboard-panel service-sla-panel">
+          <div class="panel-heading"><div><p class="eyebrow">REQUEST TIMING</p><h3>申请时效</h3></div><span class="panel-note">按申请创建日期统计</span></div>
+          <div class="admin-table-wrap sla-table-wrap" tabindex="0" aria-label="报告申请时效表，可横向滚动查看">
+            <table class="admin-table service-sla-table">
+              <thead><tr><th>咨询方向</th><th>申请数</th><th>24 小时内接单率</th><th>提交 → 接单</th><th>接单 → 交付</th></tr></thead>
+              <tbody>
+                <tr v-for="item in dashboard.service_sla?.items || []" :key="item.consultation_type">
+                  <td><strong>{{ consultationTypeLabel(item.consultation_type) }}</strong></td>
+                  <td>{{ item.request_count }}</td>
+                  <td>{{ item.response_within_24h_rate === null ? '—' : `${item.response_within_24h_rate}%` }}<small>{{ item.response_sla_samples }} 个到期样本 · 超期未接单 {{ item.overdue_unaccepted }}</small></td>
+                  <td>{{ formatElapsedHours(item.response_p50_hours) }} / {{ formatElapsedHours(item.response_p90_hours) }}<small>P50 / P90</small></td>
+                  <td>{{ formatElapsedHours(item.delivery_p50_hours) }} / {{ formatElapsedHours(item.delivery_p90_hours) }}<small>{{ item.delivery_samples }} 个交付样本 · P50 / P90</small></td>
+                </tr>
+                <tr v-if="!dashboard.service_sla?.items?.length"><td colspan="5" class="empty-cell">本期没有报告申请数据。</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="service-sla-note">24 小时样本包含已接单申请及仍开放且超时未接单申请；未到期、已撤回或拒绝的申请不计入。交付时长为首次接单到交付的总时长，包含待补充资料期间。</p>
+        </article>
+
         <article class="dashboard-panel distribution-panel">
           <div class="panel-heading"><div><p class="eyebrow">COMPOSITION</p><h3>结构分布</h3></div></div>
           <div class="distribution-columns">
@@ -110,5 +152,13 @@ defineEmits(['auto-refresh-change', 'change-range', 'go-from-alert', 'switch-tab
 
       </div>
     </template>
+
+    <section v-else-if="dashboardLoadError" class="dashboard-fetch-error" role="alert" aria-labelledby="dashboard-fetch-error-title">
+      <div>
+        <h3 id="dashboard-fetch-error-title">总览数据暂不可用</h3>
+        <p>请检查连接后重试。其他管理记录可通过上方导航继续查看。</p>
+      </div>
+      <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="dashboardLoading" :loading="dashboardLoading" loading-text="加载中…" :aria-busy="dashboardLoading" @click="$emit('retry-dashboard')">重试加载</VanButton>
+    </section>
   </section>
 </template>

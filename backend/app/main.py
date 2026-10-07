@@ -23,6 +23,7 @@ from app.api.v1 import (
     report_task_routes,
     reports,
     report_cases,
+    service_feedback,
     skills,
     skill_examples,
     skill_evaluations,
@@ -168,6 +169,7 @@ app.include_router(skill_examples.admin_router, prefix="/api/v1/admin", tags=["S
 app.include_router(skill_examples.staff_router, prefix="/api/v1/staff", tags=["Skill Examples"])
 app.include_router(skill_evaluations.router, prefix="/api/v1/admin", tags=["Skill Evaluation"])
 app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["Calendar"])
+app.include_router(service_feedback.router, prefix="/api/v1/service-feedback", tags=["Service Feedback"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 app.include_router(staff.router, prefix="/api/v1/staff", tags=["Staff"])
 app.include_router(service_requests.router, prefix="/api/v1/service-requests", tags=["Service Requests"])

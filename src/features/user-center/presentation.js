@@ -1,4 +1,5 @@
 import { formatDateTime } from '../../utils/dateTime.js'
+import { CALENDAR_REQUEST_STATUS_LABELS, SERVICE_REQUEST_STATUS_LABELS } from '../../utils/displayLabels.js'
 
 export function formatUserCenterDate(value) {
   return formatDateTime(value)
@@ -7,22 +8,16 @@ export function formatUserCenterDate(value) {
 export function requestStatusLabel(status, workflowType) {
   if (workflowType === 'calendar_generation') {
     return {
+      ...CALENDAR_REQUEST_STATUS_LABELS,
       ai_processing: '日历生成中',
       delivered: '已开放使用',
-      failed: '生成失败'
+      fulfilled: '已生成并交付'
     }[status] || status
   }
   return {
-    submitted: '等待接单',
-    accepted: '已接单',
+    ...SERVICE_REQUEST_STATUS_LABELS,
     ai_processing: '准备分析',
-    processing: '日历生成中',
-    ai_ready: '等待审校',
-    reviewing: '审校中',
-    needs_info: '需补资料',
-    failed: '分析失败',
     delivered: '已完成',
-    withdrawn: '已撤回',
     rejected: '暂未受理'
   }[status] || status
 }
