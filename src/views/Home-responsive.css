@@ -246,6 +246,16 @@
 
   .journey-section {
     padding: 46px 0 50px;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(
+        color-mix(in srgb, var(--surface) 87.5%, var(--surface-strong) 12.5%),
+        color-mix(in srgb, var(--surface) 87.5%, var(--surface-strong) 12.5%)
+      ),
+      url("../assets/home-background.webp");
+    background-position: center, center 50%;
+    background-repeat: no-repeat;
+    background-size: 100% 100%, cover;
   }
 
   .journey-heading {
