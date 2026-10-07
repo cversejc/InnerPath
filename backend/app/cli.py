@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import getpass
 
 from sqlalchemy import select
 
@@ -8,6 +7,11 @@ from app.config import settings
 from app.core.security import get_password_hash
 from app.db.session import AsyncSessionLocal
 from app.models.user import User
+
+
+DEFAULT_ADMIN_PHONE = "00000000000"
+DEFAULT_ADMIN_NAME = "系统管理员"
+DEFAULT_ADMIN_PASSWORD = "Admin@chenvis"
 
 
 async def create_admin(phone: str, name: str, password: str) -> None:
@@ -34,14 +38,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="chenvis account administration")
     subparsers = parser.add_subparsers(dest="command", required=True)
     admin_parser = subparsers.add_parser("create-admin", help="Create or promote an administrator")
-    admin_parser.add_argument("--phone", required=True)
-    admin_parser.add_argument("--name", default="系统管理员")
-    admin_parser.add_argument("--password")
+    admin_parser.add_argument("--phone", default=DEFAULT_ADMIN_PHONE)
+    admin_parser.add_argument("--name", default=DEFAULT_ADMIN_NAME)
+    admin_parser.add_argument("--password", default=DEFAULT_ADMIN_PASSWORD)
     args = parser.parse_args()
 
     if args.command == "create-admin":
-        password = args.password or getpass.getpass("Admin password: ")
-        asyncio.run(create_admin(args.phone, args.name, password))
+        asyncio.run(create_admin(args.phone, args.name, args.password))
 
 
 if __name__ == "__main__":

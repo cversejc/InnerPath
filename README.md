@@ -62,8 +62,10 @@ cp .env.example .env
 
 ```bash
 cd backend
-python -m app.cli create-admin --phone 13800138000 --name 系统管理员
+python -m app.cli create-admin
 ```
+
+初始化默认管理员手机号为 `00000000000`，密码为 `Admin@chenvis`。命令按手机号查找账号；账号已存在时会更新该账号为管理员并同步密码，不会重复创建。需要使用其他账号时，可通过 `--phone`、`--name` 和 `--password` 覆盖默认值。
 
 登录入口仅支持手机号 + 密码。公开注册和密码找回都需要短信验证码；找回密码后会撤销该账号已有的刷新会话。工作人员通过管理员生成的一次性邀请令牌完成账号初始化。短信使用 Spug 短信模板，服务端通过 `SMS_SPUG_TOKEN` 配置接口令牌；本地开发如需从后端日志读取验证码，必须显式将 `SMS_DEV_CODE_LOGGING=true`，否则未配置短信服务会返回错误，不会向前端报告发送成功。刷新令牌只保存在 HttpOnly Cookie，访问令牌保存在当前浏览器会话中。
 
@@ -212,7 +214,7 @@ alembic revision --autogenerate -m "描述"
 alembic upgrade head
 
 # 初始化首个管理员（迁移完成后执行）
-python -m app.cli create-admin --phone 13800138000 --name 系统管理员
+python -m app.cli create-admin
 ```
 
 ---
