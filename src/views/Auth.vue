@@ -4,8 +4,10 @@
       <section v-if="showIntro" class="auth-intro" aria-label="辰鉴入场动画">
         <div class="auth-intro-lockup" aria-hidden="true">
           <picture>
+            <source media="(max-width: 540px)" srcset="/brand-logo-stacked.webp" type="image/webp">
+            <source media="(max-width: 540px)" srcset="/brand-logo-stacked.png">
             <source srcset="/brand-logo.webp" type="image/webp">
-            <img class="auth-intro-logo" src="/brand-logo.png" alt="" width="640" height="640" fetchpriority="high" decoding="async">
+            <img class="auth-intro-logo" src="/brand-logo.png" alt="" width="1355" height="690" fetchpriority="high" decoding="async">
           </picture>
         </div>
       </section>
@@ -16,7 +18,7 @@
         <router-link class="auth-logo" to="/" aria-label="辰鉴首页">
           <picture>
             <source srcset="/brand-emblem.webp" type="image/webp">
-            <img class="auth-logo-mark" src="/brand-emblem.png" alt="" width="214" height="256" decoding="async">
+            <img class="auth-logo-mark" src="/brand-emblem.png" alt="" width="430" height="574" decoding="async">
           </picture>
           <span>辰鉴</span>
         </router-link>

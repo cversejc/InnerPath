@@ -16,7 +16,7 @@
         >
           <picture>
             <source srcset="/brand-emblem.webp" type="image/webp">
-            <img src="/brand-emblem.png" alt="" width="214" height="256" decoding="async">
+            <img src="/brand-emblem.png" alt="" width="430" height="574" decoding="async">
           </picture>
           <span>
             <strong>辰鉴</strong>

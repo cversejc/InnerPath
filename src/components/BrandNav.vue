@@ -4,7 +4,7 @@
       <router-link to="/pages/home/home" class="logo" aria-label="返回辰鉴首页" @click="closeMobileMenu({ restoreFocus: false })">
         <picture>
           <source srcset="/brand-emblem.webp" type="image/webp">
-          <img class="brand-emblem" src="/brand-emblem.png" alt="" width="214" height="256" decoding="async">
+          <img class="brand-emblem" src="/brand-emblem.png" alt="" width="430" height="574" decoding="async">
         </picture>
         <span>辰鉴</span>
       </router-link>

@@ -38,15 +38,19 @@
 
 .operations-brand-lockup picture {
   display: grid;
-  width: 38px;
+  width: 42px;
   height: 42px;
+  flex: 0 0 auto;
   place-items: center;
   overflow: hidden;
+  border: 1px solid rgba(217, 186, 98, .38);
+  border-radius: 11px;
+  background: rgba(255, 250, 240, .96);
 }
 
 .operations-brand-lockup img {
   width: auto;
-  height: 42px;
+  height: 36px;
   max-width: none;
 }
 

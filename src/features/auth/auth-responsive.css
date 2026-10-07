@@ -29,6 +29,11 @@
     inset: 18px 12px;
   }
 
+  .auth-intro-lockup {
+    width: min(100%, 140px, 25dvh);
+    aspect-ratio: 724 / 973;
+  }
+
   .auth-page {
     place-items: start center;
     padding:

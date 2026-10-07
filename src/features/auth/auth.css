@@ -32,8 +32,8 @@
 
 .auth-intro-lockup {
   display: grid;
-  width: min(100%, 420px, 62dvh);
-  aspect-ratio: 1;
+  width: min(100%, 320px, 76vw, 80dvh);
+  aspect-ratio: 1355 / 690;
   place-items: center;
 }
 
