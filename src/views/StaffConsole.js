@@ -32,6 +32,7 @@ import ReportFragmentReview from '../features/report-cases/components/ReportFrag
 import QualityIssueReview from '../features/report-cases/components/QualityIssueReview.vue'
 import EvidenceReferencePicker from '../features/report-cases/components/EvidenceReferencePicker.vue'
 import { nodeWorkspaceComputed, nodeWorkspaceMethods } from '../features/report-cases/node-workspace-state.js'
+import { workspaceFocusTargetId } from '../features/report-cases/node-workspace.js'
 import DeliveredReportSummary from '../features/report-cases/components/DeliveredReportSummary.vue'
 import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
 import {
@@ -73,6 +74,7 @@ export default {
       requests: { total: 0, items: [] },
       selectedRequest: null,
       workspaceSection: 'overview',
+      workspaceFocusTimer: null,
       selectedReportStepKey: '',
       nodeRecordKeys: {findings:'',fragments:'',quality:'',planned:'',candidate:''},
       nodeWritingMode: 'plan',
@@ -277,7 +279,7 @@ export default {
         IN_PROGRESS: '正在生成报告内容',
         CHAPTER_COHERENCE_CHECK: '正在检查章节内容',
         COHERENCE_CHECK: '正在检查全文连贯性',
-        READY_FOR_REVIEW: '内容已生成，等待逐段审阅',
+        READY_FOR_REVIEW: '内容已生成，等待完整报告审阅',
         BLOCKED: '当前不能开始写作，请先补充已确认的判断',
         NEEDS_INPUT: '需要补充内容后才能继续',
         FAILED: '内容生成暂时失败，可稍后继续',
@@ -342,6 +344,10 @@ export default {
       if (section === this.workspaceSection) return
       this.workspaceSection = section
       this.scrollWorkspaceToTop()
+    },
+    reportReviewBusy(value) {
+      // 编辑结束后不再提示“先保存或取消修改”，避免提示条残留误导后续操作。
+      if (!value && String(this.message || '').startsWith('请先保存或取消')) this.message = ''
     }
   },
   mounted() {
@@ -410,7 +416,7 @@ export default {
     reportStepStatusLabel(status) {
       return REPORT_STEP_STATUS_LABELS[status] || '处理中'
     },
-    setReportWorkspaceSection(sectionId) {
+    setReportWorkspaceSection(sectionId, targetKey = '') {
       if (this.reportReviewBusy) { this.message = '请先保存或取消当前修改，再切换工作界面。'; return }
       const sectionMap = {
         'case-context': 'upstream',
@@ -428,7 +434,26 @@ export default {
       if (!this.reportWorkspaceSections.some(item => item.id === section)) return
       this.workspaceSection = section
       if (this.selectedRequest) this.syncWorkspaceRoute(this.selectedRequest.id, section, { history: 'push' })
+      if (targetKey && this.focusWorkspaceTarget(section, targetKey)) return
       this.scrollWorkspaceToTop()
+    },
+    focusWorkspaceTarget(section, targetKey) {
+      // 检查问题卡片直接定位到被标记的那一条内容，避免在长列表里手动查找。
+      const targetId = workspaceFocusTargetId(section, targetKey)
+      if (!targetId) return false
+      this.$nextTick(() => {
+        const target = this.$el?.querySelector?.(`[id="${CSS.escape(targetId)}"]`) || document.getElementById(targetId)
+        if (!target) {
+          this.scrollWorkspaceToTop()
+          return
+        }
+        window.clearTimeout(this.workspaceFocusTimer)
+        target.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        target.focus?.({ preventScroll: true })
+        target.classList.add('workspace-focus-target')
+        this.workspaceFocusTimer = window.setTimeout(() => target.classList.remove('workspace-focus-target'), 2600)
+      })
+      return true
     },
     scrollWorkspaceToTop() {
       this.$nextTick(() => {
@@ -624,6 +649,9 @@ export default {
           report_analysis_finding_reference_invalid: '分析建议引用的资料已变化。请刷新页面后重新生成建议。',
           report_case_not_found: '未找到这份报告申请，请返回列表刷新后重试。',
           report_case_step_not_active: '当前步骤已变化，请刷新后继续处理。',
+          step_not_ready: '本节点尚未就绪；如上游成果刚完成，请刷新页面后重试。',
+          workflow_not_active: '这份申请已结束或已交付，不能再开始新的节点。',
+          workflow_step_already_in_review: '已有另一个节点正在处理中，请先完成或退出该节点。',
           report_analysis_output_required: '请先确认专业判断或分析内容，再完成本步骤。',
           report_analysis_sop_coverage_required: '请按本节点分析清单逐项审核。缺少资料的条目也需记录暂缓原因。'
         }

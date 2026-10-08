@@ -1,6 +1,6 @@
 <template>
   <article ref="card" class="report-fragment-review" tabindex="-1">
-    <header><h4>{{ draft.title }}</h4><span>{{ fragment.status === 'CONFIRMED' ? '已确认' : fragment.status === 'STALE' ? '依据有更新，需重新生成' : '待审稿' }}</span></header>
+    <header><h4>{{ draft.title }}</h4><span>{{ batchMode ? (fragment.status === 'STALE' ? '依据有更新，需重新生成' : '列入本次整体验阅') : fragment.status === 'CONFIRMED' ? '已确认' : fragment.status === 'STALE' ? '依据有更新，需重新生成' : '待审稿' }}</span></header>
     <p v-if="error" ref="error" class="review-feedback error" role="alert" tabindex="-1">{{ error }}</p>
     <p v-if="notice" class="review-feedback" role="status">{{ notice }}</p>
     <p v-if="fragment.revision_no !== draft.expected_revision_no" class="review-feedback">正文已有新版本。当前修改仍保留，请核对后取消修改、载入最新版再保存。</p>
@@ -24,9 +24,12 @@
     <div v-if="!readOnly && fragment.status !== 'STALE'" class="fragment-review-actions">
       <VanButton v-if="!editing" plain native-type="button" :disabled="locked" @click="editing = true">修改本段</VanButton>
       <VanButton v-else plain native-type="button" :disabled="locked" @click="reset">取消修改并载入最新版</VanButton>
-      <VanButton v-if="fragment.status !== 'CONFIRMED' || editing" type="primary" native-type="button" :loading="pending" :disabled="locked" @click="submit('CONFIRMED', advance)">{{ advance ? '确认本段并继续下一段' : '确认并保存本段' }}</VanButton>
-      <VanButton v-else-if="advance" type="primary" native-type="button" :disabled="locked" @click="$emit('continue-next')">继续下一待审段落</VanButton>
-      <VanButton v-if="editing" plain native-type="button" :disabled="locked" @click="submit('PROPOSED', false)">保存为待确认</VanButton>
+      <VanButton v-if="batchMode && editing" type="primary" native-type="button" :loading="pending" :disabled="locked" @click="submit('PROPOSED', false)">保存修改</VanButton>
+      <template v-else-if="!batchMode">
+        <VanButton v-if="fragment.status !== 'CONFIRMED' || editing" type="primary" native-type="button" :loading="pending" :disabled="locked" @click="submit('CONFIRMED', advance)">{{ advance ? '确认本段并继续下一段' : '确认并保存本段' }}</VanButton>
+        <VanButton v-else-if="advance" type="primary" native-type="button" :disabled="locked" @click="$emit('continue-next')">继续下一待审段落</VanButton>
+        <VanButton v-if="editing" plain native-type="button" :disabled="locked" @click="submit('PROPOSED', false)">保存为待确认</VanButton>
+      </template>
     </div>
   </article>
 </template>
@@ -39,7 +42,7 @@ import { reportEvidenceTitle } from '../workbench-inputs.js'
 
 export default {
   components: { VanButton },
-  props: { fragment: { type: Object, required: true }, content: { type: Object, required: true }, readOnly: Boolean, saving: Boolean, advance: Boolean },
+  props: { fragment: { type: Object, required: true }, content: { type: Object, required: true }, readOnly: Boolean, saving: Boolean, advance: Boolean, batchMode: Boolean },
   emits: ['save-review', 'continue-next', 'busy', 'saved', 'repair-source'],
   data: () => ({ draft: null, editing: false, pending: false, error: '', notice: '' }),
   computed: {
@@ -61,16 +64,17 @@ export default {
     submit(status, advance) {
       if (this.readOnly || this.locked || this.fragment.status === 'STALE') return
       if (!this.draft.content.trim()) return this.fail('请填写本段正文。')
-      const review = { ...this.draft, status }
-      if (status !== this.fragment.status && !(this.fragment.status === 'PROPOSED' && status === 'CONFIRMED')) review.edit_kind = 'SEMANTIC'
+      const nextStatus = this.batchMode && this.draft.edit_kind === 'STYLE' && this.fragment.status === 'CONFIRMED' ? 'CONFIRMED' : status
+      const review = { ...this.draft, status: nextStatus }
+      if (!this.batchMode && status !== this.fragment.status && !(this.fragment.status === 'PROPOSED' && status === 'CONFIRMED')) review.edit_kind = 'SEMANTIC'
       this.pending = true
       this.error = ''
       this.$emit('save-review', { fragment: this.fragment, review, onComplete: result => {
         this.pending = false
         if (!result.success) { if (result.message) this.fail(result.message); return }
         this.reset()
-        this.notice = status === 'CONFIRMED' ? '本段已确认。' : '修改已保存，本段仍待确认。'
-        this.$emit('saved', { status })
+        this.notice = this.batchMode ? '修改已保存；完整报告的整体确认已失效，需要重新审阅。' : status === 'CONFIRMED' ? '本段已确认。' : '修改已保存，本段仍待确认。'
+        this.$emit('saved', { status: nextStatus })
         this.$nextTick(() => { if (advance) this.$emit('continue-next'); else this.$refs.card?.focus({ preventScroll: true }) })
       } })
     }

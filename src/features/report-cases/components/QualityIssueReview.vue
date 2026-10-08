@@ -1,6 +1,27 @@
 <template>
   <section class="quality-issue-review" aria-label="连续处理检查问题">
     <p class="quality-review-guide">核对问题与涉及正文 → 修订正文或说明处理理由 → 保存并继续下一问题 → 重新检查 → 最终人工确认</p>
+    <section v-if="groups.length" class="quality-issue-groups" aria-label="同类问题整体处理">
+      <h4>同类问题整体处理</h4>
+      <p class="quality-review-guide">同一类型的问题填写一次处理理由即可整体处理；每条问题仍单独保留处理记录、处理人与时间。</p>
+      <article v-for="group in groups" :key="group.group_key" class="quality-group-card">
+        <header>
+          <strong>{{ group.count }} 项 · {{ severityLabel(group.severity) }}</strong>
+          <span>{{ issueLabel(group.issue_type) }}</span>
+        </header>
+        <details>
+          <summary>查看涉及的 {{ group.target_keys.length || group.count }} 处正文</summary>
+          <ul>
+            <li v-for="key in group.target_keys" :key="key">{{ fragmentTitle(key, '') }}<span class="quality-group-target">{{ key }}</span></li>
+          </ul>
+        </details>
+        <div v-if="groupDrafts[group.group_key]" class="quality-review-form">
+          <label class="quality-review-field">处理方式<select v-model="groupDrafts[group.group_key].status" :disabled="locked"><option value="RESOLVED">已修复</option><option value="ACCEPTED">保留并说明理由</option><option value="DISMISSED">判断为误报并说明理由</option></select></label>
+          <label class="quality-review-field">处理理由<textarea v-model="groupDrafts[group.group_key].resolution" rows="3" maxlength="2000" :disabled="locked" placeholder="说明核对了哪些正文和依据、修改了什么，或为什么保留。"></textarea></label>
+          <div class="quality-review-actions"><VanButton type="primary" native-type="button" :loading="groupPending" :disabled="readOnly || locked || !groupDrafts[group.group_key].resolution.trim()" @click="saveGroup(group)">整体记录处理理由（{{ group.count }} 项）</VanButton></div>
+        </div>
+      </article>
+    </section>
     <WorkbenchRecordPicker v-model="selectedKey" :items="items" label="待处理问题（优先处理阻断项）" :disabled="locked || noteDirty" />
     <p v-if="error" ref="error" class="quality-review-note error" role="alert" tabindex="-1">{{ error }}</p>
     <p v-if="notice" class="quality-review-note" role="status">{{ notice }}</p>
@@ -43,11 +64,12 @@ export default {
     issueLabel: { type: Function, required: true }, issueMessage: { type: Function, required: true }, issueSuggestion: { type: Function, required: true },
     severityLabel: { type: Function, required: true }, statusLabel: { type: Function, required: true }, selectedIssueKey: { type: String, default: '' }
   },
-  emits: ['save-issue', 'save-fragment', 'busy', 'rerun', 'update:selectedIssueKey', 'repair-source'],
+  emits: ['save-issue', 'save-issue-group', 'save-fragment', 'busy', 'rerun', 'update:selectedIssueKey', 'repair-source'],
   data() { return { selectedKey: this.selectedIssueKey, retainedIssue: null, draft: { status: 'RESOLVED', resolution: '' }, inspectKey: '', showBody: false,
-    pending: false, fragmentBusy: false, error: '', notice: '', editedBody: false } },
+    pending: false, fragmentBusy: false, groupPending: false, groupDrafts: {}, error: '', notice: '', editedBody: false } },
   computed: {
     orderedIssues() { return orderedQualityIssues(this.quality.issues || []) },
+    groups() { return this.quality.issue_groups || [] },
     issue() { return this.orderedIssues.find(row => String(row.id) === this.selectedKey) || this.retainedIssue },
     items() {
       const rows = [...this.orderedIssues]
@@ -61,7 +83,7 @@ export default {
     bodyFragment() { return this.target || this.inspectFragment },
     noteDirty() { return Boolean(this.issue && (this.draft.resolution.trim() || this.draft.status !== (this.issue.severity === 'BLOCK' ? 'RESOLVED' : 'ACCEPTED'))) },
     locked() { return Boolean(this.pending || this.saving || this.fragmentBusy) },
-    busy() { return Boolean(this.locked || (this.issue?.status === 'OPEN' && this.noteDirty)) },
+    busy() { return Boolean(this.locked || this.groupPending || (this.issue?.status === 'OPEN' && this.noteDirty)) },
     outdated() { return Boolean(this.issue && !this.orderedIssues.some(row => row.id === this.issue.id)) },
     checking() { return ['PENDING', 'RUNNING'].includes(this.quality.latest_validator_run?.status) },
     needsRecheck() { return Boolean(this.editedBody || this.outdated || this.quality.latest_validator_run?.current === false || !this.quality.latest_validator_run) }
@@ -73,6 +95,11 @@ export default {
       const current = rows.find(row => String(row.id) === this.selectedKey)
       if (current) { const initial = !this.retainedIssue; this.retainedIssue = { ...current }; if (initial) this.resetDraft() }
       else if (!this.retainedIssue) this.selectedKey = String(rows.find(row => row.status === 'OPEN')?.id || rows[0]?.id || '')
+    } },
+    'quality.issue_groups': { immediate: true, handler(rows) {
+      const next = {}
+      for (const group of rows || []) next[group.group_key] = this.groupDrafts[group.group_key] || { status: 'RESOLVED', resolution: '' }
+      this.groupDrafts = next
     } },
     'quality.latest_validator_run.id'(value, prior) {
       if (value && value !== prior && !this.noteDirty && !this.fragmentBusy && !this.pending) {
@@ -96,6 +123,18 @@ export default {
       else this.notice = this.openIssues.length ? '当前问题仍未处理，请继续核对或填写处理理由。' : this.needsRecheck ? '请重新检查修改后的完整报告，再进行最终确认。' : '当前问题已处理，请通读报告并完成最终人工确认。'
     },
     bodySaved() { this.editedBody = true; this.notice = '正文已保存。请记录本条处理理由；交付前须重新检查完整报告。' },
+    saveGroup(group) {
+      const draft = this.groupDrafts[group.group_key]
+      if (this.readOnly || this.locked || !draft || !draft.resolution.trim()) return
+      if (draft.resolution.trim().length < 3) { this.error = '请填写至少 3 个字的处理理由。'; this.$nextTick(() => this.$refs.error?.focus()); return }
+      this.groupPending = true; this.error = ''
+      this.$emit('save-issue-group', { group, review: { issue_ids: group.issue_ids, status: draft.status, resolution: draft.resolution.trim() }, onComplete: result => {
+        this.groupPending = false
+        if (!result.success) { this.error = result.message; this.$nextTick(() => this.$refs.error?.focus()); return }
+        this.notice = `已记录 ${group.count} 项同类问题的处理理由。`
+        this.groupDrafts = { ...this.groupDrafts, [group.group_key]: { status: draft.status, resolution: '' } }
+      } })
+    },
     saveIssue() {
       if (this.readOnly || this.locked || !this.draft.resolution.trim()) return
       if (this.draft.resolution.trim().length < 3) { this.error = '请填写至少 3 个字的处理理由。'; this.$nextTick(() => this.$refs.error?.focus()); return }

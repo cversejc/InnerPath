@@ -727,3 +727,12 @@
     height: calc(100dvh - 68px);
   }
 }
+
+/* 检查问题定位到的内容会短暂高亮，帮助咨询师在长列表里确认改的是被标记的那一条。 */
+.workspace-focus-target {
+  outline: 2px solid var(--brand-cinnabar, #b4472f);
+  outline-offset: 4px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-cinnabar, #b4472f) 7%, transparent);
+  transition: background 200ms ease, outline-color 200ms ease;
+}

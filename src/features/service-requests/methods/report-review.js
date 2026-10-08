@@ -1,4 +1,4 @@
-import { saveReportCaseFragment, resolveReportCaseQualityIssue } from '../../report-cases/api.js'
+import { saveReportCaseFragment, resolveReportCaseQualityIssue, resolveReportCaseQualityIssueGroup } from '../../report-cases/api.js'
 import { nextPendingRecord } from '../../report-cases/review-continuation.js'
 import { canHandleStep, specialtyLabels } from '../../report-cases/professional-ownership.js'
 
@@ -87,6 +87,26 @@ export default {
       await resolveReportCaseQualityIssue(this.reportCase.id, issue.id, review)
       await this.loadReportCaseData(this.reportCase.id, { silent: true })
       this.message = '本条问题处理记录已保存。'
+      result = { success: true }
+    } catch (error) {
+      this.message = this.errorText(error)
+      result = { success: false, message: this.message }
+    } finally {
+      this.reportQualitySaving = false
+      finish(result)
+    }
+  },
+  async saveReportQualityReviewGroup({ group, review, onComplete }) {
+    const finish = result => onComplete?.(result)
+    if (!this.canEditSelectedReportStep || this.selectedReportStepKey !== 'S6' || this.reportQualitySaving) {
+      finish({ success: false, message: '当前节点暂时不能保存处理记录，请先开始最终审核节点。' }); return
+    }
+    this.reportQualitySaving = true
+    let result
+    try {
+      await resolveReportCaseQualityIssueGroup(this.reportCase.id, review)
+      await this.loadReportCaseData(this.reportCase.id, { silent: true })
+      this.message = `已记录 ${group.count} 项同类问题的处理理由，每条问题仍单独留痕。`
       result = { success: true }
     } catch (error) {
       this.message = this.errorText(error)

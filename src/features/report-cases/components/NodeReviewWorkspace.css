@@ -1,0 +1,94 @@
+.whole-node-review { display:flex; flex-direction:column; min-height:0; height:100%; color:var(--ink); }
+.whole-review-heading { display:flex; justify-content:space-between; gap:1rem; padding:1rem; border-bottom:1px solid var(--line); }
+.whole-review-heading h2 { font-family:var(--font-display); font-weight:var(--weight-semibold); margin:0 0 .5rem; }
+.whole-review-heading p { margin:.25rem 0; }
+.review-state { white-space:nowrap; align-self:flex-start; }
+.review-plan-order { padding-left:1.25rem; }
+.review-plan-order li { margin:.6rem 0; overflow-wrap:anywhere; }
+.review-plan-order li button { margin:.25rem; min-height:32px; }
+.whole-review-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(230px,300px); min-height:0; flex:1; overflow:hidden; }
+.whole-review-layout.todos-collapsed { grid-template-columns:minmax(0,1fr) 110px; }
+.review-fulltext,.review-todos { overflow:auto; min-width:0; padding:1rem; overscroll-behavior:contain; }
+.review-todos { border-left:1px solid var(--line); background:var(--paper-deep); }
+.review-fragment { padding:1.5rem 0; border-bottom:1px solid var(--line); scroll-margin-top:1rem; outline:none; }
+.review-fragment header { display:flex; align-items:start; justify-content:space-between; gap:.75rem; }
+.review-fragment h3,.review-time-panel h3,.review-todos h3,.review-revision-form h3,.review-narrative h3 { font-family:var(--font-ui); font-size:var(--text-h3); font-weight:var(--weight-semibold); }
+.review-fragment header button { flex-shrink:0; }
+.review-focused { box-shadow:inset 3px 0 var(--cinnabar); padding-left:1rem; }
+.whole-node-review label { display:flex; flex-direction:column; gap:.4rem; margin:.75rem 0; font-size:var(--text-body-sm); }
+.whole-node-review textarea,.whole-node-review input,.whole-node-review select { font-family:var(--font-ui); font-size:max(16px,var(--text-body)); color:inherit; padding:.6rem; border:1px solid var(--line); border-radius:var(--button-radius); background:var(--paper); width:100%; box-sizing:border-box; }
+.whole-node-review textarea { resize:vertical; line-height:var(--leading-prose); }
+.whole-node-review input[type=checkbox] { width:auto; }
+.whole-node-review button { font-family:var(--font-ui); font-weight:var(--weight-medium); cursor:pointer; }
+.review-fragment header button,.review-collapse,.review-mobile-tabs button,.review-issue>button { background:transparent; color:inherit; border:1px solid var(--line); padding:.5rem .7rem; border-radius:var(--button-radius); text-align:left; }
+.review-fragment details,.review-time-panel details,.review-narrative details { margin:1rem 0; color:var(--muted); }
+.whole-node-review summary { cursor:pointer; min-height:28px; }
+.whole-node-review pre { font-family:var(--font-mono); font-size:var(--text-body-sm); white-space:pre-wrap; overflow-wrap:anywhere; }
+.review-time-panel,.review-narrative,.review-revision-form,.review-revision-diff { padding:1rem; background:var(--paper-deep); border:1px solid var(--line); margin:0 0 1rem; border-radius:var(--radius-card); }
+.birth-time-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-4); padding-bottom:var(--space-3); border-bottom:1px solid var(--line); }
+.birth-time-heading h3,.birth-time-information h4 { margin:0; font-size:var(--text-h4); font-weight:var(--weight-semibold); }
+.birth-time-heading p { margin:var(--space-1) 0 0; color:var(--ink-soft); font-size:var(--text-body-sm); }
+.birth-time-status { flex:none; padding:.25rem .55rem; border:1px solid var(--line); border-radius:var(--button-radius); font-size:var(--text-body-sm); color:var(--ink-soft); }
+.birth-time-status[data-state="confirmed"],.birth-time-status[data-state="ready"] { border-color:var(--jade); color:var(--ink-soft); }
+.birth-time-status[data-state="needs-review"],.birth-time-status[data-state="limited"] { border-color:var(--gold-deep); color:var(--gold-deep); }
+.birth-time-information { padding:var(--space-4) 0; border-bottom:1px solid var(--line); }
+.birth-time-information h4 { margin-bottom:var(--space-3); }
+.birth-profile-grid,.birth-calculation-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-3) var(--space-4); margin:0; }
+.birth-profile-grid > div,.birth-calculation-grid > div { min-width:0; padding-bottom:var(--space-2); border-bottom:1px solid var(--line); }
+.birth-profile-grid dt,.birth-calculation-grid dt { color:var(--muted); font-size:var(--text-body-sm); }
+.birth-profile-grid dd,.birth-calculation-grid dd { margin:var(--space-1) 0 0; overflow-wrap:anywhere; }
+.birth-time-limitations { margin:var(--space-3) 0 0; padding:var(--space-3) var(--space-4); border-left:3px solid var(--gold-deep); color:var(--ink-soft); background:var(--surface); }
+.birth-time-provenance { margin-top:var(--space-2) !important; }
+.birth-time-provenance p { margin:var(--space-2) 0; overflow-wrap:anywhere; }
+.birth-time-empty { color:var(--ink-soft); }
+.birth-time-missing { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); padding:var(--space-3) 0; }
+.birth-time-missing p { margin:0; color:var(--cinnabar-deep); }
+.birth-time-decision { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); padding:var(--space-4) 0; border-bottom:1px solid var(--line); }
+.birth-time-decision strong { font-weight:var(--weight-semibold); }
+.birth-time-decision p { margin:var(--space-1) 0 0; color:var(--ink-soft); font-size:var(--text-body-sm); }
+.birth-time-decision .van-button { flex:none; }
+.birth-time-correction { padding-top:var(--space-2); }
+.birth-time-correction summary { color:var(--cinnabar-deep); }
+.birth-time-correction-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 var(--space-4); padding-top:var(--space-2); }
+.birth-time-correction-fields .birth-time-form-hint,.birth-time-correction-fields .van-button { grid-column:1 / -1; }
+.birth-time-form-hint { margin:0 0 var(--space-3); color:var(--ink-soft); font-size:var(--text-body-sm); }
+.review-text-editor { min-height:260px; }
+.review-issue { padding:1rem 0; border-bottom:1px solid var(--line); overflow-wrap:anywhere; }
+.review-issue>span { font-size:var(--text-body-sm); color:var(--muted); }
+.review-issue>button { display:block; width:100%; margin-top:.5rem; border:0; padding:0; }
+.review-issue blockquote { margin:.75rem 0; padding-left:.75rem; border-left:2px solid var(--line); color:var(--muted); }
+.review-diff-text { white-space:pre-wrap; overflow-wrap:anywhere; line-height:var(--leading-prose); }
+.review-diff-text del { background:#fbe4df; }
+.review-diff-text ins { background:#e0ece7; text-decoration:none; }
+.whole-review-actions { border-top:1px solid var(--line); padding:.75rem 1rem; background:var(--paper); }
+.whole-review-actions>span { display:block; font-size:var(--text-body-sm); margin-bottom:.5rem; color:var(--muted); }
+.whole-review-actions>div { display:flex; gap:.5rem; flex-wrap:wrap; }
+.review-message { padding:1rem; overflow-wrap:anywhere; }
+.review-mobile-tabs { display:none; }
+@media(max-width:767px) {
+  .whole-review-heading { padding:.75rem; }
+  .whole-review-heading p:not(.eyebrow) { font-size:var(--text-body-sm); }
+  .review-mobile-tabs { display:flex; gap:.5rem; padding:.5rem .75rem; }
+  .review-mobile-tabs button { flex:1; text-align:center; }
+  .review-mobile-tabs button[aria-pressed=true] { border-color:var(--cinnabar); color:var(--cinnabar); }
+  .whole-review-layout,.whole-review-layout.todos-collapsed { display:flex; }
+  .review-fulltext,.review-todos { flex:1; padding:.75rem; }
+  .mobile-hidden { display:none; }
+  .review-collapse { display:none; }
+  .review-todos { border-left:0; }
+  .whole-review-actions { padding:.5rem .75rem; }
+  .whole-review-actions>div { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .whole-review-actions .van-button { width:100%; font-size:var(--text-body-sm); padding:0 .4rem; }
+  .birth-profile-grid,.birth-calculation-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .birth-time-decision { align-items:stretch; flex-direction:column; }
+  .birth-time-decision .van-button { width:100%; white-space:normal; }
+  .birth-time-missing { align-items:stretch; flex-direction:column; }
+  .birth-time-missing .van-button { width:100%; }
+  .birth-time-correction-fields { grid-template-columns:1fr; }
+  .birth-time-correction-fields .birth-time-form-hint,.birth-time-correction-fields .van-button { grid-column:auto; }
+}
+@media(max-width:400px) {
+  .birth-profile-grid,.birth-calculation-grid { grid-template-columns:1fr; }
+  .birth-time-heading { flex-direction:column; }
+}
+

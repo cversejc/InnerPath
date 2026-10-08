@@ -13,11 +13,12 @@
       还没有 AI 分析结果。核对上游输入{{ stepKey === 'S1' ? '和程序计算' : '及前序已确认内容' }}后，可以运行分析并生成候选判断与分析内容。
     </div>
 
-    <label v-if="stageRuns.length" class="analysis-run-select">AI 分析记录<select v-model="activeRunId" :disabled="reviewBusy || saving"><option v-for="(record, index) in stageRuns" :key="record.id" :value="String(record.id)">记录 {{ stageRuns.length - index }} · {{ formatDateTime(record.created_at) }} · {{ runStatusLabel(record.status) }}</option></select></label>
+    <label v-if="stageRuns.length" class="analysis-run-select">AI 分析记录<select v-model="activeRunId" :disabled="reviewBusy || saving || analysisRunPending"><option v-for="(record, index) in stageRuns" :key="record.id" :value="String(record.id)">记录 {{ stageRuns.length - index }} · {{ formatDateTime(record.created_at) }} · {{ runStatusLabel(record.status) }}</option></select></label>
     <form v-if="!readOnly && currentStep" class="analysis-feedback" @submit.prevent="submitAnalysis">
       <label for="analysis-feedback">分析要求或本次调整意见</label>
-      <p v-if="!analysisReady" class="analysis-prerequisite-note">请先完成程序计算并核对结果，再开始 S1 分析。</p>
-      <VanButton v-if="!analysisReady" class="secondary-button compact-button" plain native-type="button" @click="$emit('go-calculation')">前往程序计算</VanButton>
+      <p v-if="!analysisAllowed" class="analysis-prerequisite-note" role="status">{{ analysisPrerequisiteMessage }}</p>
+      <VanButton v-if="requiresBirthTimeConfirmation && birthReviewLoaded && !birthTimeConfirmed" class="secondary-button compact-button" plain native-type="button" @click="$emit('go-birth-time')">前往出生资料与时间核对</VanButton>
+      <VanButton v-else-if="!analysisReady" class="secondary-button compact-button" plain native-type="button" @click="$emit('go-calculation')">前往程序计算</VanButton>
       <VanField
         id="analysis-feedback"
         v-model="feedbackText"
@@ -32,8 +33,8 @@
       />
       <div class="analysis-feedback-actions">
         <small>运行结果只作为待审核候选；需要由你确认后才会传给后续节点。</small>
-        <VanButton class="primary-button compact-button" type="primary" native-type="submit" :disabled="feedbackSaving || feedbackDisabled || reviewBusy || !analysisReady" :loading="feedbackSaving">
-          {{ feedbackSaving ? '正在生成分析' : feedbackText.trim() ? '提交要求并运行 AI 分析' : stageRuns.length ? '重新运行 AI 分析' : '运行 AI 分析' }}
+        <VanButton class="primary-button compact-button" type="primary" native-type="submit" :disabled="feedbackSaving || feedbackDisabled || reviewBusy || analysisRunPending || !analysisAllowed" :loading="feedbackSaving || analysisRunPending">
+          {{ feedbackSaving ? '正在启动分析' : analysisRunPending ? '分析处理中' : feedbackText.trim() ? '提交要求并运行 AI 分析' : stageRuns.length ? '重新运行 AI 分析' : '运行 AI 分析' }}
         </VanButton>
       </div>
     </form>
@@ -52,7 +53,7 @@
         <p>{{ run.runtime_instruction }}</p>
       </details>
 
-      <p v-if="run.status === 'FAILED'" class="analysis-run-error" role="alert">建议暂时无法生成，请稍后重试。{{ friendlyError(run.error) }}</p>
+      <p v-if="run.status === 'FAILED'" class="analysis-run-error" role="alert">{{ failureMessage(run) }}</p>
       <div v-else-if="['PENDING', 'RUNNING'].includes(run.status)" class="analysis-run-pending" role="status">
         {{ run.status === 'PENDING' ? '正在准备分析建议…' : '正在生成分析建议…' }}
       </div>
@@ -70,7 +71,7 @@
         <AnalysisDirectionReview
           :key="run.id" :run="run" :content="content" :step-id="currentStepId"
           :read-only="readOnly" :saving="saving" :sources-current="candidateSourcesCurrent"
-          @review-candidate="$emit('review-candidate', $event)" @busy="reviewBusy = $event; $emit('busy', $event)"
+          @apply-candidates="$emit('apply-candidates', $event)" @busy="reviewBusy = $event; $emit('busy', $event)"
           @go-overview="$emit('go-overview')"
         />
         <p v-if="!run.output_parsed.findings?.length && !run.output_parsed.analysis_fragments?.length" class="analysis-drafts-empty">暂无可审核的候选，请调整分析要求后重试。</p>
@@ -84,13 +85,27 @@ import { Button as VanButton, Field as VanField } from 'vant'
 import AnalysisDirectionReview from './AnalysisDirectionReview.vue'
 import { currentReportFoundation, reportEvidenceTitle } from '../workbench-inputs.js'
 import { formatDateTime } from '../../../utils/dateTime.js'
+import { getNodeReview } from '../api.js'
 
 export default {
   name: 'AnalysisDraftsPanel',
   components: { VanButton, VanField, AnalysisDirectionReview },
-  data: () => ({ selectedRunId: '', feedbackText: '', reviewBusy: false }),
-  beforeUnmount() { this.$emit('busy', false) },
+  data: () => ({ selectedRunId: '', feedbackText: '', reviewBusy: false, birthReview: null, birthReviewLoaded: false, birthReviewLoading: false, birthReviewError: false, birthReviewRequestId: 0 }),
+  beforeUnmount() { this.birthReviewRequestId += 1; this.$emit('busy', false) },
+  mounted() { this.loadBirthReview() },
+  watch: {
+    runs() {
+      const activeRun = this.stageRuns.find(run => ['PENDING', 'RUNNING'].includes(run.status))
+      if (activeRun) this.selectedRunId = String(activeRun.id)
+    },
+    caseId() { this.loadBirthReview() },
+    stepKey() { this.loadBirthReview() },
+    reviewPolicyVersion() { this.loadBirthReview() },
+    'currentStep.id'() { this.loadBirthReview() }
+  },
   props: {
+    caseId: { type: Number, default: null },
+    reviewPolicyVersion: { type: String, default: '' },
     readOnly: Boolean,
     runs: { type: Array, default: () => [] },
     content: { type: Object, required: true },
@@ -101,12 +116,39 @@ export default {
     feedbackDisabled: { type: Boolean, default: false },
     analysisReady: { type: Boolean, default: true }
   },
-  emits: ['review-candidate', 'go-overview', 'run-analysis', 'go-calculation', 'busy'],
+  emits: ['apply-candidates', 'go-overview', 'run-analysis', 'go-calculation', 'go-birth-time', 'busy'],
   methods: {
     formatDateTime,
+    async loadBirthReview() {
+      const requestId = ++this.birthReviewRequestId
+      if (!this.requiresBirthTimeConfirmation) {
+        this.birthReview = null
+        this.birthReviewLoaded = true
+        this.birthReviewLoading = false
+        this.birthReviewError = false
+        return
+      }
+      this.birthReviewLoaded = false
+      this.birthReviewLoading = true
+      this.birthReviewError = false
+      try {
+        const review = await getNodeReview(this.caseId, 'S1')
+        if (requestId === this.birthReviewRequestId) this.birthReview = review
+      } catch {
+        if (requestId === this.birthReviewRequestId) {
+          this.birthReview = null
+          this.birthReviewError = true
+        }
+      } finally {
+        if (requestId === this.birthReviewRequestId) {
+          this.birthReviewLoaded = true
+          this.birthReviewLoading = false
+        }
+      }
+    },
     submitAnalysis() {
       const feedback = this.feedbackText.trim()
-      if (this.readOnly || !this.currentStep || this.feedbackSaving || this.reviewBusy || !this.analysisReady) return
+      if (this.readOnly || !this.currentStep || this.feedbackSaving || this.reviewBusy || this.analysisRunPending || !this.analysisAllowed) return
       const latestRun = this.visibleRuns[0]
       const sourceRunId = latestRun?.status === 'COMPLETED'
         && this.candidateSourcesCurrent(latestRun, { evidence_refs: [] })
@@ -120,9 +162,33 @@ export default {
     runStatusLabel(status) {
       return { PENDING: '正在准备', RUNNING: '正在生成', COMPLETED: '已生成', FAILED: '暂时失败' }[status] || '处理中'
     },
-    friendlyError(error) {
-      if (!error || !/^[a-z][a-z0-9_]+$/.test(String(error))) return ''
-      return ' 请刷新页面后重试；如仍无法完成，请联系管理员。'
+    failureMessage(run) {
+      const status = Number(run?.model_trace?.http_status_code || 0)
+      if (status === 401 || status === 403 || run?.error === 'skill_model_auth_failed') {
+        return '模型服务鉴权失败。请联系管理员检查本地模型服务凭据，修复后再重试。'
+      }
+      if (status === 429 || run?.error === 'skill_model_rate_limited') {
+        return '模型服务请求过于频繁。请等待限流解除后再重试，避免连续提交。'
+      }
+      if ([408, 504].includes(status) || run?.error === 'skill_model_timeout') {
+        return '模型服务响应超时。请先确认服务状态，再重试本次分析。'
+      }
+      if (status >= 500 || run?.error === 'skill_model_provider_unavailable') {
+        return `模型服务暂时异常（HTTP ${status || '5xx'}）。请稍后重试；持续失败时联系管理员。`
+      }
+      if (status >= 400 || run?.error === 'skill_model_request_rejected') {
+        return `模型服务未接受本次请求（HTTP ${status || '4xx'}）。请联系管理员检查本地服务配置后重试。`
+      }
+      if (run?.model_trace?.error_type === 'HTTPStatusError') {
+        return '模型服务返回了错误，但这条旧运行记录没有保存 HTTP 状态码。请管理员检查服务地址、鉴权和额度后再重试。'
+      }
+      if (run?.error === 'skill_output_truncated') {
+        return '模型返回内容不完整，未写入审核候选。可缩小本次分析范围后重试。'
+      }
+      if (run?.error === 'skill_model_gateway_failed') {
+        return '模型服务调用失败。请检查本地 AI 服务状态；确认服务恢复后再重试。'
+      }
+      return '分析未能完成，未生成可审核内容。请查看运行记录，或联系管理员排查后重试。'
     },
     consultantText(value, fallback = '请结合相关资料进一步核对。') {
       const text = String(value || '').trim()
@@ -154,6 +220,26 @@ export default {
 
   },
   computed: {
+    requiresBirthTimeConfirmation() {
+      return this.stepKey === 'S1' && this.reviewPolicyVersion === 'six-node-review-v1' && Boolean(this.currentStep)
+    },
+    birthTimeConfirmed() {
+      return Boolean(this.birthReview?.snapshot?.metadata?.birth_time_confirmation?.confirmed
+        && this.birthReview?.checkpoints?.birth_data?.current)
+    },
+    analysisAllowed() {
+      return this.analysisReady
+        && (!this.requiresBirthTimeConfirmation || (this.birthReviewLoaded && this.birthTimeConfirmed))
+    },
+    analysisRunPending() {
+      return this.stageRuns.some(run => ['PENDING', 'RUNNING'].includes(run.status))
+    },
+    analysisPrerequisiteMessage() {
+      if (this.requiresBirthTimeConfirmation && this.birthReviewLoading) return '正在核对出生资料确认状态…'
+      if (this.requiresBirthTimeConfirmation && this.birthReviewError) return '暂时无法读取出生资料确认状态，请进入出生资料与时间核对后刷新。'
+      if (this.requiresBirthTimeConfirmation && !this.birthTimeConfirmed) return '请先完成“出生资料与时间核对”，再运行 S1 AI 分析。'
+      return '请先完成程序计算并核对结果，再开始 S1 分析。'
+    },
     activeRunId: { get() { return String(this.visibleRuns[0]?.id || '') }, set(value) { this.selectedRunId=value } },
     visibleRuns() { const run = this.stageRuns.find(item => String(item.id) === this.selectedRunId) || this.stageRuns[0]; return run ? [run] : [] },
     stageRuns() {

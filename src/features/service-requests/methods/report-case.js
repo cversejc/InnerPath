@@ -10,6 +10,8 @@ import {
   getReportCaseNarrative,
   getReportCaseQuality,
   getReportCaseStepCompletionGate,
+  getNodeReview,
+  patchNodeReview,
   reopenReportCaseStep,
   resolveReportCaseQualityIssue,
   returnReportCaseStep,
@@ -31,7 +33,18 @@ function splitReferences(value) {
     .filter(Boolean)
 }
 
+function usesAggregateAnalysisReview(reportCase, stepKey) {
+  return reportCase?.review_policy_version === 'six-node-review-v1'
+    && ['S1', 'S2', 'S3', 'S4'].includes(stepKey)
+}
+
 export default {
+  async continueWholeNodeReview() {
+    await this.loadReportCaseData(this.reportCase.id, { silent: true })
+    const active = this.reportCase.workflow_instance?.steps.find(step => ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status))
+    if (active) this.selectReportNode(active.step_key)
+    else { this.selectedReportStepKey = ''; this.workspaceSection = 'overview'; await this.loadWorkspace?.(this.selectedRequest?.id) }
+  },
   async loadReportCaseData(caseId, { silent = false } = {}) {
     if (!silent) this.reportCaseLoading = true
     if (this.reportCase?.id !== Number(caseId)) {
@@ -60,7 +73,7 @@ export default {
       const activeStep = (reportCase.workflow_instance?.steps || []).find(step =>
         ['READY', 'IN_REVIEW', 'EXECUTING', 'WAITING_REVIEW'].includes(step.status)
       )
-      this.reportCaseCompletionGate = activeStep?.status === 'IN_REVIEW' && canHandleStep(activeStep, this.staffActor)
+      this.reportCaseCompletionGate = !reportCase.review_policy_version && activeStep?.status === 'IN_REVIEW' && canHandleStep(activeStep, this.staffActor)
         && ['S1', 'S2', 'S3', 'S4'].includes(activeStep.step_key)
         ? await getReportCaseStepCompletionGate(reportCase.id, activeStep.step_key)
         : null
@@ -79,7 +92,7 @@ export default {
           content: fragment.content,
           status: fragment.status === 'STALE' ? 'PROPOSED' : fragment.status,
           fragment_type: fragment.fragment_type,
-          edit_kind: fragment.status === 'STALE' ? 'SEMANTIC' : 'STYLE',
+          edit_kind: fragment.status === 'STALE' || usesAggregateAnalysisReview(reportCase, this.selectedReportStepKey) ? 'SEMANTIC' : 'STYLE',
           finding_refs: (fragment.source_snapshot?.findings || []).map(item => item.finding_key).join('\n'),
           fragment_refs: (fragment.source_snapshot?.fragments || []).map(item => item.fragment_key).join('\n'),
           evidence_refs: (fragment.source_snapshot?.evidence || []).map(item => item.evidence_key).join('\n')
@@ -162,7 +175,7 @@ export default {
             content: fragment.content,
             status: fragment.status === 'STALE' ? 'PROPOSED' : fragment.status,
             fragment_type: fragment.fragment_type,
-            edit_kind: fragment.status === 'STALE' ? 'SEMANTIC' : 'STYLE',
+            edit_kind: fragment.status === 'STALE' || usesAggregateAnalysisReview(this.reportCase, this.selectedReportStepKey) ? 'SEMANTIC' : 'STYLE',
             finding_refs: (fragment.source_snapshot?.findings || []).map(item => item.finding_key).join('\n'),
             fragment_refs: (fragment.source_snapshot?.fragments || []).map(item => item.fragment_key).join('\n'),
             evidence_refs: (fragment.source_snapshot?.evidence || []).map(item => item.evidence_key).join('\n')
@@ -383,7 +396,7 @@ export default {
       this.reportReviewAutoOpen = true
       this.nodeWritingMode = 'progress'
       await this.loadReportCaseData(this.reportCase.id, { silent: true })
-      this.message = '报告内容已开始按顺序生成；检查完成后会接入逐段审稿。'
+      this.message = '报告内容已开始按顺序生成；检查完成后请通读全文并整体审阅。'
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -463,6 +476,12 @@ export default {
       this.setReportWorkspaceSection('upstream')
       this.message = `已开始${this.reportStepLabel(step.step_key)}，请先核对上游输入，再继续本节点工作。`
     } catch (error) {
+      // 节点可能已由上游成果就绪事件自动开始；先把最新状态取回来再提示。
+      try {
+        await this.loadReportCaseData(this.reportCase.id, { silent: true })
+      } catch (refreshError) {
+        // 保留原始失败信息。
+      }
       this.message = this.errorText(error)
     } finally {
       this.reportStepSaving = false
@@ -607,17 +626,38 @@ export default {
     if (!this.reportCase || !step || !draft.content.trim() || this.reportFragmentSaving) return
     this.reportFragmentSaving = true
     try {
-      await saveReportCaseFragment(this.reportCase.id, step.step_key, fragment.fragment_key, {
-        expected_revision_no: fragment.revision_no,
-        fragment_type: draft.fragment_type,
-        title: draft.title,
-        content: draft.content,
-        status: draft.status,
-        finding_refs: splitReferences(draft.finding_refs),
-        fragment_refs: splitReferences(draft.fragment_refs),
-        evidence_refs: splitReferences(draft.evidence_refs),
-        edit_kind: fragment.status === draft.status ? draft.edit_kind : 'SEMANTIC'
-      })
+      const status = ['S1', 'S2', 'S3', 'S4'].includes(step.step_key) ? 'PROPOSED' : draft.status
+      const editKind = fragment.status === status ? draft.edit_kind : 'SEMANTIC'
+      if (usesAggregateAnalysisReview(this.reportCase, step.step_key) && editKind === 'SEMANTIC') {
+        const review = await getNodeReview(this.reportCase.id, step.step_key)
+        const current = review.snapshot.fragments.find(item => item.fragment_key === fragment.fragment_key)
+        if (!current || current.revision_no !== fragment.revision_no) {
+          const conflict = new Error('fragment_revision_conflict')
+          conflict.response = { status: 409 }
+          throw conflict
+        }
+        await patchNodeReview(this.reportCase.id, step.step_key, {
+          fingerprint: review.fingerprint,
+          changes: [{
+            kind: 'fragment',
+            key: fragment.fragment_key,
+            title: String(draft.title || '').trim(),
+            content: draft.content
+          }]
+        })
+      } else {
+        await saveReportCaseFragment(this.reportCase.id, step.step_key, fragment.fragment_key, {
+          expected_revision_no: fragment.revision_no,
+          fragment_type: draft.fragment_type,
+          title: draft.title,
+          content: draft.content,
+          status,
+          finding_refs: splitReferences(draft.finding_refs),
+          fragment_refs: splitReferences(draft.fragment_refs),
+          evidence_refs: splitReferences(draft.evidence_refs),
+          edit_kind: editKind
+        })
+      }
       await this.loadReportCaseData(this.reportCase.id)
       this.message = '报告内容的新版本已保存。'
     } catch (error) {

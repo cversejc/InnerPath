@@ -88,7 +88,7 @@
             type="button"
             @click="$emit('to-section', view.id)"
           >
-            <strong>{{ index + 2 }}. {{ view.label }}</strong
+            <strong>{{ views.findIndex((item) => item.id === view.id) + 1 }}. {{ view.label }}</strong
             ><span>{{ viewHint(view.id) }}</span
             ><span class="launcher-arrow" aria-hidden="true">→</span>
           </button>
@@ -115,9 +115,9 @@
         </ul>
       </div>
       <p v-if="viewStep" class="node-owner" role="status">负责专业：{{ ownerLabel }} · {{ viewStep.assignee_id ? "已接单" : "待接单" }}<span v-if="!canAct && !waitingForUser"> · 本节点供你查看，由对应负责人处理</span></p>
-      <footer v-if="section === 'overview'" class="node-actions">
+      <footer v-if="section === 'overview' || section === 'signoff'" class="node-actions">
         <VanButton
-          v-if="canAct && isCurrent && viewStep.status === 'READY'"
+          v-if="section === 'overview' && canAct && isCurrent && viewStep.status === 'READY'"
           type="primary"
           class="primary-button"
           native-type="button"
@@ -129,7 +129,8 @@
           v-if="
             canAct && isCurrent &&
             viewStep.status === 'IN_REVIEW' &&
-            viewStep.step_key !== 'S6'
+            viewStep.step_key !== 'S6' &&
+            !aggregatePolicy
           "
           ><VanButton
             plain
@@ -143,7 +144,7 @@
             native-type="button"
             :loading="loading"
             :disabled="
-              loading || reviewBusy || (completionGate && !completionGate.can_complete)
+            loading || reviewBusy || (completionGate && !completionGate.can_complete)
             "
             @click="$emit('complete-step')"
             >确认成果并进入下一节点</VanButton
@@ -171,6 +172,35 @@
         >
       </footer>
       <slot />
+      <NodeReviewCheckpoint
+        v-if="aggregatePolicy && activeCheckpoint && checkpointVisible"
+        :key="`${reportCase.id}:${viewStep.step_key}:${activeCheckpoint}`"
+        :case-id="reportCase.id"
+        :step="viewStep"
+        :checkpoint="activeCheckpoint"
+        :can-write="canAct && viewStep.status === 'IN_REVIEW'"
+        :busy="reviewBusy || loading"
+        @changed="$emit('review-changed')"
+        @approved="$emit('review-approved')"
+        @busy="$emit('review-busy', $event)"
+        @request-info="$emit('request-info', $event)"
+        @to-section="(section, targetKey) => $emit('to-section', section, targetKey)"
+        @advance="$emit('to-section', $event)"
+      />
+      <footer
+        v-if="isCurrent && canAct && viewStep.status === 'IN_REVIEW' && !activeCheckpoint && nextSection"
+        class="node-actions node-forward-actions"
+      >
+        <VanButton
+          type="primary"
+          class="primary-button"
+          native-type="button"
+          :disabled="loading || reviewBusy"
+          @click="$emit('to-section', nextSection)"
+        >
+          继续到{{ nextSectionLabel }}
+        </VanButton>
+      </footer>
       </div>
       <NodeWorkbenchDialog
         :return-focus-element="dialogTrigger"
@@ -283,11 +313,12 @@ import {
   buildWorkbenchInputGroups,
   classifyWorkbenchStepView,
 } from "../workbench-inputs.js";
-import { nodeViews, nodeAssets } from "../node-workspace.js";
+import { checkpointRendered, nextNodeSection, nodeCheckpoint, nodeViews, nodeAssets } from "../node-workspace.js";
 import NodeInputsPanel from "./NodeInputsPanel.vue";
 import NodeWorkbenchDialog from "./NodeWorkbenchDialog.vue";
+import NodeReviewCheckpoint from "./NodeReviewCheckpoint.vue";
 export default {
-  components: { VanButton, NodeInputsPanel, NodeWorkbenchDialog },
+  components: { VanButton, NodeInputsPanel, NodeWorkbenchDialog, NodeReviewCheckpoint },
   props: {
     reportCase: Object,
     actor: Object,
@@ -313,9 +344,13 @@ export default {
     "request-info",
     "toggle-return",
     "reopen",
+    "review-changed",
+    "review-approved",
+    "review-busy",
   ],
   data: () => ({ dialog: "", dialogTrigger: null }),
   computed: {
+    aggregatePolicy() { return this.reportCase?.review_policy_version === 'six-node-review-v1' },
     canAct() { return canHandleStep(this.viewStep, this.actor) && !this.waitingForUser },
     canHandleCurrent() { return canHandleStep(this.currentStep, this.actor) },
     specialtyLabels() { return specialtyLabels },
@@ -341,6 +376,10 @@ export default {
     views() {
       return nodeViews(this.viewStep?.step_key);
     },
+    activeCheckpoint() { return nodeCheckpoint(this.viewStep?.step_key, this.section) },
+    checkpointVisible() { return checkpointRendered(this.viewStep?.step_key, this.section, this.isCurrent, this.viewStep?.status) },
+    nextSection() { return nextNodeSection(this.viewStep?.step_key, this.section) },
+    nextSectionLabel() { return this.views.find((item) => item.id === this.nextSection)?.label || "下一工作页" },
     inputGroups() {
       return buildWorkbenchInputGroups({
         stage: this.stage,
@@ -383,10 +422,12 @@ export default {
     viewHint(id) {
       return {
         upstream: `${this.inputGroups.length} 类输入，集中核对资料与来源`,
-        calculation: "核对程序测算；发现错误时创建人工修订版本",
+        signoff: "检查各阶段确认与问题处理结果，完成节点签核",
+        "birth-time": "对照申请资料与程序换算；无异常时一次确认",
+        calculation: "查看完整程序计算结果与依据；异常时修订并说明原因",
         analysis: "运行 AI 分析，查看并处理候选结果",
-        findings: `${nodeAssets(this.content, this.viewStep, "findings").length} 条本步判断，逐条确认`,
-        fragments: `${nodeAssets(this.content, this.viewStep, "fragments").length} 项内容，逐项审阅与编辑`,
+        findings: `${nodeAssets(this.content, this.viewStep, "findings").length} 条本步判断，集中核对并确认`,
+        fragments: `${nodeAssets(this.content, this.viewStep, "fragments").length} 项完整内容，整体审阅并确认`,
         writing: "选择报告主线，确认编排",
         quality: "复核七维评分并处理每项问题",
       }[id];

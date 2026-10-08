@@ -2,31 +2,84 @@ import { reportStage } from "./stages.js";
 import { classifyWorkbenchStepView } from "./workbench-inputs.js";
 
 export function nodeViews(stepKey) {
-  const common = [
-    { id: "overview", label: "节点首页" },
-    { id: "upstream", label: "上游输入" },
-  ];
+  const nodeHome = { id: "overview", label: "节点首页" };
+  const nodeReview = { id: "signoff", label: "节点复核" };
+  const upstream = { id: "upstream", label: "上游输入" };
   if (["S1", "S2", "S3", "S4"].includes(stepKey))
     return [
-      ...common,
-      ...(stepKey === "S1" ? [{ id: "calculation", label: "程序计算" }] : []),
+      nodeHome,
+      upstream,
+      ...(stepKey === "S1"
+        ? [
+            { id: "birth-time", label: "出生资料与时间核对" },
+            { id: "calculation", label: "程序计算" },
+          ]
+        : []),
       { id: "analysis", label: "AI 分析" },
       { id: "findings", label: "判断审核" },
       { id: "fragments", label: "分析内容" },
+      nodeReview,
     ];
   if (stepKey === "S5")
     return [
-      ...common,
+      nodeHome,
+      upstream,
       { id: "writing", label: "AI 写作与编排" },
-      { id: "fragments", label: "逐段审稿" },
+      { id: "fragments", label: "完整报告审阅" },
+      nodeReview,
     ];
   if (stepKey === "S6")
     return [
-      ...common,
+      nodeHome,
+      upstream,
       { id: "quality", label: "AI 检查与问题" },
       { id: "fragments", label: "复核正文" },
+      nodeReview,
     ];
-  return common;
+  return [nodeHome, upstream, nodeReview];
+}
+
+export function nodeCheckpoint(stepKey, section) {
+  if (section === "signoff") return "node";
+  if (stepKey === "S1" && section === "birth-time") return "birth_data";
+  if (["S1", "S2", "S3", "S4"].includes(stepKey)) {
+    if (section === "findings") return "findings";
+    if (section === "fragments") return "analysis";
+  }
+  if (stepKey === "S5") {
+    if (section === "writing") return "narrative";
+    if (section === "fragments") return "report";
+  }
+  if (stepKey === "S6" && section === "fragments") return "report";
+  return "";
+}
+
+export function checkpointRendered(stepKey, section, isCurrent, stepStatus = "") {
+  const checkpoint = nodeCheckpoint(stepKey, section);
+  if (!checkpoint) return false;
+  if (isCurrent) return true;
+  // 已完成的 S1 仍要能只读查看出生资料与程序换算；其他阶段确认只在当前节点内展示。
+  if (checkpoint === "birth_data") return true;
+  // 已完成节点回看：节点复核页只读展示本节点完成时的检查结果与处理记录。
+  return stepStatus === "COMPLETED" && checkpoint === "node";
+}
+
+export function nextNodeSection(stepKey, section) {
+  const views = nodeViews(stepKey);
+  const index = views.findIndex((item) => item.id === section);
+  return index >= 0 ? views[index + 1]?.id || "" : "";
+}
+
+export function nextCheckpointSection(stepKey, checkpoint) {
+  const checkpointSections = {
+    birth_data: "birth-time",
+    findings: "findings",
+    analysis: "fragments",
+    narrative: "writing",
+    report: "fragments",
+  };
+  const section = checkpointSections[checkpoint];
+  return section ? nextNodeSection(stepKey, section) : "";
 }
 
 export function resolveNodeLocation(steps, currentStep, query = {}) {
@@ -118,7 +171,7 @@ export function nodeTools(
         prerequisite: !planReady
           ? "请先确认可生成的主线和内容编排。"
           : generationStatus === "READY_FOR_REVIEW"
-            ? "正文已生成，请进入逐段审稿。"
+              ? "正文已生成，请通读全文并整体审阅。"
             : [
                   "IN_PROGRESS",
                   "CHAPTER_COHERENCE_CHECK",
@@ -154,4 +207,13 @@ export function nodeTools(
     disabledReason: disabledReason || tool.prerequisite || "",
     disabled: Boolean(disabledReason || tool.prerequisite),
   }));
+}
+
+export function workspaceFocusTargetId(section, targetKey) {
+  // ???? id ??? CSS ????fragment_key ????????????? id+class?
+  const key = String(targetKey ?? "").trim();
+  if (!key) return "";
+  if (section === "fragments") return `report-fragment-${key}`;
+  if (section === "findings") return `report-finding-${key}`;
+  return "";
 }

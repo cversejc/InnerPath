@@ -32,6 +32,9 @@ export const nodeWorkspaceComputed = {
       ) || null
     );
   },
+  aggregateReviewPolicy() {
+    return this.reportCase?.review_policy_version === "six-node-review-v1";
+  },
   canEditSelectedReportStep() {
     return (
       this.selectedReportStep?.id === this.currentReportStep?.id &&
