@@ -682,6 +682,65 @@ async def test_final_report_assembler_requires_approved_s6_gate():
 
 
 @pytest.mark.asyncio
+async def test_assembler_rejects_an_advisory_override_outside_the_fast_path():
+    """Only import-review-v1 may deliver over open findings."""
+    now = datetime.utcnow()
+    case = SimpleNamespace(
+        id=11,
+        status="READY_TO_DELIVER",
+        workflow_instance_id=13,
+        review_policy_version="six-node-review-v1",
+    )
+    instance = WorkflowInstance(
+        id=13,
+        report_case_id=11,
+        workflow_version_id=3,
+        status="COMPLETED",
+        created_at=now,
+        updated_at=now,
+    )
+    final_gate = StepTask(
+        workflow_instance_id=13,
+        step_key="S6",
+        sequence_no=6,
+        executor="HUMAN",
+        status="COMPLETED",
+        activation_no=1,
+        config_snapshot={},
+        result_json={
+            "final_gate_approved": True,
+            "advisory_only": True,
+            "validator_run_id": 42,
+            "qa_fingerprint": "qa-fingerprint-42",
+        },
+        created_at=now,
+        updated_at=now,
+    )
+
+    class Session:
+        async def get(self, model, identity):
+            assert model is WorkflowInstance
+            return instance
+
+        async def scalar(self, statement):
+            return final_gate
+
+    db = Session()
+    with pytest.raises(ValueError, match="final_qa_issues_open_or_stale"):
+        await assemble_report_version(
+            db,
+            case,
+            actor_id=5,
+            quality_snapshot={
+                "can_approve": False,
+                "advisory_only": True,
+                "validator_run_id": 42,
+                "qa_fingerprint": "qa-fingerprint-42",
+            },
+        )
+
+
+@pytest.mark.asyncio
 async def test_assembled_report_version_captures_s6_attestation(
     quality_db, monkeypatch
 ):

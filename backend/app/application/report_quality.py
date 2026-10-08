@@ -1,5 +1,5 @@
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.core.time import api_datetime, utc_now_naive
 
 from sqlalchemy import select
@@ -27,6 +27,92 @@ from app.domains.workflow.models import ReportCase, StepTask, WorkflowOutbox
 # the 8000-token historical default truncated long reports mid-JSON.
 CASE_QA_MAX_TOKENS = 16000
 CASE_QA_TIMEOUT_SECONDS = 300
+# A queued run that no worker picked up within this window is orphaned (for
+# example because the Outbox consumer is not running). An explicit re-run may
+# reclaim it instead of being blocked by "validator_run_in_progress" forever.
+CASE_QA_QUEUE_TIMEOUT_SECONDS = 300
+# Allow the model gateway timeout plus transport overhead before a RUNNING
+# run is treated as abandoned.
+CASE_QA_STALL_GRACE_SECONDS = 120
+
+# The consultant fast path imports an already written report and only asks for
+# a final human authorization. Checks still run and still produce every
+# suggestion, but nothing in this policy is a hard gate.
+IMPORT_REVIEW_POLICY_VERSION = "import-review-v1"
+
+
+def _quality_run_timeout_seconds(run: SkillRun) -> int:
+    override = (run.context_snapshot or {}).get("model_policy_override") or {}
+    try:
+        return max(1, int(override.get("timeout_seconds") or CASE_QA_TIMEOUT_SECONDS))
+    except (TypeError, ValueError):
+        return CASE_QA_TIMEOUT_SECONDS
+
+
+def quality_run_is_stalled(run: SkillRun, *, now: datetime | None = None) -> bool:
+    """Report whether a validator run is abandoned and can be reclaimed."""
+
+    current = now or utc_now_naive()
+    if run.status == "PENDING":
+        return bool(run.created_at) and run.created_at <= current - timedelta(
+            seconds=CASE_QA_QUEUE_TIMEOUT_SECONDS
+        )
+    if run.status == "RUNNING":
+        started = run.started_at or run.created_at
+        return bool(started) and started <= current - timedelta(
+            seconds=_quality_run_timeout_seconds(run) + CASE_QA_STALL_GRACE_SECONDS
+        )
+    return False
+
+
+def _validator_run_timing(run: SkillRun, *, now: datetime | None = None) -> dict:
+    current = now or utc_now_naive()
+    queued_at = run.created_at
+    started_at = run.started_at
+    active_since = started_at or queued_at
+    # Finished runs report how long they actually took; only an active run keeps
+    # counting up, so the workbench never shows a stale timer next to a result.
+    reference = run.completed_at if run.status in {"COMPLETED", "FAILED"} else None
+    measured_at = reference or current
+    return {
+        "created_at": api_datetime(queued_at),
+        "started_at": api_datetime(started_at),
+        "queue_wait_seconds": (
+            max(0, int((started_at - queued_at).total_seconds()))
+            if started_at and queued_at
+            else None
+        ),
+        "elapsed_seconds": (
+            max(0, int((measured_at - active_since).total_seconds())) if active_since else None
+        ),
+        "queue_timeout_seconds": CASE_QA_QUEUE_TIMEOUT_SECONDS,
+        "run_timeout_seconds": _quality_run_timeout_seconds(run),
+    }
+
+
+async def _release_stalled_quality_run(db: AsyncSession, run: SkillRun) -> None:
+    """Fail an abandoned run and retire its Outbox event.
+
+    Retiring the event matters: a consumer that starts later must not rerun an
+    action the user has already retried.
+    """
+
+    run.status = "FAILED"
+    run.error = "quality_run_stalled"
+    run.completed_at = utc_now_naive()
+    events = list(
+        await db.scalars(
+            select(WorkflowOutbox).where(
+                WorkflowOutbox.aggregate_type == "skill_run",
+                WorkflowOutbox.aggregate_id == run.id,
+                WorkflowOutbox.event_type == "skill.run.requested",
+                WorkflowOutbox.status.in_({"PENDING", "PUBLISHED"}),
+            )
+        )
+    )
+    for event in events:
+        event.status = "FAILED"
+        event.retry_count += 1
 
 
 async def queue_case_quality_run(
@@ -50,7 +136,12 @@ async def queue_case_quality_run(
     program_issues, fingerprint, snapshot = await run_programmatic_qa(
         db, report_case, actor_id=actor_id
     )
-    if any(issue.severity == "BLOCK" for issue in program_issues):
+    if (
+        report_case.review_policy_version != IMPORT_REVIEW_POLICY_VERSION
+        and any(issue.severity == "BLOCK" for issue in program_issues)
+    ):
+        # Strict policies stop before spending a model call. The fast path keeps
+        # going so the consultant still sees the full check result as advice.
         return {
             "status": "PROGRAMMATIC_BLOCKED",
             "validator_run": None,
@@ -101,6 +192,10 @@ async def queue_case_quality_run(
         .order_by(SkillRun.created_at.desc(), SkillRun.id.desc())
         .limit(1)
     )
+    if active_run is not None and quality_run_is_stalled(active_run):
+        await _release_stalled_quality_run(db, active_run)
+        await db.flush()
+        active_run = None
     if active_run is not None:
         if feedback or source_run_id is not None:
             raise ValueError("validator_run_in_progress")
@@ -271,7 +366,13 @@ async def quality_state(
     scorecard_required = bool(run and ((run.context_snapshot or {}).get("context") or {}).get("qa_input", {}).get("scorecard_required"))
     scorecard_ready = not scorecard_required or bool(run and (run.output_parsed or {}).get("scorecard", {}).get("passes_threshold"))
     framework_ready = True
-    if (report_case.application_snapshot or {}).get("framework_contract"):
+    # The fast path imports a consultant-authored report: there is no authored
+    # Finding/coverage provenance for the framework mapper to reconcile, so the
+    # product-framework review is not part of this policy's gate.
+    if (
+        report_case.review_policy_version != "import-review-v1"
+        and (report_case.application_snapshot or {}).get("framework_contract")
+    ):
         framework_ready = False
         if run and fingerprint_matches:
             qa_input = ((run.context_snapshot or {}).get("context") or {}).get("qa_input", {})
@@ -281,6 +382,13 @@ async def quality_state(
                 framework_ready = all(item["status"] != "MISSING" for item in review)
             except ValueError:
                 pass
+    advisory_only = report_case.review_policy_version == IMPORT_REVIEW_POLICY_VERSION
+    can_approve = (
+        fingerprint_matches and not open_issues and scorecard_ready and framework_ready
+    )
+    # The fast path never blocks on check results: the check is optional advice,
+    # so the consultant may confirm and deliver at any time, with or without it.
+    can_finalize = True if advisory_only else can_approve
     return ReportQualityResponse(
         report_case_id=report_case.id,
         quality_status=(
@@ -307,17 +415,70 @@ async def quality_state(
                 "completed_at": api_datetime(run.completed_at),
                 "scorecard": (run.output_parsed or {}).get("scorecard") if fingerprint_matches else None,
                 "framework_review": (run.output_parsed or {}).get("framework_review") if fingerprint_matches else None,
+                **_validator_run_timing(run),
             }
             if run
             else None
         ),
         issues=issues,
         issue_groups=group_quality_issues(issues),
-        can_approve=fingerprint_matches and not open_issues and scorecard_ready and framework_ready,
+        can_approve=can_approve,
+        advisory_only=advisory_only,
+        can_finalize=can_finalize,
+        final_gate_override=(
+            await _persisted_import_override(db, report_case, current_fingerprint)
+            if advisory_only
+            else None
+        ),
+        unresolved_advisories=(
+            _advisory_summary(open_issues) if advisory_only else []
+        ),
         blocking_count=sum(issue.severity == "BLOCK" for issue in open_issues),
         open_count=len(open_issues),
         qa_fingerprint_current=current_fingerprint,
     )
+
+
+def _advisory_summary(issues: list[QAIssue]) -> list[dict]:
+    return [
+        {
+            "id": issue.id,
+            "severity": issue.severity,
+            "issue_type": issue.issue_type,
+            "target_fragment_key": issue.target_fragment_key,
+            "message": issue.message,
+        }
+        for issue in issues
+    ]
+
+
+async def _persisted_import_override(
+    db: AsyncSession,
+    report_case: ReportCase,
+    current_fingerprint: str,
+) -> dict | None:
+    """Return the stored fast-path gate approval while it still applies.
+
+    The approval may have been given with no validator run at all, so it is
+    matched to the report text it was given for instead of to a check. Only the
+    S6 row written by :func:`approve_case_final_gate` can authorize an overridden
+    delivery; the client never supplies these fields.
+    """
+
+    gate = await db.scalar(
+        select(StepTask).where(
+            StepTask.workflow_instance_id == report_case.workflow_instance_id,
+            StepTask.step_key == "S6",
+        )
+    )
+    result = (gate.result_json or {}) if gate is not None else {}
+    if (
+        not result.get("final_gate_approved")
+        or not result.get("advisory_only")
+        or result.get("qa_fingerprint") != current_fingerprint
+    ):
+        return None
+    return dict(result)
 
 
 async def case_can_be_delivered(db: AsyncSession, report_case: ReportCase) -> bool:
@@ -329,11 +490,16 @@ async def delivery_quality_snapshot(
     db: AsyncSession, report_case: ReportCase
 ) -> dict:
     state = await quality_state(db, report_case)
-    if not state.can_approve:
+    # The fast path has no quality gate at all: checks are optional advice and
+    # the S6 approval recorded by the consultant is the only authorization.
+    if not state.advisory_only and not state.can_approve:
         raise ValueError("final_qa_issues_open_or_stale")
     issue_history = await get_case_qa_issues(db, report_case.id)
     return {
-        "can_approve": True,
+        "can_approve": state.can_approve,
+        "advisory_only": state.advisory_only,
+        "final_gate_override": state.final_gate_override,
+        "unresolved_advisories": state.unresolved_advisories,
         "quality_status": state.quality_status,
         "qa_fingerprint": state.qa_fingerprint_current,
         "blocking_count": state.blocking_count,

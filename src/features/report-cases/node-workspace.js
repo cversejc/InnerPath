@@ -33,7 +33,7 @@ export function nodeViews(stepKey) {
       nodeHome,
       upstream,
       { id: "quality", label: "AI 检查与问题" },
-      { id: "fragments", label: "复核正文" },
+      { id: "manuscript", label: "修改后稿件" },
       nodeReview,
     ];
   return [nodeHome, upstream, nodeReview];
@@ -50,7 +50,6 @@ export function nodeCheckpoint(stepKey, section) {
     if (section === "writing") return "narrative";
     if (section === "fragments") return "report";
   }
-  if (stepKey === "S6" && section === "fragments") return "report";
   return "";
 }
 
@@ -90,7 +89,7 @@ export function resolveNodeLocation(steps, currentStep, query = {}) {
         currentStep ||
         null;
   // Preserve old links by assigning their functional page to its owning step.
-  const legacyOwner = { quality: "S6", writing: "S5" };
+  const legacyOwner = { quality: "S6", manuscript: "S6", writing: "S5" };
   const selected =
     !query.step && legacyOwner[query.section]
       ? steps.find((item) => item.step_key === legacyOwner[query.section]) ||
@@ -213,7 +212,8 @@ export function workspaceFocusTargetId(section, targetKey) {
   // ???? id ??? CSS ????fragment_key ????????????? id+class?
   const key = String(targetKey ?? "").trim();
   if (!key) return "";
-  if (section === "fragments") return `report-fragment-${key}`;
+  if (section === "fragments" || section === "manuscript")
+    return `report-fragment-${key}`;
   if (section === "findings") return `report-finding-${key}`;
   return "";
 }

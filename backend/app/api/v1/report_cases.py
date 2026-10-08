@@ -655,8 +655,6 @@ async def approve_report_case_final_gate(
     current_user: User = Depends(require_roles("admin", "consultant")),
     db: AsyncSession = Depends(get_db),
 ):
-    if not data.attested:
-        raise HTTPException(status_code=422, detail="final_gate_attestation_required")
     report_case, _step = await _authorize_step_action(
         db, case_id, "S6", current_user, require_current_review=True
     )

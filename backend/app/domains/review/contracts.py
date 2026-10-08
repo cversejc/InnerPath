@@ -213,12 +213,12 @@ def required_checkpoint_keys(step_key):
         return ("findings", "analysis")
     if step_key == "S5":
         return ("narrative", "report")
-    if step_key == "S6":
-        return ("report",)
+    # S6 has no separate checkpoint: its only authorization is the final gate,
+    # and the whole-report view there is read-only.
     return ()
 
 
-def checkpoint_scope(snapshot, checkpoint_key, *, final_quality=None):
+def checkpoint_scope(snapshot, checkpoint_key):
     step_id = snapshot["step_task_id"]
     step_key = snapshot["step_key"]
     findings = [f for f in snapshot["findings"] if f.get("owner_step_task_id") == step_id]
@@ -256,8 +256,6 @@ def checkpoint_scope(snapshot, checkpoint_key, *, final_quality=None):
             data["narrative_plan"] = snapshot.get("narrative_plan")
             data["narrative_confirmation"] = snapshot.get("narrative_plan_confirmation")
             data["report_generation"] = snapshot.get("report_generation")
-        if step_key == "S6" and checkpoint_key == "report":
-            data["final_quality"] = _final_quality_review_scope(final_quality)
         return data
     if checkpoint_key == "narrative" and step_key == "S5":
         return {
@@ -267,40 +265,13 @@ def checkpoint_scope(snapshot, checkpoint_key, *, final_quality=None):
     raise ValueError("node_checkpoint_invalid")
 
 
-def checkpoint_fingerprint(snapshot, checkpoint_key, *, final_quality=None):
+def checkpoint_fingerprint(snapshot, checkpoint_key):
     return fingerprint({
         "policy_version": snapshot["policy_version"],
         "step_key": snapshot["step_key"],
         "checkpoint_key": checkpoint_key,
-        "scope": checkpoint_scope(snapshot, checkpoint_key, final_quality=final_quality),
+        "scope": checkpoint_scope(snapshot, checkpoint_key),
     })
-
-
-def _final_quality_review_scope(final_quality):
-    if not isinstance(final_quality, dict):
-        return final_quality
-    run = final_quality.get("latest_validator_run")
-    run_fields = ("id", "status", "current", "completed_at", "scorecard", "framework_review")
-    issue_fields = (
-        "id", "source_type", "source_ref_id", "issue_type", "severity", "status",
-        "target_fragment_key", "target_fragment_revision_id", "message", "evidence_json",
-        "suggestion", "resolution", "resolved_by", "resolved_at", "created_at",
-    )
-    return {
-        "quality_status": final_quality.get("quality_status"),
-        "can_approve": final_quality.get("can_approve"),
-        "blocking_count": final_quality.get("blocking_count"),
-        "open_count": final_quality.get("open_count"),
-        "qa_fingerprint_current": final_quality.get("qa_fingerprint_current"),
-        "latest_validator_run": {
-            key: run.get(key) for key in run_fields
-        } if isinstance(run, dict) else None,
-        "issues": [
-            {key: issue.get(key) for key in issue_fields}
-            for issue in final_quality.get("issues", [])
-            if isinstance(issue, dict)
-        ],
-    }
 
 
 def _referenced_evidence(findings, snapshot):

@@ -422,14 +422,19 @@ export default {
     viewHint(id) {
       return {
         upstream: `${this.inputGroups.length} 类输入，集中核对资料与来源`,
-        signoff: "检查各阶段确认与问题处理结果，完成节点签核",
+        signoff: this.quality?.advisory_only
+          ? "确认修改后稿件，完成最终交付授权"
+          : "检查各阶段确认与问题处理结果，完成节点签核",
+        manuscript: "通读修改后的完整报告并整体确认",
         "birth-time": "对照申请资料与程序换算；无异常时一次确认",
         calculation: "查看完整程序计算结果与依据；异常时修订并说明原因",
         analysis: "运行 AI 分析，查看并处理候选结果",
         findings: `${nodeAssets(this.content, this.viewStep, "findings").length} 条本步判断，集中核对并确认`,
         fragments: `${nodeAssets(this.content, this.viewStep, "fragments").length} 项完整内容，整体审阅并确认`,
         writing: "选择报告主线，确认编排",
-        quality: "复核七维评分并处理每项问题",
+        quality: this.quality?.advisory_only
+          ? "查看七维评分与建议，按需修订后完成最终确认"
+          : "复核七维评分并处理每项问题",
       }[id];
     },
     blockerLabel(code) {

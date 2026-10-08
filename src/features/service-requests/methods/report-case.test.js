@@ -3,6 +3,7 @@ import test from 'node:test'
 import { reactive } from 'vue'
 import apiClient from '../../../utils/apiClient.js'
 import methods from './report-case.js'
+import reportReviewMethods from './report-review.js'
 
 test('accepting a reactive finding saves a detached revision instead of failing to clone its proxy', async t => {
   const previousAdapter = apiClient.defaults.adapter
@@ -237,4 +238,190 @@ test('a rejected model normalization surfaces the normalization failure message'
   assert.equal(context.reportImportDialog.error, '系统暂时无法整理报告结构，请检查正文后重试。')
   assert.equal(context.reportImportDialog.visible, true)
   assert.equal(context.reportImportDialog.saving, false)
+})
+
+function finalGateContext(overrides = {}) {
+  return {
+    reportCase: { id: 81, review_policy_version: 'import-review-v1' },
+    reportStepSaving: false,
+    reportQuality: {
+      advisory_only: true,
+      can_finalize: true,
+      can_approve: false,
+      unresolved_advisories: [{ id: 1 }, { id: 2 }]
+    },
+    finalGateNote: '',
+    confirmAction: async () => true,
+    loadReportCaseData: async () => {},
+    errorText: error => error.message,
+    ...overrides
+  }
+}
+
+test('advisory final gate approval works without a completed check and sends the note', async t => {
+  stubSessionStorage(t)
+  const previousAdapter = apiClient.defaults.adapter
+  t.after(() => { apiClient.defaults.adapter = previousAdapter })
+  const requests = []
+  apiClient.defaults.adapter = async config => {
+    requests.push({ url: config.url, data: JSON.parse(config.data) })
+    return { data: {}, status: 200, statusText: 'OK', headers: {}, config }
+  }
+  let loaded, confirmMessage
+  const context = finalGateContext({
+    finalGateNote: '  保留建议：用户未提供出生时间，已在报告中说明。  ',
+    confirmAction: async options => { confirmMessage = options.message; return true },
+    loadReportCaseData: async caseId => { loaded = caseId }
+  })
+  await methods.approveReportFinalGate.call(context)
+  assert.equal(requests.length, 1)
+  assert.equal(requests[0].url, '/report-cases/81/final-gate/approve')
+  assert.equal(requests[0].data.attested, true)
+  assert.equal(requests[0].data.note, '保留建议：用户未提供出生时间，已在报告中说明。')
+  assert.equal(confirmMessage.includes('2 条未处理建议'), true)
+  assert.equal(context.finalGateNote, '')
+  assert.equal(loaded, 81)
+  assert.equal(context.message, '最终复核已通过，可以生成交付版本。')
+})
+
+test('final gate approval sends a null note when the consultant leaves it empty', async t => {
+  stubSessionStorage(t)
+  const previousAdapter = apiClient.defaults.adapter
+  t.after(() => { apiClient.defaults.adapter = previousAdapter })
+  const requests = []
+  apiClient.defaults.adapter = async config => {
+    requests.push({ url: config.url, data: JSON.parse(config.data) })
+    return { data: {}, status: 200, statusText: 'OK', headers: {}, config }
+  }
+  const context = finalGateContext({
+    reportCase: { id: 81, review_policy_version: 'six-node-review-v1' },
+    reportQuality: { advisory_only: false, can_finalize: true, can_approve: true, unresolved_advisories: [] },
+    finalGateNote: '   '
+  })
+  await methods.approveReportFinalGate.call(context)
+  assert.equal(requests[0].data.note, null)
+})
+
+test('final gate approval stops before the request while revised report fragments are unconfirmed', async t => {
+  stubSessionStorage(t)
+  const previousAdapter = apiClient.defaults.adapter
+  t.after(() => { apiClient.defaults.adapter = previousAdapter })
+  let requests = 0
+  apiClient.defaults.adapter = async config => {
+    requests += 1
+    return { data: {}, status: 200, statusText: 'OK', headers: {}, config }
+  }
+  const context = finalGateContext({
+    reportCaseContent: {
+      fragments: [
+        { fragment_type: 'REPORT', fragment_key: 'report.intro', status: 'PROPOSED' },
+        { fragment_type: 'REPORT', fragment_key: 'report.body', status: 'CONFIRMED' }
+      ]
+    }
+  })
+  await methods.approveReportFinalGate.call(context)
+  assert.equal(requests, 0)
+  assert.equal(context.message.includes('修改后稿件'), true)
+  assert.equal(context.message.includes('1 段'), true)
+})
+
+test('confirming the manuscript confirms every unconfirmed report fragment as a style edit', async t => {
+  stubSessionStorage(t)
+  const previousAdapter = apiClient.defaults.adapter
+  t.after(() => { apiClient.defaults.adapter = previousAdapter })
+  const requests = []
+  apiClient.defaults.adapter = async config => {
+    requests.push({ url: config.url, data: JSON.parse(config.data) })
+    return { data: {}, status: 200, statusText: 'OK', headers: {}, config }
+  }
+  let loaded, confirmMessage
+  const context = {
+    reportCase: { id: 81 },
+    selectedReportStepKey: 'S6',
+    canEditSelectedReportStep: true,
+    reportFragmentSaving: false,
+    reportCaseContent: {
+      fragments: [
+        {
+          fragment_key: 'report.intro',
+          fragment_type: 'REPORT',
+          revision_no: 3,
+          title: '开篇',
+          content: '修订后的开篇',
+          status: 'PROPOSED',
+          source_snapshot: { findings: [{ finding_key: 's1.f1' }], fragments: [], evidence: [{ evidence_key: 'e1' }] }
+        },
+        { fragment_key: 'report.body', fragment_type: 'REPORT', revision_no: 1, status: 'CONFIRMED' },
+        { fragment_key: 'analysis.s3.a', fragment_type: 'ANALYSIS', revision_no: 1, status: 'PROPOSED' }
+      ]
+    },
+    confirmAction: async options => { confirmMessage = options.message; return true },
+    loadReportCaseData: async caseId => { loaded = caseId },
+    errorText: error => error.message
+  }
+  await reportReviewMethods.confirmReportManuscript.call(context)
+  assert.equal(requests.length, 1)
+  assert.equal(requests[0].url, '/report-cases/81/steps/S6/fragments/report.intro')
+  assert.equal(requests[0].data.status, 'CONFIRMED')
+  assert.equal(requests[0].data.edit_kind, 'STYLE')
+  assert.equal(requests[0].data.expected_revision_no, 3)
+  assert.equal(requests[0].data.title, '开篇')
+  assert.equal(requests[0].data.content, '修订后的开篇')
+  assert.deepEqual(requests[0].data.finding_refs, ['s1.f1'])
+  assert.deepEqual(requests[0].data.evidence_refs, ['e1'])
+  assert.equal(confirmMessage.includes('1 段'), true)
+  assert.equal(loaded, 81)
+  assert.equal(context.reportFragmentSaving, false)
+  assert.equal(context.message, '修改后的稿件已确认，可以完成最终复核并生成交付版本。')
+})
+
+test('confirming the manuscript refuses to confirm while a report fragment is stale', async t => {
+  stubSessionStorage(t)
+  const previousAdapter = apiClient.defaults.adapter
+  t.after(() => { apiClient.defaults.adapter = previousAdapter })
+  let requests = 0
+  apiClient.defaults.adapter = async config => {
+    requests += 1
+    return { data: {}, status: 200, statusText: 'OK', headers: {}, config }
+  }
+  const context = {
+    reportCase: { id: 81 },
+    selectedReportStepKey: 'S6',
+    canEditSelectedReportStep: true,
+    reportFragmentSaving: false,
+    reportCaseContent: {
+      fragments: [
+        { fragment_key: 'report.intro', fragment_type: 'REPORT', revision_no: 3, status: 'STALE' }
+      ]
+    },
+    confirmAction: async () => true,
+    loadReportCaseData: async () => {},
+    errorText: error => error.message
+  }
+  await reportReviewMethods.confirmReportManuscript.call(context)
+  assert.equal(requests, 0)
+  assert.equal(context.message.includes('来源'), true)
+})
+
+test('final gate approval stops while a report fragment source is stale', async t => {
+  stubSessionStorage(t)
+  const previousAdapter = apiClient.defaults.adapter
+  t.after(() => { apiClient.defaults.adapter = previousAdapter })
+  let requests = 0
+  apiClient.defaults.adapter = async config => {
+    requests += 1
+    return { data: {}, status: 200, statusText: 'OK', headers: {}, config }
+  }
+  const context = finalGateContext({
+    reportCaseContent: {
+      fragments: [
+        { fragment_type: 'REPORT', fragment_key: 'report.intro', status: 'STALE' },
+        { fragment_type: 'REPORT', fragment_key: 'report.body', status: 'CONFIRMED' }
+      ]
+    }
+  })
+  await methods.approveReportFinalGate.call(context)
+  assert.equal(requests, 0)
+  assert.equal(context.message.includes('来源依据已更新'), true)
+  assert.equal(context.message.includes('1 段'), true)
 })

@@ -26,6 +26,12 @@ REQUIRED_SECTIONS = {
 }
 
 
+def imported_report_case(case) -> bool:
+    """Fast path: the consultant imported a finished report, so the case has no
+    authored Finding/Analysis provenance for the programmatic mapper to trace."""
+    return case.review_policy_version == "import-review-v1"
+
+
 def reviewable_report_fragment(row, case):
     return row.status == "CONFIRMED" or (case.review_policy_version == "six-node-review-v1" and row.status == "PROPOSED")
 BLOCKED_PHRASES = (
@@ -129,14 +135,15 @@ async def collect_programmatic_issues(
         semantic_model = await load_case_semantic_model(db, report_case.id)
     except ValueError:
         semantic_model = None
-        issues.append(
-            _issue(
-                "CONFIRMED_SEMANTICS_MISSING",
-                "BLOCK",
-                "Case 没有可用于报告的已确认 Finding。",
-                suggestion="补充并确认有 Evidence 来源的专业判断。",
+        if not imported_report_case(report_case):
+            issues.append(
+                _issue(
+                    "CONFIRMED_SEMANTICS_MISSING",
+                    "BLOCK",
+                    "Case 没有可用于报告的已确认 Finding。",
+                    suggestion="补充并确认有 Evidence 来源的专业判断。",
+                )
             )
-        )
     if current_plan is not None and current_plan.status == "CONFIRMED" and semantic_model:
         if not narrative_semantic_sources_match(current_plan, semantic_model):
             issues.append(
@@ -400,7 +407,7 @@ async def collect_programmatic_issues(
         finding_refs = source.get("findings") or []
         analysis_refs = source.get("fragments") or []
         evidence_refs = source.get("evidence") or []
-        if not finding_refs and not analysis_refs:
+        if not finding_refs and not analysis_refs and not imported_report_case(report_case):
             issues.append(
                 _issue(
                     "SOURCE_MAP_MISSING",

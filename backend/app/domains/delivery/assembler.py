@@ -44,8 +44,20 @@ async def assemble_report_version(
         or not (final_gate.result_json or {}).get("final_gate_approved")
     ):
         raise ValueError("final_gate_approval_required")
-    if not quality_snapshot or quality_snapshot.get("can_approve") is not True:
+    if not quality_snapshot:
         raise ValueError("final_qa_issues_open_or_stale")
+    if quality_snapshot.get("can_approve") is not True:
+        # Advisory delivery is only possible for the consultant fast path, and
+        # only from the audit fields the server itself persisted on the S6 row.
+        # The check is optional there, so no validator run is required.
+        gate_result = final_gate.result_json or {}
+        override_applies = (
+            report_case.review_policy_version == "import-review-v1"
+            and gate_result.get("advisory_only") is True
+            and gate_result.get("qa_fingerprint") == quality_snapshot.get("qa_fingerprint")
+        )
+        if not override_applies:
+            raise ValueError("final_qa_issues_open_or_stale")
     if skill_run_snapshot is None:
         raise ValueError("skill_provenance_snapshot_required")
     workflow_version = await db.get(WorkflowVersion, instance.workflow_version_id)
@@ -83,7 +95,12 @@ async def assemble_report_version(
     fragment_rows.sort(
         key=lambda row: (fragment_order.get(row.fragment_key, 10_000), row.fragment_key)
     )
-    semantics = await load_case_semantic_model(db, report_case.id)
+    if report_case.review_policy_version == "import-review-v1":
+        # The consultant fast path has no authored analysis assets; the imported
+        # report text itself is the provenance, recorded per fragment below.
+        semantics = {"findings": [], "analysis_fragments": [], "evidence": []}
+    else:
+        semantics = await load_case_semantic_model(db, report_case.id)
     fragment_snapshot = [
         {
             "id": row.id,

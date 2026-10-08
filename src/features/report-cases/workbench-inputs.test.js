@@ -434,6 +434,38 @@ test('quality issues use clear Chinese action labels and severity levels', () =>
   assert.doesNotMatch(JSON.stringify(issue), /report\.identity|report_coherence/)
 })
 
+test('import advisory checks never surface hard-gate copy', () => {
+  assert.equal(qualitySummaryLabel({
+    advisory_only: true,
+    quality_status: 'PROGRAMMATIC_BLOCKED',
+    can_finalize: true,
+    open_count: 2,
+    unresolved_advisories: [{ id: 1 }, { id: 2 }],
+    latest_validator_run: { status: 'COMPLETED', current: true }
+  }), '检查完成 · 2 条建议仅供参考')
+  assert.equal(qualitySummaryLabel({
+    advisory_only: true,
+    can_finalize: true,
+    latest_validator_run: null
+  }), '检查可选 · 可直接确认交付')
+
+  const groups = buildWorkbenchInputGroups({
+    stage: reportStage('S6'),
+    reportCase: makeCase('S6'),
+    content: { evidence: [], findings: [], fragments: [] },
+    quality: {
+      advisory_only: true,
+      quality_status: 'PROGRAMMATIC_BLOCKED',
+      can_finalize: true,
+      issues: [{ id: 41, severity: 'BLOCK', status: 'OPEN', message: '报告中有一句话没有对应的已确认判断。', suggestion: '补充来源或删除该句。' }]
+    }
+  })
+
+  const issue = groups.find(group => group.key === 'qualityIssues').items[0]
+  assert.match(issue.meta, /重点 · 待处理/)
+  assert.doesNotMatch(issue.meta, /必须处理/)
+})
+
 test('step navigation distinguishes current work, completed history, and locked future previews', () => {
   const current = { id: 2, sequence_no: 2, status: 'IN_REVIEW' }
   assert.equal(classifyWorkbenchStepView(current, current), 'CURRENT')

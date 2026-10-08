@@ -90,6 +90,10 @@ export default {
         latest_validator_run: null,
         issues: [],
         can_approve: false,
+        can_finalize: false,
+        advisory_only: false,
+        final_gate_override: null,
+        unresolved_advisories: [],
         blocking_count: 0,
         open_count: 0
       },
@@ -97,7 +101,7 @@ export default {
       qualityFeedbackDraft: '',
       reportQualitySaving: false,
       reportCaseDelivering: false,
-      finalGateAttested: false,
+      finalGateNote: '',
       reportCaseLoading: false,
       reportAnalysisSaving: false,
       reportAnalysisFindingSavingKey: '',
@@ -135,12 +139,12 @@ export default {
       infoStepKey: '',
       rejectDialog: { visible: false, reason: '', error: '' },
       rejectSaving: false,
+      reportImportDialog: { visible: false, title: '', sourceFilename: '', content: '', error: '', saving: false, idempotencyKey: '' },
       reportEditor: reportEditorFromPayload(),
       calendarEditor: calendarEditorFromPayload(),
       consultants: [],
       assignmentId: null,
       consultationType: 'integrated',
-      reportImportDialog: { visible: false, title: '', sourceFilename: '', content: '', error: '', saving: false, idempotencyKey: '' },
       assignmentSaving: false,
       loggingOut: false
     }
@@ -173,6 +177,29 @@ export default {
     },
     reportAnalysisPending() {
       return this.reportAnalysisSaving || this.reportAnalysisRuns.some(run => ['PENDING', 'RUNNING'].includes(run.status))
+    },
+    reportFinalGateReady() {
+      const quality = this.reportQuality || {}
+      // The import fast path has no check requirement: the consultant may
+      // confirm and deliver at any time.
+      return quality.advisory_only ? true : Boolean(quality.can_approve)
+    },
+    // 修订后的正文必须先整体确认，交付快照只会包含已确认的段落。
+    reportManuscriptPendingCount() {
+      return (this.reportCaseContent.fragments || [])
+        .filter(item => item.fragment_type === 'REPORT' && item.status === 'PROPOSED').length
+    },
+    reportManuscriptStaleCount() {
+      return (this.reportCaseContent.fragments || [])
+        .filter(item => item.fragment_type === 'REPORT' && item.status === 'STALE').length
+    },
+    reportQualitySummaryLabel() {
+      const quality = this.reportQuality || {}
+      if (!quality.advisory_only) {
+        return `${quality.open_count || 0} 项待处理 · ${quality.blocking_count || 0} 项必须处理`
+      }
+      const count = quality.unresolved_advisories?.length || 0
+      return count ? `${count} 条检查建议 · 仅供参考，不阻断交付` : '暂无待复核建议 · 交付由咨询师确认'
     },
     reportReturnTargets() {
       const active = this.currentReportStep
@@ -427,7 +454,8 @@ export default {
         'case-findings': 'findings',
         'case-fragments': 'fragments',
         'case-narrative': 'writing',
-        'case-quality': 'quality'
+        'case-quality': 'quality',
+        'case-manuscript': 'manuscript'
       }
       const section = sectionMap[sectionId]
         || ({ inputs: 'upstream', suggestions: 'analysis' }[sectionId])
@@ -517,8 +545,11 @@ export default {
       this.reportNarrative = { current_plan: null, candidate_runs: [], fragment_runs: [] }
       this.reportQuality = {
         quality_status: 'NOT_RUN', latest_validator_run: null, issues: [],
-        can_approve: false, blocking_count: 0, open_count: 0
+        can_approve: false, can_finalize: false, advisory_only: false,
+        final_gate_override: null, unresolved_advisories: [],
+        blocking_count: 0, open_count: 0
       }
+      this.finalGateNote = ''
       this.qualityFeedbackDraft = ''
       this.narrativeFeedbackDrafts = {}
       this.workspaceSection = 'overview'
@@ -603,6 +634,10 @@ export default {
       return REPORT_ASSET_STATUS_LABELS[status] || ''
     },
     qualityStatusLabel(status) {
+      if (this.reportQuality?.advisory_only) {
+        const advisory = { PROGRAMMATIC_BLOCKED: '检查有建议待咨询师确认', BLOCKED: '检查已有结论，可确认后交付' }
+        if (advisory[status]) return advisory[status]
+      }
       return QUALITY_STATUS_LABELS[status] || '尚未检查'
     },
     qualityIssueLabel(type) {
@@ -624,6 +659,9 @@ export default {
       return this.qualityIssueLabel(type)
     },
     issueSeverityLabel(severity) {
+      if (this.reportQuality?.advisory_only) {
+        return { BLOCK: '重点', MAJOR: '主要', MINOR: '提示', WARN: '建议处理', INFO: '提示' }[severity] || '提示'
+      }
       return QUALITY_SEVERITY_LABELS[severity] || '提示'
     },
     consultantText(value, fallback = '请查看相关说明，并按建议处理。') {
@@ -670,6 +708,9 @@ export default {
           report_import_duplicate_content: '同一份报告已被导入到另一份申请，请确认是否选错了申请。',
           report_import_case_not_importable: '这份申请已进入其他流程，无法再走快速导入。请刷新后查看当前节点。',
           report_case_forbidden: '当前专业或负责人没有导入这份报告的权限。',
+          final_qa_not_complete: '还没完成针对当前正文的检查。请先运行交付前检查，再确认最终复核。',
+          final_qa_issues_open_or_stale: '还有必须处理的检查问题，或检查结果已过期。请处理后再确认最终复核。',
+          node_whole_review_required: '请先完成本节点整体复核，再确认最终复核。'
         }
         return messages[text] || '操作暂时无法完成，请刷新页面后重试。'
       }

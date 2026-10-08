@@ -1,5 +1,5 @@
 import { saveReportCaseFragment, resolveReportCaseQualityIssue, resolveReportCaseQualityIssueGroup } from '../../report-cases/api.js'
-import { nextPendingRecord } from '../../report-cases/review-continuation.js'
+import { nextPendingRecord, reportFragmentReviewDraft } from '../../report-cases/review-continuation.js'
 import { canHandleStep, specialtyLabels } from '../../report-cases/professional-ownership.js'
 
 export default {
@@ -39,6 +39,49 @@ export default {
     if (next) { this.nodeRecordKeys.fragments = next.fragment_key; this.scrollWorkspaceToTop() }
     else this.message = '当前正文已逐段确认。请复核全文连贯性与节点完成条件，再完成本节点。'
   },
+  // S6 修改后稿件的整体确认：把本次修订的 REPORT 段落统一置为已确认，
+  // 交付快照只会组装已确认段落，未确认的修订不能进入交付版本。
+  async confirmReportManuscript() {
+    if (!this.canEditSelectedReportStep || this.selectedReportStepKey !== 'S6' || this.reportFragmentSaving) {
+      this.message = '当前节点暂时不能确认修改后稿件，请先开始最终审核节点。'; return
+    }
+    const pending = (this.reportCaseContent.fragments || [])
+      .filter(item => item.fragment_type === 'REPORT' && item.status !== 'CONFIRMED')
+    if (!pending.length) { this.message = '修改后的稿件已经全部确认，无需重复操作。'; return }
+    if (pending.some(item => item.status === 'STALE')) {
+      this.message = '有段落的来源依据已经更新，请先复核来源，再确认修改后稿件。'; return
+    }
+    const confirmed = await this.confirmAction({
+      title: '确认修改后稿件',
+      message: `将本次修订的 ${pending.length} 段正文确认为最终稿？确认后交付版本会使用这份稿件。`,
+      confirmButtonText: '确认修改后稿件'
+    })
+    if (!confirmed) return
+    this.reportFragmentSaving = true
+    try {
+      for (const fragment of pending) {
+        await saveReportCaseFragment(this.reportCase.id, 'S6', fragment.fragment_key, {
+          ...reportFragmentReviewDraft(fragment),
+          status: 'CONFIRMED',
+          edit_kind: 'STYLE'
+        })
+      }
+      await this.loadReportCaseData(this.reportCase.id, { silent: true })
+      this.message = '修改后的稿件已确认，可以完成最终复核并生成交付版本。'
+    } catch (error) {
+      const messages = {
+        fragment_style_edit_changed_semantics: '确认失败：稿件在本次操作中发生变化，请刷新后重新确认。',
+        fragment_revision_conflict: '正文已有新版本，已刷新列表，请重新通读后再确认。',
+        report_fragment_source_stale: '本段依据已更新，请先复核前序成果。'
+      }
+      this.message = messages[error.response?.data?.detail] || this.errorText(error)
+      if (error.response?.status === 409) {
+        try { await this.loadReportCaseData(this.reportCase.id, { silent: true }) } catch { /* Preserve the original failure. */ }
+      }
+    } finally {
+      this.reportFragmentSaving = false
+    }
+  },
   resumeGeneratedReportReview() {
     if (this.reportReviewAutoOpen && this.selectedReportStepKey === 'S5' && this.workspaceSection === 'writing'
       && this.nodeWritingMode === 'progress' && this.reportGeneration.status === 'READY_FOR_REVIEW' && !this.reportReviewBusy) {
@@ -56,7 +99,6 @@ export default {
     try {
       await saveReportCaseFragment(this.reportCase.id, this.currentReportStep.step_key, fragment.fragment_key, review)
       await this.loadReportCaseData(this.reportCase.id, { silent: true })
-      this.finalGateAttested = false
       this.message = review.status === 'CONFIRMED' ? '本段审核已保存。' : '本段修改已保存，仍待确认。'
       result = { success: true }
     } catch (error) {

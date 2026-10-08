@@ -1,6 +1,7 @@
 <template>
   <section class="quality-issue-review" aria-label="连续处理检查问题">
     <p class="quality-review-guide">核对问题与涉及正文 → 修订正文或说明处理理由 → 保存并继续下一问题 → 重新检查 → 最终人工确认</p>
+    <p v-if="quality.advisory_only" class="quality-review-guide">当前流程的检查结果只是参考建议：可以不处理其中任何一条，也可以不运行检查；核对报告后随时由咨询师确认并交付。</p>
     <section v-if="groups.length" class="quality-issue-groups" aria-label="同类问题整体处理">
       <h4>同类问题整体处理</h4>
       <p class="quality-review-guide">同一类型的问题填写一次处理理由即可整体处理；每条问题仍单独保留处理记录、处理人与时间。</p>
@@ -22,14 +23,14 @@
         </div>
       </article>
     </section>
-    <WorkbenchRecordPicker v-model="selectedKey" :items="items" label="待处理问题（优先处理阻断项）" :disabled="locked || noteDirty" />
+    <WorkbenchRecordPicker v-model="selectedKey" :items="items" :label="quality.advisory_only ? '检查建议（仅供参考，可保留）' : '待处理问题（优先处理阻断项）'" :disabled="locked || noteDirty" />
     <p v-if="error" ref="error" class="quality-review-note error" role="alert" tabindex="-1">{{ error }}</p>
     <p v-if="notice" class="quality-review-note" role="status">{{ notice }}</p>
     <article v-if="issue" ref="card" class="quality-review-card" tabindex="-1">
       <header><h4>{{ issueLabel(issue.issue_type) }}</h4><span>{{ severityLabel(issue.severity) }} · {{ statusLabel(issue.status) }}</span></header>
       <p>{{ issueMessage(issue) }}</p>
       <p v-if="issue.suggestion || issue.issue_type === 'FINDING_OVER_REPEATED'">处理建议：{{ issueSuggestion(issue) }}</p>
-      <p v-if="outdated" class="quality-review-note">正文已更新，此项来自修改前的检查。可保存处理记录供追溯，交付前必须重新检查完整报告。</p>
+      <p v-if="outdated" class="quality-review-note">{{ quality.advisory_only ? '正文已更新，此项来自修改前的检查。可保存处理记录供追溯，也可以再跑一次检查作为参考；是否交付由咨询师确认。' : '正文已更新，此项来自修改前的检查。可保存处理记录供追溯，交付前必须重新检查完整报告。' }}</p>
       <template v-if="!target && reportFragments.length">
         <label class="quality-review-field">选择需要核对的正文段落<select v-model="inspectKey" :disabled="locked"><option value="">选择段落</option><option v-for="row in reportFragments" :key="row.fragment_key" :value="row.fragment_key">{{ fragmentTitle(row.fragment_key, row.title) }}</option></select></label>
       </template>
@@ -120,9 +121,12 @@ export default {
     nextIssue() {
       const next = nextPendingRecord(this.orderedIssues, this.issue?.id, 'id', row => row.status === 'OPEN')
       if (next) { this.selectedKey = String(next.id); this.$nextTick(() => this.$refs.card?.focus({ preventScroll: true })) }
-      else this.notice = this.openIssues.length ? '当前问题仍未处理，请继续核对或填写处理理由。' : this.needsRecheck ? '请重新检查修改后的完整报告，再进行最终确认。' : '当前问题已处理，请通读报告并完成最终人工确认。'
+      else if (this.openIssues.length) this.notice = '当前问题仍未处理，请继续核对或填写处理理由。'
+      else if (this.needsRecheck && this.quality.advisory_only) this.notice = '可重新检查修改后的完整报告作为参考；未处理的建议会记录在最终确认中，不阻断交付。'
+      else if (this.needsRecheck) this.notice = '请重新检查修改后的完整报告，再进行最终确认。'
+      else this.notice = '当前问题已处理，请通读报告并完成最终人工确认。'
     },
-    bodySaved() { this.editedBody = true; this.notice = '正文已保存。请记录本条处理理由；交付前须重新检查完整报告。' },
+    bodySaved() { this.editedBody = true; this.notice = this.quality.advisory_only ? '正文已保存。可记录处理理由或直接继续；检查结果不阻断交付。' : '正文已保存。请记录本条处理理由；交付前须重新检查完整报告。' },
     saveGroup(group) {
       const draft = this.groupDrafts[group.group_key]
       if (this.readOnly || this.locked || !draft || !draft.resolution.trim()) return

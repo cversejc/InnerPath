@@ -434,14 +434,22 @@ function reportFragmentCards(fragments, findingsByKey, evidenceByKey) {
 
 function qualityCards(quality = {}, content = {}) {
   const issues = quality.issues || []
+  const advisory = Boolean(quality.advisory_only)
   if (!issues.length) {
     const status = qualitySummaryLabel(quality)
-    const body = quality.can_approve
-      ? '所有检查项均已处理，可以进入最终人工复核。'
-      : quality.latest_validator_run
-        ? '报告内容有更新，请重新运行交付前检查。'
-        : '运行交付前检查后，结果会显示在这里。'
-    return [{ key: 'quality-state', title: `检查结果：${status}`, body, meta: '交付前检查' }]
+    const currentRun = quality.latest_validator_run?.current
+    const body = advisory
+      ? currentRun
+        ? '检查已完成，结果仅供参考，是否交付由咨询师确认。'
+        : quality.latest_validator_run
+          ? '报告正文已有更新，建议再运行一次检查；也可以直接由咨询师确认交付。'
+          : '尚未运行检查；检查可选、不设门槛，随时可以由咨询师确认交付。'
+      : quality.can_approve
+        ? '所有检查项均已处理，可以进入最终人工复核。'
+        : quality.latest_validator_run
+          ? '报告内容有更新，请重新运行交付前检查。'
+          : '运行交付前检查后，结果会显示在这里。'
+    return [{ key: 'quality-state', title: `检查结果：${status}`, body, meta: advisory ? '检查建议（仅供参考）' : '交付前检查' }]
   }
   const fragmentsByKey = new Map((content.fragments || []).map(item => [item.fragment_key, item]))
   const findingsByKey = new Map((content.findings || []).map(item => [item.finding_key, item]))
@@ -457,13 +465,15 @@ function qualityCards(quality = {}, content = {}) {
     const detail = QUALITY_ISSUE_GUIDANCE[issue.issue_type]
       || consultantText(issue.suggestion, '对照报告正文和对应资料，记录处理结论后再继续。')
     const count = issue.evidence_json?.fragment_count
-    const severityLabel = {
-      ...QUALITY_SEVERITY_LABELS,
-      BLOCK: '必须处理',
-      MAJOR: '需要处理',
-      MINOR: '建议复核',
-      WARN: '建议处理'
-    }[issue.severity] || '待复核'
+    const severityLabel = advisory
+      ? ({ BLOCK: '重点', MAJOR: '主要', MINOR: '提示', WARN: '建议处理' }[issue.severity] || '仅供参考')
+      : {
+        ...QUALITY_SEVERITY_LABELS,
+        BLOCK: '必须处理',
+        MAJOR: '需要处理',
+        MINOR: '建议复核',
+        WARN: '建议处理'
+      }[issue.severity] || '待复核'
 
     return {
       key: `quality-${issue.id}`,
@@ -483,6 +493,16 @@ export function qualitySummaryLabel(quality = {}, fallbackStatus = '') {
   const runStatus = quality.latest_validator_run?.status
   const openCount = Number(quality.open_count ?? (quality.issues || []).filter(issue => issue.status === 'OPEN').length)
 
+  if (quality.advisory_only) {
+    if (runStatus === 'PENDING' || runStatus === 'RUNNING') return '正在检查'
+    if (runStatus === 'FAILED') return '检查失败，可不检查直接确认交付'
+    if (runStatus === 'COMPLETED') {
+      if (!quality.latest_validator_run?.current) return '正文已更新 · 可直接确认交付'
+      const advisoryCount = Number(quality.unresolved_advisories?.length ?? openCount)
+      return advisoryCount ? `检查完成 · ${advisoryCount} 条建议仅供参考` : '检查完成 · 交付由咨询师确认'
+    }
+    return '检查可选 · 可直接确认交付'
+  }
   if (quality.can_approve) return '可以进入最终复核'
   if (runStatus === 'PENDING' || runStatus === 'RUNNING') return '正在检查'
   if (runStatus === 'FAILED') return '检查失败，请重试'
@@ -650,5 +670,5 @@ export function buildWorkbenchStageOutputs({ stage, reportCase, content, narrati
       )
     ]
   }
-  return qualityCards(quality)
+  return qualityCards(quality, content || {})
 }

@@ -631,7 +631,6 @@ async def test_final_signoff_binds_the_latest_quality_run_without_a_second_check
         model_dump=lambda mode="python": final_quality_snapshot,
     )
     monkeypatch.setattr(report_quality, "quality_state", AsyncMock(return_value=final_quality))
-    await approve_checkpoint_for_test(db, case, step, actor, "report")
     _, _, state = await review_context(db, case.id, "S6", actor)
 
     approval = await sign_node(db, case, step, state, actor, value)
@@ -645,7 +644,7 @@ async def test_final_signoff_binds_the_latest_quality_run_without_a_second_check
 
 
 @pytest.mark.asyncio
-async def test_s6_quality_issue_resolution_invalidates_final_report_checkpoint(chain_db, monkeypatch):
+async def test_s6_workspace_follows_quality_state_without_a_local_checkpoint(chain_db, monkeypatch):
     db = chain_db
     case, step, actor, _ = await seed_node(db, "S6")
     db.add(ContentFragmentRevision(
@@ -668,45 +667,60 @@ async def test_s6_quality_issue_resolution_invalidates_final_report_checkpoint(c
     await db.commit()
     from app.application import report_quality
 
-    open_issue_snapshot = {
-        "quality_status": "COMPLETED",
-        "qa_fingerprint_current": "same-report-version",
-        "can_approve": True,
-        "blocking_count": 0,
-        "open_count": 0,
-        "latest_validator_run": {"id": 52, "status": "COMPLETED", "current": True},
-        "issues": [{"id": 9, "status": "OPEN", "resolution": None}],
-    }
-
-    def quality_result(snapshot):
+    def quality_result(can_approve):
+        issue_rows = (
+            []
+            if can_approve
+            else [
+                SimpleNamespace(
+                    id=9,
+                    severity="MAJOR",
+                    status="OPEN",
+                    target_fragment_key="report.final",
+                    message="请核对最终报告的表达边界。",
+                    issue_type="EXPRESSION",
+                    evidence_json={"evidence": "用于验证最终稿确认会绑定质量问题处理状态。"},
+                    source_type="VALIDATOR",
+                    resolution=None,
+                )
+            ]
+        )
+        snapshot = {
+            "quality_status": "COMPLETED",
+            "qa_fingerprint_current": "same-report-version",
+            "can_approve": can_approve,
+            "blocking_count": 0,
+            "open_count": 0 if can_approve else 1,
+            "latest_validator_run": {"id": 52, "status": "COMPLETED", "current": True},
+            "issues": [{"id": 9, "status": "OPEN", "resolution": None}],
+        }
         return SimpleNamespace(
-            can_approve=True,
-            quality_status=snapshot["quality_status"],
+            can_approve=can_approve,
+            can_finalize=can_approve,
+            quality_status="COMPLETED",
             latest_validator_run=snapshot["latest_validator_run"],
-            qa_fingerprint_current=snapshot["qa_fingerprint_current"],
-            blocking_count=snapshot["blocking_count"],
+            qa_fingerprint_current="same-report-version",
+            blocking_count=0,
             open_count=snapshot["open_count"],
-            issues=[],
+            issues=issue_rows,
             model_dump=lambda mode="python": snapshot,
         )
 
-    current = quality_result(open_issue_snapshot)
-    quality_state_mock = AsyncMock(return_value=current)
+    quality_state_mock = AsyncMock(return_value=quality_result(False))
     monkeypatch.setattr(report_quality, "quality_state", quality_state_mock)
-    await approve_checkpoint_for_test(db, case, step, actor, "report")
     before = await review_workspace(db, case.id, "S6", actor)
-    assert before["checkpoints"]["report"]["current"] is True
+    assert before["checkpoints"] == {}
+    assert before["required_checkpoints"] == []
+    assert before["can_approve"] is False
+    assert before["can_finalize"] is False
 
-    resolved_issue_snapshot = {
-        **open_issue_snapshot,
-        "issues": [{"id": 9, "status": "ACCEPTED", "resolution": "已核实并记录处理理由"}],
-    }
-    quality_state_mock.return_value = quality_result(resolved_issue_snapshot)
+    quality_state_mock.return_value = quality_result(True)
     after = await review_workspace(db, case.id, "S6", actor)
 
     assert after["fingerprint"] == before["fingerprint"]
-    assert after["checkpoints"]["report"]["current"] is False
-    assert after["checkpoints"]["report"]["stale"] is True
+    assert after["checkpoints"] == {}
+    assert after["can_approve"] is True
+    assert after["can_finalize"] is True
 
 
 @pytest.mark.asyncio
@@ -747,7 +761,6 @@ async def test_final_delivery_failure_rolls_back_signature_and_workflow(chain_db
     monkeypatch.setattr(report_delivery,"case_can_be_delivered",AsyncMock(return_value=True))
     monkeypatch.setattr(report_delivery,"latest_validator_run",AsyncMock(return_value=SimpleNamespace(id=42,status="COMPLETED",context_snapshot={"qa_fingerprint":"checked"})))
     monkeypatch.setattr(report_delivery,"deliver_report_case",AsyncMock(side_effect=ValueError("delivery_failed")))
-    await approve_checkpoint_for_test(db, case, step, actor, "report")
     with pytest.raises(ValueError,match="delivery_failed"):
         await report_delivery.approve_and_deliver(db,case.id,actor,value)
     assert (await db.get(StepTask,step.id)).status=="IN_REVIEW"

@@ -100,14 +100,7 @@ async def approve_checkpoint(db, case_id, step_key, actor, payload):
         return prior
     snapshot = await require_fingerprint(db, case, step, state, payload.fingerprint)
     checkpoint_key = payload.checkpoint_key
-    final_quality = None
-    if step_key == "S6" and checkpoint_key == "report":
-        from app.application.report_quality import quality_state
-        final_quality = await quality_state(db, case)
-        if not final_quality.can_approve:
-            raise ValueError("final_qa_issues_open_or_stale")
-    final_quality_snapshot = final_quality.model_dump(mode="json") if final_quality else None
-    states = await checkpoint_state_map(db, case, step, snapshot, final_quality_snapshot)
+    states = await checkpoint_state_map(db, case, step, snapshot)
 
     prerequisite = {
         "findings": "birth_data" if step_key == "S1" else None,
@@ -162,9 +155,6 @@ async def approve_checkpoint(db, case_id, step_key, actor, payload):
             coherence = readiness.get("coherence") or {}
             if readiness.get("status") != "READY_FOR_REVIEW" or coherence.get("status") != "PASSED":
                 raise ValueError("node_report_coherence_required")
-        if step_key == "S6":
-            if not final_quality or not final_quality.can_approve:
-                raise ValueError("final_qa_issues_open_or_stale")
         rows = list(await db.scalars(select(ContentFragmentRevision).where(
             ContentFragmentRevision.report_case_id == case_id,
             ContentFragmentRevision.is_current.is_(True),
@@ -176,8 +166,8 @@ async def approve_checkpoint(db, case_id, step_key, actor, payload):
 
     await db.flush()
     snapshot = await node_snapshot(db, case, step, state)
-    version = checkpoint_fingerprint(snapshot, checkpoint_key, final_quality=final_quality_snapshot)
-    scope = checkpoint_scope(snapshot, checkpoint_key, final_quality=final_quality_snapshot)
+    version = checkpoint_fingerprint(snapshot, checkpoint_key)
+    scope = checkpoint_scope(snapshot, checkpoint_key)
     record = NodeCheckpointApproval(
         report_case_id=case_id, step_task_id=step.id, activation_no=step.activation_no,
         checkpoint_key=checkpoint_key, fingerprint=version, policy_version=POLICY_VERSION,
@@ -389,13 +379,7 @@ async def sign_node(db, case, step, state, actor, expected):
     if step.step_key == "S6":
         from app.application.report_quality import quality_state
         final_quality = await quality_state(db, case)
-    checkpoint_states = await checkpoint_state_map(
-        db,
-        case,
-        step,
-        snapshot,
-        final_quality.model_dump(mode="json") if final_quality else None,
-    )
+    checkpoint_states = await checkpoint_state_map(db, case, step, snapshot)
     if any(not item["current"] for item in checkpoint_states.values()):
         raise ValueError("node_checkpoint_required")
     check = await db.scalar(select(NodeReviewCommand).where(NodeReviewCommand.report_case_id == case.id, NodeReviewCommand.step_task_id == step.id, NodeReviewCommand.kind == "CHECK", NodeReviewCommand.fingerprint == expected, NodeReviewCommand.activation_no == step.activation_no).order_by(NodeReviewCommand.id.desc()).limit(1))

@@ -25,7 +25,9 @@ async def review_context(db, case_id, step_key, actor=None, *, write=False):
         current = await db.scalar(select(StepTask).where(StepTask.workflow_instance_id == case.workflow_instance_id, StepTask.status.in_(["READY", "IN_REVIEW", "EXECUTING", "WAITING_REVIEW"])).order_by(StepTask.sequence_no).limit(1))
         if not current or current.id != step.id:
             raise ValueError("report_analysis_step_not_current")
-    if case.review_policy_version != POLICY_VERSION:
+    # The import fast path reuses the same per-node review surface; only S6 is
+    # reachable there and its single authorization lives in the quality panel.
+    if case.review_policy_version not in {POLICY_VERSION, "import-review-v1"}:
         raise ValueError("node_review_policy_migration_required")
     state = await db.scalar(select(NodeReviewState).where(NodeReviewState.report_case_id == case_id, NodeReviewState.step_key == step_key))
     return case, step, state
@@ -94,16 +96,10 @@ async def review_workspace(db, case_id, step_key, actor):
     if step_key == "S6":
         from app.application.report_quality import quality_state
         final_quality = await quality_state(db, case)
-        final_ready = final_quality.can_approve
+        final_ready = final_quality.can_finalize
         issues = [{"id": f"qa:{i.id}", "severity": i.severity, "status": i.status if i.status == "OPEN" else "RETAINED" if i.status == "ACCEPTED" else "FALSE_POSITIVE" if i.status == "DISMISSED" else "RESOLVED", "target_key": i.target_fragment_key, "message": i.message, "type": i.issue_type, "quote": (i.evidence_json or {}).get("evidence", ""), "source": i.source_type, "resolution": i.resolution} for i in final_quality.issues]
     approvals = list(await db.scalars(select(NodeApproval).where(NodeApproval.report_case_id == case_id, NodeApproval.step_task_id == step.id).order_by(NodeApproval.id.desc())))
-    checkpoint_states = await checkpoint_state_map(
-        db,
-        case,
-        step,
-        snapshot,
-        final_quality.model_dump(mode="json") if final_quality else None,
-    )
+    checkpoint_states = await checkpoint_state_map(db, case, step, snapshot)
     can_write = False
     try:
         validate_step_actor(step, actor)
@@ -118,25 +114,33 @@ async def review_workspace(db, case_id, step_key, actor):
         except (ValueError, KeyError, TypeError):
             birth_time_proposal = {"status": "NEEDS_CONFIRMATION", "limitations": ["出生资料缺失，请补问后再核对"]}
     checkpoints_complete = all(item["current"] for item in checkpoint_states.values())
+    node_check_complete = bool(check and check.status == "COMPLETED") and not approval_blockers(issues)
+    if step_key == "S6":
+        can_approve = can_write and checkpoints_complete and final_ready and not approval_blockers(issues)
+        can_finalize = can_write and checkpoints_complete and final_ready
+    else:
+        can_approve = can_write and checkpoints_complete and node_check_complete and final_ready
+        can_finalize = can_approve
     return {"step_key": step_key, "step_status": step.status, "fingerprint": version, "snapshot": snapshot, "can_write": can_write,
             "issues": issues, "issue_groups": group_review_issues(issues), "check": command_data(visible_check) if visible_check else None,
             "check_historical": historical_check is not None, "birth_time_proposal": birth_time_proposal, "preparation_error": step.last_error,
             "checkpoints": checkpoint_states,
             "required_checkpoints": list(required_checkpoint_keys(step_key)),
-            "can_approve": can_write and checkpoints_complete and (final_ready if step_key == "S6" else bool(check and check.status == "COMPLETED")) and not approval_blockers(issues) and final_ready,
+            "can_approve": can_approve,
+            "can_finalize": can_finalize,
             "final_quality": final_quality.model_dump(mode="json") if final_quality else None,
             "commands": [command_data(c) for c in commands[:15]],
             "approvals": [{"id": a.id, "fingerprint": a.fingerprint, "approved_by": a.approved_by, "approved_at": api_datetime(a.approved_at), "current": a.fingerprint == version and a.activation_no == step.activation_no} for a in approvals]}
 
 
-async def checkpoint_state_map(db, case, step, snapshot, final_quality=None):
+async def checkpoint_state_map(db, case, step, snapshot):
     records = list(await db.scalars(select(NodeCheckpointApproval).where(
         NodeCheckpointApproval.report_case_id == case.id,
         NodeCheckpointApproval.step_task_id == step.id,
     ).order_by(NodeCheckpointApproval.id.desc())))
     states = {}
     for key in required_checkpoint_keys(step.step_key):
-        expected = checkpoint_fingerprint(snapshot, key, final_quality=final_quality)
+        expected = checkpoint_fingerprint(snapshot, key)
         record = next((item for item in records
                        if item.checkpoint_key == key
                        and item.activation_no == step.activation_no

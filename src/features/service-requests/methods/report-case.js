@@ -260,7 +260,7 @@ export default {
       return
     }
     this.reportQualitySaving = true
-    this.finalGateAttested = false
+    this.finalGateNote = ''
     try {
       this.reportQuality = await runReportCaseQuality(this.reportCase.id, {
         idempotency_key: `case-${this.reportCase.id}-qa-${Date.now()}`,
@@ -273,11 +273,19 @@ export default {
         && this.reportQuality.latest_validator_run?.id !== sourceRunId
       ) this.qualityFeedbackDraft = ''
       this.scheduleNarrativePoll(this.reportCase.id)
-      this.message = this.reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'
-        ? '交付前检查发现必须处理的问题，请先修订报告内容。'
-        : feedback
-          ? '已收到检查反馈，正在依据完整报告重新复核。'
+      const advisoryOnly = this.reportCase.review_policy_version === 'import-review-v1' || this.reportQuality.advisory_only
+      const blocked = this.reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'
+      if (blocked) {
+        this.message = advisoryOnly
+          ? '交付前检查发现需要人工确认的内容；这些只是建议，不阻断交付，请核对后完成最终确认。'
+          : '交付前检查发现必须处理的问题，请先修订报告内容。'
+      } else if (feedback) {
+        this.message = '已收到检查反馈，正在依据完整报告重新复核。'
+      } else {
+        this.message = advisoryOnly
+          ? '交付前检查已开始；结果作为复核建议，不阻断交付。'
           : '交付前检查已开始。'
+      }
     } catch (error) {
       this.message = this.errorText(error)
     } finally {
@@ -310,10 +318,26 @@ export default {
     }
   },
   async approveReportFinalGate() {
-    if (!this.reportCase || !this.finalGateAttested || this.reportStepSaving) return
+    if (!this.reportCase || this.reportStepSaving) return
+    // 交付快照只组装已确认的段落；修订稿未整体确认时先引导咨询师回看。
+    const pendingManuscript = (this.reportCaseContent?.fragments || [])
+      .filter(item => item.fragment_type === 'REPORT' && item.status === 'PROPOSED')
+    if (pendingManuscript.length) {
+      this.message = `还有 ${pendingManuscript.length} 段修订尚未确认，请先在“修改后稿件”通读并确认最终稿。`
+      return
+    }
+    const staleManuscript = (this.reportCaseContent?.fragments || [])
+      .filter(item => item.fragment_type === 'REPORT' && item.status === 'STALE')
+    if (staleManuscript.length) {
+      this.message = `有 ${staleManuscript.length} 段正文的来源依据已更新，交付版本不会包含这些段落；请先在“修改后稿件”复核来源并确认最终稿。`
+      return
+    }
+    const advisoryCount = this.reportQuality.advisory_only ? (this.reportQuality.unresolved_advisories?.length || 0) : 0
     const confirmed = await this.confirmAction({
       title: '确认最终复核',
-      message: '确认已复核报告主线、用户贴合度与所有检查问题，并承担最终交付责任？',
+      message: advisoryCount
+        ? `AI 检查还有 ${advisoryCount} 条未处理建议，这些建议不会阻断交付。确认完成最终复核并承担交付责任？`
+        : '确认完成最终复核并承担交付责任？',
       confirmButtonText: '确认并完成'
     })
     if (!confirmed) return
@@ -321,9 +345,9 @@ export default {
     try {
       await approveReportCaseFinalGate(this.reportCase.id, {
         attested: true,
-        note: null
+        note: (this.finalGateNote || '').trim() || null
       })
-      this.finalGateAttested = false
+      this.finalGateNote = ''
       await this.loadReportCaseData(this.reportCase.id)
       this.message = '最终复核已通过，可以生成交付版本。'
     } catch (error) {
@@ -739,8 +763,6 @@ export default {
     } finally {
       this.reportFragmentSaving = false
     }
-  }
-}
   },
   canImportReportCase(reportCase = this.reportCase) {
     if (!reportCase || ['DELIVERED', 'CANCELLED'].includes(reportCase.status)) return false
@@ -810,3 +832,5 @@ export default {
     } finally {
       dialog.saving = false
     }
+  }
+}
