@@ -21,6 +21,11 @@ export async function getReportCase(caseId) {
   return response.data
 }
 
+export async function importReportCaseContent(caseId, payload) {
+  const response = await apiClient.post(`/report-cases/${caseId}/import-report`, payload)
+  return response.data
+}
+
 export async function requestReportCaseInfo(caseId, stepKey, reason) {
   const response = await apiClient.post(
     `/report-cases/${caseId}/steps/${stepKey}/request-info`,

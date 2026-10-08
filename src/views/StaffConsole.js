@@ -140,6 +140,7 @@ export default {
       consultants: [],
       assignmentId: null,
       consultationType: 'integrated',
+      reportImportDialog: { visible: false, title: '', sourceFilename: '', content: '', error: '', saving: false, idempotencyKey: '' },
       assignmentSaving: false,
       loggingOut: false
     }
@@ -653,7 +654,22 @@ export default {
           workflow_not_active: '这份申请已结束或已交付，不能再开始新的节点。',
           workflow_step_already_in_review: '已有另一个节点正在处理中，请先完成或退出该节点。',
           report_analysis_output_required: '请先确认专业判断或分析内容，再完成本步骤。',
-          report_analysis_sop_coverage_required: '请按本节点分析清单逐项审核。缺少资料的条目也需记录暂缓原因。'
+          report_analysis_sop_coverage_required: '请按本节点分析清单逐项审核。缺少资料的条目也需记录暂缓原因。',
+          report_import_content_required: '请粘贴或上传报告正文后再导入。',
+          report_import_content_too_long: '报告正文超出长度上限，请拆分后再导入。',
+          report_import_format_invalid: '报告结构无法识别，请检查正文后重试。',
+          report_import_sections_missing: '报告缺少必要段落，系统也未能自动整理，请检查正文后重试。',
+          report_import_duplicate_section: '报告中有重复的段落标题，系统也未能自动整理，请检查正文后重试。',
+          report_import_section_empty: '有段落内容为空，系统也未能自动整理，请补全正文后再试。',
+          report_import_section_too_long: '有段落内容过长，请精简后再导入。',
+          report_import_normalization_failed: '系统暂时无法整理报告结构，请检查正文后重试。',
+          report_import_content_sha256_invalid: '报告校验值生成失败，请重新选择文件后重试。',
+          report_import_content_sha256_mismatch: '报告内容在提交前发生了变化，请确认正文后重新导入。',
+          report_import_idempotency_key_required: '导入标识生成失败，请关闭后重新打开导入窗口。',
+          report_import_idempotency_conflict: '这次导入与已有记录不一致。请刷新报告后重新打开导入窗口。',
+          report_import_duplicate_content: '同一份报告已被导入到另一份申请，请确认是否选错了申请。',
+          report_import_case_not_importable: '这份申请已进入其他流程，无法再走快速导入。请刷新后查看当前节点。',
+          report_case_forbidden: '当前专业或负责人没有导入这份报告的权限。',
         }
         return messages[text] || '操作暂时无法完成，请刷新页面后重试。'
       }

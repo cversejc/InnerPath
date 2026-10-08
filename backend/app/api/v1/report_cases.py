@@ -46,6 +46,7 @@ from app.application.report_case_info import (
     request_report_case_info,
     submit_report_case_supplement,
 )
+from app.application.report_import import import_report_case
 from app.db.session import get_db
 from app.dependencies import get_current_active_user, require_roles
 from app.domains.content.models import (
@@ -65,6 +66,7 @@ from app.domains.content.schemas import (
     NarrativePlanConfirm,
     NarrativePlanResponse,
     NarrativeStateResponse,
+    ReportImportRequest,
     ReportFragmentGenerate,
     ReportGenerationCreate,
     ReportCaseContentResponse,
@@ -206,13 +208,17 @@ def _workflow_error(error: ValueError) -> None:
         "report_authoring_not_ready",
         "report_coherence_not_ready",
         "report_coherence_state_invalid",
+        "report_import_duplicate_content",
+        "report_import_idempotency_conflict",
+        "report_import_case_not_importable",
+        "report_import_content_sha256_mismatch",
     }:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=code)
     if code in {"report_case_forbidden", "step_assigned_to_another_consultant", "step_specialty_required"}:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
-    if code.startswith(("workflow_", "step_", "narrative_", "report_case_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_foundation_", "report_authoring_", "report_coherence_", "fragment_narrative_", "final_qa_", "qa_", "framework_", "product_framework_", "reasoning_", "case_skill_")):
+    if code.startswith(("workflow_", "step_", "narrative_", "report_case_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_foundation_", "report_authoring_", "report_coherence_", "report_import_", "fragment_narrative_", "final_qa_", "qa_", "framework_", "product_framework_", "reasoning_", "case_skill_")):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
         )
@@ -448,6 +454,34 @@ async def get_report_case(
 ):
     report_case = await _case_for_read_or_action(db, case_id, current_user)
     return await _serialize_case(db, report_case)
+
+
+@router.post("/{case_id}/import-report", response_model=ReportCaseResponse)
+async def import_report_case_content(
+    case_id: int,
+    data: ReportImportRequest,
+    request: Request,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    report_case = await _case_for_read_or_action(db, case_id, current_user, action=True)
+    try:
+        report_case = await import_report_case(
+            db,
+            report_case=report_case,
+            actor=current_user,
+            content=data.content,
+            content_sha256=data.content_sha256,
+            idempotency_key=data.idempotency_key,
+            title=data.title,
+            source_filename=data.source_filename,
+            audit_context=audit_context_from_request(request),
+        )
+        await db.commit()
+        return await _serialize_case(db, report_case)
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
 
 
 @router.post("/{case_id}/steps/{step_key}/request-info", response_model=ServiceRequestResponse)

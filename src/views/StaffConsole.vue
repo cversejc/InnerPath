@@ -102,6 +102,14 @@
             <section v-if="workspace.request.service_type === 'report'" class="report-case-workspace" aria-label="人生说明书处理工作区">
               <div v-if="reportCaseLoading" class="empty-cell" role="status">正在读取报告内容…</div>
               <template v-else-if="reportCase">
+                <section v-if="canImportReportCase()" class="report-import-entry" aria-label="快速导入报告">
+                  <div>
+                    <p class="eyebrow">FAST LANE</p>
+                    <h3>已有写好的报告？</h3>
+                    <p>粘贴或上传完整正文，系统会自动整理为“你是谁 / 卡在哪 / 往哪去”三段，并标记前五个节点完成，直接进入第 6 步最终确认。AI 检查是可选的参考、不设任何门槛；咨询师核对报告后随时可以确认并交付。</p>
+                  </div>
+                  <VanButton class="primary-button compact-button" type="primary" native-type="button" @click="openReportImport">快速导入报告</VanButton>
+                </section>
                 <ReportNodeWorkbench
                   :report-case="reportCase"
                   :actor="staffActor"
@@ -511,6 +519,70 @@
             @click="submitReject"
           >
             确认关闭
+          </VanButton>
+        </div>
+      </template>
+    </VanDialog>
+    <VanDialog
+      v-model:show="reportImportDialog.visible"
+      class="mobile-form-dialog report-import-dialog"
+      title="快速导入报告"
+      :close-on-click-overlay="false"
+      :keyboard-enabled="!reportImportDialog.saving"
+      :show-confirm-button="false"
+    >
+      <p class="mobile-form-dialog__copy">支持常见报告格式，系统会自动整理为“你是谁 / 卡在哪 / 往哪去”三段。导入后前五个节点会标记为已完成，报告直接进入第 6 步。AI 检查可选、仅供参考、不设硬性门槛；咨询师核对报告后随时可以确认并交付。</p>
+      <VanField
+        v-model.trim="reportImportDialog.title"
+        class="mobile-form-dialog__field"
+        label="报告标题"
+        maxlength="240"
+        placeholder="可留空，默认取“你是谁”首句"
+        :disabled="reportImportDialog.saving"
+      />
+      <VanField
+        v-model.trim="reportImportDialog.sourceFilename"
+        class="mobile-form-dialog__field"
+        label="来源文件"
+        maxlength="240"
+        placeholder="可留空，便于日后追溯"
+        :disabled="reportImportDialog.saving"
+      />
+      <div class="report-import-file">
+        <label for="report-import-file-input">从本地选择 .md 或 .txt 文件</label>
+        <input
+          id="report-import-file-input"
+          type="file"
+          accept=".md,.markdown,.txt,text/plain,text/markdown"
+          :disabled="reportImportDialog.saving"
+          @change="handleReportImportFile"
+        >
+      </div>
+      <VanField
+        v-model="reportImportDialog.content"
+        class="mobile-form-dialog__field mobile-form-dialog__field--textarea report-import-dialog__content"
+        label="报告正文"
+        type="textarea"
+        rows="12"
+        maxlength="100000"
+        placeholder="粘贴完整报告内容，系统将自动整理为“你是谁 / 卡在哪 / 往哪去”。"
+        :disabled="reportImportDialog.saving"
+        :error-message="reportImportDialog.error"
+        @update:model-value="reportImportDialog.error = ''"
+      />
+      <template #footer>
+        <div class="mobile-form-dialog__footer">
+          <VanButton block plain native-type="button" :disabled="reportImportDialog.saving" @click="reportImportDialog.visible = false">取消</VanButton>
+          <VanButton
+            block
+            type="primary"
+            native-type="button"
+            :disabled="reportImportDialog.saving || !reportImportDialog.content.trim()"
+            :loading="reportImportDialog.saving"
+            loading-text="正在整理并导入…"
+            @click="submitReportImport"
+          >
+            确认导入
           </VanButton>
         </div>
       </template>

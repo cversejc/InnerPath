@@ -11,6 +11,7 @@ import {
   getReportCaseQuality,
   getReportCaseStepCompletionGate,
   getNodeReview,
+  importReportCaseContent,
   patchNodeReview,
   reopenReportCaseStep,
   resolveReportCaseQualityIssue,
@@ -36,6 +37,46 @@ function splitReferences(value) {
 function usesAggregateAnalysisReview(reportCase, stepKey) {
   return reportCase?.review_policy_version === 'six-node-review-v1'
     && ['S1', 'S2', 'S3', 'S4'].includes(stepKey)
+}
+
+const IMPORT_AUTHORING_STEP_KEYS = ['S1', 'S2', 'S3', 'S4', 'S5']
+const IMPORTABLE_STEP_STATUSES = ['PENDING', 'READY']
+const REPORT_IMPORT_CONTENT_LIMIT = 100000
+
+function reportImportErrorText(error, fallback) {
+  const detail = error.response?.data?.detail
+  const code = typeof detail === 'string' ? detail : ''
+  const messages = {
+    report_import_content_required: '请粘贴或上传报告正文后再导入。',
+    report_import_content_too_long: `报告正文超过 ${REPORT_IMPORT_CONTENT_LIMIT} 字上限，请拆分后再导入。`,
+    report_import_format_invalid: '报告结构无法识别，请检查正文后重试。',
+    report_import_sections_missing: '报告缺少必要段落，系统也未能自动整理，请检查正文后重试。',
+    report_import_duplicate_section: '报告中有重复的段落标题，系统也未能自动整理，请检查正文后重试。',
+    report_import_section_empty: '有段落内容为空，系统也未能自动整理，请补全正文后再试。',
+    report_import_section_too_long: '有段落内容过长，请精简后再导入。',
+    report_import_normalization_failed: '系统暂时无法整理报告结构，请检查正文后重试。',
+    report_import_content_sha256_invalid: '报告校验值生成失败，请重新选择文件后重试。',
+    report_import_content_sha256_mismatch: '报告内容在提交前发生了变化，请确认正文后重新导入。',
+    report_import_idempotency_key_required: '导入标识生成失败，请关闭后重新打开导入窗口。',
+    report_import_idempotency_conflict: '这次导入与已有记录不一致。请刷新报告后重新打开导入窗口。',
+    report_import_duplicate_content: '同一份报告已被导入到另一份申请，请确认是否选错了申请。',
+    report_import_case_not_importable: '这份申请已进入其他流程，无法再走快速导入。请刷新后查看当前节点。',
+    report_case_forbidden: '当前专业或负责人没有导入这份报告的权限。',
+    report_case_not_found: '未找到这份报告申请，请返回列表刷新后重试。'
+  }
+  return messages[code] || fallback
+}
+
+async function sha256Hex(content) {
+  if (!globalThis.crypto?.subtle) throw new Error('report_import_content_sha256_invalid')
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(content))
+  return Array.from(new Uint8Array(digest)).map(byte => byte.toString(16).padStart(2, '0')).join('')
+}
+
+function newImportIdempotencyKey() {
+  return globalThis.crypto?.randomUUID
+    ? globalThis.crypto.randomUUID()
+    : `report-import-${Date.now()}-${Math.random().toString(16).slice(2)}`
 }
 
 export default {
@@ -700,3 +741,72 @@ export default {
     }
   }
 }
+  },
+  canImportReportCase(reportCase = this.reportCase) {
+    if (!reportCase || ['DELIVERED', 'CANCELLED'].includes(reportCase.status)) return false
+    if (reportCase.review_policy_version !== 'six-node-review-v1') return false
+    const steps = reportCase.workflow_instance?.steps || []
+    const byKey = Object.fromEntries(steps.map(step => [step.step_key, step]))
+    return IMPORT_AUTHORING_STEP_KEYS.every(key =>
+      IMPORTABLE_STEP_STATUSES.includes(byKey[key]?.status)
+    ) && Boolean(byKey.S6)
+  },
+  openReportImport() {
+    if (!this.canImportReportCase() || this.reportImportDialog.saving) return
+    this.reportImportDialog = {
+      visible: true,
+      title: '',
+      sourceFilename: '',
+      content: '',
+      error: '',
+      saving: false,
+      idempotencyKey: newImportIdempotencyKey()
+    }
+  },
+  async handleReportImportFile(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    if (file.size > REPORT_IMPORT_CONTENT_LIMIT * 4) {
+      this.reportImportDialog.error = '文件过大，请确认这是一份完整报告正文。'
+      return
+    }
+    try {
+      this.reportImportDialog.content = await file.text()
+      this.reportImportDialog.sourceFilename = file.name.slice(0, 240)
+      this.reportImportDialog.error = ''
+    } catch {
+      this.reportImportDialog.error = '无法读取这份文件，请改用粘贴或换一个文本文件。'
+    }
+  },
+  async submitReportImport() {
+    const dialog = this.reportImportDialog
+    const content = dialog.content.trim()
+    if (!content) { dialog.error = '请粘贴或上传报告正文。'; return }
+    if (content.length > REPORT_IMPORT_CONTENT_LIMIT) {
+      dialog.error = `报告正文超过 ${REPORT_IMPORT_CONTENT_LIMIT} 字上限，请拆分后再导入。`
+      return
+    }
+    if (dialog.saving || !this.reportCase) return
+    dialog.saving = true
+    dialog.error = ''
+    try {
+      const contentSha256 = await sha256Hex(content)
+      await importReportCaseContent(this.reportCase.id, {
+        title: dialog.title.trim() || null,
+        content,
+        source_filename: dialog.sourceFilename.trim() || null,
+        content_sha256: contentSha256,
+        idempotency_key: dialog.idempotencyKey
+      })
+      const caseId = this.reportCase.id
+      dialog.visible = false
+      await this.loadReportCaseData(caseId)
+      this.selectReportNode('S6')
+      this.message = '报告已导入，前五个节点标记为已完成。请在第 6 步运行一次 AI 检查作为参考，然后完成最终确认并交付。'
+    } catch (error) {
+      dialog.idempotencyKey = newImportIdempotencyKey()
+      dialog.error = reportImportErrorText(error, this.errorText(error))
+    } finally {
+      dialog.saving = false
+    }

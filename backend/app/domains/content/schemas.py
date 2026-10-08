@@ -175,6 +175,16 @@ class AnalysisCandidateApplyInput(BaseModel):
     fragment_review: Optional[ContentFragmentRevisionCreate] = None
 
 
+class ReportImportRequest(BaseModel):
+    """Consultant fast-path import: a full report already written elsewhere."""
+
+    title: Optional[str] = Field(None, max_length=240)
+    content: str = Field(..., min_length=1, max_length=100000)
+    source_filename: Optional[str] = Field(None, max_length=240)
+    content_sha256: str = Field(..., min_length=64, max_length=64)
+    idempotency_key: str = Field(..., min_length=1, max_length=200)
+
+
 class ReportFragmentGenerate(BaseModel):
     idempotency_key: str = Field(..., min_length=1, max_length=200)
     fragment_key: str = Field(..., min_length=1, max_length=200)

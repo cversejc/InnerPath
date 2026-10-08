@@ -79,3 +79,162 @@ test('consultant feedback reruns include the completed S5 or S6 source run', asy
   assert.equal(context.qualityFeedbackDraft, '')
   assert.equal(refreshed, 1)
 })
+
+function importableCase(overrides = {}) {
+  return {
+    id: 81,
+    status: 'ACTIVE',
+    review_policy_version: 'six-node-review-v1',
+    workflow_instance: {
+      steps: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'].map(step_key => ({
+        step_key,
+        status: step_key === 'S6' ? 'READY' : 'PENDING'
+      }))
+    },
+    ...overrides
+  }
+}
+
+function importContext(overrides = {}) {
+  return {
+    reportCase: importableCase(),
+    reportImportDialog: {
+      visible: true,
+      title: '',
+      sourceFilename: '',
+      content: '',
+      error: '',
+      saving: false,
+      idempotencyKey: 'import-key-1'
+    },
+    errorText: error => error.message,
+    loadReportCaseData: async () => {},
+    selectReportNode: () => {},
+    ...overrides
+  }
+}
+
+function stubSessionStorage(t) {
+  const previous = Object.getOwnPropertyDescriptor(globalThis, 'sessionStorage')
+  Object.defineProperty(globalThis, 'sessionStorage', { configurable: true, value: { getItem: () => null } })
+  t.after(() => {
+    if (previous) Object.defineProperty(globalThis, 'sessionStorage', previous)
+    else delete globalThis.sessionStorage
+  })
+}
+
+test('report import is offered only while S1-S5 are untouched under the six-node policy', () => {
+  assert.equal(methods.canImportReportCase.call(importContext()), true)
+  assert.equal(methods.canImportReportCase.call(importContext({
+    reportCase: importableCase({ review_policy_version: 'import-review-v1' })
+  })), false)
+  assert.equal(methods.canImportReportCase.call(importContext({
+    reportCase: importableCase({ status: 'DELIVERED' })
+  })), false)
+  const started = importableCase()
+  started.workflow_instance.steps[2].status = 'COMPLETED'
+  assert.equal(methods.canImportReportCase.call(importContext({ reportCase: started })), false)
+  const importable = importableCase()
+  importable.workflow_instance.steps[1].status = 'IN_REVIEW'
+  assert.equal(methods.canImportReportCase.call(importContext({ reportCase: importable })), false)
+})
+
+test('submitting an imported report posts the digest and switches the workspace to S6', async t => {
+  stubSessionStorage(t)
+  const previousAdapter = apiClient.defaults.adapter
+  t.after(() => { apiClient.defaults.adapter = previousAdapter })
+  const requests = []
+  apiClient.defaults.adapter = async config => {
+    requests.push({ url: config.url, data: JSON.parse(config.data) })
+    return {
+      data: { id: 81, review_policy_version: 'import-review-v1' },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config
+    }
+  }
+  let loaded, selected
+  const context = importContext({
+    reportImportDialog: {
+      visible: true,
+      title: '  快速报告  ',
+      sourceFilename: '',
+      content: '  # 你是谁\n甲方\n\n# 卡在哪\n乙方\n\n# 往哪去\n丙方  ',
+      error: '',
+      saving: false,
+      idempotencyKey: 'import-key-1'
+    },
+    loadReportCaseData: async caseId => { loaded = caseId },
+    selectReportNode: key => { selected = key }
+  })
+  await methods.submitReportImport.call(context)
+  assert.equal(requests.length, 1)
+  assert.equal(requests[0].url, '/report-cases/81/import-report')
+  assert.match(requests[0].data.content_sha256, /^[0-9a-f]{64}$/)
+  assert.equal(requests[0].data.idempotency_key, 'import-key-1')
+  assert.equal(requests[0].data.title, '快速报告')
+  assert.equal(requests[0].data.source_filename, null)
+  assert.equal(requests[0].data.content.startsWith('# 你是谁'), true)
+  assert.equal(loaded, 81)
+  assert.equal(selected, 'S6')
+  assert.equal(context.reportImportDialog.visible, false)
+  assert.equal(context.reportImportDialog.saving, false)
+  assert.equal(context.message.includes('第 6 步'), true)
+})
+
+test('a failed import keeps the draft and rotates the idempotency key', async t => {
+  stubSessionStorage(t)
+  const previousAdapter = apiClient.defaults.adapter
+  t.after(() => { apiClient.defaults.adapter = previousAdapter })
+  apiClient.defaults.adapter = async config => {
+    const error = new Error('Request failed with status code 409')
+    error.config = config
+    error.response = { status: 409, data: { detail: 'report_import_duplicate_content' }, headers: {}, config }
+    throw error
+  }
+  const context = importContext({
+    reportImportDialog: {
+      visible: true,
+      title: '',
+      sourceFilename: 'draft.md',
+      content: '# 你是谁\n甲方\n\n# 卡在哪\n乙方\n\n# 往哪去\n丙方',
+      error: '',
+      saving: false,
+      idempotencyKey: 'import-key-1'
+    }
+  })
+  await methods.submitReportImport.call(context)
+  assert.equal(context.reportImportDialog.idempotencyKey !== 'import-key-1', true)
+  assert.equal(context.reportImportDialog.error, '同一份报告已被导入到另一份申请，请确认是否选错了申请。')
+  assert.equal(context.reportImportDialog.visible, true)
+  assert.equal(context.reportImportDialog.saving, false)
+  assert.equal(context.reportImportDialog.sourceFilename, 'draft.md')
+})
+
+test('a rejected model normalization surfaces the normalization failure message', async t => {
+  stubSessionStorage(t)
+  const previousAdapter = apiClient.defaults.adapter
+  t.after(() => { apiClient.defaults.adapter = previousAdapter })
+  apiClient.defaults.adapter = async config => {
+    const error = new Error('Request failed with status code 422')
+    error.config = config
+    error.response = { status: 422, data: { detail: 'report_import_normalization_failed' }, headers: {}, config }
+    throw error
+  }
+  const context = importContext({
+    reportImportDialog: {
+      visible: true,
+      title: '',
+      sourceFilename: '',
+      content: '这是一份没有三段标题的原始报告。',
+      error: '',
+      saving: false,
+      idempotencyKey: 'import-key-1'
+    }
+  })
+  await methods.submitReportImport.call(context)
+  assert.equal(context.reportImportDialog.error, '系统暂时无法整理报告结构，请检查正文后重试。')
+  assert.equal(context.reportImportDialog.visible, true)
+  assert.equal(context.reportImportDialog.saving, false)
+})

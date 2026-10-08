@@ -111,6 +111,15 @@
 .final-gate-controls input { margin-top: 4px; accent-color: var(--jade-deep, #356b59); }
 .quality-clear-state { margin: 4px 0; color: var(--jade-deep, #356b59); line-height: 1.6; }
 .report-case-heading { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.report-import-entry { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid var(--line); border-left: 3px solid var(--gold-deep); border-radius: 0 8px 8px 0; padding: 14px 16px; background: rgba(217, 186, 98, .1); }
+.report-import-entry h3 { margin: 3px 0 5px; color: var(--ink); font-size: 17px; }
+.report-import-entry p:not(.eyebrow) { max-width: 62ch; margin: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.6; }
+.report-import-entry .primary-button { flex-shrink: 0; }
+.report-import-file { display: flex; align-items: center; gap: 10px; margin: 12px 18px 0; }
+.report-import-file label { min-height: var(--touch-target); display: inline-flex; align-items: center; border: 1px dashed var(--line); border-radius: 8px; padding: 0 14px; color: var(--cinnabar-deep); font-size: 14px; cursor: pointer; }
+.report-import-file input { min-width: 0; flex: 1; color: var(--muted); font: inherit; font-size: 13px; }
+.report-import-dialog__content { margin-top: 12px; }
+.report-import-dialog__content :deep(.van-field__control) { min-height: 220px; }
 .report-case-heading h3 { margin: 0; color: var(--ink, #3b2d24); font-size: 21px; }
 .report-case-heading p:not(.eyebrow) { margin: 5px 0 0; color: var(--muted, #7d6653); font-size: 12px; }
 .report-step-controls, .asset-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
@@ -329,6 +338,8 @@
   .workbench-focus-header { padding: var(--space-2) var(--space-3); gap: var(--space-2); }
   .staff-shell-node-focus .workspace-panel { padding: 0; }
 }
+  .report-import-entry { flex-direction: column; align-items: stretch; }
+  .report-import-entry .primary-button { width: 100%; }
 
 /* Role-specific shell: the consultant queue is an internal workbench, not a user-facing page. */
 .staff-shell {
