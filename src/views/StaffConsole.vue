@@ -42,6 +42,7 @@
         </div>
         <div class="workbench-header-actions">
           <VanButton class="secondary-button compact-button workbench-overview-button" type="default" plain native-type="button" aria-label="返回报告处理总览" @click="openReportOverview">回到处理总览</VanButton>
+          <VanButton v-if="canReleaseSelectedRequest" class="text-button danger-text" type="danger" plain native-type="button" :disabled="releasing" @click="openReleaseDialog">退回申请</VanButton>
           <span :class="['status-badge', workbenchStatusClass]">{{ workbenchStatusLabel }}</span>
         </div>
       </header>
@@ -587,6 +588,45 @@
             @click="submitReject"
           >
             确认关闭
+          </VanButton>
+        </div>
+      </template>
+    </VanDialog>
+
+    <VanDialog
+      v-model:show="releaseDialog.visible"
+      class="mobile-form-dialog"
+      title="退回申请"
+      :close-on-click-overlay="false"
+      :keyboard-enabled="!releasing"
+      :show-confirm-button="false"
+    >
+      <p class="mobile-form-dialog__copy">退回后你将不再负责当前专业，该专业会重新进入待接单池。已经完成的节点和已确认的判断会保留，由下一位负责人继续处理。</p>
+      <VanField
+        v-model.trim="releaseDialog.reason"
+        class="mobile-form-dialog__field mobile-form-dialog__field--textarea"
+        label="退回原因（可选）"
+        type="textarea"
+        rows="3"
+        autosize
+        maxlength="1000"
+        :disabled="releasing"
+        :error-message="releaseDialog.error"
+        @update:model-value="releaseDialog.error = ''"
+      />
+      <template #footer>
+        <div class="mobile-form-dialog__footer">
+          <VanButton block plain native-type="button" :disabled="releasing" @click="releaseDialog.visible = false">取消</VanButton>
+          <VanButton
+            block
+            type="danger"
+            native-type="button"
+            :disabled="releasing"
+            :loading="releasing"
+            loading-text="退回中…"
+            @click="submitRelease"
+          >
+            确认退回
           </VanButton>
         </div>
       </template>

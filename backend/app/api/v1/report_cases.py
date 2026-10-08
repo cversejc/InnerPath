@@ -1321,6 +1321,7 @@ async def assign_report_case_step(
             step_key,
             data.assignee_id,
             audit_context_from_request(request),
+            force=True,
         )
     except ValueError as error:
         _workflow_error(error)

@@ -1,15 +1,39 @@
 import { getAllAdminUsers } from '../../admin/api.js'
-import { consultantCanHandle } from '../../report-cases/professional-ownership.js'
+import { consultantCanHandle, specialtyFields } from '../../report-cases/professional-ownership.js'
 import { updateAdminServiceRequestAssignment } from '../api.js'
+import { confirmAction } from '../../../utils/confirmAction.js'
+
+function hasActiveOrCompletedStep(steps, specialty) {
+  return (steps || []).some(step =>
+    step.required_capability === specialty &&
+    ['IN_REVIEW', 'COMPLETED'].includes(step.status)
+  )
+}
 
 export default {
   async assignProfessional(specialty, value) {
     if (!this.admin || this.assignmentSaving || !this.workspace) return
+    const currentId = this.workspace.request[specialtyFields[specialty]]
+    const nextId = value ? Number(value) : null
+    if (nextId !== currentId && currentId !== null && currentId !== undefined) {
+      const steps = this.reportCase?.workflow_instance?.steps || []
+      if (hasActiveOrCompletedStep(steps, specialty)) {
+        const confirmed = await confirmAction({
+          title: '确认更换专业负责人',
+          message: '当前专业已有审核中或已完成的节点。更换负责人后，节点进度和已确认结果会保留，但后续处理将转交新的负责人。',
+          confirmButtonText: '确认更换'
+        })
+        if (!confirmed) {
+          await this.loadWorkspace(this.workspace.request.id)
+          return
+        }
+      }
+    }
     this.assignmentSaving = true
     try {
       await updateAdminServiceRequestAssignment(
         this.workspace.request.id,
-        value ? Number(value) : null,
+        nextId,
         specialty,
         this.consultationType
       )

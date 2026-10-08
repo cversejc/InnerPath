@@ -502,7 +502,12 @@ async def reopen_step(db: AsyncSession, case_id: int, step_key: str) -> StepTask
 
 
 async def assign_step(
-    db: AsyncSession, case_id: int, step_key: str, assignee_id: Optional[int]
+    db: AsyncSession,
+    case_id: int,
+    step_key: str,
+    assignee_id: Optional[int],
+    *,
+    force: bool = False,
 ) -> StepTask:
     report_case, _, tasks = await _lock_case_and_tasks(db, case_id)
     if report_case.status in {"CANCELLED", "DELIVERED"}:
@@ -521,7 +526,11 @@ async def assign_step(
         ):
             raise ValueError("step_specialty_required")
         affected = [item for item in tasks if item.required_capability == task.required_capability]
-        if any(item.status in {"IN_REVIEW", "COMPLETED"} and item.assignee_id != assignee_id for item in affected):
+        locked = any(
+            item.status in {"IN_REVIEW", "COMPLETED"} and item.assignee_id != assignee_id
+            for item in affected
+        )
+        if locked and not force:
             raise ValueError("step_assignment_locked")
         request = await db.get(ServiceRequest, report_case.service_request_id)
         if request:

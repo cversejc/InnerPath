@@ -30,6 +30,13 @@ export function canAcceptRequest(request, actor) {
   return request.status === 'submitted' && !request.assigned_consultant_id
 }
 
+export function releaseableSpecialty(request, actor) {
+  if (!request || !actor || actor.role !== 'consultant') return null
+  return Object.keys(specialtyFields).find(
+    capability => request[specialtyFields[capability]] === actor.id
+  ) || null
+}
+
 export function canHandleStep(step, actor) {
   if (!step || !actor) return false
   if (actor.role === 'admin') return true

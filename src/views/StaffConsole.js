@@ -15,7 +15,7 @@ import {
   calendarEditorFromPayload,
   reportEditorFromPayload
 } from '../features/service-requests/payloads.js'
-import { canHandleStep, canAcceptRequest, ownsRequest, specialtyLabels, consultantCanHandle } from '../features/report-cases/professional-ownership.js'
+import { canHandleStep, canAcceptRequest, ownsRequest, releaseableSpecialty, specialtyLabels, consultantCanHandle } from '../features/report-cases/professional-ownership.js'
 import assignmentMethods from '../features/service-requests/methods/assignment.js'
 import queueMethods from '../features/service-requests/methods/queue.js'
 import workflowMethods from '../features/service-requests/methods/workflow.js'
@@ -140,6 +140,8 @@ export default {
       infoStepKey: '',
       rejectDialog: { visible: false, reason: '', error: '' },
       rejectSaving: false,
+      releaseDialog: { visible: false, reason: '', error: '' },
+      releasing: false,
       reportImportDialog: { visible: false, title: '', sourceFilename: '', content: '', error: '', saving: false, idempotencyKey: '' },
       reportEditor: reportEditorFromPayload(),
       calendarEditor: calendarEditorFromPayload(),
@@ -164,6 +166,12 @@ export default {
     workspaceCurrentLabel() { return this.selectedRequest ? '报告处理' : '报告申请' },
     canAcceptSelectedRequest() { return canAcceptRequest(this.selectedRequest, this.staffActor) },
     ownsSelectedRequest() { return ownsRequest(this.selectedRequest, this.staffActor) },
+    releaseSpecialty() { return releaseableSpecialty(this.workspace?.request || this.selectedRequest, this.staffActor) },
+    canReleaseSelectedRequest() {
+      const request = this.workspace?.request || this.selectedRequest
+      if (!this.releaseSpecialty || !request) return false
+      return !['delivered', 'withdrawn', 'rejected'].includes(request.status)
+    },
     specialtyLabel() { return specialtyLabels[this.staffActor?.consultant_type] || (this.admin ? "管理员" : "尚未设置专业类型") },
     ...nodeWorkspaceComputed,
     currentReportStep() {

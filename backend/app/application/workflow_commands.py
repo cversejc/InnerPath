@@ -115,8 +115,10 @@ async def assign_case_step(
     step_key: str,
     assignee_id: Optional[int],
     audit_context: Optional[AuditContext] = None,
+    *,
+    force: bool = False,
 ):
-    task = await assign_step(db, case_id, step_key, assignee_id)
+    task = await assign_step(db, case_id, step_key, assignee_id, force=force)
     await _audit_step_action(
         db,
         actor_id,

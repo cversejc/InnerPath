@@ -12,6 +12,7 @@ from app.domains.service_requests.schemas import (
     ServiceRequestDraftResponse,
     ServiceRequestDraftUpdate,
     ServiceRequestInfoInput,
+    ServiceRequestReleaseInput,
     ServiceRequestRegenerateInput,
     ServiceRequestResponse,
     ServiceRequestTaskResponse,
@@ -28,6 +29,7 @@ from app.domains.service_requests.service import (
     get_workspace,
     list_staff_service_requests,
     request_more_info,
+    release_service_request,
     save_service_request_draft,
     serialize_task,
     staff_can_access,
@@ -108,6 +110,28 @@ async def accept_staff_request(
             db,
             request_id,
             current_user,
+            audit_context=audit_context_from_request(request),
+        )
+    except ValueError as error:
+        _raise_value_error(error)
+    return await _serialize_public(db, service_request)
+
+
+@staff_router.post("/{request_id}/release", response_model=ServiceRequestResponse)
+async def release_staff_request(
+    request_id: int,
+    data: ServiceRequestReleaseInput,
+    request: Request,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        service_request = await release_service_request(
+            db,
+            request_id,
+            current_user,
+            data.specialty,
+            reason=data.reason,
             audit_context=audit_context_from_request(request),
         )
     except ValueError as error:

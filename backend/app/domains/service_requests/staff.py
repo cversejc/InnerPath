@@ -127,7 +127,16 @@ async def accept_service_request(
             specialty_tasks = [task for task in tasks if task.required_capability == specialty]
             if not specialty_tasks:
                 continue
-            if any(task.status == "COMPLETED" and task.assignee_id != consultant.id for task in specialty_tasks):
+            # Completed steps keep their result when a specialty is released.
+            # A released step (assignee_id is None) can therefore be inherited
+            # by the next consultant for that specialty; only a genuinely
+            # reassigned completed step blocks claiming the slot again.
+            if any(
+                task.status == "COMPLETED"
+                and task.assignee_id is not None
+                and task.assignee_id != consultant.id
+                for task in specialty_tasks
+            ):
                 continue
             setattr(service_request, field, consultant.id)
             for task in specialty_tasks:
@@ -172,6 +181,125 @@ async def accept_service_request(
     await db.commit()
     await db.refresh(service_request)
     return service_request
+
+
+async def release_service_request(
+    db: AsyncSession,
+    request_id: int,
+    actor: User,
+    specialty: Optional[str] = None,
+    *,
+    reason: Optional[str] = None,
+    audit_context: Optional[AuditContext] = None,
+) -> ServiceRequest:
+    """Release one professional slot and return the request to the open pool.
+
+    Workflow tasks are released rather than rewound: completed results and
+    in-review progress stay intact, so another consultant can continue from
+    the same point. The request only returns to ``submitted`` once every
+    professional slot has been released.
+    """
+    if specialty is not None and specialty not in SPECIALTY_FIELDS:
+        raise ValueError("specialty_not_supported")
+
+    service_request = await _get_request_for_update(db, request_id)
+    if service_request is None:
+        raise ValueError("service_request_not_found")
+    if service_request.service_type == "calendar":
+        raise ValueError("calendar_requires_delivered_report")
+    if service_request.status in {"withdrawn", "rejected", "delivered"}:
+        raise ValueError("service_request_read_only")
+
+    if actor.role == "admin":
+        if specialty is None:
+            raise ValueError("specialty_required")
+    elif actor.role == "consultant" and actor.is_active:
+        capabilities = consultant_capabilities(actor)
+        if specialty is not None and specialty not in capabilities:
+            raise ValueError("specialty_forbidden")
+        if specialty is None:
+            assigned_capabilities = [
+                item
+                for item in capabilities
+                if getattr(service_request, SPECIALTY_FIELDS[item], None) == actor.id
+            ]
+            if len(assigned_capabilities) != 1:
+                raise ValueError("specialty_required")
+            specialty = assigned_capabilities[0]
+        if getattr(service_request, SPECIALTY_FIELDS[specialty]) != actor.id:
+            raise ValueError("service_request_not_assigned")
+    else:
+        raise ValueError("service_request_forbidden")
+
+    case = await db.scalar(
+        select(ReportCase).where(ReportCase.service_request_id == request_id)
+    )
+    specialty_tasks: list[StepTask] = []
+    if case is not None:
+        specialty_tasks = list(
+            await db.scalars(
+                select(StepTask)
+                .where(
+                    StepTask.workflow_instance_id == case.workflow_instance_id,
+                    StepTask.required_capability == specialty,
+                )
+                .with_for_update()
+            )
+        )
+
+    released_consultant_ids = {
+        consultant_id
+        for task in specialty_tasks
+        if task.assignee_id is not None
+        for consultant_id in (task.assignee_id,)
+    }
+    field = SPECIALTY_FIELDS[specialty]
+    current_consultant_id = getattr(service_request, field)
+    if current_consultant_id is not None:
+        released_consultant_ids.add(current_consultant_id)
+    if not released_consultant_ids:
+        raise ValueError("service_request_not_assigned")
+    if (
+        actor.role == "consultant"
+        and actor.id not in released_consultant_ids
+        and not any(
+            task.status in {"IN_REVIEW", "COMPLETED"} and task.assignee_id == actor.id
+            for task in specialty_tasks
+        )
+    ):
+        raise ValueError("service_request_not_assigned")
+
+    setattr(service_request, field, None)
+    for task in specialty_tasks:
+        task.assignee_id = None
+        task.updated_at = utc_now_naive()
+
+    service_request.assigned_consultant_id = (
+        service_request.assigned_mingli_consultant_id
+        or service_request.assigned_psychology_consultant_id
+    )
+    if service_request.assigned_consultant_id is None:
+        service_request.status = "submitted"
+        service_request.accepted_at = None
+    service_request.updated_by = actor.id
+    await record_audit(
+        db,
+        actor.id,
+        "service_request.specialty.release",
+        "service_request",
+        str(request_id),
+        target_user_id=service_request.user_id,
+        details={
+            "specialty": specialty,
+            "released_consultant_ids": sorted(released_consultant_ids),
+            "reason": reason,
+        },
+        audit_context=audit_context,
+    )
+    await db.commit()
+    await db.refresh(service_request)
+    return service_request
+
 
 def staff_can_access(service_request: ServiceRequest, user: User) -> bool:
     return service_request.service_type != "calendar" and (

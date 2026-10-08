@@ -238,6 +238,11 @@ class ServiceRequestAssignmentUpdate(BaseModel):
     consultant_type: Optional[Literal["mingli", "psychology", "integrated"]] = None
 
 
+class ServiceRequestReleaseInput(BaseModel):
+    specialty: Optional[Literal["mingli", "psychology"]] = None
+    reason: Optional[str] = Field(None, max_length=1000)
+
+
 class ServiceRequestRegenerateInput(BaseModel):
     confirm_overwrite: bool = False
 

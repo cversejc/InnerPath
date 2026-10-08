@@ -115,6 +115,12 @@ def _detail_for_error(error: ValueError) -> tuple[int, str]:
         return status.HTTP_403_FORBIDDEN, "Service request is not assigned to this consultant"
     if code == "consultant_specialty_mismatch":
         return status.HTTP_403_FORBIDDEN, "当前咨询师不具备该申请方向的能力。"
+    if code == "specialty_forbidden":
+        return status.HTTP_403_FORBIDDEN, "当前咨询师不能退回该专业的申请。"
+    if code in {"specialty_required", "specialty_not_supported"}:
+        return status.HTTP_422_UNPROCESSABLE_ENTITY, "请指定要退回的专业方向。"
+    if code == "service_request_read_only":
+        return status.HTTP_409_CONFLICT, "申请已结束或已交付，不能退回。"
     if code in {"draft_version_conflict"}:
         return status.HTTP_409_CONFLICT, "Draft has changed; refresh before saving"
     if code in {"service_request_locked", "service_request_already_taken"}:

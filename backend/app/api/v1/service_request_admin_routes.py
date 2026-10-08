@@ -200,6 +200,7 @@ async def update_request_assignment(
                     case.id,
                     step_by_specialty[specialty],
                     data.consultant_id,
+                    force=True,
                 )
             except ValueError as error:
                 await db.rollback()
@@ -209,11 +210,21 @@ async def update_request_assignment(
                 )
     elif not collaborative and has_assignment_id:
         service_request.assigned_consultant_id = data.consultant_id
+    collaborative_assigned = any(
+        getattr(service_request, field, None) is not None
+        for field in ("assigned_mingli_consultant_id", "assigned_psychology_consultant_id")
+    )
     if consultant and service_request.status == "submitted":
         service_request.status = "accepted"
         service_request.accepted_at = utc_now_naive()
-    elif consultant is None and service_request.assigned_consultant_id is None and service_request.status == "accepted":
+    elif (
+        consultant is None
+        and service_request.assigned_consultant_id is None
+        and service_request.status == "accepted"
+        and (not collaborative or not collaborative_assigned)
+    ):
         service_request.status = "submitted"
+        service_request.accepted_at = None
     service_request.updated_by = current_user.id
     await record_audit(
         db,

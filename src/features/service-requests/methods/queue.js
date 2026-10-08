@@ -1,7 +1,8 @@
 import {
   acceptStaffServiceRequest,
   getStaffServiceRequestWorkspace,
-  getStaffServiceRequests
+  getStaffServiceRequests,
+  releaseStaffServiceRequest
 } from '../api.js'
 import { ownsRequest } from '../../report-cases/professional-ownership.js'
 import { calendarEditorFromPayload, reportEditorFromPayload } from '../payloads.js'
@@ -113,6 +114,30 @@ export default {
       await this.loadRequests()
     } finally {
       this.accepting = false
+    }
+  },
+  openReleaseDialog() {
+    if (!this.releaseSpecialty) return
+    this.releaseDialog = { ...this.releaseDialog, visible: true, reason: '', error: '' }
+  },
+  async submitRelease() {
+    if (!this.selectedRequest || this.releasing || !this.releaseSpecialty) return
+    this.releasing = true
+    try {
+      await releaseStaffServiceRequest(
+        this.selectedRequest.id,
+        this.releaseSpecialty,
+        this.releaseDialog.reason.trim() || null
+      )
+      this.releaseDialog = { ...this.releaseDialog, visible: false, reason: '', error: '' }
+      this.message = '已退回当前专业。节点进度和已确认结果会保留，该专业重新进入待接单池。'
+      await this.loadRequests()
+      this.syncWorkspaceRoute(null)
+      this.clearReportWorkspaceState()
+    } catch (error) {
+      this.releaseDialog = { ...this.releaseDialog, error: this.errorText(error) }
+    } finally {
+      this.releasing = false
     }
   }
 }

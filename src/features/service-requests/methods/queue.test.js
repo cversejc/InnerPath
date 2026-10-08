@@ -72,3 +72,59 @@ test('selecting a request adds a workbench history entry', async () => {
   assert.deepEqual(routeUpdates, [[25, 'overview', { history: 'push' }]])
   assert.equal(context.selectedRequest.id, 25)
 })
+
+test('releasing a request closes the stale workspace after refreshing the queue', async t => {
+  const previousAdapter = apiClient.defaults.adapter
+  const previousSessionStorage = Object.getOwnPropertyDescriptor(globalThis, 'sessionStorage')
+  const callOrder = []
+
+  Object.defineProperty(globalThis, 'sessionStorage', {
+    configurable: true,
+    value: { getItem: () => null, setItem() {}, removeItem() {} }
+  })
+  apiClient.defaults.adapter = async config => ({
+    data: {},
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config
+  })
+
+  t.after(() => {
+    apiClient.defaults.adapter = previousAdapter
+    if (previousSessionStorage) Object.defineProperty(globalThis, 'sessionStorage', previousSessionStorage)
+    else delete globalThis.sessionStorage
+  })
+
+  const context = {
+    selectedRequest: { id: 26, status: 'reviewing' },
+    workspace: { request: { id: 26 } },
+    releaseSpecialty: 'psychology',
+    releasing: false,
+    releaseDialog: { visible: true, reason: ' 需要换人 ', error: '' },
+    errorText: error => error.message,
+    async loadRequests() {
+      callOrder.push('loadRequests')
+    },
+    syncWorkspaceRoute(requestId) {
+      callOrder.push(['syncWorkspaceRoute', requestId])
+    },
+    clearReportWorkspaceState() {
+      callOrder.push('clearReportWorkspaceState')
+      this.selectedRequest = null
+      this.workspace = null
+    }
+  }
+
+  await queueMethods.submitRelease.call(context)
+
+  assert.deepEqual(callOrder, [
+    'loadRequests',
+    ['syncWorkspaceRoute', null],
+    'clearReportWorkspaceState'
+  ])
+  assert.equal(context.selectedRequest, null)
+  assert.equal(context.workspace, null)
+  assert.equal(context.releasing, false)
+  assert.equal(context.releaseDialog.visible, false)
+})

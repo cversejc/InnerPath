@@ -42,6 +42,14 @@ export async function acceptStaffServiceRequest(requestId) {
   return response.data
 }
 
+export async function releaseStaffServiceRequest(requestId, specialty = null, reason = null) {
+  const payload = {}
+  if (specialty) payload.specialty = specialty
+  if (reason) payload.reason = reason
+  const response = await apiClient.post(`/staff/service-requests/${requestId}/release`, payload)
+  return response.data
+}
+
 export async function getStaffServiceRequestWorkspace(requestId) {
   const response = await apiClient.get(`/staff/service-requests/${requestId}`)
   return response.data
@@ -111,6 +119,7 @@ export default {
   withdrawServiceRequest,
   getStaffServiceRequests,
   acceptStaffServiceRequest,
+  releaseStaffServiceRequest,
   getStaffServiceRequestWorkspace,
   startStaffAIDraft,
   getStaffServiceRequestTask,
