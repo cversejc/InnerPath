@@ -27,7 +27,10 @@ async def _dispatch_pending_events(batch_size: int = 100) -> int:
     published = 0
     async with AsyncSessionLocal() as db:
         from app.application.calendar_production import recover_stalled_calendar_requests
+        from app.application.skill_run_recovery import recover_stalled_skill_runs
+
         await recover_stalled_calendar_requests(db)
+        await recover_stalled_skill_runs(db)
         events = await db.scalars(
             select(WorkflowOutbox)
             .where(WorkflowOutbox.status == "PENDING")

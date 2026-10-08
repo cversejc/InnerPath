@@ -10,3 +10,4 @@ foreach ($listener in $listeners) {
 }
 $api = Start-Process -FilePath (Join-Path $backendRoot '.venv\Scripts\python.exe') -ArgumentList '-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8001' -WorkingDirectory $backendRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $ArtifactDirectory 'backend.log') -RedirectStandardError (Join-Path $ArtifactDirectory 'backend-error.log') -PassThru
 Write-Output "Review API launcher PID=$($api.Id)"
+& (Join-Path $PSScriptRoot 'run_outbox_worker.ps1') -ArtifactDirectory $ArtifactDirectory

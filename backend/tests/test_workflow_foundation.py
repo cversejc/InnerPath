@@ -47,7 +47,7 @@ from app.domains.workflow.service import (
     start_step,
 )
 from app.models.user import User  # noqa: F401
-from app.domains.skills.models import AISkillVersion, SkillExample
+from app.domains.skills.models import AISkillVersion, SkillExample, SkillRun
 
 
 def test_default_definition_is_a_valid_sequential_workflow():
@@ -155,7 +155,7 @@ def workflow_db():
         WorkflowInstance.__table__,
         StepTask.__table__,
         WorkflowOutbox.__table__,
-        AISkillVersion.__table__, SkillExample.__table__,
+        AISkillVersion.__table__, SkillExample.__table__, SkillRun.__table__,
     ]
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine, tables=tables)

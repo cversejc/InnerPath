@@ -39,6 +39,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Policy migration failed' }
     $api = Start-Process -FilePath (Join-Path $backendRoot '.venv\Scripts\python.exe') -ArgumentList '-m','uvicorn','app.main:app','--host','127.0.0.1','--port',"$apiPort" -WorkingDirectory $backendRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $ArtifactDirectory 'backend.log') -RedirectStandardError (Join-Path $ArtifactDirectory 'backend-error.log') -PassThru
 } finally { Pop-Location }
+& (Join-Path $PSScriptRoot 'run_outbox_worker.ps1') -ArtifactDirectory $ArtifactDirectory
 $configPath = Join-Path $ArtifactDirectory 'vite.review.config.mjs'
 $importPath = 'file:///' + (Join-Path $repoRoot 'vite.config.js').Replace('\','/')
 Set-Content -LiteralPath $configPath -Encoding utf8 -Value "import config from '$importPath'; export default { ...config, server: { ...config.server, open: false, host: '127.0.0.1', port: $frontendPort, strictPort: true } };"
