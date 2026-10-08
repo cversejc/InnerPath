@@ -10,6 +10,7 @@ from app.domains.quality.programmatic import collect_programmatic_issues
 from app.domains.quality.schemas import QAIssueResponse, ReportQualityResponse
 from app.domains.quality.service import (
     get_case_qa_issues,
+    group_quality_issues,
     latest_validator_run,
     resolve_qa_issue,
     run_programmatic_qa,
@@ -21,6 +22,11 @@ from app.domains.skills.models import SkillRun
 from app.domains.skills.service import create_skill_run, ensure_default_validator_skill_version
 from app.domains.skills.bindings import resolve_case_skill
 from app.domains.workflow.models import ReportCase, StepTask, WorkflowOutbox
+
+# Whole-report semantic validation emits a scorecard plus every located issue;
+# the 8000-token historical default truncated long reports mid-JSON.
+CASE_QA_MAX_TOKENS = 16000
+CASE_QA_TIMEOUT_SECONDS = 300
 
 
 async def queue_case_quality_run(
@@ -186,6 +192,14 @@ async def queue_case_quality_run(
         input_snapshot=safe_input,
         context_snapshot={
             "qa_fingerprint": fingerprint,
+            "node_review_policy": report_case.review_policy_version,
+            # Reasoning tokens count against the same budget; the whole-report
+            # pass must spend it on the JSON result, not on hidden thinking.
+            "model_policy_override": {
+                "thinking": False,
+                "max_tokens": CASE_QA_MAX_TOKENS,
+                "timeout_seconds": CASE_QA_TIMEOUT_SECONDS,
+            },
             **(
                 {"quality_activation_no": step_task.activation_no}
                 if step_task is not None
@@ -206,6 +220,8 @@ async def queue_case_quality_run(
         runtime_instruction=feedback or None,
     )
     if created:
+        if report_case.review_policy_version == "six-node-review-v1" and not feedback:
+            run.runtime_instruction = "每项事实、语义或表达问题须指定实际target_fragment_key，evidence须从该片段正文逐字摘录。全篇问题也须引用具体正文，不得只写泛泛的评语。评分门槛由程序依据scorecard判断。"
         db.add(
             WorkflowOutbox(
                 aggregate_type="skill_run",
@@ -251,7 +267,7 @@ async def quality_state(
             and issue.source_ref_id == run.id
         )
     ]
-    open_issues = [issue for issue in issues if issue.status == "OPEN"]
+    open_issues = [issue for issue in issues if issue.status == "OPEN" and issue.severity in {"BLOCK", "MAJOR"}]
     scorecard_required = bool(run and ((run.context_snapshot or {}).get("context") or {}).get("qa_input", {}).get("scorecard_required"))
     scorecard_ready = not scorecard_required or bool(run and (run.output_parsed or {}).get("scorecard", {}).get("passes_threshold"))
     framework_ready = True
@@ -296,6 +312,7 @@ async def quality_state(
             else None
         ),
         issues=issues,
+        issue_groups=group_quality_issues(issues),
         can_approve=fingerprint_matches and not open_issues and scorecard_ready and framework_ready,
         blocking_count=sum(issue.severity == "BLOCK" for issue in open_issues),
         open_count=len(open_issues),
@@ -348,3 +365,42 @@ async def close_case_qa_issue(
         resolution=resolution,
         actor_id=actor_id,
     )
+
+
+async def close_case_qa_issues(
+    db: AsyncSession,
+    *,
+    report_case_id: int,
+    issue_ids: list[int],
+    status: str,
+    resolution: str,
+    actor_id: int,
+) -> list[QAIssue]:
+    """同类问题整体处理：一次填写依据，每条问题仍保留独立处理记录。"""
+    existing = {
+        row.id: row
+        for row in await db.scalars(
+            select(QAIssue).where(
+                QAIssue.report_case_id == report_case_id,
+                QAIssue.id.in_(issue_ids),
+            )
+        )
+    }
+    resolved = []
+    for issue_id in issue_ids:
+        row = existing.get(issue_id)
+        if row is None:
+            raise ValueError("qa_issue_not_found")
+        if row.status != "OPEN":
+            continue
+        resolved.append(
+            await resolve_qa_issue(
+                db,
+                report_case_id=report_case_id,
+                issue_id=issue_id,
+                status=status,
+                resolution=resolution,
+                actor_id=actor_id,
+            )
+        )
+    return resolved

@@ -868,6 +868,9 @@ def default_validator_skill_specification() -> dict[str, Any]:
     spec["knowledge_policy"] = {"snapshot": knowledge_for_stage("S5"), "retrieval": "VERSION_SNAPSHOT"}
     spec["tool_policy"] = {"allowed": []}
     spec["model_policy"]["temperature"] = 0.1
+    # Whole-report semantic validation needs a larger output budget than the
+    # historical 8000-token default: long reports were truncated mid-JSON.
+    spec["model_policy"]["max_tokens"] = 16000
     spec["example_policy"] = {"enabled": True, "max_examples": 2}
     spec["processor_policy"] = {"processor": "reports.validator"}
     spec["output_contract"] = {

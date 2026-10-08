@@ -132,6 +132,10 @@ async def accept_service_request(
             setattr(service_request, field, consultant.id)
             for task in specialty_tasks:
                 task.assignee_id = consultant.id
+                if task.status == "READY" and case.review_policy_version == "six-node-review-v1":
+                    from app.domains.workflow.service import enqueue_outbox_event
+                    await enqueue_outbox_event(db, aggregate_type="workflow_instance", aggregate_id=task.workflow_instance_id,
+                        event_type="workflow.step.ready", payload={"report_case_id": case.id, "step_task_id": task.id, "activation_no": task.activation_no})
             claimed.append(specialty)
         if not claimed:
             raise ValueError("service_request_already_taken")

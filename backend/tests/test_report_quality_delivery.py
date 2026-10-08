@@ -30,6 +30,7 @@ from app.domains.quality.models import QAIssue
 from app.domains.quality.service import resolve_qa_issue
 from app.domains.skills.models import AISkillVersion, SkillRun, SkillExample
 from app.domains.quality.scorecard import RUBRIC
+from app.domains.review.models import NodeReviewState, NodeReviewCommand, NodeApproval
 from app.domains.workflow.models import (
     ReportCase,
     StepTask,
@@ -109,6 +110,7 @@ def quality_db():
         NarrativePlan.__table__,
         QAIssue.__table__,
         ReportVersion.__table__,
+        NodeReviewState.__table__, NodeReviewCommand.__table__, NodeApproval.__table__,
     ]
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine, tables=tables)
@@ -482,6 +484,10 @@ async def test_block_rework_and_qa_rerun_reaches_pass_with_stub_gateway(
         idempotency_key="qa-cycle-pass",
     )
     assert rerun["status"] == "PENDING"
+    assert (
+        rerun["validator_run"].context_snapshot["model_policy_override"]["max_tokens"]
+        >= 16000
+    )
     gateway = StubGateway(json.dumps({"issues": [], "scorecard": {"dimensions": {key: {"score": maximum, "reason": "核对测试报告片段", "fragment_keys": ["report.identity"]} for key, maximum in RUBRIC.items()}}}))
     monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
     completed = await skill_runtime.execute_skill_run_record(
@@ -1040,3 +1046,342 @@ async def test_report_version_history_is_staff_only():
             current_user=SimpleNamespace(role="consultant", is_active=True)
         )
     ).role == "consultant"
+
+
+@pytest.mark.asyncio
+async def test_recheck_keeps_retained_programmatic_issue_decision(
+    quality_db, monkeypatch
+):
+    """An unchanged programmatic finding must not reopen work on every re-check."""
+    from app.domains.quality import service as quality_service
+    from app.domains.quality.service import resolve_qa_issue
+
+    now = datetime.utcnow()
+    report_case = ReportCase(
+        user_id=93,
+        status="ACTIVE",
+        application_snapshot={"profile": {"name": "测试用户"}, "context": {}},
+        application_submitted_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    quality_db.add(report_case)
+    await quality_db.flush()
+
+    async def collect_fake_issues(db, case):
+        return (
+            [
+                {
+                    "issue_type": "FINDING_OVER_REPEATED",
+                    "severity": "MINOR",
+                    "target_fragment_key": "report.identity",
+                    "target_fragment_revision_id": None,
+                    "message": "同一专业判断被多段引用。",
+                    "evidence_json": {"evidence": "重复引用。"},
+                    "suggestion": "核对各段作用。",
+                }
+            ],
+            "fingerprint-1",
+            {"fragments": []},
+        )
+
+    monkeypatch.setattr(
+        quality_service, "collect_programmatic_issues", collect_fake_issues
+    )
+
+    first, _, _ = await quality_service.run_programmatic_qa(
+        quality_db, report_case, actor_id=1
+    )
+    assert [row.status for row in first] == ["OPEN"]
+
+    await resolve_qa_issue(
+        quality_db,
+        report_case_id=report_case.id,
+        issue_id=first[0].id,
+        status="ACCEPTED",
+        resolution="各段分别用于介绍、解释与行动，保留。",
+        actor_id=8,
+    )
+
+    second, _, _ = await quality_service.run_programmatic_qa(
+        quality_db, report_case, actor_id=1
+    )
+    assert [row.status for row in second] == ["ACCEPTED"]
+    assert second[0].resolution == "各段分别用于介绍、解释与行动，保留。"
+    assert second[0].resolved_by == 8
+    assert second[0].evidence_json["carried_from_issue_id"] == first[0].id
+
+
+@pytest.mark.asyncio
+async def test_recheck_reopens_programmatic_issue_after_content_change(
+    quality_db, monkeypatch
+):
+    """A finding tied to a changed fragment revision must be judged again."""
+    from app.domains.quality import service as quality_service
+    from app.domains.quality.service import resolve_qa_issue
+
+    now = datetime.utcnow()
+    report_case = ReportCase(
+        user_id=94,
+        status="ACTIVE",
+        application_snapshot={"profile": {"name": "测试用户"}, "context": {}},
+        application_submitted_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    quality_db.add(report_case)
+    await quality_db.flush()
+
+    revisions = {"id": 11}
+
+    async def collect_fake_issues(db, case):
+        return (
+            [
+                {
+                    "issue_type": "FINDING_OVER_REPEATED",
+                    "severity": "MINOR",
+                    "target_fragment_key": "report.identity",
+                    "target_fragment_revision_id": revisions["id"],
+                    "message": "同一专业判断被多段引用。",
+                    "evidence_json": {"evidence": "重复引用。"},
+                    "suggestion": "核对各段作用。",
+                }
+            ],
+            "fingerprint-1",
+            {"fragments": []},
+        )
+
+    monkeypatch.setattr(
+        quality_service, "collect_programmatic_issues", collect_fake_issues
+    )
+
+    first, _, _ = await quality_service.run_programmatic_qa(
+        quality_db, report_case, actor_id=1
+    )
+    await resolve_qa_issue(
+        quality_db,
+        report_case_id=report_case.id,
+        issue_id=first[0].id,
+        status="DISMISSED",
+        resolution="程序化启发式误报。",
+        actor_id=8,
+    )
+
+    revisions["id"] = 12
+    second, _, _ = await quality_service.run_programmatic_qa(
+        quality_db, report_case, actor_id=1
+    )
+    assert [row.status for row in second] == ["OPEN"]
+
+
+async def _validator_recheck_case(quality_db, *, user_id: int):
+    from app.domains.skills.service import create_skill_run
+
+    now = datetime.utcnow()
+    report_case = ReportCase(
+        user_id=user_id,
+        status="ACTIVE",
+        application_snapshot={"profile": {"name": "测试用户"}, "context": {}},
+        application_submitted_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    quality_db.add(report_case)
+    validator = AISkillVersion(
+        skill_key="report.final_validator",
+        name="Final Validator",
+        category="VALIDATOR",
+        version=1,
+        status="PUBLISHED",
+        specification_json={"identity": {"skill_key": "report.final_validator"}},
+        created_at=now,
+    )
+    quality_db.add(validator)
+    await quality_db.flush()
+    fragment = ContentFragmentRevision(
+        report_case_id=report_case.id,
+        fragment_key="report.identity",
+        revision_no=1,
+        semantic_revision=1,
+        content_revision=1,
+        fragment_type="REPORT",
+        title="我是谁",
+        content="有边界的描述。",
+        status="CONFIRMED",
+        source_snapshot={},
+        edit_kind="SEMANTIC",
+        is_current=True,
+        created_at=now,
+    )
+    quality_db.add(fragment)
+    await quality_db.flush()
+
+    async def queue_run(key: str):
+        run, _ = await create_skill_run(
+            quality_db,
+            skill_version_id=validator.id,
+            idempotency_key=key,
+            input_snapshot={},
+            context_snapshot={"qa_fingerprint": f"fingerprint-{key}"},
+            run_type="VALIDATE",
+            target_type="REPORT_QA",
+            target_key="report.final",
+            report_case_id=report_case.id,
+        )
+        run.status = "COMPLETED"
+        run.completed_at = datetime.utcnow()
+        run.output_parsed = {
+            "issues": [
+                {
+                    "issue_type": "SAFETY_LANGUAGE",
+                    "severity": "MINOR",
+                    "message": "该句缺少待验证限定。",
+                    "evidence": "有边界的描述。",
+                    "suggestion": "补充待验证限定。",
+                    "target_fragment_key": "report.identity",
+                }
+            ]
+        }
+        await quality_db.flush()
+        return run
+
+    return report_case, fragment, queue_run
+
+
+@pytest.mark.asyncio
+async def test_validator_recheck_keeps_decision_for_unchanged_fragment(quality_db):
+    from app.domains.quality.service import replace_validator_issues, resolve_qa_issue
+
+    report_case, _fragment, queue_run = await _validator_recheck_case(
+        quality_db, user_id=95
+    )
+    first_run = await queue_run("validator-carry-1")
+    first = await replace_validator_issues(quality_db, first_run)
+    assert [row.status for row in first] == ["OPEN"]
+
+    await resolve_qa_issue(
+        quality_db,
+        report_case_id=report_case.id,
+        issue_id=first[0].id,
+        status="ACCEPTED",
+        resolution="该句已由上下文限定，保留。",
+        actor_id=8,
+    )
+
+    second_run = await queue_run("validator-carry-2")
+    second = await replace_validator_issues(quality_db, second_run)
+    assert [row.status for row in second] == ["ACCEPTED"]
+    assert second[0].resolution == "该句已由上下文限定，保留。"
+    assert second[0].resolved_by == 8
+    assert second[0].evidence_json["carried_from_issue_id"] == first[0].id
+
+
+@pytest.mark.asyncio
+async def test_validator_recheck_reopens_decision_after_fragment_revision_changes(
+    quality_db,
+):
+    from app.domains.quality.service import replace_validator_issues, resolve_qa_issue
+
+    report_case, fragment, queue_run = await _validator_recheck_case(
+        quality_db, user_id=96
+    )
+    first_run = await queue_run("validator-reopen-1")
+    first = await replace_validator_issues(quality_db, first_run)
+    await resolve_qa_issue(
+        quality_db,
+        report_case_id=report_case.id,
+        issue_id=first[0].id,
+        status="DISMISSED",
+        resolution="启发式误报。",
+        actor_id=8,
+    )
+
+    fragment.is_current = False
+    replacement = ContentFragmentRevision(
+        report_case_id=report_case.id,
+        fragment_key="report.identity",
+        revision_no=2,
+        semantic_revision=2,
+        content_revision=2,
+        fragment_type="REPORT",
+        title="我是谁",
+        content="有边界的描述。",
+        status="CONFIRMED",
+        source_snapshot={},
+        edit_kind="SEMANTIC",
+        is_current=True,
+        created_at=datetime.utcnow(),
+    )
+    quality_db.add(replacement)
+    await quality_db.flush()
+
+    second_run = await queue_run("validator-reopen-2")
+    second = await replace_validator_issues(quality_db, second_run)
+    assert [row.status for row in second] == ["OPEN"]
+    assert second[0].target_fragment_revision_id == replacement.id
+
+
+@pytest.mark.asyncio
+async def test_same_type_quality_issues_close_together_with_single_records(quality_db):
+    from app.application.report_quality import close_case_qa_issues
+    from app.domains.quality.service import group_quality_issues
+
+    rows = [
+        QAIssue(
+            report_case_id=72,
+            source_type="VALIDATOR",
+            issue_type="事实不一致",
+            severity="MAJOR",
+            status="OPEN",
+            target_fragment_key=f"report.block.{index}",
+            message=f"第{index}处正文未标注假设。",
+            evidence_json={},
+            created_at=datetime.utcnow(),
+        )
+        for index in range(3)
+    ]
+    blocking = QAIssue(
+        report_case_id=72,
+        source_type="VALIDATOR",
+        issue_type="必须修复",
+        severity="BLOCK",
+        status="OPEN",
+        target_fragment_key="report.block.9",
+        message="必须补齐章节。",
+        evidence_json={},
+        created_at=datetime.utcnow(),
+    )
+    for row in rows:
+        quality_db.add(row)
+    quality_db.add(blocking)
+    await quality_db.flush()
+
+    groups = group_quality_issues(rows + [blocking])
+    assert len(groups) == 1
+    assert groups[0]["count"] == 3 and groups[0]["severity"] == "MAJOR"
+    assert sorted(groups[0]["issue_ids"]) == sorted(row.id for row in rows)
+
+    with pytest.raises(ValueError, match="qa_block_cannot_be_accepted"):
+        await close_case_qa_issues(
+            quality_db,
+            report_case_id=72,
+            issue_ids=[blocking.id],
+            status="ACCEPTED",
+            resolution="整体保留原因。",
+            actor_id=5,
+        )
+
+    reason = "统一核对：三处正文均已补充假设标注，保留条件式口径。"
+    resolved = await close_case_qa_issues(
+        quality_db,
+        report_case_id=72,
+        issue_ids=[row.id for row in rows],
+        status="ACCEPTED",
+        resolution=reason,
+        actor_id=5,
+    )
+    assert len(resolved) == 3
+    assert all(row.status == "ACCEPTED" for row in resolved)
+    assert all(row.resolution == reason for row in resolved)
+    assert all(row.resolved_by == 5 and row.resolved_at is not None for row in resolved)
+    assert group_quality_issues(rows) == []

@@ -67,6 +67,11 @@ async def freeze_report_skills(db, bindings=None, steps=()):
 
 async def resolve_case_skill(db, case, skill_key):
     bindings = (case.application_snapshot or {}).get("skill_bindings")
+    if bindings is None and case.review_policy_version == "six-node-review-v1":
+        from sqlalchemy import select
+        from app.domains.review.models import NodeReviewState
+        state = await db.scalar(select(NodeReviewState).where(NodeReviewState.report_case_id == case.id, NodeReviewState.step_key == "S1"))
+        bindings = (state.metadata_json or {}).get("runtime_skill_bindings") if state else None
     if bindings is None:
         # Historical cases retain the previous latest-published selection policy.
         bindings = await freeze_report_skills(db)

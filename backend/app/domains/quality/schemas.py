@@ -31,6 +31,14 @@ class QAIssueResolution(BaseModel):
     resolution: str = Field(..., min_length=3, max_length=2000)
 
 
+class QAIssueGroupResolution(BaseModel):
+    """同类型检查问题整体处理：一次填写依据，每条问题仍单独留痕。"""
+
+    issue_ids: list[int] = Field(min_length=1, max_length=200)
+    status: Literal["RESOLVED", "ACCEPTED", "DISMISSED"]
+    resolution: str = Field(..., min_length=3, max_length=2000)
+
+
 class QualityRunRequest(BaseModel):
     idempotency_key: str = Field(..., min_length=1, max_length=200)
     runtime_instruction: Optional[str] = Field(None, max_length=4000)
@@ -47,6 +55,7 @@ class ReportQualityResponse(BaseModel):
     latest_validator_run: Optional[dict[str, Any]] = None
     quality_status: str
     issues: list[QAIssueResponse]
+    issue_groups: list[dict[str, Any]] = Field(default_factory=list)
     can_approve: bool
     blocking_count: int
     open_count: int

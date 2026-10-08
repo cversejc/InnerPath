@@ -18,6 +18,7 @@ from app.application.workflow_commands import (
 from app.application.report_analysis import (
     apply_analysis_finding_candidate,
     apply_analysis_fragment_candidate,
+    apply_analysis_run_candidates,
     get_analysis_step_completion_gate,
     get_or_calculate_report_case_foundation,
     correct_report_case_foundation,
@@ -33,6 +34,7 @@ from app.application.report_generation import (
 )
 from app.application.report_quality import (
     close_case_qa_issue,
+    close_case_qa_issues,
     queue_case_quality_run,
     quality_state,
 )
@@ -77,6 +79,7 @@ from app.domains.delivery.models import ReportVersion
 from app.domains.delivery.schemas import ReportVersionResponse
 from app.domains.quality.schemas import (
     FinalGateApproval,
+    QAIssueGroupResolution,
     QAIssueResolution,
     QAIssueResponse,
     QualityRunRequest,
@@ -166,6 +169,8 @@ def _workflow_error(error: ValueError) -> None:
         "report_analysis_findings_unreviewed",
         "report_analysis_fragments_unreviewed",
         "report_analysis_fragments_stale",
+        "node_core_review_required",
+        "birth_time_confirmation_required",
         "step_not_current",
         "narrative_candidate_run_not_completed",
         "narrative_semantics_changed",
@@ -358,6 +363,7 @@ async def _serialize_case(
         user_id=report_case.user_id,
         service_request_id=report_case.service_request_id,
         status=report_case.status,
+        review_policy_version=report_case.review_policy_version,
         application_snapshot=report_case.application_snapshot,
         application_submitted_at=report_case.application_submitted_at,
         workflow_instance=instance,
@@ -578,6 +584,35 @@ async def resolve_report_case_quality_issue(
         _workflow_error(error)
 
 
+@router.post(
+    "/{case_id}/quality/issues/resolve-group",
+    response_model=list[QAIssueResponse],
+)
+async def resolve_report_case_quality_issue_group(
+    case_id: int,
+    data: QAIssueGroupResolution,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _authorize_step_action(
+        db, case_id, "S6", current_user, require_current_review=True
+    )
+    try:
+        issues = await close_case_qa_issues(
+            db,
+            report_case_id=case_id,
+            issue_ids=data.issue_ids,
+            status=data.status,
+            resolution=data.resolution,
+            actor_id=current_user.id,
+        )
+        await db.commit()
+        return [QAIssueResponse.model_validate(issue) for issue in issues]
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
 @router.post("/{case_id}/final-gate/approve", response_model=StepTaskResponse)
 async def approve_report_case_final_gate(
     case_id: int,
@@ -735,6 +770,8 @@ async def confirm_report_case_narrative_plan(
             overrides=data.overrides,
             actor_id=current_user.id,
         )
+        from app.application.node_review_commands import record_automatic_checkpoint
+        await record_automatic_checkpoint(db, report_case, active_step, current_user, "narrative", "narrative_plan_confirmation")
         await db.commit()
         await db.refresh(plan)
         return plan
@@ -1035,6 +1072,29 @@ async def start_report_case_analysis_draft(
             source_run_id=data.source_run_id,
         )
         return run
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post("/{case_id}/steps/{step_key}/analysis-drafts/{run_id}/apply")
+async def apply_report_case_analysis_candidates(
+    case_id: int,
+    step_key: str,
+    run_id: int,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        result = await apply_analysis_run_candidates(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            run_id=run_id,
+            actor=current_user,
+        )
+        await db.commit()
+        return result
     except ValueError as error:
         await db.rollback()
         _workflow_error(error)

@@ -83,6 +83,7 @@ async def approve_case_final_gate(
     actor: User,
     note: Optional[str] = None,
     audit_context: Optional[AuditContext] = None,
+    commit: bool = True,
 ) -> StepTask:
     if report_case.status in {"DELIVERED", "CANCELLED"}:
         raise ValueError("workflow_not_active")
@@ -112,6 +113,12 @@ async def approve_case_final_gate(
         "attested_at": utc_now_iso(),
         "note": (note or "").strip() or None,
     }
+    if report_case.review_policy_version == "six-node-review-v1":
+        from app.domains.review.models import NodeApproval
+        approval = await db.scalar(select(NodeApproval).where(NodeApproval.report_case_id == report_case.id, NodeApproval.step_task_id == step.id, NodeApproval.activation_no == step.activation_no).order_by(NodeApproval.id.desc()).limit(1))
+        if not approval:
+            raise ValueError("node_whole_review_required")
+        result["node_approval_id"] = approval.id
     return await complete_case_step(
         db,
         actor.id,
@@ -120,6 +127,7 @@ async def approve_case_final_gate(
         result,
         audit_context,
         final_gate_verified=True,
+        commit=commit,
     )
 
 
@@ -129,6 +137,7 @@ async def deliver_report_case(
     report_case: ReportCase,
     actor: User,
     audit_context: Optional[AuditContext] = None,
+    commit: bool = True,
 ) -> ReportVersion:
     locked_case = await db.scalar(
         select(ReportCase).where(ReportCase.id == report_case.id).with_for_update()
@@ -280,6 +289,31 @@ async def deliver_report_case(
         details={"report_version_id": version.id, "version_no": version.version_no, "report_id": report.id},
         audit_context=audit_context,
     )
-    await db.commit()
-    await db.refresh(version)
+    if commit:
+        await db.commit()
+        await db.refresh(version)
     return version
+
+
+async def approve_and_deliver(db, case_id, actor, expected):
+    """One lock and one commit; retries return the same immutable delivery."""
+    from app.application.node_review_workspace import review_context
+    from app.application.node_review_commands import sign_node
+    case = await db.scalar(select(ReportCase).where(ReportCase.id == case_id).with_for_update())
+    if not case:
+        raise ValueError("report_case_not_found")
+    if case.status == "DELIVERED":
+        step = await db.scalar(select(StepTask).where(StepTask.workflow_instance_id == case.workflow_instance_id, StepTask.step_key == "S6"))
+        validate_step_actor(step, actor)
+        return await db.scalar(select(ReportVersion).where(ReportVersion.report_case_id == case_id).order_by(ReportVersion.version_no.desc()).limit(1))
+    try:
+        case, step, state = await review_context(db, case_id, "S6", actor, write=True)
+        await sign_node(db, case, step, state, actor, expected)
+        await approve_case_final_gate(db, report_case=case, actor=actor, commit=False)
+        version = await deliver_report_case(db, report_case=case, actor=actor, commit=False)
+        await db.commit()
+        await db.refresh(version)
+        return version
+    except Exception:
+        await db.rollback()
+        raise

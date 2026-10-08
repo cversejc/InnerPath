@@ -219,6 +219,10 @@ async def test_new_case_enforces_framework_through_persistence_authoring_and_fin
         application_snapshot=intake, workflow_version=version)
     assert "framework_contract" not in intake
     assert case.application_snapshot["framework_contract"] == framework_snapshot()
+    # Exercise the original framework/persistence gate; whole-node approval is
+    # separately exercised by test_node_review with the new policy enabled.
+    assert case.review_policy_version == "six-node-review-v1"
+    case.review_policy_version = None
     await create_evidence_item(db, report_case_id=case.id, evidence_key="q", source_type="USER_PROVIDED", source_ref="questionnaire", value="synthetic test")
     await create_evidence_item(db, report_case_id=case.id, evidence_key="calc", source_type="SYSTEM_CALCULATED",
         source_ref="synthetic calculation", value={"bazi_facts": {"dayun": [{"start_year": 2020, "end_year": 2029}]}})

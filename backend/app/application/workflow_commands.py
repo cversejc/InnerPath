@@ -57,6 +57,7 @@ async def complete_case_step(
     audit_context: Optional[AuditContext] = None,
     *,
     final_gate_verified: bool = False,
+    commit: bool = True,
 ):
     task = await complete_step(
         db,
@@ -66,7 +67,8 @@ async def complete_case_step(
         final_gate_verified=final_gate_verified,
     )
     await _audit_step_action(db, actor_id, case_id, "complete", step_key, audit_context)
-    await db.commit()
+    if commit:
+        await db.commit()
     return task
 
 
