@@ -33,6 +33,7 @@ import QualityIssueReview from '../features/report-cases/components/QualityIssue
 import EvidenceReferencePicker from '../features/report-cases/components/EvidenceReferencePicker.vue'
 import { nodeWorkspaceComputed, nodeWorkspaceMethods } from '../features/report-cases/node-workspace-state.js'
 import { workspaceFocusTargetId } from '../features/report-cases/node-workspace.js'
+import { qualityRunProgress } from '../features/report-cases/quality-progress.js'
 import DeliveredReportSummary from '../features/report-cases/components/DeliveredReportSummary.vue'
 import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
 import {
@@ -177,6 +178,9 @@ export default {
     },
     reportAnalysisPending() {
       return this.reportAnalysisSaving || this.reportAnalysisRuns.some(run => ['PENDING', 'RUNNING'].includes(run.status))
+    },
+    reportQualityProgress() {
+      return qualityRunProgress(this.reportQuality)
     },
     reportFinalGateReady() {
       const quality = this.reportQuality || {}

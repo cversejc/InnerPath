@@ -192,6 +192,7 @@
 .narrative-allocation-heading, .narrative-allocation-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .narrative-allocation-heading strong, .narrative-allocation-row strong { min-width: 0; overflow-wrap: anywhere; color: var(--ink, #3b2d24); }
 .narrative-progress { margin: 0; color: var(--ink-soft, #51463d); font-size: 12px; line-height: 1.5; }
+.narrative-progress.quality-run-stalled { color: var(--cinnabar-deep, #8f4438); }
 .narrative-chapter-checks { display: flex; flex-wrap: wrap; gap: 7px 14px; color: var(--ink-soft, #51463d); font-size: 12px; line-height: 1.5; }
 .narrative-allocation-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
 .narrative-allocation-list li { display: grid; gap: 4px; min-width: 0; border-top: 1px solid rgba(80, 54, 32, .09); padding: 9px 0; }

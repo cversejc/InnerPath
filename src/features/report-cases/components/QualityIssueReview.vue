@@ -2,6 +2,12 @@
   <section class="quality-issue-review" aria-label="连续处理检查问题">
     <p class="quality-review-guide">核对问题与涉及正文 → 修订正文或说明处理理由 → 保存并继续下一问题 → 重新检查 → 最终人工确认</p>
     <p v-if="quality.advisory_only" class="quality-review-guide">当前流程的检查结果只是参考建议：可以不处理其中任何一条，也可以不运行检查；核对报告后随时由咨询师确认并交付。</p>
+    <div v-if="runProgress" class="quality-run-progress" :class="{ 'quality-run-progress--stalled': runProgress.stalled }" role="status" aria-live="polite">
+      <span class="quality-run-progress__state"><VanLoading :type="runProgress.stalled ? 'circular' : 'spinner'" size="14" />{{ runProgress.stage }}</span>
+      <span v-if="runProgress.elapsedLabel" class="quality-run-progress__elapsed">{{ runProgress.elapsedLabel }}</span>
+      <p>{{ runProgress.hint }}</p>
+      <VanButton v-if="runProgress.stalled && !readOnly" plain native-type="button" :disabled="locked || noteDirty" @click="$emit('rerun')">重新检查完整报告</VanButton>
+    </div>
     <section v-if="groups.length" class="quality-issue-groups" aria-label="同类问题整体处理">
       <h4>同类问题整体处理</h4>
       <p class="quality-review-guide">同一类型的问题填写一次处理理由即可整体处理；每条问题仍单独保留处理记录、处理人与时间。</p>
@@ -46,20 +52,21 @@
       <VanButton plain native-type="button" :disabled="locked || noteDirty" @click="nextIssue">{{ issue.status === 'OPEN' ? '暂缓此问题，继续下一待办' : '继续下一待办问题' }}</VanButton>
     </article>
     <div v-if="!openIssues.length && !pending" class="quality-review-note" role="status">
-      {{ checking ? '正在检查完整报告，请等待本次结果。' : needsRecheck ? '当前问题已处理或正文已有更新。请重新检查完整报告；检查通过后才能最终确认。' : quality.can_approve ? '当前检查问题已处理，检查条件已满足。请通读报告并完成最终人工确认。' : '当前没有待处理问题。请核对检查状态，补全检查后再进行最终人工确认。' }}
-      <VanButton v-if="!readOnly && needsRecheck" plain native-type="button" :disabled="locked || noteDirty || checking" @click="$emit('rerun')">重新检查完整报告</VanButton>
+      {{ runProgress ? (runProgress.stalled ? '检查任务等待过久，可能已经中断。请重新检查完整报告。' : '检查进行中，本次结果完成后会自动显示。') : needsRecheck ? (quality.advisory_only ? '当前问题已处理或正文已有更新。可以再跑一次检查作为参考，不阻断最终确认。' : '当前问题已处理或正文已有更新。请重新检查完整报告；检查通过后才能最终确认。') : quality.advisory_only ? '检查建议仅供参考。请通读报告并由咨询师完成最终确认。' : quality.can_approve ? '当前检查问题已处理，检查条件已满足。请通读报告并完成最终人工确认。' : '当前没有待处理问题。请核对检查状态，补全检查后再进行最终人工确认。' }}
+      <VanButton v-if="!readOnly && needsRecheck" plain native-type="button" :disabled="locked || noteDirty || (checking && !runProgress?.stalled)" @click="$emit('rerun')">重新检查完整报告</VanButton>
     </div>
   </section>
 </template>
 <script>
-import { Button as VanButton } from 'vant'
+import { Button as VanButton, Loading as VanLoading } from 'vant'
 import WorkbenchRecordPicker from './WorkbenchRecordPicker.vue'
 import ReportFragmentReview from './ReportFragmentReview.vue'
 import { orderedQualityIssues, nextPendingRecord } from '../review-continuation.js'
+import { qualityRunProgress } from '../quality-progress.js'
 import { reportFragmentTitle } from '../stages.js'
 
 export default {
-  components: { VanButton, WorkbenchRecordPicker, ReportFragmentReview },
+  components: { VanButton, VanLoading, WorkbenchRecordPicker, ReportFragmentReview },
   props: {
     quality: { type: Object, required: true }, content: { type: Object, required: true }, readOnly: Boolean, saving: Boolean, fragmentSaving: Boolean,
     issueLabel: { type: Function, required: true }, issueMessage: { type: Function, required: true }, issueSuggestion: { type: Function, required: true },
@@ -87,6 +94,7 @@ export default {
     busy() { return Boolean(this.locked || this.groupPending || (this.issue?.status === 'OPEN' && this.noteDirty)) },
     outdated() { return Boolean(this.issue && !this.orderedIssues.some(row => row.id === this.issue.id)) },
     checking() { return ['PENDING', 'RUNNING'].includes(this.quality.latest_validator_run?.status) },
+    runProgress() { return qualityRunProgress(this.quality) },
     needsRecheck() { return Boolean(this.editedBody || this.outdated || this.quality.latest_validator_run?.current === false || !this.quality.latest_validator_run) }
   },
   watch: {

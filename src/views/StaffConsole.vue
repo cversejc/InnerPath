@@ -326,9 +326,10 @@
                   </div>
                   <div class="quality-status-row">
                     <strong>检查结果：{{ qualityStatusLabel(reportQuality.quality_status) }}</strong>
-                    <span v-if="reportQuality.latest_validator_run">最近检查：{{ assetStatusLabel(reportQuality.latest_validator_run.status) }}</span>
+                    <span v-if="reportQuality.latest_validator_run">最近检查：{{ assetStatusLabel(reportQuality.latest_validator_run.status) }}{{ reportQualityProgress ? ` · ${reportQualityProgress.stage}` : '' }}{{ reportQualityProgress?.elapsedLabel ? `（${reportQualityProgress.elapsedLabel}）` : '' }}</span>
                     <VanButton v-if="canEditSelectedReportStep && selectedReportStepKey === 'S6'" class="primary-button compact-button" type="primary" native-type="button" :disabled="nodeToolPending || reportReviewBusy" :loading="reportQualitySaving" @click="runReportQuality">{{ reportQuality.latest_validator_run ? '重新检查完整报告' : '运行交付前检查' }}</VanButton>
                   </div>
+                  <p v-if="reportQualityProgress" class="narrative-progress" :class="{ 'quality-run-stalled': reportQualityProgress.stalled }" role="status" aria-live="polite">{{ reportQualityProgress.hint }}</p>
                   <p v-if="reportQuality.latest_validator_run?.error === 'quality_run_stalled'" class="task-error">上次检查任务长时间没有返回结果，已按中断处理。请重新检查完整报告。</p>
                   <p v-else-if="reportQuality.latest_validator_run?.status === 'FAILED'" class="task-error">交付前检查暂时无法完成，请稍后重试。</p>
                   <p v-if="reportQuality.quality_status === 'PROGRAMMATIC_BLOCKED'" class="stale-note">{{ reportQuality.advisory_only ? '程序化检查提示了需要人工确认的内容；请核对正文与来源，确认无误后可以继续最终复核。' : '检查发现必须处理的问题；修订报告内容后重新检查。' }}</p>
