@@ -39,7 +39,7 @@ def chart_interactions(pillars):
     return interactions
 
 
-def calculate_bazi_facts(profile, bazi):
+def calculate_bazi_facts(profile, bazi, *, actual_birth=None):
     hour = profile.get("birth_hour")
     minute = int(profile.get("birth_minute") or 0)
     year, month, day = (int(profile[f"birth_{k}"]) for k in ("year", "month", "day"))
@@ -48,6 +48,8 @@ def calculate_bazi_facts(profile, bazi):
         year, month, day = solar.getYear(), solar.getMonth(), solar.getDay()
     ec = Solar.fromYmdHms(year, month, day, int(hour or 0), minute, 0).getLunar().getEightChar()
     ec.setSect(2)
+    physical_ec = Solar.fromYmdHms(**actual_birth).getLunar().getEightChar() if actual_birth else ec
+    physical_ec.setSect(2)
     god_map = BaziCalculator.TEN_GODS_MAP[bazi["day_master"]]
     pillars = {}
     visible, hidden = Counter(), Counter()
@@ -57,7 +59,8 @@ def calculate_bazi_facts(profile, bazi):
         p = dict(bazi[key])
         p["stem_element"] = ELEMENTS[STEMS.index(p["stem"])]
         p["branch_element"] = BRANCH_ELEMENTS[p["branch"]]
-        p["hidden_stems"] = [{"stem": s, "element": ELEMENTS[STEMS.index(s)], "ten_god": god_map[s]} for s in getattr(ec, f"get{prefix}HideGan")()]
+        source_ec = physical_ec if key in {"year", "month"} else ec
+        p["hidden_stems"] = [{"stem": s, "element": ELEMENTS[STEMS.index(s)], "ten_god": god_map[s]} for s in getattr(source_ec, f"get{prefix}HideGan")()]
         p["branch_ten_god"] = p["hidden_stems"][0]["ten_god"]
         if key != "day":
             visible[god_map[p["stem"]]] += 1
@@ -67,7 +70,7 @@ def calculate_bazi_facts(profile, bazi):
     gender = profile.get("gender")
     dayun = []
     if hour is not None and gender in ("male", "female", "男", "女"):
-        yun = ec.getYun(1 if gender in ("male", "男") else 0, 2)
+        yun = physical_ec.getYun(1 if gender in ("male", "男") else 0, 2)
         for d in yun.getDaYun(10):
             if not d.getGanZhi():
                 continue

@@ -181,7 +181,7 @@ def _safe_input_snapshot(input_data: dict[str, Any]) -> dict[str, Any]:
     return envelope
 
 
-async def _authorize_case(db: AsyncSession, case_id: int, actor: User) -> ReportCase:
+async def _authorize_case(db: AsyncSession, case_id: int, actor: User, *, allow_waiting: bool = False) -> ReportCase:
     report_case = await db.get(ReportCase, case_id)
     if report_case is None:
         raise ValueError("report_case_not_found")
@@ -191,7 +191,7 @@ async def _authorize_case(db: AsyncSession, case_id: int, actor: User) -> Report
                 ServiceRequest.id == report_case.service_request_id
             )
         )
-        if request_status == "needs_info":
+        if request_status == "needs_info" and not allow_waiting:
             raise ValueError("report_case_waiting_for_user_info")
     if actor.role == "admin":
         return report_case
@@ -212,9 +212,9 @@ async def _authorize_case(db: AsyncSession, case_id: int, actor: User) -> Report
 
 
 async def authorize_report_case(
-    db: AsyncSession, case_id: int, actor: User
+    db: AsyncSession, case_id: int, actor: User, *, allow_waiting: bool = False
 ) -> ReportCase:
-    return await _authorize_case(db, case_id, actor)
+    return await _authorize_case(db, case_id, actor, allow_waiting=allow_waiting)
 
 
 async def _queue_run(
@@ -269,6 +269,14 @@ async def _queue_run(
         )
     context_snapshot = deepcopy(input_snapshot)
     context_snapshot.update(context_metadata or {})
+    if report_case is not None and step is not None and report_case.review_policy_version == "six-node-review-v1":
+        from app.application.node_review_workspace import review_context, node_snapshot
+        from app.domains.review.contracts import fingerprint
+        _, _, review_state = await review_context(db, report_case.id, step.step_key)
+        context_snapshot["node_review_policy"] = report_case.review_policy_version
+        context_snapshot["node_activation_no"] = step.activation_no
+        context_snapshot["node_model_policy"] = {"thinking": False, "max_tokens": 16000, "timeout_seconds": 240}
+        context_snapshot["node_input_fingerprint"] = fingerprint(await node_snapshot(db, report_case, step, review_state))
     semantic_sources = input_data.get("semantic_source_snapshot")
     if isinstance(semantic_sources, dict):
         context_snapshot["semantic_source_snapshot"] = semantic_sources
@@ -652,7 +660,7 @@ async def queue_case_authoring_skill_run(
             input_data["context"] = context
     else:
         plan = await get_current_narrative_plan(db, case_id)
-        if plan is None or plan.status != "CONFIRMED":
+        if plan is None or not (plan.status == "CONFIRMED" or (report_case.review_policy_version == "six-node-review-v1" and plan.status == "PROPOSED")):
             raise ValueError("narrative_plan_confirmation_required")
         if not narrative_semantic_sources_match(plan, semantic_model):
             plan.status = "STALE"
@@ -761,7 +769,9 @@ async def queue_case_report_coherence_skill_run(
     scope: str = "REPORT",
     chapter_key: str | None = None,
 ) -> tuple[SkillRun, bool]:
-    skill_version = await ensure_default_validator_skill_version(db)
+    # Coherence runs belong to the case: resolve the frozen validator version so a
+    # newly published built-in cannot break an in-flight case with a version mismatch.
+    skill_version = await resolve_case_skill(db, report_case, "report.final_validator")
     application_snapshot = report_case.application_snapshot or {}
     profile = application_snapshot.get("profile") or {}
     qa_input = {
@@ -867,6 +877,8 @@ async def execute_skill_run_record(
             input_data=run.input_snapshot or {},
             runtime_instruction=run.runtime_instruction,
             gateway=gateway or DeepSeekGateway(),
+            model_policy_override=(run.context_snapshot or {}).get("model_policy_override")
+            or (run.context_snapshot or {}).get("node_model_policy"),
         )
         run.output_raw = result.output_raw
         run.output_parsed = result.output_parsed
@@ -890,6 +902,12 @@ async def execute_skill_run_record(
                 "authoring_feedback_source_run_id",
                 "quality_feedback_source_run_id",
                 "quality_activation_no",
+                "node_review_policy",
+                "node_activation_no",
+                "node_model_policy",
+                "model_policy_override",
+                "node_input_fingerprint",
+                "node_materialized",
             )
             if key in prior_context
         }
@@ -898,12 +916,25 @@ async def execute_skill_run_record(
             "source_references": source_references,
             **run_metadata,
         }
-        if run.target_type == "REPORT_FRAGMENT":
+        can_write = True
+        if run.report_case_id is not None:
+            report_case = await db.scalar(select(ReportCase).where(ReportCase.id == run.report_case_id).with_for_update())
+            if report_case and report_case.review_policy_version == "six-node-review-v1":
+                from app.application.node_review_workspace import review_context, node_snapshot
+                from app.domains.review.contracts import fingerprint
+                run_step = await db.get(StepTask, run.step_task_id) if run.step_task_id else None
+                can_write = bool(run_step and run_step.status == "IN_REVIEW" and report_case.status == "ACTIVE" and run_metadata.get("node_review_policy") == report_case.review_policy_version and run_metadata.get("node_activation_no") == run_step.activation_no)
+                if can_write and run.target_type not in {"REPORT_QA", "REPORT_CHAPTER_COHERENCE", "REPORT_COHERENCE"}:
+                    _, _, review_state = await review_context(db, report_case.id, run_step.step_key)
+                    can_write = run_metadata.get("node_input_fingerprint") == fingerprint(await node_snapshot(db, report_case, run_step, review_state))
+                if not can_write:
+                    run_metadata["node_archived"] = "obsolete_activation_or_input"
+        if run.target_type == "REPORT_FRAGMENT" and can_write:
             await _save_authored_report_fragment(db, run)
-        elif run.target_type == "REPORT_QA":
+        elif run.target_type == "REPORT_QA" and can_write:
             await replace_validator_issues(db, run)
         foundation = result.context_snapshot.get("foundation_data")
-        if run.report_case_id is not None and foundation is not None:
+        if run.report_case_id is not None and foundation is not None and can_write and not (report_case and report_case.review_policy_version == "six-node-review-v1"):
             evidence = await create_evidence_item(
                 db,
                 report_case_id=run.report_case_id,
@@ -993,7 +1024,8 @@ async def _save_authored_report_fragment(db: AsyncSession, run: SkillRun) -> Non
     request = context.get("fragment_request") or {}
     plan_id = (run.context_snapshot or {}).get("source_narrative_plan_id")
     plan = await db.get(NarrativePlan, plan_id) if plan_id else None
-    if plan is None or plan.status != "CONFIRMED":
+    report_case = await db.get(ReportCase, run.report_case_id)
+    if plan is None or not (plan.status == "CONFIRMED" or (report_case and report_case.review_policy_version == "six-node-review-v1" and plan.status == "PROPOSED")):
         raise ValueError("narrative_plan_confirmation_required")
     semantic_model = context.get("semantic_model") or {}
     semantic_now = await load_case_semantic_model(db, run.report_case_id)

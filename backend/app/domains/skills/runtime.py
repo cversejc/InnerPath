@@ -885,6 +885,7 @@ async def execute_skill(
     input_data: dict[str, Any],
     runtime_instruction: str | None = None,
     gateway: ModelGateway | None = None,
+    model_policy_override: dict[str, Any] | None = None,
 ) -> SkillExecutionResult:
     require_active_skill(skill_version.skill_key)
     specification = validate_skill_specification(
@@ -893,6 +894,8 @@ async def execute_skill(
         )
     )
     context = build_context_envelope(input_data, specification)
+    if model_policy_override:
+        specification["model_policy"] = {**specification["model_policy"], **model_policy_override}
     feedback_rerun = (input_data.get("context") or {}).get("feedback_rerun")
     if isinstance(feedback_rerun, dict):
         context.setdefault("context", {})["feedback_rerun"] = deepcopy(
@@ -966,6 +969,38 @@ async def execute_skill(
         raise SkillExecutionError(str(error), {**error.model_trace, "prompt_sha256": prompt_hash,
             "skill_version_id": skill_version.id, "skill_key": skill_version.skill_key,
             "skill_version": skill_version.version}, output_raw=error.output_raw) from error
+    except httpx.HTTPStatusError as error:
+        status_code = error.response.status_code
+        if status_code in {401, 403}:
+            code = "skill_model_auth_failed"
+        elif status_code == 429:
+            code = "skill_model_rate_limited"
+        elif status_code in {408, 504}:
+            code = "skill_model_timeout"
+        elif status_code >= 500:
+            code = "skill_model_provider_unavailable"
+        else:
+            code = "skill_model_request_rejected"
+        trace = {
+            "provider": provider,
+            "model": model,
+            "latency_ms": round((time.perf_counter() - started) * 1000),
+            "prompt_sha256": prompt_hash,
+            "output_validation": "not_run",
+            "error_type": type(error).__name__,
+            "http_status_code": status_code,
+        }
+        raise SkillExecutionError(code, trace) from error
+    except httpx.TimeoutException as error:
+        trace = {
+            "provider": provider,
+            "model": model,
+            "latency_ms": round((time.perf_counter() - started) * 1000),
+            "prompt_sha256": prompt_hash,
+            "output_validation": "not_run",
+            "error_type": type(error).__name__,
+        }
+        raise SkillExecutionError("skill_model_timeout", trace) from error
     except Exception as error:
         trace = {
             "provider": provider,

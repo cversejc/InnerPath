@@ -49,6 +49,8 @@ class BaziCalculator:
         minute: Optional[int] = None,
         is_solar: bool = True,
         is_leap_month: bool = False,
+        actual_birth: Optional[Dict[str, Any]] = None,
+        second: int = 0,
     ) -> Dict[str, Any]:
         """
         计算八字四柱
@@ -68,7 +70,7 @@ class BaziCalculator:
             # 创建日期对象
             if is_solar:
                 if hour is not None and minute is not None:
-                    solar = Solar.fromYmdHms(year, month, day, hour, minute, 0)
+                    solar = Solar.fromYmdHms(year, month, day, hour, minute, second)
                 else:
                     solar = Solar.fromYmd(year, month, day)
                 lunar = solar.getLunar()
@@ -85,6 +87,10 @@ class BaziCalculator:
             year_pillar = eight_char.getYear()
             month_pillar = eight_char.getMonth()
             day_pillar = eight_char.getDay()
+            if actual_birth:
+                physical = Solar.fromYmdHms(**actual_birth).getLunar().getEightChar()
+                physical.setSect(2)
+                year_pillar, month_pillar = physical.getYear(), physical.getMonth()
 
             # 日主 (日干)
             day_master = day_pillar[0] if day_pillar else ""

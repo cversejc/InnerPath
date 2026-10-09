@@ -47,7 +47,7 @@ from app.domains.workflow.service import (
     start_step,
 )
 from app.models.user import User  # noqa: F401
-from app.domains.skills.models import AISkillVersion, SkillExample
+from app.domains.skills.models import AISkillVersion, SkillExample, SkillRun
 
 
 def test_default_definition_is_a_valid_sequential_workflow():
@@ -155,7 +155,7 @@ def workflow_db():
         WorkflowInstance.__table__,
         StepTask.__table__,
         WorkflowOutbox.__table__,
-        AISkillVersion.__table__, SkillExample.__table__,
+        AISkillVersion.__table__, SkillExample.__table__, SkillRun.__table__,
     ]
     engine = create_engine("sqlite://")
     Base.metadata.create_all(engine, tables=tables)
@@ -185,6 +185,9 @@ async def _create_case(db: AsyncSession, service_request_id: int | None = None):
         workflow_version=version,
     )
     await db.flush()
+    # These tests exercise the legacy manual workflow independently of the new
+    # whole-node content gates (covered by test_node_review).
+    report_case.review_policy_version = None
     return report_case
 
 
@@ -250,6 +253,19 @@ async def test_manual_workflow_advances_sequentially_and_reaches_delivery_gate(
     assert report_case.status == "READY_TO_DELIVER"
     assert instance.status == "COMPLETED"
     assert all(task.status == "COMPLETED" for task in tasks)
+
+
+@pytest.mark.asyncio
+async def test_starting_an_already_started_step_is_idempotent(workflow_db):
+    report_case = await _create_case(workflow_db)
+
+    first = await start_step(workflow_db, report_case.id, "S1")
+    again = await start_step(workflow_db, report_case.id, "S1")
+
+    assert again.id == first.id
+    assert again.status == "IN_REVIEW"
+    with pytest.raises(ValueError, match="step_not_ready"):
+        await start_step(workflow_db, report_case.id, "S2")
 
 
 @pytest.mark.asyncio

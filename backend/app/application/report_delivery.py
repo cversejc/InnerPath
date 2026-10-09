@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.report_quality import (
     case_can_be_delivered,
     delivery_quality_snapshot,
+    quality_state,
 )
 from app.application.workflow_commands import complete_case_step
 from app.domains.audit.context import AuditContext
@@ -83,6 +84,7 @@ async def approve_case_final_gate(
     actor: User,
     note: Optional[str] = None,
     audit_context: Optional[AuditContext] = None,
+    commit: bool = True,
 ) -> StepTask:
     if report_case.status in {"DELIVERED", "CANCELLED"}:
         raise ValueError("workflow_not_active")
@@ -99,6 +101,34 @@ async def approve_case_final_gate(
     if step.status != "IN_REVIEW":
         raise ValueError("step_not_in_review")
     validate_step_actor(step, actor)
+    if report_case.review_policy_version == "import-review-v1":
+        # Fast path: the consultant's confirmation is the one authorization.
+        # Checks are optional advice, so none of them may block the record.
+        state = await quality_state(db, report_case)
+        latest_run = state.latest_validator_run or {}
+        result = {
+            "final_gate_approved": True,
+            "advisory_only": True,
+            "final_gate_override": not state.can_approve,
+            "unresolved_advisories": state.unresolved_advisories,
+            "quality_status": state.quality_status,
+            "validator_run_id": latest_run.get("id"),
+            "check_status": latest_run.get("status") or "NOT_RUN",
+            "qa_fingerprint": state.qa_fingerprint_current,
+            "attested_by": actor.id,
+            "attested_at": utc_now_iso(),
+            "note": (note or "").strip() or None,
+        }
+        return await complete_case_step(
+            db,
+            actor.id,
+            report_case.id,
+            "S6",
+            result,
+            audit_context,
+            final_gate_verified=True,
+            commit=commit,
+        )
     run = await latest_validator_run(db, report_case.id)
     if run is None or run.status != "COMPLETED":
         raise ValueError("final_qa_not_complete")
@@ -112,6 +142,12 @@ async def approve_case_final_gate(
         "attested_at": utc_now_iso(),
         "note": (note or "").strip() or None,
     }
+    if report_case.review_policy_version == "six-node-review-v1":
+        from app.domains.review.models import NodeApproval
+        approval = await db.scalar(select(NodeApproval).where(NodeApproval.report_case_id == report_case.id, NodeApproval.step_task_id == step.id, NodeApproval.activation_no == step.activation_no).order_by(NodeApproval.id.desc()).limit(1))
+        if not approval:
+            raise ValueError("node_whole_review_required")
+        result["node_approval_id"] = approval.id
     return await complete_case_step(
         db,
         actor.id,
@@ -120,6 +156,7 @@ async def approve_case_final_gate(
         result,
         audit_context,
         final_gate_verified=True,
+        commit=commit,
     )
 
 
@@ -129,6 +166,7 @@ async def deliver_report_case(
     report_case: ReportCase,
     actor: User,
     audit_context: Optional[AuditContext] = None,
+    commit: bool = True,
 ) -> ReportVersion:
     locked_case = await db.scalar(
         select(ReportCase).where(ReportCase.id == report_case.id).with_for_update()
@@ -280,6 +318,36 @@ async def deliver_report_case(
         details={"report_version_id": version.id, "version_no": version.version_no, "report_id": report.id},
         audit_context=audit_context,
     )
-    await db.commit()
-    await db.refresh(version)
+    if commit:
+        await db.commit()
+        await db.refresh(version)
     return version
+
+
+async def approve_and_deliver(db, case_id, actor, expected):
+    """One lock and one commit; retries return the same immutable delivery."""
+    from app.application.node_review_workspace import require_fingerprint, review_context
+    from app.application.node_review_commands import sign_node
+    case = await db.scalar(select(ReportCase).where(ReportCase.id == case_id).with_for_update())
+    if not case:
+        raise ValueError("report_case_not_found")
+    if case.status == "DELIVERED":
+        step = await db.scalar(select(StepTask).where(StepTask.workflow_instance_id == case.workflow_instance_id, StepTask.step_key == "S6"))
+        validate_step_actor(step, actor)
+        return await db.scalar(select(ReportVersion).where(ReportVersion.report_case_id == case_id).order_by(ReportVersion.version_no.desc()).limit(1))
+    try:
+        case, step, state = await review_context(db, case_id, "S6", actor, write=True)
+        if case.review_policy_version == "import-review-v1":
+            # The fast path has exactly one authorization (the final gate), so
+            # it never signs a separate node approval.
+            await require_fingerprint(db, case, step, state, expected)
+        else:
+            await sign_node(db, case, step, state, actor, expected)
+        await approve_case_final_gate(db, report_case=case, actor=actor, commit=False)
+        version = await deliver_report_case(db, report_case=case, actor=actor, commit=False)
+        await db.commit()
+        await db.refresh(version)
+        return version
+    except Exception:
+        await db.rollback()
+        raise

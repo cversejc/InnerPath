@@ -41,6 +41,7 @@ async def confirm_narrative_plan(
     candidate_key: str,
     overrides: dict[str, Any],
     actor_id: int,
+    as_draft: bool = False,
 ) -> NarrativePlan:
     await require_case(db, report_case_id)
     run = await db.get(SkillRun, skill_run_id)
@@ -205,15 +206,15 @@ async def confirm_narrative_plan(
         report_case_id=report_case_id,
         version_no=(latest_version or 0) + 1,
         is_current=True,
-        status="CONFIRMED",
+        status="PROPOSED" if as_draft else "CONFIRMED",
         selected_skill_run_id=run.id,
         selected_candidate_key=candidate_key,
         plan_json=plan_json,
         source_snapshot=current_sources,
         created_by=actor_id,
-        confirmed_by=actor_id,
+        confirmed_by=None if as_draft else actor_id,
         created_at=now,
-        confirmed_at=now,
+        confirmed_at=None if as_draft else now,
     )
     db.add(plan)
     await db.flush()

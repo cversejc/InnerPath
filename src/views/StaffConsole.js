@@ -34,6 +34,8 @@ import ReportFragmentReview from '../features/report-cases/components/ReportFrag
 import QualityIssueReview from '../features/report-cases/components/QualityIssueReview.vue'
 import EvidenceReferencePicker from '../features/report-cases/components/EvidenceReferencePicker.vue'
 import { nodeWorkspaceComputed, nodeWorkspaceMethods } from '../features/report-cases/node-workspace-state.js'
+import { workspaceFocusTargetId } from '../features/report-cases/node-workspace.js'
+import { qualityRunProgress } from '../features/report-cases/quality-progress.js'
 import DeliveredReportSummary from '../features/report-cases/components/DeliveredReportSummary.vue'
 import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
 import { simpleReportStepLabel } from '../features/report-cases/simple-stages.js'
@@ -80,6 +82,7 @@ export default {
       requests: { total: 0, items: [] },
       selectedRequest: null,
       workspaceSection: 'overview',
+      workspaceFocusTimer: null,
       selectedReportStepKey: '',
       nodeRecordKeys: {findings:'',fragments:'',quality:'',planned:'',candidate:''},
       nodeWritingMode: 'plan',
@@ -95,6 +98,10 @@ export default {
         latest_validator_run: null,
         issues: [],
         can_approve: false,
+        can_finalize: false,
+        advisory_only: false,
+        final_gate_override: null,
+        unresolved_advisories: [],
         blocking_count: 0,
         open_count: 0
       },
@@ -102,7 +109,7 @@ export default {
       qualityFeedbackDraft: '',
       reportQualitySaving: false,
       reportCaseDelivering: false,
-      finalGateAttested: false,
+      finalGateNote: '',
       reportCaseLoading: false,
       simpleReportVersions: [],
       simpleReportLoading: false,
@@ -144,6 +151,7 @@ export default {
       infoStepKey: '',
       rejectDialog: { visible: false, reason: '', error: '' },
       rejectSaving: false,
+      reportImportDialog: { visible: false, title: '', sourceFilename: '', content: '', error: '', saving: false, idempotencyKey: '' },
       reportEditor: reportEditorFromPayload(),
       calendarEditor: calendarEditorFromPayload(),
       consultants: [],
@@ -198,6 +206,32 @@ export default {
     },
     reportAnalysisPending() {
       return this.reportAnalysisSaving || this.reportAnalysisRuns.some(run => ['PENDING', 'RUNNING'].includes(run.status))
+    },
+    reportQualityProgress() {
+      return qualityRunProgress(this.reportQuality)
+    },
+    reportFinalGateReady() {
+      const quality = this.reportQuality || {}
+      // The import fast path has no check requirement: the consultant may
+      // confirm and deliver at any time.
+      return quality.advisory_only ? true : Boolean(quality.can_approve)
+    },
+    // 修订后的正文必须先整体确认，交付快照只会包含已确认的段落。
+    reportManuscriptPendingCount() {
+      return (this.reportCaseContent.fragments || [])
+        .filter(item => item.fragment_type === 'REPORT' && item.status === 'PROPOSED').length
+    },
+    reportManuscriptStaleCount() {
+      return (this.reportCaseContent.fragments || [])
+        .filter(item => item.fragment_type === 'REPORT' && item.status === 'STALE').length
+    },
+    reportQualitySummaryLabel() {
+      const quality = this.reportQuality || {}
+      if (!quality.advisory_only) {
+        return `${quality.open_count || 0} 项待处理 · ${quality.blocking_count || 0} 项必须处理`
+      }
+      const count = quality.unresolved_advisories?.length || 0
+      return count ? `${count} 条检查建议 · 仅供参考，不阻断交付` : '暂无待复核建议 · 交付由咨询师确认'
     },
     reportReturnTargets() {
       const active = this.currentReportStep
@@ -310,7 +344,7 @@ export default {
         IN_PROGRESS: '正在生成报告内容',
         CHAPTER_COHERENCE_CHECK: '正在检查章节内容',
         COHERENCE_CHECK: '正在检查全文连贯性',
-        READY_FOR_REVIEW: '内容已生成，等待逐段审阅',
+        READY_FOR_REVIEW: '内容已生成，等待完整报告审阅',
         BLOCKED: '当前不能开始写作，请先补充已确认的判断',
         NEEDS_INPUT: '需要补充内容后才能继续',
         FAILED: '内容生成暂时失败，可稍后继续',
@@ -377,6 +411,10 @@ export default {
       if (section === this.workspaceSection) return
       this.workspaceSection = section
       this.scrollWorkspaceToTop()
+    },
+    reportReviewBusy(value) {
+      // 编辑结束后不再提示“先保存或取消修改”，避免提示条残留误导后续操作。
+      if (!value && String(this.message || '').startsWith('请先保存或取消')) this.message = ''
     }
   },
   mounted() {
@@ -450,7 +488,7 @@ export default {
     reportStepStatusLabel(status) {
       return REPORT_STEP_STATUS_LABELS[status] || '处理中'
     },
-    setReportWorkspaceSection(sectionId) {
+    setReportWorkspaceSection(sectionId, targetKey = '') {
       if (this.reportReviewBusy) { this.message = '请先保存或取消当前修改，再切换工作界面。'; return }
       const sectionMap = {
         'case-context': 'upstream',
@@ -460,7 +498,8 @@ export default {
         'case-findings': 'findings',
         'case-fragments': 'fragments',
         'case-narrative': 'writing',
-        'case-quality': 'quality'
+        'case-quality': 'quality',
+        'case-manuscript': 'manuscript'
       }
       const section = sectionMap[sectionId]
         || ({ inputs: 'upstream', suggestions: 'analysis' }[sectionId])
@@ -468,7 +507,26 @@ export default {
       if (!this.reportWorkspaceSections.some(item => item.id === section)) return
       this.workspaceSection = section
       if (this.selectedRequest) this.syncWorkspaceRoute(this.selectedRequest.id, section, { history: 'push' })
+      if (targetKey && this.focusWorkspaceTarget(section, targetKey)) return
       this.scrollWorkspaceToTop()
+    },
+    focusWorkspaceTarget(section, targetKey) {
+      // 检查问题卡片直接定位到被标记的那一条内容，避免在长列表里手动查找。
+      const targetId = workspaceFocusTargetId(section, targetKey)
+      if (!targetId) return false
+      this.$nextTick(() => {
+        const target = this.$el?.querySelector?.(`[id="${CSS.escape(targetId)}"]`) || document.getElementById(targetId)
+        if (!target) {
+          this.scrollWorkspaceToTop()
+          return
+        }
+        window.clearTimeout(this.workspaceFocusTimer)
+        target.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        target.focus?.({ preventScroll: true })
+        target.classList.add('workspace-focus-target')
+        this.workspaceFocusTimer = window.setTimeout(() => target.classList.remove('workspace-focus-target'), 2600)
+      })
+      return true
     },
     scrollWorkspaceToTop() {
       this.$nextTick(() => {
@@ -532,8 +590,11 @@ export default {
       this.reportNarrative = { current_plan: null, candidate_runs: [], fragment_runs: [] }
       this.reportQuality = {
         quality_status: 'NOT_RUN', latest_validator_run: null, issues: [],
-        can_approve: false, blocking_count: 0, open_count: 0
+        can_approve: false, can_finalize: false, advisory_only: false,
+        final_gate_override: null, unresolved_advisories: [],
+        blocking_count: 0, open_count: 0
       }
+      this.finalGateNote = ''
       this.qualityFeedbackDraft = ''
       this.narrativeFeedbackDrafts = {}
       this.resetSimpleReportState?.()
@@ -619,6 +680,10 @@ export default {
       return REPORT_ASSET_STATUS_LABELS[status] || ''
     },
     qualityStatusLabel(status) {
+      if (this.reportQuality?.advisory_only) {
+        const advisory = { PROGRAMMATIC_BLOCKED: '检查有建议待咨询师确认', BLOCKED: '检查已有结论，可确认后交付' }
+        if (advisory[status]) return advisory[status]
+      }
       return QUALITY_STATUS_LABELS[status] || '尚未检查'
     },
     qualityIssueLabel(type) {
@@ -640,6 +705,9 @@ export default {
       return this.qualityIssueLabel(type)
     },
     issueSeverityLabel(severity) {
+      if (this.reportQuality?.advisory_only) {
+        return { BLOCK: '重点', MAJOR: '主要', MINOR: '提示', WARN: '建议处理', INFO: '提示' }[severity] || '提示'
+      }
       return QUALITY_SEVERITY_LABELS[severity] || '提示'
     },
     consultantText(value, fallback = '请查看相关说明，并按建议处理。') {
@@ -666,6 +734,9 @@ export default {
           report_analysis_finding_reference_invalid: '分析建议引用的资料已变化。请刷新页面后重新生成建议。',
           report_case_not_found: '未找到这份报告申请，请返回列表刷新后重试。',
           report_case_step_not_active: '当前步骤已变化，请刷新后继续处理。',
+          step_not_ready: '本节点尚未就绪；如上游成果刚完成，请刷新页面后重试。',
+          workflow_not_active: '这份申请已结束或已交付，不能再开始新的节点。',
+          workflow_step_already_in_review: '已有另一个节点正在处理中，请先完成或退出该节点。',
           report_analysis_output_required: '请先确认专业判断或分析内容，再完成本步骤。',
           report_analysis_sop_coverage_required: '请按本节点分析清单逐项审核。缺少资料的条目也需记录暂缓原因。',
           workflow_key_mismatch: '这份申请与当前报告流程不一致，请返回列表刷新后重试。',
@@ -676,7 +747,25 @@ export default {
           step_not_in_review: '本节点还不能提交，请先在节点总览点击开始。',
           step_not_current: '本节点已不是当前处理轮次，请刷新后继续未完成的轮次。',
           simple_report_text_required: '请先填写本轮完整报告文本，再完成本节点。',
-          final_gate_approval_required: '请先勾选确认最终审核，再提交终稿交付。'
+          final_gate_approval_required: '请先勾选确认最终审核，再提交终稿交付。',
+          report_import_content_required: '请粘贴或上传报告正文后再导入。',
+          report_import_content_too_long: '报告正文超出长度上限，请拆分后再导入。',
+          report_import_format_invalid: '报告结构无法识别，请检查正文后重试。',
+          report_import_sections_missing: '报告缺少必要段落，系统也未能自动整理，请检查正文后重试。',
+          report_import_duplicate_section: '报告中有重复的段落标题，系统也未能自动整理，请检查正文后重试。',
+          report_import_section_empty: '有段落内容为空，系统也未能自动整理，请补全正文后再试。',
+          report_import_section_too_long: '有段落内容过长，请精简后再导入。',
+          report_import_normalization_failed: '系统暂时无法整理报告结构，请检查正文后重试。',
+          report_import_content_sha256_invalid: '报告校验值生成失败，请重新选择文件后重试。',
+          report_import_content_sha256_mismatch: '报告内容在提交前发生了变化，请确认正文后重新导入。',
+          report_import_idempotency_key_required: '导入标识生成失败，请关闭后重新打开导入窗口。',
+          report_import_idempotency_conflict: '这次导入与已有记录不一致。请刷新报告后重新打开导入窗口。',
+          report_import_duplicate_content: '同一份报告已被导入到另一份申请，请确认是否选错了申请。',
+          report_import_case_not_importable: '这份申请已进入其他流程，无法再走快速导入。请刷新后查看当前节点。',
+          report_case_forbidden: '当前专业或负责人没有导入这份报告的权限。',
+          final_qa_not_complete: '还没完成针对当前正文的检查。请先运行交付前检查，再确认最终复核。',
+          final_qa_issues_open_or_stale: '还有必须处理的检查问题，或检查结果已过期。请处理后再确认最终复核。',
+          node_whole_review_required: '请先完成本节点整体复核，再确认最终复核。'
         }
         return messages[text] || '操作暂时无法完成，请刷新页面后重试。'
       }

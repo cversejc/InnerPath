@@ -288,7 +288,7 @@ async def create_content_fragment_revision(
         if (
             narrative_plan is None
             or narrative_plan.report_case_id != report_case_id
-            or narrative_plan.status != "CONFIRMED"
+            or not (narrative_plan.status == "CONFIRMED" or (report_case.review_policy_version == "six-node-review-v1" and narrative_plan.status == "PROPOSED"))
         ):
             raise ValueError("fragment_narrative_plan_invalid")
     elif narrative_plan is not None and (

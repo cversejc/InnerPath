@@ -1,10 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  checkpointRendered,
   nodeAssets,
+  nodeCheckpoint,
+  nextCheckpointSection,
+  nextNodeSection,
   nodeTools,
   resolveNodeLocation,
   nodeViews,
+  workspaceFocusTargetId,
 } from "./node-workspace.js";
 import {
   nodeWorkspaceComputed,
@@ -56,6 +61,10 @@ test("node links restore the selected history without exposing unrelated functio
     { stepKey: "S6", section: "quality" },
   );
   assert.deepEqual(
+    resolveNodeLocation(steps, steps[1], { section: "manuscript" }),
+    { stepKey: "S6", section: "manuscript" },
+  );
+  assert.deepEqual(
     resolveNodeLocation(steps, steps[1], { section: "evidence" }),
     { stepKey: "S2", section: "upstream" },
   );
@@ -63,6 +72,52 @@ test("node links restore the selected history without exposing unrelated functio
     nodeViews("S5").some((view) => view.id === "quality"),
     false,
   );
+  assert.equal(
+    nodeViews("S5").find((view) => view.id === "fragments").label,
+    "完整报告审阅",
+  );
+  assert.deepEqual(
+    nodeViews("S6").map((view) => view.id),
+    ["overview", "upstream", "quality", "manuscript", "signoff"],
+  );
+  assert.equal(
+    nodeViews("S6").find((view) => view.id === "manuscript").label,
+    "修改后稿件",
+  );
+  assert.equal(
+    nodeViews("S6").some((view) => view.id === "fragments"),
+    false,
+  );
+});
+
+test("whole-node checkpoints stay on the matching workflow substep", () => {
+  assert.equal(nodeCheckpoint("S1", "birth-time"), "birth_data");
+  assert.equal(nodeCheckpoint("S1", "calculation"), "");
+  for (const stepKey of ["S1", "S2", "S3", "S4"]) {
+    assert.equal(nodeCheckpoint(stepKey, "findings"), "findings");
+    assert.equal(nodeCheckpoint(stepKey, "fragments"), "analysis");
+    assert.equal(nodeCheckpoint(stepKey, "signoff"), "node");
+  }
+  assert.equal(nodeCheckpoint("S5", "writing"), "narrative");
+  assert.equal(nodeCheckpoint("S5", "fragments"), "report");
+  assert.equal(nodeCheckpoint("S6", "quality"), "");
+  assert.equal(nodeCheckpoint("S6", "fragments"), "");
+  assert.equal(nodeCheckpoint("S6", "signoff"), "node");
+});
+
+test("workflow sections advance in order while keeping review pages between decisions", () => {
+  assert.equal(nextNodeSection("S1", "upstream"), "birth-time");
+  assert.equal(nextNodeSection("S1", "calculation"), "analysis");
+  assert.equal(nextNodeSection("S2", "analysis"), "findings");
+  assert.equal(nextNodeSection("S6", "quality"), "manuscript");
+  assert.equal(nextNodeSection("S6", "manuscript"), "signoff");
+  assert.equal(nextNodeSection("S1", "signoff"), "");
+
+  assert.equal(nextCheckpointSection("S1", "birth_data"), "calculation");
+  assert.equal(nextCheckpointSection("S1", "findings"), "fragments");
+  assert.equal(nextCheckpointSection("S3", "analysis"), "signoff");
+  assert.equal(nextCheckpointSection("S5", "report"), "signoff");
+  assert.equal(nextCheckpointSection("S6", "report"), "");
 });
 
 test("review assets belong to the selected node; report review excludes internal analysis", () => {
@@ -138,4 +193,38 @@ test("legacy node links restore the current workspace section", () => {
   });
   assert.equal(context.selectedReportStepKey, "S2");
   assert.equal(context.workspaceSection, "upstream");
+});
+
+test("completed S1 keeps the birth data checkpoint readable", () => {
+  assert.equal(checkpointRendered("S1", "birth-time", true), true);
+  assert.equal(checkpointRendered("S1", "birth-time", false), true);
+  assert.equal(checkpointRendered("S1", "findings", true), true);
+  assert.equal(checkpointRendered("S1", "findings", false), false);
+  assert.equal(checkpointRendered("S6", "fragments", false), false);
+  assert.equal(checkpointRendered("S1", "upstream", true), false);
+});
+
+test("completed nodes keep their node review checkpoint readable", () => {
+  assert.equal(checkpointRendered("S5", "signoff", false, "COMPLETED"), true);
+  assert.equal(checkpointRendered("S6", "signoff", false, "COMPLETED"), true);
+  assert.equal(checkpointRendered("S5", "signoff", false, "PENDING"), false);
+  assert.equal(checkpointRendered("S5", "signoff", false, "IN_REVIEW"), false);
+  assert.equal(checkpointRendered("S5", "fragments", false, "COMPLETED"), false);
+  assert.equal(checkpointRendered("S5", "signoff", true, "IN_REVIEW"), true);
+});
+
+test("check problem cards point at the exact finding or fragment they flag", () => {
+  assert.equal(workspaceFocusTargetId("fragments", "ziwei"), "report-fragment-ziwei");
+  assert.equal(
+    workspaceFocusTargetId("fragments", "analysis.s2.stars"),
+    "report-fragment-analysis.s2.stars",
+  );
+  assert.equal(workspaceFocusTargetId("findings", "001-abc"), "report-finding-001-abc");
+  assert.equal(
+    workspaceFocusTargetId("manuscript", "report.main"),
+    "report-fragment-report.main",
+  );
+  assert.equal(workspaceFocusTargetId("fragments", ""), "");
+  assert.equal(workspaceFocusTargetId("findings", null), "");
+  assert.equal(workspaceFocusTargetId("analysis", "ziwei"), "");
 });

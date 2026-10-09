@@ -365,7 +365,7 @@ async def _require_authoring_step(
 async def _validate_current_plan(
     db: AsyncSession, report_case: ReportCase, plan: NarrativePlan
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    if plan.status != "CONFIRMED" or not plan.is_current:
+    if not (plan.status == "CONFIRMED" or (report_case.review_policy_version == "six-node-review-v1" and plan.status == "PROPOSED")) or not plan.is_current:
         raise ValueError("narrative_plan_confirmation_required")
     semantic_model = await load_case_semantic_model(db, report_case.id)
     if not narrative_semantic_sources_match(plan, semantic_model):
@@ -811,7 +811,7 @@ async def advance_case_report_generation(db: AsyncSession, run_id: int) -> Narra
                 for issue in generation.get("issues", [])
                 if issue.get("chapter_key") != chapter_key
             ] + normalized_issues
-            if blocked:
+            if blocked and report_case.review_policy_version != "six-node-review-v1":
                 generation["status"] = "CHAPTER_COHERENCE_BLOCKED"
                 generation["completed_at"] = completed_at
                 generation["error"] = "report_chapter_coherence_blocked"
@@ -893,7 +893,7 @@ async def advance_case_report_generation(db: AsyncSession, run_id: int) -> Narra
             )
             return plan
 
-        generation["status"] = "COHERENCE_BLOCKED" if blocked else "READY_FOR_REVIEW"
+        generation["status"] = "COHERENCE_BLOCKED" if blocked and report_case.review_policy_version != "six-node-review-v1" else "READY_FOR_REVIEW"
         generation["completed_at"] = completed_at
         chapter_issues = [
             issue for issue in generation.get("issues", []) if issue.get("scope") == "CHAPTER"

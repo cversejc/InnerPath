@@ -236,6 +236,9 @@ async def submit_report_case_supplement(
     instance.status = "RUNNING"
     instance.suspended_at = None
     instance.updated_at = request.updated_at
+    if report_case.review_policy_version == "six-node-review-v1":
+        from app.domains.workflow.service import enqueue_outbox_event
+        await enqueue_outbox_event(db, aggregate_type="report_case", aggregate_id=report_case.id, event_type="report.node.prepare", payload={"report_case_id": report_case.id, "step_task_id": active_step.id, "activation_no": active_step.activation_no})
     await record_audit(
         db,
         user.id,

@@ -4,15 +4,15 @@ export const REPORT_WORKFLOW_STAGES = [
     name: '命理基础结构',
     shortName: '命理基础',
     purpose: '先核对出生资料和系统测算结果，再形成有依据的初步判断。涉及心理感受的内容先保留为待验证线索。',
-    task: '先核对出生日期、时间与地点，再查看并修订程序测算；随后运行 AI 分析，按方向审核关联判断、确认分析内容，最后复核整个节点。',
+    task: '先核对申请资料与出生时间换算，再查看程序测算并运行 AI 分析；分别整体审阅判断和分析内容，处理争议后复核整个节点。',
     actions: [
-      '先核对申请时保存的出生日期、时间和地点。',
-      '在程序计算页核对四柱和紫微结果；发现错误时修订并填写原因。',
-      '在 AI 分析中按方向审核关联判断并确认分析内容，完成后回节点总览复核。'
+      '查看申请留存资料和程序时间换算；无异常时一次确认，资料缺失、来源冲突或口径不明时再补问或更正并说明依据。',
+      '在程序计算页查看完整四柱、紫微结果及来源；常规结果由程序检查，发现异常时才人工修订并填写原因。',
+      '运行 AI 分析后分别整体审阅判断与完整分析；争议条目仍可单独修改或拒绝，完成后进入节点复核。'
     ],
-    inputGuidance: '先核对用户本次提供的出生资料和当前问题。程序测算请到独立的“程序计算”页检查或修订。',
+    inputGuidance: '“出生资料与时间核对”页并列展示用户申请时留存的出生资料、程序换算口径、限制和来源；“程序计算”页保留完整测算结果与修订依据。',
     deliverable: '有资料依据的基础判断，以及需要后续验证的线索。',
-    outputEmpty: '生成分析建议并逐条审核后，已确认的判断和分析会显示在这里。',
+    outputEmpty: '整体确认判断与分析成果后，已确认内容会显示在这里。',
     inputGroups: [
       { key: 'profile', title: '申请时确认的出生档案', reason: '用于核对测算是否采用了用户本次确认的资料。', empty: '申请快照没有保存完整出生档案，请先核对用户资料。' },
       { key: 'context', title: '用户本次提出的情况', reason: '这是用户的现实问题和期待；心理含义仍需由后续自述验证。', empty: '用户没有填写额外情境描述。' },
@@ -23,7 +23,7 @@ export const REPORT_WORKFLOW_STAGES = [
       { label: '审核专业判断', section: 'case-findings' },
       { label: '编辑分析内容', section: 'case-fragments' }
     ],
-    checklist: ['核对出生资料与测算依据', '确认每条判断都有资料支持', '把心理含义保留为待验证线索', '接受、修改或拒绝建议'],
+    checklist: ['核对出生资料、时间口径与程序依据', '整体确认有来源支持的专业判断', '分别整体确认判断和分析内容；争议项单独处理', '把心理含义保留为待验证线索'],
     sections: ['case-context', 'case-evidence', 'case-findings', 'case-fragments']
   },
   {
@@ -35,7 +35,7 @@ export const REPORT_WORKFLOW_STAGES = [
     actions: [
       '先读用户对当前处境、感受和应对方式的描述。',
       '把第一步已确认的内容当作对照线索，不直接推导心理结论。',
-      '审核每条建议：区分用户明确说过的事实与咨询分析的假设。'
+      '整体审阅全部判断和来源，区分用户事实与分析假设；争议或缺少依据的条目单独修改、拒绝或暂缓。'
     ],
     inputGuidance: '上一步的内容只是对照线索；正式心理判断必须能回到用户自述或具体情境，不作临床诊断。',
     deliverable: '有用户资料支持的心理运作模式判断，并清楚标记推测边界。',
@@ -51,7 +51,7 @@ export const REPORT_WORKFLOW_STAGES = [
       { label: '审核心理判断', section: 'case-findings' },
       { label: '审阅分析内容', section: 'case-fragments' }
     ],
-    checklist: ['区分用户事实与分析假设', '核对触发情境、感受和应对方式', '为重要判断说明依据', '对资料不足或相互矛盾处保留不确定性'],
+    checklist: ['整体确认前区分用户事实与分析假设', '核对触发情境、感受和应对方式', '为重要判断说明依据', '对争议、资料不足或相互矛盾处单独处理并保留不确定性'],
     sections: ['case-context', 'case-evidence', 'case-findings', 'case-fragments']
   },
   {
@@ -78,7 +78,7 @@ export const REPORT_WORKFLOW_STAGES = [
       { label: '审核整合判断', section: 'case-findings' },
       { label: '审阅整合内容', section: 'case-fragments' }
     ],
-    checklist: ['只整合已经确认的内容', '识别相互支持或存在冲突的判断', '说明主要矛盾与可发展的能力', '避免把结论写成绝对人格或确定未来'],
+    checklist: ['只整合已经确认的内容', '整体审阅相互支持或存在冲突的判断', '说明主要矛盾与可发展的能力', '争议内容单独处理；避免把结论写成绝对人格或确定未来'],
     sections: ['case-evidence', 'case-findings', 'case-fragments']
   },
   {
@@ -107,7 +107,7 @@ export const REPORT_WORKFLOW_STAGES = [
       { label: '审核机制与行动判断', section: 'case-findings' },
       { label: '审阅行动内容', section: 'case-fragments' }
     ],
-    checklist: ['确认每种解释都有前序依据', '区分问题理解与行动建议', '行动要具体、低成本且可调整', '不替用户作重大决定'],
+    checklist: ['整体审阅机制判断及其前序依据', '区分问题理解与行动建议', '行动要具体、低成本且可调整', '争议判断单独处理；不替用户作重大决定'],
     sections: ['case-evidence', 'case-findings', 'case-fragments']
   },
   {
@@ -115,11 +115,11 @@ export const REPORT_WORKFLOW_STAGES = [
     name: '叙事方案与报告写作',
     shortName: '报告写作',
     purpose: '依据前序已经确认的判断，选择报告主线并逐段生成、审阅和调整内容。',
-    task: '先确认报告主线并核对编排，再顺序生成正文。逐段核对依据、修订并确认，确认后继续下一待审段落；最后复核全文连贯性。',
+    task: '先确认报告主线并核对编排，再生成正文；保留逐段来源检查和问题修订，全部正文完成后整体审阅报告并复核全文连贯性。',
     actions: [
       '先选定一条最贴合用户问题的报告主线，并确认内容安排。',
       '逐段生成报告草稿，核对每段引用的判断和资料。',
-      '修正事实、逻辑和表达后，确认可以进入最终检查的段落。'
+      '修正事实、逻辑和表达；普通段落不再逐段签核，完成后整体确认整份报告，具体问题仍按段修订。'
     ],
     inputGuidance: '写作只能重组、解释和表达已确认的专业判断；不能新增事实、诊断、专业判断或确定的未来事件。',
     deliverable: '一份按确认主线组织、每段都能追溯到已确认判断的报告初稿。',
@@ -135,7 +135,7 @@ export const REPORT_WORKFLOW_STAGES = [
       { label: '查看已确认分析', section: 'case-fragments' },
       { label: '选择主线并逐段写作', section: 'case-narrative' }
     ],
-    checklist: ['确认报告只使用已确认的专业判断', '选择适合用户情境的报告主线', '逐段审阅内容与资料依据', '处理连贯性问题后完成本步骤'],
+    checklist: ['确认报告只使用已确认的专业判断', '单独确认适合用户情境的报告主线', '逐段核对内容与资料依据，问题按段修订', '整体审阅完整报告并处理连贯性问题'],
     sections: ['case-findings', 'case-fragments', 'case-narrative']
   },
   {
@@ -143,11 +143,11 @@ export const REPORT_WORKFLOW_STAGES = [
     name: '最终质量审核',
     shortName: '交付前检查',
     purpose: '检查报告是否完整、连贯并适合交付，逐项处理问题后完成最终复核。',
-    task: '运行交付前检查，在问题旁核对和修订涉及正文，保存处理理由后继续下一问题。正文改动后重新检查完整报告，再通读并完成最终人工确认。',
+    task: '运行交付前检查并逐项处理阻断或重要问题，保存处理理由；正文改动后重新检查完整报告，再通读并整体确认最终稿。',
     actions: [
       '运行系统检查和 AI 内容复核，阅读每项问题指向的段落。',
       '先修复所有阻断问题；内容改动后重新运行检查。',
-      '通读最终稿和处理记录，确认后完成最终复核并交付。'
+      '通读完整最终稿和问题处理记录，整体确认后完成终审并交付。'
     ],
     inputGuidance: '检查对象是已审阅的报告正文、对应的确认依据和系统检查结果。存在阻断问题时不能交付。',
     deliverable: '通过质量检查并完成最终人工确认后，生成不可覆盖的交付版本。',
@@ -171,7 +171,7 @@ export const REPORT_WORKFLOW_STAGES = [
 export const REPORT_STEP_STATUS_LABELS = {
   PENDING: '等待上一步',
   READY: '待开始',
-  IN_REVIEW: '待处理',
+  IN_REVIEW: '处理中',
   EXECUTING: '正在生成内容',
   WAITING_REVIEW: '待你审核',
   NEEDS_REVISION: '需要修改',

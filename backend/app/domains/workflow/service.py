@@ -162,6 +162,7 @@ async def create_report_case(
         service_request_id=service_request_id,
         source_report_task_id=source_report_task_id,
         status="ACTIVE",
+        review_policy_version="six-node-review-v1" if version.workflow_key == "report.production" else None,
         application_snapshot=frozen_application,
         application_submitted_at=now,
         created_at=now,
@@ -293,6 +294,10 @@ async def start_step(db: AsyncSession, case_id: int, step_key: str) -> StepTask:
     task = _find_step(tasks, step_key)
     if instance.status != "RUNNING" or report_case.status in {"CANCELLED", "DELIVERED"}:
         raise ValueError("workflow_not_active")
+    if task.status == "IN_REVIEW":
+        # 上游成果就绪后，后台准备流程会直接开始节点；重复或稍晚的“开始”请求
+        # 视为已开始，避免咨询师看到“请刷新后重试”的假失败。
+        return task
     if task.status != "READY":
         raise ValueError("step_not_ready")
     if any(other.status == "IN_REVIEW" for other in tasks):
@@ -352,6 +357,11 @@ async def complete_step(
     if instance.status != "RUNNING" or report_case.status in {"CANCELLED", "DELIVERED"}:
         raise ValueError("workflow_not_active")
     CompletionGate.validate(task, tasks)
+    if report_case.review_policy_version == "six-node-review-v1":
+        from app.domains.review.models import NodeApproval
+        approval = await db.get(NodeApproval, (result_json or {}).get("node_approval_id")) if (result_json or {}).get("node_approval_id") else None
+        if not approval or approval.report_case_id != case_id or approval.step_task_id != task.id or approval.activation_no != task.activation_no:
+            raise ValueError("node_whole_review_required")
     if (
         task.step_key == "S6" or (task.config_snapshot or {}).get("final_gate") is True
     ) and not final_gate_verified:
@@ -532,5 +542,10 @@ async def assign_step(
             item.assignee_id = assignee_id
     task.assignee_id = assignee_id
     task.updated_at = _now()
+    if assignee_id is not None and report_case.review_policy_version == "six-node-review-v1":
+        for item in tasks:
+            if item.status == "READY" and item.assignee_id is not None:
+                await enqueue_outbox_event(db, aggregate_type="workflow_instance", aggregate_id=item.workflow_instance_id,
+                    event_type="workflow.step.ready", payload={"report_case_id": case_id, "step_task_id": item.id, "activation_no": item.activation_no})
     await db.flush()
     return task

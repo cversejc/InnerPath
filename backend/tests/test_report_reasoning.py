@@ -83,6 +83,46 @@ async def test_changed_or_retired_bound_skill_is_rejected_without_fallback(quali
         await resolve_case_skill(db, case, skill.skill_key)
 
 
+@pytest.mark.asyncio
+async def test_coherence_run_uses_case_frozen_validator_version(quality_db):
+    from app.application.skill_runtime import queue_case_report_coherence_skill_run
+
+    db = quality_db
+    workflow = await create_workflow_draft(db, "report.production", "Frozen", default_workflow_definition(), None)
+    await publish_workflow_version(db, workflow.id, None)
+    case = await create_report_case(db, user_id=1, service_request_id=None, source_report_task_id=None,
+        application_snapshot={}, workflow_version=workflow)
+    case.review_policy_version = None
+    pinned = await resolve_case_skill(db, case, "report.final_validator")
+    spec = deepcopy(pinned.specification_json)
+    if isinstance(spec.get("reasoning_guidance"), dict):
+        spec["reasoning_guidance"]["objective"] += " Updated validator version."
+    else:
+        spec["instructions"]["objective"] += " Updated validator version."
+    newer = await create_skill_draft(db, skill_key=pinned.skill_key, name=pinned.name,
+        category=pinned.category, specification=spec, created_by=1)
+    await publish_skill_version(db, newer.id, published_by=1)
+    assert newer.id != pinned.id
+
+    run, created = await queue_case_report_coherence_skill_run(
+        db,
+        report_case=case,
+        step=SimpleNamespace(id=None, step_key="S5", activation_no=1),
+        plan=SimpleNamespace(id=1, plan_json={}),
+        semantic_model={"findings": [], "analysis_fragments": [], "evidence": []},
+        content_plan={},
+        fragment_snapshot=[],
+        coherence_fingerprint="fingerprint",
+        idempotency_key="coherence-version-pin",
+        generation_metadata={"kind": "CHAPTER_COHERENCE", "plan_id": 1},
+        scope="CHAPTER",
+        chapter_key="chapter.one",
+    )
+    assert created is True
+    assert run.skill_version_id == pinned.id
+    assert run.target_type == "REPORT_CHAPTER_COHERENCE"
+
+
 def test_analysis_requires_real_structure_or_explicit_deferral():
     key = "analysis.s2.complex"
     record = {**coverage(), "details": {f: "明确假设并核对" for f in ANALYSIS_STRUCTURES[key]}}

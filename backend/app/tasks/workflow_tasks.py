@@ -27,7 +27,10 @@ async def _dispatch_pending_events(batch_size: int = 100) -> int:
     published = 0
     async with AsyncSessionLocal() as db:
         from app.application.calendar_production import recover_stalled_calendar_requests
+        from app.application.skill_run_recovery import recover_stalled_skill_runs
+
         await recover_stalled_calendar_requests(db)
+        await recover_stalled_skill_runs(db)
         events = await db.scalars(
             select(WorkflowOutbox)
             .where(WorkflowOutbox.status == "PENDING")
@@ -74,9 +77,24 @@ async def _consume_outbox_event(event_id: int) -> dict:
                 or step.activation_no != payload.get("activation_no")
             ):
                 return {"event_id": event_id, "status": "stale"}
-            # Phase 1 steps are manual. Later executors can consume the same
-            # event after checking its activation number and current state.
-            return {"event_id": event_id, "status": "ready", "step_key": step.step_key}
+            from app.application.node_review_automation import prepare_node
+            from app.domains.workflow.models import ReportCase
+            case = await db.get(ReportCase, payload.get("report_case_id"))
+            if not case or case.review_policy_version != "six-node-review-v1":
+                return {"event_id": event_id, "status": "ready", "step_key": step.step_key}
+            result = await prepare_node(db, payload.get("report_case_id"), step.id, step.activation_no)
+            return {"event_id": event_id, "status": result, "step_key": step.step_key}
+
+        if event.event_type == "report.node.command":
+            from app.application.node_review_commands import execute_review_command
+            command = await execute_review_command(db, (event.payload_json or {}).get("command_id"))
+            return {"event_id": event_id, "status": command.status.lower() if command else "missing"}
+
+        if event.event_type == "report.node.prepare":
+            from app.application.node_review_automation import prepare_node
+            payload = event.payload_json or {}
+            result = await prepare_node(db, payload["report_case_id"], payload["step_task_id"], payload["activation_no"], retry_key=payload.get("retry_key"))
+            return {"event_id": event_id, "status": result}
 
         if event.event_type == "skill.run.requested":
             from app.application.skill_runtime import execute_skill_run_record
@@ -97,6 +115,16 @@ async def _consume_outbox_event(event_id: int) -> dict:
                 )
 
                 await advance_case_report_generation(db, run.id)
+            from app.application.node_review_automation import continue_node_run
+            try:
+                await continue_node_run(db, run)
+            except ValueError as error:
+                step_id = run.step_task_id
+                await db.rollback()
+                failed_step = await db.get(StepTask, step_id) if step_id else None
+                if failed_step:
+                    failed_step.last_error = str(error)
+                    await db.commit()
             return {
                 "event_id": event_id,
                 "status": run.status.lower(),

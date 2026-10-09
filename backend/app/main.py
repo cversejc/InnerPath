@@ -163,6 +163,8 @@ app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(report_task_routes.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(report_cases.router, prefix="/api/v1/report-cases", tags=["Report Cases"])
+from app.api.v1 import node_review
+app.include_router(node_review.router, prefix="/api/v1/report-cases", tags=["Report Node Review"])
 app.include_router(skills.admin_router, prefix="/api/v1/admin", tags=["Skill Studio"])
 app.include_router(skills.staff_router, prefix="/api/v1/staff", tags=["Skill Runs"])
 app.include_router(skill_examples.admin_router, prefix="/api/v1/admin", tags=["Skill Examples"])

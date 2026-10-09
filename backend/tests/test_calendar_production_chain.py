@@ -633,6 +633,9 @@ async def test_two_specialties_accept_and_hand_off_sequential_steps(chain_db):
         profile={"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
         context={"current_challenge": "测试工作边界", "focus_topics": ["career"],
                  "expected_outcomes": ["明确下一步"]}, idempotency_key="chain-request-1"))
+    # This fixture exercises legacy sequential domain commands and specialty
+    # handoff; new whole-node publication is covered in test_node_review.
+    case.review_policy_version = None
     expected_specialties = {
         "S1": "mingli", "S2": "mingli", "S3": "mingli",
         "S4": "psychology", "S5": "psychology", "S6": "psychology",
@@ -822,6 +825,8 @@ async def test_delivered_version_is_calendar_source_and_links_logs_to_case(chain
             request = await db.get(ServiceRequest, request_id)
             case = await db.scalar(select(ReportCase).where(ReportCase.service_request_id == request_id))
             assert request is not None and case is not None
+            # The delivered calendar-source fixture predates aggregate review.
+            case.review_policy_version = None
 
             actor = mingli
             accepted_mingli = await client.post(f"/api/v1/staff/service-requests/{request_id}/accept")

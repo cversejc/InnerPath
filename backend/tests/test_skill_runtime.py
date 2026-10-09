@@ -4,6 +4,7 @@ import json
 from types import SimpleNamespace
 from unittest.mock import Mock
 
+import httpx
 import pytest
 from fastapi import HTTPException
 from sqlalchemy import create_engine, func, select
@@ -1430,6 +1431,35 @@ async def test_executor_projects_context_validates_output_and_records_trace():
         "analysis_context"
     ]["evidence"]
     assert result.context_snapshot["foundation_data"] is None
+
+
+@pytest.mark.parametrize(
+    ("status_code", "expected_code"),
+    [
+        (401, "skill_model_auth_failed"),
+        (429, "skill_model_rate_limited"),
+        (503, "skill_model_provider_unavailable"),
+    ],
+)
+@pytest.mark.asyncio
+async def test_executor_records_provider_http_status_without_response_body(status_code, expected_code):
+    request = httpx.Request("POST", "https://provider.example/v1/chat/completions")
+    response = httpx.Response(status_code, request=request, text="private provider response")
+
+    class FailingGateway:
+        async def complete(self, **_kwargs):
+            raise httpx.HTTPStatusError("provider request failed", request=request, response=response)
+
+    with pytest.raises(SkillExecutionError, match=expected_code) as raised:
+        await execute_skill(
+            skill_version=_s1_skill_version(),
+            input_data=_analysis_skill_input(),
+            gateway=FailingGateway(),
+        )
+
+    assert raised.value.model_trace["http_status_code"] == status_code
+    assert raised.value.model_trace["error_type"] == "HTTPStatusError"
+    assert "private provider response" not in str(raised.value.model_trace)
 
 
 @pytest.mark.asyncio

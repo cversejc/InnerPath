@@ -1,4 +1,5 @@
 import {
+  applyReportCaseAnalysisCandidates,
   applyReportCaseAnalysisFinding,
   applyReportCaseAnalysisFragment,
   saveReportCaseFinding,
@@ -6,6 +7,53 @@ import {
 } from '../../report-cases/api.js'
 
 export default {
+  async applyReportAnalysisCandidates({ run, onComplete }) {
+    const finish = result => onComplete?.(result)
+    if (!this.reportCase || !this.canEditSelectedReportStep || this.reportAnalysisFindingSavingKey || this.reportAnalysisFragmentSavingKey) {
+      finish({ success: false, message: '当前节点暂时不能保存，请确认节点已开始处理。' })
+      return
+    }
+    const savingKey = `${run.id}:batch`
+    this.reportAnalysisFindingSavingKey = savingKey
+    this.reportAnalysisFragmentSavingKey = savingKey
+    try {
+      const result = await applyReportCaseAnalysisCandidates(
+        this.reportCase.id,
+        this.currentReportStep.step_key,
+        run.id
+      )
+      await this.loadReportCaseData(this.reportCase.id)
+      const findingKey = result.finding_keys?.[0]
+      const fragmentKey = result.fragment_keys?.[0]
+      if (this.nodeRecordKeys) {
+        if (findingKey) this.nodeRecordKeys.findings = findingKey
+        if (fragmentKey) this.nodeRecordKeys.fragments = fragmentKey
+      }
+      this.setReportWorkspaceSection(findingKey ? 'findings' : 'fragments')
+      this.message = `已加入待审内容：${result.finding_count} 条新判断、${result.fragment_count} 段新分析。请分别整体确认。`
+      finish({ success: true, result })
+    } catch (error) {
+      const code = error.response?.data?.detail
+      const messages = {
+        report_analysis_candidate_not_found: '分析记录已不可用，请刷新后重新运行分析。',
+        report_analysis_candidate_evidence_stale: '本次候选所依据的资料已更新，请重新运行 AI 分析。',
+        report_analysis_candidate_dependency_cycle: '候选判断的相互引用存在循环，请调整分析要求并重新运行。',
+        report_analysis_candidate_invalid: 'AI 候选结构不完整，请重新运行分析后再纳入。',
+        report_analysis_candidates_empty: '本次运行没有可纳入的判断或分析内容。',
+        report_analysis_fragment_findings_unconfirmed: '分析内容引用了当前无法采用的判断，请先处理判断后重新纳入。',
+      }
+      const message = error.response?.status === 409
+        ? '本节点内容已发生变化，请刷新后核对最新版本。'
+        : messages[code] || this.errorText(error)
+      this.message = message
+      finish({ success: false, message })
+      if (error.response?.status === 409) await this.loadReportCaseData(this.reportCase.id)
+    } finally {
+      this.reportAnalysisFindingSavingKey = ''
+      this.reportAnalysisFragmentSavingKey = ''
+    }
+  },
+
   async reviewReportAnalysisCandidate({ run, kind, candidate, review, expectedRevisionNo, onComplete }) {
     const finish = result => onComplete?.(result)
     if (!this.reportCase || !this.canEditSelectedReportStep || this.reportAnalysisFindingSavingKey || this.reportAnalysisFragmentSavingKey) {
@@ -94,8 +142,10 @@ export default {
         ? `${this.reportStepLabel(step.step_key)}已收到反馈，正在按本次要求重新生成建议。`
         : `${this.reportStepLabel(step.step_key)}的分析建议已开始生成。`
     } catch (error) {
-      this.message = error.response?.data?.detail === 'report_analysis_foundation_required'
-        ? '请先进入程序计算页保存并核对测算结果，再运行 S1 AI 分析。'
+      this.message = error.response?.data?.detail === 'birth_time_confirmation_required'
+        ? '请先完成“出生资料与时间核对”，再运行 S1 AI 分析。'
+        : error.response?.data?.detail === 'report_analysis_foundation_required'
+          ? '请先进入程序计算页保存并核对测算结果，再运行 S1 AI 分析。'
         : error.response?.data?.detail === 'report_analysis_feedback_source_stale'
           ? '之前的分析依据已更新。本次已停止沿用旧分析，请重新运行后再提交反馈。'
         : this.errorText(error)

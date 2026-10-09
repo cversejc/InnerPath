@@ -63,6 +63,7 @@ class ReportCase(Base, TimestampMixin):
     updated_at = Column(DateTime, nullable=False)
     delivered_at = Column(DateTime, nullable=True)
     cancelled_at = Column(DateTime, nullable=True)
+    review_policy_version = Column(String(40), nullable=True)
 
 
 class WorkflowVersion(Base):

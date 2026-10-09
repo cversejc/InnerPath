@@ -1,7 +1,28 @@
 import apiClient from '../../utils/apiClient.js'
 
+export async function getNodeReview(caseId, step) {
+  return (await apiClient.get(`/report-cases/${caseId}/steps/${step}/review`)).data
+}
+export async function patchNodeReview(caseId, step, payload) {
+  return (await apiClient.patch(`/report-cases/${caseId}/steps/${step}/review`, payload)).data
+}
+export async function nodeReviewCommand(caseId, step, command, payload) {
+  return (await apiClient.post(`/report-cases/${caseId}/steps/${step}/review/${command}`, payload)).data
+}
+export async function approveNodeReviewCheckpoint(caseId, step, payload) {
+  return (await apiClient.post(`/report-cases/${caseId}/steps/${step}/review/checkpoints`, payload)).data
+}
+export async function approveAndDeliver(caseId, payload) {
+  return (await apiClient.post(`/report-cases/${caseId}/approve-and-deliver`, payload)).data
+}
+
 export async function getReportCase(caseId) {
   const response = await apiClient.get(`/report-cases/${caseId}`)
+  return response.data
+}
+
+export async function importReportCaseContent(caseId, payload) {
+  const response = await apiClient.post(`/report-cases/${caseId}/import-report`, payload)
   return response.data
 }
 
@@ -36,6 +57,14 @@ export async function runReportCaseQuality(caseId, payload) {
 export async function resolveReportCaseQualityIssue(caseId, issueId, payload) {
   const response = await apiClient.post(
     `/report-cases/${caseId}/quality/issues/${issueId}/resolve`,
+    payload
+  )
+  return response.data
+}
+
+export async function resolveReportCaseQualityIssueGroup(caseId, payload) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/quality/issues/resolve-group`,
     payload
   )
   return response.data
@@ -88,6 +117,13 @@ export async function startReportCaseAnalysisDraft(caseId, stepKey, payload) {
   const response = await apiClient.post(
     `/report-cases/${caseId}/steps/${stepKey}/analysis-drafts`,
     payload
+  )
+  return response.data
+}
+
+export async function applyReportCaseAnalysisCandidates(caseId, stepKey, runId) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/steps/${stepKey}/analysis-drafts/${runId}/apply`
   )
   return response.data
 }

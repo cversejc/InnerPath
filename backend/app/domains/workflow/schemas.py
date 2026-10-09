@@ -62,6 +62,7 @@ class ReportCaseResponse(BaseModel):
     user_id: int
     service_request_id: Optional[int] = None
     status: str
+    review_policy_version: Optional[str] = None
     application_snapshot: dict[str, Any]
     application_submitted_at: datetime
     workflow_instance: Optional[WorkflowInstanceResponse] = None

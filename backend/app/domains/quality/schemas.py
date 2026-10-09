@@ -31,6 +31,14 @@ class QAIssueResolution(BaseModel):
     resolution: str = Field(..., min_length=3, max_length=2000)
 
 
+class QAIssueGroupResolution(BaseModel):
+    """同类型检查问题整体处理：一次填写依据，每条问题仍单独留痕。"""
+
+    issue_ids: list[int] = Field(min_length=1, max_length=200)
+    status: Literal["RESOLVED", "ACCEPTED", "DISMISSED"]
+    resolution: str = Field(..., min_length=3, max_length=2000)
+
+
 class QualityRunRequest(BaseModel):
     idempotency_key: str = Field(..., min_length=1, max_length=200)
     runtime_instruction: Optional[str] = Field(None, max_length=4000)
@@ -38,7 +46,9 @@ class QualityRunRequest(BaseModel):
 
 
 class FinalGateApproval(BaseModel):
-    attested: bool
+    # Kept for audit compatibility; the server does not require it. The
+    # consultant's explicit confirmation through the button is the authorization.
+    attested: bool = False
     note: Optional[str] = Field(None, max_length=2000)
 
 
@@ -47,7 +57,16 @@ class ReportQualityResponse(BaseModel):
     latest_validator_run: Optional[dict[str, Any]] = None
     quality_status: str
     issues: list[QAIssueResponse]
+    issue_groups: list[dict[str, Any]] = Field(default_factory=list)
     can_approve: bool
+    # `can_approve` keeps the strict meaning (nothing open, scorecard and
+    # framework checks pass). The consultant fast path is advisory only: checks
+    # are optional, so `can_finalize` stays true and delivery may be confirmed at
+    # any time, even before any check has run.
+    advisory_only: bool = False
+    can_finalize: bool = False
+    final_gate_override: Optional[dict[str, Any]] = None
+    unresolved_advisories: list[dict[str, Any]] = Field(default_factory=list)
     blocking_count: int
     open_count: int
     qa_fingerprint_current: Optional[str] = None

@@ -56,7 +56,7 @@ alembic/versions/*.pyc
 Thumbs.db
 
 # Celery
-celerybeat-schedule
+celerybeat-schedule*
 celerybeat.pid
 
 # Backup files

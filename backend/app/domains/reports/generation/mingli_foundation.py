@@ -2,6 +2,8 @@ from typing import Any, Dict, Optional
 
 from .bazi_calculator import bazi_calculator
 from .bazi_facts import calculate_bazi_facts
+from .birth_time import adopted_profile, resolve_birth_time
+from datetime import datetime, timedelta
 
 def calculate_bazi_from_user_data(user_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -18,6 +20,16 @@ def calculate_bazi_from_user_data(user_data: Dict[str, Any]) -> Dict[str, Any]:
             return default
         return int(value)
 
+    time = None
+    physical = None
+    if user_data.get("review_time_policy"):
+        time = resolve_birth_time(user_data, user_data.get("birth_time_confirmation"))
+        if time.get("actual_utc"):
+            # lunar-python's solar terms are represented in UTC+8, independent of chart clock.
+            instant = datetime.fromisoformat(time["actual_utc"].rstrip("Z")) + timedelta(hours=8)
+            physical = dict(year=instant.year, month=instant.month, day=instant.day,
+                            hour=instant.hour, minute=instant.minute, second=instant.second)
+        user_data = adopted_profile(user_data, time)
     year = int(user_data.get("birth_year"))
     month = int(user_data.get("birth_month"))
     day = int(user_data.get("birth_day"))
@@ -42,6 +54,8 @@ def calculate_bazi_from_user_data(user_data: Dict[str, Any]) -> Dict[str, Any]:
         minute=minute,
         is_solar=is_solar,
         is_leap_month=bool(user_data.get("birth_is_leap_month", False)),
+        actual_birth=physical,
+        second=int(user_data.get("birth_second") or 0),
     )
 
     # 计算紫微斗数 (如果有时辰)
@@ -68,7 +82,10 @@ def calculate_bazi_from_user_data(user_data: Dict[str, Any]) -> Dict[str, Any]:
 
     return {
         "bazi": bazi_result,
-        "ziwei": ziwei_result
+        "ziwei": ziwei_result,
+        "birth_time": time,
+        "actual_birth": physical,
+        "adopted_profile": user_data,
     }
 
 
@@ -118,7 +135,13 @@ def calculate_mingli_foundation(user_data: Dict[str, Any]) -> Dict[str, Any]:
     if ziwei:
         result["ziwei"] = ziwei
 
-    result["bazi_facts"] = calculate_bazi_facts(user_data, bazi)
+    result["bazi_facts"] = calculate_bazi_facts(foundation_data["adopted_profile"], bazi, actual_birth=foundation_data["actual_birth"])
+    if foundation_data.get("birth_time"):
+        result["birth_time"] = foundation_data["birth_time"]
+        result["bazi_facts"]["conventions"]["time"] = "年/月及起运采用实际出生瞬间；日/时及紫微采用经确认的命理日期、时间"
+        result["bazi_facts"]["limitations"].extend(result["birth_time"]["limitations"])
+        if result["birth_time"].get("actual_utc") is None:
+            result["bazi_facts"]["dayun"] = []
     result["calculation_version"] = "mingli-v2"
     result["input_assumptions"] = user_data.get("demo_assumptions") or []
     result["limitations"] = result["bazi_facts"]["limitations"] + ([] if ziwei else ["紫微未计算，不能补造宫位星曜"])

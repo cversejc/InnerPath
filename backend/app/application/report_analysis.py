@@ -26,6 +26,7 @@ from app.domains.content.framework_coverage import analysis_coverage_issues
 from app.domains.content.reasoning_contract import (
     ANALYSIS_STRUCTURES, normalize_structured_analysis, reasoning_issues, validate_timeline_source,
 )
+from app.domains.review.contracts import fingerprint
 from app.models.user import User
 
 
@@ -260,6 +261,10 @@ async def _ensure_mingli_foundation(
         return current
 
     profile, _context = _stage_snapshot(report_case)
+    if report_case.review_policy_version == "six-node-review-v1":
+        from app.domains.review.models import NodeReviewState
+        state = await db.scalar(select(NodeReviewState).where(NodeReviewState.report_case_id == report_case.id, NodeReviewState.step_key == "S1"))
+        profile = {**profile, "review_time_policy": True, "birth_time_confirmation": (state.metadata_json or {}).get("birth_time_confirmation") if state else None}
     try:
         foundation = calculate_mingli_foundation(profile)
     except (KeyError, TypeError, ValueError) as error:
@@ -613,6 +618,21 @@ async def queue_case_analysis_draft(
     report_case, step = await _authorize_analysis_step(
         db, case_id=case_id, step_key=step_key, actor=actor
     )
+    if step_key == "S1" and report_case.review_policy_version == "six-node-review-v1":
+        from app.application.node_review_workspace import checkpoint_state_map, node_snapshot
+        from app.domains.review.models import NodeReviewState
+
+        review_state = await db.scalar(
+            select(NodeReviewState).where(
+                NodeReviewState.report_case_id == report_case.id,
+                NodeReviewState.step_key == "S1",
+            )
+        )
+        confirmation = (review_state.metadata_json or {}).get("birth_time_confirmation") if review_state else None
+        snapshot = await node_snapshot(db, report_case, step, review_state)
+        checkpoints = await checkpoint_state_map(db, report_case, step, snapshot)
+        if not (confirmation or {}).get("confirmed") or not checkpoints.get("birth_data", {}).get("current"):
+            raise ValueError("birth_time_confirmation_required")
     if step_key == "S1":
         active_foundation_rows = list(await db.scalars(
             select(CaseEvidenceItem).where(
@@ -624,6 +644,30 @@ async def queue_case_analysis_draft(
             raise ValueError("report_analysis_foundation_required")
     stage = ANALYSIS_STEPS[step_key]
     skill = await resolve_case_skill(db, report_case, stage["skill_key"])
+    if report_case.review_policy_version == "six-node-review-v1":
+        from app.application.node_review_workspace import node_snapshot
+
+        current_snapshot = snapshot if step_key == "S1" else await node_snapshot(db, report_case, step)
+        current_fingerprint = fingerprint(current_snapshot)
+        pending_run = await db.scalar(
+            select(SkillRun)
+            .where(
+                SkillRun.report_case_id == report_case.id,
+                SkillRun.step_task_id == step.id,
+                SkillRun.skill_version_id == skill.id,
+                SkillRun.target_type == "REPORT_ANALYSIS_DRAFT",
+                SkillRun.target_key == step_key,
+                SkillRun.status.in_(["PENDING", "RUNNING"]),
+            )
+            .order_by(SkillRun.id.desc())
+            .limit(1)
+        )
+        if (
+            pending_run is not None
+            and (pending_run.context_snapshot or {}).get("analysis_activation_no") == step.activation_no
+            and (pending_run.context_snapshot or {}).get("node_input_fingerprint") == current_fingerprint
+        ):
+            return pending_run, False
     analysis_context, foundation = await _analysis_context(
         db, report_case=report_case, step=step
     )
@@ -882,7 +926,7 @@ async def apply_analysis_fragment_candidate(
         raise ValueError("report_analysis_fragment_support_required")
     for referenced_key in candidate.get("finding_refs") or []:
         referenced_finding = await current_finding(db, case_id, referenced_key)
-        if referenced_finding is None or referenced_finding.status != "CONFIRMED":
+        if referenced_finding is None or not (referenced_finding.status == "CONFIRMED" or (report_case.review_policy_version == "six-node-review-v1" and referenced_finding.status == "PROPOSED" and referenced_finding.owner_step_task_id == step.id)):
             raise ValueError("report_analysis_fragment_findings_unconfirmed")
     current = await db.scalar(
         select(ContentFragmentRevision)
@@ -931,3 +975,154 @@ async def apply_analysis_fragment_candidate(
         source_skill_run_id=run.id,
         created_by=actor.id,
     )
+
+
+
+def relation_targets(candidate: dict[str, Any]) -> set[str]:
+    """Candidate finding keys referenced by one candidate's relation_refs."""
+    targets = set()
+    for ref in candidate.get("relation_refs") or []:
+        if isinstance(ref, str):
+            targets.add(ref)
+        elif isinstance(ref, dict) and isinstance(ref.get("finding_key"), str):
+            targets.add(ref["finding_key"])
+    return targets
+
+
+async def apply_analysis_run_candidates(
+    db: AsyncSession,
+    *,
+    case_id: int,
+    step_key: str,
+    run_id: int,
+    actor: User,
+) -> dict[str, Any]:
+    """Add one completed analysis run to the node as proposed content."""
+    report_case, step = await _authorize_analysis_step(
+        db, case_id=case_id, step_key=step_key, actor=actor
+    )
+    run = await _analysis_run_for_apply(
+        db, report_case=report_case, step=step, run_id=run_id
+    )
+    output = run.output_parsed or {}
+    finding_candidates = output.get("findings") or []
+    fragment_candidates = output.get("analysis_fragments") or []
+    if not finding_candidates and not fragment_candidates:
+        raise ValueError("report_analysis_candidates_empty")
+
+    pending_findings = {}
+    for candidate in finding_candidates:
+        key = candidate.get("finding_key") if isinstance(candidate, dict) else None
+        if not isinstance(key, str) or not key or key in pending_findings:
+            raise ValueError("report_analysis_candidate_invalid")
+        pending_findings[key] = candidate
+
+    applied_findings = []
+    existing_findings = []
+    cycle_breaks: list[dict[str, Any]] = []
+    while pending_findings:
+        for key in list(pending_findings):
+            current = await current_finding(db, case_id, key)
+            if current and current.source_skill_run_id == run.id:
+                existing_findings.append(key)
+                del pending_findings[key]
+        if not pending_findings:
+            break
+
+        ready = []
+        for key, candidate in pending_findings.items():
+            refs = candidate.get("relation_refs") or []
+            dependencies = set()
+            for ref in refs:
+                if isinstance(ref, str):
+                    dependencies.add(ref)
+                elif isinstance(ref, dict):
+                    dependencies.add(ref.get("finding_key"))
+                else:
+                    raise ValueError("finding_relation_invalid")
+            if not dependencies.intersection(pending_findings):
+                ready.append((key, candidate))
+        if not ready:
+            # 候选之间互相引用（例如互为对立面）时不存在能满足全部引用的应用顺序。
+            # 按最少待定依赖优先断环，只剪掉指向尚未写入候选的引用，避免整批失败。
+            ordered = list(pending_findings)
+            key = min(
+                ordered,
+                key=lambda item: (
+                    len(relation_targets(pending_findings[item]).intersection(ordered)),
+                    ordered.index(item),
+                ),
+            )
+            candidate = pending_findings[key]
+            kept, pruned = [], []
+            for ref in candidate.get("relation_refs") or []:
+                target = ref if isinstance(ref, str) else ref.get("finding_key") if isinstance(ref, dict) else None
+                if target in pending_findings:
+                    pruned.append(target)
+                else:
+                    kept.append(ref)
+            if pruned:
+                candidate["relation_refs"] = kept
+                cycle_breaks.append({"finding_key": key, "pruned_relation_keys": pruned, "pruned_relation_count": len(pruned)})
+            ready.append((key, candidate))
+
+        for key, candidate in ready:
+            current = await current_finding(db, case_id, key)
+            await apply_analysis_finding_candidate(
+                db,
+                case_id=case_id,
+                step_key=step_key,
+                run_id=run_id,
+                finding_key=key,
+                expected_revision_no=current.revision_no if current else None,
+                actor=actor,
+            )
+            applied_findings.append(key)
+            del pending_findings[key]
+
+    pending_fragments = {}
+    for candidate in fragment_candidates:
+        key = candidate.get("fragment_key") if isinstance(candidate, dict) else None
+        if not isinstance(key, str) or not key or key in pending_fragments:
+            raise ValueError("report_analysis_candidate_invalid")
+        pending_fragments[key] = candidate
+
+    applied_fragments = []
+    existing_fragments = []
+    for key in pending_fragments:
+        current = await db.scalar(
+            select(ContentFragmentRevision)
+            .where(
+                ContentFragmentRevision.report_case_id == case_id,
+                ContentFragmentRevision.fragment_key == key,
+                ContentFragmentRevision.is_current.is_(True),
+            )
+            .with_for_update()
+        )
+        if current and current.source_skill_run_id == run.id:
+            existing_fragments.append(key)
+            continue
+        await apply_analysis_fragment_candidate(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            run_id=run_id,
+            fragment_key=key,
+            expected_revision_no=current.revision_no if current else None,
+            actor=actor,
+        )
+        applied_fragments.append(key)
+
+    if cycle_breaks:
+        # 断环后的候选引用已在内存中收敛，回写一次保证与本次应用结果一致。
+        run.output_parsed = output
+    return {
+        "cycle_breaks": cycle_breaks,
+        "pruned_relation_count": sum(item["pruned_relation_count"] for item in cycle_breaks),
+        "finding_count": len(applied_findings),
+        "fragment_count": len(applied_fragments),
+        "existing_finding_count": len(existing_findings),
+        "existing_fragment_count": len(existing_fragments),
+        "finding_keys": applied_findings + existing_findings,
+        "fragment_keys": applied_fragments + existing_fragments,
+    }

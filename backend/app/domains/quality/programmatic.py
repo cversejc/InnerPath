@@ -24,6 +24,16 @@ REQUIRED_SECTIONS = {
     "challenge": (("report.challenge", "report.blocks"), "卡在哪"),
     "direction": ("report.direction", "往哪去"),
 }
+
+
+def imported_report_case(case) -> bool:
+    """Fast path: the consultant imported a finished report, so the case has no
+    authored Finding/Analysis provenance for the programmatic mapper to trace."""
+    return case.review_policy_version == "import-review-v1"
+
+
+def reviewable_report_fragment(row, case):
+    return row.status == "CONFIRMED" or (case.review_policy_version == "six-node-review-v1" and row.status == "PROPOSED")
 BLOCKED_PHRASES = (
     "注定发财",
     "必然离婚",
@@ -125,14 +135,15 @@ async def collect_programmatic_issues(
         semantic_model = await load_case_semantic_model(db, report_case.id)
     except ValueError:
         semantic_model = None
-        issues.append(
-            _issue(
-                "CONFIRMED_SEMANTICS_MISSING",
-                "BLOCK",
-                "Case 没有可用于报告的已确认 Finding。",
-                suggestion="补充并确认有 Evidence 来源的专业判断。",
+        if not imported_report_case(report_case):
+            issues.append(
+                _issue(
+                    "CONFIRMED_SEMANTICS_MISSING",
+                    "BLOCK",
+                    "Case 没有可用于报告的已确认 Finding。",
+                    suggestion="补充并确认有 Evidence 来源的专业判断。",
+                )
             )
-        )
     if current_plan is not None and current_plan.status == "CONFIRMED" and semantic_model:
         if not narrative_semantic_sources_match(current_plan, semantic_model):
             issues.append(
@@ -193,7 +204,7 @@ async def collect_programmatic_issues(
                 ),
                 None,
             )
-            if fragment is None or fragment.status != "CONFIRMED":
+            if fragment is None or not reviewable_report_fragment(fragment, report_case):
                 issues.append(
                     _issue(
                         "PLANNED_FRAGMENT_UNCONFIRMED",
@@ -210,7 +221,7 @@ async def collect_programmatic_issues(
         covered_must_include = {
             ref.get("finding_key")
             for fragment in current_fragments
-            if fragment.status == "CONFIRMED"
+            if reviewable_report_fragment(fragment, report_case)
             and fragment.source_narrative_plan_id == current_plan.id
             for ref in (fragment.source_snapshot or {}).get("findings", [])
             if isinstance(ref, dict)
@@ -229,7 +240,7 @@ async def collect_programmatic_issues(
         if semantic_model.get("framework_contract"):
             for issue in report_coverage_issues(content_plan, [
                 {"fragment_key": f.fragment_key, "content": f.content, "source_snapshot": f.source_snapshot}
-                for f in current_fragments if f.status == "CONFIRMED"]):
+                for f in current_fragments if reviewable_report_fragment(f, report_case)]):
                 issues.append(_issue(issue["type"], "BLOCK", "产品框架内容覆盖未完成或与当前正文不一致。",
                     fragment=next((f for f in current_fragments if f.fragment_key == issue.get("target_fragment")), None),
                     evidence=issue, suggestion="补齐该段要求的内容和覆盖说明，重新审核。"))
@@ -248,7 +259,7 @@ async def collect_programmatic_issues(
                     row
                     for row in current_fragments
                     if row.fragment_key == growth.get("fragment_key")
-                    and row.status == "CONFIRMED"
+                    and reviewable_report_fragment(row, report_case)
                     and row.source_narrative_plan_id == current_plan.id
                 ),
                 None,
@@ -298,7 +309,7 @@ async def collect_programmatic_issues(
         }
         for fragment in current_fragments:
             if (
-                fragment.status != "CONFIRMED"
+                not reviewable_report_fragment(fragment, report_case)
                 or fragment.source_narrative_plan_id != current_plan.id
             ):
                 continue
@@ -337,7 +348,7 @@ async def collect_programmatic_issues(
                 for item in prefixes
             )
         ]
-        if not any(row.status == "CONFIRMED" and row.content.strip() for row in section_fragments):
+        if not any(reviewable_report_fragment(row, report_case) and row.content.strip() for row in section_fragments):
             issues.append(
                 _issue(
                     "MISSING_REQUIRED_SECTION",
@@ -371,7 +382,7 @@ async def collect_programmatic_issues(
                 )
             )
             continue
-        if fragment.status != "CONFIRMED":
+        if not reviewable_report_fragment(fragment, report_case):
             issues.append(
                 _issue(
                     "UNCONFIRMED_FRAGMENT",
@@ -396,7 +407,7 @@ async def collect_programmatic_issues(
         finding_refs = source.get("findings") or []
         analysis_refs = source.get("fragments") or []
         evidence_refs = source.get("evidence") or []
-        if not finding_refs and not analysis_refs:
+        if not finding_refs and not analysis_refs and not imported_report_case(report_case):
             issues.append(
                 _issue(
                     "SOURCE_MAP_MISSING",
@@ -539,7 +550,7 @@ async def collect_programmatic_issues(
                 "revision_no": row.revision_no,
                 "semantic_revision": row.semantic_revision,
                 "content_revision": row.content_revision,
-                "status": row.status,
+                "status": "REVIEWABLE" if report_case.review_policy_version == "six-node-review-v1" and reviewable_report_fragment(row, report_case) else row.status,
                 "title": row.title,
                 "content": row.content,
                 "source_snapshot": row.source_snapshot,
