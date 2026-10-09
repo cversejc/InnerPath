@@ -2,7 +2,7 @@ from datetime import datetime
 from app.core.time import utc_now_naive
 from typing import Optional
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,7 +17,13 @@ from app.domains.workflow.definitions import (
     default_workflow_definition,
     normalize_workflow_key,
 )
-from app.domains.workflow.simple_definitions import simple_workflow_definition
+from app.domains.workflow.simple_definitions import (
+    SIMPLE_PROTOCOL_LEGACY,
+    ai_assisted_simple_workflow_definition,
+    normalize_simple_protocol,
+    simple_protocol_from_definition,
+    simple_workflow_definition,
+)
 from app.domains.workflow.models import ReportCase, WorkflowVersion
 from app.domains.workflow.service import cancel_case, create_report_case
 from app.domains.workflow.service import latest_published_version, create_workflow_draft, publish_workflow_version
@@ -83,25 +89,74 @@ async def ensure_default_workflow_version(db: AsyncSession) -> WorkflowVersion:
         raise
 
 
-async def ensure_simple_workflow_version(db: AsyncSession) -> WorkflowVersion:
-    """Return the published built-in version matching the current code.
+async def _latest_simple_version_for_protocol(
+    db: AsyncSession, protocol: str
+) -> Optional[WorkflowVersion]:
+    """Return the newest published ``report.simple`` version of one protocol.
 
-    The simplified workflow follows the shared report node catalog and replaces
-    every node contract with user info + report text. It has no authoring
-    screen, so its code definition is published on first use. Existing cases
-    keep their frozen workflow version; when the code definition changes, new
-    cases receive a new version instead of reusing the stale one.
+    The workflow key is shared by both protocols, so the frozen definition
+    marker, not the version number alone, decides which version a case wants.
     """
-    definition = simple_workflow_definition()
-    latest = await latest_published_version(db, SIMPLE_WORKFLOW_KEY)
+    versions = list(
+        (
+            await db.scalars(
+                select(WorkflowVersion)
+                .where(
+                    WorkflowVersion.workflow_key == SIMPLE_WORKFLOW_KEY,
+                    WorkflowVersion.status == "PUBLISHED",
+                )
+                .order_by(WorkflowVersion.version.desc())
+            )
+        ).all()
+    )
+    for version in versions:
+        if simple_protocol_from_definition(version.definition_json) == protocol:
+            return version
+    return None
+
+
+async def _next_simple_version_number(db: AsyncSession) -> int:
+    """Return the next globally unique version number for ``report.simple``.
+
+    The unique constraint covers ``(workflow_key, version)`` across both
+    protocols, so numbering must not restart per protocol.
+    """
+    latest_number = await db.scalar(
+        select(func.max(WorkflowVersion.version)).where(
+            WorkflowVersion.workflow_key == SIMPLE_WORKFLOW_KEY
+        )
+    )
+    return int(latest_number or 0) + 1
+
+
+async def ensure_simple_workflow_version(
+    db: AsyncSession, protocol: str = SIMPLE_PROTOCOL_LEGACY
+) -> WorkflowVersion:
+    """Return the published built-in version matching protocol and code.
+
+    The simplified workflow follows the shared report node catalog. It has no
+    authoring screen, so its code definition is published on first use.
+    Existing cases keep their frozen workflow version; when a protocol's code
+    definition changes, new cases receive a new version instead of reusing the
+    stale one. The legacy protocol stays the default so existing callers and
+    cases are untouched until the AI protocol is explicitly enabled.
+    """
+    protocol = normalize_simple_protocol(protocol)
+    if protocol == SIMPLE_PROTOCOL_LEGACY:
+        definition = simple_workflow_definition()
+        name = "简化报告流程"
+    else:
+        definition = ai_assisted_simple_workflow_definition()
+        name = "简化报告流程（AI 辅助）"
+    latest = await _latest_simple_version_for_protocol(db, protocol)
     if latest is not None and latest.definition_json == definition:
         return latest
 
     now = utc_now_naive()
     version = WorkflowVersion(
         workflow_key=SIMPLE_WORKFLOW_KEY,
-        name="简化报告流程",
-        version=(latest.version if latest else 0) + 1,
+        name=name,
+        version=await _next_simple_version_number(db),
         status="PUBLISHED",
         definition_json=definition,
         created_by=None,
@@ -115,7 +170,7 @@ async def ensure_simple_workflow_version(db: AsyncSession) -> WorkflowVersion:
             await db.flush()
         return version
     except IntegrityError:
-        latest = await latest_published_version(db, SIMPLE_WORKFLOW_KEY)
+        latest = await _latest_simple_version_for_protocol(db, protocol)
         if latest is not None and latest.definition_json == definition:
             return latest
         raise
@@ -183,11 +238,15 @@ async def create_user_service_request(
     )
     report_case = await get_report_case_for_service_request(db, request.id)
     if report_case is None and request.status not in {"withdrawn", "rejected"}:
-        workflow_key = normalize_workflow_key(
-            case_workflow_key(request.request_payload or {})
-        )
+        request_payload = request.request_payload or {}
+        workflow_key = normalize_workflow_key(case_workflow_key(request_payload))
         if workflow_key == SIMPLE_WORKFLOW_KEY:
-            workflow_version = await ensure_simple_workflow_version(db)
+            # The request payload freezes which Simple protocol was requested;
+            # only an explicit AI-assisted request leaves the legacy default.
+            workflow_version = await ensure_simple_workflow_version(
+                db,
+                simple_protocol_from_definition(request_payload),
+            )
         else:
             workflow_version = await ensure_collaborative_workflow_version(db)
         report_case = await create_report_case(

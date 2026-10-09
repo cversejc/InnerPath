@@ -27,6 +27,18 @@ from app.application.report_analysis import (
 )
 from app.application.skill_runtime import queue_case_authoring_skill_run
 from app.application.simple_report_delivery import complete_simple_report_step
+from app.application.simple_ai_workflow import (
+    AI_REVISION as SIMPLE_STEP_MODE_AI_REVISION,
+    INITIAL as SIMPLE_STEP_MODE_INITIAL,
+    REGENERATE as SIMPLE_STEP_MODE_REGENERATE,
+    approve_step as approve_simple_step,
+    list_revisions as list_simple_step_revisions,
+    quality_state as simple_quality_state,
+    reopen_step as reopen_simple_step,
+    save_manual_edit as save_simple_manual_edit,
+    start_generation as start_simple_step_generation,
+    step_state as simple_step_state,
+)
 from app.application.report_generation import (
     start_case_report_coherence_check,
     start_case_report_generation,
@@ -82,10 +94,21 @@ from app.domains.delivery.models import ReportVersion
 from app.domains.delivery.schemas import ReportVersionResponse
 from app.domains.delivery.simple_models import SimpleReportVersion
 from app.domains.delivery.simple_schemas import (
+    SimpleApproveInput,
+    SimpleGenerateInput,
+    SimpleManualEditInput,
+    SimpleQualityResponse,
+    SimpleRegenerateInput,
+    SimpleReopenInput,
     SimpleReportVersionListResponse,
     SimpleReportVersionResponse,
+    SimpleReviseInput,
+    SimpleStepActionInput,
+    SimpleStepRevisionListResponse,
+    SimpleStepRevisionResponse,
     SimpleStepCompleteInput,
     SimpleStepCompletionResponse,
+    SimpleStepStateResponse,
 )
 from app.domains.quality.schemas import (
     FinalGateApproval,
@@ -130,6 +153,10 @@ from app.domains.workflow.definitions import (
     SIMPLE_WORKFLOW_KEY,
     case_workflow_key,
 )
+from app.domains.workflow.simple_definitions import (
+    SIMPLE_PROTOCOL_AI_ASSISTED,
+    case_simple_protocol,
+)
 from app.models.user import User
 from app.domains.workflow.authorization import is_assigned, assignment_condition, validate_step_actor
 
@@ -151,6 +178,9 @@ def _workflow_error(error: ValueError) -> None:
         "qa_issue_not_found",
         "report_analysis_run_not_found",
         "report_analysis_candidate_not_found",
+        "simple_step_execution_not_found",
+        "simple_revision_not_found",
+        "simple_review_target_not_found",
     }:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
     if code in {
@@ -223,17 +253,45 @@ def _workflow_error(error: ValueError) -> None:
         "workflow_key_mismatch",
         "workflow_key_locked",
         "simple_report_version_immutable",
+        "simple_ai_protocol_required",
+        "simple_step_not_ready",
+        "simple_step_not_in_review",
+        "simple_step_dependency_stale",
+        "simple_revision_outdated",
+        "simple_step_run_in_progress",
+        "simple_step_already_completed",
+        "simple_review_idempotency_conflict",
+        "simple_generation_idempotency_conflict",
+        "simple_activation_outdated",
+        "simple_initial_revision_conflict",
+        "simple_step_not_completed",
+        "simple_protocol_locked",
         "report_import_duplicate_content",
         "report_import_idempotency_conflict",
         "report_import_case_not_importable",
         "report_import_content_sha256_mismatch",
     }:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=code)
-    if code in {"report_case_forbidden", "step_assigned_to_another_consultant", "step_specialty_required"}:
+    if code in {
+        "report_case_forbidden",
+        "step_assigned_to_another_consultant",
+        "step_specialty_required",
+        "simple_review_forbidden",
+    }:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
-    if code in {"simple_report_text_required"}:
+    if code in {
+        "simple_report_text_required",
+        "simple_revision_required",
+        "simple_revision_content_missing",
+        "simple_revision_type_invalid",
+        "simple_feedback_required",
+        "simple_review_mode_invalid",
+        "simple_review_delegation_required",
+        "simple_review_delegation_invalid",
+        "simple_protocol_unsupported",
+    }:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
         )
@@ -763,10 +821,17 @@ async def complete_simple_report_case_step(
     current_user: User = Depends(require_roles("admin", "consultant")),
     db: AsyncSession = Depends(get_db),
 ):
-    try:
-        await _authorize_step_action(
-            db, case_id, step_key, current_user, require_current_review=True
+    report_case, _task = await _authorize_step_action(
+        db, case_id, step_key, current_user, require_current_review=True
+    )
+    if case_simple_protocol(report_case) == SIMPLE_PROTOCOL_AI_ASSISTED:
+        # The legacy manual completion path must never be able to overwrite an
+        # AI-assisted execution.  Callers have to use /approve instead.
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="simple_ai_protocol_required",
         )
+    try:
         version, report = await complete_simple_report_step(
             db,
             case_id=case_id,
@@ -784,6 +849,285 @@ async def complete_simple_report_case_step(
         version=SimpleReportVersionResponse.model_validate(version),
         delivered=report is not None,
         report_id=report.id if report is not None else None,
+    )
+
+
+async def _start_simple_step_command(
+    db: AsyncSession,
+    *,
+    case_id: int,
+    step_key: str,
+    current_user: User,
+    data: SimpleStepActionInput,
+    mode: str,
+    base_revision_id: Optional[int] = None,
+    feedback_text: Optional[str] = None,
+) -> dict:
+    await _authorize_step_action(db, case_id, step_key, current_user)
+    try:
+        await start_simple_step_generation(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+            idempotency_key=data.idempotency_key,
+            mode=mode,
+            base_revision_id=base_revision_id,
+            feedback_text=feedback_text,
+            review_mode=data.review_mode,
+            on_behalf_of_user_id=data.on_behalf_of_user_id,
+        )
+        return await simple_step_state(db, case_id, step_key)
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.get(
+    "/{case_id}/simple/steps/{step_key}",
+    response_model=SimpleStepStateResponse,
+)
+async def get_simple_report_case_step(
+    case_id: int,
+    step_key: str,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _case_for_read_or_action(db, case_id, current_user)
+    try:
+        return await simple_step_state(db, case_id, step_key)
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/simple/steps/{step_key}/generate",
+    response_model=SimpleStepStateResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def generate_simple_report_case_step(
+    case_id: int,
+    step_key: str,
+    data: SimpleGenerateInput,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await _start_simple_step_command(
+        db,
+        case_id=case_id,
+        step_key=step_key,
+        current_user=current_user,
+        data=data,
+        mode=SIMPLE_STEP_MODE_INITIAL,
+    )
+
+
+@router.post(
+    "/{case_id}/simple/steps/{step_key}/revise",
+    response_model=SimpleStepStateResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def revise_simple_report_case_step(
+    case_id: int,
+    step_key: str,
+    data: SimpleReviseInput,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await _start_simple_step_command(
+        db,
+        case_id=case_id,
+        step_key=step_key,
+        current_user=current_user,
+        data=data,
+        mode=SIMPLE_STEP_MODE_AI_REVISION,
+        base_revision_id=data.base_revision_id,
+        feedback_text=data.feedback_text,
+    )
+
+
+@router.post(
+    "/{case_id}/simple/steps/{step_key}/regenerate",
+    response_model=SimpleStepStateResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def regenerate_simple_report_case_step(
+    case_id: int,
+    step_key: str,
+    data: SimpleRegenerateInput,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    return await _start_simple_step_command(
+        db,
+        case_id=case_id,
+        step_key=step_key,
+        current_user=current_user,
+        data=data,
+        mode=SIMPLE_STEP_MODE_REGENERATE,
+        base_revision_id=data.base_revision_id,
+        feedback_text=data.feedback_text,
+    )
+
+
+@router.post(
+    "/{case_id}/simple/steps/{step_key}/manual-edit",
+    response_model=SimpleStepRevisionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def manually_edit_simple_report_case_step(
+    case_id: int,
+    step_key: str,
+    data: SimpleManualEditInput,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _authorize_step_action(db, case_id, step_key, current_user)
+    try:
+        revision = await save_simple_manual_edit(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+            content=data.content,
+            structured_content=data.structured_content,
+            base_revision_id=data.base_revision_id,
+            idempotency_key=data.idempotency_key,
+            review_mode=data.review_mode,
+            on_behalf_of_user_id=data.on_behalf_of_user_id,
+        )
+        return revision
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/simple/steps/{step_key}/approve",
+    response_model=SimpleStepStateResponse,
+)
+async def approve_simple_report_case_step(
+    case_id: int,
+    step_key: str,
+    data: SimpleApproveInput,
+    request: Request,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _authorize_step_action(db, case_id, step_key, current_user)
+    try:
+        await approve_simple_step(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+            base_revision_id=data.base_revision_id,
+            idempotency_key=data.idempotency_key,
+            final_gate_confirmed=data.final_gate_confirmed,
+            review_note=data.review_note,
+            review_mode=data.review_mode,
+            on_behalf_of_user_id=data.on_behalf_of_user_id,
+            audit_context=audit_context_from_request(request),
+        )
+        return await simple_step_state(db, case_id, step_key)
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.get(
+    "/{case_id}/simple/steps/{step_key}/revisions",
+    response_model=SimpleStepRevisionListResponse,
+)
+async def list_simple_report_case_step_revisions(
+    case_id: int,
+    step_key: str,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _case_for_read_or_action(db, case_id, current_user)
+    try:
+        rows = await list_simple_step_revisions(db, case_id, step_key)
+        return SimpleStepRevisionListResponse(
+            total=len(rows),
+            items=[
+                SimpleStepRevisionResponse.model_validate(row) for row in rows
+            ],
+        )
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post(
+    "/{case_id}/simple/steps/{step_key}/reopen",
+    response_model=SimpleStepStateResponse,
+)
+async def reopen_simple_report_case_step(
+    case_id: int,
+    step_key: str,
+    data: SimpleReopenInput,
+    request: Request,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _authorize_step_action(db, case_id, step_key, current_user)
+    try:
+        await reopen_simple_step(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+            reason=data.reason,
+            idempotency_key=data.idempotency_key,
+            review_mode=data.review_mode,
+            on_behalf_of_user_id=data.on_behalf_of_user_id,
+            audit_context=audit_context_from_request(request),
+        )
+        return await simple_step_state(db, case_id, step_key)
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.get(
+    "/{case_id}/simple/quality",
+    response_model=SimpleQualityResponse,
+)
+async def get_simple_report_case_quality(
+    case_id: int,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    await _case_for_read_or_action(db, case_id, current_user)
+    try:
+        return await simple_quality_state(db, case_id)
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+
+
+@router.post("/{case_id}/simple/finalize")
+async def finalize_simple_report_case(
+    case_id: int,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    report_case = await _case_for_read_or_action(
+        db, case_id, current_user, action=True
+    )
+    if case_simple_protocol(report_case) != SIMPLE_PROTOCOL_AI_ASSISTED:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="simple_ai_protocol_required",
+        )
+    # Phase one freezes the delivery contract but intentionally keeps the
+    # legacy final gate in charge.  The phase-three endpoint will be wired to
+    # the dedicated Simple snapshot delivery path.
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="simple_finalize_not_implemented",
     )
 
 

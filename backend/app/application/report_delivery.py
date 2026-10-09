@@ -23,6 +23,7 @@ from app.domains.reports.models import Report
 from app.domains.skills.models import AISkillVersion, SkillRun
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.users.lunar_calendar import solar_date_for_birth
+from app.domains.workflow.simple_definitions import ensure_legacy_simple_protocol
 from app.domains.workflow.models import ReportCase, StepTask, WorkflowInstance
 from app.models.user import User
 
@@ -86,6 +87,7 @@ async def approve_case_final_gate(
     audit_context: Optional[AuditContext] = None,
     commit: bool = True,
 ) -> StepTask:
+    ensure_legacy_simple_protocol(report_case)
     if report_case.status in {"DELIVERED", "CANCELLED"}:
         raise ValueError("workflow_not_active")
     step = await db.scalar(
@@ -173,6 +175,7 @@ async def deliver_report_case(
     )
     if locked_case is None:
         raise ValueError("report_case_not_found")
+    ensure_legacy_simple_protocol(locked_case)
     if (locked_case.application_snapshot or {}).get("collaboration_contract"):
         final_step = await db.scalar(select(StepTask).where(
             StepTask.workflow_instance_id == locked_case.workflow_instance_id, StepTask.step_key == "S6"))
@@ -331,6 +334,7 @@ async def approve_and_deliver(db, case_id, actor, expected):
     case = await db.scalar(select(ReportCase).where(ReportCase.id == case_id).with_for_update())
     if not case:
         raise ValueError("report_case_not_found")
+    ensure_legacy_simple_protocol(case)
     if case.status == "DELIVERED":
         step = await db.scalar(select(StepTask).where(StepTask.workflow_instance_id == case.workflow_instance_id, StepTask.step_key == "S6"))
         validate_step_actor(step, actor)

@@ -8,8 +8,13 @@ from .models import SERVICE_REQUEST_TYPES, ServiceRequest
 from app.models.user import User
 from app.domains.users.lunar_calendar import solar_date_for_birth
 from app.domains.workflow.definitions import (
+    SIMPLE_WORKFLOW_KEY,
     case_workflow_key,
     normalize_workflow_key,
+)
+from app.domains.workflow.simple_definitions import (
+    normalize_simple_protocol,
+    simple_protocol_from_definition,
 )
 from app.services.intake_service import profile_snapshot
 from .schemas import (
@@ -95,6 +100,7 @@ def _normalize_payload(
     context: Optional[dict[str, Any]] = None,
     profile_version: Optional[int] = None,
     workflow_key: Optional[str] = None,
+    simple_protocol: Optional[str] = None,
 ) -> dict[str, Any]:
     ensure_service_type(service_type)
     normalized_profile = deepcopy(profile or {})
@@ -160,6 +166,13 @@ def _normalize_payload(
         normalized["profile_version"] = int(profile_version)
     if service_type == "report":
         normalized["workflow_key"] = normalize_workflow_key(workflow_key)
+        if normalized["workflow_key"] == SIMPLE_WORKFLOW_KEY:
+            # The execution protocol is frozen with the application so a case
+            # never switches between the legacy manual loop and the
+            # AI-assisted loop after submission.
+            normalized["simple_protocol"] = normalize_simple_protocol(
+                simple_protocol
+            )
     return normalized
 
 
@@ -186,6 +199,7 @@ def payload_from_create(
             context=data.context.model_dump() if data.context is not None else None,
             profile_version=data.profile_version or user.profile_version or 1,
             workflow_key=data.workflow_key,
+            simple_protocol=data.simple_protocol,
         ),
         data.idempotency_key,
     )
@@ -208,6 +222,10 @@ def payload_from_update(
         requested_workflow_key = normalize_workflow_key(data.workflow_key)
         if requested_workflow_key != current_workflow_key:
             raise ValueError("workflow_key_locked")
+    current_simple_protocol = simple_protocol_from_definition(current)
+    if data.simple_protocol is not None:
+        if normalize_simple_protocol(data.simple_protocol) != current_simple_protocol:
+            raise ValueError("simple_protocol_locked")
     current_profile = _merge_profile(
         user,
         current.get("profile") or {},
@@ -258,6 +276,7 @@ def payload_from_update(
         context=context,
         profile_version=profile_version or user.profile_version or 1,
         workflow_key=current_workflow_key,
+        simple_protocol=current_simple_protocol,
     )
 
 

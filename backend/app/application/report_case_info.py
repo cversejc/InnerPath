@@ -15,6 +15,7 @@ from app.domains.service_requests.repository import _append_revision
 from app.domains.skills.models import SkillRun
 from app.domains.workflow.authorization import validate_step_actor
 from app.domains.workflow.models import ReportCase, StepTask, WorkflowInstance
+from app.domains.workflow.simple_definitions import ensure_legacy_simple_protocol
 from app.models.user import User
 
 
@@ -32,6 +33,7 @@ async def request_report_case_info(
     )
     if report_case is None:
         raise ValueError("report_case_not_found")
+    ensure_legacy_simple_protocol(report_case)
     if report_case.service_request_id is None:
         raise ValueError("report_case_user_request_required")
     request = await db.scalar(
@@ -142,6 +144,7 @@ async def submit_report_case_supplement(
     )
     if report_case is None or report_case.user_id != user.id:
         raise ValueError("report_case_not_found")
+    ensure_legacy_simple_protocol(report_case)
     if report_case.service_request_id is None:
         raise ValueError("report_case_user_request_required")
     request = await db.scalar(

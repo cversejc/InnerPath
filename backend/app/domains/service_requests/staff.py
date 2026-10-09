@@ -25,6 +25,10 @@ from app.domains.workflow.definitions import (
     case_workflow_key,
 )
 from app.domains.workflow.models import ReportCase, StepTask
+from app.domains.workflow.simple_definitions import (
+    SIMPLE_PROTOCOL_AI_ASSISTED,
+    case_simple_protocol,
+)
 from app.services.intake_service import profile_snapshot
 
 
@@ -133,6 +137,13 @@ async def accept_service_request(
             )
         ):
             task.assignee_id = consultant.id
+            if (
+                task.status == "READY"
+                and case_simple_protocol(case) == SIMPLE_PROTOCOL_AI_ASSISTED
+            ):
+                from app.domains.workflow.service import enqueue_step_ready
+
+                await enqueue_step_ready(db, case, task)
         await record_audit(
             db,
             consultant.id,

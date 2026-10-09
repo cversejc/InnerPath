@@ -61,6 +61,7 @@ class ServiceProfileSnapshot(BaseModel):
 class ServiceRequestCreate(BaseModel):
     service_type: ServiceType
     workflow_key: Optional[str] = Field(None, max_length=50)
+    simple_protocol: Optional[str] = Field(None, max_length=32)
     profile: ServiceProfileSnapshot
     profile_version: Optional[int] = Field(None, ge=1)
     context: Optional[ReportContext] = None
@@ -73,6 +74,7 @@ class ServiceRequestCreate(BaseModel):
 
 class ServiceRequestUpdate(BaseModel):
     workflow_key: Optional[str] = Field(None, max_length=50)
+    simple_protocol: Optional[str] = Field(None, max_length=32)
     profile: Optional[ServiceProfileSnapshot] = None
     profile_version: Optional[int] = Field(None, ge=1)
     context: Optional[ReportContext] = None

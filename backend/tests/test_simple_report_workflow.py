@@ -19,7 +19,12 @@ from app.db.base import Base
 from app.domains.audit.models import AuditLog
 from app.domains.content.models import CaseEvidenceItem, NarrativePlan
 from app.domains.delivery.models import ReportVersion
-from app.domains.delivery.simple_models import SimpleReportVersion
+from app.domains.delivery.simple_models import (
+    SimpleReportVersion,
+    SimpleReviewDecision,
+    SimpleStepExecution,
+    SimpleStepRevision,
+)
 from app.domains.delivery.simple_schemas import SimpleStepCompleteInput
 from app.domains.quality.models import QAIssue
 from app.domains.reports.models import Report
@@ -51,7 +56,11 @@ from app.domains.workflow.models import (
 )
 from app.domains.workflow.service import create_report_case, start_step
 from app.domains.workflow.simple_definitions import (
+    SIMPLE_PROTOCOL_AI_ASSISTED,
+    SIMPLE_PROTOCOL_LEGACY,
     SIMPLE_STEP_KEYS,
+    ai_assisted_simple_workflow_definition,
+    case_simple_protocol,
     simple_workflow_definition,
 )
 from app.models.user import User
@@ -131,6 +140,9 @@ def simple_db(monkeypatch):
         StepTask.__table__,
         WorkflowOutbox.__table__,
         SimpleReportVersion.__table__,
+        SimpleStepExecution.__table__,
+        SimpleStepRevision.__table__,
+        SimpleReviewDecision.__table__,
         ReportVersion.__table__,
         QAIssue.__table__,
         NarrativePlan.__table__,
@@ -246,6 +258,124 @@ def test_simple_definition_follows_the_report_node_catalog():
         bool(step["config"].get("final_gate")) for step in definition["steps"]
     ] == [False] * (node_count - 1) + [True]
     assert "collaboration_contract" not in definition
+
+
+def test_ai_assisted_definition_keeps_the_same_business_nodes():
+    definition = ai_assisted_simple_workflow_definition()
+
+    assert definition["simple_protocol"] == SIMPLE_PROTOCOL_AI_ASSISTED
+    assert definition["protocol_version"] == 1
+    assert [step["step_key"] for step in definition["steps"]] == list(SIMPLE_STEP_KEYS)
+    assert {step["executor"] for step in definition["steps"]} == {"HYBRID"}
+    assert {
+        step["config"]["execution_protocol"] for step in definition["steps"]
+    } == {SIMPLE_PROTOCOL_AI_ASSISTED}
+    assert all(
+        step["config"]["requires_human_approval"] is True
+        for step in definition["steps"]
+    )
+    assert all(
+        step["config"]["allow_manual_edit"] is True
+        for step in definition["steps"]
+    )
+    assert all(
+        step["config"]["auto_retry_limit"] == 2 for step in definition["steps"]
+    )
+    assert [
+        bool(step["config"].get("final_gate")) for step in definition["steps"]
+    ] == [False] * (len(SIMPLE_STEP_KEYS) - 1) + [True]
+    assert definition["steps"][-1]["config"]["generation_profile"] == "final_quality_gate"
+
+
+def test_protocol_resolution_defaults_unknown_definitions_to_legacy():
+    assert case_simple_protocol(SimpleNamespace(application_snapshot={})) == (
+        SIMPLE_PROTOCOL_LEGACY
+    )
+    assert (
+        case_simple_protocol(
+            SimpleNamespace(
+                application_snapshot={"simple_protocol": SIMPLE_PROTOCOL_AI_ASSISTED}
+            )
+        )
+        == SIMPLE_PROTOCOL_AI_ASSISTED
+    )
+    assert (
+        case_simple_protocol({"simple_protocol": SIMPLE_PROTOCOL_AI_ASSISTED})
+        == SIMPLE_PROTOCOL_AI_ASSISTED
+    )
+    with pytest.raises(ValueError, match="simple_protocol_unsupported"):
+        case_simple_protocol(
+            SimpleNamespace(application_snapshot={"simple_protocol": "experimental"})
+        )
+
+
+@pytest.mark.asyncio
+async def test_simple_versions_are_published_per_protocol(simple_db):
+    legacy = await report_cases_application.ensure_simple_workflow_version(simple_db)
+    same_legacy = await report_cases_application.ensure_simple_workflow_version(simple_db)
+    ai_assisted = await report_cases_application.ensure_simple_workflow_version(
+        simple_db, SIMPLE_PROTOCOL_AI_ASSISTED
+    )
+    same_ai_assisted = await report_cases_application.ensure_simple_workflow_version(
+        simple_db, SIMPLE_PROTOCOL_AI_ASSISTED
+    )
+
+    assert same_legacy.id == legacy.id
+    assert same_ai_assisted.id == ai_assisted.id
+    assert legacy.id != ai_assisted.id
+    assert ai_assisted.version == legacy.version + 1
+    assert legacy.definition_json == simple_workflow_definition()
+    assert ai_assisted.definition_json == ai_assisted_simple_workflow_definition()
+    assert "simple_protocol" not in legacy.definition_json
+
+
+@pytest.mark.asyncio
+async def test_ai_case_freezes_its_execution_protocol(simple_db):
+    version = await report_cases_application.ensure_simple_workflow_version(
+        simple_db, SIMPLE_PROTOCOL_AI_ASSISTED
+    )
+    report_case = await create_report_case(
+        simple_db,
+        user_id=1,
+        service_request_id=None,
+        source_report_task_id=None,
+        application_snapshot={"context": {}},
+        workflow_version=version,
+    )
+
+    assert (
+        report_case.application_snapshot["simple_protocol"]
+        == SIMPLE_PROTOCOL_AI_ASSISTED
+    )
+    assert case_simple_protocol(report_case) == SIMPLE_PROTOCOL_AI_ASSISTED
+    assert set(report_case.application_snapshot["skill_bindings"]) == {
+        "report.s1_foundation_analysis",
+        "report.s2_psychology_mapping",
+        "report.s3_integration",
+        "report.s4_mechanism_block_action",
+        "report.fragment_authoring",
+        "report.final_validator",
+    }
+    assert all(
+        isinstance(binding["id"], int)
+        for binding in report_case.application_snapshot["skill_bindings"].values()
+    )
+
+
+@pytest.mark.asyncio
+async def test_legacy_case_does_not_gain_an_ai_protocol_marker(simple_db):
+    version = await report_cases_application.ensure_simple_workflow_version(simple_db)
+    report_case = await create_report_case(
+        simple_db,
+        user_id=1,
+        service_request_id=None,
+        source_report_task_id=None,
+        application_snapshot={"context": {}},
+        workflow_version=version,
+    )
+
+    assert "simple_protocol" not in report_case.application_snapshot
+    assert case_simple_protocol(report_case) == SIMPLE_PROTOCOL_LEGACY
 
 
 @pytest.mark.asyncio

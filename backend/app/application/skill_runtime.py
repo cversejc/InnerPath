@@ -67,6 +67,24 @@ from app.models.user import User
 from app.domains.workflow.authorization import is_assigned, assignment_condition, validate_step_actor
 
 
+SIMPLE_STEP_TARGET_TYPE = "SIMPLE_STEP"
+
+_SIMPLE_CONTEXT_KEYS = (
+    "simple_protocol",
+    "simple_step_key",
+    "simple_activation_no",
+    "simple_revision_type",
+    "simple_base_revision_id",
+    "simple_input_fingerprint",
+    "simple_assignee_id",
+    "simple_generation_profile",
+    "simple_attempt_no",
+    "simple_recover_stale",
+    "simple_request_scope",
+    "simple_archived",
+)
+
+
 async def ensure_skill_workflow_version(db: AsyncSession) -> WorkflowVersion:
     """Compatibility entry point; initialize only the current production flow."""
     return await ensure_analysis_workflow_version(db)
@@ -860,13 +878,17 @@ async def execute_skill_run_record(
         run.status = "FAILED"
         run.error = "skill_version_not_found"
         run.completed_at = utc_now_naive()
+        await _persist_simple_run_outcome(db, run)
         await db.commit()
+        await db.refresh(run)
         return run
     if skill_version.skill_key == "report.generate" or skill_version.status == "RETIRED":
         run.status = "FAILED"
         run.error = "skill_retired"
         run.completed_at = utc_now_naive()
+        await _persist_simple_run_outcome(db, run)
         await db.commit()
+        await db.refresh(run)
         return run
     run.status = "RUNNING"
     run.started_at = utc_now_naive()
@@ -911,13 +933,23 @@ async def execute_skill_run_record(
             )
             if key in prior_context
         }
+        run_metadata.update(
+            {
+                key: prior_context[key]
+                for key in _SIMPLE_CONTEXT_KEYS
+                if key in prior_context
+            }
+        )
         run.context_snapshot = {
             **result.context_snapshot,
             "source_references": source_references,
             **run_metadata,
         }
         can_write = True
-        if run.report_case_id is not None:
+        if (
+            run.target_type != SIMPLE_STEP_TARGET_TYPE
+            and run.report_case_id is not None
+        ):
             report_case = await db.scalar(select(ReportCase).where(ReportCase.id == run.report_case_id).with_for_update())
             if report_case and report_case.review_policy_version == "six-node-review-v1":
                 from app.application.node_review_workspace import review_context, node_snapshot
@@ -934,7 +966,16 @@ async def execute_skill_run_record(
         elif run.target_type == "REPORT_QA" and can_write:
             await replace_validator_issues(db, run)
         foundation = result.context_snapshot.get("foundation_data")
-        if run.report_case_id is not None and foundation is not None and can_write and not (report_case and report_case.review_policy_version == "six-node-review-v1"):
+        if (
+            run.target_type != SIMPLE_STEP_TARGET_TYPE
+            and run.report_case_id is not None
+            and foundation is not None
+            and can_write
+            and not (
+                report_case
+                and report_case.review_policy_version == "six-node-review-v1"
+            )
+        ):
             evidence = await create_evidence_item(
                 db,
                 report_case_id=run.report_case_id,
@@ -1009,9 +1050,27 @@ async def execute_skill_run_record(
         run.context_snapshot = {**(run.context_snapshot or {}), "evaluation": evaluation}
         flag_modified(run, "context_snapshot")
     run.completed_at = utc_now_naive()
+    await _persist_simple_run_outcome(db, run)
     await db.commit()
     await db.refresh(run)
     return run
+
+
+async def _persist_simple_run_outcome(
+    db: AsyncSession, run: SkillRun
+) -> None:
+    """Bridge a Simple skill run into its revision or retry state machine."""
+    if run.target_type != SIMPLE_STEP_TARGET_TYPE:
+        return
+    from app.application.simple_ai_workflow import (
+        apply_run_result,
+        record_run_failure,
+    )
+
+    if run.status == "COMPLETED":
+        await apply_run_result(db, run)
+    elif run.status == "FAILED":
+        await record_run_failure(db, run)
 
 
 async def _save_authored_report_fragment(db: AsyncSession, run: SkillRun) -> None:

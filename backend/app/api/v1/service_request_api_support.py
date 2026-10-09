@@ -127,6 +127,8 @@ def _detail_for_error(error: ValueError) -> tuple[int, str]:
         return status.HTTP_422_UNPROCESSABLE_ENTITY, "暂不支持该报告流程。"
     if code == "report_case_workflow_required":
         return status.HTTP_409_CONFLICT, "该报告申请已进入 Case 工作流，请在报告工作区继续处理。"
+    if code == "simple_ai_protocol_required":
+        return status.HTTP_409_CONFLICT, "该报告申请使用 AI 辅助协议，请在报告工作台完成节点流程。"
     if code == "calendar_requires_delivered_report":
         return status.HTTP_409_CONFLICT, "日历需从一份已交付报告进入生成流程。"
     if code in {"service_request_cannot_withdraw", "service_request_not_waiting_for_info"}:

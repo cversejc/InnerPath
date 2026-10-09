@@ -21,14 +21,30 @@ def specification_digest(spec):
                              separators=(",", ":")).encode()).hexdigest()
 
 
-async def freeze_report_skills(db, bindings=None, steps=()):
+async def _default_skill_bindings(db, required_keys):
+    versions = [*await ensure_default_analysis_skill_versions(db),
+                *await ensure_default_narrative_skill_versions(db),
+                await ensure_default_validator_skill_version(db)]
+    available = {version.skill_key: version.id for version in versions}
+    if not required_keys.issubset(available):
+        raise ValueError("case_skill_bindings_incomplete")
+    return {key: version_id for key, version_id in available.items()
+            if key in required_keys}
+
+
+async def freeze_report_skills(db, bindings=None, steps=(), required_keys=None):
+    """Freeze the skill versions a workflow binds to.
+
+    ``required_keys`` defaults to the seven production skills so publications
+    of ``report.production`` keep their existing contract.  The AI-assisted
+    Simple protocol passes the six business skills its frozen definition
+    declares and never binds ``report.narrative_plan``.
+    """
+    required = frozenset(required_keys) if required_keys is not None else PRODUCTION_KEYS
     explicitly_bound = bindings is not None
     if bindings is None:
-        versions = [*await ensure_default_analysis_skill_versions(db),
-                    *await ensure_default_narrative_skill_versions(db),
-                    await ensure_default_validator_skill_version(db)]
-        bindings = {v.skill_key: v.id for v in versions}
-    if not isinstance(bindings, dict) or not PRODUCTION_KEYS.issubset(bindings):
+        bindings = await _default_skill_bindings(db, required)
+    if not isinstance(bindings, dict) or not required.issubset(bindings):
         raise ValueError("case_skill_bindings_incomplete")
     bindings = dict(bindings)
     for step in steps:

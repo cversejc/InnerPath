@@ -77,11 +77,34 @@ async def _consume_outbox_event(event_id: int) -> dict:
                 or step.activation_no != payload.get("activation_no")
             ):
                 return {"event_id": event_id, "status": "stale"}
-            from app.application.node_review_automation import prepare_node
             from app.domains.workflow.models import ReportCase
+            from app.domains.workflow.simple_definitions import (
+                SIMPLE_PROTOCOL_AI_ASSISTED,
+                case_simple_protocol,
+            )
+
             case = await db.get(ReportCase, payload.get("report_case_id"))
+            if (
+                case is not None
+                and case_simple_protocol(case) == SIMPLE_PROTOCOL_AI_ASSISTED
+            ):
+                from app.application.simple_ai_workflow import prepare_ready_step
+
+                result = await prepare_ready_step(
+                    db,
+                    case.id,
+                    step.id,
+                    step.activation_no,
+                )
+                return {
+                    "event_id": event_id,
+                    "status": result,
+                    "step_key": step.step_key,
+                }
             if not case or case.review_policy_version != "six-node-review-v1":
                 return {"event_id": event_id, "status": "ready", "step_key": step.step_key}
+            from app.application.node_review_automation import prepare_node
+
             result = await prepare_node(db, payload.get("report_case_id"), step.id, step.activation_no)
             return {"event_id": event_id, "status": result, "step_key": step.step_key}
 
@@ -115,6 +138,22 @@ async def _consume_outbox_event(event_id: int) -> dict:
                 )
 
                 await advance_case_report_generation(db, run.id)
+            if run.target_type == "SIMPLE_STEP":
+                from app.application.simple_ai_workflow import (
+                    apply_run_result,
+                    record_run_failure,
+                )
+
+                if run.status == "COMPLETED":
+                    await apply_run_result(db, run)
+                elif run.status == "FAILED":
+                    await record_run_failure(db, run)
+                await db.commit()
+                return {
+                    "event_id": event_id,
+                    "status": run.status.lower(),
+                    "skill_run_id": run.id,
+                }
             from app.application.node_review_automation import continue_node_run
             try:
                 await continue_node_run(db, run)

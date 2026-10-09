@@ -2,13 +2,23 @@ from datetime import datetime
 from typing import Any, Optional
 
 from sqlalchemy import func, select
+from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.ext.asyncio import AsyncSession
 from copy import deepcopy
 from app.domains.content.product_framework import framework_snapshot
 from app.domains.content.reasoning_contract import reasoning_snapshot
+from app.domains.delivery.simple_models import SimpleStepExecution
 from app.domains.skills.bindings import freeze_report_skills
+from app.domains.skills.models import SkillRun
 
-from .definitions import validate_workflow_definition
+from .definitions import SIMPLE_WORKFLOW_KEY, validate_workflow_definition
+from .simple_definitions import (
+    SIMPLE_PROTOCOL_AI_ASSISTED,
+    SIMPLE_PROTOCOL_LEGACY,
+    case_simple_protocol,
+    simple_ai_required_skill_keys,
+    simple_protocol_from_definition,
+)
 from .models import (
     ReportCase,
     StepTask,
@@ -112,6 +122,25 @@ async def enqueue_outbox_event(
     return event
 
 
+async def enqueue_step_ready(
+    db: AsyncSession, report_case: ReportCase, step: StepTask
+) -> WorkflowOutbox:
+    """Queue the single "this step may start now" event for a case step."""
+    return await enqueue_outbox_event(
+        db,
+        aggregate_type="workflow_instance",
+        aggregate_id=step.workflow_instance_id,
+        event_type="workflow.step.ready",
+        payload={
+            "report_case_id": report_case.id,
+            "workflow_instance_id": step.workflow_instance_id,
+            "step_task_id": step.id,
+            "step_key": step.step_key,
+            "activation_no": step.activation_no,
+        },
+    )
+
+
 async def create_report_case(
     db: AsyncSession,
     *,
@@ -151,6 +180,29 @@ async def create_report_case(
     collaboration = version.definition_json.get("collaboration_contract")
     if collaboration:
         frozen_application["collaboration_contract"] = deepcopy(collaboration)
+    simple_protocol: Optional[str] = None
+    if version.workflow_key == SIMPLE_WORKFLOW_KEY:
+        # Simple freezes its execution protocol on the case so a later code
+        # deployment cannot silently switch an existing case between the
+        # legacy manual protocol and the AI-assisted protocol.
+        simple_protocol = simple_protocol_from_definition(version.definition_json)
+        if (
+            simple_protocol != SIMPLE_PROTOCOL_LEGACY
+            or "simple_protocol" in version.definition_json
+        ):
+            frozen_application["simple_protocol"] = simple_protocol
+        if simple_protocol == SIMPLE_PROTOCOL_AI_ASSISTED:
+            # AI-assisted cases reuse the production skills, but only the six
+            # business skills their frozen definition declares.  The narrative
+            # plan skill belongs to the standard workflow and is never bound.
+            frozen_application["skill_bindings"] = await freeze_report_skills(
+                db,
+                version.definition_json.get("skill_bindings"),
+                version.definition_json["steps"],
+                required_keys=simple_ai_required_skill_keys(
+                    version.definition_json
+                ),
+            )
     if version.workflow_key == "report.production":
         # Only newly created production cases opt in. Existing cases are never rewritten.
         frozen_application["framework_contract"] = framework_snapshot()
@@ -186,6 +238,19 @@ async def create_report_case(
     task_by_key: dict[str, StepTask] = {}
     for index, step in enumerate(steps):
         is_first = index == 0
+        config_snapshot = deepcopy(step.get("config", {}))
+        if simple_protocol == SIMPLE_PROTOCOL_AI_ASSISTED:
+            # Pin the frozen skill version on the step so the run entry point
+            # never re-resolves a newer published skill for a frozen case.
+            skill_key = config_snapshot.get("skill_key")
+            binding = (frozen_application.get("skill_bindings") or {}).get(
+                skill_key
+            )
+            if not isinstance(binding, dict) or not isinstance(
+                binding.get("id"), int
+            ):
+                raise ValueError("case_skill_bindings_incomplete")
+            config_snapshot["skill_version_id"] = binding["id"]
         task = StepTask(
             workflow_instance_id=instance.id,
             step_key=step["step_key"],
@@ -196,7 +261,7 @@ async def create_report_case(
             # this case. Do not silently replace it with the latest code mapping.
             required_capability=step.get("required_capability"),
             activation_no=1 if is_first else 0,
-            config_snapshot=step.get("config", {}),
+            config_snapshot=config_snapshot,
             activated_at=now if is_first else None,
             created_at=now,
             updated_at=now,
@@ -205,22 +270,52 @@ async def create_report_case(
         task_by_key[task.step_key] = task
     await db.flush()
 
+    if simple_protocol == SIMPLE_PROTOCOL_AI_ASSISTED:
+        # Every business step gets one execution row up front.  Steps that are
+        # not activated yet keep a placeholder activation of 1; activation and
+        # reopen copy the execution counter onto the step task so both rows
+        # always agree once a step is live.
+        for step in steps:
+            task = task_by_key[step["step_key"]]
+            db.add(
+                SimpleStepExecution(
+                    report_case_id=report_case.id,
+                    step_task_id=task.id,
+                    step_key=task.step_key,
+                    execution_status="READY",
+                    dependency_status="CURRENT",
+                    activation_no=max(task.activation_no, 1),
+                    current_revision_id=None,
+                    confirmed_revision_id=None,
+                    active_skill_run_id=None,
+                    input_snapshot={},
+                    input_fingerprint=None,
+                    stale_reason=None,
+                    created_at=now,
+                    updated_at=now,
+                )
+            )
+        await db.flush()
+
     report_case.workflow_instance_id = instance.id
     report_case.updated_at = now
     first_task = task_by_key[steps[0]["step_key"]]
-    await enqueue_outbox_event(
-        db,
-        aggregate_type="workflow_instance",
-        aggregate_id=instance.id,
-        event_type="workflow.step.ready",
-        payload={
-            "report_case_id": report_case.id,
-            "workflow_instance_id": instance.id,
-            "step_task_id": first_task.id,
-            "step_key": first_task.step_key,
-            "activation_no": first_task.activation_no,
-        },
-    )
+    if simple_protocol != SIMPLE_PROTOCOL_AI_ASSISTED:
+        # AI-assisted cases wait for a consultant: the first generation starts
+        # when the request is accepted or assigned, never at creation time.
+        await enqueue_outbox_event(
+            db,
+            aggregate_type="workflow_instance",
+            aggregate_id=instance.id,
+            event_type="workflow.step.ready",
+            payload={
+                "report_case_id": report_case.id,
+                "workflow_instance_id": instance.id,
+                "step_task_id": first_task.id,
+                "step_key": first_task.step_key,
+                "activation_no": first_task.activation_no,
+            },
+        )
     await enqueue_outbox_event(
         db,
         aggregate_type="report_case",
@@ -344,6 +439,24 @@ async def cancel_case(
     return report_case
 
 
+async def _sync_simple_execution_activation(
+    db: AsyncSession, report_case: ReportCase, step: StepTask
+) -> None:
+    """Keep the AI Simple execution counter aligned with its step task."""
+    if case_simple_protocol(report_case) != SIMPLE_PROTOCOL_AI_ASSISTED:
+        return
+    execution = await db.scalar(
+        select(SimpleStepExecution).where(
+            SimpleStepExecution.report_case_id == report_case.id,
+            SimpleStepExecution.step_key == step.step_key,
+        )
+    )
+    if execution is None:
+        return
+    execution.activation_no = step.activation_no
+    execution.updated_at = _now()
+
+
 async def complete_step(
     db: AsyncSession,
     case_id: int,
@@ -396,6 +509,7 @@ async def complete_step(
         following.activation_no += 1
         following.activated_at = now
         following.updated_at = now
+        await _sync_simple_execution_activation(db, report_case, following)
         report_case.status = "ACTIVE"
         await enqueue_outbox_event(
             db,
@@ -512,6 +626,63 @@ async def reopen_step(db: AsyncSession, case_id: int, step_key: str) -> StepTask
     return await _rewind_to_step(db, report_case, instance, tasks, target, reason=None)
 
 
+async def _prepare_simple_reassignment(
+    db: AsyncSession,
+    report_case: ReportCase,
+    task: StepTask,
+    *,
+    previous_assignee_id: Optional[int],
+    assignee_id: Optional[int],
+) -> None:
+    """Invalidate the previous owner's in-flight Simple run, if any."""
+    if (
+        previous_assignee_id == assignee_id
+        or case_simple_protocol(report_case) != SIMPLE_PROTOCOL_AI_ASSISTED
+        or task.status not in {"READY", "EXECUTING", "IN_REVIEW"}
+    ):
+        return
+    execution = await db.scalar(
+        select(SimpleStepExecution)
+        .where(
+            SimpleStepExecution.report_case_id == report_case.id,
+            SimpleStepExecution.step_key == task.step_key,
+        )
+        .with_for_update()
+    )
+    if execution is None:
+        return
+    now = _now()
+    if execution.execution_status in {"GENERATING", "REVISING"}:
+        if execution.active_skill_run_id is not None:
+            run = await db.get(SkillRun, execution.active_skill_run_id)
+            if run is not None:
+                context = dict(run.context_snapshot or {})
+                context["simple_archived"] = "assignee_reassigned"
+                run.context_snapshot = context
+                flag_modified(run, "context_snapshot")
+        execution.execution_status = "FAILED"
+        execution.active_skill_run_id = None
+        execution.input_fingerprint = None
+        execution.input_snapshot = {
+            **(execution.input_snapshot or {}),
+            "last_error": "simple_assignee_changed",
+        }
+        execution.updated_at = now
+        flag_modified(execution, "input_snapshot")
+        task.status = "READY"
+        task.started_at = None
+        task.last_error = "simple_assignee_changed"
+        task.updated_at = now
+        return
+    if execution.execution_status == "FAILED":
+        task.status = "READY"
+        task.last_error = "simple_assignee_changed"
+        task.updated_at = now
+    elif execution.execution_status == "IN_REVIEW":
+        task.status = "IN_REVIEW"
+        task.updated_at = now
+
+
 async def assign_step(
     db: AsyncSession, case_id: int, step_key: str, assignee_id: Optional[int]
 ) -> StepTask:
@@ -522,7 +693,9 @@ async def assign_step(
     from app.models.user import User
     from app.domains.service_requests.models import ServiceRequest
     from .authorization import SPECIALTY_FIELDS, consultant_capabilities
-    if task.required_capability in SPECIALTY_FIELDS:
+    previous_assignee_id = task.assignee_id
+    simple_ai = case_simple_protocol(report_case) == SIMPLE_PROTOCOL_AI_ASSISTED
+    if task.required_capability in SPECIALTY_FIELDS and not simple_ai:
         assignee = await db.get(User, assignee_id) if assignee_id is not None else None
         if assignee_id is not None and (
             assignee is None
@@ -540,6 +713,13 @@ async def assign_step(
             request.assigned_consultant_id = request.assigned_mingli_consultant_id or request.assigned_psychology_consultant_id
         for item in affected:
             item.assignee_id = assignee_id
+    await _prepare_simple_reassignment(
+        db,
+        report_case,
+        task,
+        previous_assignee_id=previous_assignee_id,
+        assignee_id=assignee_id,
+    )
     task.assignee_id = assignee_id
     task.updated_at = _now()
     if assignee_id is not None and report_case.review_policy_version == "six-node-review-v1":
@@ -547,5 +727,14 @@ async def assign_step(
             if item.status == "READY" and item.assignee_id is not None:
                 await enqueue_outbox_event(db, aggregate_type="workflow_instance", aggregate_id=item.workflow_instance_id,
                     event_type="workflow.step.ready", payload={"report_case_id": case_id, "step_task_id": item.id, "activation_no": item.activation_no})
+    if (
+        assignee_id is not None
+        and simple_ai
+        and task.status == "READY"
+    ):
+        # AI-assisted Simple starts generating as soon as an assignee owns the
+        # activated step.  Re-assignment never rewrites earlier revisions; the
+        # in-flight run is invalidated by the activation/owner check instead.
+        await enqueue_step_ready(db, report_case, task)
     await db.flush()
     return task

@@ -225,8 +225,19 @@ async def update_request_assignment(
                 )
             )
             for step_task in step_tasks:
-                step_task.assignee_id = data.consultant_id
-                step_task.updated_at = utc_now_naive()
+                try:
+                    await assign_step(
+                        db,
+                        case.id,
+                        step_task.step_key,
+                        data.consultant_id,
+                    )
+                except ValueError as error:
+                    await db.rollback()
+                    raise HTTPException(
+                        status_code=422,
+                        detail=str(error),
+                    )
     if consultant and service_request.status == "submitted":
         service_request.status = "accepted"
         service_request.accepted_at = utc_now_naive()

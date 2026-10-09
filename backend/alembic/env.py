@@ -32,7 +32,12 @@ from app.domains.content.models import (
 )
 from app.domains.quality.models import QAIssue
 from app.domains.delivery.models import ReportVersion
-from app.domains.delivery.simple_models import SimpleReportVersion
+from app.domains.delivery.simple_models import (
+    SimpleReportVersion,
+    SimpleReviewDecision,
+    SimpleStepExecution,
+    SimpleStepRevision,
+)
 from app.domains.llm.models import LLMProviderConfig
 from app.domains.review.models import NodeReviewState, NodeReviewCommand, NodeApproval, NodeCheckpointApproval
 
