@@ -15,7 +15,7 @@
       @logout="handleLogout"
     >
       <template #topbar-actions>
-        <span v-if="!selectedRequest" class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading || reportAnalysisPending }"></i>{{ reportAnalysisPending ? '分析建议处理中' : pollingTask ? '内容生成中' : reportCaseLoading ? '正在打开报告' : loading ? '正在同步' : '已同步' }}</span>
+        <span v-if="!selectedRequest" class="live-state" role="status" aria-live="polite"><i :class="{ active: loading || pollingTask || reportCaseLoading || simpleReportLoading || reportAnalysisPending }"></i>{{ reportAnalysisPending ? '分析建议处理中' : pollingTask ? '内容生成中' : reportCaseLoading || simpleReportLoading ? '正在打开报告' : loading ? '正在同步' : '已同步' }}</span>
         <VanButton v-if="!selectedRequest" class="operations-refresh-button" type="default" plain native-type="button" :disabled="loading" :loading="loading" aria-label="刷新报告申请" title="刷新报告申请" @click="loadRequests">
           <template #icon><IconMark name="refresh" /></template>
         </VanButton>
@@ -87,22 +87,39 @@
           </div>
 
           <div v-else-if="workspace" class="workspace-content">
-            <DeliveredReportSummary v-if="!selectedReportStepKey" :request="workspace.request" @view-analysis="selectReportNode('S1')" />
-            <div v-if="admin && !selectedReportStepKey && reportCase?.application_snapshot?.collaboration_contract" class="assignment-row">
+            <DeliveredReportSummary v-if="!selectedReportStepKey && !isSimpleReportCase" :request="workspace.request" @view-analysis="selectReportNode('S1')" />
+            <div v-if="admin && !selectedReportStepKey && !isSimpleReportCase && reportCase?.application_snapshot?.collaboration_contract" class="assignment-row">
               <label>咨询方向<select v-model="consultationType" :disabled="assignmentSaving" @change="saveConsultationType"><option value="metaphysics">命理</option><option value="psychology">心理</option><option value="integrated">综合（命理 + 心理）</option></select></label>
               <label v-for="specialty in ['mingli', 'psychology']" :key="specialty">{{ specialty === 'mingli' ? '命理负责人' : '心理负责人' }}<select :value="workspace.request['assigned_' + specialty + '_consultant_id'] || ''" :disabled="assignmentSaving" @change="assignProfessional(specialty, $event.target.value)"><option value="">待接单</option><option v-for="consultant in consultants.filter(item => consultantCanHandle(item, specialty))" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
             </div>
             <div v-else-if="admin && !selectedReportStepKey" class="assignment-row">
-              <label v-if="workspace.request.service_type === 'report'">咨询方向<select v-model="consultationType" :disabled="assignmentSaving" @change="changeConsultationType"><option value="metaphysics">命理</option><option value="psychology">心理</option><option value="integrated">综合（命理 + 心理）</option></select></label>
+              <label v-if="workspace.request.service_type === 'report' && !isSimpleReportCase">咨询方向<select v-model="consultationType" :disabled="assignmentSaving" @change="changeConsultationType"><option value="metaphysics">命理</option><option value="psychology">心理</option><option value="integrated">综合（命理 + 心理）</option></select></label>
               <label>处理咨询师<select v-model="assignmentId" :disabled="assignmentSaving"><option :value="null">未分配</option><option v-for="consultant in assignableConsultants" :key="consultant.id" :value="consultant.id">{{ consultant.name }}</option></select></label>
               <VanButton class="secondary-button compact-button" type="default" plain native-type="button" :disabled="!assignmentChanged || assignmentSaving" :loading="assignmentSaving" loading-text="保存中…" @click="assignConsultant">保存分配</VanButton>
-              <small>可按咨询方向分配咨询师；修改不会覆盖已有报告版本。</small>
+              <small>{{ isSimpleReportCase ? '简化流程由同一位咨询师按标准流程的节点顺序连续完成，请选择一位在职咨询师。' : '可按咨询方向分配咨询师；修改不会覆盖已有报告版本。' }}</small>
             </div>
 
             <section v-if="workspace.request.service_type === 'report'" class="report-case-workspace" aria-label="人生说明书处理工作区">
               <div v-if="reportCaseLoading" class="empty-cell" role="status">正在读取报告内容…</div>
               <template v-else-if="reportCase">
+                <SimpleReportNodeWorkbench
+                  v-if="isSimpleReportCase"
+                  :report-case="reportCase"
+                  :actor="staffActor"
+                  :selected-step-key="selectedReportStepKey"
+                  :current-step="currentReportStep"
+                  :versions="simpleReportVersions"
+                  :draft="simpleReportDraft"
+                  :loading="simpleReportLoading"
+                  :saving="simpleReportSaving"
+                  :waiting-for-user="workspace.request.status === 'needs_info'"
+                  @select-step="selectSimpleReportStep"
+                  @start-step="startSimpleReportStep"
+                  @complete-step="completeSimpleReportStep"
+                  @update:draft="simpleReportDraft = $event"
+                />
                 <ReportNodeWorkbench
+                  v-else
                   :report-case="reportCase"
                   :actor="staffActor"
                   :selected-step-key="selectedReportStepKey"

@@ -43,6 +43,7 @@ from app.domains.quality.programmatic import collect_programmatic_issues
 from app.domains.quality.service import run_programmatic_qa
 from app.domains.service_requests.models import ServiceRequest
 from app.domains.service_requests.schemas import ServiceRequestCreate
+from app.domains.workflow.definitions import DEFAULT_WORKFLOW_KEY
 from app.domains.skills.definitions import default_validator_skill_specification
 from app.domains.skills.evaluation import (
     evaluate_regression_output,
@@ -325,6 +326,10 @@ def _service_request_data(user: User, scenario: dict, service_type: str) -> Serv
     if service_type == "calendar":
         data["calendar_goal"] = scenario["challenge"]
         data["start_date"] = shanghai_today()
+    if service_type == "report":
+        # The consultant demo walks the retained standard workflow: findings,
+        # evidence and node hand-off only exist there.
+        data["workflow_key"] = DEFAULT_WORKFLOW_KEY
     return ServiceRequestCreate.model_validate(data)
 
 

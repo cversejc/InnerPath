@@ -20,6 +20,10 @@ from app.domains.workflow.authorization import (
     is_assigned,
 )
 from app.core.time import utc_now_naive, utc_naive_for_shanghai_date
+from app.domains.workflow.definitions import (
+    SIMPLE_WORKFLOW_KEY,
+    case_workflow_key,
+)
 from app.domains.workflow.models import ReportCase, StepTask
 from app.services.intake_service import profile_snapshot
 
@@ -103,6 +107,45 @@ async def accept_service_request(
     if service_request.service_type == "calendar":
         raise ValueError("calendar_requires_delivered_report")
     case = await db.scalar(select(ReportCase).where(ReportCase.service_request_id == request_id))
+    if case is not None and case_workflow_key(case) == SIMPLE_WORKFLOW_KEY:
+        # The simplified workflow is a single-consultant process: every node is
+        # owned by whoever accepts the request, so the integrated
+        # dual-specialty gate of the production workflow does not apply.
+        if consultant.role != "consultant" or not consultant.is_active:
+            raise ValueError("consultant_specialty_required")
+        if (
+            service_request.status == "accepted"
+            and service_request.assigned_consultant_id == consultant.id
+        ):
+            return service_request
+        if service_request.status in {"withdrawn", "rejected", "delivered"}:
+            raise ValueError("service_request_read_only")
+        if service_request.status != "submitted" or service_request.assigned_consultant_id is not None:
+            raise ValueError("service_request_already_taken")
+        service_request.assigned_consultant_id = consultant.id
+        service_request.status = "accepted"
+        service_request.accepted_at = utc_now_naive()
+        service_request.updated_by = consultant.id
+        for task in await db.scalars(
+            select(StepTask).where(
+                StepTask.workflow_instance_id == case.workflow_instance_id,
+                StepTask.required_capability == "consultant",
+            )
+        ):
+            task.assignee_id = consultant.id
+        await record_audit(
+            db,
+            consultant.id,
+            "service_request.accept",
+            "service_request",
+            str(request_id),
+            target_user_id=service_request.user_id,
+            details={"workflow_key": SIMPLE_WORKFLOW_KEY},
+            audit_context=audit_context,
+        )
+        await db.commit()
+        await db.refresh(service_request)
+        return service_request
     if case and (case.application_snapshot or {}).get("collaboration_contract"):
         capabilities = consultant_capabilities(consultant)
         if service_request.consultation_type == "metaphysics":
@@ -235,17 +278,22 @@ async def list_staff_service_requests(
         ReportCase.service_request_id == ServiceRequest.id,
         StepTask.required_capability.in_(SPECIALTY_FIELDS),
     ).exists()
+    simple_case = select(ReportCase.id).where(
+        ReportCase.service_request_id == ServiceRequest.id,
+        ReportCase.application_snapshot["workflow_key"].as_string() == SIMPLE_WORKFLOW_KEY,
+    ).exists()
     if user.role != "admin":
         if scope == "available":
             supported_types = consultant_request_types(user)
             capabilities = consultant_capabilities(user)
             legacy_direction = (
                 or_(
+                    simple_case,
                     ServiceRequest.consultation_type.is_(None),
                     ServiceRequest.consultation_type.in_(supported_types),
                 )
                 if supported_types
-                else false()
+                else simple_case
             )
             legacy_available = and_(
                 ~collaborative,

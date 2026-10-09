@@ -144,6 +144,10 @@ async def create_report_case(
 
     now = _now()
     frozen_application = deepcopy(application_snapshot)
+    # The chosen workflow is frozen into the case snapshot at creation time.
+    # Cases never switch workflows halfway through, so the stored key is the
+    # only value later readers and writers should trust.
+    frozen_application["workflow_key"] = version.workflow_key
     collaboration = version.definition_json.get("collaboration_contract")
     if collaboration:
         frozen_application["collaboration_contract"] = deepcopy(collaboration)
@@ -275,6 +279,13 @@ def _find_step(tasks: list[StepTask], step_key: str) -> StepTask:
         if task.step_key == step_key:
             return task
     raise ValueError("step_task_not_found")
+
+
+async def lock_case_and_tasks(
+    db: AsyncSession, case_id: int
+) -> tuple[ReportCase, WorkflowInstance, list[StepTask]]:
+    """Public accessor for case-level row locks shared by workflow use cases."""
+    return await _lock_case_and_tasks(db, case_id)
 
 
 async def start_step(db: AsyncSession, case_id: int, step_key: str) -> StepTask:

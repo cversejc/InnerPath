@@ -16,6 +16,7 @@ from app.domains.service_requests.schemas import (
 from app.domains.service_requests.service import serialize_service_request, serialize_task
 from app.domains.calendar.requests import serialize_calendar_request
 from app.domains.workflow.authorization import has_collaboration_contract
+from app.domains.workflow.definitions import case_workflow_key
 
 
 def project_report_case_status(case_status: str, step_status: str | None, fallback: str) -> str:
@@ -68,6 +69,7 @@ async def report_case_progress_for_requests(
         case.service_request_id: {
             "report_case_id": case.id,
             "report_case_status": case.status,
+            "workflow_key": case_workflow_key(case),
             "is_collaborative": has_collaboration_contract(case.application_snapshot),
             "current_step_key": (
                 current_by_workflow[case.workflow_instance_id].step_key
@@ -119,6 +121,10 @@ def _detail_for_error(error: ValueError) -> tuple[int, str]:
         return status.HTTP_409_CONFLICT, "Draft has changed; refresh before saving"
     if code in {"service_request_locked", "service_request_already_taken"}:
         return status.HTTP_409_CONFLICT, code
+    if code == "workflow_key_locked":
+        return status.HTTP_409_CONFLICT, "报告流程已在申请创建后确定，不能中途切换。"
+    if code == "workflow_key_unsupported":
+        return status.HTTP_422_UNPROCESSABLE_ENTITY, "暂不支持该报告流程。"
     if code == "report_case_workflow_required":
         return status.HTTP_409_CONFLICT, "该报告申请已进入 Case 工作流，请在报告工作区继续处理。"
     if code == "calendar_requires_delivered_report":
@@ -147,6 +153,12 @@ async def _serialize_public(db: AsyncSession, service_request: ServiceRequest) -
         if report_case:
             payload["report_case_id"] = report_case.id
             payload["report_case_status"] = report_case.status
+        payload["workflow_key"] = case_workflow_key(
+            report_case
+            if report_case is not None
+            else (service_request.request_payload or {})
+        )
+        if report_case:
             current_step = None
             if report_case.workflow_instance_id:
                 current_step = await db.scalar(

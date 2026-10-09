@@ -7,6 +7,10 @@ from typing import Any, Optional
 from .models import SERVICE_REQUEST_TYPES, ServiceRequest
 from app.models.user import User
 from app.domains.users.lunar_calendar import solar_date_for_birth
+from app.domains.workflow.definitions import (
+    case_workflow_key,
+    normalize_workflow_key,
+)
 from app.services.intake_service import profile_snapshot
 from .schemas import (
     ReportContext,
@@ -90,6 +94,7 @@ def _normalize_payload(
     *,
     context: Optional[dict[str, Any]] = None,
     profile_version: Optional[int] = None,
+    workflow_key: Optional[str] = None,
 ) -> dict[str, Any]:
     ensure_service_type(service_type)
     normalized_profile = deepcopy(profile or {})
@@ -153,6 +158,8 @@ def _normalize_payload(
         normalized["additional_info"] = normalized_context["additional_info"]
     if service_type == "report" and profile_version is not None:
         normalized["profile_version"] = int(profile_version)
+    if service_type == "report":
+        normalized["workflow_key"] = normalize_workflow_key(workflow_key)
     return normalized
 
 
@@ -178,6 +185,7 @@ def payload_from_create(
             data.start_date,
             context=data.context.model_dump() if data.context is not None else None,
             profile_version=data.profile_version or user.profile_version or 1,
+            workflow_key=data.workflow_key,
         ),
         data.idempotency_key,
     )
@@ -195,6 +203,11 @@ def payload_from_update(
     ):
         raise ValueError("profile_version_conflict")
     current = deepcopy(request.request_payload or {})
+    current_workflow_key = case_workflow_key(current)
+    if data.workflow_key is not None:
+        requested_workflow_key = normalize_workflow_key(data.workflow_key)
+        if requested_workflow_key != current_workflow_key:
+            raise ValueError("workflow_key_locked")
     current_profile = _merge_profile(
         user,
         current.get("profile") or {},
@@ -244,6 +257,7 @@ def payload_from_update(
         start_date,
         context=context,
         profile_version=profile_version or user.profile_version or 1,
+        workflow_key=current_workflow_key,
     )
 
 

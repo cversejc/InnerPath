@@ -31,6 +31,7 @@ test('report application contains the confirmed profile version and full context
   const payload = buildReportApplication(profile, context, 9)
 
   assert.equal(payload.service_type, 'report')
+  assert.equal('workflow_key' in payload, false)
   assert.equal(payload.profile.name, '林一')
   assert.equal(payload.profile.time_accuracy, 'approximate')
   assert.equal(payload.profile_version, 9)

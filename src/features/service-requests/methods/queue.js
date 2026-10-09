@@ -25,6 +25,7 @@ export default {
           this.reportCase = null
           this.reportCaseCompletionGate = null
           this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
+          this.resetSimpleReportState?.()
           this.syncWorkspaceRoute(null)
           this.stopPolling()
         }
@@ -43,6 +44,7 @@ export default {
     this.reportCase = null
     this.reportCaseCompletionGate = null
     this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
+    this.resetSimpleReportState?.()
     this.stopPolling()
     await this.loadRequests()
   },
@@ -60,6 +62,7 @@ export default {
     this.reportCaseCompletionGate = null
     this.reportCaseContent = { evidence: [], findings: [], fragments: [] }
     this.reportAnalysisRuns = []
+    this.resetSimpleReportState?.()
     this.message = ''
     this.$nextTick(() => {
       if (this.selectedRequest?.id === item.id) this.$el?.scrollTo?.(0, 0)
@@ -90,6 +93,7 @@ export default {
       if (this.workspace.task?.status === 'processing') this.startPolling(this.workspace.task)
     } catch (error) {
       this.workspace = null
+      this.resetSimpleReportState?.()
       this.message = this.errorText(error)
     } finally {
       this.loading = false

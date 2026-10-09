@@ -23,7 +23,9 @@ import reportCaseMethods from '../features/service-requests/methods/report-case.
 import reportAnalysisMethods from '../features/service-requests/methods/report-analysis.js'
 import reportFoundationMethods from '../features/service-requests/methods/report-foundation.js'
 import reportReviewMethods from '../features/service-requests/methods/report-review.js'
+import simpleReportCaseMethods from '../features/service-requests/methods/simple-report-case.js'
 import ReportNodeWorkbench from '../features/report-cases/components/ReportNodeWorkbench.vue'
+import SimpleReportNodeWorkbench from '../features/report-cases/components/SimpleReportNodeWorkbench.vue'
 import AnalysisDraftsPanel from '../features/report-cases/components/AnalysisDraftsPanel.vue'
 import FoundationCalculationPanel from '../features/report-cases/components/FoundationCalculationPanel.vue'
 import WorkbenchRecordPicker from '../features/report-cases/components/WorkbenchRecordPicker.vue'
@@ -34,6 +36,11 @@ import EvidenceReferencePicker from '../features/report-cases/components/Evidenc
 import { nodeWorkspaceComputed, nodeWorkspaceMethods } from '../features/report-cases/node-workspace-state.js'
 import DeliveredReportSummary from '../features/report-cases/components/DeliveredReportSummary.vue'
 import { REPORT_STEP_STATUS_LABELS, reportFragmentTitle, reportStage } from '../features/report-cases/stages.js'
+import { simpleReportStepLabel } from '../features/report-cases/simple-stages.js'
+import {
+  SIMPLE_REPORT_WORKFLOW_KEY,
+  reportWorkflowKeyFromSources
+} from '../features/report-cases/workflow-keys.js'
 import {
   CONFIDENCE_LABELS,
   EDIT_KIND_LABELS,
@@ -58,7 +65,7 @@ import OperationsShell from '../components/OperationsShell.vue'
 
 export default {
   name: 'StaffConsole',
-  components: { OperationsShell, VanButton, VanDialog, VanField, ReportNodeWorkbench, AnalysisDraftsPanel, FoundationCalculationPanel, DeliveredReportSummary, WorkbenchRecordPicker, QualityScorecard, ReportFragmentReview, QualityIssueReview, EvidenceReferencePicker },
+  components: { OperationsShell, VanButton, VanDialog, VanField, ReportNodeWorkbench, SimpleReportNodeWorkbench, AnalysisDraftsPanel, FoundationCalculationPanel, DeliveredReportSummary, WorkbenchRecordPicker, QualityScorecard, ReportFragmentReview, QualityIssueReview, EvidenceReferencePicker },
   data() {
     const admin = hasRole('admin')
     return {
@@ -97,6 +104,10 @@ export default {
       reportCaseDelivering: false,
       finalGateAttested: false,
       reportCaseLoading: false,
+      simpleReportVersions: [],
+      simpleReportLoading: false,
+      simpleReportSaving: false,
+      simpleReportDraft: null,
       reportAnalysisSaving: false,
       reportAnalysisFindingSavingKey: '',
       reportAnalysisFragmentSavingKey: '',
@@ -145,16 +156,33 @@ export default {
   computed: {
     staffActor() { return authState.user },
     operatorName() { return authState.user?.name || (this.admin ? '管理员' : '咨询师') },
+    isSimpleReportCase() {
+      return reportWorkflowKeyFromSources(
+        this.reportCase,
+        this.workspace?.request,
+        this.selectedRequest
+      ) === SIMPLE_REPORT_WORKFLOW_KEY
+    },
     operationsNavGroups() {
       const items = [
-        { id: 'staff-workbench', label: '咨询师工作台', icon: 'reports', active: true },
-        { id: 'skill-studio', label: '技能工作台', icon: 'spark', to: this.skillStudioLocation }
+        { id: 'staff-workbench', label: '咨询师工作台', icon: 'reports', active: true }
       ]
+      // The simplified flow never reads generated skill runs, so the entry
+      // point stays hidden instead of leading to an empty workspace.
+      if (!this.isSimpleReportCase) {
+        items.push({ id: 'skill-studio', label: '技能工作台', icon: 'spark', to: this.skillStudioLocation })
+      }
       if (this.admin) items.push({ id: 'admin-console', label: '运营总览', icon: 'compass', to: '/admin' })
       return [{ id: 'workbenches', label: '工作台', items }]
     },
     workspaceCurrentLabel() { return this.selectedRequest ? '报告处理' : '报告申请' },
-    canAcceptSelectedRequest() { return canAcceptRequest(this.selectedRequest, this.staffActor) },
+    canAcceptSelectedRequest() {
+      if (!this.isSimpleReportCase) return canAcceptRequest(this.selectedRequest, this.staffActor)
+      const request = this.selectedRequest
+      if (!request || ['delivered', 'withdrawn', 'rejected'].includes(request.status)) return false
+      if (this.staffActor?.role !== 'consultant') return false
+      return !request.assigned_consultant_id
+    },
     ownsSelectedRequest() { return ownsRequest(this.selectedRequest, this.staffActor) },
     specialtyLabel() { return specialtyLabels[this.staffActor?.consultant_type] || (this.admin ? "管理员" : "尚未设置专业类型") },
     ...nodeWorkspaceComputed,
@@ -179,6 +207,7 @@ export default {
       )
     },
     scopeDescription() {
+      if (this.isSimpleReportCase && this.scope === 'available') return '展示等待接单的简化报告申请，任意在职咨询师均可接单。'
       if (this.scope === 'available') return `展示尚缺${this.specialtyLabel}的报告申请，接单后负责对应节点。`
       if (this.scope === 'mine') return '展示分配给当前咨询师的申请。'
       return '管理员可查看全量申请并介入处理。'
@@ -188,6 +217,7 @@ export default {
     },
     assignableConsultants() {
       if (this.workspace?.request.service_type !== 'report') return this.consultants
+      if (this.isSimpleReportCase) return this.consultants
       const required = this.consultationType === 'integrated'
         ? ['mingli', 'psychology']
         : [this.consultationType === 'metaphysics' ? 'mingli' : 'psychology']
@@ -198,6 +228,9 @@ export default {
     assignmentChanged() {
       if (!this.workspace) return false
       const request = this.workspace.request
+      if (this.isSimpleReportCase) {
+        return Number(this.assignmentId || 0) !== Number(request.assigned_consultant_id || 0)
+      }
       return Number(this.assignmentId || 0) !== Number(request.assigned_consultant_id || 0) || (
         request.service_type === 'report' && this.consultationType !== (request.consultation_type || 'integrated')
       )
@@ -326,7 +359,9 @@ export default {
       else this.clearReportWorkspaceState()
     },
     '$route.query.step'() {
-      if(this.reportCase) this.restoreReportNode()
+      if (!this.reportCase) return
+      if (this.isSimpleReportCase) this.restoreSimpleReportNode()
+      else this.restoreReportNode()
     },
     '$route.query.section'(sectionId) {
       if (!this.selectedRequest) return
@@ -375,6 +410,7 @@ export default {
     ...queueMethods,
     ...workflowMethods,
     ...reportCaseMethods,
+    ...simpleReportCaseMethods,
     ...reportAnalysisMethods,
     ...reportFoundationMethods,
     ...reportReviewMethods,
@@ -405,6 +441,10 @@ export default {
       return SERVICE_REQUEST_STATUS_LABELS[status] || '处理中'
     },
     reportStepLabel(stepKey) {
+      const simpleLabel = this.isSimpleReportCase
+        ? simpleReportStepLabel(stepKey, '')
+        : ''
+      if (simpleLabel) return simpleLabel
       return reportStage(stepKey)?.shortName || '处理步骤'
     },
     reportStepStatusLabel(status) {
@@ -470,7 +510,8 @@ export default {
         return
       }
       await this.selectRequest(request, { updateRoute: false })
-      this.restoreReportNode()
+      if (this.isSimpleReportCase) this.restoreSimpleReportNode()
+      else this.restoreReportNode()
     },
     closeReportWorkspace() {
       if (this.reportReviewBusy) { this.message = '请先保存或取消当前修改，再关闭报告工作区。'; return }
@@ -495,6 +536,7 @@ export default {
       }
       this.qualityFeedbackDraft = ''
       this.narrativeFeedbackDrafts = {}
+      this.resetSimpleReportState?.()
       this.workspaceSection = 'overview'
       this.selectedReportStepKey = ''
       this.scrollWorkspaceToTop()
@@ -625,7 +667,16 @@ export default {
           report_case_not_found: '未找到这份报告申请，请返回列表刷新后重试。',
           report_case_step_not_active: '当前步骤已变化，请刷新后继续处理。',
           report_analysis_output_required: '请先确认专业判断或分析内容，再完成本步骤。',
-          report_analysis_sop_coverage_required: '请按本节点分析清单逐项审核。缺少资料的条目也需记录暂缓原因。'
+          report_analysis_sop_coverage_required: '请按本节点分析清单逐项审核。缺少资料的条目也需记录暂缓原因。',
+          workflow_key_mismatch: '这份申请与当前报告流程不一致，请返回列表刷新后重试。',
+          workflow_key_locked: '报告流程已在申请创建后确定，不能中途切换。',
+          workflow_key_unsupported: '暂不支持该报告流程，请返回列表刷新后重试。',
+          workflow_not_active: '这份申请的报告流程已结束或暂停，请刷新后查看最新状态。',
+          workflow_step_order_invalid: '轮次顺序已变化，请刷新后从当前节点继续。',
+          step_not_in_review: '本节点还不能提交，请先在节点总览点击开始。',
+          step_not_current: '本节点已不是当前处理轮次，请刷新后继续未完成的轮次。',
+          simple_report_text_required: '请先填写本轮完整报告文本，再完成本节点。',
+          final_gate_approval_required: '请先勾选确认最终审核，再提交终稿交付。'
         }
         return messages[text] || '操作暂时无法完成，请刷新页面后重试。'
       }

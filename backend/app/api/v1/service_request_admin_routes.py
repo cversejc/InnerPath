@@ -30,7 +30,8 @@ from app.api.v1.service_request_api_support import (
     report_case_progress_for_requests,
 )
 from app.application.report_cases import cancel_report_case_for_service_request
-from app.domains.workflow.models import ReportCase
+from app.domains.workflow.definitions import SIMPLE_WORKFLOW_KEY, case_workflow_key
+from app.domains.workflow.models import ReportCase, StepTask
 from app.domains.workflow.authorization import has_collaboration_contract
 from app.domains.workflow.service import assign_step
 
@@ -164,7 +165,8 @@ async def update_request_assignment(
             select(ReportCase).where(ReportCase.service_request_id == request_id)
         )
     collaborative = bool(case and has_collaboration_contract(case.application_snapshot))
-    if consultant and service_request.service_type == "report" and not collaborative:
+    simple = bool(case and case_workflow_key(case) == SIMPLE_WORKFLOW_KEY)
+    if consultant and service_request.service_type == "report" and not collaborative and not simple:
         if consultation_type is None:
             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Select a consultation direction first")
         if not consultant_can_cover_specialty(consultant, consultation_type):
@@ -209,6 +211,22 @@ async def update_request_assignment(
                 )
     elif not collaborative and has_assignment_id:
         service_request.assigned_consultant_id = data.consultant_id
+        if simple and case is not None:
+            # The simplified workflow is a single-consultant process: every
+            # round belongs to whoever owns the request, so the assignment
+            # fans out to all nodes instead of the two-specialty split used by
+            # the production workflow.
+            step_tasks = list(
+                await db.scalars(
+                    select(StepTask).where(
+                        StepTask.workflow_instance_id == case.workflow_instance_id,
+                        StepTask.status.not_in(("COMPLETED", "CANCELLED")),
+                    )
+                )
+            )
+            for step_task in step_tasks:
+                step_task.assignee_id = data.consultant_id
+                step_task.updated_at = utc_now_naive()
     if consultant and service_request.status == "submitted":
         service_request.status = "accepted"
         service_request.accepted_at = utc_now_naive()

@@ -1,3 +1,5 @@
+// The applicant never chooses a report workflow: the backend assigns the
+// default one (currently `report.simple`) when the request is created.
 export function buildReportApplication(profile, context, profileVersion) {
   const listValue = value => Array.isArray(value) ? [...value] : []
   const textValue = value => String(value || '').trim() || null

@@ -150,8 +150,9 @@ async def resubmit_service_request(
         (service_request.request_payload or {}).get("additional_info"),
         (service_request.request_payload or {}).get("calendar_goal"),
         (service_request.request_payload or {}).get("start_date"),
-        (service_request.request_payload or {}).get("context"),
-        (service_request.request_payload or {}).get("profile_version"),
+        context=(service_request.request_payload or {}).get("context"),
+        profile_version=(service_request.request_payload or {}).get("profile_version"),
+        workflow_key=(service_request.request_payload or {}).get("workflow_key"),
     )
     old_draft = await _get_draft(db, service_request.id)
     if old_draft:

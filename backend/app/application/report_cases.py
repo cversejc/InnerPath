@@ -12,8 +12,12 @@ from app.domains.service_requests.users import create_service_request
 from app.domains.content.service import sync_application_evidence
 from app.domains.workflow.definitions import (
     DEFAULT_WORKFLOW_KEY,
+    SIMPLE_WORKFLOW_KEY,
+    case_workflow_key,
     default_workflow_definition,
+    normalize_workflow_key,
 )
+from app.domains.workflow.simple_definitions import simple_workflow_definition
 from app.domains.workflow.models import ReportCase, WorkflowVersion
 from app.domains.workflow.service import cancel_case, create_report_case
 from app.domains.workflow.service import latest_published_version, create_workflow_draft, publish_workflow_version
@@ -79,6 +83,44 @@ async def ensure_default_workflow_version(db: AsyncSession) -> WorkflowVersion:
         raise
 
 
+async def ensure_simple_workflow_version(db: AsyncSession) -> WorkflowVersion:
+    """Return the published built-in version matching the current code.
+
+    The simplified workflow follows the shared report node catalog and replaces
+    every node contract with user info + report text. It has no authoring
+    screen, so its code definition is published on first use. Existing cases
+    keep their frozen workflow version; when the code definition changes, new
+    cases receive a new version instead of reusing the stale one.
+    """
+    definition = simple_workflow_definition()
+    latest = await latest_published_version(db, SIMPLE_WORKFLOW_KEY)
+    if latest is not None and latest.definition_json == definition:
+        return latest
+
+    now = utc_now_naive()
+    version = WorkflowVersion(
+        workflow_key=SIMPLE_WORKFLOW_KEY,
+        name="简化报告流程",
+        version=(latest.version if latest else 0) + 1,
+        status="PUBLISHED",
+        definition_json=definition,
+        created_by=None,
+        published_by=None,
+        created_at=now,
+        published_at=now,
+    )
+    try:
+        async with db.begin_nested():
+            db.add(version)
+            await db.flush()
+        return version
+    except IntegrityError:
+        latest = await latest_published_version(db, SIMPLE_WORKFLOW_KEY)
+        if latest is not None and latest.definition_json == definition:
+            return latest
+        raise
+
+
 async def ensure_collaborative_workflow_version(db: AsyncSession) -> WorkflowVersion:
     from app.application.skill_runtime import ensure_analysis_workflow_version
     await ensure_default_workflow_version(db)
@@ -141,15 +183,22 @@ async def create_user_service_request(
     )
     report_case = await get_report_case_for_service_request(db, request.id)
     if report_case is None and request.status not in {"withdrawn", "rejected"}:
-        await ensure_collaborative_workflow_version(db)
+        workflow_key = normalize_workflow_key(
+            case_workflow_key(request.request_payload or {})
+        )
+        if workflow_key == SIMPLE_WORKFLOW_KEY:
+            workflow_version = await ensure_simple_workflow_version(db)
+        else:
+            workflow_version = await ensure_collaborative_workflow_version(db)
         report_case = await create_report_case(
             db,
             user_id=user.id,
             service_request_id=request.id,
             source_report_task_id=None,
             application_snapshot=request.request_payload,
+            workflow_version=workflow_version,
         )
-    if report_case is not None:
+    if report_case is not None and case_workflow_key(report_case) != SIMPLE_WORKFLOW_KEY:
         await sync_application_evidence(
             db,
             report_case_id=report_case.id,

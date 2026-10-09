@@ -60,6 +60,7 @@ class ServiceProfileSnapshot(BaseModel):
 
 class ServiceRequestCreate(BaseModel):
     service_type: ServiceType
+    workflow_key: Optional[str] = Field(None, max_length=50)
     profile: ServiceProfileSnapshot
     profile_version: Optional[int] = Field(None, ge=1)
     context: Optional[ReportContext] = None
@@ -71,6 +72,7 @@ class ServiceRequestCreate(BaseModel):
 
 
 class ServiceRequestUpdate(BaseModel):
+    workflow_key: Optional[str] = Field(None, max_length=50)
     profile: Optional[ServiceProfileSnapshot] = None
     profile_version: Optional[int] = Field(None, ge=1)
     context: Optional[ReportContext] = None
@@ -84,6 +86,7 @@ class ServiceRequestResponse(BaseModel):
     id: int
     service_type: ServiceType
     workflow_type: Optional[str] = None
+    workflow_key: Optional[str] = None
     status: str
     request_payload: Dict[str, Any]
     result_type: Optional[str] = None
@@ -110,6 +113,7 @@ class ServiceRequestResponse(BaseModel):
     rejected_at: Optional[datetime] = None
     report_case_id: Optional[int] = None
     report_case_status: Optional[str] = None
+    workflow_key: Optional[str] = None
     current_step_key: Optional[str] = None
 
 

@@ -23,6 +23,10 @@ import {
 import { getCaseSkillRuns } from '../../skills/api.js'
 import { canHandleStep } from '../../report-cases/professional-ownership.js'
 import { reportFragmentTitle } from '../../report-cases/stages.js'
+import {
+  SIMPLE_REPORT_WORKFLOW_KEY,
+  reportWorkflowKeyFromSources
+} from '../../report-cases/workflow-keys.js'
 
 function splitReferences(value) {
   return String(value || '')
@@ -44,14 +48,26 @@ export default {
       this.reportNarrativePollTimer = null
     }
     try {
-      const [reportCase, content, narrative, quality, analysisRuns] = await Promise.all([
-        getReportCase(caseId),
+      const reportCase = await getReportCase(caseId)
+      this.reportCase = reportCase
+      const workflowKey = reportWorkflowKeyFromSources(
+        reportCase,
+        this.workspace?.request,
+        this.selectedRequest
+      )
+      if (workflowKey === SIMPLE_REPORT_WORKFLOW_KEY) {
+        // The simplified workflow owns its own state: it never reads or polls
+        // the production content, narrative, quality or skill-run resources.
+        if (this.restoreSimpleReportNode && !this.selectedReportStepKey) this.restoreSimpleReportNode()
+        await this.loadSimpleReportCaseData(caseId)
+        return
+      }
+      const [content, narrative, quality, analysisRuns] = await Promise.all([
         getReportCaseContent(caseId),
         getReportCaseNarrative(caseId),
         getReportCaseQuality(caseId),
         getCaseSkillRuns(caseId)
       ])
-      this.reportCase = reportCase
       if (this.restoreReportNode && !this.selectedReportStepKey) this.restoreReportNode()
       this.reportCaseContent = content
       this.reportNarrative = narrative
@@ -113,6 +129,9 @@ export default {
     return `${run.id}:${candidate.candidate_key}`
   },
   scheduleNarrativePoll(caseId) {
+    if (reportWorkflowKeyFromSources(this.reportCase, this.workspace?.request, this.selectedRequest) === SIMPLE_REPORT_WORKFLOW_KEY) {
+      return
+    }
     const runs = [
       ...(this.reportNarrative.candidate_runs || []),
       ...(this.reportNarrative.fragment_runs || []),

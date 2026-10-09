@@ -56,6 +56,19 @@ export async function getReportCaseVersions(caseId) {
   return response.data
 }
 
+export async function getSimpleReportCaseVersions(caseId) {
+  const response = await apiClient.get(`/report-cases/${caseId}/simple/versions`)
+  return response.data
+}
+
+export async function completeSimpleReportCaseStep(caseId, stepKey, payload) {
+  const response = await apiClient.post(
+    `/report-cases/${caseId}/simple/steps/${stepKey}/complete`,
+    payload
+  )
+  return response.data
+}
+
 export async function getReportCaseNarrative(caseId) {
   const response = await apiClient.get(`/report-cases/${caseId}/narrative`)
   return response.data

@@ -36,6 +36,7 @@ from app.domains.service_requests.staff import (
     staff_can_access,
 )
 from app.domains.workflow.models import ReportCase, StepTask, WorkflowVersion
+from app.domains.workflow.definitions import DEFAULT_WORKFLOW_KEY
 from app.domains.workflow.authorization import validate_step_actor, STEP_SPECIALTIES
 from app.domains.workflow.service import create_report_case, start_step, complete_step
 from tests.test_workflow_foundation import SyncSessionAdapter
@@ -628,6 +629,7 @@ async def test_two_specialties_accept_and_hand_off_sequential_steps(chain_db):
     db.add_all([mingli, psychology, competing])
     await db.flush()
     request, case = await create_user_service_request(db, user, ServiceRequestCreate(service_type="report",
+        workflow_key=DEFAULT_WORKFLOW_KEY,
         profile={"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
         context={"current_challenge": "测试工作边界", "focus_topics": ["career"],
                  "expected_outcomes": ["明确下一步"]}, idempotency_key="chain-request-1"))
@@ -808,6 +810,7 @@ async def test_delivered_version_is_calendar_source_and_links_logs_to_case(chain
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
             submitted = await client.post("/api/v1/service-requests", json={
                 "service_type": "report",
+                "workflow_key": DEFAULT_WORKFLOW_KEY,
                 "profile": {"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
                 "context": {"current_challenge": "测试边界", "focus_topics": ["career"],
                             "expected_outcomes": ["明确下一步"]},
@@ -997,6 +1000,7 @@ async def test_http_application_dual_acceptance_and_step_permissions(chain_db):
     try:
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
             submitted = await client.post("/api/v1/service-requests", json={"service_type": "report",
+                "workflow_key": DEFAULT_WORKFLOW_KEY,
                 "profile": {"gender": "female", "birth_year": 1990, "birth_month": 5, "birth_day": 12},
                 "context": {"current_challenge": "工作边界", "focus_topics": ["career"],
                             "expected_outcomes": ["明确下一步"]}, "idempotency_key": "http-chain"})

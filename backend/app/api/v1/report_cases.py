@@ -25,6 +25,7 @@ from app.application.report_analysis import (
     validate_analysis_step_completion,
 )
 from app.application.skill_runtime import queue_case_authoring_skill_run
+from app.application.simple_report_delivery import complete_simple_report_step
 from app.application.report_generation import (
     start_case_report_coherence_check,
     start_case_report_generation,
@@ -75,6 +76,13 @@ from app.domains.content.findings import current_finding
 from app.domains.content.narrative import confirm_narrative_plan, get_current_narrative_plan
 from app.domains.delivery.models import ReportVersion
 from app.domains.delivery.schemas import ReportVersionResponse
+from app.domains.delivery.simple_models import SimpleReportVersion
+from app.domains.delivery.simple_schemas import (
+    SimpleReportVersionListResponse,
+    SimpleReportVersionResponse,
+    SimpleStepCompleteInput,
+    SimpleStepCompletionResponse,
+)
 from app.domains.quality.schemas import (
     FinalGateApproval,
     QAIssueResolution,
@@ -112,6 +120,10 @@ from app.domains.workflow.schemas import (
     WorkflowInstanceResponse,
     WorkflowVersionCreate,
     WorkflowVersionResponse,
+)
+from app.domains.workflow.definitions import (
+    SIMPLE_WORKFLOW_KEY,
+    case_workflow_key,
 )
 from app.models.user import User
 from app.domains.workflow.authorization import is_assigned, assignment_condition, validate_step_actor
@@ -201,12 +213,19 @@ def _workflow_error(error: ValueError) -> None:
         "report_authoring_not_ready",
         "report_coherence_not_ready",
         "report_coherence_state_invalid",
+        "workflow_key_mismatch",
+        "workflow_key_locked",
+        "simple_report_version_immutable",
     }:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=code)
     if code in {"report_case_forbidden", "step_assigned_to_another_consultant", "step_specialty_required"}:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=code)
     if code in {"narrative_candidate_run_invalid", "narrative_candidate_not_found"}:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=code)
+    if code in {"simple_report_text_required"}:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
+        )
     if code.startswith(("workflow_", "step_", "narrative_", "report_case_", "report_fragment_", "report_generation_", "report_content_plan_", "report_analysis_", "report_foundation_", "report_authoring_", "report_coherence_", "fragment_narrative_", "final_qa_", "qa_", "framework_", "product_framework_", "reasoning_", "case_skill_")):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=code
@@ -635,6 +654,69 @@ async def list_report_case_versions(
             .where(ReportVersion.report_case_id == case_id)
             .order_by(ReportVersion.version_no.desc())
         )
+    )
+
+
+@router.get(
+    "/{case_id}/simple/versions",
+    response_model=SimpleReportVersionListResponse,
+)
+async def list_simple_report_case_versions(
+    case_id: int,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    report_case = await _case_for_read_or_action(db, case_id, current_user)
+    if case_workflow_key(report_case) != SIMPLE_WORKFLOW_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="workflow_key_mismatch"
+        )
+    rows = list(
+        await db.scalars(
+            select(SimpleReportVersion)
+            .where(SimpleReportVersion.report_case_id == case_id)
+            .order_by(SimpleReportVersion.version_no)
+        )
+    )
+    return SimpleReportVersionListResponse(
+        total=len(rows),
+        items=[SimpleReportVersionResponse.model_validate(row) for row in rows],
+    )
+
+
+@router.post(
+    "/{case_id}/simple/steps/{step_key}/complete",
+    response_model=SimpleStepCompletionResponse,
+)
+async def complete_simple_report_case_step(
+    case_id: int,
+    step_key: str,
+    data: SimpleStepCompleteInput,
+    request: Request,
+    current_user: User = Depends(require_roles("admin", "consultant")),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        await _authorize_step_action(
+            db, case_id, step_key, current_user, require_current_review=True
+        )
+        version, report = await complete_simple_report_step(
+            db,
+            case_id=case_id,
+            step_key=step_key,
+            actor=current_user,
+            report_text=data.report_text,
+            review_note=data.review_note,
+            final_gate_confirmed=data.final_gate_confirmed,
+            audit_context=audit_context_from_request(request),
+        )
+    except ValueError as error:
+        await db.rollback()
+        _workflow_error(error)
+    return SimpleStepCompletionResponse(
+        version=SimpleReportVersionResponse.model_validate(version),
+        delivered=report is not None,
+        report_id=report.id if report is not None else None,
     )
 
 

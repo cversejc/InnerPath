@@ -3,6 +3,65 @@ import test from 'node:test'
 import { reactive } from 'vue'
 import apiClient from '../../../utils/apiClient.js'
 import methods from './report-case.js'
+import simpleReportCaseMethods from './simple-report-case.js'
+
+test('a simplified case loads only the case and its simple versions', async t => {
+  const previousAdapter = apiClient.defaults.adapter
+  const previousStorage = Object.getOwnPropertyDescriptor(globalThis, 'sessionStorage')
+  Object.defineProperty(globalThis, 'sessionStorage', { configurable: true, value: { getItem: () => null } })
+  t.after(() => {
+    apiClient.defaults.adapter = previousAdapter
+    if (previousStorage) Object.defineProperty(globalThis, 'sessionStorage', previousStorage)
+    else delete globalThis.sessionStorage
+  })
+
+  const urls = []
+  apiClient.defaults.adapter = async config => {
+    urls.push(config.url)
+    const data = config.url === '/report-cases/41'
+      ? {
+          id: 41,
+          status: 'ACTIVE',
+          application_snapshot: { workflow_key: 'report.simple' },
+          workflow_instance: {
+            steps: [
+              { id: 1, step_key: 'S1', sequence_no: 1, status: 'READY', config_snapshot: { output_version: 1 } },
+              { id: 2, step_key: 'S2', sequence_no: 2, status: 'PENDING', config_snapshot: { output_version: 2 } },
+              { id: 3, step_key: 'S3', sequence_no: 3, status: 'PENDING', config_snapshot: { output_version: 3 } },
+              { id: 4, step_key: 'S4', sequence_no: 4, status: 'PENDING', config_snapshot: { output_version: 4 } },
+              { id: 5, step_key: 'S5', sequence_no: 5, status: 'PENDING', config_snapshot: { output_version: 5 } },
+              { id: 6, step_key: 'S6', sequence_no: 6, status: 'PENDING', config_snapshot: { output_version: 6, final_gate: true } }
+            ]
+          }
+        }
+      : { items: [] }
+    return { data, status: 200, statusText: 'OK', headers: {}, config }
+  }
+
+  const context = {
+    ...simpleReportCaseMethods,
+    reportCaseLoading: false,
+    reportCase: null,
+    workspace: null,
+    selectedRequest: null,
+    selectedReportStepKey: '',
+    simpleReportLoading: false,
+    simpleReportSaving: false,
+    simpleReportVersions: [],
+    simpleReportDraft: null,
+    currentReportStep: null,
+    $route: { query: {} },
+    syncWorkspaceRoute() {},
+    scrollWorkspaceToTop() {},
+    errorText: error => { throw error }
+  }
+
+  await methods.loadReportCaseData.call(context, 41)
+
+  assert.deepEqual(urls, ['/report-cases/41', '/report-cases/41/simple/versions'])
+  assert.equal(context.reportCase.id, 41)
+  assert.equal(context.simpleReportLoading, false)
+})
 
 test('accepting a reactive finding saves a detached revision instead of failing to clone its proxy', async t => {
   const previousAdapter = apiClient.defaults.adapter
