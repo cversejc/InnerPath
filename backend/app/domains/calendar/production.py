@@ -80,7 +80,10 @@ def validate_daily(row, analysis, facts, *, practice_rhythm=None, available_minu
     max_suitable = min(5, max(3, 2 + len(scheduled_refs or [])))
     if (not isinstance(row.get("suitable"), list) or not 2 <= len(row["suitable"]) <= max_suitable
             or any(not isinstance(s, str) or not s.strip() for s in row["suitable"])):
-        raise ValueError("calendar_directions_invalid")
+        detail = {"entry_date": row.get("entry_date"),
+                  "suitable_count": len(row["suitable"]) if isinstance(row.get("suitable"), list) else None,
+                  "expected_range": [2, max_suitable]}
+        raise ValueError("calendar_directions_invalid:" + json.dumps(detail, ensure_ascii=False, separators=(",", ":")))
     if not row.get("energy_awareness") or not row.get("tone_explanation"):
         raise ValueError("calendar_awareness_required")
     validate_windows(row.get("windows"), facts)
@@ -347,6 +350,8 @@ async def produce_calendar(db, request, *, gateway=None):
             runtime_instruction = (runtime_instruction or "") + (
                 "\n独立校准反馈是本次重写的硬性问题清单：只改requested_dates中被反馈点名的实际文案，"
                 "逐项按field_path修复并保留action_refs、tone、day_pillar、windows.period和固定来源。"
+                "每个日期仍须保留2–3条非空suitable；被反馈点名的suitable条目若引用了未排入当日的报告练习，"
+                "改写为不调用报告Action的日常安排，不得直接删除条目或让数组短于2条。"
                 "不要只解释问题，也不要把approved改为true绕过问题。"
             )
         if quality_codes & {"REPETITIVE_DAILY_ADVICE", "REPETITIVE_SUGGESTION"}:
@@ -448,11 +453,19 @@ async def produce_calendar(db, request, *, gateway=None):
                     {"entry_date": e.get("entry_date"), "characters": len(e.get("summary") or "")}
                     for e in (log.output_parsed or {}).get("entries", [])
                 ], ensure_ascii=False)
+                suitable_feedback = json.dumps([
+                    {"entry_date": e.get("entry_date"),
+                     "count": len(e["suitable"]) if isinstance(e.get("suitable"), list) else None}
+                    for e in (log.output_parsed or {}).get("entries", [])
+                ], ensure_ascii=False)
                 return await run(key, suffix + ":repair", {**extra,
                     "previous_output": log.output_parsed or log.output_raw,
                     "summary_character_counts": [{"entry_date": e.get("entry_date"), "characters": len(e.get("summary") or "")}
                         for e in (log.output_parsed or {}).get("entries", [])],
-                    "format_repair_instruction": f"上次输出未通过程序校验：{execution_error}。只修复结构或来源错误，重新返回本阶段完整JSON，不改变系统日期、干支、色块或窗口。若错误包含calendar_summary_length_invalid，必须把错误详情列出的日期摘要逐项改为30–60字；本批摘要长度参考：{summary_feedback}。若错误包含calendar_energy_awareness_repeated，必须改写后出现日期的energy_awareness，使其结合当天summary、keyword或action_refs提出不同观察问题，不得逐字复用历史日期问句。若错误包含calendar_practice_schedule_mismatch，逐日照抄错误详情中的expected数组，actual数组一律视为错误；不得添加未排入的报告Action，也不得在suitable中安排未排入行动的步骤。scheduled_practice_by_date是本批唯一可执行的报告行动清单，practice_schedule是最终排程。windows每项含period、label、suggestion；daily summary含标点目标35–45字符，必须30–60字符；keyword用顿号连接2–4词；source_refs只能用allowed_source_refs。逐日文案必须带action_refs数组，只能引用报告行动并遵守每日时间预算与频率。校准MAJOR/BLOCK必须给出field_path和observed_text逐字引用实际交付文案；只评文案，不重排或质疑固定facts，不把已核验字段说成缺失。不得通过把approved改为true绕过质量问题。"}, validator)
+                    "suitable_counts": [{"entry_date": e.get("entry_date"),
+                        "count": len(e["suitable"]) if isinstance(e.get("suitable"), list) else None}
+                        for e in (log.output_parsed or {}).get("entries", [])],
+                    "format_repair_instruction": f"上次输出未通过程序校验：{execution_error}。只修复结构或来源错误，重新返回本阶段完整JSON，不改变系统日期、干支、色块或窗口。若错误包含calendar_summary_length_invalid，必须把错误详情列出的日期摘要逐项改为30–60字；本批摘要长度参考：{summary_feedback}。若错误包含calendar_directions_invalid，逐日把suitable修回2–3条非空字符串（当日排入多个Action时上限为2+排入数量且不超过5），被点名引用未排入练习的条目改写为不调用报告Action的日常安排，不能删除到少于2条；本批suitable条数参考：{suitable_feedback}。若错误包含calendar_energy_awareness_repeated，必须改写后出现日期的energy_awareness，使其结合当天summary、keyword或action_refs提出不同观察问题，不得逐字复用历史日期问句。若错误包含calendar_practice_schedule_mismatch，逐日照抄错误详情中的expected数组，actual数组一律视为错误；不得添加未排入的报告Action，也不得在suitable中安排未排入行动的步骤。scheduled_practice_by_date是本批唯一可执行的报告行动清单，practice_schedule是最终排程。windows每项含period、label、suggestion；daily summary含标点目标35–45字符，必须30–60字符；keyword用顿号连接2–4词；source_refs只能用allowed_source_refs。逐日文案必须带action_refs数组，只能引用报告行动并遵守每日时间预算与频率。校准MAJOR/BLOCK必须给出field_path和observed_text逐字引用实际交付文案；只评文案，不重排或质疑固定facts，不把已核验字段说成缺失。不得通过把approved改为true绕过质量问题。"}, validator)
             raise execution_error
         runs.append(log.id)
         return result.output_parsed

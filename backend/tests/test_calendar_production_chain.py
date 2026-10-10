@@ -280,6 +280,29 @@ async def test_format_repair_preserves_both_raw_outputs(chain_db):
 
 
 @pytest.mark.asyncio
+async def test_daily_direction_repair_restores_two_suitable_items(chain_db):
+    class ShortSuitableGateway(CalendarGateway):
+        async def complete(self, **kwargs):
+            result = await super().complete(**kwargs)
+            if self.calls == 5:
+                parsed = json.loads(result.content)
+                parsed["entries"][2]["suitable"] = parsed["entries"][2]["suitable"][:1]
+                return ModelCompletion(json.dumps(parsed, ensure_ascii=False), {})
+            return result
+
+    user, _, _, data = await seed_report(chain_db)
+    request = await queue_calendar_from_report(chain_db, user, data)
+    assert (await execute_calendar_production(chain_db, request.id, 1, gateway=ShortSuitableGateway()))["status"] == "fulfilled"
+    failed = await chain_db.scalar(select(SkillRun).where(SkillRun.status == "FAILED"))
+    assert failed.error.startswith("calendar_directions_invalid:")
+    assert '"suitable_count":1' in failed.error and '"expected_range":[2,3]' in failed.error
+    repaired = await chain_db.scalar(select(SkillRun).where(SkillRun.idempotency_key.like("%:repair")))
+    assert "calendar_directions_invalid" in repaired.runtime_instruction
+    assert "不能删除到少于2条" in repaired.runtime_instruction
+    assert repaired.input_snapshot["suitable_counts"][2]["count"] == 1
+
+
+@pytest.mark.asyncio
 async def test_duplicate_daily_awareness_is_repaired_before_calibration(chain_db):
     class DuplicateAwarenessGateway(CalendarGateway):
         async def complete(self, **kwargs):
