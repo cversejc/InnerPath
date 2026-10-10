@@ -13,8 +13,34 @@ from .programmatic import collect_programmatic_issues
 from app.core.time import utc_now_naive
 
 
+_MIN_RECOVERED_EVIDENCE_LENGTH = 4
+
+
 def _now() -> datetime:
     return utc_now_naive()
+
+
+def _longest_contiguous_source_quote(evidence: str, source: str) -> str | None:
+    """Return the longest exact quote from evidence that appears in source."""
+    if not evidence or not source:
+        return None
+    previous = [0] * (len(source) + 1)
+    best_start = 0
+    best_length = 0
+    for character in evidence:
+        current = [0] * (len(source) + 1)
+        for source_index, source_character in enumerate(source, start=1):
+            if character != source_character:
+                continue
+            length = previous[source_index - 1] + 1
+            current[source_index] = length
+            if length > best_length:
+                best_start = source_index - length
+                best_length = length
+        previous = current
+    if best_length < _MIN_RECOVERED_EVIDENCE_LENGTH:
+        return None
+    return source[best_start : best_start + best_length]
 
 
 def _programmatic_issue_identity(row: QAIssue) -> tuple:
@@ -158,6 +184,7 @@ async def replace_validator_issues(db: AsyncSession, run: SkillRun) -> list[QAIs
     saved = []
     case = await db.get(ReportCase, run.report_case_id)
     seen = set()
+    unverified_seen = set()
     for issue in (run.output_parsed or {}).get("issues", []):
         if not isinstance(issue, dict):
             continue
@@ -170,9 +197,62 @@ async def replace_validator_issues(db: AsyncSession, run: SkillRun) -> list[QAIs
             continue
         fragment_key = issue.get("target_fragment_key")
         fragment = current_fragments.get(fragment_key)
+        evidence = issue.get("evidence")
+        evidence_original = None
         if case and case.review_policy_version == "six-node-review-v1":
-            if issue.get("issue_type") != "quality_score_below_threshold" and (not fragment or not isinstance(issue.get("evidence"), str) or issue["evidence"] not in fragment.content):
-                raise ValueError("final_qa_source_quote_invalid")
+            issue_type = str(issue.get("issue_type") or "SEMANTIC_REVIEW")
+            if issue_type != "quality_score_below_threshold":
+                source_quote = (
+                    evidence
+                    if (
+                        fragment
+                        and isinstance(evidence, str)
+                        and evidence in fragment.content
+                    )
+                    else None
+                )
+                if source_quote is None and fragment and isinstance(evidence, str):
+                    source_quote = _longest_contiguous_source_quote(
+                        evidence, fragment.content
+                    )
+                    if source_quote is not None:
+                        evidence_original = evidence
+                if source_quote is None:
+                    identity = (fragment_key, issue_type, evidence)
+                    if identity not in unverified_seen:
+                        unverified_seen.add(identity)
+                        row = QAIssue(
+                            report_case_id=run.report_case_id,
+                            source_type="PROGRAMMATIC",
+                            source_ref_id=run.id,
+                            issue_type="VALIDATOR_EVIDENCE_UNVERIFIED",
+                            severity="MINOR",
+                            status="OPEN",
+                            target_fragment_key=(
+                                fragment_key if fragment else None
+                            ),
+                            target_fragment_revision_id=(
+                                fragment.id if fragment else None
+                            ),
+                            message=(
+                                "检查意见的引用无法在目标正文中定位，"
+                                "已省略原意见，请人工复核。"
+                            ),
+                            evidence_json={
+                                "evidence": evidence,
+                                "validator_issue_type": issue_type,
+                                "validator_run_id": run.id,
+                                "qa_fingerprint": (
+                                    run.context_snapshot or {}
+                                ).get("qa_fingerprint"),
+                            },
+                            suggestion="请重新运行检查或人工通读目标片段核对。",
+                            created_at=_now(),
+                        )
+                        db.add(row)
+                        saved.append(row)
+                    continue
+                evidence = source_quote
             identity = (fragment_key, issue.get("issue_type"), severity)
             if identity in seen:
                 continue
@@ -197,8 +277,13 @@ async def replace_validator_issues(db: AsyncSession, run: SkillRun) -> list[QAIs
             target_fragment_revision_id=fragment.id if fragment else None,
             message=str(issue.get("message") or "语义审核发现需要复核的问题。"),
             evidence_json={
-                "evidence": issue.get("evidence"),
+                "evidence": evidence,
                 "qa_fingerprint": (run.context_snapshot or {}).get("qa_fingerprint"),
+                **(
+                    {"evidence_original": evidence_original}
+                    if evidence_original is not None
+                    else {}
+                ),
                 **(
                     {"carried_from_issue_id": decision.id}
                     if decision is not None

@@ -300,6 +300,14 @@ async def queue_case_quality_run(
                 if step_task is not None
                 else {}
             ),
+            # The skill runtime only materializes validator findings while the
+            # owning node still holds this activation, so the whole-report run
+            # has to carry the same activation the node flow stamped on it.
+            **(
+                {"node_activation_no": step_task.activation_no}
+                if step_task is not None
+                else {}
+            ),
             **(
                 {"quality_feedback_source_run_id": previous_run.id}
                 if previous_run is not None
@@ -316,7 +324,7 @@ async def queue_case_quality_run(
     )
     if created:
         if report_case.review_policy_version == "six-node-review-v1" and not feedback:
-            run.runtime_instruction = "每项事实、语义或表达问题须指定实际target_fragment_key，evidence须从该片段正文逐字摘录。全篇问题也须引用具体正文，不得只写泛泛的评语。评分门槛由程序依据scorecard判断。"
+            run.runtime_instruction = "每项事实、语义或表达问题须指定实际target_fragment_key，evidence须是该片段正文中的单一连续原文子串，逐字摘录，禁止省略号、顿号拼接、改写或转述。全篇问题也须引用具体正文，不得只写泛泛的评语。评分门槛由程序依据scorecard判断。"
         db.add(
             WorkflowOutbox(
                 aggregate_type="skill_run",

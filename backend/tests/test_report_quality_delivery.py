@@ -1381,6 +1381,50 @@ async def test_validator_recheck_reopens_decision_after_fragment_revision_change
 
 
 @pytest.mark.asyncio
+async def test_validator_recheck_repairs_non_contiguous_evidence(quality_db):
+    from app.domains.quality.service import replace_validator_issues
+
+    report_case, _fragment, queue_run = await _validator_recheck_case(
+        quality_db, user_id=97
+    )
+    report_case.review_policy_version = "six-node-review-v1"
+    await quality_db.flush()
+    run = await queue_run("validator-evidence-repair")
+    run.output_parsed["issues"][0]["evidence"] = "有边界的描述。……补充转述"
+
+    issues = await replace_validator_issues(quality_db, run)
+
+    assert len(issues) == 1
+    assert issues[0].source_type == "VALIDATOR"
+    assert issues[0].evidence_json["evidence"] == "有边界的描述。"
+    assert issues[0].evidence_json["evidence_original"] == "有边界的描述。……补充转述"
+
+
+@pytest.mark.asyncio
+async def test_validator_recheck_records_unverified_evidence_without_failing(
+    quality_db,
+):
+    from app.domains.quality.service import replace_validator_issues
+
+    report_case, _fragment, queue_run = await _validator_recheck_case(
+        quality_db, user_id=98
+    )
+    report_case.review_policy_version = "six-node-review-v1"
+    await quality_db.flush()
+    run = await queue_run("validator-evidence-unverified")
+    run.output_parsed["issues"][0]["evidence"] = "这段文字完全不在目标正文中"
+
+    issues = await replace_validator_issues(quality_db, run)
+
+    assert len(issues) == 1
+    assert issues[0].source_type == "PROGRAMMATIC"
+    assert issues[0].issue_type == "VALIDATOR_EVIDENCE_UNVERIFIED"
+    assert issues[0].severity == "MINOR"
+    assert issues[0].evidence_json["validator_issue_type"] == "SAFETY_LANGUAGE"
+    assert issues[0].evidence_json["evidence"] == "这段文字完全不在目标正文中"
+
+
+@pytest.mark.asyncio
 async def test_same_type_quality_issues_close_together_with_single_records(quality_db):
     from app.application.report_quality import close_case_qa_issues
     from app.domains.quality.service import group_quality_issues
@@ -1444,3 +1488,188 @@ async def test_same_type_quality_issues_close_together_with_single_records(quali
     assert all(row.resolution == reason for row in resolved)
     assert all(row.resolved_by == 5 and row.resolved_at is not None for row in resolved)
     assert group_quality_issues(rows) == []
+
+
+@pytest.mark.asyncio
+async def test_six_node_quality_run_binds_node_activation_and_materializes_findings(
+    quality_db, monkeypatch
+):
+    """S6's whole-report check must carry the node activation it belongs to.
+
+    The skill runtime only materializes validator findings while the owning node
+    still holds that activation; without the binding the run is archived and
+    every validator issue is dropped on the floor.
+    """
+    from app.application import report_quality, skill_runtime
+    from app.application.report_quality import queue_case_quality_run
+    from app.domains.skills.bindings import specification_digest
+    from app.domains.skills.service import ensure_default_validator_skill_version
+
+    now = datetime.utcnow()
+    validator = await ensure_default_validator_skill_version(quality_db)
+    validator_spec = validator.specification_json
+    workflow_version = WorkflowVersion(
+        workflow_key="report.production",
+        name="Workflow",
+        version=1,
+        status="PUBLISHED",
+        definition_json={"steps": []},
+        created_at=now,
+    )
+    quality_db.add(workflow_version)
+    await quality_db.flush()
+    report_case = ReportCase(
+        user_id=46,
+        status="ACTIVE",
+        review_policy_version="six-node-review-v1",
+        application_snapshot={
+            "profile": {"name": "林女士"},
+            "context": {},
+            "skill_bindings": {
+                "report.final_validator": {
+                    "id": validator.id,
+                    "version": validator.version,
+                    "digest": specification_digest(validator_spec),
+                }
+            },
+        },
+        application_submitted_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    quality_db.add(report_case)
+    await quality_db.flush()
+    instance = WorkflowInstance(
+        report_case_id=report_case.id,
+        workflow_version_id=workflow_version.id,
+        status="RUNNING",
+        created_at=now,
+        updated_at=now,
+    )
+    quality_db.add(instance)
+    await quality_db.flush()
+    report_case.workflow_instance_id = instance.id
+    step = StepTask(
+        workflow_instance_id=instance.id,
+        step_key="S6",
+        sequence_no=6,
+        executor="HYBRID",
+        status="IN_REVIEW",
+        activation_no=1,
+        config_snapshot={},
+        created_at=now,
+        updated_at=now,
+    )
+    quality_db.add(step)
+    await quality_db.flush()
+    from app.domains.skills.service import create_skill_run
+
+    plan_source, _ = await create_skill_run(
+        quality_db,
+        skill_version_id=validator.id,
+        idempotency_key="six-node-quality-plan-source",
+        input_snapshot={},
+        context_snapshot={},
+        run_type="INITIAL",
+        target_type="NARRATIVE_CANDIDATES",
+        target_key="S5",
+        report_case_id=report_case.id,
+    )
+    plan = NarrativePlan(
+        report_case_id=report_case.id,
+        version_no=1,
+        is_current=True,
+        status="PROPOSED",
+        selected_skill_run_id=plan_source.id,
+        selected_candidate_key="six-node-quality",
+        plan_json={"core_theme": "先理解取舍，再选择方向"},
+        source_snapshot={},
+        created_at=now,
+    )
+    quality_db.add(plan)
+    await quality_db.flush()
+    fragment = await create_content_fragment_revision(
+        quality_db,
+        report_case_id=report_case.id,
+        fragment_key="report.identity",
+        fragment_type="REPORT",
+        title="你是谁",
+        content="你重视稳定，也会认真衡量自主空间。",
+        status="CONFIRMED",
+        source_narrative_plan_id=plan.id,
+    )
+    snapshot = {
+        "narrative_plan": None,
+        "semantic_model": {},
+        "fragments": [
+            {
+                "fragment_key": fragment.fragment_key,
+                "revision_no": fragment.revision_no,
+                "title": fragment.title,
+                "content": fragment.content,
+                "source_snapshot": fragment.source_snapshot,
+            }
+        ],
+    }
+    monkeypatch.setattr(
+        report_quality,
+        "run_programmatic_qa",
+        AsyncMock(
+            return_value=([], "six-node-fingerprint", snapshot)
+        ),
+    )
+
+    queued = await queue_case_quality_run(
+        quality_db,
+        report_case=report_case,
+        actor_id=7,
+        idempotency_key="s6-node-quality",
+        step_task=step,
+    )
+    run = queued["validator_run"]
+
+    assert run.step_task_id == step.id
+    assert run.context_snapshot["quality_activation_no"] == step.activation_no
+    assert run.context_snapshot["node_activation_no"] == step.activation_no
+
+    gateway = StubGateway(
+        json.dumps(
+            {
+                "issues": [
+                    {
+                        "severity": "MAJOR",
+                        "issue_type": "SOURCE_FIDELITY",
+                        "target_fragment_key": "report.identity",
+                        "evidence": "你重视稳定",
+                        "message": "该判断缺少用户资料支撑。",
+                        "suggestion": "补充用户原始资料的核对记录。",
+                    }
+                ],
+                "scorecard": {
+                    "dimensions": {
+                        key: {
+                            "score": maximum,
+                            "reason": "核对测试报告片段",
+                            "fragment_keys": ["report.identity"],
+                        }
+                        for key, maximum in RUBRIC.items()
+                    }
+                },
+            },
+            ensure_ascii=False,
+        )
+    )
+    monkeypatch.setattr(skill_runtime, "DeepSeekGateway", lambda: gateway)
+
+    completed = await skill_runtime.execute_skill_run_record(quality_db, run.id)
+    issues = list(
+        await quality_db.scalars(
+            select(QAIssue).where(QAIssue.report_case_id == report_case.id)
+        )
+    )
+
+    assert completed.status == "COMPLETED", completed.error
+    assert "node_archived" not in completed.context_snapshot
+    assert [
+        (row.source_type, row.severity, row.target_fragment_key) for row in issues
+    ] == [("VALIDATOR", "MAJOR", "report.identity")]
