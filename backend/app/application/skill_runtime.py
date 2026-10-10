@@ -81,6 +81,8 @@ _SIMPLE_CONTEXT_KEYS = (
     "simple_attempt_no",
     "simple_recover_stale",
     "simple_request_scope",
+    "simple_control_scope",
+    "simple_upstream_revisions",
     "simple_archived",
 )
 
@@ -249,6 +251,7 @@ async def _queue_run(
     context_metadata: dict[str, Any] | None = None,
     run_type: str | None = None,
     commit: bool = True,
+    frozen_run: SkillRun | None = None,
 ) -> tuple[SkillRun, bool]:
     skill_version = await db.get(AISkillVersion, version_id)
     if skill_version is None:
@@ -257,71 +260,95 @@ async def _queue_run(
     if skill_version.status == "RETIRED":
         raise ValueError("skill_retired")
     specification = skill_version.specification_json
-    base_input = build_context_envelope(input_data, specification)
-    example_policy = specification.get("example_policy") or {}
-    selected_examples = []
-    if example_policy.get("enabled"):
-        max_examples = example_policy.get("max_examples", 0)
-        if not isinstance(max_examples, int) or isinstance(max_examples, bool):
-            max_examples = 0
-        selected_examples = await retrieve_skill_examples(
-            db,
-            skill_key=skill_version.skill_key,
-            target_key=target_key if target_type == "REPORT_FRAGMENT" else None,
-            context=base_input.get("context") or {},
-            max_examples=max_examples,
-        )
-    input_snapshot = build_context_envelope(
-        {
-            **input_data,
-            "few_shot_examples": [
-                item["example_snapshot"] for item in selected_examples
-            ],
-        },
-        specification,
-    )
-    feedback_rerun = (input_data.get("context") or {}).get("feedback_rerun")
-    if isinstance(feedback_rerun, dict):
-        input_snapshot.setdefault("context", {})["feedback_rerun"] = deepcopy(
-            feedback_rerun
-        )
-    context_snapshot = deepcopy(input_snapshot)
-    context_snapshot.update(context_metadata or {})
-    if report_case is not None and step is not None and report_case.review_policy_version == "six-node-review-v1":
-        from app.application.node_review_workspace import review_context, node_snapshot
-        from app.domains.review.contracts import fingerprint
-        _, _, review_state = await review_context(db, report_case.id, step.step_key)
-        context_snapshot["node_review_policy"] = report_case.review_policy_version
-        context_snapshot["node_activation_no"] = step.activation_no
-        context_snapshot["node_model_policy"] = {"thinking": False, "max_tokens": 16000, "timeout_seconds": 240}
-        context_snapshot["node_input_fingerprint"] = fingerprint(await node_snapshot(db, report_case, step, review_state))
-    semantic_sources = input_data.get("semantic_source_snapshot")
-    if isinstance(semantic_sources, dict):
-        context_snapshot["semantic_source_snapshot"] = semantic_sources
-    narrative_plan_id = input_data.get("source_narrative_plan_id")
-    if isinstance(narrative_plan_id, int):
-        context_snapshot["source_narrative_plan_id"] = narrative_plan_id
-    if report_case is not None:
-        evidence_rows = await db.scalars(
-            select(CaseEvidenceItem)
-            .where(
-                CaseEvidenceItem.report_case_id == report_case.id,
-                CaseEvidenceItem.status == "ACTIVE",
-            )
-            .order_by(CaseEvidenceItem.evidence_key)
-        )
-        context_snapshot["source_references"] = {
-            "evidence": [
-                {
-                    "evidence_id": item.id,
-                    "evidence_key": item.evidence_key,
-                    "source_type": item.source_type,
-                    "source_ref": item.source_ref,
-                    "source_skill_run_id": item.source_skill_run_id,
-                }
-                for item in evidence_rows
-            ]
+    if frozen_run is not None:
+        if (
+            frozen_run.skill_version_id != version_id
+            or frozen_run.target_type != target_type
+            or frozen_run.target_key != target_key
+            or frozen_run.report_case_id
+            != (report_case.id if report_case else None)
+            or frozen_run.workflow_instance_id
+            != (report_case.workflow_instance_id if report_case else None)
+            or frozen_run.step_task_id != (step.id if step else None)
+        ):
+            raise ValueError("skill_run_frozen_input_conflict")
+        input_snapshot = deepcopy(frozen_run.input_snapshot or {})
+        selected_examples = deepcopy(frozen_run.selected_examples or [])
+        selected_knowledge = deepcopy(frozen_run.selected_knowledge or [])
+        runtime_instruction = frozen_run.runtime_instruction
+        context_snapshot = {
+            key: deepcopy(value)
+            for key, value in (frozen_run.context_snapshot or {}).items()
+            if key not in _SIMPLE_CONTEXT_KEYS
         }
+        context_snapshot.update(deepcopy(context_metadata or {}))
+    else:
+        base_input = build_context_envelope(input_data, specification)
+        example_policy = specification.get("example_policy") or {}
+        selected_examples = []
+        if example_policy.get("enabled"):
+            max_examples = example_policy.get("max_examples", 0)
+            if not isinstance(max_examples, int) or isinstance(max_examples, bool):
+                max_examples = 0
+            selected_examples = await retrieve_skill_examples(
+                db,
+                skill_key=skill_version.skill_key,
+                target_key=target_key if target_type == "REPORT_FRAGMENT" else None,
+                context=base_input.get("context") or {},
+                max_examples=max_examples,
+            )
+        input_snapshot = build_context_envelope(
+            {
+                **input_data,
+                "few_shot_examples": [
+                    item["example_snapshot"] for item in selected_examples
+                ],
+            },
+            specification,
+        )
+        feedback_rerun = (input_data.get("context") or {}).get("feedback_rerun")
+        if isinstance(feedback_rerun, dict):
+            input_snapshot.setdefault("context", {})["feedback_rerun"] = deepcopy(
+                feedback_rerun
+            )
+        context_snapshot = deepcopy(input_snapshot)
+        context_snapshot.update(context_metadata or {})
+        if report_case is not None and step is not None and report_case.review_policy_version == "six-node-review-v1":
+            from app.application.node_review_workspace import review_context, node_snapshot
+            from app.domains.review.contracts import fingerprint
+            _, _, review_state = await review_context(db, report_case.id, step.step_key)
+            context_snapshot["node_review_policy"] = report_case.review_policy_version
+            context_snapshot["node_activation_no"] = step.activation_no
+            context_snapshot["node_model_policy"] = {"thinking": False, "max_tokens": 16000, "timeout_seconds": 240}
+            context_snapshot["node_input_fingerprint"] = fingerprint(await node_snapshot(db, report_case, step, review_state))
+        semantic_sources = input_data.get("semantic_source_snapshot")
+        if isinstance(semantic_sources, dict):
+            context_snapshot["semantic_source_snapshot"] = semantic_sources
+        narrative_plan_id = input_data.get("source_narrative_plan_id")
+        if isinstance(narrative_plan_id, int):
+            context_snapshot["source_narrative_plan_id"] = narrative_plan_id
+        if report_case is not None:
+            evidence_rows = await db.scalars(
+                select(CaseEvidenceItem)
+                .where(
+                    CaseEvidenceItem.report_case_id == report_case.id,
+                    CaseEvidenceItem.status == "ACTIVE",
+                )
+                .order_by(CaseEvidenceItem.evidence_key)
+            )
+            context_snapshot["source_references"] = {
+                "evidence": [
+                    {
+                        "evidence_id": item.id,
+                        "evidence_key": item.evidence_key,
+                        "source_type": item.source_type,
+                        "source_ref": item.source_ref,
+                        "source_skill_run_id": item.source_skill_run_id,
+                    }
+                    for item in evidence_rows
+                ]
+            }
+        selected_knowledge = []
     run, created = await create_skill_run(
         db,
         skill_version_id=version_id,
@@ -338,7 +365,13 @@ async def _queue_run(
         selected_examples=selected_examples,
     )
     if created:
-        run.selected_knowledge = deepcopy(specification.get("knowledge_policy", {}).get("snapshot") or [])
+        run.selected_knowledge = (
+            selected_knowledge
+            if frozen_run is not None
+            else deepcopy(
+                specification.get("knowledge_policy", {}).get("snapshot") or []
+            )
+        )
         event = WorkflowOutbox(
             aggregate_type="skill_run",
             aggregate_id=run.id,

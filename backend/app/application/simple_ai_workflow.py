@@ -205,7 +205,6 @@ def _fingerprint_scope(
     upstream: dict[str, dict[str, Any]],
     *,
     revision_type: str,
-    attempt_no: int,
     recover_stale: bool,
 ) -> dict[str, Any]:
     config = task.config_snapshot or {}
@@ -215,7 +214,6 @@ def _fingerprint_scope(
         "activation_no": execution.activation_no,
         "assignee_id": task.assignee_id,
         "revision_type": revision_type,
-        "attempt_no": attempt_no,
         "input_contract": config.get("input_contract"),
         "skill_version_id": config.get("skill_version_id"),
         "generation_profile": config.get("generation_profile"),
@@ -374,6 +372,32 @@ async def _resolve_retry_parameters(
     return revision_type, base, feedback, attempt_no, _frozen_upstream, False
 
 
+async def _latest_failed_run_for_retry(
+    db: AsyncSession, task: StepTask
+) -> Optional[SkillRun]:
+    """Return the failed run whose frozen plan the next attempt must reuse."""
+    run = await db.scalar(
+        select(SkillRun)
+        .where(
+            SkillRun.target_type == SIMPLE_STEP_TARGET_TYPE,
+            SkillRun.step_task_id == task.id,
+            SkillRun.status == "FAILED",
+        )
+        .order_by(SkillRun.id.desc())
+    )
+    if run is None:
+        return None
+    context = run.context_snapshot or {}
+    if (
+        context.get("simple_step_key") != task.step_key
+        or context.get("simple_activation_no") != task.activation_no
+        or context.get("simple_assignee_id") != task.assignee_id
+        or context.get("simple_archived")
+    ):
+        return None
+    return run
+
+
 async def _collect_revision_refs(
     db: AsyncSession, execution: SimpleStepExecution
 ) -> set[int]:
@@ -493,6 +517,7 @@ async def _replace_stale_run(
                 recover_stale=recover_stale,
                 allow_failed_state=True,
                 last_error=store_error,
+                frozen_run=run if not recover_stale else None,
             )
     except IntegrityError:
         return None
@@ -557,7 +582,6 @@ async def _replay_run(
         "assignee_id": task.assignee_id,
         "revision_type": context.get("simple_revision_type"),
         "base_revision_id": context.get("simple_base_revision_id"),
-        "attempt_no": context.get("simple_attempt_no"),
     }
     for key, expected in scope_expectations.items():
         if scope.get(key) != expected:
@@ -727,6 +751,7 @@ async def _queue_step_run(
     requested_mode: Any = _UNSET,
     requested_base_revision_id: Any = _UNSET,
     requested_feedback_text: Any = _UNSET,
+    frozen_run: Optional[SkillRun] = None,
 ) -> tuple[SkillRun, bool, str]:
     from app.application.skill_runtime import _queue_run
 
@@ -751,7 +776,6 @@ async def _queue_step_run(
         feedback_text,
         upstream,
         revision_type=revision_type,
-        attempt_no=attempt_no,
         recover_stale=recover_stale,
     )
     input_fingerprint = _fingerprint(scope)
@@ -801,6 +825,7 @@ async def _queue_step_run(
         },
         run_type=_RUN_TYPE_BY_REVISION_TYPE[revision_type],
         commit=False,
+        frozen_run=frozen_run,
     ) + (input_fingerprint,)
 
 
@@ -824,6 +849,7 @@ async def _start_run(
     requested_mode: Any = _UNSET,
     requested_base_revision_id: Any = _UNSET,
     requested_feedback_text: Any = _UNSET,
+    frozen_run: Optional[SkillRun] = None,
 ) -> tuple[SimpleStepExecution, bool]:
     """Queue one generation run for a step.
 
@@ -891,6 +917,7 @@ async def _start_run(
         requested_mode=requested_mode,
         requested_base_revision_id=requested_base_revision_id,
         requested_feedback_text=requested_feedback_text,
+        frozen_run=frozen_run,
     )
     if not created:
         # Idempotent replay: never restart a run that already exists.
@@ -1098,6 +1125,11 @@ async def start_generation(
             upstream,
             recover_stale,
         ) = await _resolve_retry_parameters(db, report_case, tasks, execution, task)
+        frozen_run = (
+            None
+            if recover_stale
+            else await _latest_failed_run_for_retry(db, task)
+        )
         await _start_run(
             db,
             report_case,
@@ -1116,6 +1148,7 @@ async def start_generation(
             requested_mode=requested_mode,
             requested_base_revision_id=requested_base_revision_id,
             requested_feedback_text=requested_feedback_text,
+            frozen_run=frozen_run,
         )
         await db.commit()
         await db.refresh(execution)

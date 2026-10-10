@@ -641,6 +641,16 @@ async def test_automatic_retry_stops_after_two_retries_then_manual_retry(
     first_key = SIMPLE_STEP_KEYS[0]
     first_task, first_run = await _prepare(simple_db, report_case, first_key)
 
+    frozen_input = {
+        **first_run.input_snapshot,
+        "frozen_retry_marker": "keep-this-input",
+    }
+    first_run.input_snapshot = frozen_input
+    first_run.selected_examples = [{"example_key": "frozen-example"}]
+    first_run.selected_knowledge = [{"knowledge_key": "frozen-knowledge"}]
+    first_run.runtime_instruction = "keep-this-runtime-instruction"
+    await simple_db.flush()
+
     first_run.status = "FAILED"
     first_run.error = "gateway timeout"
     await record_run_failure(simple_db, first_run)
@@ -650,6 +660,14 @@ async def test_automatic_retry_stops_after_two_retries_then_manual_retry(
     )
     retry_one = await _run_for_step(simple_db, report_case, first_key)
     assert retry_one.context_snapshot["simple_attempt_no"] == 2
+    assert (
+        retry_one.context_snapshot["simple_input_fingerprint"]
+        == first_run.context_snapshot["simple_input_fingerprint"]
+    )
+    assert retry_one.input_snapshot == frozen_input
+    assert retry_one.selected_examples == first_run.selected_examples
+    assert retry_one.selected_knowledge == first_run.selected_knowledge
+    assert retry_one.runtime_instruction == first_run.runtime_instruction
     await simple_db.refresh(first_task)
     assert first_task.retry_count == 1
 
@@ -659,6 +677,14 @@ async def test_automatic_retry_stops_after_two_retries_then_manual_retry(
     await simple_db.flush()
     retry_two = await _run_for_step(simple_db, report_case, first_key)
     assert retry_two.context_snapshot["simple_attempt_no"] == 3
+    assert (
+        retry_two.context_snapshot["simple_input_fingerprint"]
+        == first_run.context_snapshot["simple_input_fingerprint"]
+    )
+    assert retry_two.input_snapshot == frozen_input
+    assert retry_two.selected_examples == first_run.selected_examples
+    assert retry_two.selected_knowledge == first_run.selected_knowledge
+    assert retry_two.runtime_instruction == first_run.runtime_instruction
     await simple_db.refresh(first_task)
     assert first_task.retry_count == 2
 
@@ -686,6 +712,14 @@ async def test_automatic_retry_stops_after_two_retries_then_manual_retry(
     )
     manual_retry = await _run_for_step(simple_db, report_case, first_key)
     assert manual_retry.context_snapshot["simple_attempt_no"] == 4
+    assert (
+        manual_retry.context_snapshot["simple_input_fingerprint"]
+        == first_run.context_snapshot["simple_input_fingerprint"]
+    )
+    assert manual_retry.input_snapshot == frozen_input
+    assert manual_retry.selected_examples == first_run.selected_examples
+    assert manual_retry.selected_knowledge == first_run.selected_knowledge
+    assert manual_retry.runtime_instruction == first_run.runtime_instruction
     await simple_db.refresh(first_task)
     assert first_task.retry_count == 3
     assert (
