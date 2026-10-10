@@ -13,8 +13,18 @@ from app.domains.reports.generation.birth_time import resolve_birth_time
 from app.application.node_review_workspace import save_metadata
 
 
-async def migrate_reviews(db, *, apply=False):
-    cases = list(await db.scalars(select(ReportCase).join(WorkflowInstance, ReportCase.workflow_instance_id == WorkflowInstance.id).join(WorkflowVersion, WorkflowInstance.workflow_version_id == WorkflowVersion.id).where(WorkflowVersion.workflow_key == "report.production", ReportCase.status.not_in(["DELIVERED", "CANCELLED"]), ReportCase.review_policy_version.is_(None)).order_by(ReportCase.id).with_for_update()))
+async def migrate_reviews(db, *, apply=False, case_ids=None, auto_prepare=True):
+    statement = (select(ReportCase)
+                 .join(WorkflowInstance, ReportCase.workflow_instance_id == WorkflowInstance.id)
+                 .join(WorkflowVersion, WorkflowInstance.workflow_version_id == WorkflowVersion.id)
+                 .where(WorkflowVersion.workflow_key == "report.production", ReportCase.status.not_in(["DELIVERED", "CANCELLED"]), ReportCase.review_policy_version.is_(None))
+                 .order_by(ReportCase.id).with_for_update())
+    if case_ids is not None:
+        selected = sorted({int(case_id) for case_id in case_ids})
+        if not selected:
+            return []
+        statement = statement.where(ReportCase.id.in_(selected))
+    cases = list(await db.scalars(statement))
     inventory = []
     for case in cases:
         tasks = list(await db.scalars(select(StepTask).where(StepTask.workflow_instance_id == case.workflow_instance_id).order_by(StepTask.sequence_no)))
@@ -23,7 +33,7 @@ async def migrate_reviews(db, *, apply=False):
             time = resolve_birth_time((case.application_snapshot or {}).get("profile") or {})
         except (KeyError, TypeError, ValueError):
             time = {"status": "NEEDS_CONFIRMATION", "limitations": ["出生资料不完整"]}
-        record = {"case_id": case.id, "earliest_review": "S1", "time_status": time["status"],
+        record = {"case_id": case.id, "earliest_review": "S1", "time_status": time["status"], "auto_prepare": auto_prepare,
                   "in_flight_run_ids": [r.id for r in runs], "legacy_reviews": [{"step_key": t.step_key, "status": t.status, "activation_no": t.activation_no, "result": t.result_json} for t in tasks],
                   "reason": "新时间口径与整体审核政策需要核验；旧签核保留，不转为新时间确认"}
         inventory.append(record)
@@ -56,7 +66,7 @@ async def migrate_reviews(db, *, apply=False):
             task.started_at = None
             task.last_error = None
         first = next(t for t in tasks if t.step_key == "S1")
-        if not waiting:
+        if not waiting and auto_prepare:
             await enqueue_outbox_event(db, aggregate_type="workflow_instance", aggregate_id=instance.id, event_type="workflow.step.ready", payload={"report_case_id": case.id, "step_task_id": first.id, "activation_no": first.activation_no})
         record["migration_status"] = "MIGRATED"
     if apply:

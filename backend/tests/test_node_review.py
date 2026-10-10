@@ -10,7 +10,7 @@ from tests.test_calendar_production_chain import chain_db
 from app.models.user import User
 from app.domains.content.models import CaseEvidenceItem, ContentFragmentRevision, FindingRevision, NarrativePlan
 from app.domains.skills.models import AISkillVersion, SkillRun
-from app.domains.workflow.models import ReportCase, WorkflowVersion, WorkflowInstance, StepTask
+from app.domains.workflow.models import ReportCase, WorkflowVersion, WorkflowInstance, StepTask, WorkflowOutbox
 from app.domains.review.models import NodeReviewCommand, NodeApproval, POLICY_VERSION
 from app.domains.review.schemas import ReviewPatch, ReviewCommandInput, ReviewCheckpointInput, ReviewVersion, RevisionInput, IssueResolution, IssueResolutionGroup
 from app.domains.review.contracts import fingerprint, normalize_ai_issues, approval_blockers, program_issues, group_review_issues
@@ -418,6 +418,51 @@ async def test_migration_waits_for_running_jobs_then_archives_pending_and_preser
 
 
 @pytest.mark.asyncio
+async def test_migration_case_filter_only_touches_selected_cases(chain_db):
+    from app.application.node_review_migration import migrate_reviews
+    db=chain_db
+    case,_,actor,_=await seed_node(db)
+    case.review_policy_version=None
+    await db.commit()
+    now=datetime.utcnow()
+    version=await db.scalar(select(WorkflowVersion).where(WorkflowVersion.workflow_key=="report.production"))
+    other=ReportCase(user_id=actor.id,status="ACTIVE",review_policy_version=None,
+        application_snapshot={"profile":{"birth_year":2000,"birth_month":1,"birth_day":1,"birth_hour":12,"birth_place":"山东济南"}},application_submitted_at=now,created_at=now,updated_at=now)
+    db.add(other)
+    await db.flush()
+    instance=WorkflowInstance(report_case_id=other.id,workflow_version_id=version.id,status="RUNNING",created_at=now,updated_at=now)
+    db.add(instance)
+    await db.flush()
+    other.workflow_instance_id=instance.id
+    for n in range(1,7):
+        db.add(StepTask(workflow_instance_id=instance.id,step_key=f"S{n}",sequence_no=n,executor="HYBRID",status="READY" if n==1 else "PENDING",activation_no=1,config_snapshot={},created_at=now,updated_at=now))
+    await db.commit()
+    assert await migrate_reviews(db,apply=True,case_ids=[])==[]
+    inventory=await migrate_reviews(db,apply=True,case_ids=[case.id])
+    assert [record["case_id"] for record in inventory]==[case.id]
+    assert case.review_policy_version==POLICY_VERSION
+    assert other.review_policy_version is None
+    events=list(await db.scalars(select(WorkflowOutbox).where(WorkflowOutbox.event_type=="workflow.step.ready")))
+    assert [event.payload_json["report_case_id"] for event in events]==[case.id]
+    assert await migrate_reviews(db,apply=True,case_ids=[case.id])==[]
+
+
+@pytest.mark.asyncio
+async def test_migration_can_park_ready_step_without_auto_prepare(chain_db):
+    from app.application.node_review_migration import migrate_reviews
+    db=chain_db
+    case,_,_,steps=await seed_node(db)
+    case.review_policy_version=None
+    await db.commit()
+    inventory=await migrate_reviews(db,apply=True,case_ids=[case.id],auto_prepare=False)
+    assert inventory[0]["migration_status"]=="MIGRATED"
+    assert inventory[0]["auto_prepare"] is False
+    assert steps[0].status=="READY"
+    assert steps[1].status=="PENDING"
+    assert list(await db.scalars(select(WorkflowOutbox)))==[]
+
+
+@pytest.mark.asyncio
 async def test_failed_final_validator_releases_review_command_for_retry(chain_db):
     from app.application.node_review_automation import continue_node_run
     db=chain_db
@@ -430,6 +475,21 @@ async def test_failed_final_validator_releases_review_command_for_retry(chain_db
     await continue_node_run(db,run)
     assert command.status=="FAILED" and command.completed_at is not None
     assert command.error=="provider_unavailable"
+
+
+@pytest.mark.asyncio
+async def test_successful_final_validator_clears_stale_step_error(chain_db):
+    from app.application.node_review_automation import continue_node_run
+    db=chain_db
+    case,step,actor,_=await seed_node(db,"S6")
+    step.last_error="final_qa_source_quote_invalid"
+    run=await dummy_run(db,case,step,actor,target="REPORT_QA",status="COMPLETED")
+    command=NodeReviewCommand(report_case_id=case.id,step_task_id=step.id,kind="CHECK",idempotency_key="successful-final",activation_no=1,fingerprint=await version(db,case,step),policy_version=POLICY_VERSION,status="RUNNING",input_json={},output_json={"validator_run_id":run.id},requested_by=actor.id,created_at=datetime.utcnow())
+    db.add(command)
+    await db.commit()
+    await continue_node_run(db,run)
+    assert step.last_error is None
+    assert command.status=="COMPLETED" and command.completed_at is not None
 
 
 @pytest.mark.asyncio

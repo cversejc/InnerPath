@@ -99,6 +99,20 @@ async def continue_node_run(db, run):
         return
     if run.status != "COMPLETED" or metadata.get("node_materialized") or metadata.get("node_archived"):
         return
+    if run.target_type == "REPORT_QA":
+        # A finished validator run supersedes stale errors and RUNNING CHECK rows even when the
+        # node's current actor can no longer be resolved, so reconcile before the holder guards.
+        from app.core.time import utc_now_naive
+        checks = list(await db.scalars(select(NodeReviewCommand).where(NodeReviewCommand.report_case_id == case.id, NodeReviewCommand.step_task_id == step.id, NodeReviewCommand.kind == "CHECK", NodeReviewCommand.status == "RUNNING")))
+        _, _, state = await review_context(db, case.id, step.step_key)
+        current_version = fingerprint(await node_snapshot(db, case, step, state))
+        for check in checks:
+            if (check.output_json or {}).get("validator_run_id") == run.id:
+                check.status = "COMPLETED" if check.fingerprint == current_version and check.activation_no == step.activation_no else "STALE"
+                check.completed_at = utc_now_naive()
+        step.last_error = None
+        await db.commit()
+        return
     actor = await db.get(User, step.assignee_id) if step.assignee_id else None
     if not actor or case.status in {"DELIVERED", "CANCELLED"} or step.status != "IN_REVIEW":
         return
@@ -153,13 +167,3 @@ async def continue_node_run(db, run):
         plan = await db.scalar(select(NarrativePlan).where(NarrativePlan.report_case_id == case.id, NarrativePlan.is_current.is_(True)))
         if plan and (plan.plan_json.get("generation") or {}).get("status") == "READY_FOR_REVIEW":
             await auto_check(db, case, step, actor)
-    elif run.target_type == "REPORT_QA":
-        checks = list(await db.scalars(select(NodeReviewCommand).where(NodeReviewCommand.report_case_id == case.id, NodeReviewCommand.step_task_id == step.id, NodeReviewCommand.kind == "CHECK", NodeReviewCommand.status == "RUNNING")))
-        _, _, state = await review_context(db, case.id, step.step_key)
-        current_version = fingerprint(await node_snapshot(db, case, step, state))
-        for check in checks:
-            if (check.output_json or {}).get("validator_run_id") == run.id:
-                check.status = "COMPLETED" if check.fingerprint == current_version and check.activation_no == step.activation_no else "STALE"
-                from app.core.time import utc_now_naive
-                check.completed_at = utc_now_naive()
-        await db.commit()
